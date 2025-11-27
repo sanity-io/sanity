@@ -1,7 +1,7 @@
+import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
-import {TZDate} from '@date-fns/tz'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {
   type ComponentProps,

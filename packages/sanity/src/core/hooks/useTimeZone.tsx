@@ -1,7 +1,7 @@
+import {tz as tzHelper, TZDate} from '@date-fns/tz'
 import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
-import {TZDate, tz} from '@date-fns/tz'
 import {format as dateFnsFormat} from 'date-fns'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -97,7 +97,7 @@ function getCachedTimeZoneInfo(
   const dateToUse = relativeDateForZones ?? new Date()
   const parts = formatter.formatToParts(dateToUse)
   const shortParts = shortFormatter.formatToParts(dateToUse)
-  const rawOffset = dateFnsFormat(dateToUse, 'xxx', {in: tz(canonicalIdentifier)})
+  const rawOffset = dateFnsFormat(dateToUse, 'xxx', {in: tzHelper(canonicalIdentifier)})
   // If the offset is +02:00 then we can just show +2, if it has +13:45 then we should show +13:45, remove the leading +0 and just leave a + if a number under 10, remove the :00 at the end
   const offset = rawOffset
     .replace(/([+-])0(\d)/, '$1$2')
@@ -296,7 +296,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         dateFormat = `${format} (zzzz)`
       }
       return dateFnsFormat(date, dateFormat, {
-        in: tz(timeZone?.name || getLocalTimeZone()?.name || 'UTC'),
+        in: tzHelper(timeZone?.name || getLocalTimeZone()?.name || 'UTC'),
       })
     },
     [timeZone, getLocalTimeZone],
