@@ -1,8 +1,8 @@
 import {getImageDimensions, isImageSource, type SanityImageDimensions} from '@sanity/asset-utils'
+import {type ImageUrlBuilder} from '@sanity/image-url'
 import {type CSSProperties, useMemo} from 'react'
 import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {type ImageUrlBuilder} from '../types'
 import {type BaseImageInputValue} from './types'
 
 export function usePreviewImageSource<Value extends BaseImageInputValue | undefined>({

@@ -1,7 +1,6 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {DocumentIcon} from '@sanity/icons'
-import imageUrlBuilder from '@sanity/image-url'
-import {type SanityImageSource} from '@sanity/image-url/lib/types/types'
+import {createImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 import {type ImageUrlFitMode} from '@sanity/types'
 import {
   type ComponentType,
@@ -42,7 +41,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   const {icon: Icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
 
   // NOTE: This function exists because the previews provides options
   // for the rendering of the media (dimensions)

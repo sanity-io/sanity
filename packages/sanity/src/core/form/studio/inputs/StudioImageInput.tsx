@@ -1,4 +1,4 @@
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../../hooks'
@@ -35,7 +35,7 @@ export function StudioImageInput(props: ImageInputProps) {
 
   const assetSources = sourcesFromSchema || imageConfig.assetSources
 
-  const builder = useMemo(() => imageUrlBuilder(client), [client])
+  const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),

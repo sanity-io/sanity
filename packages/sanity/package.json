@@ -154,7 +154,7 @@
     "@sanity/export": "^4.0.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/id-utils": "^1.0.0",
-    "@sanity/image-url": "^1.2.0",
+    "@sanity/image-url": "^2.0.1",
     "@sanity/import": "^3.38.3",
     "@sanity/insert-menu": "^2.1.0",
     "@sanity/logos": "^2.2.2",
