@@ -1,4 +1,5 @@
 import {stat} from 'node:fs/promises'
+import path from 'node:path'
 import {isMainThread, parentPort, workerData} from 'node:worker_threads'
 
 import {
@@ -44,8 +45,10 @@ async function main({
 }: TypegenGenerateTypesWorkerData) {
   const report = WorkerChannelReporter.from<TypegenWorkerChannel>(parentPort)
 
+  const fullPath = path.join(workDir, schemaPath)
+
   try {
-    const schemaStats = await stat(schemaPath)
+    const schemaStats = await stat(fullPath)
     if (!schemaStats.isFile()) {
       throw new Error(`Schema path is not a file: ${schemaPath}`)
     }
@@ -53,12 +56,13 @@ async function main({
     if (err.code === 'ENOENT') {
       // If the user has not provided a specific schema path (eg we're using the default), give some help
       const hint = schemaPath === './schema.json' ? ` - did you run "sanity schema extract"?` : ''
-      throw new Error(`Schema file not found: ${schemaPath}${hint}`, { cause: err })
+      throw new Error(`Schema file not found: ${fullPath}${hint}`, {cause: err})
     }
     throw err
   }
 
-  const schema = await readSchema(schemaPath)
+  const schema = await readSchema(fullPath)
+
   report.event.loadedSchema()
 
   const typeGenerator = new TypeGenerator()
