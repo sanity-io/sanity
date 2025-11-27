@@ -1140,7 +1140,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@rollup/plugin-node-resolve':
-        specifier: ^16.0.1
+        specifier: ^16.0.3
         version: 16.0.3(rollup@4.53.3)
       '@sanity/generate-help-url':
         specifier: ^3.0.0
