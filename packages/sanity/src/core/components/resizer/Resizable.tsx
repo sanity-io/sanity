@@ -23,7 +23,7 @@ const Root = styled(Box)`
  */
 export function Resizable(
   props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
-) {
+) : React.JSX.Element {
   const {
     as: forwardedAs,
     children,

@@ -59,7 +59,7 @@ export default {
   ],
 }
 
-export function CustomComponent(props: ObjectInputProps) {
+export function CustomComponent(props: ObjectInputProps) : React.JSX.Element {
   const {onChange, value} = props
 
   const valueA = value?.a

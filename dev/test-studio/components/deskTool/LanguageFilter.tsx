@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 
-export function LanguageFilter(props: {schemaType: SchemaType}) {
+export function LanguageFilter(props: {schemaType: SchemaType}) : React.JSX.Element {
   return (
     <Card border padding={3} radius={2}>
       <div style={{margin: -1}}>

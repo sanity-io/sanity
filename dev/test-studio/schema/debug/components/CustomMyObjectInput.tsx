@@ -1,6 +1,6 @@
 import {type ObjectInputProps, set, setIfMissing} from 'sanity'
 
-export default function CustomMyObjectInput(props: ObjectInputProps) {
+export default function CustomMyObjectInput(props: ObjectInputProps) : React.JSX.Element {
   const {value, schemaType, onChange} = props
   return (
     <div style={{backgroundColor: '#f5ad3d'}}>

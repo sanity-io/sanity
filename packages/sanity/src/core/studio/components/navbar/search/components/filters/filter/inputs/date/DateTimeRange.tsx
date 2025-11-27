@@ -4,6 +4,6 @@ import {CommonDateRangeInput} from './CommonDateRange'
 
 export function SearchFilterDateTimeRangeInput(
   props: OperatorInputComponentProps<OperatorDateRangeValue>,
-) {
+) : React.JSX.Element {
   return <CommonDateRangeInput {...props} isDateTime />
 }

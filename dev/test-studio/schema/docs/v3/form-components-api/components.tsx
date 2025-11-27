@@ -19,7 +19,7 @@ const COMPONENT_COLORS = {
   item: hues.green[400].hex,
 }
 
-export function FormInput(props: InputProps) {
+export function FormInput(props: InputProps) : React.JSX.Element {
   return (
     <Stack space={5} padding={3}>
       <Stack space={4}>
@@ -48,7 +48,7 @@ export function FormInput(props: InputProps) {
   )
 }
 
-export function CustomField(props: FieldProps & {testId: string}) {
+export function CustomField(props: FieldProps & {testId: string}) : React.JSX.Element {
   return (
     <Box
       data-testid={props.testId}
@@ -60,7 +60,7 @@ export function CustomField(props: FieldProps & {testId: string}) {
   )
 }
 
-export function CustomInput(props: InputProps & {testId: string}) {
+export function CustomInput(props: InputProps & {testId: string}) : React.JSX.Element {
   return (
     <Box
       data-testid={props.testId}
@@ -72,7 +72,7 @@ export function CustomInput(props: InputProps & {testId: string}) {
   )
 }
 
-export function CustomItem(props: ItemProps & {testId: string}) {
+export function CustomItem(props: ItemProps & {testId: string}) : React.JSX.Element {
   return (
     <Box
       data-testid={props.testId}
@@ -84,7 +84,7 @@ export function CustomItem(props: ItemProps & {testId: string}) {
   )
 }
 
-export function CustomPreview(props: PreviewProps & {testId: string}) {
+export function CustomPreview(props: PreviewProps & {testId: string}) : React.JSX.Element {
   return (
     <Box
       data-testid={props.testId}
@@ -110,6 +110,6 @@ function ArrayActions(props: ArrayInputFunctionsProps<string | number | boolean,
   )
 }
 
-export function ArrayWithCustomActions(props: ArrayOfPrimitivesInputProps) {
+export function ArrayWithCustomActions(props: ArrayOfPrimitivesInputProps) : React.JSX.Element {
   return props.renderDefault({...props, arrayFunctions: ArrayActions})
 }

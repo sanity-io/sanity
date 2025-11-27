@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
 interface RootProps {
   $changed?: boolean
@@ -74,7 +74,7 @@ export const FieldWrapper = styled.div`
   min-width: 0;
 `
 
-export const ChangeBar = styled.div<{$zIndex: number}>`
+export const ChangeBar: StyledComponent<'div', any, {$zIndex: number}> = styled.div<{$zIndex: number}>`
   position: relative;
   opacity: 1;
   transition: opacity 100ms;

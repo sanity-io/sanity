@@ -2,7 +2,7 @@ import {set, type StringInputProps} from 'sanity'
 
 import styles from './CustomFontStringInput.module.css'
 
-export default function CustomFontStringInput(props: StringInputProps) {
+export default function CustomFontStringInput(props: StringInputProps) : React.JSX.Element {
   const {value, schemaType, onChange} = props
   return (
     <div>

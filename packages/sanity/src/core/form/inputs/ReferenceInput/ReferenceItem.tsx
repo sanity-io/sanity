@@ -65,7 +65,7 @@ const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
-) {
+) : React.JSX.Element {
   const {
     schemaType,
     parentSchemaType,

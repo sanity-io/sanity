@@ -44,7 +44,7 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
  */
 export function VirtualizedArrayList<Item extends ObjectItem>(
   props: VirtualizedArrayListProps<Item>,
-) {
+) : React.JSX.Element {
   const {
     members,
     memberKeys,

@@ -4,6 +4,6 @@ import {CommonDateEqualInput} from './CommonDateEqual'
 
 export function SearchFilterDateEqualInput(
   props: OperatorInputComponentProps<OperatorDateEqualValue>,
-) {
+) : React.JSX.Element {
   return <CommonDateEqualInput {...props} isDateTime={false} />
 }

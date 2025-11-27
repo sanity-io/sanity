@@ -7,7 +7,7 @@ interface Document {
   number?: number
 }
 
-export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}}) => {
+export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}}) : React.JSX.Element => {
   const {options} = props
   const doc$ = options.doc$
   const [doc, setDoc] = useState<Document | null>(null)

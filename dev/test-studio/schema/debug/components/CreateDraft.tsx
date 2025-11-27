@@ -3,7 +3,7 @@ import {useCallback, useState} from 'react'
 import {getDraftId, useClient} from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
 
-export function CreateDraft() {
+export function CreateDraft() : React.JSX.Element {
   const {documentId, documentType, value, editState} = useDocumentPane()
 
   const client = useClient({apiVersion: '2025-01-30'})

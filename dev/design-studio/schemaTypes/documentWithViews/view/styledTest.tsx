@@ -7,7 +7,7 @@ const Thing = styled.div`
   box-sizing: border-box;
 `
 
-export function StyledTestView() {
+export function StyledTestView() : React.JSX.Element {
   // throw new Error('called?')
 
   return (

@@ -4,6 +4,6 @@ import {CommonDateDirectionInput} from './CommonDateDirection'
 
 export function SearchFilterDateBeforeInput(
   props: OperatorInputComponentProps<OperatorDateDirectionValue>,
-) {
+) : React.JSX.Element {
   return <CommonDateDirectionInput {...props} direction="before" isDateTime={false} />
 }

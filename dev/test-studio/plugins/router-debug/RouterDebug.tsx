@@ -3,7 +3,7 @@ import {Button, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
 
-export function RouterDebug() {
+export function RouterDebug() : React.JSX.Element {
   const {navigate} = useRouter()
 
   const link = useStateLink({

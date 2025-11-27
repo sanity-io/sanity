@@ -6,7 +6,7 @@ import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker}
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'
 
-export function CustomContentInput(inputProps: PortableTextInputProps) {
+export function CustomContentInput(inputProps: PortableTextInputProps) : React.JSX.Element {
   const {value} = inputProps
 
   const handlePaste: OnPasteFn = useCallback((input) => {

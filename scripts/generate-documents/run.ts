@@ -14,7 +14,7 @@ export type ProgramArgs = {
   concurrency?: number
 }
 
-export function run(_args: ProgramArgs) {
+export function run(_args: ProgramArgs) : void {
   const {client, bundle, draft, concurrency, published, template, number, size} = _args
   const runId = Date.now()
 

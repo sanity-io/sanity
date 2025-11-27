@@ -1,7 +1,7 @@
 import {Button, Flex} from '@sanity/ui'
 import {ToolLink, type ToolMenuProps} from 'sanity'
 
-export function ToolMenu(props: ToolMenuProps) {
+export function ToolMenu(props: ToolMenuProps) : React.JSX.Element {
   const {context, tools, closeSidebar} = props
 
   return (

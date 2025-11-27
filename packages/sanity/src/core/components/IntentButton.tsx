@@ -10,7 +10,7 @@ import {Button, type ButtonProps} from '../../ui-components'
  */
 export function IntentButton(
   props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'ref' | 'size' | 'as'>,
-) {
+) : React.JSX.Element {
   return props.disabled ? (
     <Button {...props} as="a" role="link" aria-disabled="true" />
   ) : (

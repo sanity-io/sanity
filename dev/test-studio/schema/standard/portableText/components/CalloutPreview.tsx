@@ -1,7 +1,7 @@
 import {Box, Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
 
-export function CalloutPreview(props: PreviewProps) {
+export function CalloutPreview(props: PreviewProps) : React.JSX.Element {
   const tone = props.tone || 'default'
 
   return (

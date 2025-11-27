@@ -1,7 +1,7 @@
 import {rem, Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {css, styled, type StyledComponent} from 'styled-components'
 
-export const RootSpan = styled.span`
+export const RootSpan: StyledComponent<'span', any> = styled.span`
   display: inline-flex;
   align-items: center;
   vertical-align: top;
@@ -9,7 +9,7 @@ export const RootSpan = styled.span`
   max-width: 100%;
 `
 
-export const MediaSpan = styled.span`
+export const MediaSpan: StyledComponent<'span', any> = styled.span`
   position: relative;
   display: inline-block;
   width: calc(1em - 1px);

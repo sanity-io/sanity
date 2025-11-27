@@ -26,7 +26,7 @@ export function PaneLayout(
   props: PaneLayoutProps &
     CardProps &
     Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
-) {
+) : React.JSX.Element {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const [controller] = useState(() => createPaneLayoutController())
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)

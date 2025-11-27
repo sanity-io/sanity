@@ -114,7 +114,7 @@ export const HotspotHandleInteractionArea = styled.circle`
 `
 
 export const Guidelines = styled.g`
-  ${(props) => {
+  ${(props) : React.JSX.Element => {
     const {color} = getThemeV2(props.theme)
     return css`
       stroke: ${color.fg};

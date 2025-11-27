@@ -28,7 +28,7 @@ function triggerPromiseError() {
   })
 }
 
-export function ErrorReportingTest() {
+export function ErrorReportingTest() : React.JSX.Element {
   const [doRenderError, setRenderError] = useState(false)
   const handleShouldRenderWithError = useCallback(() => setRenderError(true), [])
   const [triggerReactLazyImportError, setTriggerReactLazyImportError] = useState(false)

@@ -160,7 +160,7 @@ const codeInputType = {
   ],
 }
 
-export function createSchemaTypes(projectId: string) {
+export function createSchemaTypes(projectId: string) : React.JSX.Element {
   return [
     // Test documents with standard inputs
     arrays,

@@ -1,6 +1,6 @@
 import {set, type StringInputProps} from 'sanity'
 
-export default function CustomStringInput(props: StringInputProps) {
+export default function CustomStringInput(props: StringInputProps) : React.JSX.Element {
   const {value, schemaType, onChange} = props
 
   return (

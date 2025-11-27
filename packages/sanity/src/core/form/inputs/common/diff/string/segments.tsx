@@ -14,7 +14,7 @@ interface StyledSegmentProps {
 }
 
 export const Segment = styled.span<StyledSegmentProps>`
-  ${({theme, $tone}) => {
+  ${({theme, $tone}) : React.JSX.Element => {
     if (typeof $tone === 'undefined') {
       return undefined
     }

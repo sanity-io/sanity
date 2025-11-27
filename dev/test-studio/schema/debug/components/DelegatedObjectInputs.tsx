@@ -69,7 +69,7 @@ export function DelegatedArrayOfOptionsInput(
   )
 }
 
-export function DelegatedArrayOfPrimitivesInput(props: ArrayOfPrimitivesInputProps) {
+export function DelegatedArrayOfPrimitivesInput(props: ArrayOfPrimitivesInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <ArrayOfPrimitivesInput {...props} />
@@ -77,7 +77,7 @@ export function DelegatedArrayOfPrimitivesInput(props: ArrayOfPrimitivesInputPro
   )
 }
 
-export function DelegatedArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
+export function DelegatedArrayOfObjectsInput(props: ArrayOfObjectsInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <ArrayOfObjectsInput {...props} />
@@ -85,7 +85,7 @@ export function DelegatedArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   )
 }
 
-export function DelegatedTagsArrayInput(props: ArrayOfPrimitivesInputProps) {
+export function DelegatedTagsArrayInput(props: ArrayOfPrimitivesInputProps) : React.JSX.Element {
   // lets just live with the need to cast here
   return (
     <DelegateBorder>
@@ -94,7 +94,7 @@ export function DelegatedTagsArrayInput(props: ArrayOfPrimitivesInputProps) {
   )
 }
 
-export function DelegatedBooleanInput(props: BooleanInputProps) {
+export function DelegatedBooleanInput(props: BooleanInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <BooleanInput {...props} />
@@ -102,7 +102,7 @@ export function DelegatedBooleanInput(props: BooleanInputProps) {
   )
 }
 
-export function DelegatedDateInput(props: DateInputProps) {
+export function DelegatedDateInput(props: DateInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <DateInput {...props} />
@@ -110,7 +110,7 @@ export function DelegatedDateInput(props: DateInputProps) {
   )
 }
 
-export function DelegatedDatetimeInput(props: DateTimeInputProps) {
+export function DelegatedDatetimeInput(props: DateTimeInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <DateTimeInput {...props} />
@@ -118,7 +118,7 @@ export function DelegatedDatetimeInput(props: DateTimeInputProps) {
   )
 }
 
-export function DelegatedNumberInput(props: NumberInputProps) {
+export function DelegatedNumberInput(props: NumberInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <NumberInput {...props} />
@@ -126,7 +126,7 @@ export function DelegatedNumberInput(props: NumberInputProps) {
   )
 }
 
-export function DelegatedReferenceInput(props: ReferenceInputProps) {
+export function DelegatedReferenceInput(props: ReferenceInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <ReferenceInput {...props} />
@@ -134,7 +134,7 @@ export function DelegatedReferenceInput(props: ReferenceInputProps) {
   )
 }
 
-export function DelegatedCrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
+export function DelegatedCrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <CrossDatasetReferenceInput {...props} />
@@ -142,7 +142,7 @@ export function DelegatedCrossDatasetReferenceInput(props: CrossDatasetReference
   )
 }
 
-export function DelegatedFileInput(props: FileInputProps) {
+export function DelegatedFileInput(props: FileInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <FileInput {...props} />
@@ -150,7 +150,7 @@ export function DelegatedFileInput(props: FileInputProps) {
   )
 }
 
-export function DelegatedSlugInput(props: SlugInputProps) {
+export function DelegatedSlugInput(props: SlugInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <SlugInput {...props} />
@@ -158,7 +158,7 @@ export function DelegatedSlugInput(props: SlugInputProps) {
   )
 }
 
-export function DelegatedImageInput(props: ImageInputProps) {
+export function DelegatedImageInput(props: ImageInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <ImageInput {...props} />
@@ -166,7 +166,7 @@ export function DelegatedImageInput(props: ImageInputProps) {
   )
 }
 
-export function DelegatedObjectInput(props: ObjectInputProps) {
+export function DelegatedObjectInput(props: ObjectInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <ObjectInput {...props} />
@@ -174,7 +174,7 @@ export function DelegatedObjectInput(props: ObjectInputProps) {
   )
 }
 
-export function DelegatedStringInput(props: StringInputProps) {
+export function DelegatedStringInput(props: StringInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <StringInput {...props} />
@@ -182,7 +182,7 @@ export function DelegatedStringInput(props: StringInputProps) {
   )
 }
 
-export function DelegatedTextInput(props: StringInputProps) {
+export function DelegatedTextInput(props: StringInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <TextInput {...props} />
@@ -190,7 +190,7 @@ export function DelegatedTextInput(props: StringInputProps) {
   )
 }
 
-export function DelegatedTelephoneInput(props: StringInputProps) {
+export function DelegatedTelephoneInput(props: StringInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <TelephoneInput {...props} />
@@ -198,7 +198,7 @@ export function DelegatedTelephoneInput(props: StringInputProps) {
   )
 }
 
-export function DelegatedEmailInput(props: StringInputProps) {
+export function DelegatedEmailInput(props: StringInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <EmailInput {...props} />
@@ -206,7 +206,7 @@ export function DelegatedEmailInput(props: StringInputProps) {
   )
 }
 
-export function DelegatedSelectInput(props: StringInputProps) {
+export function DelegatedSelectInput(props: StringInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <SelectInput {...props} />
@@ -214,7 +214,7 @@ export function DelegatedSelectInput(props: StringInputProps) {
   )
 }
 
-export function DelegatedUrlInput(props: UrlInputProps) {
+export function DelegatedUrlInput(props: UrlInputProps) : React.JSX.Element {
   return (
     <DelegateBorder>
       <UrlInput {...props} />
@@ -222,7 +222,7 @@ export function DelegatedUrlInput(props: UrlInputProps) {
   )
 }
 
-export function DelegatedPTEInput(props: ArrayOfObjectsInputProps) {
+export function DelegatedPTEInput(props: ArrayOfObjectsInputProps) : React.JSX.Element {
   // lets just live with the need to cast here
   return (
     <DelegateBorder>

@@ -18,7 +18,7 @@ import {useInsertMenuPopover} from './InsertMenuPopover'
 export function ArrayOfObjectsFunctions<
   Item extends ObjectItem,
   TSchemaType extends ArraySchemaType,
->(props: ArrayInputFunctionsProps<Item, TSchemaType>) {
+>(props: ArrayInputFunctionsProps<Item, TSchemaType>) : React.JSX.Element {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend, path} = props
   const {t} = useTranslation()
   const [gridElement, setGridElement] = useState<HTMLDivElement | null>(null)

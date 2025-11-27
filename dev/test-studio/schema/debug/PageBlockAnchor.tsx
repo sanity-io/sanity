@@ -3,7 +3,7 @@ import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {useCallback} from 'react'
 import {type ObjectItemProps, type Slug, useFormValue} from 'sanity'
 
-export function PageBlockAnchor(props: ObjectItemProps) {
+export function PageBlockAnchor(props: ObjectItemProps) : React.JSX.Element {
   const slug = useFormValue(['slug']) as Slug | undefined
   const toast = useToast()
 

@@ -13,7 +13,7 @@ import {type ArrayInputFunctionsProps} from '../../../types'
 export function ArrayOfPrimitivesFunctions<
   MemberType extends string | boolean | number,
   SchemaType extends ArraySchemaType,
->(props: ArrayInputFunctionsProps<MemberType, SchemaType>) {
+>(props: ArrayInputFunctionsProps<MemberType, SchemaType>) : React.JSX.Element {
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
   const {t} = useTranslation()

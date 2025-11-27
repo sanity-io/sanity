@@ -8,7 +8,7 @@ export const CLIENT_OPTIONS = {
 // skip firefox due to flakyness
 const SKIP_BROWSERS = ['firefox']
 
-export const skipIfBrowser = (browserName: string) => {
+export const skipIfBrowser = (browserName: string) : void => {
   test.skip(SKIP_BROWSERS.includes(browserName), `Skip ${browserName} due to flakiness`)
 }
 
@@ -160,7 +160,7 @@ export const discardVersion = async ({
  * @returns a random string of letters and numbers (9 characters long)
  * @internal
  */
-export function getRandomReleaseId() {
+export function getRandomReleaseId() : void {
   return Math.random().toString(36).slice(2)
 }
 

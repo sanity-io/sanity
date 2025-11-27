@@ -7,7 +7,7 @@ import {useHookCollectionStates} from './useHookCollectionStates'
 /** @internal */
 export function GetHookCollectionState<Args, State>(
   props: GetHookCollectionStateProps<Args, State>,
-) {
+) : React.JSX.Element {
   const {hooks, args, children, resetRef} = props
 
   const {states, handleNext} = useHookCollectionStates({hooks})

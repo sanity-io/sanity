@@ -137,7 +137,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
 export function CommentReactionsUsersTooltipContent(
   props: Omit<CommentReactionsUsersTooltipProps, 'children'>,
-) {
+) : React.JSX.Element {
   const {currentUser, reactionName, userIds} = props
   const {t} = useTranslation(commentsLocaleNamespace)
 

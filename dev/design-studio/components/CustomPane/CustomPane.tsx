@@ -2,7 +2,7 @@ import {Button, Card, Code, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
 import {usePaneRouter} from 'sanity/structure'
 
-export function CustomPane(props: any) {
+export function CustomPane(props: any) : React.JSX.Element {
   return (
     <Card height="fill" tone="transparent">
       <Stack padding={2} space={1}>

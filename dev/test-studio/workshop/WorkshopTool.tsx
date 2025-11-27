@@ -5,7 +5,7 @@ import {config} from './config'
 import {type WorkshopOptions} from './types'
 import {useLocationStore} from './useLocationStore'
 
-export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) {
+export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) : React.JSX.Element {
   const {tool} = props
   const toolName = tool.options?.name || 'workshop'
 

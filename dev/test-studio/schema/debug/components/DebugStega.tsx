@@ -8,7 +8,7 @@ import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-export function StegaDebugger(props: InputProps) {
+export function StegaDebugger(props: InputProps) : React.JSX.Element {
   if (isDocumentSchemaType(props.schemaType)) {
     return (
       <Stack space={2}>

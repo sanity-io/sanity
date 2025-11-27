@@ -7,6 +7,6 @@ const IFrame = styled.iframe`
   border: 0;
 `
 
-export function IFrameView() {
+export function IFrameView() : React.JSX.Element {
   return <IFrame src="https://www.sanity.io/" />
 }

@@ -4,7 +4,7 @@ function stripDraftId(str) {
   return str.replace(/^drafts\./, '')
 }
 
-export function resolveProductionUrl(document, rev) {
+export function resolveProductionUrl(document, rev) : void {
   const id = stripDraftId(document._id)
 
   if (rev) {

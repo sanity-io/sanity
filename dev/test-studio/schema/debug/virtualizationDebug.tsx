@@ -5,7 +5,7 @@ interface Author {
   title: string
 }
 
-export function MyField(props: FieldProps) {
+export function MyField(props: FieldProps) : React.JSX.Element {
   return (
     <div
       data-testid="my-field-relative"

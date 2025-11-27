@@ -23,7 +23,7 @@ export interface LanguageFilterMenuButtonProps {
   schemaType: ObjectSchemaType
 }
 
-export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
+export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) : React.JSX.Element {
   const {options} = props
   const defaultLanguages = options.supportedLanguages.filter((l) =>
     options.defaultLanguages?.includes(l.id),

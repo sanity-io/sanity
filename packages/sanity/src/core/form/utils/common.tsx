@@ -63,7 +63,7 @@ export function useCheckCondition(
   checkProperty: ConditionalProperty,
   checkPropertyName: string,
   context: ConditionalPropertyCallbackContext,
-) {
+) : React.JSX.Element {
   return useMemo(() => {
     return isTrueIsh(checkProperty, checkPropertyName, context)
   }, [checkProperty, checkPropertyName, context])

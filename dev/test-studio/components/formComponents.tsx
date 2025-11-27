@@ -9,7 +9,7 @@ import {
   type PreviewProps,
 } from 'sanity'
 
-export function Input(props: InputProps) {
+export function Input(props: InputProps) : React.JSX.Element {
   return (
     <Card data-testid="input-config-component" padding={2} border tone="primary">
       {props.renderDefault(props)}
@@ -17,7 +17,7 @@ export function Input(props: InputProps) {
   )
 }
 
-export function Field(props: FieldProps) {
+export function Field(props: FieldProps) : React.JSX.Element {
   return (
     <Card data-testid="field-config-component" padding={2} border tone="caution">
       {props.renderDefault(props)}
@@ -25,7 +25,7 @@ export function Field(props: FieldProps) {
   )
 }
 
-export function Item(props: ItemProps) {
+export function Item(props: ItemProps) : React.JSX.Element {
   return (
     <Card data-testid="item-config-component" padding={2} border tone="positive">
       {props.renderDefault(props)}
@@ -33,7 +33,7 @@ export function Item(props: ItemProps) {
   )
 }
 
-export function Block(props: BlockProps) {
+export function Block(props: BlockProps) : React.JSX.Element {
   return (
     <Card data-testid="block-config-component" padding={2} border tone="positive">
       {props.renderDefault(props)}
@@ -41,7 +41,7 @@ export function Block(props: BlockProps) {
   )
 }
 
-export function InlineBlock(props: BlockProps) {
+export function InlineBlock(props: BlockProps) : React.JSX.Element {
   return (
     <Card
       data-testid="inline-block-config-component"
@@ -55,7 +55,7 @@ export function InlineBlock(props: BlockProps) {
   )
 }
 
-export function Annotation(props: BlockAnnotationProps) {
+export function Annotation(props: BlockAnnotationProps) : React.JSX.Element {
   return (
     <Card
       data-testid="annotation-config-component"
@@ -69,7 +69,7 @@ export function Annotation(props: BlockAnnotationProps) {
   )
 }
 
-export function Preview(props: PreviewProps) {
+export function Preview(props: PreviewProps) : React.JSX.Element {
   return (
     <Card data-testid="preview-config-component" padding={2} border tone="critical">
       {props.renderDefault(props)}
@@ -77,7 +77,7 @@ export function Preview(props: PreviewProps) {
   )
 }
 
-export function CustomBadge() {
+export function CustomBadge() : React.JSX.Element {
   return {
     label: 'Hello world',
     title: 'Hello I am a custom document badge',

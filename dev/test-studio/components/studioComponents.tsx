@@ -30,7 +30,7 @@ export const studioComponentsPlugin = definePlugin({
 const TitleContext = createContext<string>('')
 const useTitleContext = () => useContext(TitleContext)
 
-export function CustomLayout(props: LayoutProps) {
+export function CustomLayout(props: LayoutProps) : React.JSX.Element {
   const {renderDefault} = props
 
   return (
@@ -43,14 +43,14 @@ export function CustomLayout(props: LayoutProps) {
 }
 
 // Logo
-export function CustomLogo(props: LogoProps) {
+export function CustomLogo(props: LogoProps) : React.JSX.Element {
   const title = useTitleContext()
 
   return props.renderDefault({...props, title})
 }
 
 // Navbar
-export function CustomNavbar(props: NavbarProps) {
+export function CustomNavbar(props: NavbarProps) : React.JSX.Element {
   return (
     <Stack data-testid="test-navbar-config">
       <Card padding={4} tone="primary" data-testid="test-navbar-banner-config">
@@ -68,7 +68,7 @@ export function CustomNavbar(props: NavbarProps) {
 }
 
 // ToolMenu
-export function CustomToolMenu(props: ToolMenuProps) {
+export function CustomToolMenu(props: ToolMenuProps) : React.JSX.Element {
   return (
     <Card
       data-testid="test-tool-menu-config"

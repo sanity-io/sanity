@@ -1,7 +1,7 @@
 import {LockIcon} from '@sanity/icons'
 import {Text, Tooltip} from '@sanity/ui'
 
-export function PrivateIcon() {
+export function PrivateIcon() : React.JSX.Element {
   return (
     <Tooltip
       content={

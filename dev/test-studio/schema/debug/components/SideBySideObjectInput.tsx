@@ -6,7 +6,7 @@ import {type ItemProps, ObjectInputMembers, type ObjectInputProps} from 'sanity'
  * Displays the item's fields in a custom card layout
  * When editing, renders the custom input form (children)
  */
-export function SideBySideObjectItem(props: ItemProps) {
+export function SideBySideObjectItem(props: ItemProps) : React.JSX.Element {
   const {value, children} = props
 
   // Cast value to an object to access fields
@@ -45,7 +45,7 @@ export function SideBySideObjectItem(props: ItemProps) {
 /**
  * Custom input component that displays fields side by side when editing
  */
-export function SideBySideObjectInput(props: ObjectInputProps) {
+export function SideBySideObjectInput(props: ObjectInputProps) : React.JSX.Element {
   const {
     members,
     renderAnnotation,

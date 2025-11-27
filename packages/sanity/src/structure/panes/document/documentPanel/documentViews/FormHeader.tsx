@@ -24,7 +24,7 @@ interface DocumentHeaderProps {
  */
 
 export const TitleContainer = styled(Stack)`
-  ${({theme}) => {
+  ${({theme}) : React.JSX.Element => {
     return css`
       @supports not (container-type: inline-size) {
         display: none !important;

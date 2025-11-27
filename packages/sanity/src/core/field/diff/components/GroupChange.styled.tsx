@@ -1,12 +1,12 @@
 import {rem} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {styled, type StyledComponent} from 'styled-components'
 
-export const ChangeListWrapper = styled.div`
+export const ChangeListWrapper: StyledComponent<'div', any> = styled.div`
   display: grid;
   grid-template-columns: minmax(0, 1fr);
 `
 
-export const GroupChangeContainer = styled.div`
+export const GroupChangeContainer: StyledComponent<'div', any> = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
   --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1])};
   --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};

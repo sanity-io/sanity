@@ -5,7 +5,7 @@ import {DECISION_PARAMETERS_SCHEMA, set, type StringInputProps, unset, useWorksp
 /**
  * Custom input component for audience selection that reads from sanity.config
  */
-export function AudienceSelectInput(props: StringInputProps) {
+export function AudienceSelectInput(props: StringInputProps) : React.JSX.Element {
   const {value, onChange} = props
   const decisionParametersConfig = useWorkspace().__internal.options[DECISION_PARAMETERS_SCHEMA]
 

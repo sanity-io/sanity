@@ -1,14 +1,14 @@
 import {rem} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {styled, type StyledComponent} from 'styled-components'
 
-export const FieldChangeContainer = styled.div`
+export const FieldChangeContainer: StyledComponent<'div', any> = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
   &[data-revert-all-changes-hover] [data-revert-all-hover]::before {
     border-left: 2px solid var(--field-change-error);
   }
 `
 
-export const DiffBorder = styled.div`
+export const DiffBorder: StyledComponent<'div', any> = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};
   --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1])};
   --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2])};

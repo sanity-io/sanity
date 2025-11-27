@@ -1,5 +1,5 @@
 import {Box, Card, Flex, rem} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {styled, type StyledComponent} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
 
@@ -10,7 +10,7 @@ export const HeaderFlex = styled(Flex).attrs({align: 'center'})`
   z-index: 1;
 `
 
-export const MediaCard = styled(Card)<{$ratio: number}>`
+export const MediaCard: StyledComponent<typeof Card, any, {$ratio: number}> = styled(Card)<{$ratio: number}>`
   overflow: hidden;
   position: relative;
   padding-bottom: ${({$ratio}) => $ratio}%;

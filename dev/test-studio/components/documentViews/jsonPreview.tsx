@@ -1,6 +1,6 @@
 import {Box, Card, Code} from '@sanity/ui'
 
-export function JSONPreviewDocumentView(props: any) {
+export function JSONPreviewDocumentView(props: any) : React.JSX.Element {
   return (
     <Card overflow="auto" style={{minHeight: '100%'}} tone="transparent">
       <Box padding={4}>

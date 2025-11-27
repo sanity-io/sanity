@@ -28,7 +28,7 @@ export const createGlobalDocumentReferenceSubtype = (projectId: string) =>
     ],
   })
 
-export default function createGDRType(projectId: string) {
+export default function createGDRType(projectId: string) : React.JSX.Element {
   return defineType({
     name: 'globalDocumentReferenceTest',
     type: 'document',

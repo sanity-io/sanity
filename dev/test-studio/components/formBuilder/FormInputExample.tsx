@@ -9,7 +9,7 @@ import {
   type RenderInputCallback,
 } from 'sanity'
 
-export function FormInputExample(props: ObjectInputProps) {
+export function FormInputExample(props: ObjectInputProps) : React.JSX.Element {
   const [path, setPath] = useState<Path>([])
 
   const [includeField, setIncludeField] = useState(false)

@@ -5,7 +5,7 @@ interface InfoBoxPreviewProps {
   value?: {_type: 'infobox'; body: unknown[]; title: string}
 }
 
-export function InfoBoxPreview(props: InfoBoxPreviewProps) {
+export function InfoBoxPreview(props: InfoBoxPreviewProps) : React.JSX.Element {
   const {value} = props
   const {body, title} = value || {}
 

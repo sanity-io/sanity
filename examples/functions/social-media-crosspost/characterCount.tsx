@@ -3,7 +3,7 @@ import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
-export function CharacterCount(props: any) {
+export function CharacterCount(props: any) : React.JSX.Element {
   const doc = useFormValue([]) as any
   const parentPath = props.path.slice(0, -1)
   const parentValue = useFormValue(parentPath) as {platform?: Platform}
