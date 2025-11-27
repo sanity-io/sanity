@@ -404,7 +404,7 @@ describe('after releases have loaded', () => {
     it('should show published retention card', async () => {
       await renderTest()
 
-      screen.getByText('This release is published')
+      screen.getByText('This release is published successfully.')
 
       within(screen.getByTestId('retention-policy-card')).getByText('123', {exact: false})
     })
