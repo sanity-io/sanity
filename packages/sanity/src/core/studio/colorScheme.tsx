@@ -55,7 +55,7 @@ export function ColorSchemeProvider({
   children,
   onSchemeChange,
   scheme: schemeProp,
-}: ColorSchemeProviderProps) {
+}: ColorSchemeProviderProps) : React.JSX.Element {
   if (schemeProp) {
     return (
       <ColorSchemeCustomProvider scheme={schemeProp} onSchemeChange={onSchemeChange}>
@@ -78,7 +78,7 @@ export function ColorSchemeProvider({
 export function ColorSchemeLocalStorageProvider({
   children,
   onSchemeChange,
-}: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) {
+}: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'>) : React.JSX.Element {
   const scheme = useSyncExternalStore<StudioThemeColorSchemeKey>(
     subscribe,
     getSnapshot,

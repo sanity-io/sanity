@@ -13,7 +13,7 @@ import {type FormDocumentValue} from '../types'
 export const GetFormValueProvider = function GetFormValueProvider(props: {
   value: FormDocumentValue | undefined
   children: ReactNode
-}) {
+}) : React.JSX.Element {
   const valueRef = useRef(props.value)
   useEffect(() => {
     valueRef.current = props.value

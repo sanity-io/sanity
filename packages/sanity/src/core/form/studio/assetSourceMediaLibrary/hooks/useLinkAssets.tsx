@@ -34,7 +34,7 @@ export function useLinkAssets({
   schemaType,
 }: {
   schemaType?: ImageSchemaType | FileSchemaType | VideoSchemaType
-}) {
+}) : React.JSX.Element {
   const mediaLibraryIds = useMediaLibraryIds()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
 

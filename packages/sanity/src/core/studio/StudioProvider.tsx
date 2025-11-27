@@ -62,7 +62,7 @@ export function StudioProvider({
   scheme,
   unstable_history: history,
   unstable_noAuthBoundary: noAuthBoundary,
-}: StudioProviderProps) {
+}: StudioProviderProps) : React.JSX.Element {
   // We initialize the error reporter as early as possible in order to catch anything that could
   // occur during configuration loading, React rendering etc. StudioProvider is often the highest
   // mounted React component that is shared across embedded and standalone studios.
