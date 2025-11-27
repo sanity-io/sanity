@@ -12,6 +12,9 @@ catalogs:
     '@playwright/test':
       specifier: 1.56.1
       version: 1.56.1
+    '@sanity/client':
+      specifier: ^7.12.1
+      version: 7.13.1
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
