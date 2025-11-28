@@ -8,7 +8,6 @@ import {
 import {Stack, useToast} from '@sanity/ui'
 import {get} from 'lodash'
 import {
-  type FocusEvent,
   Fragment,
   memo,
   type ReactNode,
@@ -236,21 +235,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     },
     [onChange, resolveUploader, schemaType, uploadWith],
   )
-  const handleFileTargetFocus = useCallback(
-    (event: FocusEvent) => {
-      // We want to handle focus when the file target element *itself* receives
-      // focus, not when an interactive child element receives focus. Since React has decided
-      // to let focus bubble, so this workaround is needed
-      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-      if (
-        event.currentTarget === event.target &&
-        event.currentTarget === elementProps.ref?.current
-      ) {
-        elementProps.onFocus(event)
-      }
-    },
-    [elementProps],
-  )
 
   const handleCancelUpload = useCallback(() => {
     cancelUpload()
@@ -473,14 +457,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       if (value && typeof value.asset !== 'undefined' && !value?._upload && !isImageSource(value)) {
         return <InvalidImageWarning onClearValue={handleClearField} />
       }
-
       return (
         <ImageInputAsset
           assetSources={assetSources}
           directUploads={directUploads !== false}
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
-          handleFileTargetFocus={handleFileTargetFocus}
           hoveringFiles={hoveringFiles}
           imageUrlBuilder={imageUrlBuilder}
           inputProps={inputProps}
@@ -506,7 +488,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       getFileTone,
       handleClearField,
       handleClearUploadState,
-      handleFileTargetFocus,
       handleSelectFilesToUpload,
       hoveringFiles,
       imageUrlBuilder,

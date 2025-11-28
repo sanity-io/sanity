@@ -536,13 +536,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
           handleSetOpenPath(pathFor(newOpenPath))
         }
       } else {
-        const lastSegment = nextFocusPath[nextFocusPath.length - 1]
-        if (isKeySegment(lastSegment)) {
-          // For fields inside array items, preserve the key segment, or the focus path will be lost
-          handleSetOpenPath(pathFor(nextFocusPath))
-        } else {
-          handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
-        }
+        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
       }
 
       focusPathRef.current = nextFocusPath
