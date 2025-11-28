@@ -24,7 +24,7 @@ catalog:
   '@types/react-dom': ^19.1.7
   '@types/react-is': ^19.0.0
   '@typescript/native-preview': 7.0.0-dev.20251126.1
-  '@vitejs/plugin-react': ^4.7.0
+  '@vitejs/plugin-react': ^5.1.1
   esbuild: 0.27.0
   esbuild-register: ^3.6.0
   eslint: ^9.37.0
