@@ -57,7 +57,7 @@ export default {
     defineField({
       name: 'selfRef',
       type: 'reference',
-      to: [{type: 'house'}],
+      to: [{type: 'referenceTest'}],
     }),
   ],
 }
