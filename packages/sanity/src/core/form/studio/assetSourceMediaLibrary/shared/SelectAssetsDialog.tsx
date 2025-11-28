@@ -25,7 +25,7 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
-import {ignoreAssetRequiredValidation} from './validation'
+import {filterMediaValidationMarkers} from './validation'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
@@ -100,7 +100,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
           return true
         },
       })
-      return ignoreAssetRequiredValidation(result)
+      return filterMediaValidationMarkers(result)
     },
     [client, document, mediaLibraryIds?.libraryId, schema, schemaType, workspace.i18n],
   )
