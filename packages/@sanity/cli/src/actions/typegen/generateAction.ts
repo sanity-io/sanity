@@ -4,7 +4,7 @@ import {dirname, isAbsolute, join} from 'node:path'
 import {env} from 'node:process'
 import {Worker} from 'node:worker_threads'
 
-import {type CodegenConfig, configDefinition, readConfig} from '@sanity/codegen'
+import {configDefinition, readConfig, type TypeGenConfig} from '@sanity/codegen'
 import {WorkerChannelReceiver} from '@sanity/worker-channels'
 import chalk from 'chalk'
 
@@ -38,7 +38,7 @@ const generatedFileWarning = `/**
 async function getConfig(
   workDir: string,
   configPath?: string,
-): Promise<{config: CodegenConfig; path?: string; type: 'legacy' | 'cli'}> {
+): Promise<{config: TypeGenConfig; path?: string; type: 'legacy' | 'cli'}> {
   const config = await getCliConfig(workDir)
 
   // check if the legacy config exist
