@@ -90,7 +90,7 @@ async function main() {
     let serializedDebug: ValidateSchemaWorkerResult['serializedDebug']
 
     if (debugSerialize) {
-      const conv = new DescriptorConverter({})
+      const conv = new DescriptorConverter()
       const set = conv.get(schema)
       serializedDebug = getSeralizedSchemaDebug(set)
     }

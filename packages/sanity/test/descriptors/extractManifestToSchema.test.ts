@@ -5,7 +5,7 @@ import {describe, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'
 
-const DESCRIPTOR_CONVERTER = new DescriptorConverter({})
+const DESCRIPTOR_CONVERTER = new DescriptorConverter()
 
 function validate(schema: Schema) {
   expectManifestSchemaConversion(schema, DESCRIPTOR_CONVERTER.get(schema))

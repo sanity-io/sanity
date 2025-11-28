@@ -51,12 +51,7 @@ const MAX_DEPTH_UKNOWN = 5
 type UnknownRecord<T> = {[P in keyof T]: unknown}
 
 export class DescriptorConverter {
-  opts: Options
   cache: WeakMap<Schema, SetSynchronization<RegistryType>> = new WeakMap()
-
-  constructor(opts: Options) {
-    this.opts = opts
-  }
 
   /**
    * Returns a synchronization object for a schema.
@@ -69,7 +64,7 @@ export class DescriptorConverter {
 
     const builder = new SetBuilder()
     for (const name of schema.getLocalTypeNames()) {
-      const typeDef = convertTypeDef(schema.get(name)!, this.opts)
+      const typeDef = convertTypeDef(schema.get(name)!, {})
       builder.addObject('sanity.schema.namedType', {name, typeDef})
     }
 
