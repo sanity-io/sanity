@@ -64,7 +64,6 @@ This function uses **aspects** to store custom metadata on assets. Aspects are s
 
    You'll need your Media Library ID to configure the function. Find it by going to your Media Library and check the URL `https://www.sanity.io/@<organizationId>/media/<mediaLibraryId>/assets`
 
-
 4. **Add configuration to your blueprint**
 
    ```ts
@@ -72,22 +71,22 @@ This function uses **aspects** to store custom metadata on assets. Aspects are s
    import {defineBlueprint, defineMediaLibraryAssetFunction} from '@sanity/blueprints'
 
    export default defineBlueprint({
-      resources: [
-        defineMediaLibraryAssetFunction({
-          name: 'media-library-auto-alt-text',
-          memory: 2,
-          timeout: 30,
-          src: './functions/media-library-auto-alt-text',
-          event: {
-            on: ['create', 'update'],
-            filter: 'assetType == "sanity.imageAsset" && !defined(aspects.altText)',
-            projection: '{ _id, currentVersion }',
-            resource: {
-              type: 'media-library',
-              id: '<your-media-library-id>', // TODO: replace with your media library id
-            }
-          },
-        }),
+     resources: [
+       defineMediaLibraryAssetFunction({
+         name: 'media-library-auto-alt-text',
+         memory: 2,
+         timeout: 30,
+         src: './functions/media-library-auto-alt-text',
+         event: {
+           on: ['create', 'update'],
+           filter: 'assetType == "sanity.imageAsset" && !defined(aspects.altText)',
+           projection: '{ _id, currentVersion }',
+           resource: {
+             type: 'media-library',
+             id: '<your-media-library-id>', // TODO: replace with your media library id
+           },
+         },
+       }),
      ],
    })
    ```
@@ -96,7 +95,7 @@ This function uses **aspects** to store custom metadata on assets. Aspects are s
 
    Install dependencies in the project root and in the functions directory:
 
-   ```bash   
+   ```bash
    # Install in the functions directory
    cd functions/
    pnpm install
@@ -301,12 +300,7 @@ This returns the underlying image with detailed metadata:
     },
     "hasAlpha": false,
     "isOpaque": true,
-    "keywords": [
-      "movie poster",
-      "character",
-      "studio",
-      "red cape"
-    ],
+    "keywords": ["movie poster", "character", "studio", "red cape"],
     "lqip": "<data-url>",
     "palette": {
       "_type": "sanity.imagePalette",
@@ -335,4 +329,3 @@ This returns the underlying image with detailed metadata:
 1. **Access Media Library keywords from the image asset**, not the asset container
 2. **Store custom metadata in aspects** on the asset container
 3. **Prevent update loops** by checking for existing aspect data before updating
-

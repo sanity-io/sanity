@@ -13,7 +13,10 @@
     "memory": 2,
     "timeout": 30,
     "event": {
-      "on": ["create", "update"],
+      "on": [
+        "create",
+        "update"
+      ],
       "filter": "assetType == 'sanity.imageAsset' && !defined(aspects.altText)",
       "projection": "{ _id, currentVersion }",
       "resource": {
