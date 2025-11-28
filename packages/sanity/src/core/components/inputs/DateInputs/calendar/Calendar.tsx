@@ -1,8 +1,8 @@
+import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -28,6 +28,23 @@ import {features} from './features'
 import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
+
+/**
+ * Helper function to create a TZDate from a Date's components in a specific timezone.
+ * This is useful for interpreting local date/time values as being in a specific timezone.
+ */
+function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
+  return new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    timeZone,
+  )
+}
 
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
@@ -107,8 +124,20 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     if (timeZone) {
-      const utcDate = zonedTimeToUtc(selectedDate, timeZone.name)
-      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      // Replicate the old date-fns-tz behavior:
+      // fromZonedTime(selectedDate, tz) interprets selectedDate components as being in the timezone
+      const utcDate = createTZDateFromComponents(selectedDate, timeZone.name)
+      // toZonedTime(utcDate, tz) converts to timezone and returns a Date with local getters
+      const tzDate = new TZDate(utcDate, timeZone.name)
+      const zonedDate = new Date(
+        tzDate.getFullYear(),
+        tzDate.getMonth(),
+        tzDate.getDate(),
+        tzDate.getHours(),
+        tzDate.getMinutes(),
+        tzDate.getSeconds(),
+        tzDate.getMilliseconds(),
+      )
       setSavedSelectedDate(zonedDate)
     }
   }, [selectedDate, timeZone])
@@ -149,9 +178,11 @@ export const Calendar = forwardRef(function Calendar(
         return
       }
 
-      const utcDate = zonedTimeToUtc(newDate, timeZone.name)
+      // Create a TZDate in the timezone with the new date values
+      // This interprets the local date/time as being in the specified timezone
+      const tzDate = createTZDateFromComponents(newDate, timeZone.name)
 
-      onSelect(utcDate)
+      onSelect(tzDate)
     },
     [onSelect, savedSelectedDate, timeZone],
   )
@@ -162,10 +193,12 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(savedSelectedDate, timeZone.name)
+      // Get the date in the timezone
+      const zonedDate = new TZDate(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
-      onSelect(utcDate)
+      // Create a TZDate with the new time in the timezone
+      const tzDate = createTZDateFromComponents(newZonedDate, timeZone.name)
+      onSelect(tzDate)
     },
     [onSelect, savedSelectedDate, timeZone],
   )
