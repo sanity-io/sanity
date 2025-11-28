@@ -1394,11 +1394,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
-  /** Body text for the dialog confirming deletion of a scheduled draft */
-  'release.dialog.delete-schedule-draft.body':
-    'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
+  /** Body text when deleting scheduled draft and draft is already up to date */
+  'release.dialog.delete-schedule-draft.body-already-current':
+    'Delete this scheduled draft? Your draft is already up to date.',
+  /** Body text when deleting scheduled draft and changes will be saved to draft */
+  'release.dialog.delete-schedule-draft.body-will-save-to-draft':
+    'Delete this scheduled draft? Your changes will be saved to draft.',
+  /** Body text when deleting scheduled draft with checkbox shown for user choice */
+  'release.dialog.delete-schedule-draft.body-with-choice': 'Delete this scheduled draft?',
   /** Confirm button text for deleting a scheduled draft */
   'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
+  /** Checkbox label for copying scheduled draft to draft before deletion */
+  'release.dialog.delete-schedule-draft.copy-checkbox':
+    'Keep my scheduled changes by copying them to draft (recommended)',
+  /** Explanation text shown when scheduled draft has different changes than current draft */
+  'release.dialog.delete-schedule-draft.different-changes-explanation':
+    'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
   /** Body text for change schedule dialog */

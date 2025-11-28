@@ -145,7 +145,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(scheduledRelease._id)
+      await result.current.deleteScheduledDraft(scheduledRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).toHaveBeenCalledWith(
@@ -167,7 +167,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(archivedScheduledRelease._id)
+      await result.current.deleteScheduledDraft(archivedScheduledRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).not.toHaveBeenCalled()
@@ -185,7 +185,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(publishedASAPRelease._id)
+      await result.current.deleteScheduledDraft(publishedASAPRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).not.toHaveBeenCalled()
@@ -204,7 +204,7 @@ describe('useScheduleDraftOperations', () => {
 
     await expect(
       act(async () => {
-        await result.current.deleteScheduledDraft('non-existent-id')
+        await result.current.deleteScheduledDraft('non-existent-id', false, '')
       }),
     ).rejects.toThrow('Release with ID non-existent-id not found')
   })

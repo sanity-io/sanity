@@ -219,6 +219,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const scheduledDraftMenuActions = useScheduledDraftMenuActions({
     release,
     documentType,
+    documentId,
     disabled: contextMenuDisabled,
   })
 

@@ -17,6 +17,7 @@ export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-sch
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
   documentType?: string
+  documentId?: string
   disabled?: boolean
   onActionComplete?: () => void
 }
@@ -45,7 +46,7 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, disabled = false, onActionComplete} = options
+  const {release, documentType, documentId, disabled = false, onActionComplete} = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -162,6 +163,7 @@ export function useScheduledDraftMenuActions(
           <DeleteScheduledDraftDialog
             release={release}
             documentType={documentType}
+            documentId={documentId}
             onClose={handleDialogClose}
           />
         )
@@ -173,6 +175,7 @@ export function useScheduledDraftMenuActions(
     selectedAction,
     release,
     documentType,
+    documentId,
     handleDialogClose,
     handleReschedule,
     isPerformingOperation,
