@@ -83,7 +83,17 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
   return {
     name: 'sanity/structure',
     document: {
-      actions: (prevActions) => {
+      actions: (prevActions, context) => {
+        if (context.versionType === 'published') {
+          // Place the unpublish action as the primary action if the document is the published version.
+          const sortedActions = [...documentActions].sort((a, b) => {
+            if (a.action === 'unpublish') return -1
+            if (b.action === 'unpublish') return 1
+            return 0
+          })
+          return Array.from(new Set([...prevActions, ...sortedActions]))
+        }
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document actions already exist in the Studio config
         return Array.from(new Set([...prevActions, ...documentActions]))
