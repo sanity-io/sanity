@@ -1,3 +1,4 @@
+import {type ImageUrlBuilder} from '@sanity/image-url'
 import {type AssetSource, type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
 import {type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
@@ -9,7 +10,6 @@ import {type InputProps} from '../../../types'
 import {FileTarget} from '../common/styles'
 import {UploadDestinationPicker} from '../common/UploadDestinationPicker'
 import {UploadWarning} from '../common/UploadWarning'
-import {type ImageUrlBuilder} from '../types'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
 import {usePreviewImageSource} from './usePreviewImageSource'
 
