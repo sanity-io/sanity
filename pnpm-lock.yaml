@@ -79,7 +79,7 @@ catalogs:
       specifier: 5.9.3
       version: 5.9.3
     vite:
-      specifier: ^7.1.7
+      specifier: ^7.2.4
       version: 7.2.4
   react18:
     react:
