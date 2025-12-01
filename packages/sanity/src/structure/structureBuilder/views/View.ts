@@ -25,9 +25,10 @@ export interface BaseView {
  *
  * @public
  */
-export abstract class GenericViewBuilder<TView extends Partial<BaseView>, ConcreteImpl>
-  implements Serializable<BaseView>
-{
+export abstract class GenericViewBuilder<
+  TView extends Partial<BaseView>,
+  ConcreteImpl,
+> implements Serializable<BaseView> {
   /** Generic view option object */
   protected spec: TView = {} as TView
 

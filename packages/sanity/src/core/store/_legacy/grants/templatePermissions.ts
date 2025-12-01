@@ -18,8 +18,7 @@ import {type GrantsStore, type PermissionCheckResult} from './types'
 
 /** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
-  extends PermissionCheckResult,
-    InitialValueTemplateItem {
+  extends PermissionCheckResult, InitialValueTemplateItem {
   granted: boolean
   reason: string
   resolvedInitialValue: TInitialValue

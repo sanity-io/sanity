@@ -44,8 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 /** @internal */
-export interface GlobalDocumentReferenceInputProps
-  extends ObjectInputProps<GlobalDocumentReferenceValue, GlobalDocumentReferenceSchemaType> {
+export interface GlobalDocumentReferenceInputProps extends ObjectInputProps<
+  GlobalDocumentReferenceValue,
+  GlobalDocumentReferenceSchemaType
+> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: GlobalDocumentReferenceSchemaType,

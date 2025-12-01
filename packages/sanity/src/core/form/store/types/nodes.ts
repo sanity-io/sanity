@@ -68,8 +68,10 @@ export interface NodeDiffProps<Annotation, Value = unknown> extends NodeChronolo
  * @hidden
  * @public
  */
-export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType>
-  extends NodeDiffProps<ProvenanceDiffAnnotation, T> {
+export interface BaseFormNode<T = unknown, S extends SchemaType = SchemaType> extends NodeDiffProps<
+  ProvenanceDiffAnnotation,
+  T
+> {
   // constants
   /** The unique identifier of the node. */
   id: string

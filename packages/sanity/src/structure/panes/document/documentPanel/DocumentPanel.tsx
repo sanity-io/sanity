@@ -191,8 +191,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
-        displayed?._id &&
-        getVersionFromId(displayed?._id) === selectedReleaseId,
+      displayed?._id &&
+      getVersionFromId(displayed?._id) === selectedReleaseId,
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({

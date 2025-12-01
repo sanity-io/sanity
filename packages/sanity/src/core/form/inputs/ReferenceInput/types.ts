@@ -66,8 +66,10 @@ export interface ReferenceSearchHit {
   published: boolean
 }
 
-export interface ReferenceInputProps<Value = Reference>
-  extends ObjectInputProps<Value, ReferenceSchemaType> {
+export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps<
+  Value,
+  ReferenceSchemaType
+> {
   suffix?: ReactNode
   liveEdit?: boolean
   onSearch: ReferenceSearchFunction

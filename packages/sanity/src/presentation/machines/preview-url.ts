@@ -132,9 +132,9 @@ export const previewUrlMachine = setup({
     'has checked permissions': ({context}) => {
       return Boolean(
         context.previewAccessSharingCreatePermission &&
-          context.previewAccessSharingReadPermission &&
-          context.previewAccessSharingUpdatePermission &&
-          context.previewUrlSecretPermission,
+        context.previewAccessSharingReadPermission &&
+        context.previewAccessSharingUpdatePermission &&
+        context.previewUrlSecretPermission,
       )
     },
     'search param has new origin': ({context, event}) => {

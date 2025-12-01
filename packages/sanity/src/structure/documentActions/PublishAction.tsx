@@ -195,11 +195,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     const disabled = Boolean(
       publishScheduled ||
-        editState?.transactionSyncLock?.enabled ||
-        publishState?.status === 'publishing' ||
-        publishState?.status === 'published' ||
-        hasValidationErrors ||
-        publish.disabled,
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled,
     )
 
     return {

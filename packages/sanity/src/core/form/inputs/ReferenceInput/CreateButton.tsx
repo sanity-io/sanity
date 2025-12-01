@@ -14,8 +14,10 @@ import {useGetI18nText, useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
 import {type CreateReferenceOption} from './types'
 
-interface Props
-  extends Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'width' | 'type' | 'ref'> {
+interface Props extends Omit<
+  HTMLProps<HTMLButtonElement>,
+  'as' | 'size' | 'width' | 'type' | 'ref'
+> {
   id: string
   createOptions: CreateReferenceOption[]
   menuRef?: RefObject<HTMLDivElement | null>

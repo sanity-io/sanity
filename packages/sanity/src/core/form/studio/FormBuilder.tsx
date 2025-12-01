@@ -49,17 +49,16 @@ import {
 /**
  * @alpha
  */
-export interface FormBuilderProps
-  extends Omit<
-    ObjectFormNode,
-    | 'level'
-    | 'path'
-    | 'presence'
-    | 'validation'
-    | '_allMembers'
-    | '__unstable_computeDiff'
-    | 'displayInlineChanges'
-  > {
+export interface FormBuilderProps extends Omit<
+  ObjectFormNode,
+  | 'level'
+  | 'path'
+  | 'presence'
+  | 'validation'
+  | '_allMembers'
+  | '__unstable_computeDiff'
+  | 'displayInlineChanges'
+> {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
