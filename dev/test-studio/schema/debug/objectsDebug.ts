@@ -9,6 +9,9 @@ import {
 import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
 import {PageBlockAnchor} from './PageBlockAnchor'
 
+import {CustomEnhancedObjectField} from './customEnhancedObjectField'
+import {CustomEnhancedObjectInput} from './customEnhancedObjectInput'
+
 const animal = defineField({
   type: 'object',
   name: 'animal',
@@ -245,6 +248,32 @@ const animal = defineField({
           name: 'species',
           title: 'Species',
           to: [{type: 'species'}],
+        },
+      ],
+    },
+    {
+      name: 'arrayWithNoTitle',
+      title: 'Array with custom field',
+      type: 'array',
+      components: {
+        field: CustomEnhancedObjectField,
+        input: CustomEnhancedObjectInput,
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'obj',
+          title: 'Some object',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'description',
+              type: 'string',
+            },
+          ],
         },
       ],
     },
@@ -971,6 +1000,32 @@ export const objectsDebug = defineType({
       ],
     }),
     animals,
+    {
+      name: 'arrayWithNoTitle_2',
+      title: 'Array with custom field 2',
+      type: 'array',
+      components: {
+        field: CustomEnhancedObjectField,
+        input: CustomEnhancedObjectInput,
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'obj_2',
+          title: 'Some object',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'description',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
     arrayOfMixedTypes,
     body,
     fieldsetArray,
