@@ -44,8 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 /** @internal */
-export interface CrossDatasetReferenceInputProps
-  extends ObjectInputProps<CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType> {
+export interface CrossDatasetReferenceInputProps extends ObjectInputProps<
+  CrossDatasetReferenceValue,
+  CrossDatasetReferenceSchemaType
+> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType,

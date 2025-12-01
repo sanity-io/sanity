@@ -52,8 +52,10 @@ function passThrough({children}: {children?: React.ReactNode}) {
 /**
  * @hidden
  * @beta */
-export interface BaseVideoInputProps
-  extends ObjectInputProps<BaseVideoInputValue, VideoSchemaType> {
+export interface BaseVideoInputProps extends ObjectInputProps<
+  BaseVideoInputValue,
+  VideoSchemaType
+> {
   assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<VideoAsset>

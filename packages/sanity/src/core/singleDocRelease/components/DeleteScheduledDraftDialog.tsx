@@ -24,8 +24,7 @@ interface DeleteScheduledDraftDialogProps extends DeleteScheduledDraftDialogBase
   documentType?: string
 }
 
-interface DeleteScheduledDraftDialogWithCopyToDraftProps
-  extends DeleteScheduledDraftDialogBaseProps {
+interface DeleteScheduledDraftDialogWithCopyToDraftProps extends DeleteScheduledDraftDialogBaseProps {
   documentId: string
   documentType: string
 }

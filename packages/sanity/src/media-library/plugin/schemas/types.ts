@@ -44,8 +44,10 @@ export interface VideoValue {
 }
 
 /** @public */
-export interface VideoDefinition
-  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
+export interface VideoDefinition extends Omit<
+  ObjectDefinition,
+  'type' | 'fields' | 'options' | 'groups' | 'validation'
+> {
   type: 'sanity.video'
   fields?: ObjectDefinition['fields']
   options?: VideoOptions

@@ -76,7 +76,7 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
       if (isTextSelectionComment(parentComment)) {
         hasTextSelection = Boolean(
           parentComment.target.path?.selection &&
-            parentComment.target.path.selection.value.some((v) => v.text),
+          parentComment.target.path.selection.value.some((v) => v.text),
         )
       }
 

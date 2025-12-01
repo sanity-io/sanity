@@ -168,8 +168,10 @@ interface SharedProps {
   client: SanityClient
 }
 
-interface QuerySubscriptionProps
-  extends Pick<UseQuerySubscriptionProps, 'client' | 'liveDocument' | 'liveEventsMessages'> {
+interface QuerySubscriptionProps extends Pick<
+  UseQuerySubscriptionProps,
+  'client' | 'liveDocument' | 'liveEventsMessages'
+> {
   projectId: string
   dataset: string
   perspective: ClientPerspective
