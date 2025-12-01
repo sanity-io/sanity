@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
+import {getReleaseIdFromReleaseDocumentId} from '../releases'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'
@@ -52,11 +53,19 @@ export function PerspectiveProvider({
       selectedPerspectiveName,
       selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
         ? undefined
-        : selectedPerspectiveName,
+        : releases
+            .map((release) => getReleaseIdFromReleaseDocumentId(release._id))
+            .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
     }
-  }, [selectedPerspectiveName, selectedPerspective, perspectiveStack, excludedPerspectives])
+  }, [
+    selectedPerspectiveName,
+    releases,
+    selectedPerspective,
+    perspectiveStack,
+    excludedPerspectives,
+  ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }
