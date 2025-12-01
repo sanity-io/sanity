@@ -7,6 +7,7 @@ import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
 
 import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
+import {setupImportErrorHandler} from './importErrorHandler'
 
 const require = createRequire(import.meta.url)
 
@@ -23,6 +24,9 @@ export function mockBrowserEnvironment(basePath: string): () => void {
       /* intentional noop */
     }
   }
+
+  // Set up import error handler before esbuild-register to silently ignore themer.sanity.build URLs
+  const importErrorHandler = setupImportErrorHandler()
 
   const btoa = global.btoa
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
@@ -60,6 +64,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     globalCleanup()
     windowCleanup()
     domCleanup()
+    importErrorHandler.cleanup()
   }
 }
 
