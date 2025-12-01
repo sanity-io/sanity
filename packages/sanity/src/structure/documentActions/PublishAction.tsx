@@ -4,8 +4,8 @@ import {isValidationErrorMarker} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
-  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -50,13 +50,16 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published, release} = props
+  const {id, type, liveEdit, draft, published, release, version} = props
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
-  const {publish} = useDocumentOperation(id, type)
+
+  const bundleId = version?._id && getVersionFromId(version._id)
+
+  const {publish} = useDocumentOperation(id, type, bundleId)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
-  const validationStatus = useValidationStatus(value._id, type)
+  const validationStatus = useValidationStatus(value._id, type, !release)
   const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -157,12 +160,15 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
-    if (release) {
-      // Version documents are not publishable by this action, they should be published as part of a release
+    if (release && version) {
+      // release versions are not publishable by this action, they should be published as part of a release
       return null
     }
-    if (liveEdit) {
-      // Live edit documents are not publishable by this action, they are published automatically
+
+    if (liveEdit && !version) {
+      // disable publish if liveEdit is true and we're not on a version
+      // e.g. if liveEdit is true and we have a version, we want to allow publish
+      // note that liveEdit is "forced" on version documents as a hack of sorts
       return null
     }
 
@@ -171,7 +177,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
      * then it means the draft is yet to be saved - in this case don't disabled
      * the publish button due to ALREADY_PUBLISHED reason
      */
-    if (isPublishedId(value._id) && draft !== null) {
+    if (published && !draft && !version) {
       return {
         tone: 'default',
         icon: PublishIcon,
@@ -225,8 +231,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [
     release,
     liveEdit,
-    value._id,
+    version,
     draft,
+    published,
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
@@ -237,7 +244,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     t,
     title,
     handle,
-    published?._updatedAt,
     currentUser,
   ])
 }
