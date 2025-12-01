@@ -23,6 +23,17 @@ const animal = defineField({
       title: 'Animal name',
     },
     {
+      name: 'arrayOfNumbersAnimals',
+      type: 'array',
+      title: 'Array of numbers animals',
+      of: [
+        {
+          type: 'number',
+          title: 'Number',
+        },
+      ],
+    },
+    {
       type: 'array',
       name: 'description',
       title: 'Description',
@@ -966,6 +977,17 @@ export const objectsDebug = defineType({
     {
       name: 'title',
       type: 'string',
+    },
+    {
+      name: 'arrayOfNumbers',
+      type: 'array',
+      title: 'Array of numbers',
+      of: [
+        {
+          type: 'number',
+          title: 'Number',
+        },
+      ],
     },
     /** Internationalized array string */
     defineField({
