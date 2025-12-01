@@ -14,7 +14,7 @@ import {debounce, isEqual} from 'lodash'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps} from '../../../../form'
+import {type PortableTextInputProps, useFieldActions} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {CommentInlineHighlightSpan} from '../../../components'
 import {isTextSelectionComment} from '../../../helpers'
@@ -47,6 +47,7 @@ const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
   const {enabled, mode} = useCommentsEnabled()
+  const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
   // The AI assist uses the official PTE input which is composed from the
@@ -54,8 +55,13 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   // will get the comments functionality as well, which  we don't want.
   // Therefore we disable the comments for the AI assist type.
   const isAiAssist = props.schemaType.name === AI_ASSIST_TYPE
-
-  if (!enabled || isAiAssist) {
+  /**
+   * Comments can be disabled at field level by passing the `__internal_comments: undefined` prop to the field.
+   * Even though is not recommended and tagged as internal, it works for all type of fields.
+   * This adds the same ability to disable inline comments in the Portable Text editor.
+   */
+  const isCommentsEnabledInField = Boolean(fieldActions.__internal_comments)
+  if (!enabled || isAiAssist || !isCommentsEnabledInField) {
     return props.renderDefault(props)
   }
 
