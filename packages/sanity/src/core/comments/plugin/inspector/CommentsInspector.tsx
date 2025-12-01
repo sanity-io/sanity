@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 import {type DocumentInspectorProps} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
+import {useAddonDataset} from '../../../studio/addonDataset'
 import {
   CommentDeleteDialog,
   CommentsList,
@@ -31,6 +32,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
+import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
@@ -90,7 +92,7 @@ function CommentsInspectorInner(
     onPathOpen,
   } = useComments()
   const commentIdParamRef = useRef<string | undefined>(selectedCommentId)
-
+  const {error: addonDatasetError} = useAddonDataset()
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
@@ -417,7 +419,7 @@ function CommentsInspectorInner(
             mode={mode}
           />
         </CommentsOnboardingPopover>
-
+        {addonDatasetError && <CommentsInspectorError error={addonDatasetError} />}
         {currentUser && (
           <CommentsList
             beforeListNode={beforeListNode}

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 import {
   type EditorChange,
@@ -16,6 +17,7 @@ import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState
 
 import {type PortableTextInputProps} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
+import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components'
 import {isTextSelectionComment} from '../../../helpers'
 import {
@@ -71,6 +73,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
   const {comments, getComment, mentionOptions, onCommentsOpen, operation, setStatus, status} =
     useComments()
+  const {error: addonDatasetError} = useAddonDataset()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
   const {handleOpenDialog} = useCommentsUpsell()
@@ -555,7 +558,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
-              disabled={currentSelectionIsOverlapping}
+              disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
               onClick={handleSelectCurrentSelection}
               onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}
