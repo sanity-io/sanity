@@ -3847,7 +3847,7 @@ describe('sanity', () => {
     expectTypeOf<ImageUrlAutoMode>().not.toBeNever()
   })
   test('ImageUrlBuilder', () => {
-    expectTypeOf<ImageUrlBuilder>().not.toBeNever()
+    expectTypeOf<ImageUrlBuilder>().toBeObject()
   })
   test('ImageUrlCropMode', () => {
     expectTypeOf<ImageUrlCropMode>().not.toBeNever()
