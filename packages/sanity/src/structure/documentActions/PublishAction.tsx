@@ -5,7 +5,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   InsufficientPermissionsMessage,
-  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -50,13 +49,13 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published, release} = props
+  const {id, type, liveEdit, draft, published, release, bundle, version} = props
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
-  const {publish} = useDocumentOperation(id, type)
-  const {changesOpen, documentId, documentType, value} = useDocumentPane()
-  const validationStatus = useValidationStatus(value._id, type)
+  const {publish} = useDocumentOperation(id, type, release || bundle)
+  const {changesOpen, documentId, documentType} = useDocumentPane()
+  const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -161,7 +160,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       // Version documents are not publishable by this action, they should be published as part of a release
       return null
     }
-    if (liveEdit) {
+
+    if (liveEdit && !bundle) {
       // Live edit documents are not publishable by this action, they are published automatically
       return null
     }
@@ -171,7 +171,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
      * then it means the draft is yet to be saved - in this case don't disabled
      * the publish button due to ALREADY_PUBLISHED reason
      */
-    if (isPublishedId(value._id) && draft !== null) {
+    if (published && !draft && !version) {
       return {
         tone: 'default',
         icon: PublishIcon,
@@ -225,8 +225,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [
     release,
     liveEdit,
-    value._id,
+    version,
     draft,
+    published,
+    bundle,
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
@@ -237,7 +239,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     t,
     title,
     handle,
-    published?._updatedAt,
     currentUser,
   ])
 }
