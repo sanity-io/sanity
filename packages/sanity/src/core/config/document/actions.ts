@@ -20,6 +20,10 @@ export interface DocumentActionProps extends EditStateFor {
    * Whether the initial value has been resolved.
    */
   initialValueResolved: boolean
+  /**
+   * The bundle the document belongs to (if any)
+   */
+  bundle?: string
 }
 
 type SanityDefinedAction =
