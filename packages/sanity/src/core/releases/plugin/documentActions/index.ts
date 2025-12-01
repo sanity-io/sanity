@@ -9,11 +9,12 @@ export default function resolveDocumentActions(
   existingActions: Action[],
   context: DocumentActionsContext,
 ): Action[] {
-  const duplicateAction = existingActions.filter(({action}) => action === 'duplicate')
-
-  if (context.versionType === 'version') {
+  if (context.versionType === 'version' && context.releaseId) {
+    const defaultActions = existingActions.filter(({action}) => {
+      return action === 'duplicate' || action === 'publish'
+    })
     // For regular version documents, show traditional version actions
-    return duplicateAction.concat(useDiscardVersionAction, useUnpublishVersionAction)
+    return defaultActions.concat(useDiscardVersionAction, useUnpublishVersionAction)
   }
 
   return existingActions
