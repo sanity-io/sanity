@@ -539,7 +539,7 @@ describe('Extract schema test', () => {
     expect(book.attributes.logos.optional).toBe(false)
     assert(book.attributes.logos.value.type === 'array') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     assert(book.attributes.logos.value.of.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
-    expect(book.attributes.logos.value.of.attributes.asset.optional).toBe(false) // with assetRequired defined in _rules, it should be required
+    expect(book.attributes.logos.value.of.attributes.asset.optional).toBe(false) // with assetRequired defined, it should be required
 
     expect(book).toMatchSnapshot()
   })
