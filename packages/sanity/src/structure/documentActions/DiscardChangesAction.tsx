@@ -2,7 +2,6 @@ import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  type DocumentActionDialogProps,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -11,6 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -56,20 +56,8 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionDialogProps | false = useMemo(
-    () =>
-      isConfirmDialogOpen && {
-        type: 'confirm',
-        tone: 'critical',
-        onCancel: handleCancel,
-        onConfirm: handleConfirm,
-        message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
-      },
-    [handleConfirm, isConfirmDialogOpen, handleCancel, t],
-  )
-
   return useMemo(() => {
-    if (!published || liveEdit || isPublished) {
+    if (liveEdit || isPublished) {
       return null
     }
 
@@ -92,18 +80,29 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
       title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
-      dialog,
+      dialog: isConfirmDialogOpen && {
+        type: 'custom',
+        component: (
+          <ConfirmDiscardDialog
+            onCancel={handleCancel}
+            onConfirm={handleConfirm}
+            publishedExists={Boolean(published)}
+          />
+        ),
+      },
     }
   }, [
     currentUser,
-    dialog,
+    handleConfirm,
+    handleCancel,
+    isConfirmDialogOpen,
     discardChanges.disabled,
+    published,
     handle,
     isPermissionsLoading,
     isPublished,
     liveEdit,
     permissions?.granted,
-    published,
     t,
   ])
 }
