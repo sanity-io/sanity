@@ -1,5 +1,6 @@
 import {
   type ArraySchemaType,
+  type FormDecorationSchemaType,
   type NumberSchemaType,
   type ObjectField,
   type ObjectFieldType,
@@ -26,6 +27,8 @@ import {
   type UnionTypeNode,
   type UnknownTypeNode,
 } from 'groq-js'
+
+import {FORM_DECORATION} from '../legacy/types/constants'
 
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
@@ -120,7 +123,7 @@ export function extractSchema(
     }
 
     const value = convertSchemaType(schemaType)
-    if (value.type === 'unknown') {
+    if (value === null || value.type === 'unknown') {
       return null
     }
     if (value.type === 'object') {
@@ -148,7 +151,7 @@ export function extractSchema(
     }
   }
 
-  function convertSchemaType(schemaType: SanitySchemaType): TypeNode {
+  function convertSchemaType(schemaType: SanitySchemaType): TypeNode | null {
     // if we have already seen the base type, we can just reference it
     if (inlineFields.has(schemaType.type!)) {
       return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
@@ -160,6 +163,9 @@ export function extractSchema(
       return {type: 'inline', name: schemaType.name} satisfies InlineTypeNode
     }
 
+    if (isFormDecorationType(schemaType)) {
+      return null
+    }
     if (isStringType(schemaType)) {
       return createStringTypeNodeDefintion(schemaType)
     }
@@ -261,6 +267,9 @@ export function extractSchema(
     const of: TypeNode[] = []
     for (const item of arraySchemaType.of) {
       const field = convertSchemaType(item)
+      if (field === null) {
+        continue
+      }
       if (field.type === 'inline') {
         of.push({
           type: 'object',
@@ -415,6 +424,9 @@ function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
 }
 function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
   return isType(typeDef, 'number')
+}
+function isFormDecorationType(typeDef: SanitySchemaType): typeDef is FormDecorationSchemaType {
+  return isType(typeDef, FORM_DECORATION)
 }
 function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,

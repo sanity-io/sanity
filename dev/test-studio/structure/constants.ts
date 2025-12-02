@@ -49,6 +49,7 @@ export const DEBUG_INPUT_TYPES = [
   'customInputsTest',
   'customInputsWithPatches',
   'dateValidation',
+  'decorationFields',
   'dateTimeValidation',
   'deprecatedFields',
   'deprecatedDocument',

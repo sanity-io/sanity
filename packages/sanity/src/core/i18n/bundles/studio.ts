@@ -768,6 +768,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+  /** Internal form decorator description for the default input, it requires always a custom input */
+  'inputs.form-decoration-default':
+    'To use this field you need to provide a custom input component',
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Crop image',
   /** Accessibility label for button to open image edit dialog */
