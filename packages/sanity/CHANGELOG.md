@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Features
+
+* **cli:** add command for visualizing schema bloat ([721e6d2](https://github.com/sanity-io/sanity/commit/721e6d2b96838160fb48129f0e50415233e69f5a)) by Magnus Holm (judofyr@gmail.com)
+* delete scheduled drafts allows for copy back to draft when appropriate ([#11143](https://github.com/sanity-io/sanity/issues/11143)) ([3210749](https://github.com/sanity-io/sanity/commit/321074904b9da8f750cc7af137f59fb7e8877e18)) by Jordan Lawrence (jordanl17@me.com)
+* **descriptors:** minimize blocking the UI ([2826615](https://github.com/sanity-io/sanity/commit/2826615efb55aee9a99077daf6cf831e5e051f9c)) by Magnus Holm (judofyr@gmail.com)
+* **schema:** de-dupe re-used fields in the descriptor ([b287558](https://github.com/sanity-io/sanity/commit/b287558417c6f06eaaf7acf1a4f51dc6aab0c3f6)) by Magnus Holm (judofyr@gmail.com)
+* support private assets ([#11316](https://github.com/sanity-io/sanity/issues/11316)) ([9a661ca](https://github.com/sanity-io/sanity/commit/9a661ca445b108db5a2dca1b471aab7a8ebe29bc)) by Rupert Dunk (rupert@rupertdunk.com)
+
+### Bug Fixes
+
+* add dialog for content releases misconfiguration with support contact option ([#11276](https://github.com/sanity-io/sanity/issues/11276)) ([a43f8e0](https://github.com/sanity-io/sanity/commit/a43f8e085eeaf02f5582fd9e5f02957990e79cdd)) by Jordan Lawrence (jordanl17@me.com)
+* allow `createGlobalStyle` to work with auto updating studios ([#11313](https://github.com/sanity-io/sanity/issues/11313)) ([c964ffe](https://github.com/sanity-io/sanity/commit/c964ffecf1f3374ecef82b5962ef77e146dd12f8)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* concat `previewUrl` and `targetOrigin` correctly ([#11322](https://github.com/sanity-io/sanity/issues/11322)) ([a18d3ed](https://github.com/sanity-io/sanity/commit/a18d3edabf1048282c36ca4ede7fc3a8d95b197c)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **core:** date time input fixes ([#11233](https://github.com/sanity-io/sanity/issues/11233)) ([84418b4](https://github.com/sanity-io/sanity/commit/84418b410a7d3b5f0f19d8e63eea03011a74c218)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** fix props function delcaration ([#11362](https://github.com/sanity-io/sanity/issues/11362)) ([6b54783](https://github.com/sanity-io/sanity/commit/6b547838391477d45cb249202959553abb7b7e44)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **core:** only validate .media validation markers ([#11311](https://github.com/sanity-io/sanity/issues/11311)) ([f8643c1](https://github.com/sanity-io/sanity/commit/f8643c14897f703709700b4e4cbeca42fa4529d2)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **core:** pte inline comments respect __internal_comments disabled ([#11341](https://github.com/sanity-io/sanity/issues/11341)) ([0f566b5](https://github.com/sanity-io/sanity/commit/0f566b5c99891052b661791d0d48f8e4c7118b98)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** set correct focus path for assets inputs in images ([#11317](https://github.com/sanity-io/sanity/issues/11317)) ([f1182f5](https://github.com/sanity-io/sanity/commit/f1182f50e73297c6043ea9ce4bac10e877aed044)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** update server delete operation to include versions list ([#11364](https://github.com/sanity-io/sanity/issues/11364)) ([482f1d1](https://github.com/sanity-io/sanity/commit/482f1d19cc49ed4ebac1f5b0f06dd685219c085b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use `toolTitle` for `document.title` if present ([#11285](https://github.com/sanity-io/sanity/issues/11285)) ([c7967d8](https://github.com/sanity-io/sanity/commit/c7967d8ed56baa49de5b201246135ba6946c911e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** mark support for `react < 19.2` and `@sanity/ui < 3` as deprecated ([#11238](https://github.com/sanity-io/sanity/issues/11238)) ([8cd0a7c](https://github.com/sanity-io/sanity/commit/8cd0a7c7a018f274eabde068127eeb767e72d0f7)) by Bjørge Næss (bjoerge@gmail.com)
+* **deps:** Update portabletext ([#11270](https://github.com/sanity-io/sanity/issues/11270)) ([bf4bf3b](https://github.com/sanity-io/sanity/commit/bf4bf3b130a3a2922a23708b7684e94c4b5bd110)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11329](https://github.com/sanity-io/sanity/issues/11329)) ([ab15495](https://github.com/sanity-io/sanity/commit/ab154959c7b632f7fab54b8dfcaa9a08100ec411)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11338](https://github.com/sanity-io/sanity/issues/11338)) ([7ee38ba](https://github.com/sanity-io/sanity/commit/7ee38ba2b5a6c1b1028eb7cd9f80a6821cb95c4a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* ensure schema errors are caught ([#11349](https://github.com/sanity-io/sanity/issues/11349)) ([30b67b5](https://github.com/sanity-io/sanity/commit/30b67b5fa20aadffb91b0b91990bc4ff4cd9460e)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* make sure `require` calls comes from `createRequire` ([#11306](https://github.com/sanity-io/sanity/issues/11306)) ([0ae1f8b](https://github.com/sanity-io/sanity/commit/0ae1f8b2d2b3a5960768cd992a2eb94313944e65)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **media-library:** support groups and fieldset in `defineVideoField` ([#11361](https://github.com/sanity-io/sanity/issues/11361)) ([3c840ce](https://github.com/sanity-io/sanity/commit/3c840ce0c20b83f5b7115b76382083286b570a9e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* remove `ServerStyleSheet` usage ([#10757](https://github.com/sanity-io/sanity/issues/10757)) ([76028e1](https://github.com/sanity-io/sanity/commit/76028e1d19cdf32c6c1dd9888acbdb33b36ed99e)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **sanity:** allow editing documents in non-release bundles ([#11312](https://github.com/sanity-io/sanity/issues/11312)) ([dfa9dc1](https://github.com/sanity-io/sanity/commit/dfa9dc1f70fbe01699f3186eb93e4671d228b329)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** replace delete action for discard in non published docs ([#11363](https://github.com/sanity-io/sanity/issues/11363)) ([ef60727](https://github.com/sanity-io/sanity/commit/ef607275cd08b3b3be2413d208af75b905723291)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* validate published document when it is displayed ([#11130](https://github.com/sanity-io/sanity/issues/11130)) ([adf299b](https://github.com/sanity-io/sanity/commit/adf299b1d002d540c8e67aa2b2f601725a3e32ec)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Features
