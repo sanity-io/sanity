@@ -11,7 +11,7 @@ interface Props {
   drag: boolean
   isRejected: boolean
   readOnly?: boolean | null
-  src: string
+  src?: string
 }
 
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
@@ -35,13 +35,15 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   return (
     <RatioBox {...rest} tone="transparent">
       {!isLoaded && <OverlayComponent cardTone="transparent" content={<LoadingBlock showText />} />}
-      <img
-        src={src}
-        data-testid="hotspot-image-input"
-        alt={props.alt}
-        onLoad={onLoadChange}
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
+      {src && (
+        <img
+          src={src}
+          data-testid="hotspot-image-input"
+          alt={props.alt}
+          onLoad={onLoadChange}
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      )}
       {drag && (
         <OverlayComponent
           cardTone={tone}

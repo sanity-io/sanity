@@ -1,7 +1,7 @@
-import {type ImageUrlBuilder} from '@sanity/image-url'
+import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
-import {type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
+import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {useTranslation} from '../../../../i18n'
@@ -11,7 +11,6 @@ import {FileTarget} from '../common/styles'
 import {UploadDestinationPicker} from '../common/UploadDestinationPicker'
 import {UploadWarning} from '../common/UploadWarning'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
-import {usePreviewImageSource} from './usePreviewImageSource'
 
 const ASSET_FIELD_PATH = ['asset'] as const
 
@@ -22,7 +21,6 @@ function ImageInputAssetComponent(props: {
   handleClearUploadState: () => void
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   hoveringFiles: FileInfo[]
-  imageUrlBuilder: ImageUrlBuilder
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
@@ -54,7 +52,6 @@ function ImageInputAssetComponent(props: {
     setHoveringFiles,
     tone,
     value,
-    imageUrlBuilder,
   } = props
 
   const elementRef = elementProps.ref?.current
@@ -63,11 +60,14 @@ function ImageInputAssetComponent(props: {
 
   const hasValueOrUpload = Boolean(value?._upload || value?.asset)
   const path = useMemo(() => inputProps.path.concat(ASSET_FIELD_PATH), [inputProps.path])
-  const {customProperties} = usePreviewImageSource({value, imageUrlBuilder})
   const [assetSourceDestination, setAssetSourceDestination] = useState<AssetSource | null>(null)
   const [showDestinationSourcePicker, setShowDestinationSourcePicker] = useState<boolean>(false)
   const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
   const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
+  const customProperties = useMemo(() => {
+    const {width = 0, height = 0} = value?.asset ? getImageDimensions(value.asset) : {}
+    return {'--image-width': width, '--image-height': height} as CSSProperties
+  }, [value])
 
   const handleFilesOut = useCallback(() => {
     setHoveringFiles([])

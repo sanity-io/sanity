@@ -348,6 +348,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     }
     return (
       <ImageInputPreview
+        client={client}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         hoveringFiles={hoveringFiles}
@@ -359,6 +360,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    client,
     directUploads,
     handleOpenDialog,
     hoveringFiles,
@@ -464,7 +466,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
           hoveringFiles={hoveringFiles}
-          imageUrlBuilder={imageUrlBuilder}
           inputProps={inputProps}
           isStale={isStale}
           onSelectFiles={handleSelectFilesToUpload}
@@ -490,7 +491,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       handleClearUploadState,
       handleSelectFilesToUpload,
       hoveringFiles,
-      imageUrlBuilder,
       isStale,
       readOnly,
       renderAssetMenu,
