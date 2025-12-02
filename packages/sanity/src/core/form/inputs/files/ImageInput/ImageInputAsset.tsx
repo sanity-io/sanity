@@ -26,10 +26,10 @@ function ImageInputAssetComponent(props: {
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
-  renderAssetMenu(): React.JSX.Element | null
+  renderAssetMenu: () => React.JSX.Element
   renderPreview: () => React.JSX.Element
-  renderUploadPlaceholder(): React.JSX.Element
-  renderUploadState(uploadState: UploadState): React.JSX.Element
+  renderUploadPlaceholder: () => React.JSX.Element
+  renderUploadState: (uploadState: UploadState) => React.JSX.Element
   schemaType: BaseImageInputProps['schemaType']
   selectedAssetSource: AssetSource | null
   setHoveringFiles: (hoveringFiles: FileInfo[]) => void
