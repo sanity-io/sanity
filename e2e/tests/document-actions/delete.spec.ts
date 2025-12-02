@@ -5,7 +5,7 @@ import {test} from '../../studio-test'
 
 const name = 'Test Name'
 
-test(`unpublished documents can be deleted`, async ({page, createDraftDocument}) => {
+test(`unpublished documents can't be deleted`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
@@ -14,10 +14,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
   await expectCreatedStatus(paneFooter)
 
   await page.getByTestId('action-menu-button').click()
-  await page.getByTestId('action-Delete').click()
-  await page.getByRole('button', {name: 'Delete all versions'}).click()
-
-  await expect(page.getByText('The document was successfully deleted')).toBeVisible()
+  await expect(page.getByTestId('action-Delete')).toBeHidden()
 })
 
 test(`published documents can be deleted`, async ({page, createDraftDocument}) => {
@@ -46,15 +43,22 @@ test(`deleted document shows the right name from last revision`, async ({
 }) => {
   test.slow()
   const documentName = 'John Doe'
+  const publishButton = page.getByTestId('action-publish')
+  const paneFooter = page.getByTestId('pane-footer-document-status')
 
   await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(documentName)
+  await expectCreatedStatus(paneFooter)
 
   // Save the current URL before deletion
   const documentUrl = page.url()
 
   // Verify the name is displayed correctly before deletion
   await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+
+  // Publish the document, to allow deletion
+  await publishButton.click()
+  await expectPublishedStatus(paneFooter)
 
   // Delete the document
   await page.getByTestId('action-menu-button').click()

@@ -24,6 +24,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
+  /** Message prompting the user to confirm discarding changes */
+  'action.discard-changes.confirm-dialog.confirm-discard-changes-draft':
+    'Are you sure you want to discard all changes and delete this draft document?',
+  /**Header for the confirm discard dialog */
+  'action.discard-changes.confirm-dialog.header.text': 'Discard changes?',
   /** Tooltip when action is disabled because the document has no unpublished changes */
   'action.discard-changes.disabled.no-change': 'This document has no unpublished changes',
   /** Tooltip when action is disabled because the document is not published */
@@ -541,7 +546,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The document was successfully deleted',
   /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
-    'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+    'All changes has now been discarded. The discarded draft can still be recovered from history',
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',
