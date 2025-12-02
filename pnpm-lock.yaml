@@ -4318,10 +4318,6 @@ packages:
     resolution: {integrity: sha512-uuG5HZFXLfyFKqg8QypsmgLQW7smiRjVc45bqD/ofZZcR/uxEjgQU8qDPv0s9TEeMUiAAU/GC5bR6++UdTirIQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@npmcli/package-json@7.0.3':
-    resolution: {integrity: sha512-XT8016UrDfnR7yh2XvnIqaPnA5v2QomaWryDYYgKNT0LaX0vcKf4gu2f3CWD/ltV4tOto4MwZynWlynMJL8bBQ==}
-    engines: {node: ^20.17.0 || >=22.9.0}
-
   '@npmcli/package-json@7.0.4':
     resolution: {integrity: sha512-0wInJG3j/K40OJt/33ax47WfWMzZTm6OQxB9cDhTt5huCP2a9g2GnlsxmfN+PulItNPIpPrZ+kfwwUil7eHcZQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -8778,11 +8774,6 @@ packages:
 
   glob@11.0.3:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
-    engines: {node: 20 || >=22}
-    hasBin: true
-
-  glob@12.0.0:
-    resolution: {integrity: sha512-5Qcll1z7IKgHr5g485ePDdHcNQY0k2dtv/bjYy0iuyGxQw2qSOiiXUXJ+AYQpg3HNoUMHqAruX478Jeev7UULw==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -15363,16 +15354,6 @@ snapshots:
 
   '@npmcli/node-gyp@5.0.0': {}
 
-  '@npmcli/package-json@7.0.3':
-    dependencies:
-      '@npmcli/git': 7.0.0
-      glob: 12.0.0
-      hosted-git-info: 9.0.2
-      json-parse-even-better-errors: 5.0.0
-      proc-log: 6.0.0
-      semver: 7.7.3
-      validate-npm-package-license: 3.0.4
-
   '@npmcli/package-json@7.0.4':
     dependencies:
       '@npmcli/git': 7.0.0
@@ -15400,7 +15381,7 @@ snapshots:
   '@npmcli/run-script@10.0.3':
     dependencies:
       '@npmcli/node-gyp': 5.0.0
-      '@npmcli/package-json': 7.0.3
+      '@npmcli/package-json': 7.0.4
       '@npmcli/promise-spawn': 9.0.1
       node-gyp: 12.1.0
       proc-log: 6.0.0
@@ -20662,15 +20643,6 @@ snapshots:
       path-scurry: 1.11.1
 
   glob@11.0.3:
-    dependencies:
-      foreground-child: 3.3.1
-      jackspeak: 4.1.1
-      minimatch: 10.1.1
-      minipass: 7.1.2
-      package-json-from-dist: 1.0.1
-      path-scurry: 2.0.0
-
-  glob@12.0.0:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
