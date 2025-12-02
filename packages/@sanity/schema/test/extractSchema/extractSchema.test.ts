@@ -1,6 +1,6 @@
 import assert, {strictEqual} from 'node:assert'
 
-import {defineField, defineType} from '@sanity/types'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {type DocumentSchemaType} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
@@ -489,6 +489,20 @@ describe('Extract schema test', () => {
               type: 'image',
               validation: (Rule) => Rule.required().assetRequired(),
             }),
+            defineField({
+              name: 'logos',
+              title: 'Logos',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  type: 'image',
+                  name: 'definedImageInArray',
+                  title: 'Image',
+                  validation: (rule) => [rule.required().assetRequired()],
+                }),
+              ],
+              validation: (rule) => [rule.required()],
+            }),
             {
               title: 'Asset Required File Rule Spec',
               name: 'assetRequiredFileRuleSpec',
@@ -521,6 +535,13 @@ describe('Extract schema test', () => {
     expect(book.attributes.assetRequiredFileRuleSpec.optional).toBe(false)
     assert(book.attributes.assetRequiredFileRuleSpec.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(book.attributes.assetRequiredFileRuleSpec.value.attributes.asset.optional).toBe(false) // with assetRequired defined in _rules, it should be required
+
+    expect(book.attributes.logos.optional).toBe(false)
+    assert(book.attributes.logos.value.type === 'array') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(book.attributes.logos.value.of.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.logos.value.of.attributes.asset.optional).toBe(false) // with assetRequired defined in _rules, it should be required
+
+    expect(book).toMatchSnapshot()
   })
 
   test('can handle `list` option that is not an array', () => {

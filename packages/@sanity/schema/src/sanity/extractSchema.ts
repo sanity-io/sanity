@@ -237,6 +237,16 @@ export function extractSchema(
       }
     }
 
+    // If we enforce required fields and the schema type itself (not just its fields) has assetRequired validation
+    // we set asset.optional=false. This handles cases like array members with validation: (rule) => rule.assetRequired()
+    if (
+      extractOptions.enforceRequiredFields &&
+      hasAssetRequired(schemaType.validation) &&
+      attributes.asset
+    ) {
+      attributes.asset.optional = false
+    }
+
     // Ignore empty objects
     if (Object.keys(attributes).length === 0) {
       return {type: 'unknown'} satisfies UnknownTypeNode
