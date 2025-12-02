@@ -1,15 +1,15 @@
 import Module from 'node:module'
 
-import {describe, expect, it} from 'vitest'
+import {describe, expect, test} from 'vitest'
 
-import {setupImportErrorHandler} from '../../../src/_internal/cli/util/importErrorHandler'
+import {setupImportErrorHandler} from '../importErrorHandler'
 
 interface ModuleConstructor {
   _load(request: string, parent: Module | undefined, isMain: boolean): any
 }
 
 describe('setupImportErrorHandler', () => {
-  it('should handle themer.sanity.build URL imports', () => {
+  test('should handle themer.sanity.build URL imports', () => {
     const handler = setupImportErrorHandler()
 
     const ModuleConstructor = Module as unknown as ModuleConstructor
@@ -29,7 +29,7 @@ describe('setupImportErrorHandler', () => {
     handler.cleanup()
   })
 
-  it('should re-throw errors for non-themer URLs', () => {
+  test('should re-throw errors for non-themer URLs', () => {
     const handler = setupImportErrorHandler()
 
     const ModuleConstructor = Module as unknown as ModuleConstructor
@@ -45,7 +45,7 @@ describe('setupImportErrorHandler', () => {
     handler.cleanup()
   })
 
-  it('should restore original Module._load after cleanup', () => {
+  test('should restore original Module._load after cleanup', () => {
     const ModuleConstructor = Module as unknown as ModuleConstructor
     const originalLoad = ModuleConstructor._load
 
