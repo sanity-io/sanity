@@ -589,4 +589,66 @@ describe('generateQueryMap', () => {
       'export type Inline_2 = MyType;',
     )
   })
+
+  test('should handle required image array member', async () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'author',
+        attributes: {
+          images: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  asset: {
+                    type: 'objectAttribute',
+                    value: {
+                      type: 'object',
+                      attributes: {
+                        _ref: {
+                          type: 'objectAttribute',
+                          value: {
+                            type: 'string',
+                          },
+                        },
+                        _type: {
+                          type: 'objectAttribute',
+                          value: {
+                            type: 'string',
+                            value: 'reference',
+                          },
+                        },
+                      },
+                      dereferencesTo: 'sanity.imageAsset',
+                    },
+                    optional: false, // <-- exported with --enforce-required-fields
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    const actualOutput = typeGenerator.generateSchemaTypes()
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"export type Author = {
+  images: Array<{
+    asset: {
+      _ref: string;
+      _type: "reference";
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+  }>;
+};
+
+export type AllSanitySchemaTypes = Author;"
+`)
+  })
 })
