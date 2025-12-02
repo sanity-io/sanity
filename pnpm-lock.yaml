@@ -37,7 +37,7 @@ catalogs:
       specifier: ^19.2.3
       version: 19.2.3
     '@types/react-is':
-      specifier: ^19.0.0
+      specifier: ^19.2.0
       version: 19.2.0
     '@typescript/native-preview':
       specifier: 7.0.0-dev.20251128.1
@@ -64,13 +64,13 @@ catalogs:
       specifier: ^3.7.1
       version: 3.7.1
     react:
-      specifier: ^19.1.1
+      specifier: ^19.2.0
       version: 19.2.0
     react-dom:
-      specifier: ^19.1.1
+      specifier: ^19.2.0
       version: 19.2.0
     react-is:
-      specifier: ^19.1.1
+      specifier: ^19.2.0
       version: 19.2.0
     styled-components:
       specifier: npm:@sanity/styled-components@^6.1.24
