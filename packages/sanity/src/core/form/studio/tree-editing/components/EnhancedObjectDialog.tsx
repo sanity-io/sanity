@@ -73,6 +73,23 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
       // eslint-disable-next-line @typescript-eslint/no-shadow -- workaround the React Compiler flagging refs being passed to lodash's `debounce`
       treeStateRef: React.RefObject<TreeEditingState>,
     ) => {
+      /* This is a workaround to prevent the tree editing state from being built when the user is editing (focused) an input element.
+       * We do this in situations where there are objects of arrays that might have previews that are inputs
+       * (such as the internationalizedArrayString, for example)
+       * And while those cases are an object, they shouldn't open the dialog as the editing is done directly on the input
+       * We can't guess what a user will do in cases where they use components?.input or components?.items
+       * But this will mean that at least if a user is editing an input that is inside an object of an array, the dialog will not navigate to it.
+       */
+      const activeElement = document.activeElement
+      const isInputElement =
+        activeElement &&
+        (activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          activeElement.tagName === 'SELECT' ||
+          activeElement.closest('[data-ui="Input"]') ||
+          activeElement.closest('[data-ui="TextArea"]'))
+      if (isInputElement) return
+
       const currentTreeState = treeStateRef.current
       const isPathWithinPTEtext = isPathTextInPTEField(
         schemaType.fields,
