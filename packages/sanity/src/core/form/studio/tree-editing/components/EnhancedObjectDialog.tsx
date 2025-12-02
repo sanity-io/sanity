@@ -73,17 +73,6 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
       // eslint-disable-next-line @typescript-eslint/no-shadow -- workaround the React Compiler flagging refs being passed to lodash's `debounce`
       treeStateRef: React.RefObject<TreeEditingState>,
     ) => {
-      /* This is a workaround to prevent the tree editing state from being built when the user is editing (focused)
-       * on a content editable element (such as inputs, textareas, selects, etc.)
-       * We do this in situations where there are objects of arrays that might have previews that are inputs
-       * (such as the internationalizedArrayString, for example)
-       * And while those cases are an object, they shouldn't open the dialog as the editing is done directly on the input
-       * We can't guess what a user will do in cases where they use components?.input or components?.items
-       * But this will mean that at least if a user is editing an input that is inside an object of an array, the dialog will not navigate to it.
-       */
-      const activeElement = document.activeElement as HTMLElement
-      if (activeElement?.isContentEditable) return
-
       const currentTreeState = treeStateRef.current
       const isPathWithinPTEtext = isPathTextInPTEField(
         schemaType.fields,
@@ -291,6 +280,22 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
     const isInitialRender = valueRef.current === undefined && openPathRef.current === undefined
 
     const isMarksDefinition = openPath[openPath.length - 2] === 'markDefs'
+
+    /*
+     * This is a workaround to prevent the dialog from being built
+     * When a user has potentially clicked a button which creates inputs with the specific path
+     * (think internationalizedArrayString where clicking a button creates an input with the path "en.value")
+     * So, if an element exists in the dom with the updated path then it means
+     * A input exists with the updated path and we don't want to build the dialog
+     */
+    if (openPathChanged) {
+      const elementExists = document.getElementById(`${pathToString(openPath)}`)
+      /**
+       * if an element exists in the dom with the updated path then it means
+       * a input exists with the updated path
+       */
+      if (elementExists) return undefined
+    }
 
     // If the value has not changed but the openPath has changed, or
     // if it is the initial render, build the tree editing state
