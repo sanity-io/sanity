@@ -6,7 +6,6 @@ import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   type GeneralPreviewLayoutKey,
-  prefetchAssetAccessPolicies,
   useActiveReleases,
   useClient,
   useI18nText,
@@ -174,10 +173,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     handleClearSearch()
     setEnableSearchSpinner()
   }, [paneKey, handleClearSearch])
-
-  useEffect(() => {
-    prefetchAssetAccessPolicies(items, client)
-  }, [client, items])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && enableSearchSpinner === paneKey) {

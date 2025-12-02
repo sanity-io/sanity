@@ -475,7 +475,6 @@ exports[`exports snapshot 1`] = `
     "operatorDefinitions": "object",
     "pathToString": "function",
     "pathsAreEqual": "function",
-    "prefetchAssetAccessPolicies": "function",
     "prefixPath": "function",
     "prepareConfig": "function",
     "prepareForPreview": "function",
