@@ -32,13 +32,15 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, relea
     setConfirmDialogOpen(false)
   }, [])
 
-  const handleConfirm = useCallback(() => {
-    setIsDeleting(true)
-    setConfirmDialogOpen(false)
-    paneSetIsDeleting(true)
-    deleteOp.execute()
-    setIsDeleting(false)
-  }, [deleteOp, paneSetIsDeleting])
+  const handleConfirm = useCallback(
+    (versions: string[]) => {
+      setConfirmDialogOpen(false)
+      setIsDeleting(true)
+      deleteOp.execute(versions)
+      setIsDeleting(false)
+    },
+    [deleteOp, setIsDeleting],
+  )
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)

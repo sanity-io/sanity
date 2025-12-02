@@ -29,6 +29,7 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   onReferenceLinkClick?: () => void
   documentId: string
   documentType: string
+  documentVersions: string[]
 }
 
 /**
@@ -46,6 +47,7 @@ export function ConfirmDeleteDialogBody({
   documentId,
   documentType,
   onReferenceLinkClick,
+  documentVersions,
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
   const toast = useToast()
@@ -86,11 +88,11 @@ export function ConfirmDeleteDialogBody({
           />
         </Text>
         {action === 'delete' && (
-          <VersionsPreviewList documentId={documentId} documentType={documentType} />
+          <VersionsPreviewList documentType={documentType} documentVersions={documentVersions} />
         )}
       </Stack>
     ),
-    [t, action, documentTitle, documentId, documentType],
+    [t, action, documentTitle, documentType, documentVersions],
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
