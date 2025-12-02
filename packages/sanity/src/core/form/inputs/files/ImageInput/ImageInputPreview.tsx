@@ -1,13 +1,14 @@
 import {type SanityClient} from '@sanity/client'
-import {type ImageUrlBuilder} from '@sanity/image-url'
+import {type ImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 import {type ImageSchemaType} from '@sanity/types'
 import {memo, useMemo} from 'react'
+import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../../i18n'
 import {type UploaderResolver} from '../../../studio/uploads/types'
 import {ImagePreview} from './ImagePreview'
 import {type BaseImageInputValue, type FileInfo} from './types'
-import {usePreviewImageSource} from './usePreviewImageSource'
+import {useImageUrl} from './useImageUrl'
 
 export const ImageInputPreview = memo(function ImageInputPreviewComponent(props: {
   client: SanityClient
@@ -80,10 +81,16 @@ function RenderImageInputPreview(props: {
     [acceptedFiles, hoveringFiles],
   )
 
-  const {url} = usePreviewImageSource({
+  const dpr = useDevicePixelRatio()
+
+  const transform = (builder: ImageUrlBuilder, val: SanityImageSource) =>
+    builder.width(2000).fit('max').image(val).dpr(dpr).auto('format').url()
+
+  const {url} = useImageUrl({
     client,
-    value,
+    imageSource: value,
     imageUrlBuilder,
+    transform,
   })
 
   return (

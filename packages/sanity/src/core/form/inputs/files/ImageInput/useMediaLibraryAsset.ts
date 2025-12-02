@@ -7,8 +7,8 @@ import {getMediaLibraryRef, type MediaLibraryRef} from '../../../../store/access
 import {resolveMediaLibraryClient} from './utils/mediaLibrary'
 
 export function useMediaLibraryAsset(params: {
-  client?: SanityClient
-  imageSource: SanityImageSource | undefined
+  client: SanityClient
+  imageSource: SanityImageSource
 }): {
   isChecking: boolean
   isPrivate: boolean
@@ -17,7 +17,7 @@ export function useMediaLibraryAsset(params: {
   const {client, imageSource} = params
 
   const ref = getMediaLibraryRef(imageSource)
-  const mediaLibraryClient = resolveMediaLibraryClient({client, ref})
+  const mediaLibraryClient = ref ? resolveMediaLibraryClient({client, ref}) : undefined
 
   // useSWR gives us synchronous access to the cached policy values so the UI
   // can render without a flash of loading state while

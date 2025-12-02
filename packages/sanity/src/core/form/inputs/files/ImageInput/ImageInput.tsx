@@ -466,7 +466,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
           hoveringFiles={hoveringFiles}
-          imageUrlBuilder={imageUrlBuilder}
           inputProps={inputProps}
           isStale={isStale}
           onSelectFiles={handleSelectFilesToUpload}
@@ -492,7 +491,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       handleClearUploadState,
       handleSelectFilesToUpload,
       hoveringFiles,
-      imageUrlBuilder,
       isStale,
       readOnly,
       renderAssetMenu,

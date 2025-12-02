@@ -6,7 +6,7 @@ import {useMediaLibraryAsset} from './useMediaLibraryAsset'
 import {resolveMediaLibraryClient} from './utils/mediaLibrary'
 
 export interface UseImageUrlParameters<T extends SanityImageSource | undefined> {
-  client?: SanityClient
+  client: SanityClient
   imageSource: T
   imageUrlBuilder: ImageUrlBuilder
   transform?: (builder: ImageUrlBuilder, value: SanityImageSource) => string | undefined
@@ -25,9 +25,9 @@ export interface UseImageUrlResult {
  *
  * @internal
  */
-export function useImageUrl<
-  T extends SanityImageSource | undefined = SanityImageSource | undefined,
->(params: UseImageUrlParameters<T>): UseImageUrlResult {
+export function useImageUrl<T extends SanityImageSource = SanityImageSource>(
+  params: UseImageUrlParameters<T>,
+): UseImageUrlResult {
   const {client, imageSource, imageUrlBuilder, transform} = params
 
   const {
@@ -42,13 +42,15 @@ export function useImageUrl<
   // The `http:` or `https:` URL. While a Private asset check is in progress,
   // this stays undefined as it may change after the check completes.
   const networkUrl = (() => {
-    if (!imageSource || isCheckingForPrivateAsset) return undefined
+    if (isCheckingForPrivateAsset) return undefined
 
     // Use the Media Library specific URL builder when the asset is Private.
     let builder = imageUrlBuilder
     if (isPrivate && client && ref) {
       const mediaLibraryClient = resolveMediaLibraryClient({client, ref})
-      builder = imageUrlBuilder.withClient(mediaLibraryClient)
+      if (mediaLibraryClient) {
+        builder = imageUrlBuilder.withClient(mediaLibraryClient)
+      }
     }
 
     // Apply the transformations if provided.
