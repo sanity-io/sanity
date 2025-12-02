@@ -7,10 +7,9 @@ import {
 } from 'sanity'
 
 import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
-import {PageBlockAnchor} from './PageBlockAnchor'
-
 import {CustomEnhancedObjectField} from './customEnhancedObjectField'
 import {CustomEnhancedObjectInput} from './customEnhancedObjectInput'
+import {PageBlockAnchor} from './PageBlockAnchor'
 
 const animal = defineField({
   type: 'object',
