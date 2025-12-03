@@ -68,15 +68,17 @@ describe('patch', () => {
         ],
       )
 
-      expect(draftMutate).toHaveBeenCalledOnce()
+      expect(draftMutate).toHaveBeenCalledTimes(2)
 
-      expect(draftMutate).toHaveBeenCalledWith([
+      expect(draftMutate).toHaveBeenNthCalledWith(1, [
         {
           createIfNotExists: {
             _createdAt: '2021-09-14T22:48:02.303Z',
             _id: 'drafts.my-id',
           },
         },
+      ])
+      expect(draftMutate).toHaveBeenNthCalledWith(2, [
         {
           patch: {
             id: 'drafts.my-id',
@@ -84,7 +86,6 @@ describe('patch', () => {
           },
         },
       ])
-
       expect(publishedMutate).not.toHaveBeenCalled()
       expect(versionMutate).not.toHaveBeenCalled()
     })
