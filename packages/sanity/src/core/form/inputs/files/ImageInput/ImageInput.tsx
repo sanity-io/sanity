@@ -25,7 +25,7 @@ import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitE
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
-import {useRenderMembers} from '../../../members/object/useRenderMembets'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
