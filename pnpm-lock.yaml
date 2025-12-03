@@ -61,8 +61,8 @@ catalogs:
       specifier: 1.56.1
       version: 1.56.1
     prettier:
-      specifier: ^3.7.2
-      version: 3.7.2
+      specifier: ^3.7.3
+      version: 3.7.3
     react:
       specifier: ^19.2.0
       version: 19.2.0
@@ -130,7 +130,7 @@ importers:
         version: link:packages/@repo/utils
       '@sanity/prettier-config':
         specifier: ^1.0.6
-        version: 1.0.6(prettier@3.7.2)
+        version: 1.0.6(prettier@3.7.3)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 3.1.11(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.0(react@19.2.0))(react-is@19.2.0)(react@19.2.0)(styled-components@6.1.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
@@ -181,10 +181,10 @@ importers:
         version: 1.56.1
       prettier:
         specifier: 'catalog:'
-        version: 3.7.2
+        version: 3.7.3
       prettier-plugin-packagejson:
         specifier: ^2.5.20
-        version: 2.5.20(prettier@3.7.2)
+        version: 2.5.20(prettier@3.7.3)
       sanity:
         specifier: workspace:*
         version: link:packages/sanity
@@ -986,7 +986,7 @@ importers:
         version: 9.39.1(jiti@2.6.1)
       prettier:
         specifier: 'catalog:'
-        version: 3.7.2
+        version: 3.7.3
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -1119,7 +1119,7 @@ importers:
         version: 5.0.0
       prettier:
         specifier: 'catalog:'
-        version: 3.7.2
+        version: 3.7.3
       semver:
         specifier: ^7.7.2
         version: 7.7.3
@@ -10964,6 +10964,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.7.3:
+    resolution: {integrity: sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-bytes@7.1.0:
     resolution: {integrity: sha512-nODzvTiYVRGRqAOvE84Vk5JDPyyxsVk0/fbA/bq7RqlnhksGpset09XTxbpvLTIjoaF7K8Z8DG8yHtKGTPSYRw==}
     engines: {node: '>=20'}
@@ -16553,10 +16558,10 @@ snapshots:
       - '@sanity/client'
       - '@sanity/types'
 
-  '@sanity/prettier-config@1.0.6(prettier@3.7.2)':
+  '@sanity/prettier-config@1.0.6(prettier@3.7.3)':
     dependencies:
-      prettier: 3.7.2
-      prettier-plugin-packagejson: 2.5.20(prettier@3.7.2)
+      prettier: 3.7.3
+      prettier-plugin-packagejson: 2.5.20(prettier@3.7.3)
 
   '@sanity/preview-url-secret@3.0.0(@sanity/client@7.13.1(debug@4.4.3))(@sanity/icons@3.7.4(react@19.2.0))(sanity@packages+sanity)':
     dependencies:
@@ -22906,14 +22911,16 @@ snapshots:
 
   preserve@0.2.0: {}
 
-  prettier-plugin-packagejson@2.5.20(prettier@3.7.2):
+  prettier-plugin-packagejson@2.5.20(prettier@3.7.3):
     dependencies:
       sort-package-json: 3.5.0
       synckit: 0.11.11
     optionalDependencies:
-      prettier: 3.7.2
+      prettier: 3.7.3
 
   prettier@3.7.2: {}
+
+  prettier@3.7.3: {}
 
   pretty-bytes@7.1.0: {}
 
