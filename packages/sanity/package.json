@@ -323,8 +323,8 @@
     "vitest-package-exports": "^0.1.1"
   },
   "peerDependencies": {
-    "react": "^18 || ^19",
-    "react-dom": "^18 || ^19",
+    "react": "^19.2",
+    "react-dom": "^19.2",
     "styled-components": "^6.1.15"
   },
   "engines": {

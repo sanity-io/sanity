@@ -66,6 +66,6 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@types/react": "18 || 19"
+    "@types/react": "^19.2"
   }
 }

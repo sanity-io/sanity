@@ -101,7 +101,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "^18 || ^19.0.0",
+    "react": "^19.2.0",
     "styled-components": "^6.1.15"
   }
 }
