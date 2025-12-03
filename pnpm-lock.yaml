@@ -1062,6 +1062,9 @@ importers:
       '@sanity/template-validator':
         specifier: ^2.4.3
         version: 2.4.3
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -1080,9 +1083,6 @@ importers:
       get-latest-version:
         specifier: ^5.1.0
         version: 5.1.0(debug@4.4.3)
-      groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1285,6 +1285,9 @@ importers:
       '@babel/types':
         specifier: ^7.28.5
         version: 7.28.5
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       debug:
         specifier: ^4.4.3
         version: 4.4.3(supports-color@8.1.1)
@@ -1300,6 +1303,9 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
+      reselect:
+        specifier: ^5.1.1
+        version: 5.1.1
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -5499,6 +5505,10 @@ packages:
       svelte:
         optional: true
 
+  '@sanity/worker-channels@1.1.0':
+    resolution: {integrity: sha512-25SS2RuQFRLZ8STlW7fdxb7vvxMWhryh3tY2ADQaZiaQt1r57GZgeMma85AG0mSesaMvFL1ndO+XiBOFHBHSmg==}
+    engines: {node: '>=18.2'}
+
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
@@ -8793,6 +8803,10 @@ packages:
   graphmatch@1.1.0:
     resolution: {integrity: sha512-0E62MaTW5rPZVRLyIJZG/YejmdA/Xr1QydHEw3Vt+qOKkMIOE8WDLc9ZX2bmAjtJFZcId4lEdrdmASsEy7D1QA==}
 
+  groq-js@1.21.0:
+    resolution: {integrity: sha512-CQlUzcD5Ju30P+yEuxYJzQjwjC1w5OyZ207ZVKOAdwvVTGGOKM7QPa8nGGEsrEVNM0fQ7VyRC39WGecqRmDJLg==}
+    engines: {node: '>= 14'}
+
   groq-js@1.22.0:
     resolution: {integrity: sha512-AKdkUorjSJ0nwCrGP/CMsGnzXgmz+UweL02BUS4skYTI5WHk5hxwUJV1elV97NczsLlV8+euCeQFkzwaWmIhMA==}
     engines: {node: '>= 14'}
@@ -10888,6 +10902,11 @@ packages:
     peerDependenciesMeta:
       prettier:
         optional: true
+
+  prettier@3.7.2:
+    resolution: {integrity: sha512-n3HV2J6QhItCXndGa3oMWvWFAgN1ibnS7R9mt6iokScBOC0Ul9/iZORmU2IWUMcyAQaMPjTlY3uT34TqocUxMA==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   prettier@3.7.3:
     resolution: {integrity: sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==}
@@ -16422,7 +16441,7 @@ snapshots:
       mkdirp: 3.0.1
       outdent: 0.8.0
       package-up: 5.0.0
-      prettier: 3.7.3
+      prettier: 3.7.2
       pretty-bytes: 7.1.0
       prompts: 2.4.2
       recast: 0.23.11
@@ -16582,7 +16601,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': 3.99.0(@types/react@19.2.7)(debug@4.4.3)
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.22.0
+      groq-js: 1.21.0
       lodash-es: 4.17.21
       reselect: 5.1.1
       rxjs: 7.8.2
@@ -16789,6 +16808,8 @@ snapshots:
       - debug
       - sanity
       - typescript
+
+  '@sanity/worker-channels@1.1.0': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -20644,6 +20665,12 @@ snapshots:
 
   graphmatch@1.1.0: {}
 
+  groq-js@1.21.0:
+    dependencies:
+      debug: 4.4.3(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
   groq-js@1.22.0:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
@@ -22783,6 +22810,8 @@ snapshots:
       synckit: 0.11.11
     optionalDependencies:
       prettier: 3.7.3
+
+  prettier@3.7.2: {}
 
   prettier@3.7.3: {}
 
