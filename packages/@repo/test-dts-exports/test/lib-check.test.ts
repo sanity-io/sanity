@@ -65,6 +65,11 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // This error comes from `@sanity/css-in-js` having slightly different typings than `styled-components`
+  if (file.fileName.endsWith('node_modules/@sanity/ui/dist/index.d.mts') && code === 2307) {
+    return false
+  }
+
   // This error originates from a generated xstate machine declaration, so it's not code we can fix, it's a false negative
   if (
     file.fileName.includes('node_modules/@portabletext/editor/') &&
