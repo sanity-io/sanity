@@ -5,4 +5,15 @@ export {findQueriesInPath} from '../typescript/findQueriesInPath'
 export {findQueriesInSource} from '../typescript/findQueriesInSource'
 export {getResolver} from '../typescript/moduleResolver'
 export {registerBabel} from '../typescript/registerBabel'
-export {TypeGenerator} from '../typescript/typeGenerator'
+export {
+  type GenerateTypesOptions,
+  TypeGenerator,
+  type TypegenWorkerChannel,
+} from '../typescript/typeGenerator'
+export {
+  type EvaluatedModule,
+  type EvaluatedQuery,
+  type ExtractedModule,
+  type ExtractedQuery,
+  QueryExtractionError,
+} from '../typescript/types'
