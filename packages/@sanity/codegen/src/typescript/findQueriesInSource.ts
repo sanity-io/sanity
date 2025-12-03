@@ -5,8 +5,9 @@ import {type Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 
 import {getBabelConfig} from '../getBabelConfig'
-import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
+import {resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
+import {type ExtractedModule, type ExtractedQuery, QueryExtractionError} from './types'
 
 const require = createRequire(import.meta.url)
 
@@ -32,8 +33,9 @@ export function findQueriesInSource(
   filename: string,
   babelConfig: TransformOptions = getBabelConfig(),
   resolver: NodeJS.RequireResolve = require.resolve,
-): NamedQueryResult[] {
-  const queries: NamedQueryResult[] = []
+): ExtractedModule {
+  const queries: ExtractedQuery[] = []
+  const errors: QueryExtractionError[] = []
   const file = parseSourceFile(source, filename, babelConfig)
 
   traverse(file, {
@@ -63,33 +65,27 @@ export function findQueriesInSource(
           return
         }
 
-        const queryName = `${node.id.name}`
-        const queryResult = resolveExpression({
-          node: init,
-          file,
-          scope,
-          babelConfig,
-          filename,
-          resolver,
-        })
+        const {id, start, end} = node
+        const variable = {id, ...(start && {start}), ...(end && {end})}
 
-        const location = node.loc
-          ? {
-              start: {
-                ...node.loc?.start,
-              },
-              end: {
-                ...node.loc?.end,
-              },
-            }
-          : {}
-
-        queries.push({name: queryName, result: queryResult, location})
+        try {
+          const query = resolveExpression({
+            node: init,
+            file,
+            scope,
+            babelConfig,
+            filename,
+            resolver,
+          })
+          queries.push({variable, query, filename})
+        } catch (cause) {
+          errors.push(new QueryExtractionError({filename, variable, cause}))
+        }
       }
     },
   })
 
-  return queries
+  return {filename, queries, errors}
 }
 
 function declarationLeadingCommentContains(path: NodePath, comment: string): boolean {
