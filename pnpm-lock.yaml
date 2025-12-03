@@ -1062,6 +1062,9 @@ importers:
       '@sanity/template-validator':
         specifier: ^2.4.3
         version: 2.4.3
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -1080,9 +1083,6 @@ importers:
       get-latest-version:
         specifier: ^5.1.0
         version: 5.1.0(debug@4.4.3)
-      groq-js:
-        specifier: ^1.23.0
-        version: 1.23.0
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1285,6 +1285,9 @@ importers:
       '@babel/types':
         specifier: ^7.28.5
         version: 7.28.5
+      '@sanity/worker-channels':
+        specifier: ^1.1.0
+        version: 1.1.0
       debug:
         specifier: ^4.4.3
         version: 4.4.3(supports-color@8.1.1)
@@ -1300,6 +1303,9 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
+      reselect:
+        specifier: ^5.1.1
+        version: 5.1.1
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -5824,6 +5830,10 @@ packages:
         optional: true
       svelte:
         optional: true
+
+  '@sanity/worker-channels@1.1.0':
+    resolution: {integrity: sha512-25SS2RuQFRLZ8STlW7fdxb7vvxMWhryh3tY2ADQaZiaQt1r57GZgeMma85AG0mSesaMvFL1ndO+XiBOFHBHSmg==}
+    engines: {node: '>=18.2'}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -17274,6 +17284,8 @@ snapshots:
       - debug
       - sanity
       - typescript
+
+  '@sanity/worker-channels@1.1.0': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 

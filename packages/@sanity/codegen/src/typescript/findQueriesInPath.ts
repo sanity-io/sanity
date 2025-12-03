@@ -5,21 +5,16 @@ import createDebug from 'debug'
 import glob from 'globby'
 
 import {getBabelConfig} from '../getBabelConfig'
-import {type NamedQueryResult} from './expressionResolvers'
 import {findQueriesInSource} from './findQueriesInSource'
 import {getResolver} from './moduleResolver'
+import {type ExtractedModule, QueryExtractionError} from './types'
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
-type ResultQueries = {
-  type: 'queries'
-  filename: string
-  queries: NamedQueryResult[]
-}
-type ResultError = {
-  type: 'error'
-  error: Error
-  filename: string
+interface FindQueriesInPathOptions {
+  path: string | string[]
+  babelOptions?: TransformOptions
+  resolver?: NodeJS.RequireResolve
 }
 
 /**
@@ -31,15 +26,11 @@ type ResultError = {
  * @beta
  * @internal
  */
-export async function* findQueriesInPath({
+export function findQueriesInPath({
   path,
   babelOptions = getBabelConfig(),
   resolver = getResolver(),
-}: {
-  path: string | string[]
-  babelOptions?: TransformOptions
-  resolver?: NodeJS.RequireResolve
-}): AsyncGenerator<ResultQueries | ResultError> {
+}: FindQueriesInPathOptions): {files: string[]; queries: AsyncIterable<ExtractedModule>} {
   const queryNames = new Set()
   // Holds all query names found in the source files
   debug(`Globing ${path}`)
@@ -52,28 +43,38 @@ export async function* findQueriesInPath({
     })
     .sort()
 
-  for (const filename of files) {
-    if (typeof filename !== 'string') {
-      continue
-    }
-
-    debug(`Found file "${filename}"`)
-    try {
-      const source = await fs.readFile(filename, 'utf8')
-      const queries = findQueriesInSource(source, filename, babelOptions, resolver)
-      // Check and error on duplicate query names, because we can't generate types with the same name.
-      for (const query of queries) {
-        if (queryNames.has(query.name)) {
-          throw new Error(
-            `Duplicate query name found: "${query.name}". Query names must be unique across all files.`,
-          )
-        }
-        queryNames.add(query.name)
+  async function* getQueries(): AsyncGenerator<ExtractedModule> {
+    for (const filename of files) {
+      if (typeof filename !== 'string') {
+        continue
       }
-      yield {type: 'queries', filename, queries}
-    } catch (error) {
-      debug(`Error in file "${filename}"`, error)
-      yield {type: 'error', error, filename}
+
+      debug(`Found file "${filename}"`)
+      try {
+        const source = await fs.readFile(filename, 'utf8')
+        const pluckedModuleResult = findQueriesInSource(source, filename, babelOptions, resolver)
+        // Check and error on duplicate query names, because we can't generate types with the same name.
+        for (const {variable} of pluckedModuleResult.queries) {
+          if (queryNames.has(variable.id.name)) {
+            throw new Error(
+              `Duplicate query name found: "${variable.id.name}". Query names must be unique across all files.`,
+            )
+          }
+          queryNames.add(variable.id.name)
+        }
+
+        yield pluckedModuleResult
+      } catch (cause) {
+        debug(`Error in file "${filename}"`, cause)
+
+        yield {
+          filename,
+          queries: [],
+          errors: [new QueryExtractionError({cause, filename})],
+        }
+      }
     }
   }
+
+  return {files, queries: getQueries()}
 }
