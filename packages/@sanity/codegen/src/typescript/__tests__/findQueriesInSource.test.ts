@@ -23,15 +23,12 @@ describe('findQueries with the groq template', () => {
       const res = sanity.fetch(postQuery);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.name).toEqual('postQuery')
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
-      expect(queryResult?.location).toStrictEqual({
-        end: {line: 3, column: 50, index: 86},
-        start: {line: 3, column: 12, index: 48},
-      })
+      expect(queryResult?.variable.id.name).toEqual('postQuery')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
+      expect(queryResult?.variable).toMatchObject({start: 48, end: 86})
     })
 
     test('with variables', () => {
@@ -42,14 +39,11 @@ describe('findQueries with the groq template', () => {
       const res = sanity.fetch(authorQuery);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
-      expect(queryResult?.location).toStrictEqual({
-        end: {line: 4, column: 53, index: 118},
-        start: {line: 4, column: 12, index: 77},
-      })
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
+      expect(queryResult?.variable).toMatchObject({start: 77, end: 118})
     })
 
     test('with function', () => {
@@ -60,11 +54,10 @@ describe('findQueries with the groq template', () => {
       const res = sanity.fetch(query);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      const queryResult = queries[0]
-
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
 
     test('with function with literal parameters', () => {
@@ -75,11 +68,10 @@ describe('findQueries with the groq template', () => {
       const res = sanity.fetch(query);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      const queryResult = queries[0]
-
-      expect(queryResult?.result).toEqual('*[_type == "author2"]')
+      expect(queryResult?.query).toEqual('*[_type == "author2"]')
     })
 
     test('with block comment', () => {
@@ -90,10 +82,10 @@ describe('findQueries with the groq template', () => {
         const res = sanity.fetch(query);
       `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
   })
 
@@ -103,7 +95,7 @@ describe('findQueries with the groq template', () => {
         const res = sanity.fetch(groq\`*[_type == "author"]\`);
       `
 
-    const queries = findQueriesInSource(source, 'test.ts')
+    const {queries} = findQueriesInSource(source, 'test.ts')
 
     expect(queries.length).toBe(0)
   })
@@ -115,9 +107,10 @@ describe('findQueries with the groq template', () => {
       const postQuery = groq\`*[_type == "\${foo}"]\`
       const res = sanity.fetch(postQueryResult);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo"]')
   })
 
   test('should import, subdirectory', () => {
@@ -127,9 +120,10 @@ describe('findQueries with the groq template', () => {
       const postQuery = groq\`*[_type == "\${foo}"]\`
       const res = sanity.fetch(postQueryResult);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo"]')
   })
 
   test('can import sequence of files', () => {
@@ -138,9 +132,10 @@ describe('findQueries with the groq template', () => {
       import {query}  from "../__tests__/fixtures/importSeq1";
       const someQuery = groq\`$\{query}\`
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo bar"]')
   })
 
   test('can import deeply nested files', () => {
@@ -149,9 +144,9 @@ describe('findQueries with the groq template', () => {
       import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
       const someQuery = groq\`$\{query}\`
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('* { foo, bar }')
+    expect(queries[0].query).toBe('* { foo, bar }')
   })
 
   test('can import from export *', () => {
@@ -161,9 +156,10 @@ describe('findQueries with the groq template', () => {
       const postQuery = groq\`*[_type == "\${foo}"]\`
       const res = sanity.fetch(postQueryResult);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo"]')
   })
 
   test('will ignore declarations with ignore tag', () => {
@@ -174,7 +170,7 @@ describe('findQueries with the groq template', () => {
       const postQuery = groq\`*[_type == "foo"]\`
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -186,7 +182,7 @@ describe('findQueries with the groq template', () => {
       export const postQuery = groq\`*[_type == "foo"]\`
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -199,11 +195,11 @@ describe('findQueries with the groq template', () => {
       export const postQuery = groq\`*[_type == "foo"]\`
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
-  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+  test('will ignore declarations if any of the leading comments are ignore tags', () => {
     const source = `
       import { groq } from "groq";
 
@@ -212,7 +208,7 @@ describe('findQueries with the groq template', () => {
       export const postQuery = groq\`*[_type == "foo"]\`
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 })
@@ -226,10 +222,10 @@ describe('findQueries with defineQuery', () => {
       const res = sanity.fetch(postQuery);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual("*[_type == 'author']")
+      expect(queryResult?.query).toEqual("*[_type == 'author']")
     })
 
     test('template string', () => {
@@ -239,10 +235,10 @@ describe('findQueries with defineQuery', () => {
       const res = sanity.fetch(postQuery);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
 
     test('with variables', () => {
@@ -253,10 +249,10 @@ describe('findQueries with defineQuery', () => {
       const res = sanity.fetch(authorQuery);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
 
     test('with function', () => {
@@ -267,11 +263,10 @@ describe('findQueries with defineQuery', () => {
       const res = sanity.fetch(query);
     `
 
-      const queries = findQueriesInSource(source, 'test.ts')
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      const queryResult = queries[0]
-
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
 
     test('with block comment', () => {
@@ -282,10 +277,10 @@ describe('findQueries with defineQuery', () => {
         const res = sanity.fetch(query);
       `
 
-      const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries[0]
+      const {queries} = findQueriesInSource(source, 'test.ts')
+      const [queryResult] = queries
 
-      expect(queryResult?.result).toEqual('*[_type == "author"]')
+      expect(queryResult?.query).toEqual('*[_type == "author"]')
     })
   })
 
@@ -295,7 +290,7 @@ describe('findQueries with defineQuery', () => {
         const res = sanity.fetch(defineQuery(\`*[_type == "author"]\`));
       `
 
-    const queries = findQueriesInSource(source, 'test.ts')
+    const {queries} = findQueriesInSource(source, 'test.ts')
 
     expect(queries.length).toBe(0)
   })
@@ -307,9 +302,10 @@ describe('findQueries with defineQuery', () => {
       const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
       const res = sanity.fetch(postQueryResult);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo"]')
   })
 
   test('should import, subdirectory', () => {
@@ -319,9 +315,10 @@ describe('findQueries with defineQuery', () => {
       const postQuery = defineQuery(\`*[_type == "\${foo}"]\`);
       const res = sanity.fetch(postQueryResult);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo"]')
   })
 
   test('can import sequence of files', () => {
@@ -330,9 +327,10 @@ describe('findQueries with defineQuery', () => {
       import {query}  from "../__tests__/fixtures/importSeq1";
       const someQuery = defineQuery(\`$\{query}\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo bar"]')
   })
 
   test('can import deeply nested files', () => {
@@ -341,9 +339,9 @@ describe('findQueries with defineQuery', () => {
       import {query}  from "../__tests__/fixtures/deeplyNestedImports/root";
       const someQuery = defineQuery(\`$\{query}\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('* { foo, bar }')
+    expect(queries[0].query).toBe('* { foo, bar }')
   })
 
   test('should detect defineQuery calls that have been required', () => {
@@ -352,9 +350,10 @@ describe('findQueries with defineQuery', () => {
       import {query}  from "../__tests__/fixtures/importSeq1";
       const someQuery = defineQuery(\`$\{query}\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
-    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+    const [queryResult] = queries
+    expect(queryResult?.query).toBe('*[_type == "foo bar"]')
   })
 
   test('will ignore declarations with ignore tag', () => {
@@ -365,7 +364,7 @@ describe('findQueries with defineQuery', () => {
       const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -377,7 +376,7 @@ describe('findQueries with defineQuery', () => {
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -390,11 +389,11 @@ describe('findQueries with defineQuery', () => {
       export const postQuery = groq\`*[_type == "foo"]\`
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
-  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+  test('will ignore declarations if any of the leading comments are ignore tags', () => {
     const source = `
       import {defineQuery} from "groq";
 
@@ -403,7 +402,7 @@ describe('findQueries with defineQuery', () => {
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
 
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -412,7 +411,7 @@ describe('findQueries with defineQuery', () => {
       import {defineQuery} from "another-module";
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -421,7 +420,7 @@ describe('findQueries with defineQuery', () => {
       const {defineQuery} = require("another-module");
       export const postQuery = defineQuery(\`*[_type == "foo"]\`);
     `
-    const queries = findQueriesInSource(source, __filename, undefined)
+    const {queries} = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
 
@@ -432,11 +431,11 @@ describe('findQueries with defineQuery', () => {
     const res = sanity.fetch(postQuery);
   `
 
-    const queries = findQueriesInSource(source, 'test.ts')
+    const {queries} = findQueriesInSource(source, 'test.ts')
     expect(queries.length).toBe(1)
-    const queryResult = queries[0]
+    const [queryResult] = queries
 
-    expect(queryResult?.result).toEqual("*[_type == 'author']")
+    expect(queryResult?.query).toEqual("*[_type == 'author']")
   })
 
   test('wont import from other package names', () => {
@@ -446,7 +445,7 @@ describe('findQueries with defineQuery', () => {
     const res = sanity.fetch(postQuery);
   `
 
-    const queries = findQueriesInSource(source, 'test.ts')
+    const {queries} = findQueriesInSource(source, 'test.ts')
     expect(queries.length).toBe(0)
   })
 })
