@@ -94,8 +94,8 @@ export interface BaseInputProps {
 export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType,
-> extends BaseInputProps,
-    Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -193,8 +193,8 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -334,8 +334,8 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -455,8 +455,7 @@ export interface ComplexElementProps {
  * @hidden
  * @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends BaseInputProps,
-    Omit<StringFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<StringFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -472,8 +471,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
  * @hidden
  * @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends BaseInputProps,
-    Omit<NumberFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<NumberFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -489,8 +487,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
  * @hidden
  * @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BaseInputProps,
-    Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -521,8 +518,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
  *
  * @public
  * */
-export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
+  PortableTextBlock,
+  ArraySchemaType<PortableTextBlock>
+> {
   /**
    * A React Ref that can reference the underlying editor instance
    */
