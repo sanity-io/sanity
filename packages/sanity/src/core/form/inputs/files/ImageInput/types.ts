@@ -32,8 +32,10 @@ export interface BaseImageInputValue extends Partial<BaseImage> {
 /**
  * @hidden
  * @beta */
-export interface BaseImageInputProps
-  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
+export interface BaseImageInputProps extends ObjectInputProps<
+  BaseImageInputValue,
+  ImageSchemaType
+> {
   assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder
