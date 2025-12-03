@@ -141,9 +141,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
   renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
     const {schemaType} = this.props
     const sortable = schemaType.options?.sortable !== false
-    return (
-      <ItemRow key={props.inputId} {...props} sortable={sortable} insertableTypes={schemaType.of} />
-    )
+    return <ItemRow {...props} sortable={sortable} insertableTypes={schemaType.of} />
   }
 
   render() {

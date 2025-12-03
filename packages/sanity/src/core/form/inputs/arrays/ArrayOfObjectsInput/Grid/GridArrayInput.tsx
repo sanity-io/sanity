@@ -44,7 +44,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
     // todo: consider using a different item component for references
-    return <GridItem key={itemProps.inputId} {...itemProps} />
+    return <GridItem {...itemProps} />
   }, [])
 
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])
