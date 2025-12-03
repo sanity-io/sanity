@@ -18,7 +18,7 @@ import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/Ass
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {MemberDecoration} from '../../../members/object/MemberDecoration'
-import {useRenderMembers} from '../../../members/object/useRenderMembets'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'

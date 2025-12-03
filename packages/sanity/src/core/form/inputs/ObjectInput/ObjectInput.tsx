@@ -6,7 +6,7 @@ import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ObjectInputMembers} from '../../members'
-import {useRenderMembers} from '../../members/object/useRenderMembets'
+import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
