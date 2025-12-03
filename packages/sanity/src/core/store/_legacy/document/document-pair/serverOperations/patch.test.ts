@@ -86,6 +86,204 @@ describe('patch', () => {
           },
         },
       ])
+
+      expect(publishedMutate).not.toHaveBeenCalled()
+      expect(versionMutate).not.toHaveBeenCalled()
+    })
+  })
+  describe("draft doesn't exist, create when editing", () => {
+    it('Published document exists', () => {
+      const client = createMockSanityClient() as unknown as SanityClient
+
+      const idPair: IdPair = {
+        draftId: 'drafts.my-id',
+        publishedId: 'my-id',
+      }
+
+      const pair = checkoutPair(client, idPair, of(true))
+      const versionMutate = vi.fn()
+      const draftMutate = vi.fn()
+      const publishedMutate = vi.fn()
+
+      if (typeof pair.version !== 'undefined') {
+        pair.version.mutate = versionMutate
+      }
+
+      pair.draft.mutate = draftMutate
+      pair.published.mutate = publishedMutate
+      patch.execute(
+        {
+          client,
+          idPair,
+          typeName: 'example',
+          snapshots: {
+            draft: null,
+            published: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'exampleRev',
+              _id: 'my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+              newValue: 'hey',
+            },
+          },
+          serverActionsEnabled: true,
+          ...pair,
+        } as unknown as OperationArgs,
+        [
+          {
+            unset: ['newValue'],
+          },
+        ],
+      )
+
+      expect(draftMutate).toHaveBeenCalledTimes(2)
+
+      expect(draftMutate).toHaveBeenNthCalledWith(1, [
+        {
+          createIfNotExists: {
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _id: 'drafts.my-id',
+            _type: 'example',
+            newValue: 'hey',
+          },
+        },
+      ])
+      expect(draftMutate).toHaveBeenNthCalledWith(2, [
+        {
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['newValue'],
+          },
+        },
+      ])
+
+      expect(publishedMutate).not.toHaveBeenCalled()
+      expect(versionMutate).not.toHaveBeenCalled()
+    })
+    it('No published document, has initial value', () => {
+      const client = createMockSanityClient() as unknown as SanityClient
+
+      const idPair: IdPair = {
+        draftId: 'drafts.my-id',
+        publishedId: 'my-id',
+      }
+
+      const pair = checkoutPair(client, idPair, of(true))
+      const versionMutate = vi.fn()
+      const draftMutate = vi.fn()
+      const publishedMutate = vi.fn()
+
+      if (typeof pair.version !== 'undefined') {
+        pair.version.mutate = versionMutate
+      }
+
+      pair.draft.mutate = draftMutate
+      pair.published.mutate = publishedMutate
+      patch.execute(
+        {
+          client,
+          idPair,
+          typeName: 'example',
+          snapshots: {
+            draft: null,
+            published: null,
+          },
+          serverActionsEnabled: true,
+          ...pair,
+        } as unknown as OperationArgs,
+        [
+          {
+            unset: ['newValue'],
+          },
+        ],
+        {
+          _type: 'example',
+          newValue: 'hey',
+        },
+      )
+
+      expect(draftMutate).toHaveBeenCalledTimes(2)
+
+      expect(draftMutate).toHaveBeenNthCalledWith(1, [
+        {
+          create: {
+            _id: 'drafts.my-id',
+            _type: 'example',
+            newValue: 'hey',
+          },
+        },
+      ])
+      expect(draftMutate).toHaveBeenNthCalledWith(2, [
+        {
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['newValue'],
+          },
+        },
+      ])
+
+      expect(publishedMutate).not.toHaveBeenCalled()
+      expect(versionMutate).not.toHaveBeenCalled()
+    })
+    it('No published document, has initial value', () => {
+      const client = createMockSanityClient() as unknown as SanityClient
+
+      const idPair: IdPair = {
+        draftId: 'drafts.my-id',
+        publishedId: 'my-id',
+      }
+
+      const pair = checkoutPair(client, idPair, of(true))
+      const versionMutate = vi.fn()
+      const draftMutate = vi.fn()
+      const publishedMutate = vi.fn()
+
+      if (typeof pair.version !== 'undefined') {
+        pair.version.mutate = versionMutate
+      }
+
+      pair.draft.mutate = draftMutate
+      pair.published.mutate = publishedMutate
+      patch.execute(
+        {
+          client,
+          idPair,
+          typeName: 'example',
+          snapshots: {
+            draft: null,
+            published: null,
+          },
+          serverActionsEnabled: true,
+          ...pair,
+        } as unknown as OperationArgs,
+        [
+          {
+            unset: ['newValue'],
+          },
+        ],
+        undefined,
+      )
+
+      expect(draftMutate).toHaveBeenCalledTimes(2)
+
+      expect(draftMutate).toHaveBeenNthCalledWith(1, [
+        {
+          create: {
+            _id: 'drafts.my-id',
+            _type: 'example',
+          },
+        },
+      ])
+      expect(draftMutate).toHaveBeenNthCalledWith(2, [
+        {
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['newValue'],
+          },
+        },
+      ])
+
       expect(publishedMutate).not.toHaveBeenCalled()
       expect(versionMutate).not.toHaveBeenCalled()
     })
