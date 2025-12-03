@@ -1,5 +1,6 @@
 import {writeFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -11,7 +12,7 @@ import {
 } from '../../threads/extractSchema'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
-const __dirname = dirname(new URL(import.meta.url).pathname)
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 interface ExtractFlags {
   'workspace'?: string

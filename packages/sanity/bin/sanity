@@ -5,8 +5,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import readPkgUp from 'read-pkg-up'
 import {createRequire} from 'node:module'
+import {fileURLToPath} from 'node:url'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
 const require = createRequire(import.meta.url)
 

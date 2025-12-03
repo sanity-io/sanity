@@ -1,5 +1,6 @@
 import {writeFileSync} from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -13,7 +14,7 @@ import {
 import {formatSchemaValidation, getAggregatedSeverity} from './formatSchemaValidation'
 import {generateMetafile} from './metafile'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 interface ValidateFlags {
   'workspace'?: string

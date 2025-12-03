@@ -10,7 +10,7 @@ import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
 const __filename = fileURLToPath(import.meta.url)
-const require = createRequire(__filename)
+const require = createRequire(import.meta.url)
 
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'

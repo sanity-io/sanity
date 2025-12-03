@@ -1,3 +1,4 @@
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {describe, expect, test} from 'vitest'
@@ -10,7 +11,7 @@ function getImportWorker(importName: string) {
     importName,
   }
 
-  const filepath = new URL('./themerImportWorker.ts', import.meta.url).pathname
+  const filepath = fileURLToPath(new URL('./themerImportWorker.ts', import.meta.url))
 
   const worker = new Worker(
     `

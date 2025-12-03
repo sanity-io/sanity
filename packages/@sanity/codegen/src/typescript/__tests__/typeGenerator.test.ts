@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {
   createReferenceTypeNode,
@@ -14,7 +15,7 @@ import {describe, expect, test} from 'vitest'
 import {readSchema} from '../../readSchema'
 import {TypeGenerator} from '../typeGenerator'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('generateSchemaTypes', () => {
   test('should generate TypeScript type declarations for a schema', async () => {
