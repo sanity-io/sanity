@@ -27,8 +27,32 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
     await expect(input).toBeEnabled()
     await input.click()
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+
+    await input.fill('Test')
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+
+  test(`opening - when clicking the internationalized array string field, and click the next one, the modal should not open`, async ({
+    page,
+  }) => {
+    const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
+    await expect(input).toBeVisible()
+    await expect(input).toBeEnabled()
+    await input.click()
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
     await input.fill('Test')
 
+    await page.getByRole('button', {name: 'FR'}).click()
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+
+    const inputFr = page.getByTestId('field-greeting[_key=="fr"].value').getByTestId('string-input')
+    await expect(inputFr).toBeVisible()
+    await expect(inputFr).toBeEnabled()
+    await inputFr.click()
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+
+    await inputFr.fill('Test but in french')
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
   })
 
