@@ -27,8 +27,12 @@ test.describe('Enhanced Object Dialog - open and close', () => {
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+      .fill('Blue, the whale')
 
+    await page.getByRole('button', {name: 'Close dialog'}).click()
     await expect(modal).not.toBeVisible()
   })
 })

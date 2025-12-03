@@ -281,22 +281,6 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
 
     const isMarksDefinition = openPath[openPath.length - 2] === 'markDefs'
 
-    /*
-     * This is a workaround to prevent the dialog from being built
-     * When a user has potentially clicked a button which creates inputs with the specific path
-     * (think internationalizedArrayString where clicking a button creates an input with the path "en.value")
-     * So, if an element exists in the dom with the updated path then it means
-     * A input exists with the updated path and we don't want to build the dialog
-     */
-    if (openPathChanged) {
-      const elementExists = document.getElementById(`${pathToString(openPath)}`)
-      /**
-       * if an element exists in the dom with the updated path then it means
-       * a input exists with the updated path
-       */
-      if (elementExists) return undefined
-    }
-
     // If the value has not changed but the openPath has changed, or
     // if it is the initial render, build the tree editing state
     // without debouncing. We do this to make sure that the UI is
