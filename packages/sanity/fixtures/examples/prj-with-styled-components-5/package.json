@@ -1,9 +1,0 @@
-{
-  "name": "prj-with-styled-components-5",
-  "private": true,
-  "dependencies": {
-    "react": "catalog:react18",
-    "react-dom": "catalog:react18",
-    "styled-components": "^5.3.0"
-  }
-}
