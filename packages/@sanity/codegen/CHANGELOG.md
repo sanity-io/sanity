@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.22.0 ([#11366](https://github.com/sanity-io/sanity/issues/11366)) ([6976b77](https://github.com/sanity-io/sanity/commit/6976b77295f0959abc588fe24dbd45e246d4b217)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* ERR_REQUIRE_CYCLE_MODULE on older node, and windows resolve regression ([#11385](https://github.com/sanity-io/sanity/issues/11385)) ([bfaa1c7](https://github.com/sanity-io/sanity/commit/bfaa1c7710e4d0c2f422689ca107a7f84c37c763)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* handle asset as array member with enforce required fields ([#11370](https://github.com/sanity-io/sanity/issues/11370)) ([6cb181b](https://github.com/sanity-io/sanity/commit/6cb181b4a9f0bc64ed0c4991a3b2eb9bc6c6054f)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
 
 **Note:** Version bump only for package @sanity/codegen
