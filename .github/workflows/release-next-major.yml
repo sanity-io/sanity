@@ -1,17 +1,17 @@
-name: Release @canary
+name: Release @next-major
 
 on:
   push:
     branches:
-      - canary
+      - next-major
 
 permissions:
   contents: read # for checkout
 
 jobs:
-  release-canary:
+  release-next-major:
     concurrency:
-      group: release_canary
+      group: release_next_major
 
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
@@ -27,7 +27,7 @@ jobs:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
-      # Publish packages to npm under the `canary` tag on new commits to the canary branch.
+      # Publish packages to npm under the `next-major` tag on new commits to the next-major branch.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
@@ -40,7 +40,7 @@ jobs:
       - name: Install deps
         run: pnpm install --ignore-scripts
 
-      - name: Bump canary versions
+      - name: Bump with conventional commits
         # Note: ubuntu-latest ships with lerna installed on the system
         # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
         # It's important that we call lerna using npx in the command below so we get the
@@ -49,7 +49,7 @@ jobs:
           npx lerna version \
             --conventional-commits \
             --conventional-prerelease \
-            --preid=canary \
+            --preid=next-major \
             --force-publish \
             --no-git-tag-version \
             --exact \
@@ -106,6 +106,6 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        run: pnpm -r publish --tag canary --no-git-checks
+        run: pnpm -r publish --tag next-major --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
