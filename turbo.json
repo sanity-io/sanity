@@ -71,7 +71,7 @@
     "SANITY_AUTH_TOKEN"
   ],
   "globalDependencies": [
-    ".npmrc",
+    "pnpm-workspace.yaml",
     ".oxlintrc.json",
     "lerna.json"
   ],
