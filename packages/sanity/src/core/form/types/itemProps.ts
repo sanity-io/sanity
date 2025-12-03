@@ -35,8 +35,6 @@ export type ObjectItem = {
 export interface BaseItemProps<T> extends NodeDiffProps<ProvenanceDiffAnnotation> {
   /** The schema type of the item. */
   schemaType: SchemaType
-  /** The key of the item. */
-  key: string
   /** The index of the item. */
   index: number
   /** The level of the item. */
