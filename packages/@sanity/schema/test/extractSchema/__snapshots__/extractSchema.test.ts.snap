@@ -4603,6 +4603,327 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
 ]
 `;
 
+exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1`] = `
+{
+  "attributes": {
+    "_createdAt": {
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+      },
+    },
+    "_id": {
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+      },
+    },
+    "_rev": {
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+      },
+    },
+    "_type": {
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+        "value": "book",
+      },
+    },
+    "_updatedAt": {
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+      },
+    },
+    "assetRequiredFileRuleSpec": {
+      "optional": false,
+      "type": "objectAttribute",
+      "value": {
+        "attributes": {
+          "_type": {
+            "type": "objectAttribute",
+            "value": {
+              "type": "string",
+              "value": "file",
+            },
+          },
+          "asset": {
+            "optional": false,
+            "type": "objectAttribute",
+            "value": {
+              "attributes": {
+                "_ref": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "reference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "dereferencesTo": "sanity.fileAsset",
+              "type": "object",
+            },
+          },
+          "media": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "type": "unknown",
+            },
+          },
+        },
+        "type": "object",
+      },
+    },
+    "assetRequiredImage": {
+      "optional": false,
+      "type": "objectAttribute",
+      "value": {
+        "attributes": {
+          "_type": {
+            "type": "objectAttribute",
+            "value": {
+              "type": "string",
+              "value": "image",
+            },
+          },
+          "asset": {
+            "optional": false,
+            "type": "objectAttribute",
+            "value": {
+              "attributes": {
+                "_ref": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "reference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "dereferencesTo": "sanity.imageAsset",
+              "type": "object",
+            },
+          },
+          "crop": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "name": "sanity.imageCrop",
+              "type": "inline",
+            },
+          },
+          "hotspot": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "name": "sanity.imageHotspot",
+              "type": "inline",
+            },
+          },
+          "media": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "type": "unknown",
+            },
+          },
+        },
+        "type": "object",
+      },
+    },
+    "logos": {
+      "optional": false,
+      "type": "objectAttribute",
+      "value": {
+        "of": {
+          "attributes": {
+            "_type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+                "value": "definedImageInArray",
+              },
+            },
+            "asset": {
+              "optional": false,
+              "type": "objectAttribute",
+              "value": {
+                "attributes": {
+                  "_ref": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                  "_type": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                      "value": "reference",
+                    },
+                  },
+                  "_weak": {
+                    "optional": true,
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean",
+                    },
+                  },
+                },
+                "dereferencesTo": "sanity.imageAsset",
+                "type": "object",
+              },
+            },
+            "crop": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "name": "sanity.imageCrop",
+                "type": "inline",
+              },
+            },
+            "hotspot": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "name": "sanity.imageHotspot",
+                "type": "inline",
+              },
+            },
+            "media": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "unknown",
+              },
+            },
+          },
+          "rest": {
+            "attributes": {
+              "_key": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+            },
+            "type": "object",
+          },
+          "type": "object",
+        },
+        "type": "array",
+      },
+    },
+    "requiredImage": {
+      "optional": false,
+      "type": "objectAttribute",
+      "value": {
+        "attributes": {
+          "_type": {
+            "type": "objectAttribute",
+            "value": {
+              "type": "string",
+              "value": "image",
+            },
+          },
+          "asset": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "attributes": {
+                "_ref": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "reference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "dereferencesTo": "sanity.imageAsset",
+              "type": "object",
+            },
+          },
+          "crop": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "name": "sanity.imageCrop",
+              "type": "inline",
+            },
+          },
+          "hotspot": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "name": "sanity.imageHotspot",
+              "type": "inline",
+            },
+          },
+          "media": {
+            "optional": true,
+            "type": "objectAttribute",
+            "value": {
+              "type": "unknown",
+            },
+          },
+        },
+        "type": "object",
+      },
+    },
+    "title": {
+      "optional": true,
+      "type": "objectAttribute",
+      "value": {
+        "type": "string",
+      },
+    },
+  },
+  "name": "book",
+  "type": "document",
+}
+`;
+
 exports[`Extract schema test > inline reference types works 1`] = `
 [
   {
