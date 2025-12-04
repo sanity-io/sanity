@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+### Bug Fixes
+
+* `traverse is not a function` error ([#11391](https://github.com/sanity-io/sanity/issues/11391)) ([e4ea395](https://github.com/sanity-io/sanity/commit/e4ea395c228e4bebcdfe55eb7209c908951ae235)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
 
 ### Bug Fixes
