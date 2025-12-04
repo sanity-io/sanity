@@ -1,12 +1,22 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 import fs from 'node:fs'
+import {createRequire} from 'node:module'
 import path from 'node:path'
 
 import {type TransformOptions} from '@babel/core'
-import traverse, {Scope} from '@babel/traverse'
+import {Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
 
 import {parseSourceFile} from './parseSource'
+
+const require = createRequire(import.meta.url)
+
+// @babel/traverse is a CJS module masquerading as an ESM module,
+// doing a `import traverse from '@babel/traverse'` causes problems,
+// and using require('@babel/traverse') allows it to work consistently regardless of host env
+// oxlint-disable-next-line no-unsafe-type-assertion
+const traverse = require('@babel/traverse').default as typeof import('@babel/traverse').default
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
