@@ -71,6 +71,7 @@ minimumReleaseAgeExclude:
   - '@types/*'
   - '@typescript/*'
   - csstype
+  - 'get-it'
   - 'groq-js'
   - 'oxlint'
   - 'oxlint-tsgolint'
