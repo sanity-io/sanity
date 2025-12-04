@@ -316,8 +316,8 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            <DialogStackProvider>
-              <FullscreenPTEProvider>
+            <FullscreenPTEProvider>
+              <DialogStackProvider>
                 {/** The id 'root' is always attributed to being in a document,
                  * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
                 <EnhancedObjectDialogProvider isDialogAvailable={id === 'root'}>
@@ -328,8 +328,8 @@ export function FormBuilder(props: FormBuilderProps) {
                     renderInput={renderInput}
                   />
                 </EnhancedObjectDialogProvider>
-              </FullscreenPTEProvider>
-            </DialogStackProvider>
+              </DialogStackProvider>
+            </FullscreenPTEProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
