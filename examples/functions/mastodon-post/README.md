@@ -8,7 +8,7 @@ Content teams want to automatically share their published articles on Mastodon t
 
 ## Solution
 
-This Sanity Function automatically posts to Mastodon when a post is created with the `mastodonPost` field defined using the `@humanwhocodes/crosspost` library. When a new post with a `mastodonPost` field is published, the function creates a Mastodon post containing the title, mastodonPost, and slug, helping maintain consistent presence across decentralized social networks.
+This Sanity Function automatically posts to Mastodon when you publish a new post with the `mastodonPost` field defined using the `@humanwhocodes/crosspost` library. The function creates a Mastodon post containing the title, mastodonPost, and slug, helping maintain consistent presence across decentralized social networks.
 
 ## Benefits
 

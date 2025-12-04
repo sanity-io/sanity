@@ -8,7 +8,7 @@ Content teams want to automatically share their published articles on Bluesky to
 
 ## Solution
 
-This Sanity Function automatically posts to Bluesky when a post is created with the `blueskyPost` field defined using the `@humanwhocodes/crosspost` library. When a new post with a `blueskyPost` field is published, the function creates a Bluesky post containing the title, summary, and slug, helping maintain consistent social media presence without manual effort.
+This Sanity Function automatically posts to Bluesky when you publish a new post with the `blueskyPost` field defined using the `@humanwhocodes/crosspost` library. The function creates a Bluesky post containing the title, summary, and slug, helping maintain consistent social media presence without manual effort.
 
 ## Benefits
 
