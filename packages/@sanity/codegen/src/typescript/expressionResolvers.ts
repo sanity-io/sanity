@@ -1,17 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {type TransformOptions} from '@babel/core'
+import {type TransformOptions, traverse} from '@babel/core'
 import {Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
 
 import {parseSourceFile} from './parseSource'
-
-// @babel/traverse is a CJS module masquerading as an ESM module,
-// doing a `import traverse from '@babel/traverse'` causes problems,
-// and using await import('@babel/traverse') allows it to work consistently regardless of host env
-const {default: traverse} = await import('@babel/traverse')
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
