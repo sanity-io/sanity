@@ -23,6 +23,7 @@ import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
+import {EditPortal} from '../../../components/EditPortal'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
@@ -55,7 +56,6 @@ import {
   TooltipBox,
 } from './BlockObject.styles'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
-import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface BlockObjectProps extends PropsWithChildren {
   floatingBoundary: HTMLElement | null
@@ -443,18 +443,17 @@ export const DefaultBlockObjectComponent = (
        * In situations where we are using the new nested method, we do not want to show this object edit modal.
        * However, in cases where we aren't, the old modal needs to work as expected
        */}
-      {open && !shouldUseEnhancedDialog && (
-        <ObjectEditModal
-          floatingBoundary={__unstable_floatingBoundary}
-          defaultType="dialog"
+      {open && (
+        <EditPortal
+          type="dialog"
+          id={value._key}
           onClose={onClose}
-          autoFocus
-          schemaType={schemaType}
-          referenceBoundary={__unstable_referenceBoundary}
-          referenceElement={__unstable_referenceElement}
+          autofocus={focused}
+          header={schemaType.title || ''}
+          width={1}
         >
           {children}
-        </ObjectEditModal>
+        </EditPortal>
       )}
     </>
   )

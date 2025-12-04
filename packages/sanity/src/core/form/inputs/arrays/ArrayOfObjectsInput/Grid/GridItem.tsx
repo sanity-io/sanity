@@ -98,7 +98,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   // The edit portal should open if the item is open and:
   // - EnhancedObjectDialog is disabled
   // - the EnhancedObjectDialog is not available
-  const openPortal = open && !shouldUseEnhancedDialog
+  const openPortal = open
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of

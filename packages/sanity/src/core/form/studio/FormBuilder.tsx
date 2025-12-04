@@ -37,14 +37,11 @@ import {
   type ObjectInputProps,
   type RenderPreviewCallbackProps,
 } from '../types'
+import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {
-  EnhancedObjectDialog,
-  EnhancedObjectDialogProvider,
-  useEnhancedObjectDialog,
-} from './tree-editing'
+import {EnhancedObjectDialogProvider, useEnhancedObjectDialog} from './tree-editing'
 
 /**
  * @alpha
@@ -319,18 +316,20 @@ export function FormBuilder(props: FormBuilderProps) {
       <GetFormValueProvider value={value}>
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
-            <FullscreenPTEProvider>
-              {/** The id 'root' is always attributed to being in a document,
-               * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
-              <EnhancedObjectDialogProvider isDialogAvailable={id === 'root'}>
-                <RootInput
-                  rootInputProps={rootInputProps}
-                  onPathOpen={onPathOpen}
-                  openPath={openPath}
-                  renderInput={renderInput}
-                />
-              </EnhancedObjectDialogProvider>
-            </FullscreenPTEProvider>
+            <DialogStackProvider>
+              <FullscreenPTEProvider>
+                {/** The id 'root' is always attributed to being in a document,
+                 * if there is not root then it means it's outside of the document and so it doesn't have access to the dialog */}
+                <EnhancedObjectDialogProvider isDialogAvailable={id === 'root'}>
+                  <RootInput
+                    rootInputProps={rootInputProps}
+                    onPathOpen={onPathOpen}
+                    openPath={openPath}
+                    renderInput={renderInput}
+                  />
+                </EnhancedObjectDialogProvider>
+              </FullscreenPTEProvider>
+            </DialogStackProvider>
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
@@ -349,15 +348,7 @@ function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
-  const arrayEditingModal = enhancedObjectDialogEnabled && (
-    <EnhancedObjectDialog
-      onPathFocus={rootInputProps.onPathFocus}
-      onPathOpen={onPathOpen}
-      openPath={openPath}
-      rootInputProps={rootInputProps}
-      schemaType={rootInputProps.schemaType}
-    />
-  )
+  const arrayEditingModal = undefined
 
   return renderInput({
     ...rootInputProps,
