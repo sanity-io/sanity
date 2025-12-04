@@ -40,6 +40,12 @@ function extractAnnotationForFromInput(
     return annotationForTransactionIndex(transactions, meta.transactionIndex + 1, meta.event)
   }
 
+  // Fallback: if meta is null, the value existed initially and was changed/removed
+  // by the first transaction in our range
+  if (transactions.length > 0) {
+    return annotationForTransactionIndex(transactions, 0)
+  }
+
   return null
 }
 function extractAnnotationForToInput(
