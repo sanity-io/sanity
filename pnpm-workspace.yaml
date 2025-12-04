@@ -16,7 +16,7 @@ catalog:
   '@playwright/test': 1.56.1
   '@sanity/client': ^7.13.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^9.2.3
+  '@sanity/pkg-utils': ^10.0.0
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
@@ -31,9 +31,9 @@ catalog:
   globals: ^16.2.0
   playwright: 1.56.1
   prettier: ^3.7.3
-  react: ^19.2.0
-  react-dom: ^19.2.0
-  react-is: ^19.2.0
+  react: ^19.2.1
+  react-dom: ^19.2.1
+  react-is: ^19.2.1
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.
@@ -75,6 +75,9 @@ minimumReleaseAgeExclude:
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'eslint-plugin-oxlint'
+  - 'react'
+  - 'react-dom'
+  - 'react-is'
   - 'react-rx'
   - 'use-effect-event'
 

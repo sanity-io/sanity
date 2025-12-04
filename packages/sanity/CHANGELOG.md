@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+### Bug Fixes
+
+* **cli:** handle url imports for themer.sanity.build ([#11346](https://github.com/sanity-io/sanity/issues/11346)) ([eedec5b](https://github.com/sanity-io/sanity/commit/eedec5b4bf533672d6e5e53189d003df252182a1)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **core:** remove key prop from BaseItemProps ([#11375](https://github.com/sanity-io/sanity/issues/11375)) ([8908e08](https://github.com/sanity-io/sanity/commit/8908e087f591b51457d56df745a68ff92fe79dbe)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.22.0 ([#11366](https://github.com/sanity-io/sanity/issues/11366)) ([6976b77](https://github.com/sanity-io/sanity/commit/6976b77295f0959abc588fe24dbd45e246d4b217)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* ERR_REQUIRE_CYCLE_MODULE on older node, and windows resolve regression ([#11385](https://github.com/sanity-io/sanity/issues/11385)) ([bfaa1c7](https://github.com/sanity-io/sanity/commit/bfaa1c7710e4d0c2f422689ca107a7f84c37c763)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
 
 ### Features

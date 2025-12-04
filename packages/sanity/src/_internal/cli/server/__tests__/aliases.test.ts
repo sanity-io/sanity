@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {escapeRegExp} from 'lodash'
 import * as resolve from 'resolve.exports'
@@ -11,7 +12,7 @@ import {
 } from '../getBrowserAliases'
 import {getMonorepoAliases} from '../sanityMonorepo'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const sanityPkgPath = path.resolve(__dirname, '../../../../../package.json')
 

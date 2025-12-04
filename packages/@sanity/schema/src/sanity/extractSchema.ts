@@ -8,6 +8,7 @@ import {
   type Rule,
   type Schema as SchemaDef,
   type SchemaType as SanitySchemaType,
+  type SchemaValidationValue,
   type StringSchemaType,
 } from '@sanity/types'
 import {
@@ -213,7 +214,7 @@ export function extractSchema(
 
     const fields = gatherFields(schemaType)
     for (const field of fields) {
-      const fieldIsRequired = isFieldRequired(field)
+      const fieldIsRequired = isFieldRequired(field?.type?.validation)
       const value = convertSchemaType(field.type)
       if (value === null) {
         continue
@@ -221,7 +222,7 @@ export function extractSchema(
 
       // if the field sets assetRequired() we will mark the asset attribute as required
       // also guard against the case where the field is not an object, though type validation should catch this
-      if (hasAssetRequired(field) && value.type === 'object') {
+      if (hasAssetRequired(field?.type?.validation) && value.type === 'object') {
         value.attributes.asset.optional = false
       }
 
@@ -234,6 +235,16 @@ export function extractSchema(
         value,
         optional,
       }
+    }
+
+    // If we enforce required fields and the schema type itself (not just its fields) has assetRequired validation
+    // we set asset.optional=false. This handles cases like array members with validation: (rule) => rule.assetRequired()
+    if (
+      extractOptions.enforceRequiredFields &&
+      hasAssetRequired(schemaType.validation) &&
+      attributes.asset
+    ) {
+      attributes.asset.optional = false
     }
 
     // Ignore empty objects
@@ -310,8 +321,7 @@ function createKeyField(): ObjectAttribute<StringTypeNode> {
   }
 }
 
-function isFieldRequired(field: ObjectField): boolean {
-  const {validation} = field.type
+function isFieldRequired(validation?: SchemaValidationValue): boolean {
   if (!validation) {
     return false
   }
@@ -350,8 +360,7 @@ function isFieldRequired(field: ObjectField): boolean {
   return false
 }
 
-function hasAssetRequired(field: ObjectField): boolean {
-  const {validation} = field.type
+function hasAssetRequired(validation?: SchemaValidationValue): boolean {
   if (!validation) {
     return false
   }

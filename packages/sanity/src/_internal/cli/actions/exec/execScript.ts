@@ -1,13 +1,14 @@
 import {spawn} from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type CliCommandAction, type CliCommandArguments} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 interface ExecFlags {
   'with-user-token'?: boolean
