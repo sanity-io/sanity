@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "styled-components": "catalog:",
-    "tsx": "^4.20.6"
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
