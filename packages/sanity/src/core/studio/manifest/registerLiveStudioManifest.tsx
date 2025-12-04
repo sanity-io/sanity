@@ -6,6 +6,10 @@ import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {resolveIcon} from './icon'
 
+const buildId: string | undefined =
+  // @ts-expect-error: __SANITY_BUILD_TIMESTAMP__ is a global env variable set by the vite config
+  typeof __SANITY_BUILD_TIMESTAMP__ === 'undefined' ? undefined : `${__SANITY_BUILD_TIMESTAMP__}`
+
 /**
  * Workspace configuration for the Studio manifest.
  * @internal
@@ -98,6 +102,7 @@ async function generateStudioManifest(
   )
 
   return {
+    buildId,
     // Filter out null entries (workspaces without schemaDescriptorId)
     workspaces: workspaceManifests.filter((config): config is WorkspaceManifest => config !== null),
   }
