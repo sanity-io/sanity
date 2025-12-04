@@ -224,6 +224,20 @@ export function resolveExpression({
     })
   }
 
+  // Handle TypeScript type assertions (e.g., `'foo' as string`)
+  if (babelTypes.isTSAsExpression(node)) {
+    return resolveExpression({
+      node: node.expression,
+      scope,
+      filename,
+      file,
+      resolver,
+      params,
+      babelConfig,
+      fnArguments,
+    })
+  }
+
   throw new Error(
     `Unsupported expression type: ${node.type} in ${filename}:${node.loc?.start.line}:${node.loc?.start.column}`,
   )
