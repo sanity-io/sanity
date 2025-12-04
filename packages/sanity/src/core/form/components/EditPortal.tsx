@@ -1,8 +1,10 @@
+import {type Path} from '@sanity/types'
 import {Box, type ResponsiveWidthProps} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
+import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -74,10 +76,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const {dialogId, isTop, stack, closeAll} = useDialogStack()
+  const {path: currentPath} = (children as React.ReactElement)?.props as {path?: Path}
 
-  // Log the current state
-  console.log('[EditPortal]', {dialogId, isTop, header, stack})
+  const {dialogId, isTop, stack, close} = useDialogStack({path: currentPath})
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -89,9 +90,12 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const hasNestedDialogs = stack.length > 1
 
   const handleCloseAll = useCallback(() => {
-    closeAll()
-    onClose?.()
-  }, [closeAll, onClose])
+    // closeAll() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
+    // We intentionally do NOT call onClose?.() here because parent onClose callbacks
+    // (like BlockObject.onClose) would override the path we just set by calling onItemClose()
+    // and focusing a different editor
+    close()
+  }, [close])
 
   if (type === 'dialog') {
     return (
@@ -114,6 +118,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
             width={width}
             animate={!hasNestedDialogs}
           >
+            {currentPath && pathToString(currentPath)}
             {contents}
           </Dialog>
         </VirtualizerScrollInstanceProvider>
