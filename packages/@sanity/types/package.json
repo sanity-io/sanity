@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "4.15.0",
+  "version": "4.20.3",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -23,25 +23,22 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -50,7 +47,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@sanity/media-library-types": "^1.0.1"
   },
   "devDependencies": {
@@ -61,6 +58,7 @@
     "@sanity/insert-menu": "2.1.0",
     "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",

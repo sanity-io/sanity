@@ -17,8 +17,11 @@ import {
 const createScheduledDraftAction = (
   actionKey: keyof UseScheduledDraftMenuActionsReturn['actions'],
 ): DocumentActionComponent => {
-  return (props: DocumentActionProps): DocumentActionDescription | null => {
-    const {type, release} = props
+  // Using hook naming conventions is required for React Compiler to detect this function and memoize it
+  const useScheduledDraftAction: DocumentActionComponent = (
+    props: DocumentActionProps,
+  ): DocumentActionDescription | null => {
+    const {type, release, id} = props
     const {data: releases = []} = useAllReleases()
 
     const releaseDocument = releases.find(
@@ -28,6 +31,7 @@ const createScheduledDraftAction = (
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
+      documentId: id,
     })
 
     // This action is only shown for scheduled-draft version type
@@ -52,6 +56,7 @@ const createScheduledDraftAction = (
       onHandle: actionProps.onClick,
     }
   }
+  return useScheduledDraftAction
 }
 
 /**

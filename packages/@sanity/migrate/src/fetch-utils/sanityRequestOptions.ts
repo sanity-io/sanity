@@ -1,5 +1,9 @@
+import {createRequire} from 'node:module'
+
 import {type Endpoint} from './endpoints'
 import {type FetchOptions} from './fetchStream'
+
+const require = createRequire(import.meta.url)
 
 function getUserAgent() {
   if (typeof window === 'undefined') {

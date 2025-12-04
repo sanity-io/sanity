@@ -1,5 +1,4 @@
 import {type Path} from '@sanity/types'
-import {createContext} from 'sanity/_createContext'
 
 /**
  * Context for tracking fullscreen state of portable text editors by their path
@@ -23,13 +22,3 @@ export interface FullscreenPTEContextValue {
    */
   allFullscreenPaths: string[]
 }
-
-export const FullscreenPTEContext = createContext<FullscreenPTEContextValue>(
-  'sanity/_singletons/context/fullscreen-pte',
-  {
-    getFullscreenPath: () => undefined,
-    setFullscreenPath: () => {},
-    hasAnyFullscreen: () => false,
-    allFullscreenPaths: [],
-  },
-)

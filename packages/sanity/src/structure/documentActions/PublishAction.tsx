@@ -47,16 +47,17 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const PublishAction: DocumentActionComponent = (props) => {
+export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release} = props
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
   const {publish} = useDocumentOperation(id, type)
-  const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
+  const validationStatus = useValidationStatus(value._id, type)
+  const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -194,11 +195,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
     const disabled = Boolean(
       publishScheduled ||
-        editState?.transactionSyncLock?.enabled ||
-        publishState?.status === 'publishing' ||
-        publishState?.status === 'published' ||
-        hasValidationErrors ||
-        publish.disabled,
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled,
     )
 
     return {
@@ -241,5 +242,5 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 }
 
-PublishAction.action = 'publish'
-PublishAction.displayName = 'PublishAction'
+usePublishAction.action = 'publish'
+usePublishAction.displayName = 'PublishAction'

@@ -75,7 +75,8 @@ export const ReleasePublishAllButton = ({
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)
       telemetry.log(PublishedRelease)
@@ -85,6 +86,9 @@ export const ReleasePublishAllButton = ({
       ) {
         setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
       }
+    }
+    try {
+      await run()
     } catch (publishingError) {
       toast.push({
         status: 'error',
@@ -102,10 +106,9 @@ export const ReleasePublishAllButton = ({
         ),
       })
       console.error(publishingError)
-    } finally {
-      onConfirmDialogClose?.()
-      setPublishBundleStatus('idle')
     }
+    onConfirmDialogClose?.()
+    setPublishBundleStatus('idle')
   }, [
     release,
     publishRelease,

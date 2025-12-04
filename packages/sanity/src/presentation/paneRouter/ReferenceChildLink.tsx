@@ -1,5 +1,5 @@
 import {forwardRef} from 'react'
-import {pathToString} from 'sanity'
+import {getPublishedId, pathToString} from 'sanity'
 import {type ReferenceChildLinkProps} from 'sanity/structure'
 
 import {type PresentationSearchParams} from '../types'
@@ -15,7 +15,7 @@ export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
     <ChildLink
       {...rest}
       ref={ref}
-      childId={documentId}
+      childId={getPublishedId(documentId)}
       childType={documentType}
       childPayload={template?.params}
       childParameters={{

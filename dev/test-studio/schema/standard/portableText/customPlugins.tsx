@@ -70,6 +70,7 @@ export const customPlugins = defineType({
             return props.renderDefault({
               ...props,
               plugins: {
+                ...props.plugins,
                 markdown: {
                   boldDecorator: ({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
@@ -120,6 +121,7 @@ export const customPlugins = defineType({
             return props.renderDefault({
               ...props,
               plugins: {
+                ...props.plugins,
                 markdown: {
                   config: {
                     boldDecorator: ({schema}) =>
@@ -154,6 +156,7 @@ export const customPlugins = defineType({
             return props.renderDefault({
               ...props,
               plugins: {
+                ...props.plugins,
                 markdown: {
                   enabled: false,
                 },
@@ -188,6 +191,7 @@ export const customPlugins = defineType({
                 {props.renderDefault({
                   ...props,
                   plugins: {
+                    ...props.plugins,
                     markdown: {
                       config: {
                         ...props.plugins.markdown,
@@ -235,6 +239,38 @@ export const customPlugins = defineType({
                 />
               </>
             )
+          },
+        },
+      },
+    },
+
+    /**
+     * All Typographic rules enabled
+     */
+    {
+      type: 'array',
+      name: 'allTypographicRulesEnabled',
+      title: 'All Typographic Rules Enabled',
+      description: 'All typographic rules are enabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                typography: {
+                  ...props.plugins.typography,
+                  enabled: true,
+                  preset: 'all',
+                },
+              },
+            })
           },
         },
       },

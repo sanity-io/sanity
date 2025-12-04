@@ -1,10 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type InlineConfig} from 'vite'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {buildVendorDependencies} from '../buildVendorDependencies'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Mocking the vite.build function to inspect its calls. This allows us to test
 // that the function is called with the correct configuration without actually

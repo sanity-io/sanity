@@ -1,8 +1,8 @@
+import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {
   type ComponentProps,
   type FormEvent,
@@ -29,6 +29,23 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
+/**
+ * Helper function to create a TZDate from a Date's components in a specific timezone.
+ * This is useful for interpreting local date/time values as being in a specific timezone.
+ */
+function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
+  return new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    timeZone,
+  )
+}
+
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
   carousel: 'carousel',
@@ -36,7 +53,7 @@ export const MONTH_PICKER_VARIANT = {
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
-  selectedDate?: Date
+  selectedDate: Date
   timeStep?: number
   onSelect: (date: Date) => void
   focusedDate: Date
@@ -76,8 +93,8 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate = new Date(),
-    focusedDate = selectedDate,
+    selectedDate,
+    focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
     labels,
@@ -88,6 +105,8 @@ export const Calendar = forwardRef(function Calendar(
     timeZoneScope,
     ...restProps
   } = props
+
+  const focusedDate = _focusedDate ?? selectedDate
 
   const {timeZone} = useTimeZone(timeZoneScope)
 
@@ -105,8 +124,20 @@ export const Calendar = forwardRef(function Calendar(
 
   useEffect(() => {
     if (timeZone) {
-      const utcDate = zonedTimeToUtc(selectedDate, timeZone.name)
-      const zonedDate = utcToZonedTime(utcDate, timeZone.name)
+      // Replicate the old date-fns-tz behavior:
+      // fromZonedTime(selectedDate, tz) interprets selectedDate components as being in the timezone
+      const utcDate = createTZDateFromComponents(selectedDate, timeZone.name)
+      // toZonedTime(utcDate, tz) converts to timezone and returns a Date with local getters
+      const tzDate = new TZDate(utcDate, timeZone.name)
+      const zonedDate = new Date(
+        tzDate.getFullYear(),
+        tzDate.getMonth(),
+        tzDate.getDate(),
+        tzDate.getHours(),
+        tzDate.getMinutes(),
+        tzDate.getSeconds(),
+        tzDate.getMilliseconds(),
+      )
       setSavedSelectedDate(zonedDate)
     }
   }, [selectedDate, timeZone])
@@ -147,9 +178,11 @@ export const Calendar = forwardRef(function Calendar(
         return
       }
 
-      const utcDate = zonedTimeToUtc(newDate, timeZone.name)
+      // Create a TZDate in the timezone with the new date values
+      // This interprets the local date/time as being in the specified timezone
+      const tzDate = createTZDateFromComponents(newDate, timeZone.name)
 
-      onSelect(utcDate)
+      onSelect(tzDate)
     },
     [onSelect, savedSelectedDate, timeZone],
   )
@@ -160,18 +193,37 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
         return
       }
-      const zonedDate = utcToZonedTime(savedSelectedDate, timeZone.name)
+      // Get the date in the timezone
+      const zonedDate = new TZDate(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      const utcDate = zonedTimeToUtc(newZonedDate, timeZone.name)
-      onSelect(utcDate)
+      // Create a TZDate with the new time in the timezone
+      const tzDate = createTZDateFromComponents(newZonedDate, timeZone.name)
+      onSelect(tzDate)
     },
     [onSelect, savedSelectedDate, timeZone],
   )
 
+  const timeFromDate = useMemo(() => format(savedSelectedDate, 'HH:mm'), [savedSelectedDate])
+  const [timeValue, setTimeValue] = useState<string | undefined>(timeFromDate)
+
+  useEffect(() => {
+    // The change is coming from another source, so we need to update the timeValue to the new value.
+    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects
+    setTimeValue(timeFromDate)
+  }, [timeFromDate])
+
   const handleTimeChangeInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const date = parse(event.currentTarget.value, 'HH:mm', new Date())
-      handleTimeChange(date.getHours(), date.getMinutes())
+      const value = event.currentTarget.value
+      if (value) {
+        const date = parse(value, 'HH:mm', new Date())
+        handleTimeChange(date.getHours(), date.getMinutes())
+      } else {
+        // Setting the timeValue to undefined will let the input behave correctly as a time input while the user types.
+        // This means, that until it has a valid value the time input input won't emit a new onChange event.
+        // but we cannot send the undefined value to the handleTimeChange, because it expects a valid date.
+        setTimeValue(undefined)
+      }
     },
     [handleTimeChange],
   )
@@ -366,8 +418,15 @@ export const Calendar = forwardRef(function Calendar(
               <Flex align="center">
                 <TimeInput
                   aria-label={labels.selectTime}
-                  value={format(savedSelectedDate, 'HH:mm')}
+                  value={timeValue}
                   onChange={handleTimeChangeInputChange}
+                  /**
+                   * Values received in timeStep are defined in minutes as shown in the docs https://www.sanity.io/docs/studio/datetime-type#timestep-47de7f21-25bc-468d-b925-cd30e2690a7b
+                   * the input type="time" step is in seconds, so we need to multiply by 60.
+                   *
+                   * The UI will show all the minutes anyways, from 0 to 59, but it rounds the value to the nearest step once blurred.
+                   */
+                  step={timeStep * 60}
                 />
                 <Box marginLeft={2}>
                   <Button text={labels.setToCurrentTime} mode="bleed" onClick={handleNowClick} />

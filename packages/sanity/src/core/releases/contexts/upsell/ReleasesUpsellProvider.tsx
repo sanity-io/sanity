@@ -9,6 +9,8 @@ import {useUpsellData} from '../../../hooks/useUpsellData'
 import {useTranslation} from '../../../i18n'
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {ReleaseLimitsMisconfigurationDialog} from '../../components/dialog/ReleaseLimitsMisconfigurationDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
 import {useReleaseLimits} from '../../store/useReleaseLimits'
@@ -32,7 +34,7 @@ class StudioReleaseLimitExceededError extends Error {
  */
 export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const {data: activeReleases} = useActiveReleases()
+  const {data: allActiveReleases} = useActiveReleases()
   const {enabled: isReleasesFeatureEnabled} = useFeatureEnabled(FEATURES.contentReleases)
   const {upsellData, telemetryLogs, hasError} = useUpsellData({
     dataUri: '/journey/content-releases',
@@ -40,6 +42,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   })
   const toast = useToast()
   const {t} = useTranslation()
+
+  const meteredActiveReleases = useMemo(
+    () => allActiveReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allActiveReleases],
+  )
 
   const mode = useMemo(() => {
     /**
@@ -66,6 +73,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetryLogs])
 
   const [releaseLimit, setReleaseLimit] = useState<number | null>(null)
+  const [showMisconfigurationDialog, setShowMisconfigurationDialog] = useState(false)
+
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
       if (hasError) {
@@ -132,29 +141,44 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
         return cb()
       }
 
-      const [orgActiveReleaseCount, releaseLimits] = result
+      const [orgMeteredActiveReleaseCount, releaseLimits] = result
 
-      if (releaseLimits === null || orgActiveReleaseCount === null) {
+      if (releaseLimits === null || orgMeteredActiveReleaseCount === null) {
         whenResolved?.(true)
         return cb()
       }
 
       const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
 
-      // orgActiveReleaseCount might be missing due to internal server error
+      // Misconfiguration is when the content release feature is enabled
+      // but the quota is set to 0
+      if (orgActiveReleaseLimit === 0) {
+        whenResolved?.(false)
+        setShowMisconfigurationDialog(true)
+        if (throwError) {
+          throw new StudioReleaseLimitExceededError()
+        }
+        return false
+      }
+
+      // orgMeteredActiveReleaseCount might be missing due to internal server error
       // allow pass through guard in that case
-      if (orgActiveReleaseCount === null) {
+      if (orgMeteredActiveReleaseCount === null) {
         whenResolved?.(true)
         return cb()
       }
 
-      const activeReleasesCount = activeReleases?.length || 0
+      const meteredActiveReleaseCount = meteredActiveReleases?.length || 0
+      const allActiveReleaseCount = allActiveReleases?.length || 0
 
-      const isCurrentDatasetAtAboveDatasetLimit = activeReleasesCount >= datasetReleaseLimit
+      // scheduled drafts and content releases contribute towards reaching the dataset limit
+      const isCurrentDatasetAtAboveDatasetLimit = allActiveReleaseCount >= datasetReleaseLimit
+
+      // only metered content releases contribute towards reaching the org limit
       const isCurrentDatasetAtAboveOrgLimit =
-        orgActiveReleaseLimit !== null && activeReleasesCount >= orgActiveReleaseLimit
+        orgActiveReleaseLimit !== null && meteredActiveReleaseCount >= orgActiveReleaseLimit
       const isOrgAtAboveOrgLimit =
-        orgActiveReleaseLimit !== null && orgActiveReleaseCount >= orgActiveReleaseLimit
+        orgActiveReleaseLimit !== null && orgMeteredActiveReleaseCount >= orgActiveReleaseLimit
 
       const shouldShowDialog =
         isCurrentDatasetAtAboveDatasetLimit ||
@@ -169,7 +193,14 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       whenResolved?.(true)
       return cb()
     },
-    [mode, handleOpenDialog, orgActiveReleaseCount$, releaseLimits$, activeReleases?.length],
+    [
+      meteredActiveReleases.length,
+      handleOpenDialog,
+      allActiveReleases.length,
+      mode,
+      releaseLimits$,
+      orgActiveReleaseCount$,
+    ],
   )
 
   const onReleaseLimitReached = useCallback(
@@ -228,7 +259,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
-      <UpsellDialog {...dialogProps} />
+      {showMisconfigurationDialog ? (
+        <ReleaseLimitsMisconfigurationDialog onClose={() => setShowMisconfigurationDialog(false)} />
+      ) : (
+        <UpsellDialog {...dialogProps} />
+      )}
     </ReleasesUpsellContext.Provider>
   )
 }

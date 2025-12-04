@@ -347,7 +347,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       ? diffRangeDecorations
       : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
 
+    // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    // eslint-disable-next-line react-hooks/refs -- see above
     previousRangeDecorations.current = reconciled
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
@@ -533,7 +535,11 @@ function EditorChangePlugin(
           })
           break
         case 'mutation':
-          props.onChange(event)
+          props.onChange({
+            type: 'mutation',
+            snapshot: event.value,
+            patches: event.patches,
+          })
           break
         case 'patch': {
           if (event.patch.type === 'diffMatchPatch' && event.patch.origin === 'local') {

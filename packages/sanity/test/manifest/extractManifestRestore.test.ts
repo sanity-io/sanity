@@ -5,7 +5,7 @@ import {
   type ObjectSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import pick from 'lodash/pick'
+import {pick} from 'lodash'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'

@@ -64,7 +64,7 @@ export {
 } from './releases'
 export {
   EditScheduleForm,
-  ScheduleAction,
+  useScheduleAction as ScheduleAction,
   ScheduledBadge,
   SchedulesContext,
 } from './scheduled-publishing'
@@ -75,7 +75,7 @@ export * from './singleDocRelease'
 export * from './store'
 export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
-export {IsLastPaneProvider} from './tasks'
+export {IsLastPaneProvider, useDocumentPreviewValues} from './tasks'
 export * from './templates'
 export * from './theme'
 export * from './user-color'
@@ -91,5 +91,7 @@ export {type ReleaseDocument} from '@sanity/client'
 // If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
 export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
+export {getDocumentIdForCanvasLink} from './canvas/utils/getDocumentIdForCanvasLink'
 export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
+export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'

@@ -1,5 +1,5 @@
-import {getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
-import {formatInTimeZone} from 'date-fns-tz'
+import {tz as tzHelper} from '@date-fns/tz'
+import {format, getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
@@ -101,7 +101,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   )
 
   const formatInputValue = useCallback(
-    (date: Date) => formatInTimeZone(date, timeZone.name, `${inputDateTimeFormat}`),
+    (date: Date) => format(date, `${inputDateTimeFormat}`, {in: tzHelper(timeZone.name)}),
     [inputDateTimeFormat, timeZone.name],
   )
 

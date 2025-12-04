@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react'
+import {useState} from 'react'
 
 import {type Schedule, type ScheduleFormData} from '../types'
 
@@ -12,17 +12,14 @@ export default function useScheduleForm(schedule?: Schedule) {
       : null,
   )
 
-  const handleFormChange = useCallback(
-    (form: ScheduleFormData) => {
-      const equalDates =
-        schedule?.executeAt &&
-        new Date(schedule.executeAt).getTime() === new Date(form?.date).getTime()
+  const handleFormChange = (form: ScheduleFormData) => {
+    const equalDates =
+      schedule?.executeAt &&
+      new Date(schedule.executeAt).getTime() === new Date(form?.date).getTime()
 
-      setFormData(form)
-      setIsDirty(!equalDates)
-    },
-    [schedule?.executeAt],
-  )
+    setFormData(form)
+    setIsDirty(!equalDates)
+  }
 
   return {
     formData,

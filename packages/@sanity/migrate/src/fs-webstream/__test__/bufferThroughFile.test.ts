@@ -1,5 +1,6 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {describe, expect, test} from 'vitest'
 
@@ -9,6 +10,8 @@ import {lastValueFrom} from '../../it-utils/lastValueFrom'
 import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../bufferThroughFile'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

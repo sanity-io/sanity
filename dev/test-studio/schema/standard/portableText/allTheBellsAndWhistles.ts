@@ -421,6 +421,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
     defineField({
       name: 'content',
       type: 'array',
+      title: 'Content, comments disabled',
+      components: {
+        field: (props) => {
+          // eslint-disable-next-line camelcase
+          return props.renderDefault({...props, __internal_comments: undefined})
+        },
+      },
       of: [
         defineArrayMember({
           name: 'something',

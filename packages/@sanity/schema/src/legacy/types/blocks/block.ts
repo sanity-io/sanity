@@ -72,13 +72,7 @@ export const BlockType = {
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: extendMember(type),
-        }
-      })
+      return fields.map((fieldDef) => extendMember.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))

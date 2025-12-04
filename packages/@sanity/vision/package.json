@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "4.15.0",
+  "version": "4.20.3",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -25,18 +25,15 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"
@@ -44,7 +41,7 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -52,15 +49,15 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.0",
-    "@codemirror/commands": "^6.9.0",
+    "@codemirror/autocomplete": "^6.20.0",
+    "@codemirror/commands": "^6.10.0",
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/language": "^6.11.3",
     "@codemirror/search": "^6.5.11",
     "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.6",
+    "@codemirror/view": "^6.38.8",
     "@juggle/resize-observer": "^3.4.0",
-    "@lezer/highlight": "^1.2.1",
+    "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
@@ -73,7 +70,7 @@
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.1.0-rc.3",
+    "react-compiler-runtime": "1.0.0",
     "react-fast-compare": "^3.2.2",
     "react-rx": "^4.2.2",
     "rxjs": "^7.8.2",
@@ -85,14 +82,15 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^7.12.1",
+    "@sanity/client": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/pkg-utils": "catalog:",
     "@testing-library/react": "^16.3.0",
     "@types/lodash": "^4.17.20",
     "@types/react": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "babel-plugin-react-compiler": "1.0.0",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

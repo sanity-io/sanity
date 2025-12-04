@@ -2,7 +2,6 @@ import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  type DocumentActionDialogProps,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -11,6 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -20,13 +20,13 @@ const DISABLED_REASON_KEY = {
   NOT_READY: 'action.discard-changes.disabled.not-ready',
 } as const
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const DiscardChangesAction: DocumentActionComponent = ({
+export const useDiscardChangesAction: DocumentActionComponent = ({
   id,
   type,
   published,
   liveEdit,
-  onComplete,
   release,
 }) => {
   const {discardChanges} = useDocumentOperation(id, type, release)
@@ -45,27 +45,19 @@ export const DiscardChangesAction: DocumentActionComponent = ({
 
   const handleConfirm = useCallback(() => {
     discardChanges.execute()
-    onComplete()
-  }, [discardChanges, onComplete])
+    setConfirmDialogOpen(false)
+  }, [discardChanges])
+
+  const handleCancel = useCallback(() => {
+    setConfirmDialogOpen(false)
+  }, [])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionDialogProps | false = useMemo(
-    () =>
-      isConfirmDialogOpen && {
-        type: 'confirm',
-        tone: 'critical',
-        onCancel: onComplete,
-        onConfirm: handleConfirm,
-        message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
-      },
-    [handleConfirm, isConfirmDialogOpen, onComplete, t],
-  )
-
   return useMemo(() => {
-    if (!published || liveEdit || isPublished) {
+    if (liveEdit || isPublished) {
       return null
     }
 
@@ -88,21 +80,32 @@ export const DiscardChangesAction: DocumentActionComponent = ({
       title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
-      dialog,
+      dialog: isConfirmDialogOpen && {
+        type: 'custom',
+        component: (
+          <ConfirmDiscardDialog
+            onCancel={handleCancel}
+            onConfirm={handleConfirm}
+            publishedExists={Boolean(published)}
+          />
+        ),
+      },
     }
   }, [
     currentUser,
-    dialog,
+    handleConfirm,
+    handleCancel,
+    isConfirmDialogOpen,
     discardChanges.disabled,
+    published,
     handle,
     isPermissionsLoading,
     isPublished,
     liveEdit,
     permissions?.granted,
-    published,
     t,
   ])
 }
 
-DiscardChangesAction.action = 'discardChanges'
-DiscardChangesAction.displayName = 'DiscardChangesAction'
+useDiscardChangesAction.action = 'discardChanges'
+useDiscardChangesAction.displayName = 'DiscardChangesAction'

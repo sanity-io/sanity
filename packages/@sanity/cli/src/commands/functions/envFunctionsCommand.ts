@@ -60,9 +60,8 @@ const envFunctionsCommand: CliCommandDefinition<FunctionsEnvFlags> = {
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
     const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
-    const {functionEnvAddCore, functionEnvListCore, functionEnvRemoveCore} = await import(
-      '@sanity/runtime-cli/cores/functions'
-    )
+    const {functionEnvAddCore, functionEnvListCore, functionEnvRemoveCore} =
+      await import('@sanity/runtime-cli/cores/functions')
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',

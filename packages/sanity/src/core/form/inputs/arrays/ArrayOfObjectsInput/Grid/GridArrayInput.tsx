@@ -42,9 +42,9 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const sortable = schemaType.options?.sortable !== false
 
-  const renderItem = useCallback(({key, ...itemProps}: Omit<ObjectItemProps, 'renderDefault'>) => {
+  const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
     // todo: consider using a different item component for references
-    return <GridItem key={key} {...itemProps} />
+    return <GridItem {...itemProps} />
   }, [])
 
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])

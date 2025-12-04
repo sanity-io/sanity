@@ -11,6 +11,7 @@ import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 export const useCanvasCompanionDoc = (documentId: string) => {
   const companionDocsStore = useCanvasCompanionDocsStore()
   const publishedId = getPublishedId(documentId)
+
   const companionDocs$ = useMemo(
     () => companionDocsStore.getCompanionDocs(publishedId),
     [publishedId, companionDocsStore],

@@ -633,13 +633,13 @@ async function collateObjectValue({
         if (options.client && targetSchemaType.options?.filter) {
           const getClient = (clientOptions: {apiVersion: string}) =>
             (options.client as SanityClient).withConfig(clientOptions)
-          const isMatch = await documentMatchesGroqFilter(
-            (targetRootValue || {}) as SanityDocument,
-            reference,
-            targetSchemaType.options,
+          const isMatch = await documentMatchesGroqFilter({
+            rootDocumentValue: (targetRootValue || {}) as SanityDocument,
+            referencedDocument: reference,
+            schemaTypeOptions: targetSchemaType.options,
             targetRootPath,
             getClient,
-          )
+          })
 
           // eslint-disable-next-line max-depth
           if (!isMatch) {

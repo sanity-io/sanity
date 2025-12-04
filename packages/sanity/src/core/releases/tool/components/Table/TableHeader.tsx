@@ -1,6 +1,6 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'

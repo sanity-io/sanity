@@ -52,8 +52,10 @@ function passThrough({children}: {children?: React.ReactNode}) {
 /**
  * @hidden
  * @beta */
-export interface BaseVideoInputProps
-  extends ObjectInputProps<BaseVideoInputValue, VideoSchemaType> {
+export interface BaseVideoInputProps extends ObjectInputProps<
+  BaseVideoInputValue,
+  VideoSchemaType
+> {
   assetSources: AssetSource[]
   directUploads?: boolean
   observeAsset: (documentId: string) => Observable<VideoAsset>
@@ -87,7 +89,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
 
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
 
-  const assetSourceUploaderRef = useRef<{
+  const [assetSourceUploader, setAssetSourceUploader] = useState<{
     unsubscribe: () => void
     uploader: AssetSourceUploader
   } | null>(null)
@@ -194,9 +196,9 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
       if (assetSource.Uploader) {
         const uploader = new assetSource.Uploader()
         // Unsubscribe from the previous uploader
-        assetSourceUploaderRef.current?.unsubscribe()
+        assetSourceUploader?.unsubscribe()
         try {
-          assetSourceUploaderRef.current = {
+          setAssetSourceUploader({
             unsubscribe: uploader.subscribe((event) => {
               switch (event.type) {
                 case 'progress':
@@ -224,16 +226,16 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
               }
             }),
             uploader,
-          }
+          })
           setIsUploading(true)
           onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
           uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
         } catch (error) {
           onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
           setIsUploading(false)
-          assetSourceUploaderRef.current?.unsubscribe()
+          assetSourceUploader?.unsubscribe()
           setSelectedAssetSource(null)
-          assetSourceUploaderRef.current = null
+          setAssetSourceUploader(null)
           push({
             status: 'error',
             description: t('asset-sources.common.uploader.upload-failed.description'),
@@ -243,20 +245,20 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
         }
       }
     },
-    [onChange, push, schemaType, t],
+    [assetSourceUploader, onChange, push, schemaType, t],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
-      assetSourceUploaderRef.current?.uploader?.abort()
-      assetSourceUploaderRef.current?.unsubscribe()
+      assetSourceUploader?.uploader?.abort()
+      assetSourceUploader?.unsubscribe()
     }
-  }, [])
+  }, [assetSourceUploader])
 
   const handleCancelUpload = useCallback(() => {
-    assetSourceUploaderRef.current?.uploader?.abort()
-  }, [])
+    assetSourceUploader?.uploader?.abort()
+  }, [assetSourceUploader])
 
   const renderAsset = useCallback(() => {
     return (
@@ -368,7 +370,7 @@ export function BaseVideoInput(props: BaseVideoInputProps) {
           setIsBrowseMenuOpen={setIsBrowseMenuOpen}
           setIsUploading={setIsUploading}
           setSelectedAssetSource={setSelectedAssetSource}
-          uploader={assetSourceUploaderRef.current?.uploader}
+          uploader={assetSourceUploader?.uploader}
         />
       )}
     </>

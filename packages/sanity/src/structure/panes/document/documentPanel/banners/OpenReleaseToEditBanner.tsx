@@ -4,6 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isCardinalityOneRelease,
   isVersionId,
   Translate,
   useActiveReleases,
@@ -43,11 +44,7 @@ export function OpenReleaseToEditBanner({
   return <OpenReleaseToEditBannerInner documentId={documentId} />
 }
 
-export function OpenReleaseToEditBannerInner({
-  documentId,
-}: {
-  documentId: string
-}): React.JSX.Element {
+export function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   const {data: activeReleases} = useActiveReleases()
   const setPerspective = useSetPerspective()
   const releaseId = getVersionFromId(documentId) ?? ''
@@ -63,10 +60,11 @@ export function OpenReleaseToEditBannerInner({
     () =>
       activeReleases
         .filter((version) => {
-          return documentVersions.find((release) => {
+          const hasDocumentVersion = documentVersions.find((release) => {
             const r = getVersionFromId(release) ?? ''
             return getReleaseIdFromReleaseDocumentId(version._id) === r
           })
+          return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
         .map((version) => version.metadata.title || tCore('release.placeholder-untitled-release')),
     [activeReleases, documentVersions, tCore],
@@ -77,6 +75,10 @@ export function OpenReleaseToEditBannerInner({
   const handleGoToEdit = useCallback(async () => {
     setPerspective(releaseId)
   }, [releaseId, setPerspective])
+
+  if (documentVersionsTitleList.length === 0) {
+    return null
+  }
 
   return (
     <Banner
@@ -110,12 +112,16 @@ export function OpenReleaseToEditBannerInner({
           </Flex>
         </Text>
       }
-      action={{
-        text: t('banners.release.action.open-to-edit'),
-        tone: tone,
-        onClick: handleGoToEdit,
-        mode: 'default',
-      }}
+      action={
+        documentVersionsTitleList.length > 0
+          ? {
+              text: t('banners.release.action.open-to-edit'),
+              tone: tone,
+              onClick: handleGoToEdit,
+              mode: 'default',
+            }
+          : undefined
+      }
     />
   )
 }

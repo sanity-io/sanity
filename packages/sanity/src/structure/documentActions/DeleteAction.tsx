@@ -18,8 +18,9 @@ const DISABLED_REASON_TITLE_KEY = {
   NOT_READY: 'action.delete.disabled.not-ready',
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete, release}) => {
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft, release, published}) => {
   const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
   const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -29,16 +30,17 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
-  const handleConfirm = useCallback(() => {
-    setIsDeleting(true)
-    setConfirmDialogOpen(false)
-    paneSetIsDeleting(true)
-    deleteOp.execute()
-    onComplete()
-  }, [deleteOp, onComplete, paneSetIsDeleting])
+  const handleConfirm = useCallback(
+    (versions: string[]) => {
+      setConfirmDialogOpen(false)
+      setIsDeleting(true)
+      deleteOp.execute(versions)
+      setIsDeleting(false)
+    },
+    [deleteOp, setIsDeleting],
+  )
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -54,6 +56,9 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const currentUser = useCurrentUser()
 
   return useMemo(() => {
+    if (!published) {
+      return null
+    }
     if (!isPermissionsLoading && !permissions?.granted) {
       return {
         tone: 'critical',
@@ -101,8 +106,9 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
     permissions?.granted,
     t,
     type,
+    published,
   ])
 }
 
-DeleteAction.action = 'delete'
-DeleteAction.displayName = 'DeleteAction'
+useDeleteAction.action = 'delete'
+useDeleteAction.displayName = 'DeleteAction'

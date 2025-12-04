@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
+import {FullscreenPTEContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../../validation/util/pathToString'
 import {
@@ -8,7 +9,7 @@ import {
   OpenedPortableTextEditorFullScreen,
 } from '../../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useEnhancedObjectDialog} from '../../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
-import {FullscreenPTEContext, type FullscreenPTEContextValue} from './FullscreenPTEContext'
+import {type FullscreenPTEContextValue} from './FullscreenPTEContext'
 
 interface FullscreenPTEProviderProps {
   children: React.ReactNode

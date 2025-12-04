@@ -8,7 +8,7 @@ import {getBabelConfig} from '../getBabelConfig'
 import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
-const require = createRequire(__filename)
+const require = createRequire(import.meta.url)
 
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'

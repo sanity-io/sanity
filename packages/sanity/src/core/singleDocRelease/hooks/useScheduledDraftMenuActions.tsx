@@ -17,6 +17,7 @@ export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-sch
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
   documentType?: string
+  documentId?: string
   disabled?: boolean
   onActionComplete?: () => void
 }
@@ -45,7 +46,7 @@ export interface UseScheduledDraftMenuActionsReturn {
 export function useScheduledDraftMenuActions(
   options: UseScheduledDraftMenuActionsOptions,
 ): UseScheduledDraftMenuActionsReturn {
-  const {release, documentType, disabled = false, onActionComplete} = options
+  const {release, documentType, documentId, disabled = false, onActionComplete} = options
 
   const {t} = useTranslation()
   const toast = useToast()
@@ -62,9 +63,13 @@ export function useScheduledDraftMenuActions(
       if (!release) return
 
       setIsPerformingOperation(true)
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
         await operations.rescheduleScheduledDraft(release, newPublishAt)
         onActionComplete?.()
+      }
+      try {
+        await run()
       } catch (error) {
         console.error('Failed to reschedule draft:', error)
         toast.push({
@@ -81,10 +86,9 @@ export function useScheduledDraftMenuActions(
             />
           ),
         })
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(null)
       }
+      setIsPerformingOperation(false)
+      setSelectedAction(null)
     },
     [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
   )
@@ -159,6 +163,7 @@ export function useScheduledDraftMenuActions(
           <DeleteScheduledDraftDialog
             release={release}
             documentType={documentType}
+            documentId={documentId}
             onClose={handleDialogClose}
           />
         )
@@ -170,6 +175,7 @@ export function useScheduledDraftMenuActions(
     selectedAction,
     release,
     documentType,
+    documentId,
     handleDialogClose,
     handleReschedule,
     isPerformingOperation,

@@ -16,10 +16,9 @@ import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
-/**
- * @internal
- */
-export const UnpublishVersionAction: DocumentActionComponent = (
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+/** @internal */
+export const useUnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
@@ -99,5 +98,5 @@ export const UnpublishVersionAction: DocumentActionComponent = (
   }
 }
 
-UnpublishVersionAction.action = 'unpublishVersion'
-UnpublishVersionAction.displayName = 'UnpublishVersionAction'
+useUnpublishVersionAction.action = 'unpublishVersion'
+useUnpublishVersionAction.displayName = 'UnpublishVersionAction'

@@ -461,6 +461,7 @@ import type {
   DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
+  DocumentStackAvailability,
   DocumentStatus,
   DocumentStatusIndicator,
   DocumentStore,
@@ -635,6 +636,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getDiffAtPath,
+  getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
   getDocumentPairPermissions,
   getDocumentValuePermissions,
@@ -1105,6 +1107,7 @@ import type {
   PrimitiveMemberItemProps,
   ProjectData,
   ProjectDatasetData,
+  ProjectGrants,
   ProjectStore,
   ProvenanceDiffAnnotation,
   PublishDocumentVersionEvent,
@@ -1146,6 +1149,7 @@ import type {
   ReleaseActionsContext,
   ReleaseActionsResolver,
   ReleaseAvatar,
+  ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
   RELEASES_INTENT,
@@ -1486,6 +1490,7 @@ import type {
   useDocumentPairPermissionsFromHookFactory,
   useDocumentPresence,
   useDocumentPreviewStore,
+  useDocumentPreviewValues,
   useDocumentStore,
   useDocumentType,
   useDocumentValuePermissions,
@@ -3047,6 +3052,9 @@ describe('sanity', () => {
   test('DocumentRule', () => {
     expectTypeOf<DocumentRule>().toBeObject()
   })
+  test('DocumentStackAvailability', () => {
+    expectTypeOf<DocumentStackAvailability>().toBeObject()
+  })
   test('DocumentStatus', () => {
     expectTypeOf<typeof DocumentStatus>().toBeFunction()
   })
@@ -3575,6 +3583,9 @@ describe('sanity', () => {
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
   })
+  test('getDocumentIdForCanvasLink', () => {
+    expectTypeOf<typeof getDocumentIdForCanvasLink>().toBeFunction()
+  })
   test('getDocumentIsInPerspective', () => {
     expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
   })
@@ -3600,7 +3611,7 @@ describe('sanity', () => {
     expectTypeOf<typeof GetFormValueProvider>().not.toBeNever()
   })
   test('GetHookCollectionState', () => {
-    expectTypeOf<typeof GetHookCollectionState>().not.toBeNever()
+    expectTypeOf<typeof GetHookCollectionState>().toBeFunction()
   })
   test('GetHookCollectionStateProps', () => {
     expectTypeOf<GetHookCollectionStateProps<any, any>>().toBeObject()
@@ -3836,7 +3847,7 @@ describe('sanity', () => {
     expectTypeOf<ImageUrlAutoMode>().not.toBeNever()
   })
   test('ImageUrlBuilder', () => {
-    expectTypeOf<ImageUrlBuilder>().not.toBeNever()
+    expectTypeOf<ImageUrlBuilder>().toBeObject()
   })
   test('ImageUrlCropMode', () => {
     expectTypeOf<ImageUrlCropMode>().not.toBeNever()
@@ -4991,6 +5002,9 @@ describe('sanity', () => {
   test('ProjectDatasetData', () => {
     expectTypeOf<ProjectDatasetData>().toBeObject()
   })
+  test('ProjectGrants', () => {
+    expectTypeOf<ProjectGrants>().not.toBeNever()
+  })
   test('ProjectStore', () => {
     expectTypeOf<ProjectStore>().toBeObject()
   })
@@ -5115,6 +5129,9 @@ describe('sanity', () => {
   })
   test('ReleaseAvatar', () => {
     expectTypeOf<typeof ReleaseAvatar>().toBeFunction()
+  })
+  test('ReleaseAvatarIcon', () => {
+    expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
   })
   test('ReleaseDocument', () => {
     expectTypeOf<ReleaseDocument>().toBeObject()
@@ -6147,6 +6164,9 @@ describe('sanity', () => {
   })
   test('useDocumentPreviewStore', () => {
     expectTypeOf<typeof useDocumentPreviewStore>().toBeFunction()
+  })
+  test('useDocumentPreviewValues', () => {
+    expectTypeOf<typeof useDocumentPreviewValues>().toBeFunction()
   })
   test('useDocumentStore', () => {
     expectTypeOf<typeof useDocumentStore>().toBeFunction()

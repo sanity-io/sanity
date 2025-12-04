@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
 import {type PluginOptions as ReactCompilerOptions} from 'babel-plugin-react-compiler'
 import type chalk from 'chalk'
@@ -370,6 +371,10 @@ export interface CliConfig {
      */
     aspectsPath: string
   }
+  /**
+   * Configuration for Sanity typegen
+   */
+  typegen?: Partial<TypeGenConfig>
 }
 
 export type UserViteConfig =

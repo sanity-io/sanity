@@ -3,7 +3,7 @@ import {expect} from '@playwright/test'
 import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
-test(`isn't possible to discard changes if a changed document has no published version`, async ({
+test(`it is possible to discard changes if a changed document has no published version, delete is disabled`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -13,12 +13,20 @@ test(`isn't possible to discard changes if a changed document has no published v
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
   const deleteButton = page.getByTestId('action-Delete')
+  const confirmButton = page.getByTestId('confirm-button')
 
   await titleInput.fill('This is a book')
 
   await actionMenuButton.click()
-  await expect(deleteButton).toBeEnabled()
-  await expect(discardChangesButton).toBeHidden()
+  await expect(deleteButton).toBeHidden()
+  await expect(discardChangesButton).toBeEnabled()
+  await discardChangesButton.click()
+  await confirmButton.click()
+  await expect(
+    page.getByText(
+      'All changes has now been discarded. The discarded draft can still be recovered from history',
+    ),
+  ).toBeVisible()
 })
 
 test(`is possible to discard changes if a changed document has a published version`, async ({
@@ -60,7 +68,7 @@ test(`displays the published document state after discarding changes`, async ({
   const publishButton = page.getByTestId('action-publish')
   const actionMenuButton = page.getByTestId('action-menu-button')
   const discardChangesButton = page.getByTestId('action-Discardchanges')
-  const confirmButton = page.getByTestId('confirm-popover-confirm-button')
+  const confirmButton = page.getByTestId('confirm-button')
   const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
   const paneFooterDocumentStatus = page.getByTestId('pane-footer-document-status')
 

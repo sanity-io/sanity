@@ -1,51 +1,36 @@
 import {CheckmarkCircleIcon, CloseCircleIcon} from '@sanity/icons'
-import {Button, Text, useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useToast} from '@sanity/ui'
+import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
-export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
-  const {onComplete} = props
+export const useTestConfirmDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const {push: pushToast} = useToast()
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     if (!dialogOpen) {
       setDialogOpen(true)
       pushToast({closable: true, title: '[confirm] Opened'})
     }
-  }, [dialogOpen, pushToast])
+  }
 
-  const handleClose = useCallback(() => {
-    setDialogOpen(false)
-    pushToast({closable: true, title: '[confirm] Closed'})
-    onComplete()
-  }, [onComplete, pushToast])
-
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     setDialogOpen(false)
     pushToast({closable: true, title: '[confirm] Cancelled'})
-    onComplete()
-  }, [onComplete, pushToast])
+  }
 
-  const handleConfirm = useCallback(() => {
+  const handleConfirm = () => {
     setDialogOpen(false)
     pushToast({closable: true, title: '[confirm] Confirmed', status: 'info'})
-    onComplete()
-  }, [onComplete, pushToast])
+  }
 
-  const dialog: DocumentActionDescription['dialog'] = useMemo(
-    () =>
-      dialogOpen && {
+  return {
+    tone: 'positive',
+    dialog:
+      dialogOpen &&
+      ({
         type: 'confirm',
         tone: 'positive',
-        content: (
-          <>
-            <Text>
-              This is the <code>confirm</code> dialog
-            </Text>
-            <Button onClick={handleClose} text="Close" />
-          </>
-        ),
         message: 'Test confirm dialog',
         onCancel: handleCancel,
         onConfirm: handleConfirm,
@@ -53,15 +38,11 @@ export const TestConfirmDialogAction: DocumentActionComponent = (props) => {
         cancelButtonText: 'No',
         confirmButtonIcon: CheckmarkCircleIcon,
         confirmButtonText: 'Yes',
-      },
-    [dialogOpen, handleCancel, handleClose, handleConfirm],
-  )
-
-  return {
-    tone: 'positive',
-    dialog,
+      } satisfies DocumentActionDescription['dialog']),
     onHandle: handleOpen,
-    label: 'Test confirm dialog',
+    label: `Test confirm dialog`,
     shortcut: 'mod+p',
-  }
+  } satisfies DocumentActionDescription
 }
+
+useTestConfirmDialogAction.displayName = 'TestConfirmDialogAction'

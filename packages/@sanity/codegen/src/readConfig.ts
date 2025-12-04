@@ -3,7 +3,10 @@ import {readFile} from 'node:fs/promises'
 import json5 from 'json5'
 import * as z from 'zod'
 
-export const configDefintion = z.object({
+/**
+ * @internal
+ */
+export const configDefinition = z.object({
   path: z
     .string()
     .or(z.array(z.string()))
@@ -18,13 +21,22 @@ export const configDefintion = z.object({
   overloadClientMethods: z.boolean().default(true),
 })
 
-export type CodegenConfig = z.infer<typeof configDefintion>
+export type TypeGenConfig = z.infer<typeof configDefinition>
 
+/**
+ * @deprecated use TypeGenConfig
+ */
+export type CodegenConfig = TypeGenConfig
+
+/**
+ * Read, parse and process a config file
+ * @internal
+ */
 export async function readConfig(path: string): Promise<CodegenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
     const json = json5.parse(content)
-    return configDefintion.parseAsync(json)
+    return configDefinition.parseAsync(json)
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(
@@ -33,7 +45,7 @@ export async function readConfig(path: string): Promise<CodegenConfig> {
       )
     }
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
-      return configDefintion.parse({})
+      return configDefinition.parse({})
     }
 
     throw error

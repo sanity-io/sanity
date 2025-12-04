@@ -1,4 +1,4 @@
-import createImageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {type ImageUrlFitMode} from '@sanity/types'
 import {type ForwardedRef, forwardRef, type HTMLAttributes, useMemo} from 'react'
 

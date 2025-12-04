@@ -18,6 +18,7 @@ import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
+import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildArrayStatePTE} from './buildArrayStatePTE'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
@@ -94,13 +95,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
     if (isReferenceSchemaType(itemSchemaField)) return
 
-    // If the item schema type itself has custom components.item, skip building
-    // Array dialog for this item. This handles cases like internationalized arrays.
-    // NOTE: We only check the item type itself, NOT nested fields within it.
-    if (itemSchemaField.components?.item) {
-      return
-    }
-
     // Check if this is the currently selected item and store its index
     if (isArrayItemSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
@@ -122,7 +116,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: DialogItem[] = []
 
-    if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
+    if (
+      shouldBeInBreadcrumb(itemPath, openPath, documentValue) &&
+      !hasCustomInputComponent(rootSchemaType.fields, itemPath)
+    ) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -178,6 +175,11 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
           // Skip references early, references are handled by the reference input and shouldn't open the enhanced dialog
           if (isReferenceSchemaType(nestedArrayField.type)) return
+
+          // If the child array field has custom components.input, skip building dialog
+          if (isArrayOfObjectsSchemaType(nestedArrayField.type)) {
+            const nestedArraySchemaType = nestedArrayField.type as ArraySchemaType
+          }
 
           // Update the relative path if the array field is selected.
           if (isArrayItemSelected(fieldPath, openPath)) {
@@ -247,7 +249,10 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         }
         childArray.forEach(updateChildArrayIndex)
 
-        if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
+        if (
+          shouldBeInBreadcrumb(childPath, openPath, documentValue) &&
+          !hasCustomInputComponent(rootSchemaType.fields, childPath)
+        ) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],

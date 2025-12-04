@@ -171,8 +171,10 @@ export function validateDocument({
 /**
  * @internal
  */
-export interface ValidateDocumentObservableOptions
-  extends Pick<ValidationContext, 'getDocumentExists' | 'i18n'> {
+export interface ValidateDocumentObservableOptions extends Pick<
+  ValidationContext,
+  'getDocumentExists' | 'i18n'
+> {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema

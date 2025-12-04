@@ -96,7 +96,7 @@ const VENDOR_IMPORTS: VendorImports = {
   },
   'styled-components': {
     '^6.1.0': {
-      '.': './dist/styled-components.esm.js',
+      '.': './dist/styled-components.browser.esm.js',
       './package.json': './package.json',
     },
   },

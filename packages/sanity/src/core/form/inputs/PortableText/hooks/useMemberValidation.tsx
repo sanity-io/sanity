@@ -33,7 +33,9 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
     [validation],
   )
 
+  // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
   const reconciled = immutableReconcile(prev.current, validation)
+  // eslint-disable-next-line react-hooks/refs -- see above
   prev.current = reconciled
 
   return useMemo(() => {

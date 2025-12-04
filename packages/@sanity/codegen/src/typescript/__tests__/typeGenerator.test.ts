@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {
   createReferenceTypeNode,
@@ -13,6 +14,8 @@ import {describe, expect, test} from 'vitest'
 
 import {readSchema} from '../../readSchema'
 import {TypeGenerator} from '../typeGenerator'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('generateSchemaTypes', () => {
   test('should generate TypeScript type declarations for a schema', async () => {
@@ -586,5 +589,67 @@ describe('generateQueryMap', () => {
     expect(typeGenerator.generateTypeNodeTypes('inline', {type: 'inline', name: 'myType'})).toEqual(
       'export type Inline_2 = MyType;',
     )
+  })
+
+  test('should handle required image array member', async () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'author',
+        attributes: {
+          images: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  asset: {
+                    type: 'objectAttribute',
+                    value: {
+                      type: 'object',
+                      attributes: {
+                        _ref: {
+                          type: 'objectAttribute',
+                          value: {
+                            type: 'string',
+                          },
+                        },
+                        _type: {
+                          type: 'objectAttribute',
+                          value: {
+                            type: 'string',
+                            value: 'reference',
+                          },
+                        },
+                      },
+                      dereferencesTo: 'sanity.imageAsset',
+                    },
+                    optional: false, // <-- exported with --enforce-required-fields
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator(schema)
+    const actualOutput = typeGenerator.generateSchemaTypes()
+
+    expect(actualOutput).toMatchInlineSnapshot(`
+"export type Author = {
+  images: Array<{
+    asset: {
+      _ref: string;
+      _type: "reference";
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+  }>;
+};
+
+export type AllSanitySchemaTypes = Author;"
+`)
   })
 })

@@ -13,10 +13,6 @@ jobs:
     concurrency:
       group: release_canary
 
-    # this runs in main, and we want to skip running it when release PRs are merged
-    # format of the commit message is specified in lerna.json
-    if: >
-      !startsWith(github.event.head_commit.message, 'chore(release): publish')
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
@@ -31,7 +27,7 @@ jobs:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
-      # Publish packages to npm under the `canary` tag on new commits to main.
+      # Publish packages to npm under the `canary` tag on new commits to the canary branch.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0

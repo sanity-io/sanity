@@ -14,6 +14,7 @@ import {styled} from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {CommentInput, type CommentInputHandle} from '../../components'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
@@ -56,6 +57,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     value,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {error: addonDatasetError} = useAddonDataset()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
     null,
@@ -164,7 +166,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         <div>
           <Button
             aria-label={t('field-button.aria-label-add')}
-            disabled={isCreatingDataset}
+            disabled={isCreatingDataset || Boolean(addonDatasetError)}
             icon={AddCommentIcon}
             mode="bleed"
             onClick={onClick}

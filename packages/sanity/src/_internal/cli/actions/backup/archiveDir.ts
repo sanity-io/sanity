@@ -1,11 +1,9 @@
 import {createWriteStream} from 'node:fs'
 import zlib from 'node:zlib'
 
-import {type ProgressData} from 'archiver'
+import archiver, {type ProgressData} from 'archiver'
 
 import debug from './debug'
-
-const archiver = require('archiver')
 
 // ProgressCb is a callback that is called with the number of bytes processed so far.
 type ProgressCb = (processedBytes: number) => void
@@ -44,7 +42,7 @@ function archiveDir(tmpOutDir: string, outFilePath: string, progressCb: Progress
     // Pipe archive data to the file
     archive.pipe(archiveDestination)
     archive.directory(tmpOutDir, false)
-    archive.finalize()
+    void archive.finalize()
   })
 }
 

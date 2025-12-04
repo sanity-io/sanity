@@ -14,8 +14,10 @@ import {useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
-interface ParsedDateTextInputProps
-  extends Omit<ComponentProps<typeof CustomTextInput>, 'onChange' | 'value'> {
+interface ParsedDateTextInputProps extends Omit<
+  ComponentProps<typeof CustomTextInput>,
+  'onChange' | 'value'
+> {
   /**
    * Determines whether `onChange` returns a full or partial ISO-8601 string.
    * e.g. '2023-01-04T10:00:00.000Z' or '2023-01-04'

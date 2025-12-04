@@ -464,8 +464,7 @@ export interface InspectorTab {
  * @public
  */
 export interface CombinedSearchParams
-  extends StructureDocumentPaneParams,
-    PresentationSearchParams {}
+  extends StructureDocumentPaneParams, PresentationSearchParams {}
 
 /**
  * All possible parameters that can be used to describe the state of the
@@ -473,8 +472,7 @@ export interface CombinedSearchParams
  * @public
  */
 export interface PresentationParamsContextValue
-  extends PresentationStateParams,
-    CombinedSearchParams {}
+  extends PresentationStateParams, CombinedSearchParams {}
 
 /** @public */
 export type PresentationNavigateOptions = (

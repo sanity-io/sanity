@@ -5,6 +5,7 @@ import {
 } from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import debugit from 'debug'
+import {max, sum} from 'lodash'
 import {firstValueFrom} from 'rxjs'
 
 import {isDev} from '../environment'
@@ -13,7 +14,7 @@ import {DESCRIPTOR_CONVERTER} from '../schema'
 
 const debug = debugit('sanity:config')
 
-const TOGGLE = 'toggle.schema.upload'
+const TOGGLE = 'toggle.schema.upload-pause'
 
 async function isEnabled(client: SanityClient): Promise<boolean> {
   if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
@@ -72,12 +73,24 @@ export async function uploadSchema(
   // The second step is then to actually synchronize it. This is a multi-step
   // process where it tries to synchronize as much as possible in each step.
 
+  const pauseDurations: number[] = []
   const before = performance.now()
-  const sync = DESCRIPTOR_CONVERTER.get(schema)
+  const sync = await DESCRIPTOR_CONVERTER.get(schema, {pauseDurations})
   const after = performance.now()
+
+  const totalPause = sum(pauseDurations) || 0
+  const maxPause = max(pauseDurations) || 0
+  const avgPause = pauseDurations.length === 0 ? 0 : totalPause / pauseDurations.length
   const duration = after - before
+
   if (duration > 1000) {
     console.warn(`Building schema for synchronization took more than 1 second (${duration}ms)`)
+  }
+
+  if (maxPause > 100) {
+    console.warn(
+      `Building schema for synchronization blocked UI for more than 100ms (${maxPause}ms)`,
+    )
   }
 
   const descriptorId = sync.set.id
@@ -87,13 +100,22 @@ export async function uploadSchema(
 
   const claimRequest: ClaimRequest = {descriptorId, contextKey}
 
+  const clientTimings = {
+    convertSchema: duration,
+    convertSchemaPauseTotal: totalPause,
+    convertSchemaPauseMax: maxPause,
+    convertSchemaPauseAvg: avgPause,
+  }
+
   const claimResponse = await client.request<ClaimResponse>({
     uri: '/descriptors/claim',
     method: 'POST',
     body: claimRequest,
     headers: {
       // We mirror the format of Server-Timing: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Server-Timing
-      'Client-Timing': `convertSchema;dur=${duration}`,
+      'Client-Timing': Object.entries(clientTimings)
+        .map(([name, dur]) => `${name};dur=${dur}`)
+        .join(','),
     },
   })
 

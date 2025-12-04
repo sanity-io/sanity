@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-dynamic-require, no-sync, no-console, no-process-exit */
 
-const fs = require('fs')
-const path = require('path')
-const readPkgUp = require('read-pkg-up')
+import fs from 'node:fs'
+import path from 'node:path'
+import readPkgUp from 'read-pkg-up'
+import {createRequire} from 'node:module'
+import {fileURLToPath} from 'node:url'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+const require = createRequire(import.meta.url)
 
 if (fs.existsSync(expectedPath)) {
   isNodeScript(expectedPath).then((isScript) => {

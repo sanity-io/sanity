@@ -5,6 +5,7 @@
 import {describe, expectTypeOf, test} from 'vitest'
 import type {
   CodegenConfig,
+  configDefinition,
   findQueriesInPath,
   findQueriesInSource,
   getResolver,
@@ -12,12 +13,16 @@ import type {
   readSchema,
   registerBabel,
   safeParseQuery,
+  TypeGenConfig,
   TypeGenerator,
 } from '@sanity/codegen'
 
 describe('@sanity/codegen', () => {
   test('CodegenConfig', () => {
     expectTypeOf<CodegenConfig>().not.toBeNever()
+  })
+  test('configDefinition', () => {
+    expectTypeOf<typeof configDefinition>().not.toBeNever()
   })
   test('findQueriesInPath', () => {
     expectTypeOf<typeof findQueriesInPath>().toBeFunction()
@@ -39,6 +44,9 @@ describe('@sanity/codegen', () => {
   })
   test('safeParseQuery', () => {
     expectTypeOf<typeof safeParseQuery>().toBeFunction()
+  })
+  test('TypeGenConfig', () => {
+    expectTypeOf<TypeGenConfig>().not.toBeNever()
   })
   test('TypeGenerator', () => {
     expectTypeOf<TypeGenerator>().not.toBeNever()

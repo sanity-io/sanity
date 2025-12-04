@@ -9,17 +9,17 @@ import {
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
 
-export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
-  )
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
+
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {unlinkCtaClicked, unlinkApproved} = useCanvasTelemetry()
   const toast = useToast()
@@ -34,7 +34,8 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   }, [unlinkCtaClicked])
 
   const handleUnlink = useCallback(async () => {
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       if (!companionDoc?._id) {
         throw new Error('Companion doc not found')
       }
@@ -47,6 +48,9 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
         status: 'success',
         title: t('dialog.unlink-from-canvas.success'),
       })
+    }
+    try {
+      await run()
     } catch (e) {
       console.error(e)
       setError(e.message)
@@ -79,5 +83,5 @@ export const UnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentA
   }
 }
 
-UnlinkFromCanvasAction.action = 'unlinkFromCanvas'
-UnlinkFromCanvasAction.displayName = 'UnlinkFromCanvasAction'
+useUnlinkFromCanvasAction.action = 'unlinkFromCanvas'
+useUnlinkFromCanvasAction.displayName = 'UnlinkFromCanvasAction'

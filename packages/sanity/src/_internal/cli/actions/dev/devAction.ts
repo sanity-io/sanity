@@ -9,8 +9,9 @@ import {
 } from '@sanity/cli'
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import semver from 'semver'
+import {version} from 'vite'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
@@ -167,7 +168,7 @@ export default async function startSanityDevServer(
     ]
     const appId = getAppId({cliConfig, output})
 
-    output.print(`${info} Running with auto-updates enabled`)
+    output.print(`${logSymbols.info} Running with auto-updates enabled`)
     if (!appId) {
       warnAboutMissingAppId({
         appType: 'studio',
@@ -280,7 +281,7 @@ export default async function startSanityDevServer(
 
       loggerInfo(
         `${appType} ` +
-          `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+          `using ${chalk.cyan(`vite@${version}`)} ` +
           `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
           `and running at ${chalk.cyan(url)}`,
       )

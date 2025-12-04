@@ -43,12 +43,16 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(true)
 
     if (isVersionId(documentId)) {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
         await discardVersion(
           getVersionFromId(documentId) ||
             getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
           documentId,
         )
+      }
+      try {
+        await run()
       } catch (err) {
         toast.push({
           closable: true,

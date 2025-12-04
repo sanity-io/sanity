@@ -11,6 +11,8 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {MONTH_PICKER_VARIANT} from '../../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../../../components/inputs/DateInputs/DateTimeInput'
+import {TimeZoneButton} from '../../../../components/timeZone/timeZoneButton/TimeZoneButton'
+import TimeZoneButtonElementQuery from '../../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -49,7 +51,9 @@ export const ReleaseScheduleButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   // in the releases tool we want timezone to be saved for releases
-  const {utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
+  const {utcToCurrentZoneDate, zoneDateToUtc, timeZone} = useTimeZone(
+    CONTENT_RELEASES_TIME_ZONE_SCOPE,
+  )
   const [status, setStatus] = useState<'idle' | 'confirm' | 'scheduling'>('idle')
   const [publishAt, setPublishAt] = useState<Date | undefined>()
   /**
@@ -110,7 +114,8 @@ export const ReleaseScheduleButton = ({
       return
     }
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setStatus('scheduling')
       await schedule(release._id, publishAt)
       telemetry.log(ScheduledRelease)
@@ -129,6 +134,9 @@ export const ReleaseScheduleButton = ({
           </Text>
         ),
       })
+    }
+    try {
+      await run()
     } catch (schedulingError) {
       toast.push({
         status: 'error',
@@ -146,10 +154,9 @@ export const ReleaseScheduleButton = ({
         ),
       })
       console.error(schedulingError)
-    } finally {
-      onConfirmDialogClose?.()
-      setStatus('idle')
     }
+    onConfirmDialogClose?.()
+    setStatus('idle')
   }, [
     publishAt,
     isMenuItem,
@@ -166,14 +173,11 @@ export const ReleaseScheduleButton = ({
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(tCore), [tCore])
 
-  const handleBundlePublishAtCalendarChange = useCallback(
-    (date: Date | null) => {
-      if (!date) return
+  const handleBundlePublishAtCalendarChange = useCallback((date: Date | null) => {
+    if (!date) return
 
-      setPublishAt(zoneDateToUtc(startOfMinute(date)))
-    },
-    [zoneDateToUtc],
-  )
+    setPublishAt(startOfMinute(date))
+  }, [])
 
   const handleBundleInputChange = useCallback(
     (event: React.FocusEvent<HTMLInputElement>) => {
@@ -233,27 +237,47 @@ export const ReleaseScheduleButton = ({
               <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
             </Card>
           )}
-          <label>
-            <Stack space={3}>
-              <Text size={1} weight="semibold">
-                {tCore('release.schedule-dialog.select-publish-date-label')}
-              </Text>
-              <DateTimeInput
-                selectTime
-                monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
-                onChange={handleBundlePublishAtCalendarChange}
-                onInputChange={handleBundleInputChange}
-                value={timeZoneAdjustedPublishAt}
-                calendarLabels={calendarLabels}
-                inputValue={
-                  timeZoneAdjustedPublishAt ? format(timeZoneAdjustedPublishAt, 'PP HH:mm') : ''
-                }
-                constrainSize={false}
-                isPastDisabled
-                timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
-              />
-            </Stack>
-          </label>
+          <Stack space={3}>
+            <Flex align="center" justify="space-between" gap={2}>
+              <label>
+                <Text size={1} weight="semibold">
+                  {tCore('release.schedule-dialog.select-publish-date-label')}
+                </Text>
+              </label>
+              <TimeZoneButtonElementQuery>
+                <TimeZoneButton
+                  tooltipContent={
+                    <Translate
+                      t={tCore}
+                      i18nKey={'time-zone.time-zone-tooltip-input'}
+                      values={{
+                        title: tCore('release.schedule-dialog.select-publish-date-label'),
+                        alternativeName: timeZone.alternativeName,
+                        offset: timeZone.offset,
+                      }}
+                    />
+                  }
+                  allowTimeZoneSwitch
+                  useElementQueries
+                  timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
+                />
+              </TimeZoneButtonElementQuery>
+            </Flex>
+            <DateTimeInput
+              selectTime
+              monthPickerVariant={MONTH_PICKER_VARIANT.carousel}
+              onChange={handleBundlePublishAtCalendarChange}
+              onInputChange={handleBundleInputChange}
+              value={publishAt}
+              calendarLabels={calendarLabels}
+              inputValue={
+                timeZoneAdjustedPublishAt ? format(timeZoneAdjustedPublishAt, 'PP HH:mm') : ''
+              }
+              constrainSize={false}
+              isPastDisabled
+              timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
+            />
+          </Stack>
           <Text muted size={1}>
             <Translate
               t={t}
@@ -272,6 +296,7 @@ export const ReleaseScheduleButton = ({
     isScheduledDateInPast,
     rerenderDialog,
     t,
+    publishAt,
     documents.length,
     handleOnDialogClose,
     handleConfirmSchedule,
@@ -281,6 +306,7 @@ export const ReleaseScheduleButton = ({
     calendarLabels,
     release.metadata.title,
     tCore,
+    timeZone,
   ])
 
   const handleOnInitialSchedule = useCallback(() => {

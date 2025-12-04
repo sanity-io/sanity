@@ -3,7 +3,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -169,11 +169,9 @@ export function ReleasesOverview() {
   }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
-  useEffect(() => {
-    if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
-      setReleaseGroupMode('active')
-    }
-  }, [releaseGroupMode, archivedReleases.length, loadingReleases])
+  if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
+    setReleaseGroupMode('active')
+  }
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {

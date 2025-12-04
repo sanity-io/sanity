@@ -44,14 +44,20 @@ export function createFieldDefinitions(
 
   // Get user-defined schema types, partitioned into documents and objects
   const {documentTypes, objectTypes} = (schema._original?.types || [])
-    // Ignore document types hidden by omnisearch
-    .filter((t) =>
-      isDocumentObjectDefinition(t) ? searchableDocumentTypeNames.includes(t.name) : true,
-    )
-    // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
-    .filter((schemaType) => schemaType.name !== 'slug')
-    // Ignore sanity documents and assets
-    .filter((schemaType) => !schemaType.name.startsWith('sanity.'))
+    .filter((t) => {
+      // Ignore document types hidden by omnisearch
+      const isNotTypeNotIgnored = isDocumentObjectDefinition(t)
+        ? searchableDocumentTypeNames.includes(t.name)
+        : true
+
+      return (
+        isNotTypeNotIgnored &&
+        // Ignore the 'slug' object to prevent surfacing 'current' and (deprecated) 'source field' fields.
+        t.name !== 'slug' &&
+        // Ignore sanity documents and assets
+        !t.name.startsWith('sanity.')
+      )
+    })
     // Partition
     .reduce<{
       documentTypes: Record<string, ObjectDefinition>
@@ -93,6 +99,8 @@ function getDocumentFieldDefinitions(
   documentTypes: Record<string, ObjectDefinition>,
   objectTypes: Record<string, ObjectDefinition>,
 ) {
+  const supportedFieldTypeSet = new Set<string>(supportedFieldTypes)
+
   // Recursively iterate through all documents and resolve objects
   function addFieldDefinitionRecursive({
     acc,
@@ -109,14 +117,15 @@ function getDocumentFieldDefinitions(
     prevFieldPath?: string
     prevTitlePath?: string[]
   }) {
-    const continueRecursion = depth <= MAX_OBJECT_TRAVERSAL_DEPTH
+    if (depth > MAX_OBJECT_TRAVERSAL_DEPTH) {
+      return
+    }
+
     const isInternalField = defType.name.startsWith('_')
     // Sanitize schema titles (which may either be a string or React element)
     const title = defType?.title ? sanitizeFieldValue(defType.title) : startCase(defType.name)
     const fieldPath = prevFieldPath ? `${prevFieldPath}.${defType.name}` : defType.name
     const titlePath = prevTitlePath ? [...prevTitlePath, title] : [title]
-
-    if (!continueRecursion) return
 
     // Map to an existing document, object or inline object if found
     const existingObject = objectTypes[defType.type]
@@ -125,7 +134,7 @@ function getDocumentFieldDefinitions(
     const targetObject = existingDocument || existingObject || inlineObject
 
     if (targetObject) {
-      targetObject?.fields?.forEach((field) =>
+      for (const field of targetObject.fields ?? []) {
         addFieldDefinitionRecursive({
           acc,
           defType: field as ObjectDefinition,
@@ -133,13 +142,13 @@ function getDocumentFieldDefinitions(
           documentType,
           prevFieldPath: fieldPath,
           prevTitlePath: titlePath,
-        }),
-      )
+        })
+      }
       return
     }
 
     // Return if the current field type doesn't have a corresponding filter
-    if (!supportedFieldTypes.includes(defType.type)) return
+    if (!supportedFieldTypeSet.has(defType.type)) return
 
     acc.push({
       documentTypes: documentType && !isInternalField ? [documentType] : [],
@@ -153,35 +162,38 @@ function getDocumentFieldDefinitions(
     })
   }
 
-  const fieldDefinitions = Object.values(documentTypes)
-    .reduce<SearchFieldDefinition[]>((acc, documentType) => {
-      const documentFields = (documentType.fields as ObjectDefinition[]).reduce<
-        SearchFieldDefinition[]
-      >((a, field) => {
-        addFieldDefinitionRecursive({acc: a, defType: field, documentType: documentType.name})
-        return a
-      }, [])
-      acc.push(...documentFields)
-      return acc
-    }, [])
-    .reduce<SearchFieldDefinition[]>((acc, val) => {
-      const prevIndex = acc.findIndex(
-        (v) => v.fieldPath === val.fieldPath && v.title === val.title && v.type === val.type,
-      )
-      if (prevIndex > -1) {
-        acc[prevIndex] = {
-          ...acc[prevIndex],
-          documentTypes: [...acc[prevIndex].documentTypes, ...val.documentTypes],
-        }
-      } else {
-        acc.push(val)
-      }
-      return acc
-    }, [])
-    .map(addFieldDefinitionId)
-    .sort(sortFieldDefinitions)
+  const fieldDefinitions: Array<SearchFieldDefinition> = []
 
-  return fieldDefinitions
+  for (const documentType of Object.values(documentTypes)) {
+    const documentFields: Array<SearchFieldDefinition> = []
+
+    for (const documentField of (documentType.fields ?? []) as Array<ObjectDefinition>) {
+      addFieldDefinitionRecursive({
+        acc: documentFields,
+        defType: documentField,
+        documentType: documentType.name,
+      })
+    }
+
+    fieldDefinitions.push(...documentFields.map(addFieldDefinitionId))
+  }
+
+  const consolidatedFieldDefinitionMap = new Map<string, SearchFieldDefinition>()
+  for (const fieldDefinitionWithId of fieldDefinitions) {
+    const consolidated = consolidatedFieldDefinitionMap.get(fieldDefinitionWithId.id)
+
+    if (consolidated) {
+      consolidated.documentTypes.push(...fieldDefinitionWithId.documentTypes)
+      continue
+    }
+
+    consolidatedFieldDefinitionMap.set(fieldDefinitionWithId.id, fieldDefinitionWithId)
+  }
+
+  const consolidatedFieldDefinitions = Array.from(consolidatedFieldDefinitionMap.values())
+  consolidatedFieldDefinitions.sort(sortFieldDefinitions)
+
+  return consolidatedFieldDefinitions
 }
 
 /**
@@ -251,11 +263,9 @@ function resolveFilterName(schemaType: SchemaTypeDefinition) {
  * Sort definitions by title, joined titlePath and fieldPath (in that order)
  */
 function sortFieldDefinitions(a: SearchFieldDefinition, b: SearchFieldDefinition): number {
-  const aTitlePath = a.titlePath.slice(0, -1).join('/')
-  const bTitlePath = b.titlePath.slice(0, -1).join('/')
   return (
     a.title.localeCompare(b.title) ||
-    aTitlePath.localeCompare(bTitlePath) ||
+    a.titlePath.slice(0, -1).join('/').localeCompare(b.titlePath.slice(0, -1).join('/')) ||
     a.fieldPath.localeCompare(b.fieldPath)
   )
 }

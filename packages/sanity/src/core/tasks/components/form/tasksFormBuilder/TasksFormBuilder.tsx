@@ -2,7 +2,7 @@ import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {motion, type Variants} from 'framer-motion'
+import {motion, type Variants} from 'motion/react'
 import {useEffect, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 

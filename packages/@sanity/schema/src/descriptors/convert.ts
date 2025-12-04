@@ -18,7 +18,9 @@ import {isEqual, isObject} from 'lodash'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
+import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
+  type ArrayElement,
   type ArrayTypeDef,
   type CommonTypeDef,
   type CoreTypeDef,
@@ -51,53 +53,138 @@ const MAX_DEPTH_UKNOWN = 5
 type UnknownRecord<T> = {[P in keyof T]: unknown}
 
 export class DescriptorConverter {
-  opts: Options
   cache: WeakMap<Schema, SetSynchronization<RegistryType>> = new WeakMap()
-
-  constructor(opts: Options) {
-    this.opts = opts
-  }
 
   /**
    * Returns a synchronization object for a schema.
    *
    * This is automatically cached in a weak map.
    */
-  get(schema: Schema): SetSynchronization<RegistryType> {
+  async get(
+    schema: Schema,
+    opts?: {
+      /**
+       * If present, this will use an idle scheduler which records duration into this array.
+       * This option will be ignored if the `scheduler` option is passed in.
+       **/
+      pauseDurations?: number[]
+
+      /** An explicit scheduler to do the work. */
+      scheduler?: Scheduler
+    },
+  ): Promise<SetSynchronization<RegistryType>> {
+    /*
+      Converting the schema into a descriptor consists of two parts:
+
+      1. Traversing the type into a descriptor.
+      2. Serializing the descriptor, including SHA256 hashing.
+
+      Note that only (2) can be done in a background worker since the type
+      itself isn't serializable (which is a requirement for a background
+      worker). In addition, we expect (2) to scale in the same way as (1): If it
+      takes X milliseconds to traverse the type into a descriptor it will
+      probably take c*X milliseconds to serialize it.
+
+      This means that a background worker actually doesn't give us that much
+      value. A huge type will either way be expensive to convert from a type to
+      a descriptor. Therefore this function currently only avoid blocking by
+      only processing each type separately.
+
+      If we want to minimize the blocking further we would have to restructure
+      this converter to be able to convert the types asynchronously and _then_
+      it might make sense to the serialization step itself in a background
+      worker.
+    */
     let value = this.cache.get(schema)
     if (value) return value
 
-    const builder = new SetBuilder()
-    for (const name of schema.getLocalTypeNames()) {
-      const typeDef = convertTypeDef(schema.get(name)!, this.opts)
-      builder.addObject('sanity.schema.namedType', {name, typeDef})
+    let idleScheduler: IdleScheduler | undefined
+    const scheduler =
+      opts?.scheduler ||
+      (opts?.pauseDurations
+        ? (idleScheduler = new IdleScheduler(opts.pauseDurations))
+        : SYNC_SCHEDULER)
+
+    const options: Options = {
+      fields: new Map(),
+      duplicateFields: new Map(),
+      arrayElements: new Map(),
+      duplicateArrayElements: new Map(),
     }
 
+    const namedTypes = await scheduler.map(schema.getLocalTypeNames(), (name) => {
+      const typeDef = convertTypeDef(schema.get(name)!, name, options)
+      return {name, typeDef}
+    })
+
+    const rewriteMap = new Map<EncodableObject, EncodableObject>()
+
+    // First we populate the rewrite map with the duplications:
+    for (const [fieldDef, key] of options.duplicateFields.entries()) {
+      rewriteMap.set(fieldDef, {__type: 'hoisted', key})
+    }
+
+    for (const [arrayElem, key] of options.duplicateArrayElements.entries()) {
+      rewriteMap.set(arrayElem, {__type: 'hoisted', key})
+    }
+
+    const builder = new SetBuilder({rewriteMap})
+
+    // Now we can build the de-duplicated objects:
+    await scheduler.forEachIter(options.duplicateFields.entries(), ([fieldDef, key]) => {
+      builder.addObject('sanity.schema.hoisted', {key, value: {...fieldDef}})
+    })
+
+    await scheduler.forEachIter(options.duplicateArrayElements.entries(), ([arrayElem, key]) => {
+      builder.addObject('sanity.schema.hoisted', {key, value: {...arrayElem}})
+    })
+
+    await scheduler.forEach(namedTypes, (namedType) => {
+      builder.addObject('sanity.schema.namedType', namedType)
+    })
+
     if (schema.parent) {
-      builder.addSet(this.get(schema.parent))
+      builder.addSet(await this.get(schema.parent, {scheduler}))
     }
 
     value = builder.build('sanity.schema.registry')
     this.cache.set(schema, value)
+
+    // If we created the scheduler we also need to end it.
+    if (idleScheduler) idleScheduler.end()
     return value
   }
 }
 
-function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonTypeDef {
+function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Options): CommonTypeDef {
   // Note that OWN_PROPS_NAME is only set on subtypes, not the core types.
   // We might consider setting OWN_PROPS_NAME on _all_ types to avoid this branch.
   const ownProps = OWN_PROPS_NAME in schemaType ? (schemaType as any)[OWN_PROPS_NAME] : schemaType
 
   let fields: ObjectField[] | undefined
   if (Array.isArray(ownProps.fields)) {
-    fields = (ownProps.fields as ObjectSchemaType['fields']).map(
-      ({name, group, fieldset, type}) => ({
+    fields = (ownProps.fields as ObjectSchemaType['fields']).map((field) => {
+      const fieldPath = `${path}.${field.name}`
+      const value = opts.fields.get(field)
+      if (value) {
+        // We've seen it before. Mark it as duplicate.
+        const otherPath = opts.duplicateFields.get(value)
+        // We always keep the _smallest_ path around.
+        if (!otherPath || isLessCanonicalName(fieldPath, otherPath))
+          opts.duplicateFields.set(value, fieldPath)
+        return value
+      }
+
+      const {name, group, fieldset, type} = field
+      const converted: ObjectField = {
         name,
-        typeDef: convertTypeDef(type, opts),
+        typeDef: convertTypeDef(type, fieldPath, opts),
         groups: arrayifyString(group),
         fieldset,
-      }),
-    )
+      }
+      opts.fields.set(field, converted)
+      return converted
+    })
   }
 
   let fieldsets: ObjectFieldset[] | undefined
@@ -162,15 +249,28 @@ function convertCommonTypeDef(schemaType: SchemaType, opts: Options): CommonType
   }
 }
 
-/**
- * Options used when converting the schema.
- *
- * We know we need this in order to handle validations.
- **/
-export type Options = Record<never, never>
+type Options = {
+  /** Mapping of fields to descriptor value. Used for de-duping. */
+  fields: Map<object, ObjectField>
 
-export function convertTypeDef(schemaType: SchemaType, opts: Options): TypeDef {
-  const common = convertCommonTypeDef(schemaType, opts)
+  /**
+   * Once a field has been seen twice it's inserted into this map.
+   * The value here is the canonical name.
+   **/
+  duplicateFields: Map<ObjectField, string>
+
+  /** Mapping of array element to descriptor value. Used for de-duping. */
+  arrayElements: Map<object, ArrayElement>
+
+  /**
+   * Once an array element has been seen twice it's inserted into this map.
+   * The value here is the canonical name.
+   **/
+  duplicateArrayElements: Map<ArrayElement, string>
+}
+
+export function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
+  const common = convertCommonTypeDef(schemaType, path, opts)
 
   if (!schemaType.type) {
     return {
@@ -188,10 +288,24 @@ export function convertTypeDef(schemaType: SchemaType, opts: Options): TypeDef {
     case 'array': {
       return {
         extends: 'array',
-        of: (schemaType as ArraySchemaType).of.map((ofType) => ({
-          name: ofType.name,
-          typeDef: convertTypeDef(ofType, opts),
-        })),
+        of: (schemaType as ArraySchemaType).of.map((ofType, idx) => {
+          const itemPath = `${path}.${ofType.name}`
+          const value = opts.arrayElements.get(ofType)
+          if (value) {
+            // We've seen it before. Mark it as duplicate.
+            const otherPath = opts.duplicateArrayElements.get(value)
+            // We always keep the _smallest_ path around.
+            if (!otherPath || isLessCanonicalName(itemPath, otherPath))
+              opts.duplicateArrayElements.set(value, itemPath)
+            return value
+          }
+          const converted: ArrayElement = {
+            name: ofType.name,
+            typeDef: convertTypeDef(ofType, `${path}.${ofType.name}`, opts),
+          }
+          opts.arrayElements.set(ofType, converted)
+          return converted
+        }),
         ...common,
       } satisfies ArrayTypeDef
     }
@@ -731,4 +845,11 @@ function maybeOrderingBy(val: unknown): ObjectOrderingBy | undefined {
   if (!field || !direction) return undefined
 
   return {field, direction}
+}
+
+/**
+ * Checks if `a` is smaller than `b` for determining a canonical name.
+ */
+function isLessCanonicalName(a: string, b: string): boolean {
+  return a.length < b.length || (a.length === b.length && a < b)
 }

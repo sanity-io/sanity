@@ -1,8 +1,13 @@
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+
 import {expect, test} from 'vitest'
 
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {untar} from '../untar'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function* extract(file: string) {
   const fileStream = readFileAsWebStream(file)

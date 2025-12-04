@@ -49,17 +49,16 @@ import {
 /**
  * @alpha
  */
-export interface FormBuilderProps
-  extends Omit<
-    ObjectFormNode,
-    | 'level'
-    | 'path'
-    | 'presence'
-    | 'validation'
-    | '_allMembers'
-    | '__unstable_computeDiff'
-    | 'displayInlineChanges'
-  > {
+export interface FormBuilderProps extends Omit<
+  ObjectFormNode,
+  | 'level'
+  | 'path'
+  | 'presence'
+  | 'validation'
+  | '_allMembers'
+  | '__unstable_computeDiff'
+  | 'displayInlineChanges'
+> {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -184,7 +183,9 @@ export function FormBuilder(props: FormBuilderProps) {
     [Field],
   )
   const renderItem = useCallback(
-    ({key, ...itemProps}: Omit<ItemProps, 'renderDefault'>) => <Item key={key} {...itemProps} />,
+    (itemProps: Omit<ItemProps, 'renderDefault'>) => (
+      <Item key={itemProps.inputId} {...itemProps} />
+    ),
     [Item],
   )
   const renderPreview = useCallback(
@@ -350,7 +351,6 @@ function RootInput(props: RootInputProps) {
 
   const arrayEditingModal = enhancedObjectDialogEnabled && (
     <EnhancedObjectDialog
-      // eslint-disable-next-line react/jsx-handler-names
       onPathFocus={rootInputProps.onPathFocus}
       onPathOpen={onPathOpen}
       openPath={openPath}

@@ -1,5 +1,6 @@
 import {writeFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -10,6 +11,8 @@ import {
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 interface ExtractFlags {
   'workspace'?: string
@@ -39,7 +42,7 @@ export default async function extractAction(
     '_internal',
     'cli',
     'threads',
-    'extractSchema.js',
+    'extractSchema.cjs',
   )
 
   const spinner = output

@@ -1,6 +1,7 @@
+import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
 import {Box, type CardTone} from '@sanity/ui'
-import {type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
+import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {useTranslation} from '../../../../i18n'
@@ -9,9 +10,7 @@ import {type InputProps} from '../../../types'
 import {FileTarget} from '../common/styles'
 import {UploadDestinationPicker} from '../common/UploadDestinationPicker'
 import {UploadWarning} from '../common/UploadWarning'
-import {type ImageUrlBuilder} from '../types'
 import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
-import {usePreviewImageSource} from './usePreviewImageSource'
 
 const ASSET_FIELD_PATH = ['asset'] as const
 
@@ -20,17 +19,15 @@ function ImageInputAssetComponent(props: {
   directUploads: boolean
   elementProps: BaseImageInputProps['elementProps']
   handleClearUploadState: () => void
-  handleFileTargetFocus: (event: FocusEvent<Element, Element>) => void
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   hoveringFiles: FileInfo[]
-  imageUrlBuilder: ImageUrlBuilder
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
-  renderAssetMenu(): React.JSX.Element | null
+  renderAssetMenu: () => React.JSX.Element
   renderPreview: () => React.JSX.Element
-  renderUploadPlaceholder(): React.JSX.Element
-  renderUploadState(uploadState: UploadState): React.JSX.Element
+  renderUploadPlaceholder: () => React.JSX.Element
+  renderUploadState: (uploadState: UploadState) => React.JSX.Element
   schemaType: BaseImageInputProps['schemaType']
   selectedAssetSource: AssetSource | null
   setHoveringFiles: (hoveringFiles: FileInfo[]) => void
@@ -42,7 +39,6 @@ function ImageInputAssetComponent(props: {
     directUploads,
     elementProps,
     handleClearUploadState,
-    handleFileTargetFocus,
     onSelectFiles,
     hoveringFiles,
     inputProps,
@@ -56,7 +52,6 @@ function ImageInputAssetComponent(props: {
     setHoveringFiles,
     tone,
     value,
-    imageUrlBuilder,
   } = props
 
   const elementRef = elementProps.ref?.current
@@ -65,11 +60,14 @@ function ImageInputAssetComponent(props: {
 
   const hasValueOrUpload = Boolean(value?._upload || value?.asset)
   const path = useMemo(() => inputProps.path.concat(ASSET_FIELD_PATH), [inputProps.path])
-  const {customProperties} = usePreviewImageSource({value, imageUrlBuilder})
   const [assetSourceDestination, setAssetSourceDestination] = useState<AssetSource | null>(null)
   const [showDestinationSourcePicker, setShowDestinationSourcePicker] = useState<boolean>(false)
   const [filesToUploadFromPaste, setFilesToUploadFromPaste] = useState<File[]>([])
   const hasMultipleUploadSources = assetSources.filter((s) => Boolean(s.Uploader)).length > 1
+  const customProperties = useMemo(() => {
+    const {width = 0, height = 0} = value?.asset ? getImageDimensions(value.asset) : {}
+    return {'--image-width': width, '--image-height': height} as CSSProperties
+  }, [value])
 
   const handleFilesOut = useCallback(() => {
     setHoveringFiles([])
@@ -161,6 +159,22 @@ function ImageInputAssetComponent(props: {
     setShowDestinationSourcePicker(false)
     setAssetSourceDestination(null)
   }, [])
+
+  const handleFileTargetFocus = useCallback(
+    (event: FocusEvent) => {
+      // We want to handle focus when the file target element *itself* receives
+      // focus, not when an interactive child element receives focus. Since React has decided
+      // to let focus bubble, so this workaround is needed
+      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+      if (
+        event.currentTarget === event.target &&
+        event.currentTarget === elementProps.ref?.current
+      ) {
+        inputProps.elementProps.onFocus(event)
+      }
+    },
+    [inputProps, elementProps.ref?.current],
+  )
 
   return (
     <div style={customProperties}>

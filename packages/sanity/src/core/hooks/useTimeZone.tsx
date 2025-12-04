@@ -1,7 +1,8 @@
+import {tz as tzHelper, TZDate} from '@date-fns/tz'
 import {type ClientError} from '@sanity/client'
 import {useToast} from '@sanity/ui'
 import {sanitizeLocale} from '@sanity/util/legacyDateFormat'
-import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
+import {format as dateFnsFormat} from 'date-fns'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {startWith} from 'rxjs/operators'
@@ -11,6 +12,23 @@ import {DATE_FORMAT} from '../studio/timezones/constants'
 import ToastDescription from '../studio/timezones/toastDescription/ToastDescription'
 import {type NormalizedTimeZone} from '../studio/timezones/types'
 import {debugWithName} from '../studio/timezones/utils/debug'
+
+/**
+ * Helper function to create a TZDate from a Date's components in a specific timezone.
+ * This is useful for interpreting local date/time values as being in a specific timezone.
+ */
+function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
+  return new TZDate(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+    timeZone,
+  )
+}
 
 const TimeZoneEvents = {
   update: 'timeZoneEventUpdate' as const,
@@ -79,7 +97,7 @@ function getCachedTimeZoneInfo(
   const dateToUse = relativeDateForZones ?? new Date()
   const parts = formatter.formatToParts(dateToUse)
   const shortParts = shortFormatter.formatToParts(dateToUse)
-  const rawOffset = formatInTimeZone(dateToUse, canonicalIdentifier, 'xxx')
+  const rawOffset = dateFnsFormat(dateToUse, 'xxx', {in: tzHelper(canonicalIdentifier)})
   // If the offset is +02:00 then we can just show +2, if it has +13:45 then we should show +13:45, remove the leading +0 and just leave a + if a number under 10, remove the :00 at the end
   const offset = rawOffset
     .replace(/([+-])0(\d)/, '$1$2')
@@ -199,7 +217,8 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const getStoredTimeZone = useCallback((): NormalizedTimeZone | undefined => {
     if (!storedTimeZone) return undefined
 
-    try {
+    // The try/catch wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = () => {
       const wholeTimeZone = allTimeZones.find((tz) => tz.name === storedTimeZone)
 
       if (
@@ -214,10 +233,13 @@ export const useTimeZone = (scope: TimeZoneScope) => {
         void keyValueStore.setKey(keyStoreId, fallbackTimeZone.name)
         return fallbackTimeZone
       }
+      return undefined
+    }
+    try {
+      return run()
     } catch {
       return undefined
     }
-    return undefined
   }, [allTimeZones, keyStoreId, keyValueStore, storedTimeZone])
 
   const getLocalTimeZone = useCallback((): NormalizedTimeZone => {
@@ -239,6 +261,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(() => getInitialTimeZone())
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/no-deriving-state-in-effects -- @todo fix later
     setTimeZone(getInitialTimeZone())
   }, [getInitialTimeZone])
 
@@ -272,14 +295,16 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       if (includeTimeZone) {
         dateFormat = `${format} (zzzz)`
       }
-      return formatInTimeZone(date, timeZone?.name || getLocalTimeZone()?.name || 'UTC', dateFormat)
+      return dateFnsFormat(date, dateFormat, {
+        in: tzHelper(timeZone?.name || getLocalTimeZone()?.name || 'UTC'),
+      })
     },
     [timeZone, getLocalTimeZone],
   )
 
   const getCurrentZoneDate = useCallback(() => {
     if (!timeZone) return new Date()
-    return utcToZonedTime(new Date(), timeZone.name)
+    return new TZDate(new Date(), timeZone.name)
   }, [timeZone])
 
   const getTimeZone = useCallback(
@@ -293,7 +318,8 @@ export const useTimeZone = (scope: TimeZoneScope) => {
       debug('handleNewValue:', tz)
 
       setTimeZone((prevTz) => {
-        try {
+        // The try/catch wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+        const run = () => {
           if (prevTz?.name !== tz.name) {
             void keyValueStore.setKey(keyStoreId, tz.name)
             window.dispatchEvent(new Event(TimeZoneEvents.update))
@@ -310,6 +336,9 @@ export const useTimeZone = (scope: TimeZoneScope) => {
             duration: 15000,
             status: 'info',
           })
+        }
+        try {
+          run()
         } catch (err) {
           console.error(err)
 
@@ -331,7 +360,7 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const utcToCurrentZoneDate = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return utcToZonedTime(date, timeZone.name)
+      return new TZDate(date, timeZone.name)
     },
     [timeZone],
   )
@@ -339,7 +368,8 @@ export const useTimeZone = (scope: TimeZoneScope) => {
   const zoneDateToUtc = useCallback(
     (date: Date) => {
       if (!timeZone) return date
-      return zonedTimeToUtc(date, timeZone.name)
+      // Create a TZDate by interpreting the date components as being in the timezone
+      return createTZDateFromComponents(date, timeZone.name)
     },
     [timeZone],
   )

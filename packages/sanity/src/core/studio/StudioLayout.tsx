@@ -75,6 +75,7 @@ export function StudioLayout() {
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
 
+  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
   return <Layout />
 }
 
@@ -107,14 +108,14 @@ export function StudioLayoutComponent() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const documentTitle = useMemo(() => {
-    const mainTitle = title || startCase(name)
-
-    if (activeToolName) {
-      return `${startCase(activeToolName)} | ${mainTitle}`
+    const workspaceTitle = title || startCase(name)
+    const toolTitle = activeTool ? activeTool.title || activeTool.name : undefined
+    if (toolTitle) {
+      return `${toolTitle} | ${workspaceTitle}`
     }
+    return workspaceTitle
+  }, [activeTool, name, title])
 
-    return mainTitle
-  }, [activeToolName, name, title])
   const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
   useEffect(() => {
@@ -183,6 +184,7 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
@@ -210,6 +212,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
+                {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                 <ActiveToolLayout activeTool={activeTool} />
               </Suspense>
             </RouteScope>

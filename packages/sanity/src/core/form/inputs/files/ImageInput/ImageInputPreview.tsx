@@ -1,14 +1,17 @@
+import {type SanityClient} from '@sanity/client'
+import {type ImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 import {type ImageSchemaType} from '@sanity/types'
 import {memo, useMemo} from 'react'
+import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../../i18n'
 import {type UploaderResolver} from '../../../studio/uploads/types'
-import {type ImageUrlBuilder} from '../types'
 import {ImagePreview} from './ImagePreview'
 import {type BaseImageInputValue, type FileInfo} from './types'
-import {usePreviewImageSource} from './usePreviewImageSource'
+import {useImageUrl} from './useImageUrl'
 
 export const ImageInputPreview = memo(function ImageInputPreviewComponent(props: {
+  client: SanityClient
   directUploads: boolean | undefined
   handleOpenDialog: () => void
   hoveringFiles: FileInfo[]
@@ -19,6 +22,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
   value: BaseImageInputValue
 }) {
   const {
+    client,
     directUploads,
     handleOpenDialog,
     hoveringFiles,
@@ -31,6 +35,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
 
   return (
     <RenderImageInputPreview
+      client={client}
       directUploads={directUploads}
       handleOpenDialog={handleOpenDialog}
       hoveringFiles={hoveringFiles}
@@ -44,6 +49,7 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
 })
 
 function RenderImageInputPreview(props: {
+  client: SanityClient
   directUploads: boolean | undefined
   handleOpenDialog: () => void
   hoveringFiles: FileInfo[]
@@ -54,6 +60,7 @@ function RenderImageInputPreview(props: {
   value: BaseImageInputValue
 }) {
   const {
+    client,
     directUploads,
     handleOpenDialog,
     hoveringFiles,
@@ -74,7 +81,17 @@ function RenderImageInputPreview(props: {
     [acceptedFiles, hoveringFiles],
   )
 
-  const {url} = usePreviewImageSource({value, imageUrlBuilder})
+  const dpr = useDevicePixelRatio()
+
+  const transform = (builder: ImageUrlBuilder, val: SanityImageSource) =>
+    builder.width(2000).fit('max').image(val).dpr(dpr).auto('format').url()
+
+  const {url} = useImageUrl({
+    client,
+    imageSource: value,
+    imageUrlBuilder,
+    transform,
+  })
 
   return (
     <ImagePreview

@@ -84,7 +84,7 @@ export async function measureFpsForInput({
 
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
-    await input.press(character)
+    await input.pressSequentially(character)
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
 

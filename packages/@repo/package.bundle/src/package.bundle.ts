@@ -41,6 +41,10 @@ export const defaultConfig: UserConfig = {
         exports: 'named',
         dir: 'dist',
         format: 'es',
+        // Due to module server expecting `.mjs`, and packages/sanity/package.json#type now being `module`, it's necessary to configure vite to continue using `.mjs`
+        // Otherwise it'll start using `.js` instead: https://github.com/vitejs/vite/blob/a3cd262f37228967e455617e982b35fccc49ffe9/packages/vite/src/node/build.ts#L664-L679
+        entryFileNames: '[name].mjs',
+        chunkFileNames: '[name]-[hash].mjs',
       },
       treeshake: {
         preset: 'recommended',

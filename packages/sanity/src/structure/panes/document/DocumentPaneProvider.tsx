@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -22,6 +22,7 @@ import {
   isVersionId,
   type PartialContext,
   pathToString,
+  type ReleaseDocument,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -62,8 +63,18 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
  * @internal
  */
 // eslint-disable-next-line max-statements
-export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+  const {
+    children,
+    index,
+    pane,
+    paneKey,
+    onFocusPath,
+    onSetMaximizedPane,
+    maximized = false,
+    forcedVersion,
+    historyStore,
+  } = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -278,39 +289,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const {data: releases = []} = useActiveReleases()
 
-  const getDocumentVersionType = useCallback(() => {
-    let version: DocumentActionsVersionType
-    switch (true) {
-      case Boolean(params.rev):
-        version = 'revision'
-        break
-      case selectedReleaseId && isVersionId(value._id): {
-        // Check if this is a scheduled draft (cardinality one release)
-        const releaseDocument = releases.find(
-          (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
-        )
-
-        if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
-          version = 'scheduled-draft'
-        } else {
-          version = 'version'
-        }
-        break
-      }
-      case selectedPerspectiveName === 'published':
-        version = 'published'
-        break
-      case draftsEnabled:
-        version = 'draft'
-        break
-      default:
-        version = 'published'
-    }
-
-    return version
-  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled, releases])
-
-  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
+  const actionsPerspective = useMemo(
+    () =>
+      getDocumentVersionType(
+        params,
+        selectedReleaseId,
+        value,
+        selectedPerspectiveName,
+        draftsEnabled,
+        releases,
+      ),
+    [params, selectedReleaseId, value, selectedPerspectiveName, draftsEnabled, releases],
+  )
 
   const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
@@ -561,6 +551,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onSetActiveFieldGroup,
         onSetCollapsedPath,
         onSetCollapsedFieldSet,
+        onSetMaximizedPane,
+        maximized,
         openInspector,
         openPath,
         index,
@@ -624,6 +616,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onSetActiveFieldGroup,
       onSetCollapsedPath,
       onSetCollapsedFieldSet,
+      onSetMaximizedPane,
+      maximized,
       openInspector,
       openPath,
       index,
@@ -680,6 +674,44 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
-})
+}
 
-DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+// eslint-disable-next-line max-params
+function getDocumentVersionType(
+  params: Record<string, string | undefined> | undefined,
+  selectedReleaseId: string | undefined,
+  value: SanityDocumentLike,
+  selectedPerspectiveName: string | undefined,
+  draftsEnabled: boolean,
+  releases: ReleaseDocument[],
+) {
+  let version: DocumentActionsVersionType
+  switch (true) {
+    case Boolean(params?.rev):
+      version = 'revision'
+      break
+    case selectedReleaseId && isVersionId(value._id): {
+      // Check if this is a scheduled draft (cardinality one release)
+      const releaseDocument = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+
+      if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+        version = 'scheduled-draft'
+      } else {
+        version = 'version'
+      }
+      break
+    }
+    case selectedPerspectiveName === 'published':
+      version = 'published'
+      break
+    case draftsEnabled:
+      version = 'draft'
+      break
+    default:
+      version = 'published'
+  }
+
+  return version
+}

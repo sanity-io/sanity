@@ -62,6 +62,7 @@ function createSubscription(
     },
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
     'movie',
+    'draft',
   ).pipe(publish())
 
   // Publish and connect this for the tests
@@ -81,6 +82,47 @@ function createSubscription(
     },
   }
 }
+
+// A fixture for version validation streams
+function createVersionSubscription(
+  client: SanityClient,
+  versionId: string,
+  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
+) {
+  const getClient = () => client
+
+  const stream = validation(
+    {
+      client,
+      getClient,
+      schema,
+      observeDocumentPairAvailability,
+      i18n: getFallbackLocaleSource(),
+      serverActionsEnabled: of(false),
+    },
+    {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
+    'movie',
+    'version',
+  ).pipe(publish())
+
+  // Publish and connect this for the tests
+  ;(stream as ConnectableObservable<unknown>).connect()
+
+  // Create a subject we can use to notify via `done.next()`
+  const done = new Subject<void>()
+
+  // Create a subscription that collects all emissions until `done.next()`
+  const subscription = firstValueFrom(stream.pipe(buffer(done)))
+
+  return {
+    subscription,
+    closeSubscription: () => done.next(),
+    doneValidating: () => {
+      return lastValueFrom(stream.pipe(takeWhile((e) => e.isValidating, true)))
+    },
+  }
+}
+
 // @todo: fix mock sanity client is not compatible with SanityClient
 function getMockClient() {
   return createMockSanityClient() as any as SanityClient
@@ -303,6 +345,7 @@ describe('validation', () => {
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
         'movie',
+        'draft',
       ).pipe(buffer(timer(500))),
     )
 
@@ -348,6 +391,7 @@ describe('validation', () => {
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
         'movie',
+        'draft',
       ),
     )
 
@@ -356,6 +400,7 @@ describe('validation', () => {
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
         'movie',
+        'draft',
       ),
     )
 
@@ -389,5 +434,101 @@ describe('validation', () => {
     closeSubscription()
 
     await expect(subscription).resolves.toMatchObject([{isValidating: false, validation: []}])
+  })
+
+  it('creates separate cache entries for different document versions', async () => {
+    const client = getMockClient()
+
+    const summerEditStateSubject = new Subject<EditStateFor>()
+    const winterEditStateSubject = new Subject<EditStateFor>()
+
+    mockEditState.mockImplementation((_ctx, idPair) => {
+      if (idPair.versionId === 'versions.summer.example-id') {
+        return summerEditStateSubject.asObservable()
+      }
+      return winterEditStateSubject.asObservable()
+    })
+
+    const {
+      subscription: summerSubscription,
+      closeSubscription: closeSummerSubscription,
+      doneValidating: summerDoneValidating,
+    } = createVersionSubscription(client, 'versions.summer.example-id', () => EMPTY)
+
+    const {
+      subscription: winterSubscription,
+      closeSubscription: closeWinterSubscription,
+      doneValidating: winterDoneValidating,
+    } = createVersionSubscription(client, 'versions.winter.example-id', () => EMPTY)
+
+    summerEditStateSubject.next({
+      id: 'example-id',
+      version: {
+        _id: 'versions.summer.example-id',
+        _createdAt: '2021-09-07T16:23:52.256Z',
+        _rev: 'summerRev1',
+        _type: 'movie',
+        _updatedAt: '2021-09-07T16:23:52.256Z',
+        title: 5, // Invalid: should be string
+      },
+      draft: null,
+      published: null,
+      transactionSyncLock: null,
+      liveEdit: false,
+      liveEditSchemaType: false,
+      release: undefined,
+      type: 'movie',
+      ready: true,
+    })
+
+    winterEditStateSubject.next({
+      id: 'example-id',
+      version: {
+        _id: 'versions.winter.example-id',
+        _createdAt: '2021-09-07T16:23:52.256Z',
+        _rev: 'winterRev1',
+        _type: 'movie',
+        _updatedAt: '2021-09-07T16:23:52.256Z',
+        title: 'Valid Winter Title', // Valid
+      },
+      draft: null,
+      published: null,
+      transactionSyncLock: null,
+      liveEdit: false,
+      liveEditSchemaType: false,
+      release: undefined,
+      type: 'movie',
+      ready: true,
+    })
+
+    await summerDoneValidating()
+    await winterDoneValidating()
+
+    closeSummerSubscription()
+    closeWinterSubscription()
+
+    const summerResults = await summerSubscription
+    const winterResults = await winterSubscription
+
+    expect(summerResults[summerResults.length - 1]).toMatchObject({
+      isValidating: false,
+      validation: [
+        {
+          item: {message: 'Expected type "String", got "Number"'},
+          level: 'error',
+          path: ['title'],
+        },
+      ],
+    })
+
+    expect(winterResults[winterResults.length - 1]).toMatchObject({
+      isValidating: false,
+      validation: [],
+    })
+
+    expect(mockEditState).toHaveBeenCalledTimes(2)
+
+    summerEditStateSubject.complete()
+    winterEditStateSubject.complete()
   })
 })

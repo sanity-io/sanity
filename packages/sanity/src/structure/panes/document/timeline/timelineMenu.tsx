@@ -69,9 +69,13 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectRev = useCallback(
     (revChunk: Chunk) => {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         const [sinceId, revId] = timelineStore?.findRangeForRev(revChunk) || [null, null]
         setTimelineRange(sinceId, revId)
+      }
+      try {
+        run()
       } catch (err) {
         toast.push({
           closable: true,
@@ -86,9 +90,13 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   const selectSince = useCallback(
     (sinceChunk: Chunk) => {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         const [sinceId, revId] = timelineStore?.findRangeForSince(sinceChunk) || [null, null]
         setTimelineRange(sinceId, revId)
+      }
+      try {
+        run()
       } catch (err) {
         toast.push({
           closable: true,

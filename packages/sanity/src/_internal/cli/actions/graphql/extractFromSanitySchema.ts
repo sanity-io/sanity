@@ -243,7 +243,7 @@ export function extractFromSanitySchema(
   function isArrayType(type: SchemaType | ObjectField): type is ArraySchemaType {
     return Boolean(
       ('jsonType' in type && type.jsonType === 'array') ||
-        (type.type && type.type.jsonType === 'array'),
+      (type.type && type.type.jsonType === 'array'),
     )
   }
 

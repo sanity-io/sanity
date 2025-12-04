@@ -12,8 +12,10 @@ import {type BaseInputProps} from '../../../types/inputProps'
 import {computeRangeDecorationsForPortableText} from './computeRangeDecorationsForPortableText'
 import {diffMatchPatchToPortableText} from './diffMatchPatchToPortableText'
 
-export interface PortableTextOptimisticDiffOptions
-  extends Pick<BaseInputProps, 'displayInlineChanges'> {
+export interface PortableTextOptimisticDiffOptions extends Pick<
+  BaseInputProps,
+  'displayInlineChanges'
+> {
   upstreamValue: PortableTextBlock[] | undefined
   definitiveValue: PortableTextBlock[] | undefined
   perspective?: TargetPerspective

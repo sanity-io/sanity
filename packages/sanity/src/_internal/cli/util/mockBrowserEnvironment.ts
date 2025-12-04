@@ -1,3 +1,5 @@
+import {createRequire} from 'node:module'
+
 import {ResizeObserver} from '@juggle/resize-observer'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
 import jsdomGlobal from 'jsdom-global'
@@ -5,6 +7,9 @@ import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
 
 import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
+import {setupImportErrorHandler} from './importErrorHandler'
+
+const require = createRequire(import.meta.url)
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -20,7 +25,15 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     }
   }
 
+  // Set up import error handler before esbuild-register to silently ignore themer.sanity.build URLs
+  const importErrorHandler = setupImportErrorHandler()
+
+  const btoa = global.btoa
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
+
+  // Don't use jsdom's btoa as it's using the deprecatd `abab` package.
+  if (typeof btoa === 'function') global.btoa = btoa
+
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals(basePath)
   const cleanupFileLoader = addHook(
@@ -51,6 +64,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     globalCleanup()
     windowCleanup()
     domCleanup()
+    importErrorHandler.cleanup()
   }
 }
 

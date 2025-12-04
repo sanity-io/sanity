@@ -1,5 +1,15 @@
 import {type SanityClient} from '@sanity/client'
-import {catchError, map, type Observable, of, retry, shareReplay, startWith, timer} from 'rxjs'
+import {
+  catchError,
+  map,
+  type Observable,
+  of,
+  retry,
+  shareReplay,
+  startWith,
+  switchMap,
+  timer,
+} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
@@ -27,11 +37,18 @@ const getCompanionDocs = memoize(
     client: SanityClient,
     previewStore: DocumentPreviewStore,
   ): Observable<CompanionDocs> => {
-    const companionDocsIdsListener$ = (id: string) =>
-      previewStore.unstable_observeDocumentIdSet(
-        `_type == "sanity.canvas.link" && studioDocumentId in *[sanity::versionOf($publishedId)]._id`,
-        {publishedId: id},
-      )
+    const allVersionIds$ = previewStore
+      .unstable_observeDocumentIdSet(`sanity::versionOf($publishedId)`, {publishedId})
+      .pipe(map((result) => result.documentIds))
+
+    const companionDocsIdsListener$ = allVersionIds$.pipe(
+      switchMap((versionIds) =>
+        previewStore.unstable_observeDocumentIdSet(
+          `_type == "sanity.canvas.link" && studioDocumentId in $ids`,
+          {ids: versionIds},
+        ),
+      ),
+    )
 
     const getCompanionDoc$ = (id: string) =>
       client.observable
@@ -61,7 +78,7 @@ const getCompanionDocs = memoize(
           }),
         )
 
-    return companionDocsIdsListener$(publishedId).pipe(
+    return companionDocsIdsListener$.pipe(
       map((value) => value.documentIds),
       mergeMapArray(getCompanionDoc$),
       map((value) => ({error: null, data: value, loading: false})),

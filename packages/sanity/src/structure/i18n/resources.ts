@@ -24,6 +24,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
+  /** Message prompting the user to confirm discarding changes */
+  'action.discard-changes.confirm-dialog.confirm-discard-changes-draft':
+    'Are you sure you want to discard all changes and delete this draft document?',
+  /**Header for the confirm discard dialog */
+  'action.discard-changes.confirm-dialog.header.text': 'Discard changes?',
   /** Tooltip when action is disabled because the document has no unpublished changes */
   'action.discard-changes.disabled.no-change': 'This document has no unpublished changes',
   /** Tooltip when action is disabled because the document is not published */
@@ -182,6 +187,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document is not part of any release
+   * @deprecated – no longer in use
+   * */
+  'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
@@ -214,6 +223,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The action menu button tooltip */
   'buttons.action-menu-button.tooltip': 'Document actions',
 
+  /** The aria-label for the collapse pane button on the document panel header */
+  'buttons.focus-pane-button.aria-label.collapse': 'Exit focus mode (show navigation)',
+  /** The aria-label for the focus pane button on the document panel header */
+  'buttons.focus-pane-button.aria-label.focus': 'Enter focus mode (hide navigation)',
+
+  /** The tooltip for the collapse pane button on the document panel header */
+  'buttons.focus-pane-button.tooltip.collapse': 'Exit focus mode',
+  /** The tooltip for the focus pane button on the document panel header */
+  'buttons.focus-pane-button.tooltip.focus': 'Enter focus mode',
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
   /** The tool tip for the split pane button on the document panel header */
@@ -304,16 +322,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The header for the project ID column in the list of cross-dataset references found */
   'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
   /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
-  'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete anyway',
+  'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete all versions anyway',
   /** The text in the "Unpublish anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_unpublish': 'Unpublish anyway',
   /** The text in the "Delete now" button in the confirm delete dialog that confirms the action */
-  'confirm-delete-dialog.confirm-button.text_delete': 'Delete now',
+  'confirm-delete-dialog.confirm-button.text_delete': 'Delete all versions',
   /** The text in the "Unpublish now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_unpublish': 'Unpublish now',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_delete':
-    'Are you sure you want to delete “<DocumentTitle/>”?',
+    'Are you sure you want to delete all the versions of this document?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
     'Are you sure you want to unpublish “<DocumentTitle/>”?',
@@ -528,7 +546,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The document was successfully deleted',
   /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
-    'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+    'All changes has now been discarded. The discarded draft can still be recovered from history',
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',

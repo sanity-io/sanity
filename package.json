@@ -20,7 +20,7 @@
     "check:lint": "turbo run lint --continue -- --quiet",
     "check:oxlint": "oxlint --type-aware --quiet",
     "check:test": "pnpm test -- --silent",
-    "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
+    "check:types": "tsgo && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
     "chore:format:fix": "prettier --cache --write .",
     "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",
@@ -104,9 +104,9 @@
   },
   "prettier": "@sanity/prettier-config",
   "devDependencies": {
-    "@lerna-lite/cli": "^4.9.0",
-    "@lerna-lite/list": "^4.9.0",
-    "@lerna-lite/publish": "^4.9.0",
+    "@lerna-lite/cli": "^4.9.4",
+    "@lerna-lite/list": "^4.9.4",
+    "@lerna-lite/publish": "^4.9.4",
     "@repo/bundle-manager": "workspace:*",
     "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
@@ -117,6 +117,7 @@
     "@sanity/prettier-config": "^1.0.6",
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
+    "@typescript/native-preview": "catalog:",
     "@vitest/coverage-v8": "^3.2.4",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "depcheck": "^1.4.7",
@@ -125,33 +126,21 @@
     "eslint": "catalog:",
     "eslint-formatter-gha": "^1.6.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.0",
+    "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "1.28.0",
-    "oxlint-tsgolint": "0.5.1",
+    "oxlint": "1.31.0",
+    "oxlint-tsgolint": "0.8.3",
     "playwright": "catalog:",
     "prettier": "catalog:",
-    "prettier-plugin-packagejson": "^2.5.19",
+    "prettier-plugin-packagejson": "^2.5.20",
     "sanity": "workspace:*",
     "tsx": "^4.20.6",
-    "turbo": "^2.5.8",
+    "turbo": "^2.6.1",
     "typescript": "catalog:",
     "vercel": "^48.6.0",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@10.20.0",
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowAny": [
-        "react",
-        "react-dom"
-      ]
-    },
-    "overrides": {
-      "@sanity/ui@3": "$@sanity/ui",
-      "jsdom": "26.1.0",
-      "vitest": "$vitest"
-    }
-  },
+  "packageManager": "pnpm@10.24.0",
+  "//": "pnpm settings moved to pnpm-workspace.yaml",
   "isSanityMonorepo": true
 }

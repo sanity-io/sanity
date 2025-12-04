@@ -11,6 +11,7 @@ interface TypesGeneratedTraceAttrubutes {
   unknownTypeNodesRatio: number
   emptyUnionTypeNodesGenerated: number
   configOverloadClientMethods: boolean
+  configMethod: 'legacy' | 'cli'
 }
 
 export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttrubutes>({
