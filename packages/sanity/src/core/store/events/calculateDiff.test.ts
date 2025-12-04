@@ -118,8 +118,6 @@ describe('calculateDiff', () => {
         "type": "object",
       }
     `)
-    expect(diff.fields.name.action).toBe('changed')
-    expect(diff.fields.name.annotation).not.toBeNull()
   })
   it('should calculate the diff between the initial and final document when removing values', () => {
     const initialDoc = {
@@ -229,7 +227,164 @@ describe('calculateDiff', () => {
         "type": "object",
       }
     `)
-    expect(diff.fields.name.action).toBe('removed')
-    expect(diff.fields.name.annotation).not.toBeNull()
+  })
+  it('should handle additions and removals in multiple transactions', () => {
+    const initialDoc = {
+      _createdAt: '2025-12-04T15:58:23Z',
+      _id: 'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8',
+      _rev: '4318b535-f950-460e-b334-cd84c054804c',
+      _type: 'author',
+      _updatedAt: '2025-12-04T15:58:23Z',
+      name: 'Foo',
+    }
+    const documentId = 'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8'
+    const transactions = [
+      {
+        id: '0f16838b-ba66-4719-a916-ad6cfe18ccf1',
+        timestamp: '2025-12-04T15:58:28.105248Z',
+        author: 'p8xDvUMxC',
+
+        documentIDs: ['drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8'],
+        effects: {
+          'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8': {
+            apply: [11, 3, 23, 0, 18, 22, '8', 23, 19, 20, 15, 17, 'F', 'name'],
+            revert: [10, 0, 14, '_updatedAt', 17, 'Foo', 'name'],
+          },
+        },
+      },
+      {
+        id: '8532447b-3639-4b9b-abf0-9be4c6e80fdd',
+        timestamp: '2025-12-04T15:58:34.265377Z',
+        author: 'p8xDvUMxC',
+        documentIDs: ['drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8'],
+        effects: {
+          'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8': {
+            apply: [11, 3, 23, 0, 17, 22, '34', 23, 19, 20, 15, 17, 'developer', 'role'],
+            revert: [19, 5, 11, 3, 23, 0, 17, 22, '28', 23, 19, 20, 15],
+          },
+        },
+      },
+    ]
+    const events: DocumentGroupEvent[] = [
+      {
+        type: 'editDocumentVersion',
+        documentId: 'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8',
+        id: '8532447b-3639-4b9b-abf0-9be4c6e80fdd',
+        timestamp: '2025-12-04T15:58:34.265Z',
+        author: 'p8xDvUMxC',
+        contributors: ['p8xDvUMxC'],
+        revisionId: '8532447b-3639-4b9b-abf0-9be4c6e80fdd',
+        transactions: [
+          {
+            type: 'editTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2025-12-04T15:58:34.265Z',
+            revisionId: '8532447b-3639-4b9b-abf0-9be4c6e80fdd',
+          },
+          {
+            type: 'editTransaction',
+            author: 'p8xDvUMxC',
+            timestamp: '2025-12-04T15:58:28.105Z',
+            revisionId: '0f16838b-ba66-4719-a916-ad6cfe18ccf1',
+          },
+        ],
+        documentVariantType: 'draft',
+      },
+      {
+        author: 'p8xDvUMxC',
+        type: 'createDocumentVersion',
+        timestamp: '2025-12-04T15:58:23Z',
+        documentId: '102042fa-0115-4c2c-aa61-23cca17b9ad8',
+        releaseId: '',
+        versionId: 'drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8',
+        versionRevisionId: '4318b535-f950-460e-b334-cd84c054804c',
+        id: '4318b535-f950-460e-b334-cd84c054804c',
+        documentVariantType: 'draft',
+      },
+    ]
+    const diff = calculateDiff({initialDoc, documentId, transactions, events})
+    expect(diff).toMatchInlineSnapshot(`
+      {
+        "action": "changed",
+        "annotation": {
+          "author": "p8xDvUMxC",
+          "event": undefined,
+          "timestamp": "2025-12-04T15:58:34.265377Z",
+        },
+        "fields": {
+          "name": {
+            "action": "changed",
+            "annotation": {
+              "author": "p8xDvUMxC",
+              "event": undefined,
+              "timestamp": "2025-12-04T15:58:28.105248Z",
+            },
+            "fromValue": "Foo",
+            "isChanged": true,
+            "segments": [
+              {
+                "action": "unchanged",
+                "text": "F",
+                "type": "stringSegment",
+              },
+              {
+                "action": "removed",
+                "annotation": {
+                  "author": "p8xDvUMxC",
+                  "event": undefined,
+                  "timestamp": "2025-12-04T15:58:28.105248Z",
+                },
+                "text": "oo",
+                "type": "stringSegment",
+              },
+            ],
+            "toValue": "F",
+            "type": "string",
+          },
+          "role": {
+            "action": "added",
+            "annotation": {
+              "author": "p8xDvUMxC",
+              "event": undefined,
+              "timestamp": "2025-12-04T15:58:34.265377Z",
+            },
+            "fromValue": undefined,
+            "isChanged": true,
+            "segments": [
+              {
+                "action": "added",
+                "annotation": {
+                  "author": "p8xDvUMxC",
+                  "event": undefined,
+                  "timestamp": "2025-12-04T15:58:34.265377Z",
+                },
+                "text": "developer",
+                "type": "stringSegment",
+              },
+            ],
+            "toValue": "developer",
+            "type": "string",
+          },
+        },
+        "fromValue": {
+          "_createdAt": "2025-12-04T15:58:23Z",
+          "_id": "drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8",
+          "_rev": "4318b535-f950-460e-b334-cd84c054804c",
+          "_type": "author",
+          "_updatedAt": "2025-12-04T15:58:23Z",
+          "name": "Foo",
+        },
+        "isChanged": true,
+        "toValue": {
+          "_createdAt": "2025-12-04T15:58:23Z",
+          "_id": "drafts.102042fa-0115-4c2c-aa61-23cca17b9ad8",
+          "_type": "author",
+          "_updatedAt": "2025-12-04T15:58:34Z",
+          "name": "F",
+          "role": "developer",
+        },
+        "type": "object",
+      }
+    `)
   })
 })
