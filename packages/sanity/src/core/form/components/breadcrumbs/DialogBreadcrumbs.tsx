@@ -1,4 +1,4 @@
-import {isArrayOfBlocksSchemaType, isKeySegment, type Path, type SchemaType} from '@sanity/types'
+import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
 import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
 import {
@@ -11,10 +11,10 @@ import {
 } from 'react'
 
 import {MenuButton} from '../../../../ui-components'
-import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
+import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
+import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {useValuePreviewWithFallback} from '../../studio/tree-editing/hooks'
 import {useFormBuilder} from '../../useFormBuilder'
 
 const MAX_LENGTH = 5
@@ -65,84 +65,6 @@ const SeparatorItem = forwardRef(function SeparatorItem(
 })
 
 /**
- * Hook to get sibling info (index and count) for a breadcrumb item.
- * Returns null if the item is not in an array, can't be found, or is inside a PTE array.
- */
-function useSiblingInfo(
-  itemPath: Path,
-  documentSchemaType: SchemaType,
-  documentValue: unknown,
-): {index: number; count: number} | null {
-  // Find the last key segment in the path
-  const lastKeySegmentIndex = useMemo(() => {
-    for (let i = itemPath.length - 1; i >= 0; i--) {
-      if (isKeySegment(itemPath[i])) {
-        return i
-      }
-    }
-    return -1
-  }, [itemPath])
-
-  // Get the parent array path (path up to but not including the key segment)
-  const parentArrayPath = useMemo(() => {
-    if (lastKeySegmentIndex < 0) return []
-    return itemPath.slice(0, lastKeySegmentIndex)
-  }, [itemPath, lastKeySegmentIndex])
-
-  // Get the parent array value
-  const parentArrayValue = useFormValue(parentArrayPath)
-
-  // Get the schema type for the parent array to check if it's a PTE
-  const parentArraySchemaType = useMemo(
-    () => resolveSchemaTypeForPath(documentSchemaType, parentArrayPath, documentValue),
-    [documentSchemaType, parentArrayPath, documentValue],
-  )
-
-  return useMemo(() => {
-    if (lastKeySegmentIndex < 0) return null
-
-    // Skip sibling info for Portable Text arrays (arrays of blocks)
-    if (parentArraySchemaType && isArrayOfBlocksSchemaType(parentArraySchemaType)) {
-      return null
-    }
-
-    const keySegment = itemPath[lastKeySegmentIndex]
-    if (!isKeySegment(keySegment)) return null
-
-    const arrayValue = parentArrayValue as Array<{_key: string}> | undefined
-    if (!Array.isArray(arrayValue)) return null
-
-    const index = arrayValue.findIndex((item) => item._key === keySegment._key)
-    if (index < 0) return null
-
-    return {
-      index: index + 1, // 1-based index for display
-      count: arrayValue.length,
-    }
-  }, [itemPath, lastKeySegmentIndex, parentArrayValue, parentArraySchemaType])
-}
-
-/**
- * Hook to get the preview title for a breadcrumb item.
- */
-function useBreadcrumbPreview(
-  itemPath: Path,
-  documentSchemaType: SchemaType,
-  documentValue: unknown,
-) {
-  const value = useFormValue(itemPath)
-
-  const schemaType = useMemo(
-    () => resolveSchemaTypeForPath(documentSchemaType, itemPath, documentValue),
-    [documentSchemaType, itemPath, documentValue],
-  )
-
-  const {value: preview} = useValuePreviewWithFallback({schemaType, value})
-
-  return preview.title
-}
-
-/**
  * Individual breadcrumb button that fetches its own preview.
  * Used for inline breadcrumb items.
  */
@@ -160,7 +82,7 @@ function BreadcrumbButton({
   onPathSelect: (path: Path) => void
 }) {
   const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
-  const siblingInfo = useSiblingInfo(itemPath, documentSchemaType, documentValue)
+  const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
@@ -219,7 +141,7 @@ function BreadcrumbMenuItem({
   onPathSelect: (path: Path) => void
 }) {
   const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
-  const siblingInfo = useSiblingInfo(itemPath, documentSchemaType, documentValue)
+  const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
@@ -239,7 +161,7 @@ function BreadcrumbMenuItem({
           </Box>
         )}
         <Box
-          paddingLeft={siblingInfo ? 1 : 0}
+          paddingLeft={siblingInfo?.index ? 1 : 0}
           style={{
             minWidth: 0,
             overflow: 'hidden',
