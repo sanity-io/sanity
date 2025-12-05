@@ -9,6 +9,7 @@ import {useMemo} from 'react'
 
 import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../contexts/FormValue'
+import {shouldSkipSiblingCount} from '../studio/tree-editing/utils/build-tree-editing-state/utils'
 
 /**
  * Hook to get sibling info (index and count) for a breadcrumb item.
@@ -40,16 +41,14 @@ export function useBreadcrumbSiblingInfo(
   // Check if parent is "children" inside a PTE block (for inline objects)
   // Pattern: ["pteField", {_key}, "children", {_key}]
   const isInsidePTEChildren = useMemo(() => {
-    // Check if parent array is named "children"
-    const parentName = parentArrayPath[parentArrayPath.length - 1]
-    if (parentName !== 'children') return false
-
-    // Check if grandparent's parent array is a PTE (array of blocks)
-    // Path to PTE array: parentArrayPath minus "children" and the block key
     if (parentArrayPath.length < 3) return false
+    // Path to PTE array: parentArrayPath minus "children" and the block key
     const pteArrayPath = parentArrayPath.slice(0, -2)
     const pteSchemaType = resolveSchemaTypeForPath(documentSchemaType, pteArrayPath, documentValue)
-    return pteSchemaType && isArrayOfBlocksSchemaType(pteSchemaType)
+    return shouldSkipSiblingCount({
+      arraySchemaType: pteSchemaType,
+      fieldPath: parentArrayPath,
+    })
   }, [parentArrayPath, documentSchemaType, documentValue])
 
   // Get the schema type for the current item
@@ -70,7 +69,7 @@ export function useBreadcrumbSiblingInfo(
     }
 
     // Skip sibling info for objects inside "children" of a PTE block (inline objects)
-    if (isObjectType && isInsidePTEChildren && isParentPTE) {
+    if (isObjectType && isInsidePTEChildren) {
       return null
     }
 
