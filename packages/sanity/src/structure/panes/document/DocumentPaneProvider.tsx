@@ -111,6 +111,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   } = pane
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
+
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
