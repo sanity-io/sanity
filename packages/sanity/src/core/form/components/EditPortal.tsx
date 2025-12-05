@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
@@ -76,9 +76,16 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const {path: currentPath} = (children as React.ReactElement)?.props as {path?: Path}
+  const {absolutePath, path} = (children as React.ReactElement)?.props as {
+    absolutePath?: Path
+    path?: Path
+  }
 
-  const {dialogId, isTop, stack, close} = useDialogStack({path: currentPath})
+  const currentPath = absolutePath || path
+
+  const {dialogId, isTop, stack, close, navigateUp} = useDialogStack({
+    path: currentPath,
+  })
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -89,6 +96,17 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   // Disable animation when there are nested dialogs (stack > 1)
   const hasNestedDialogs = stack.length > 1
 
+  const handleGlobalKeyDown = useCallback(
+    (event: any) => {
+      // Only the top dialog should respond to the keyboard shortcut
+      if (isTop && (event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') {
+        event.preventDefault()
+        navigateUp()
+      }
+    },
+    [isTop, navigateUp],
+  )
+
   const handleCloseAll = useCallback(() => {
     // closeAll() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
     // We intentionally do NOT call onClose?.() here because parent onClose callbacks
@@ -96,6 +114,8 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
     // and focusing a different editor
     close()
   }, [close])
+
+  useGlobalKeyDown(handleGlobalKeyDown)
 
   if (type === 'dialog') {
     return (

@@ -128,7 +128,20 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     closeAll()
   }, [closeWithFullscreen, closeAll, stack, hasAnyFullscreen, allFullscreenPaths])
 
-  const value = useMemo(() => ({stack, push, remove, close}), [stack, push, remove, close])
+  const navigateUp = useCallback(() => {
+    const currentPath = stack[stack.length - 1]?.path
+
+    if (currentPath && currentPath.length > 1) {
+      const newCurrentPath = currentPath.slice(0, -1)
+
+      onPathOpen(newCurrentPath)
+    }
+  }, [onPathOpen, stack])
+
+  const value = useMemo(
+    () => ({stack, push, remove, close, navigateUp}),
+    [stack, push, remove, close, navigateUp],
+  )
 
   return <DialogStackContext.Provider value={value}>{children}</DialogStackContext.Provider>
 }
