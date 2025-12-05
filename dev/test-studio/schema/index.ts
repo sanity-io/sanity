@@ -25,6 +25,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {elidedValuesExample} from './debug/elidedValues'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
 import {fieldActionsTest} from './debug/fieldActionsTest'
@@ -263,6 +264,7 @@ export function createSchemaTypes(projectId: string) {
     simpleReferences,
     reservedFieldNames,
     review,
+    elidedValuesExample,
     select,
     typeWithNoToplevelStrings,
     uploads,

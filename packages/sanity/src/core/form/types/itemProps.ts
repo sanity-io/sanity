@@ -114,6 +114,12 @@ export interface ObjectItemProps<Item extends ObjectItem = ObjectItem> extends B
   onClose: () => void
   /** Callback for when the item is opened. */
   onOpen: () => void
+  /** Callback for when the item is selected. */
+  onSelect: (options?: {metaKey?: boolean; shiftKey?: boolean}) => void
+  /** Callback for when the item is unselected. */
+  onUnselect: () => void
+  selectable: boolean
+  selected: boolean
   /** The value of the item. */
   value: Item
   /**

@@ -1,8 +1,10 @@
 import {
   AddDocumentIcon,
+  CheckmarkIcon,
   CloseIcon,
   CopyIcon,
   LaunchIcon as OpenInNewTabIcon,
+  SquareIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
@@ -78,6 +80,10 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     open,
     onInsert,
     onCopy,
+    selected,
+    onSelect,
+    onUnselect,
+    selectable,
     presence,
     validation,
     inputId,
@@ -88,6 +94,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   } = props
 
   const sortable = parentSchemaType.options?.sortable !== false
+  const showDragHandle = parentSchemaType.options?.dragHandle !== false
   const insertableTypes = parentSchemaType.of
 
   const elementRef = useRef<HTMLDivElement | null>(null)
@@ -155,7 +162,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     ? schemaType.to.find((toType) => toType.name === refTypeName)
     : undefined
   const pressed = selectedState === 'pressed'
-  const selected = selectedState === 'selected'
+  const active = selectedState === 'active'
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const isEditing = !hasRef || focusPath[0] === '_ref'
@@ -268,6 +275,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                   icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
                   onClick={handleReplace}
                 />
+                {selected ? (
+                  <MenuItem text="Unselect" icon={SquareIcon} onClick={onUnselect} />
+                ) : (
+                  <MenuItem text="Select" icon={CheckmarkIcon} onClick={() => onSelect()} />
+                )}
                 {!disableActions.includes('copy') && (
                   <MenuItem
                     text={t('inputs.reference.action.copy')}
@@ -319,7 +331,11 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       containerRef={containerRef}
     >
       <RowLayout
-        dragHandle={sortable}
+        selected={selected}
+        onUnselect={onUnselect}
+        onSelect={onSelect}
+        dragHandle={showDragHandle && sortable}
+        selectable={selectable}
         readOnly={!!readOnly}
         presence={
           !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
@@ -354,8 +370,8 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             documentId={value?._ref}
             documentType={refType?.name}
             disabled={resolvingInitialValue}
-            __unstable_focusRing
-            selected={selected}
+            __unstable_focusRing={!selectable}
+            selected={active}
             pressed={pressed}
             data-selected={selected ? true : undefined}
             data-pressed={pressed ? true : undefined}

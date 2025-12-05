@@ -26,6 +26,13 @@ export default defineType({
       description: 'Try toggling me! This is the new switch design',
     },
     {
+      name: 'indeterminate',
+      type: 'boolean',
+      indeterminate: true,
+      title: `I'm indeterminate`,
+      description: 'I can be set to undefined',
+    },
+    {
       name: 'switchTest',
       type: 'boolean',
       title: `true & Read only`,

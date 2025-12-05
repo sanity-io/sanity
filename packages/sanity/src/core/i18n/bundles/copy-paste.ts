@@ -80,6 +80,15 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
     'Clipboard access required to copy this content. Allow clipboard permissions in your browser settings, then try copying again.',
   /** The error message that is shown when the clipboard is not supported */
   'copy-paste.on-copy.validation.clipboard-not-supported.title': 'Clipboard access blocked',
+  /** The success message that is shown when a document is copied */
+  'copy-paste.on-copy.validation.copy-document-success.title': 'Document "{{fieldNames}}" copied',
+  /** The success message that is shown when a field is copied */
+  'copy-paste.on-copy.validation.copy-field_one-success.title': 'Field "{{fieldName}}" copied',
+  /** The success message that is shown when a selection of a field is copied */
+  'copy-paste.on-copy.validation.copy-field_selection-success.title':
+    'Selection of "{{fieldName}}" copied',
+  /** The success message that is shown when a array item is copied */
+  'copy-paste.on-copy.validation.copy-item_one-success.title': 'Item "{{typeName}}" copied',
 })
 
 /**
