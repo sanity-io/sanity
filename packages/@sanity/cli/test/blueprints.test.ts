@@ -300,11 +300,17 @@ describe('blueprints commands with mocked cores', () => {
 
   describe('plan command', () => {
     it('should call blueprintPlanCore with blueprint', async () => {
-      // sanity blueprints plan
-      await planBlueprintsCommand.action(emptyArgs, mockContext)
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {verbose: true},
+      }
+
+      // sanity blueprints plan --verbose
+      await planBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintPlanCore).toHaveBeenCalledWith({
         ...config,
+        flags: {verbose: true},
       })
     })
   })

@@ -2,7 +2,7 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --project-id <id>    Project ID to use
+  --project-id <id>       Project ID to use
 
 Examples:
   # List all Stacks for the current Project
@@ -16,6 +16,7 @@ export interface BlueprintsStacksFlags {
   'project-id'?: string
   'projectId'?: string
   'project'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsStacksFlags = {
@@ -26,9 +27,9 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
   name: 'stacks',
   group: 'blueprints',
   helpText,
-  signature: '[--project-id <id>]',
-  description: 'List all Blueprint Stacks for the current Project',
-  hideFromHelp: true,
+  signature: '[--project-id <value>]',
+  description: 'List all Blueprint Stacks',
+  hideFromHelp: false,
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -56,6 +57,7 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
       ...cmdConfig.value,
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
+        'verbose': flags.verbose,
       },
     })
 

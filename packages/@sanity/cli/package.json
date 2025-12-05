@@ -57,7 +57,7 @@
     "@babel/traverse": "^7.28.5",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "workspace:*",
-    "@sanity/runtime-cli": "^11.1.4",
+    "@sanity/runtime-cli": "^12.1.0",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "chalk": "^4.1.2",
