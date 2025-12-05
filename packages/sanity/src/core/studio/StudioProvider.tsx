@@ -23,6 +23,7 @@ import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
+import {LiveManifestRegisterProvider} from './manifest'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
@@ -81,6 +82,7 @@ export function StudioProvider({
                 <UserApplicationCacheProvider>
                   <AppIdCacheProvider>
                     <LiveUserApplicationProvider>
+                      <LiveManifestRegisterProvider />
                       <ComlinkRouteHandler />
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>

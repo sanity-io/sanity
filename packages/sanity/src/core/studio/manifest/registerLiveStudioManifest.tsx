@@ -1,0 +1,146 @@
+import {type SanityClient} from '@sanity/client'
+import {type RootTheme} from '@sanity/ui/theme'
+import {firstValueFrom} from 'rxjs'
+
+import {type Source, type WorkspaceSummary} from '../../config/types'
+import {type UserApplication} from '../../store/userApplications'
+import {resolveIcon} from './icon'
+
+/**
+ * Workspace configuration for the Studio manifest.
+ * @internal
+ */
+interface WorkspaceManifest {
+  name: string
+  projectId: string
+  dataset: string
+  schemaDescriptorId: string
+  basePath?: string
+  title?: string
+  subtitle?: string
+  icon?: string
+  mediaLibraryId?: string
+  apiHost?: string
+}
+
+/**
+ * Studio configuration manifest that gets registered with the Content Operating System.
+ * @internal
+ */
+interface StudioManifest {
+  version?: string
+  buildId?: string
+  workspaces: WorkspaceManifest[]
+}
+
+/**
+ * Resolves the Source from a WorkspaceSummary by subscribing to the source observable.
+ */
+async function resolveSource(workspace: WorkspaceSummary): Promise<Source | undefined> {
+  // At risk of being fired, we need the schema descriptor id for the workspace.
+  const sourceEntry = workspace.__internal.sources[0]
+  if (!sourceEntry) {
+    return undefined
+  }
+  return firstValueFrom(sourceEntry.source)
+}
+
+/**
+ * Resolves the schemaDescriptorId for a workspace.
+ * Returns undefined if the schema hasn't been uploaded or is unavailable.
+ */
+async function resolveSchemaDescriptorId(workspace: WorkspaceSummary): Promise<string | undefined> {
+  const source = await resolveSource(workspace)
+  return await source?.__internal?.schemaDescriptorId
+}
+
+/**
+ * Generates the workspace configuration for the manifest.
+ */
+async function generateWorkspaceManifest(
+  workspace: WorkspaceSummary,
+  theme: RootTheme,
+): Promise<WorkspaceManifest | null> {
+  const schemaDescriptorId = await resolveSchemaDescriptorId(workspace)
+
+  // schemaDescriptorId is required for the manifest
+  if (!schemaDescriptorId) {
+    return null
+  }
+
+  return {
+    name: workspace.name,
+    projectId: workspace.projectId,
+    dataset: workspace.dataset,
+    schemaDescriptorId,
+    basePath: workspace.basePath || undefined,
+    title: workspace.title || undefined,
+    subtitle: workspace.subtitle || undefined,
+    icon: resolveIcon({
+      icon: workspace.icon,
+      title: workspace.title || workspace.name,
+      subtitle: workspace.subtitle,
+      theme,
+    }),
+    mediaLibraryId: workspace.mediaLibrary?.enabled ? workspace.mediaLibrary.libraryId : undefined,
+  }
+}
+
+/**
+ * Generates the complete Studio manifest configuration.
+ */
+async function generateStudioManifest(
+  workspaces: WorkspaceSummary[],
+  theme: RootTheme,
+): Promise<StudioManifest> {
+  const workspaceManifests = await Promise.all(
+    workspaces.map((workspace) => generateWorkspaceManifest(workspace, theme)),
+  )
+
+  return {
+    // Filter out null entries (workspaces without schemaDescriptorId)
+    workspaces: workspaceManifests.filter((config): config is WorkspaceManifest => config !== null),
+  }
+}
+
+/**
+ * Uploads the studio manifest containing all workspace information to the backend.
+ * Each workspace manifest includes its associated schemaDescriptorId.
+ *
+ * @param client - The Sanity client to use for the API request
+ * @param userApplication - The user application
+ * @param workspaces - Array of all workspaces in the Studio
+ * @param theme - The Studio theme to use for rendering icons
+ * @returns Promise that resolves when upload is complete
+ * @internal
+ */
+export async function registerStudioManifest(
+  client: SanityClient,
+  userApplication: UserApplication,
+  workspaces: WorkspaceSummary[],
+  theme: RootTheme,
+): Promise<void> {
+  const liveManifest = await generateStudioManifest(workspaces, theme)
+
+  // Skip registering if the manifest does not have any valid workspaces
+  if (liveManifest.workspaces.length === 0) {
+    return
+  }
+
+  const {id, projectId, apiHost} = userApplication
+
+  // Post the live manifest via the global api
+  await client
+    .withConfig({
+      projectId,
+      apiHost,
+    })
+    .request({
+      method: 'POST',
+      uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
+      body: {
+        value: liveManifest,
+      },
+      tag: 'live-manifest-register',
+    })
+}
