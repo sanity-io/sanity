@@ -24,7 +24,7 @@ export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'san
 export const {NODE_ENV, ...envLessEnv} = process.env
 export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
-export const [nodeMajorVersion] = process.version.split('.')
+export const [nodeMajorVersion, nodeMinorVersion] = process.version.split('.')
 export const npmPath = which.sync('npm')
 // note: we use pnpm for `pack`, because npm doesn't rewrite `workspace:*` protocols
 export const pnpmPath = which.sync('pnpm')
@@ -44,7 +44,7 @@ let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
  * The generated ID contains enough information to:
  *   - Identify the test run the entity belongs to (duh)
  *   - Automatically clean up dangling entities from previous test runs (timestamp)
- *   - Separate runs in different OSes/node versions from eachother (platform/node major)
+ *   - Separate runs in different OSes/node versions from eachother (platform/node major+minor)
  *   - Separate runs in different _executions_ from eachother (process ID/github run ID)
  *
  * We use this test ID as the prefix for entities we create through the tests, and the tests
@@ -52,8 +52,8 @@ let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
  * multiple studio versions without conflicts.
  *
  * Examples:
- *   - Local : test-168262061-dar-v16-wode-11664
- *   - GitHub: test-168262061-lin-v14-gh-1234
+ *   - Local : t-168262061-dar-v16-0-14-wode-11664
+ *   - GitHub: t-168262061-lin-v14-18-15-gh-1234
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -67,7 +67,7 @@ const getTestId = () => {
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
   const osPlatform = platform().slice(0, 3)
-  cachedTestId = `test-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
+  cachedTestId = `t-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${nodeMinorVersion}-${runId}`
 
   // We're setting this to the environment because the global setup and the tests run in
   // isolated workers/threads, meaning the local `cachedTestId` variable won't be available
