@@ -26,7 +26,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   const {validation: validationMarkers} = useValidationStatus(
     value._id,
     documentType,
-    selectedReleaseId,
+    !selectedReleaseId,
   )
 
   const validation: FormNodeValidation[] = useMemo(
