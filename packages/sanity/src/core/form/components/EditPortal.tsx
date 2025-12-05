@@ -4,10 +4,10 @@ import {type DragEvent, type ReactNode, useCallback, useRef, useState} from 'rea
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
-import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -129,7 +129,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
             __unstable_autoFocus={isTop ? props.autofocus : false}
             contentRef={setDocumentScrollElement}
             data-testid="edit-portal-dialog"
-            header={header}
+            header={<DialogBreadcrumbs currentPath={currentPath} />}
             id={dialogId}
             onClickOutside={isTop ? handleCloseAll : undefined}
             onClose={handleCloseAll}
@@ -138,7 +138,6 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
             width={width}
             animate={!hasNestedDialogs}
           >
-            {currentPath && pathToString(currentPath)}
             {contents}
           </Dialog>
         </VirtualizerScrollInstanceProvider>
