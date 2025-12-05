@@ -17,7 +17,7 @@ beforeEach(() => {
 
 describe('patch', () => {
   describe('draft exists, version not checked-out', () => {
-    it('operates on the draft document only', () => {
+    it('operates on the draft document only, published document exists', () => {
       const client = createMockSanityClient() as unknown as SanityClient
 
       const idPair: IdPair = {
@@ -68,17 +68,82 @@ describe('patch', () => {
         ],
       )
 
-      expect(draftMutate).toHaveBeenCalledTimes(2)
+      expect(draftMutate).toHaveBeenCalledTimes(1)
 
       expect(draftMutate).toHaveBeenNthCalledWith(1, [
         {
-          createIfNotExists: {
-            _createdAt: '2021-09-14T22:48:02.303Z',
-            _id: 'drafts.my-id',
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['_empty_action_guard_pseudo_field_'],
+          },
+        },
+        {
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['newValue'],
           },
         },
       ])
-      expect(draftMutate).toHaveBeenNthCalledWith(2, [
+
+      expect(publishedMutate).not.toHaveBeenCalled()
+      expect(versionMutate).not.toHaveBeenCalled()
+    })
+
+    it('operates on the draft document only, published document does not exist', () => {
+      const client = createMockSanityClient() as unknown as SanityClient
+
+      const idPair: IdPair = {
+        draftId: 'drafts.my-id',
+        publishedId: 'my-id',
+      }
+
+      const pair = checkoutPair(client, idPair, of(true))
+      const versionMutate = vi.fn()
+      const draftMutate = vi.fn()
+      const publishedMutate = vi.fn()
+
+      if (typeof pair.version !== 'undefined') {
+        pair.version.mutate = versionMutate
+      }
+
+      pair.draft.mutate = draftMutate
+      pair.published.mutate = publishedMutate
+
+      patch.execute(
+        {
+          client,
+          idPair,
+          snapshots: {
+            draft: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'exampleRev',
+              _id: 'drafts.my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+              newValue: 'hey',
+            },
+            published: null,
+          },
+          serverActionsEnabled: true,
+          ...pair,
+        } as unknown as OperationArgs,
+        [
+          {
+            unset: ['newValue'],
+          },
+        ],
+      )
+
+      expect(draftMutate).toHaveBeenCalledTimes(1)
+
+      // Performs the same operations as the previous test, doesn't matter if the published document exists or not.
+      expect(draftMutate).toHaveBeenNthCalledWith(1, [
+        {
+          patch: {
+            id: 'drafts.my-id',
+            unset: ['_empty_action_guard_pseudo_field_'],
+          },
+        },
         {
           patch: {
             id: 'drafts.my-id',
