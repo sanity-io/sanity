@@ -793,3 +793,40 @@ describe('Extract schema test', () => {
     expect(inlineRef.value.dereferencesTo).toBe('thing')
   })
 })
+
+test('inline regression: inline type that references other inline type', () => {
+  const schema = createSchema(
+    {
+      name: 'test',
+      types: [
+        defineType({
+          type: 'iconPicker',
+          title: 'sanityIcon',
+          name: 'sanityIcon',
+        }),
+        defineType({
+          type: 'object',
+          title: 'iconPicker',
+          name: 'iconPicker',
+          fields: [
+            {
+              type: 'string',
+              name: 'title',
+            },
+          ],
+        }),
+      ],
+    },
+    true,
+  )
+
+  const extracted = extractSchema(schema)
+  expect(extracted.map((v) => v.name)).toStrictEqual(['sanityIcon', 'iconPicker'])
+  expect(extracted).toMatchSnapshot()
+  const inlineRef = extracted.find((type) => type.name === 'sanityIcon')
+  expect(inlineRef).toBeDefined()
+  assert(inlineRef !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+  assert(inlineRef.type === 'type')
+  assert(inlineRef.value.type === 'inline')
+  expect(inlineRef.value.name).toBe('iconPicker')
+})
