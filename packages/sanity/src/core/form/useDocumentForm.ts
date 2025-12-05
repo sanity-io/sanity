@@ -237,7 +237,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(value._id, documentType, releaseId)
+  const {validation: validationRaw} = useValidationStatus(value._id, documentType, !releaseId)
+
   const validation = useUnique(validationRaw)
 
   const {previousId: upstreamId} = useDocumentIdStack({
