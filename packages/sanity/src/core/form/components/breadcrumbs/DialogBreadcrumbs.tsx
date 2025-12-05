@@ -15,6 +15,7 @@ import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {useFormBuilder} from '../../useFormBuilder'
 
 const MAX_LENGTH = 5
@@ -211,6 +212,7 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
   }, [size?.border.width])
 
   // Build raw breadcrumb items from the path (only key segments = array items)
+  // Also filter out PTE blocks (blocks with span children)
   const rawItems: BreadcrumbItemData[] = useMemo(() => {
     if (!currentPath || currentPath.length === 0) {
       return []
@@ -221,14 +223,18 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
     currentPath.forEach((segment, index) => {
       // Only include key segments (array items)
       if (isKeySegment(segment)) {
-        result.push({
-          path: currentPath.slice(0, index + 1),
-        })
+        const itemPath = currentPath.slice(0, index + 1)
+        // Use shouldBeInBreadcrumb to filter out PTE blocks
+        if (shouldBeInBreadcrumb(itemPath, currentPath, documentValue)) {
+          result.push({
+            path: itemPath,
+          })
+        }
       }
     })
 
     return result
-  }, [currentPath])
+  }, [currentPath, documentValue])
 
   // Collapse middle items if too many
   const items: BreadcrumbItem[] = useMemo(() => {
