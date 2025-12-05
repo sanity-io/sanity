@@ -64,7 +64,7 @@ function DelayedValidationRunner({id, schemaName, updateValidation}: ValidationR
 
 function ValidationRunner({id, schemaName, updateValidation}: ValidationRunnerProps) {
   const draftId = getDraftId(id)
-  const validationStatus = useValidationStatus(draftId, schemaName)
+  const validationStatus = useValidationStatus(draftId, schemaName, true)
 
   useEffect(() => {
     if (!validationStatus.isValidating) {
