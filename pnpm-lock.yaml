@@ -1974,8 +1974,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/export':
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.1)
@@ -5615,8 +5615,8 @@ packages:
   '@sanity/eventsource@5.0.2':
     resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
-  '@sanity/export@4.0.1':
-    resolution: {integrity: sha512-fQYd26ooDOKsiza6ubdPla8x7sKmQGD8U1wsFEQ3RGJByQkFq1C7LbylG+4m42BMERbftkonv26XLgfN8RXZQQ==}
+  '@sanity/export@5.0.1':
+    resolution: {integrity: sha512-ATHXvRNup6mTYYxlGXvJpzAodx1GuXfNcIdxy027LmAKPRoUExwp7rg2yfU/Nxu0gvpfeDbUPneJ2H5gPQmNWg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/generate-help-url@3.0.1':
@@ -9963,8 +9963,9 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
-  json-stream-stringify@2.0.4:
-    resolution: {integrity: sha512-gIPoa6K5w6j/RnQ3fOtmvICKNJGViI83A7dnTIL+0QJ/1GKuNvCPFvbFWxt0agruF4iGgDFJvge4Gua4ZoiggQ==}
+  json-stream-stringify@3.1.6:
+    resolution: {integrity: sha512-x7fpwxOkbhFCaJDJ8vb1fBY3DdSa4AlITaz+HHILQJzdPMnHEFjxPwVUi1ALIbcIxDE0PNe/0i7frnY8QnBQog==}
+    engines: {node: '>=7.10.1'}
 
   json-stringify-nice@1.1.4:
     resolution: {integrity: sha512-5Z5RFW63yxReJ7vANgW6eZFGWaQvnPE3WNmZoOJrSkGju2etKA2L5rrOa1sm877TVTFt57A80BH1bArcmlLfPw==}
@@ -10953,10 +10954,6 @@ packages:
   p-pipe@4.0.0:
     resolution: {integrity: sha512-HkPfFklpZQPUKBFXzKFB6ihLriIHxnmuQdK9WmLDwe4hf2PdhhfWT/FJa+pc3bA1ywvKXtedxIRmd4Y7BTXE4w==}
     engines: {node: '>=12'}
-
-  p-queue@2.4.2:
-    resolution: {integrity: sha512-n8/y+yDJwBjoLQe1GSJbbaYQLTI7QHNZI2+rpmCDbe++WLf9HC3gf6iqj5yfPAV71W4UF3ql5W1+UBPXoXTxng==}
-    engines: {node: '>=4'}
 
   p-queue@9.0.1:
     resolution: {integrity: sha512-RhBdVhSwJb7Ocn3e8ULk4NMwBEuOxe+1zcgphUy9c2e5aR/xbEsdVXxHJ3lynw6Qiqu7OINEyHlZkiblEpaq7w==}
@@ -16766,21 +16763,14 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@4.0.1':
+  '@sanity/export@5.0.1':
     dependencies:
-      '@sanity/client': 7.13.1(debug@4.4.3)
-      '@sanity/util': link:packages/@sanity/util
       archiver: 7.0.1
       debug: 4.4.3(supports-color@8.1.1)
       get-it: 8.7.0(debug@4.4.3)
-      json-stream-stringify: 2.0.4
-      lodash: 4.17.21
-      mississippi: 4.0.0
-      p-queue: 2.4.2
+      json-stream-stringify: 3.1.6
+      p-queue: 9.0.1
       rimraf: 6.1.2
-      split2: 4.2.0
-      tar: 7.5.2
-      yaml: 2.8.2
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
@@ -22136,7 +22126,7 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
-  json-stream-stringify@2.0.4: {}
+  json-stream-stringify@3.1.6: {}
 
   json-stringify-nice@1.1.4: {}
 
@@ -23178,8 +23168,6 @@ snapshots:
   p-map@7.0.4: {}
 
   p-pipe@4.0.0: {}
-
-  p-queue@2.4.2: {}
 
   p-queue@9.0.1:
     dependencies:
