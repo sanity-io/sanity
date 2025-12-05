@@ -107,13 +107,11 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
     [isTop, navigateUp],
   )
 
-  const handleCloseAll = useCallback(() => {
-    // closeAll() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
-    // We intentionally do NOT call onClose?.() here because parent onClose callbacks
-    // (like BlockObject.onClose) would override the path we just set by calling onItemClose()
-    // and focusing a different editor
+  const handleClose = useCallback(() => {
+    // close() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
     close()
-  }, [close])
+    onClose?.()
+  }, [close, onClose])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
@@ -131,8 +129,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
             data-testid="edit-portal-dialog"
             header={<DialogBreadcrumbs currentPath={currentPath} />}
             id={dialogId}
-            onClickOutside={isTop ? handleCloseAll : undefined}
-            onClose={handleCloseAll}
+            onClose={handleClose}
             onDragEnter={onDragEnter}
             onDrop={onDrop}
             width={width}
@@ -154,7 +151,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
     <div style={popoverStyle}>
       <PopoverDialog
         header={header}
-        onClose={onClose}
+        onClose={handleClose}
         referenceElement={props.legacy_referenceElement}
         width={width}
         containerRef={setDocumentScrollElement}
