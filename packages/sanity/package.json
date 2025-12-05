@@ -238,7 +238,7 @@
     "raf": "^3.4.1",
     "react-compiler-runtime": "1.0.0",
     "react-fast-compare": "^3.2.2",
-    "react-focus-lock": "^2.13.6",
+    "react-focus-lock": "^2.13.7",
     "react-i18next": "15.6.1",
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
