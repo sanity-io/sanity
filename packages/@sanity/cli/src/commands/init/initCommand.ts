@@ -28,6 +28,7 @@ Options
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
   --auto-updates Enable/disable auto updates of studio versions (default: true)
   --overwrite-files Overwrite existing files (default: false)
+  --skip-mcp Skip AI editor integration (MCP) setup
 
 Some flags are used when initializing a project in a specific framework.
 
@@ -35,7 +36,7 @@ Next.js
   --nextjs-add-config-files Add config files to Next.js project (default: true)
   --nextjs-embed-studio Embed the Studio in Next.js application (default: true)
   --nextjs-append-env Append project ID and dataset to .env file (default: true)
-  
+
 Examples
   # Initialize a new project, prompt for required information along the way
   sanity init
@@ -109,6 +110,9 @@ export interface InitFlags {
   'nextjs-add-config-files'?: boolean
   'nextjs-embed-studio'?: boolean
   'nextjs-append-env'?: boolean
+
+  // Skip AI editor integration (MCP) setup
+  'skip-mcp'?: boolean
 }
 
 const initCommand: CliCommandDefinition<InitFlags> = {
