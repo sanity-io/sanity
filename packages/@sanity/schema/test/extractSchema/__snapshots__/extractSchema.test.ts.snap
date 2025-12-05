@@ -5107,3 +5107,39 @@ exports[`Extract schema test > will ignore global document reference types at th
   },
 ]
 `;
+
+exports[`inline regression: inline type that references other inline type 1`] = `
+[
+  {
+    "name": "sanityIcon",
+    "type": "type",
+    "value": {
+      "name": "iconPicker",
+      "type": "inline",
+    },
+  },
+  {
+    "name": "iconPicker",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "iconPicker",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+]
+`;
