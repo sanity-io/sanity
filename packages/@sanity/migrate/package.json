@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/mutate": "^0.14.0",
+    "@sanity/mutate": "^0.15.0",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "arrify": "^2.0.1",
