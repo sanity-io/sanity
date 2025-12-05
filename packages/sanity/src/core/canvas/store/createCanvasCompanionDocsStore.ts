@@ -1,16 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {
-  catchError,
-  map,
-  type Observable,
-  of,
-  retry,
-  shareReplay,
-  startWith,
-  switchMap,
-  timer,
-} from 'rxjs'
-import {mergeMapArray} from 'rxjs-mergemap-array'
+import {catchError, map, type Observable, of, shareReplay, startWith, switchMap} from 'rxjs'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
@@ -50,38 +39,29 @@ const getCompanionDocs = memoize(
       ),
     )
 
-    const getCompanionDoc$ = (id: string) =>
-      client.observable
-        .fetch<CompanionDoc | null>(
-          `*[_id == $id][0]{ _id, canvasDocumentId, studioDocumentId}`,
-          {id},
-          {tag: 'canvas.companion-docs'},
-        )
-        .pipe(
-          map((response) => {
-            if (!response?._id) {
-              // In some race scenarios we can get the response in the listener before the document is available to be fetched.
-              // This will only retry "not ready" errors, other errors will be propagated immediately
-              throw new Error('Companion doc not ready')
-            }
-            return response
-          }),
-          retry({
-            count: 2,
-            delay: (error) => {
-              if (error instanceof Error && error.message === 'Companion doc not ready') {
-                return timer(1000)
-              }
-
-              throw error
-            },
-          }),
-        )
-
     return companionDocsIdsListener$.pipe(
-      map((value) => value.documentIds),
-      mergeMapArray(getCompanionDoc$),
-      map((value) => ({error: null, data: value, loading: false})),
+      switchMap((value) => {
+        const ids = value.documentIds
+        if (ids.length === 0) {
+          return of({error: null, data: [] as CompanionDoc[], loading: false})
+        }
+        return previewStore.unstable_observeDocuments(ids).pipe(
+          map((docs) =>
+            docs
+              .filter((doc): doc is NonNullable<typeof doc> => Boolean(doc?._id))
+              .map(
+                (doc) =>
+                  ({
+                    _id: doc._id,
+                    canvasDocumentId: doc.canvasDocumentId,
+                    studioDocumentId: doc.studioDocumentId,
+                    isStudioDocumentEditable: doc.isStudioDocumentEditable,
+                  }) as CompanionDoc,
+              ),
+          ),
+          map((data) => ({error: null, data, loading: false})),
+        )
+      }),
       catchError((error) => of({error, data: [], loading: false})),
       startWith(INITIAL_VALUE),
       shareReplay(1),

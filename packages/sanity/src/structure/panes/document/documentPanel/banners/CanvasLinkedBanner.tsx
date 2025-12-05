@@ -72,12 +72,19 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
   const documentVariantType = getDocumentVariantType(documentId)
-  const variantText = useMemo(() => {
-    if (documentVariantType === 'published') return t('canvas.banner.linked-text.published')
-    if (documentVariantType === 'draft') return t('canvas.banner.linked-text.draft')
-    return t('canvas.banner.linked-text.version')
-  }, [documentVariantType, t])
+  const {isLockedByCanvas} = useCanvasCompanionDoc(documentId)
 
+  const variantText = useMemo(() => {
+    if (isLockedByCanvas) {
+      if (documentVariantType === 'published') return t('canvas.banner.linked-text.published')
+      if (documentVariantType === 'draft') return t('canvas.banner.linked-text.draft')
+      return t('canvas.banner.linked-text.version')
+    }
+    if (documentVariantType === 'published')
+      return t('canvas.banner.editable.linked-text.published')
+    if (documentVariantType === 'draft') return t('canvas.banner.editable.linked-text.draft')
+    return t('canvas.banner.editable.linked-text.version')
+  }, [documentVariantType, isLockedByCanvas, t])
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
   const onClose = useCallback(() => setOpen(false), [])
   return (

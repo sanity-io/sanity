@@ -240,13 +240,27 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'canvas.banner.linked-text.published': 'This live document is linked to Canvas',
   /** The text for the canvas linked banner when the document is a version document */
   'canvas.banner.linked-text.version': 'This version document is linked to Canvas',
+  /** The text for the canvas linked banner when the document is a draft */
+  'canvas.banner.editable.linked-text.draft':
+    'This draft document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The text for the canvas linked banner when the document is a live document */
+  'canvas.banner.editable.linked-text.published':
+    'This live document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The text for the canvas linked banner when the document is a version document */
+  'canvas.banner.editable.linked-text.version':
+    'This version document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
   /** The text for the canvas linked banner popover button */
   'canvas.banner.popover-button-text': 'Learn more',
   /** The description for the canvas linked banner popover */
   'canvas.banner.popover-description':
     'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
+  /** The description for the canvas linked banner popover */
+  'canvas.banner.editable.popover-description':
+    'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
   /** The heading for the canvas linked banner popover */
   'canvas.banner.popover-heading': 'Idea first authoring',
+  /** The heading for the canvas linked banner popover */
+  'canvas.banner.editable.popover-heading': 'Free-form writing',
   /** The description for the changes banner */
   'changes.banner.description':
     'Showing the history for the <strong>{{perspective}}</strong> version of this document.',
