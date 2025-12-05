@@ -162,6 +162,7 @@ function BreadcrumbMenuItem({
         )}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}
+          paddingY={1}
           style={{
             minWidth: 0,
             overflow: 'hidden',
