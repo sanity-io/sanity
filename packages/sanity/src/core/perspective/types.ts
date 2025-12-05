@@ -17,7 +17,7 @@ export type ReleaseId = string
  *
  * @public
  */
-export type TargetPerspective = ReleaseDocument | SystemBundle
+export type TargetPerspective = ReleaseDocument | SystemBundle | string
 
 /**
  * @beta
