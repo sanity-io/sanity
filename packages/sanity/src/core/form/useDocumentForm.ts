@@ -16,6 +16,7 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
+import {pathToString} from '../field/paths/helpers'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
@@ -528,12 +529,26 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         if (!isKeySegment(lastSegment)) {
           // For fields inside array items, find the last key segment to preserve context
           const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+          // We must preserve the context of the array item when focusing on an object field
+          // As if we don't, then the open path will open the dialog when the object is simply focused,
+          // Which is not what we want.
           const newOpenPath =
             lastKeyIndex >= 0
               ? nextFocusPath.slice(0, lastKeyIndex + 1)
               : nextFocusPath.slice(0, -1)
 
-          handleSetOpenPath(pathFor(newOpenPath))
+          /*
+           * This checks if an element exists in the dom with the updated path.
+           * There are situations where the element doesn't exist in the dom yet, for example:
+           * (think internationalizedArrayString where clicking a button creates an input with the path "en.value")
+           * And, in those cases, the open path will open the dialog when the button is pressed.
+           * So, if an element exists in the dom with the updated path then it means
+           * then we shouldn't update the open path
+           */
+          const elementExists = document.getElementById(`${pathToString(nextFocusPath)}`)
+          if (!elementExists) {
+            handleSetOpenPath(pathFor(newOpenPath))
+          }
         }
       } else {
         handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))

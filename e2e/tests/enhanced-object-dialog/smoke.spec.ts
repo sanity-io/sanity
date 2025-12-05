@@ -27,8 +27,12 @@ test.describe('Enhanced Object Dialog - open and close', () => {
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+      .fill('Blue, the whale')
 
+    await page.getByRole('button', {name: 'Close dialog'}).click()
     await expect(modal).not.toBeVisible()
   })
 })
@@ -57,5 +61,45 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
     await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
     // The enhanced dialog should not be visible
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+})
+
+test.describe('Enhanced Object Dialog - when tab focusing on an array item', () => {
+  test.beforeEach(async ({createDraftDocument, page}) => {
+    // wait for form to be attached
+    await createDraftDocument('/content/input-debug;objectsDebug')
+
+    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    const modal = page.getByTestId('nested-object-dialog')
+
+    await expect(modal).toBeVisible()
+    await page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+      .fill('Blue, the whale')
+
+    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await expect(modal).not.toBeVisible()
+
+    await page.getByTestId('field-animals').focus()
+  })
+
+  test(`when tab focusing on an array item, the tree editing modal should not open`, async ({
+    page,
+  }) => {
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
+
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+
+  test(`When pressing enter on an array item, the tree editing modal should open`, async ({
+    page,
+  }) => {
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+
+    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
   })
 })

@@ -11,7 +11,6 @@ import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {type DialogItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'
-import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {buildArrayState} from './buildArrayState'
 
 const EMPTY_ARRAY: [] = []
@@ -77,19 +76,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     documentValue: props.documentValue,
     path: rootPath,
   })
-
-  // If the child array field has custom components.input, skip building dialog
-  // but preserve breadcrumbs, menuItems, and siblings
-  if (hasCustomInputComponent((props.schemaType as ObjectSchemaType).fields || [], openPath)) {
-    const {menuItems, siblings} = result
-    return {
-      relativePath: EMPTY_ARRAY,
-      breadcrumbs,
-      menuItems: menuItems,
-      rootTitle,
-      siblings: siblings,
-    }
-  }
 
   function recursive(recursiveProps: RecursiveProps): TreeEditingState {
     const {schemaType, path, documentValue} = recursiveProps
