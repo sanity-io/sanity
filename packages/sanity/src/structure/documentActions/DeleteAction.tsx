@@ -20,7 +20,7 @@ const DISABLED_REASON_TITLE_KEY = {
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft, release, published}) => {
   const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
   const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -32,13 +32,15 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, relea
     setConfirmDialogOpen(false)
   }, [])
 
-  const handleConfirm = useCallback(() => {
-    setIsDeleting(true)
-    setConfirmDialogOpen(false)
-    paneSetIsDeleting(true)
-    deleteOp.execute()
-    setIsDeleting(false)
-  }, [deleteOp, paneSetIsDeleting])
+  const handleConfirm = useCallback(
+    (versions: string[]) => {
+      setConfirmDialogOpen(false)
+      setIsDeleting(true)
+      deleteOp.execute(versions)
+      setIsDeleting(false)
+    },
+    [deleteOp, setIsDeleting],
+  )
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -54,6 +56,9 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, relea
   const currentUser = useCurrentUser()
 
   return useMemo(() => {
+    if (!published) {
+      return null
+    }
     if (!isPermissionsLoading && !permissions?.granted) {
       return {
         tone: 'critical',
@@ -101,6 +106,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, relea
     permissions?.granted,
     t,
     type,
+    published,
   ])
 }
 

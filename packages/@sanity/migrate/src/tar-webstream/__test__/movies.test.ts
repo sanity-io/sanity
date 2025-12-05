@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {expect, test} from 'vitest'
 
@@ -9,7 +10,7 @@ import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {drain} from '../drain'
 import {untar} from '../untar'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 function getCrypto() {
   if (typeof globalThis.crypto === 'undefined') {

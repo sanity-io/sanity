@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactNode, startTransition, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useDeferredValue} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
 
 import {type Config, prepareConfig} from '../../config'
@@ -19,11 +19,10 @@ export function WorkspacesProvider({
   basePath,
   LoadingComponent,
 }: WorkspacesProviderProps) {
-  const [workspaces, setWorkspaces] = useState<WorkspacesContextValue | null>(null)
-
-  useEffect(() => {
-    startTransition(() => setWorkspaces(prepareConfig(config, {basePath}).workspaces))
-  }, [basePath, config])
+  const workspaces = useDeferredValue(
+    prepareConfig(config, {basePath}).workspaces satisfies WorkspacesContextValue,
+    null,
+  )
 
   if (workspaces === null) {
     return <LoadingComponent />

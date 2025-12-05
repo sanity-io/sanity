@@ -1,5 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 // import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
@@ -15,7 +16,7 @@ import {
   UNICODE_TEXT,
 } from './input'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 

@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {type TransformOptions} from '@babel/core'
-import traverse, {Scope} from '@babel/traverse'
+import {type TransformOptions, traverse} from '@babel/core'
+import {Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
 
@@ -214,6 +214,20 @@ export function resolveExpression({
   if (babelTypes.isAssignmentPattern(node)) {
     return resolveExpression({
       node: node.right,
+      scope,
+      filename,
+      file,
+      resolver,
+      params,
+      babelConfig,
+      fnArguments,
+    })
+  }
+
+  // Handle TypeScript type assertions (e.g., `'foo' as string`)
+  if (babelTypes.isTSAsExpression(node)) {
+    return resolveExpression({
+      node: node.expression,
       scope,
       filename,
       file,

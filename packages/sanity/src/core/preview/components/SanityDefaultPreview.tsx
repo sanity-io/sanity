@@ -1,7 +1,12 @@
 import {isImageSource} from '@sanity/asset-utils'
+import {type SanityClient} from '@sanity/client'
 import {DocumentIcon} from '@sanity/icons'
-import {createImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
-import {type ImageUrlFitMode} from '@sanity/types'
+import {
+  createImageUrlBuilder,
+  type ImageUrlBuilder,
+  type SanityImageSource,
+} from '@sanity/image-url'
+import {Skeleton} from '@sanity/ui'
 import {
   type ComponentType,
   type ElementType,
@@ -14,7 +19,8 @@ import {
 import {isValidElementType} from 'react-is'
 
 import {Tooltip} from '../../../ui-components'
-import {type PreviewProps} from '../../components/previews'
+import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util'
@@ -29,6 +35,50 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
   error?: Error | null
   icon?: ElementType | false
   tooltip?: ReactNode
+}
+
+type SanityDefaultMediaProps = {
+  client: SanityClient
+  dimensions: PreviewMediaDimensions
+  imageSource: SanityImageSource
+  imageUrlBuilder: ImageUrlBuilder
+  title: PreviewProps['title']
+}
+
+function SanityDefaultMedia({
+  client,
+  dimensions,
+  imageSource,
+  imageUrlBuilder,
+  title,
+}: SanityDefaultMediaProps) {
+  const transform = (builder: ImageUrlBuilder, val: SanityImageSource) => {
+    const width = dimensions.width ?? 100
+    const height = dimensions.height ?? 100
+    const fit = dimensions.fit
+    const dpr = dimensions.dpr ?? 1
+
+    return builder.image(val).withOptions({width, height, fit, dpr}).url() || ''
+  }
+
+  const {url, isLoading} = useImageUrl({
+    client,
+    imageSource,
+    imageUrlBuilder,
+    transform,
+  })
+
+  if (isLoading) {
+    return <Skeleton animated style={{width: '100%', height: '100%'}} />
+  }
+
+  return (
+    <img
+      alt={typeof title === 'string' ? title : undefined}
+      referrerPolicy="strict-origin-when-cross-origin"
+      src={url}
+    />
+  )
 }
 
 /**
@@ -46,33 +96,21 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   // NOTE: This function exists because the previews provides options
   // for the rendering of the media (dimensions)
   const renderMedia = useCallback(
-    (options: {
-      dimensions: {width?: number; height?: number; fit: ImageUrlFitMode; dpr?: number}
-    }) => {
-      const {dimensions} = options
-      const width = dimensions.width || 100
-      const height = dimensions.height || 100
+    (options: {dimensions: PreviewMediaDimensions}) => {
+      // Will only enter this code path if it's compatible
+      const imageSource = mediaProp as SanityImageSource
 
-      // Handle sanity image
       return (
-        <img
-          alt={isString(title) ? title : undefined}
-          referrerPolicy="strict-origin-when-cross-origin"
-          src={
-            imageBuilder
-              .image(
-                mediaProp as SanityImageSource /*will only enter this code path if it's compatible*/,
-              )
-              .width(width)
-              .height(height)
-              .fit(dimensions.fit)
-              .dpr(dimensions.dpr || 1)
-              .url() || ''
-          }
+        <SanityDefaultMedia
+          client={client}
+          dimensions={options.dimensions}
+          imageSource={imageSource}
+          imageUrlBuilder={imageBuilder}
+          title={title}
         />
       )
     },
-    [imageBuilder, mediaProp, title],
+    [client, imageBuilder, mediaProp, title],
   )
 
   const renderIcon = useCallback(() => {

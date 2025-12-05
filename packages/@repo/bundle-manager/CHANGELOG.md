@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package @repo/bundle-manager
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package @repo/bundle-manager
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package @repo/bundle-manager
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Bug Fixes
+
+* ensure module server uploads `.mjs` files ([#11281](https://github.com/sanity-io/sanity/issues/11281)) ([2be3548](https://github.com/sanity-io/sanity/commit/2be3548d46a4fe7570f12305a2e739bb3cd4bafd)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 **Note:** Version bump only for package @repo/bundle-manager

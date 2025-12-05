@@ -16,24 +16,24 @@ catalog:
   '@playwright/test': 1.56.1
   '@sanity/client': ^7.13.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^9.2.1
+  '@sanity/pkg-utils': ^10.0.0
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
   '@types/react': ^19.2.7
   '@types/react-dom': ^19.2.3
-  '@types/react-is': ^19.0.0
-  '@typescript/native-preview': 7.0.0-dev.20251126.1
+  '@types/react-is': ^19.2.0
+  '@typescript/native-preview': 7.0.0-dev.20251128.1
   '@vitejs/plugin-react': ^5.1.1
   esbuild: 0.27.0
   esbuild-register: ^3.6.0
   eslint: ^9.39.1
   globals: ^16.2.0
   playwright: 1.56.1
-  prettier: ^3.7.1
-  react: ^19.1.1
-  react-dom: ^19.1.1
-  react-is: ^19.1.1
+  prettier: ^3.7.3
+  react: ^19.2.1
+  react-dom: ^19.2.1
+  react-is: ^19.2.1
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.
@@ -41,7 +41,7 @@ catalog:
   # × FileInput with empty state > renders the browse button with a tooltip when it has at least one element in assetSources
   #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
   jsdom: ^26.1.0
-  vite: ^7.2.4
+  vite: ^7.2.6
   vitest: ^3.2.4
   styled-components: npm:@sanity/styled-components@^6.1.24
   typescript: 5.9.3
@@ -71,10 +71,14 @@ minimumReleaseAgeExclude:
   - '@types/*'
   - '@typescript/*'
   - csstype
+  - 'get-it'
   - 'groq-js'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'eslint-plugin-oxlint'
+  - 'react'
+  - 'react-dom'
+  - 'react-is'
   - 'react-rx'
   - 'use-effect-event'
 

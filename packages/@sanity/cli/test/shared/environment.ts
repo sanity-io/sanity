@@ -24,7 +24,7 @@ export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'san
 export const {NODE_ENV, ...envLessEnv} = process.env
 export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
-export const nodeMajorVersion = process.version.split('.')[0]
+export const [nodeMajorVersion] = process.version.split('.')
 export const npmPath = which.sync('npm')
 // note: we use pnpm for `pack`, because npm doesn't rewrite `workspace:*` protocols
 export const pnpmPath = which.sync('pnpm')
@@ -62,7 +62,7 @@ const getTestId = () => {
 
   const localId = readFileSync(testIdPath, 'utf8').trim().slice(0, 5)
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
-  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_JOB_ID || process.env.GITHUB_RUN_ATTEMPT}`
   const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 

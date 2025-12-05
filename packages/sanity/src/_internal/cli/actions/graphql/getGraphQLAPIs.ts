@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {isMainThread, Worker} from 'node:worker_threads'
 
 import {type CliCommandContext} from '@sanity/cli'
@@ -12,7 +13,7 @@ import {
   type TypeResolvedGraphQLAPI,
 } from './types'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
   if (!isMainThread) {

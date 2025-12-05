@@ -18,6 +18,7 @@ import {isEqual, isObject} from 'lodash'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
+import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
 import {
   type ArrayElement,
   type ArrayTypeDef,
@@ -59,9 +60,50 @@ export class DescriptorConverter {
    *
    * This is automatically cached in a weak map.
    */
-  async get(schema: Schema): Promise<SetSynchronization<RegistryType>> {
+  async get(
+    schema: Schema,
+    opts?: {
+      /**
+       * If present, this will use an idle scheduler which records duration into this array.
+       * This option will be ignored if the `scheduler` option is passed in.
+       **/
+      pauseDurations?: number[]
+
+      /** An explicit scheduler to do the work. */
+      scheduler?: Scheduler
+    },
+  ): Promise<SetSynchronization<RegistryType>> {
+    /*
+      Converting the schema into a descriptor consists of two parts:
+
+      1. Traversing the type into a descriptor.
+      2. Serializing the descriptor, including SHA256 hashing.
+
+      Note that only (2) can be done in a background worker since the type
+      itself isn't serializable (which is a requirement for a background
+      worker). In addition, we expect (2) to scale in the same way as (1): If it
+      takes X milliseconds to traverse the type into a descriptor it will
+      probably take c*X milliseconds to serialize it.
+
+      This means that a background worker actually doesn't give us that much
+      value. A huge type will either way be expensive to convert from a type to
+      a descriptor. Therefore this function currently only avoid blocking by
+      only processing each type separately.
+
+      If we want to minimize the blocking further we would have to restructure
+      this converter to be able to convert the types asynchronously and _then_
+      it might make sense to the serialization step itself in a background
+      worker.
+    */
     let value = this.cache.get(schema)
     if (value) return value
+
+    let idleScheduler: IdleScheduler | undefined
+    const scheduler =
+      opts?.scheduler ||
+      (opts?.pauseDurations
+        ? (idleScheduler = new IdleScheduler(opts.pauseDurations))
+        : SYNC_SCHEDULER)
 
     const options: Options = {
       fields: new Map(),
@@ -70,7 +112,7 @@ export class DescriptorConverter {
       duplicateArrayElements: new Map(),
     }
 
-    const namedTypes = schema.getLocalTypeNames().map((name) => {
+    const namedTypes = await scheduler.map(schema.getLocalTypeNames(), (name) => {
       const typeDef = convertTypeDef(schema.get(name)!, name, options)
       return {name, typeDef}
     })
@@ -89,24 +131,27 @@ export class DescriptorConverter {
     const builder = new SetBuilder({rewriteMap})
 
     // Now we can build the de-duplicated objects:
-    for (const [fieldDef, key] of options.duplicateFields.entries()) {
+    await scheduler.forEachIter(options.duplicateFields.entries(), ([fieldDef, key]) => {
       builder.addObject('sanity.schema.hoisted', {key, value: {...fieldDef}})
-    }
+    })
 
-    for (const [arrayElem, key] of options.duplicateArrayElements.entries()) {
+    await scheduler.forEachIter(options.duplicateArrayElements.entries(), ([arrayElem, key]) => {
       builder.addObject('sanity.schema.hoisted', {key, value: {...arrayElem}})
-    }
+    })
 
-    for (const namedType of namedTypes) {
+    await scheduler.forEach(namedTypes, (namedType) => {
       builder.addObject('sanity.schema.namedType', namedType)
-    }
+    })
 
     if (schema.parent) {
-      builder.addSet(await this.get(schema.parent))
+      builder.addSet(await this.get(schema.parent, {scheduler}))
     }
 
     value = builder.build('sanity.schema.registry')
     this.cache.set(schema, value)
+
+    // If we created the scheduler we also need to end it.
+    if (idleScheduler) idleScheduler.end()
     return value
   }
 }

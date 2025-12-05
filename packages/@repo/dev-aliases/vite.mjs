@@ -1,12 +1,9 @@
+import {dirname, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+
 import devAliases from './dev-aliases.cjs'
 
-import {dirname, resolve} from 'node:path'
-
-const PACKAGES_PATH = resolve(getDirname(import.meta.url), '..', '..')
-
-function getDirname(importMetaUrl) {
-  return dirname(importMetaUrl.replace('file://', ''))
-}
+const PACKAGES_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 export function getViteAliases() {
   return Object.fromEntries(

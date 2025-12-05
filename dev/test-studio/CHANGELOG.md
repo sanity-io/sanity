@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Features
+
+* **schema:** de-dupe re-used fields in the descriptor ([b287558](https://github.com/sanity-io/sanity/commit/b287558417c6f06eaaf7acf1a4f51dc6aab0c3f6)) by Magnus Holm (judofyr@gmail.com)
+
+### Bug Fixes
+
+* **core:** pte inline comments respect __internal_comments disabled ([#11341](https://github.com/sanity-io/sanity/issues/11341)) ([0f566b5](https://github.com/sanity-io/sanity/commit/0f566b5c99891052b661791d0d48f8e4c7118b98)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#11270](https://github.com/sanity-io/sanity/issues/11270)) ([bf4bf3b](https://github.com/sanity-io/sanity/commit/bf4bf3b130a3a2922a23708b7684e94c4b5bd110)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11329](https://github.com/sanity-io/sanity/issues/11329)) ([ab15495](https://github.com/sanity-io/sanity/commit/ab154959c7b632f7fab54b8dfcaa9a08100ec411)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11338](https://github.com/sanity-io/sanity/issues/11338)) ([7ee38ba](https://github.com/sanity-io/sanity/commit/7ee38ba2b5a6c1b1028eb7cd9f80a6821cb95c4a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **media-library:** support groups and fieldset in `defineVideoField` ([#11361](https://github.com/sanity-io/sanity/issues/11361)) ([3c840ce](https://github.com/sanity-io/sanity/commit/3c840ce0c20b83f5b7115b76382083286b570a9e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **sanity:** allow editing documents in non-release bundles ([#11312](https://github.com/sanity-io/sanity/issues/11312)) ([dfa9dc1](https://github.com/sanity-io/sanity/commit/dfa9dc1f70fbe01699f3186eb93e4671d228b329)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Bug Fixes

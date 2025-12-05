@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "4.19.0",
+  "version": "4.20.3",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -46,6 +46,7 @@
     },
     "./createSafeJsonParser": {
       "source": "./src/_exports/createSafeJsonParser.ts",
+      "require": "./lib/createSafeJsonParser.cjs",
       "default": "./lib/createSafeJsonParser.js"
     },
     "./legacyDateFormat": {
