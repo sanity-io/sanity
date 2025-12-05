@@ -28,7 +28,7 @@ import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import manageCommand from './manage/manageCommand'
-import addMcpCommand from './mcp/addMcpCommand'
+import configureMcpCommand from './mcp/configureMcpCommand'
 import mcpGroup from './mcp/mcpGroup'
 import getCommand from './openapi/getCommand'
 import listCommand from './openapi/listCommand'
@@ -70,7 +70,7 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   enableTelemetryCommand,
   telemetryStatusCommand,
   mcpGroup,
-  addMcpCommand,
+  configureMcpCommand,
   generateTypegenCommand,
   typegenGroup,
   functionsGroup,

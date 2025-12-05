@@ -4,11 +4,11 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Examples
   # Configure Sanity MCP server for detected AI editors
-  sanity mcp add
+  sanity mcp configure
 `
 
-const addMcpCommand: CliCommandDefinition = {
-  name: 'add',
+const configureMcpCommand: CliCommandDefinition = {
+  name: 'configure',
   group: 'mcp',
   helpText,
   signature: '',
@@ -29,4 +29,4 @@ const addMcpCommand: CliCommandDefinition = {
   },
 }
 
-export default addMcpCommand
+export default configureMcpCommand
