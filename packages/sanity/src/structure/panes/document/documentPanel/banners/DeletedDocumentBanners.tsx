@@ -4,6 +4,7 @@ import {useCallback} from 'react'
 import {
   isDraftPerspective,
   isPublishedPerspective,
+  isReleaseDocument,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
@@ -23,6 +24,7 @@ export function DeletedDocumentBanners() {
   if (
     !isPublishedPerspective(selectedPerspective) &&
     !isDraftPerspective(selectedPerspective) &&
+    isReleaseDocument(selectedPerspective) &&
     selectedPerspective.state === 'archived'
   ) {
     return <ArchivedReleaseBanner release={selectedPerspective as ReleaseDocument} />
