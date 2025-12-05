@@ -89,7 +89,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
-      <Box ref={containerElement}>{children}</Box>
+      <Box ref={containerElement} style={{height: 'min(calc(100vh - 200px), 500px)'}}>
+        {children}
+      </Box>
     </PresenceOverlay>
   )
 
