@@ -1,4 +1,10 @@
-import {isArrayOfBlocksSchemaType, isKeySegment, type Path, type SchemaType} from '@sanity/types'
+import {
+  isArrayOfBlocksSchemaType,
+  isKeySegment,
+  isObjectSchemaType,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
 import {useMemo} from 'react'
 
 import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
@@ -6,7 +12,7 @@ import {useFormValue} from '../contexts/FormValue'
 
 /**
  * Hook to get sibling info (index and count) for a breadcrumb item.
- * Returns null if the item is not in an array, can't be found, or is inside a PTE array.
+ * Returns null if the item is not in an array, can't be found, or is an object directly inside a PTE array.
  */
 export function useBreadcrumbSiblingInfo(
   itemPath: Path,
@@ -14,14 +20,7 @@ export function useBreadcrumbSiblingInfo(
   documentValue: unknown,
 ): {index: number; count: number} | null {
   // Find the last key segment in the path
-  const lastKeySegmentIndex = useMemo(() => {
-    for (let i = itemPath.length - 1; i >= 0; i--) {
-      if (isKeySegment(itemPath[i])) {
-        return i
-      }
-    }
-    return -1
-  }, [itemPath])
+  const lastKeySegmentIndex = itemPath.findLastIndex(isKeySegment)
 
   // Get the parent array path (path up to but not including the key segment)
   const parentArrayPath = useMemo(() => {
@@ -38,11 +37,40 @@ export function useBreadcrumbSiblingInfo(
     [documentSchemaType, parentArrayPath, documentValue],
   )
 
+  // Check if parent is "children" inside a PTE block (for inline objects)
+  // Pattern: ["pteField", {_key}, "children", {_key}]
+  const isInsidePTEChildren = useMemo(() => {
+    // Check if parent array is named "children"
+    const parentName = parentArrayPath[parentArrayPath.length - 1]
+    if (parentName !== 'children') return false
+
+    // Check if grandparent's parent array is a PTE (array of blocks)
+    // Path to PTE array: parentArrayPath minus "children" and the block key
+    if (parentArrayPath.length < 3) return false
+    const pteArrayPath = parentArrayPath.slice(0, -2)
+    const pteSchemaType = resolveSchemaTypeForPath(documentSchemaType, pteArrayPath, documentValue)
+    return pteSchemaType && isArrayOfBlocksSchemaType(pteSchemaType)
+  }, [parentArrayPath, documentSchemaType, documentValue])
+
+  // Get the schema type for the current item
+  const itemSchemaType = useMemo(
+    () => resolveSchemaTypeForPath(documentSchemaType, itemPath, documentValue),
+    [documentSchemaType, itemPath, documentValue],
+  )
+
   return useMemo(() => {
     if (lastKeySegmentIndex < 0) return null
 
-    // Skip sibling info for Portable Text arrays (arrays of blocks)
-    if (parentArraySchemaType && isArrayOfBlocksSchemaType(parentArraySchemaType)) {
+    const isObjectType = isObjectSchemaType(itemSchemaType)
+
+    // Skip sibling info for objects whose immediate parent is a PTE array
+    const isParentPTE = parentArraySchemaType && isArrayOfBlocksSchemaType(parentArraySchemaType)
+    if (isObjectType && isParentPTE) {
+      return null
+    }
+
+    // Skip sibling info for objects inside "children" of a PTE block (inline objects)
+    if (isObjectType && isInsidePTEChildren && isParentPTE) {
       return null
     }
 
@@ -59,5 +87,12 @@ export function useBreadcrumbSiblingInfo(
       index: index + 1, // 1-based index for display
       count: arrayValue.length,
     }
-  }, [itemPath, lastKeySegmentIndex, parentArrayValue, parentArraySchemaType])
+  }, [
+    itemPath,
+    lastKeySegmentIndex,
+    parentArrayValue,
+    parentArraySchemaType,
+    itemSchemaType,
+    isInsidePTEChildren,
+  ])
 }
