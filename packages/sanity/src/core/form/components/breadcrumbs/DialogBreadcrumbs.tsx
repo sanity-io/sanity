@@ -1,6 +1,6 @@
-import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
+import {isArrayOfBlocksSchemaType, isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
-import {Box, Button, Flex, Inline, Menu, Text, useElementSize} from '@sanity/ui'
+import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
 import {
   type ForwardedRef,
   forwardRef,
@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react'
 
-import {MenuButton, MenuItem} from '../../../../ui-components'
+import {MenuButton} from '../../../../ui-components'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
@@ -65,6 +65,64 @@ const SeparatorItem = forwardRef(function SeparatorItem(
 })
 
 /**
+ * Hook to get sibling info (index and count) for a breadcrumb item.
+ * Returns null if the item is not in an array, can't be found, or is inside a PTE array.
+ */
+function useSiblingInfo(
+  itemPath: Path,
+  documentSchemaType: SchemaType,
+  documentValue: unknown,
+): {index: number; count: number} | null {
+  // Find the last key segment in the path
+  const lastKeySegmentIndex = useMemo(() => {
+    for (let i = itemPath.length - 1; i >= 0; i--) {
+      if (isKeySegment(itemPath[i])) {
+        return i
+      }
+    }
+    return -1
+  }, [itemPath])
+
+  // Get the parent array path (path up to but not including the key segment)
+  const parentArrayPath = useMemo(() => {
+    if (lastKeySegmentIndex < 0) return []
+    return itemPath.slice(0, lastKeySegmentIndex)
+  }, [itemPath, lastKeySegmentIndex])
+
+  // Get the parent array value
+  const parentArrayValue = useFormValue(parentArrayPath)
+
+  // Get the schema type for the parent array to check if it's a PTE
+  const parentArraySchemaType = useMemo(
+    () => resolveSchemaTypeForPath(documentSchemaType, parentArrayPath, documentValue),
+    [documentSchemaType, parentArrayPath, documentValue],
+  )
+
+  return useMemo(() => {
+    if (lastKeySegmentIndex < 0) return null
+
+    // Skip sibling info for Portable Text arrays (arrays of blocks)
+    if (parentArraySchemaType && isArrayOfBlocksSchemaType(parentArraySchemaType)) {
+      return null
+    }
+
+    const keySegment = itemPath[lastKeySegmentIndex]
+    if (!isKeySegment(keySegment)) return null
+
+    const arrayValue = parentArrayValue as Array<{_key: string}> | undefined
+    if (!Array.isArray(arrayValue)) return null
+
+    const index = arrayValue.findIndex((item) => item._key === keySegment._key)
+    if (index < 0) return null
+
+    return {
+      index: index + 1, // 1-based index for display
+      count: arrayValue.length,
+    }
+  }, [itemPath, lastKeySegmentIndex, parentArrayValue, parentArraySchemaType])
+}
+
+/**
  * Hook to get the preview title for a breadcrumb item.
  */
 function useBreadcrumbPreview(
@@ -102,6 +160,7 @@ function BreadcrumbButton({
   onPathSelect: (path: Path) => void
 }) {
   const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const siblingInfo = useSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
@@ -110,28 +169,43 @@ function BreadcrumbButton({
   return (
     <Button
       mode="bleed"
-      padding={2}
+      padding={1}
       radius={2}
       onClick={handleClick}
       style={{minWidth: 0, maxWidth: '250px'}}
       title={title}
     >
-      <Text
-        muted={!isSelected}
-        size={1}
-        weight={isSelected ? 'bold' : 'medium'}
-        textOverflow="ellipsis"
-        style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
-      >
-        {title}
-      </Text>
+      <Flex align="center" style={{minWidth: 0}}>
+        {siblingInfo && (
+          <Box flex="none">
+            <Badge>#{siblingInfo.index}</Badge>
+          </Box>
+        )}
+        <Box
+          padding={1}
+          style={{
+            minWidth: 0,
+            overflow: 'hidden',
+          }}
+        >
+          <Text
+            muted={!isSelected}
+            size={1}
+            weight={isSelected ? 'bold' : 'medium'}
+            textOverflow="ellipsis"
+            style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
+          >
+            {title}
+          </Text>
+        </Box>
+      </Flex>
     </Button>
   )
 }
 
 /**
  * Menu item version of breadcrumb for overflow dropdown.
- * Uses MenuItem for proper keyboard navigation within Menu.
+ * Uses sanity-ui MenuItem for proper keyboard navigation within Menu.
  */
 function BreadcrumbMenuItem({
   itemPath,
@@ -145,15 +219,44 @@ function BreadcrumbMenuItem({
   onPathSelect: (path: Path) => void
 }) {
   const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const siblingInfo = useSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
   }, [onPathSelect, itemPath])
 
-  // Capitalize first letter
-  const displayTitle = title.charAt(0).toUpperCase() + title.slice(1)
-
-  return <MenuItem onClick={handleClick} text={`${SEPARATOR} ${displayTitle}`} />
+  return (
+    <MenuItem padding={1} onClick={handleClick}>
+      <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
+        <Box flex="none" padding={1}>
+          <Text size={1} muted>
+            {SEPARATOR}
+          </Text>
+        </Box>
+        {siblingInfo && (
+          <Box flex="none">
+            <Badge>#{siblingInfo.index}</Badge>
+          </Box>
+        )}
+        <Box
+          paddingLeft={siblingInfo ? 1 : 0}
+          style={{
+            minWidth: 0,
+            overflow: 'hidden',
+          }}
+        >
+          <Text
+            size={1}
+            textOverflow="ellipsis"
+            style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
+            title={title}
+          >
+            {title}
+          </Text>
+        </Box>
+      </Flex>
+    </MenuItem>
+  )
 }
 
 /**
