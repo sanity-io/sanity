@@ -52,39 +52,31 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     }
 
     const patchMutation = draft.patch(patches)
-
-    if (snapshots.published) {
-      // If there's no draft, the user's edits will be based on the published document in the form in front of them
-      // so before patching it we need to make sure it's created based on the current published version first.
-      draft.mutate([
-        draft.createIfNotExists({
-          ...initialDocument,
-          ...snapshots.published,
-          _id: idPair.draftId,
-          _type: typeName,
-        }),
-      ])
-      // Commit so we create the draft in a different transaction than the patch, and we get the correct initial value for it.
-      draft.commit()
-      // We do it in two steps to first create the draft with the copied version and then reflect the user edit to preserve the history.
-      draft.mutate(patchMutation)
-      return
-    }
-
     if (snapshots.draft) {
       draft.mutate([
         ...draft.patch([{unset: ['_empty_action_guard_pseudo_field_']}]),
         ...patchMutation,
       ])
     } else {
-      draft.mutate([
-        draft.create({
-          ...initialDocument,
-          _id: idPair.draftId,
-          _type: typeName,
-        }),
-      ])
+      const createMutation = snapshots.published
+        ? // If there's no draft, the user's edits will be based on the published document in the form in front of them
+          // so before patching it we need to make sure it's created based on the current published version first.
+          draft.createIfNotExists({
+            ...initialDocument,
+            ...snapshots.published,
+            _id: idPair.draftId,
+            _type: typeName,
+          })
+        : draft.create({
+            ...initialDocument,
+            _id: idPair.draftId,
+            _type: typeName,
+          })
+
+      draft.mutate([createMutation])
+      // Commit so we create the draft in a different transaction than the patch, and we get the correct initial value for it.
       draft.commit()
+      // We do it in two steps to first create the draft with the copied version and then reflect the user edit to preserve the history.
       draft.mutate(patchMutation)
     }
   },
