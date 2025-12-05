@@ -210,7 +210,7 @@ describe('validateDocuments', () => {
         moduleAlias.addAliases(${JSON.stringify(await getMonorepoAliases(path.resolve(__dirname, '../../../../../../..')))})
 
         const { unregister } = register({
-          target: 'node18',
+          target: \`node\${process.versions.node}\`,
           format: 'cjs',
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
           jsx: 'automatic',
