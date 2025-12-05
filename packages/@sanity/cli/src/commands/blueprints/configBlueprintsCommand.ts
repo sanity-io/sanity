@@ -2,9 +2,10 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --edit, -e           Edit the configuration
-  --test, -t           Test the configuration
-  --project-id <id>    Project ID to use
+  --edit, -e           Modify the configuration interactively, or directly when combined with ID flags.
+  --project-id <id>    Directly set the Project ID in the configuration. Requires --edit flag
+  --stack-id <id>      Directly set the Stack ID in the configuration. Requires --edit flag
+  --verbose            Output verbose logs
 
 Examples:
   # View current configuration
@@ -12,18 +13,9 @@ Examples:
 
   # Edit configuration
   sanity blueprints config --edit
-
-  # Test configuration
-  sanity blueprints config --test
-
-  # Edit and test configuration
-  sanity blueprints config -et
 `
 
 export interface BlueprintsConfigFlags {
-  'test-config'?: boolean
-  'test'?: boolean
-  't'?: boolean
   'edit'?: boolean
   'e'?: boolean
   'project-id'?: string
@@ -32,6 +24,7 @@ export interface BlueprintsConfigFlags {
   'stack-id'?: string
   'stackId'?: string
   'stack'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsConfigFlags = {
@@ -42,7 +35,7 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   name: 'config',
   group: 'blueprints',
   helpText,
-  signature: '[--edit] [-e] [--test] [-t] [--project-id <id>]',
+  signature: '[--edit] [--project-id <id>] [--stack-id <id>] [--verbose]',
   description: 'View or edit local Blueprints configuration',
 
   async action(args, context) {
@@ -74,8 +67,8 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
-        'test-config': flags['test-config'] ?? flags.test ?? flags.t,
         'edit': flags.edit ?? flags.e,
+        'verbose': flags.verbose,
       },
     })
 
