@@ -26,24 +26,24 @@ export function FullscreenPTEProvider({children}: FullscreenPTEProviderProps): R
 
   const getFullscreenPath = useCallback(
     (path: Path): string | undefined => {
-      telemetry.log(ClosedPortableTextEditorFullScreen, {
-        path: pathToString(path),
-        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-      })
       return fullscreenPaths.find((savedPath) => savedPath === pathToString(path)) ?? undefined
     },
-    [fullscreenPaths, enhancedObjectDialogEnabled, telemetry],
+    [fullscreenPaths],
   )
 
   const setFullscreenPath = useCallback(
     (path: Path, isFullscreen: boolean): void => {
-      telemetry.log(OpenedPortableTextEditorFullScreen, {
-        path: pathToString(path),
-        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-      })
       if (isFullscreen) {
+        telemetry.log(OpenedPortableTextEditorFullScreen, {
+          path: pathToString(path),
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+        })
         setFullscreenPaths([...fullscreenPaths, pathToString(path)])
       } else {
+        telemetry.log(ClosedPortableTextEditorFullScreen, {
+          path: pathToString(path),
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+        })
         setFullscreenPaths(fullscreenPaths.filter((savedPath) => savedPath !== pathToString(path)))
       }
     },
