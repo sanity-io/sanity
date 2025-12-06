@@ -37,7 +37,7 @@ import shallowEquals from 'shallow-equals'
 import {type SourceClientOptions} from '../config/types'
 import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
-import {getVersionFromId} from '../util/draftUtils'
+import {getVersionFromId} from '../util'
 import {validateDocumentObservable} from './validateDocument'
 
 /**
@@ -105,28 +105,32 @@ export function validateDocumentWithReferences(
     i18n: LocaleSource
   },
   document$: Observable<SanityDocument | null | undefined>,
+  // whether to allow references to non-published documents that does not exist as published
+  // set to true to allow references to versions as long they exist in the same bundle
+  allowReferencesToVersionsInSameBundle: boolean,
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
     map((document) => findReferenceIds(document)),
     mergeMap((ids) => from(ids)),
   )
 
-  const versionId$ = document$.pipe(
-    map((doc) => ({versionId: getVersionFromId(doc?._id || '')})),
-    distinctUntilChanged(),
-  )
+  const versionId$ = document$.pipe(distinctUntilChanged())
 
   // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
   const referenceExistence$ = combineLatest([versionId$, referenceIds$]).pipe(
-    groupBy(([_, id]) => id, {duration: () => timer(1000 * 60 * 30)}),
-    mergeMap((id$) =>
-      id$.pipe(
+    groupBy(([_, referenceId]) => referenceId, {duration: () => timer(1000 * 60 * 30)}),
+    mergeMap((refIds$) =>
+      refIds$.pipe(
         distinct(),
-        mergeMap(([{versionId}, id]) =>
-          listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
-            map((result) => [id, result] as const),
-          ),
-        ),
+        mergeMap(([document, referenceId]) => {
+          return listenDocumentExists(
+            ctx.observeDocumentPairAvailability,
+            referenceId,
+            allowReferencesToVersionsInSameBundle
+              ? getVersionFromId(document?._id || '')
+              : undefined,
+          ).pipe(map((result) => [referenceId, result] as const))
+        }),
       ),
     ),
     scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {
