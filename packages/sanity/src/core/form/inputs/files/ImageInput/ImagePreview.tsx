@@ -1,24 +1,17 @@
-import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui'
+import {type Card, type CardTone} from '@sanity/ui'
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
 import {FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
 interface Props {
   alt: string
-  drag: boolean
-  isRejected: boolean
-  readOnly?: boolean | null
   src?: string
 }
 
 export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
-  const {drag, readOnly, isRejected, src, ...rest} = props
+  const {src, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
-  const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
-  const tone = drag ? acceptTone : 'default'
 
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
@@ -29,8 +22,6 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
   const onLoadChange = useCallback(() => {
     setLoaded(true)
   }, [])
-
-  const {t} = useTranslation()
 
   return (
     <RatioBox {...rest} tone="transparent">
@@ -44,48 +35,8 @@ export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
           referrerPolicy="strict-origin-when-cross-origin"
         />
       )}
-      {drag && (
-        <OverlayComponent
-          cardTone={tone}
-          content={
-            <>
-              <Box marginBottom={3}>
-                <Heading>
-                  <HoverIcon isRejected={isRejected} readOnly={readOnly} />
-                </Heading>
-              </Box>
-              <Text size={1}>{t(getHoverTextTranslationKey({isRejected, readOnly}))}</Text>
-            </>
-          }
-        />
-      )}
     </RatioBox>
   )
-}
-
-function HoverIcon({isRejected, readOnly}: {isRejected: boolean; readOnly?: boolean}) {
-  if (isRejected) {
-    return <AccessDeniedIcon />
-  }
-  if (readOnly) {
-    return <ReadOnlyIcon />
-  }
-  return <ImageIcon />
-}
-
-function getHoverTextTranslationKey({
-  isRejected,
-  readOnly,
-}: {
-  isRejected: boolean
-  readOnly?: boolean
-}) {
-  if (isRejected) {
-    return 'inputs.image.drag-overlay.cannot-upload-here'
-  }
-  return readOnly
-    ? 'inputs.image.drag-overlay.this-field-is-read-only'
-    : 'inputs.image.drag-overlay.drop-to-upload-image'
 }
 
 function OverlayComponent({
