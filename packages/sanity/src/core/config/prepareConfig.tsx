@@ -276,6 +276,7 @@ export function prepareConfig(
       auth: resolvedSources[0].auth,
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
+      apiHost: rootSource.apiHost,
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
