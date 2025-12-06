@@ -82,7 +82,8 @@ npx sanity schema deploy
          timeout: 30,
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'post' && delta::changedAny(content)",
+           filter:
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
            projection: '{_id}',
          },
        }),
