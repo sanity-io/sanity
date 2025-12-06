@@ -43,6 +43,7 @@ export const DEBUG_INPUT_TYPES = [
   'actionsTest',
   'allFieldsGroupHidden',
   'allNativeInputComponents',
+  'decorations',
   'collapsibleObjects',
   'commentsDebug',
   'conditionalFieldsTest',

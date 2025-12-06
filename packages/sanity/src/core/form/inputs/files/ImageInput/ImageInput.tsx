@@ -24,6 +24,8 @@ import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/Ass
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
@@ -72,6 +74,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -551,7 +554,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   return (
     // The Stack space should match the space in ObjectInput
     <Stack space={5} data-testid="image-input">
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately
           return null
@@ -590,6 +593,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         }
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
+        }
+        if (member.kind === 'decoration') {
+          return <MemberDecoration key={member.key} member={member} />
         }
 
         return (
