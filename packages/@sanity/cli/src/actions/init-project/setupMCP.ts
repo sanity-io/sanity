@@ -3,7 +3,6 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
-import chalk from 'chalk'
 import execa from 'execa'
 
 import {debug} from '../../debug'
