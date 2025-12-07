@@ -99,7 +99,7 @@ export async function promptForMCPSetup(
   skipMcp: boolean,
 ): Promise<Editor[] | null> {
   if (skipMcp) {
-    // User explicitly opted out via --skip-mcp flag
+    // User explicitly opted out via --no-mcp flag
     return null
   }
 
@@ -262,7 +262,7 @@ export async function setupMCP(
   } catch (error) {
     // Don't fail init if MCP setup fails
     output.warn(
-      `Warning: Could not configure MCP: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      `Warning: Could not configure MCP: ${error instanceof Error ? error.message : `${err}`}`,
     )
     output.warn('You can set up MCP manually later using https://mcp.sanity.io')
     return null

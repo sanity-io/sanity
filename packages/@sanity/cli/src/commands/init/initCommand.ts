@@ -28,7 +28,7 @@ Options
   --package-manager <name> Specify which package manager to use [allowed: ${allowedPackageManagersString}]
   --auto-updates Enable/disable auto updates of studio versions (default: true)
   --overwrite-files Overwrite existing files (default: false)
-  --skip-mcp Skip AI editor integration (MCP) setup
+  --no-mcp Skip AI editor integration (MCP) setup
 
 Some flags are used when initializing a project in a specific framework.
 
@@ -112,7 +112,7 @@ export interface InitFlags {
   'nextjs-append-env'?: boolean
 
   // Skip AI editor integration (MCP) setup
-  'skip-mcp'?: boolean
+  'mcp'?: boolean
 }
 
 const initCommand: CliCommandDefinition<InitFlags> = {
