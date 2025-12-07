@@ -547,9 +547,9 @@ export default async function initSanity(
       }
     }
 
-    // Set up MCP integration (automatic unless --skip-mcp)
+    // Set up MCP integration (automatic unless --no-mcp)
     try {
-      mcpConfigured = await setupMCP(context, {skipMcp: cliFlags['skip-mcp'] || false})
+      mcpConfigured = await setupMCP(context, {skipMcp: !cliFlags.mcp})
     } catch (err) {
       debug('MCP setup error: %s', err instanceof Error ? err.message : 'Unknown error')
     }
@@ -591,7 +591,7 @@ export default async function initSanity(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
     if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = mcpConfigured.map((e) => e.name).join(' and ')
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
@@ -662,9 +662,9 @@ export default async function initSanity(
     }
   }
 
-  // Set up MCP integration (automatic unless --skip-mcp)
+  // Set up MCP integration (automatic unless --no-mcp)
   try {
-    mcpConfigured = await setupMCP(context, {skipMcp: cliFlags['skip-mcp'] || false})
+    mcpConfigured = await setupMCP(context, {skipMcp: !cliFlags.mcp})
   } catch (err) {
     debug('MCP setup error: %s', err instanceof Error ? err.message : 'Unknown error')
   }
@@ -743,7 +743,7 @@ export default async function initSanity(
     print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
     print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
     if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = mcpConfigured.map((e) => e.name).join(' and ')
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
@@ -762,7 +762,7 @@ export default async function initSanity(
       `Get started by running ${chalk.cyan(devCommand)} to launch your Studio’s development server`,
     )
     if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = mcpConfigured.map((e) => e.name).join(' and ')
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
