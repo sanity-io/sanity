@@ -262,7 +262,7 @@ export async function setupMCP(
   } catch (error) {
     // Don't fail init if MCP setup fails
     output.warn(
-      `Warning: Could not configure MCP: ${error instanceof Error ? error.message : `${err}`}`,
+      `Warning: Could not configure MCP: ${error instanceof Error ? error.message : `${error}`}`,
     )
     output.warn('You can set up MCP manually later using https://mcp.sanity.io')
     return null
