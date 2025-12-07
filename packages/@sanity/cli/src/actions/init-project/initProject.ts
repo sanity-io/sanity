@@ -547,12 +547,8 @@ export default async function initSanity(
       }
     }
 
-    // Set up MCP integration (automatic unless --no-mcp)
-    try {
-      mcpConfigured = await setupMCP(context, {skipMcp: !cliFlags.mcp})
-    } catch (err) {
-      debug('MCP setup error: %s', err instanceof Error ? err.message : 'Unknown error')
-    }
+    // Set up MCP integration
+    mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
 
     const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
@@ -662,12 +658,8 @@ export default async function initSanity(
     }
   }
 
-  // Set up MCP integration (automatic unless --no-mcp)
-  try {
-    mcpConfigured = await setupMCP(context, {skipMcp: !cliFlags.mcp})
-  } catch (err) {
-    debug('MCP setup error: %s', err instanceof Error ? err.message : 'Unknown error')
-  }
+  // Set up MCP integration
+  mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
 
   // we enable auto-updates by default, but allow users to specify otherwise
   let autoUpdates = true

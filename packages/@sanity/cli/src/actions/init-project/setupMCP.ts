@@ -92,22 +92,11 @@ export async function detectAvailableEditors(): Promise<Editor[]> {
  * Shows existing config status - unconfigured editors are pre-selected,
  * configured editors show "(select to reconfigure)" and are not pre-selected
  */
-export async function promptForMCPSetup(
+async function promptForMCPSetup(
   prompt: CliPrompter,
   detectedEditors: Editor[],
   editorsWithExisting: Editor[],
-  skipMcp: boolean,
 ): Promise<Editor[] | null> {
-  if (skipMcp) {
-    // User explicitly opted out via --no-mcp flag
-    return null
-  }
-
-  if (detectedEditors.length === 0) {
-    // No editors detected, skip silently
-    return null
-  }
-
   // Build choices with existing config status
   const editorChoices = detectedEditors.map((e) => {
     const isConfigured = editorsWithExisting.some((existing) => existing.name === e.name)
@@ -141,7 +130,7 @@ export async function promptForMCPSetup(
  * Get the CLI authentication token
  * This token is already authenticated and can be used for MCP
  */
-export function getMCPToken(): string {
+function getMCPToken(): string {
   const token = getCliToken()
 
   if (!token) {
@@ -178,7 +167,7 @@ async function getEditorsWithExistingConfig(editors: Editor[]): Promise<Editor[]
  * Merges with existing config if present
  * Uses existing CLI authentication token
  */
-export async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
+async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
   const configPath = editor.configPath
 
   // 1. Read existing config (if exists)
@@ -220,13 +209,14 @@ export async function writeMCPConfig(editor: Editor, token: string): Promise<voi
  */
 export async function setupMCP(
   context: CliCommandContext,
-  options: {skipMcp: boolean},
+  options: {mcp?: boolean},
 ): Promise<Editor[] | null> {
   const {output, prompt} = context
 
   try {
     // 1. Check for explicit opt-out
-    if (options.skipMcp) {
+    if (options.mcp === false) {
+      output.warn('Skipping MCP configuration due to --no-mcp flag')
       return null
     }
 
@@ -234,7 +224,7 @@ export async function setupMCP(
     const detected = await detectAvailableEditors()
 
     if (detected.length === 0) {
-      // No editors found, skip silently (no message)
+      output.warn('No supported AI editors detected (Cursor, VS Code, Claude Code)')
       return null
     }
 
@@ -242,7 +232,7 @@ export async function setupMCP(
     const editorsWithExisting = await getEditorsWithExistingConfig(detected)
 
     // 4. Prompt user (shows existing config status, only pre-selects unconfigured editors)
-    const selected = await promptForMCPSetup(prompt, detected, editorsWithExisting, options.skipMcp)
+    const selected = await promptForMCPSetup(prompt, detected, editorsWithExisting)
 
     if (!selected || selected.length === 0) {
       // User deselected all editors
@@ -255,15 +245,13 @@ export async function setupMCP(
     // 6. Write configs for each selected editor
     for (const editor of selected) {
       await writeMCPConfig(editor, token)
-      output.print(`${chalk.green('✓')} MCP configured for ${editor.name}`)
+      output.success(`MCP configured for ${editor.name}`)
     }
 
     return selected
   } catch (error) {
     // Don't fail init if MCP setup fails
-    output.warn(
-      `Warning: Could not configure MCP: ${error instanceof Error ? error.message : `${error}`}`,
-    )
+    output.warn(`Could not configure MCP: ${error instanceof Error ? error.message : `${error}`}`)
     output.warn('You can set up MCP manually later using https://mcp.sanity.io')
     return null
   }
