@@ -25,7 +25,7 @@ const configureMcpCommand: CliCommandDefinition = {
     }
 
     // Run the MCP setup flow (reuses init logic)
-    await setupMCP(context, {skipMcp: false})
+    await setupMCP(context, {mcp: true})
   },
 }
 
