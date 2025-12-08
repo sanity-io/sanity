@@ -1,13 +1,19 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
-import {type DragEvent, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
+import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
+import {
+  NestedDialogClosed,
+  NestedDialogOpened,
+} from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
@@ -78,6 +84,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const {onPathOpen} = useFormCallbacks()
+  const telemetry = useTelemetry()
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
     absolutePath?: Path
     path?: Path
@@ -91,6 +98,15 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const {dialogId, isTop, stack, close} = useDialogStack({
     path: currentPath,
   })
+
+  // Log telemetry when the dialog opens
+  useEffect(() => {
+    if (stack.length === 0) {
+      telemetry.log(NestedDialogOpened, {
+        path: pathToString([]),
+      })
+    }
+  }, [stack, telemetry])
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -117,20 +133,26 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
           if (newLastStackPath.length > 1) {
             onPathOpen(newLastStackPath)
           } else {
+            telemetry.log(NestedDialogClosed, {
+              path: pathToString([]),
+            })
             onClose?.()
             close()
           }
         }
       }
     },
-    [isTop, stack, onPathOpen, onClose, close],
+    [isTop, stack, onPathOpen, onClose, close, telemetry],
   )
 
   const handleClose = useCallback(() => {
     // close() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
+    telemetry.log(NestedDialogClosed, {
+      path: pathToString([]),
+    })
     onClose?.()
     close()
-  }, [close, onClose])
+  }, [close, onClose, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 

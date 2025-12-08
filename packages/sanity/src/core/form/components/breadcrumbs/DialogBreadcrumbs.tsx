@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
 import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
@@ -11,10 +12,12 @@ import {
 } from 'react'
 
 import {MenuButton} from '../../../../ui-components'
+import {pathToString} from '../../../field/paths/helpers'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {useFormBuilder} from '../../useFormBuilder'
 
@@ -84,10 +87,14 @@ function BreadcrumbButton({
 }) {
   const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
+  const telemetry = useTelemetry()
 
   const handleClick = useCallback(() => {
     onPathSelect(itemPath)
-  }, [onPathSelect, itemPath])
+    telemetry.log(NavigatedToNestedObjectViaBreadcrumb, {
+      path: pathToString(itemPath),
+    })
+  }, [onPathSelect, itemPath, telemetry])
 
   return (
     <Button
