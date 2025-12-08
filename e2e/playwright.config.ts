@@ -129,18 +129,19 @@ const playwrightConfig: PlaywrightTestConfig = {
   projects: E2E_DEBUG ? [CHROMIUM_PROJECT] : [CHROMIUM_PROJECT, FIREFOX_PROJECT, ...OS_BROWSERS],
 
   /* Run your local dev server before starting the tests */
-  webServer: BASE_URL.includes('.sanity.dev')
-    ? undefined
-    : {
-        /**
-         * If it is running in CI just start the production build assuming that studio is already build
-         * Locally run the dev server
-         */
-        command: CI ? 'pnpm start' : 'pnpm dev',
-        port: 3339,
-        reuseExistingServer: !CI,
-        stdout: 'pipe',
-      },
+  webServer:
+    BASE_URL.includes('.sanity.dev') || BASE_URL.includes('.vercel.app')
+      ? undefined
+      : {
+          /**
+           * If it is running in CI just start the production build assuming that studio is already build
+           * Locally run the dev server
+           */
+          command: CI ? 'pnpm start' : 'pnpm dev',
+          port: 3339,
+          reuseExistingServer: !CI,
+          stdout: 'pipe',
+        },
 }
 
 export default defineConfig(playwrightConfig)
