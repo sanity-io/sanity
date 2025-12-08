@@ -77,7 +77,20 @@ export function extractSchema(
   const generatedTypes = new Map<string, string>()
 
   // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
-  const sortedSchemaTypeNames = sortByDependencies(schemaDef)
+  const {sortedSchemaTypeNames, repeated} = sortByDependencies(schemaDef)
+  // repeated.clear() // Disable hoisting for now
+
+  repeated.forEach((key, objectField) => {
+    const base = convertSchemaType(objectField.type)
+    if (base === null) {
+      return
+    }
+    schema.push({
+      type: 'type',
+      name: key,
+      value: base,
+    })
+  })
   sortedSchemaTypeNames.forEach((typeName) => {
     const schemaType = schemaDef.get(typeName)
     if (schemaType === undefined) {
@@ -236,7 +249,6 @@ export function extractSchema(
 
     throw new Error(`Type "${schemaType.name}" not found`)
   }
-
   function createObject(
     schemaType: ObjectSchemaType | SanitySchemaType,
   ): ObjectTypeNode | UnknownTypeNode {
@@ -245,15 +257,25 @@ export function extractSchema(
     const fields = gatherFields(schemaType)
     for (const field of fields) {
       const fieldIsRequired = isFieldRequired(field?.type?.validation)
-      const value = convertSchemaType(field.type)
-      if (value === null) {
-        continue
-      }
+      let value: TypeNode
+      const hoisted = repeated.get(field)
+      if (hoisted && !sortedSchemaTypeNames.includes(field.type.name)) {
+        // This field is hoisted, hoist it with an inline type
+        value = {
+          type: 'inline',
+          name: hoisted,
+        }
+      } else {
+        value = convertSchemaType(field.type)
+        if (value === null) {
+          continue
+        }
 
-      // if the field sets assetRequired() we will mark the asset attribute as required
-      // also guard against the case where the field is not an object, though type validation should catch this
-      if (hasAssetRequired(field?.type?.validation) && value.type === 'object') {
-        value.attributes.asset.optional = false
+        // if the field sets assetRequired() we will mark the asset attribute as required
+        // also guard against the case where the field is not an object, though type validation should catch this
+        if (hasAssetRequired(field?.type?.validation) && value.type === 'object') {
+          value.attributes.asset.optional = false
+        }
       }
 
       // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
@@ -575,13 +597,32 @@ function lastType(typeDef: SanitySchemaType): SanitySchemaType | undefined {
 }
 
 // Sorts the types by their dependencies by using a topological sort depth-first algorithm.
-function sortByDependencies(compiledSchema: SchemaDef): string[] {
+function sortByDependencies(compiledSchema: SchemaDef): {
+  sortedSchemaTypeNames: string[]
+  repeated: Map<ObjectField, string>
+} {
   const seen = new Set<SanitySchemaType>()
+  const objectMap = new Set<ObjectField>()
+  const repeated = new Map<ObjectField, string>()
+  const repeatedNames = new Set<string>()
+
+  function pickRepeatedName(path: string[]): string {
+    for (let idx = path.length - 1; idx >= 0; idx--) {
+      const name = path.slice(idx).join('.')
+      if (!repeatedNames.has(name)) {
+        repeatedNames.add(name)
+        return name
+      }
+    }
+    throw new Error(`Unable to pick repeated name: ${path.join('.')}`)
+  }
 
   // Walks the dependencies of a schema type and adds them to the dependencies set
   function walkDependencies(
     schemaType: SanitySchemaType,
     dependencies: Set<SanitySchemaType>,
+    path: string[],
+    hoistRepetitions = true,
   ): void {
     if (seen.has(schemaType)) {
       return
@@ -589,6 +630,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     seen.add(schemaType)
 
     if ('fields' in schemaType) {
+      console.log('START Gatthring fields', path.join('.'))
       for (const field of gatherFields(schemaType)) {
         const last = lastType(field.type)
         if (last!.name === 'document') {
@@ -608,14 +650,29 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
           } else {
             dependencies.add(field.type)
           }
+
+          if (hoistRepetitions && !compiledSchema.get(field.type.name)) {
+            const fieldPath = path.concat([field.name])
+            console.log('FOUND!', field.name, '@', fieldPath.join('.'))
+            if (objectMap.has(field)) {
+              // eslint-disable-next-line max-depth
+              if (!repeated.has(field)) {
+                console.log('FOUND!!!', field.name, '@', fieldPath.join('.'), field)
+                repeated.set(field, pickRepeatedName(fieldPath))
+              }
+            }
+
+            objectMap.add(field)
+          }
         } else if (field.type) {
           dependencies.add(field.type)
         }
-        walkDependencies(field.type, dependencies)
+        walkDependencies(field.type, dependencies, path.concat([field.name]))
       }
+      console.log('END Gatthring fields', path.join('.'))
     } else if ('of' in schemaType) {
       for (const item of schemaType.of) {
-        walkDependencies(item, dependencies)
+        walkDependencies(item, dependencies, path.concat(item.name), true)
       }
     }
   }
@@ -630,7 +687,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     validSchemaNames.add(typeName)
     const dependencies = new Set<SanitySchemaType>()
 
-    walkDependencies(schemaType, dependencies)
+    walkDependencies(schemaType, dependencies, [typeName])
     dependencyMap.set(schemaType, dependencies)
     seen.clear() // Clear the seen set for the next type
   })
@@ -671,5 +728,8 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     visit(type)
   }
 
-  return typeNames.filter((typeName) => validSchemaNames.has(typeName))
+  return {
+    sortedSchemaTypeNames: typeNames.filter((typeName) => validSchemaNames.has(typeName)),
+    repeated,
+  }
 }
