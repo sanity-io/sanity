@@ -5,6 +5,7 @@ import {type WorkerChannel, type WorkerChannelReporter} from '@sanity/worker-cha
 import {type SchemaType} from 'groq-js'
 import {createSelector} from 'reselect'
 
+import {resultSuffix} from '../casing'
 import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL, SANITY_QUERIES} from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
@@ -145,7 +146,7 @@ export class TypeGenerator {
         const {variable} = extractedQuery
         try {
           const {tsType, stats} = schemaTypeGenerator.evaluateQuery(extractedQuery)
-          const id = getUniqueIdentifierForName(`${variable.id.name}Result`, currentIdentifiers)
+          const id = getUniqueIdentifierForName(resultSuffix(variable.id.name), currentIdentifiers)
           const typeAlias = t.tsTypeAliasDeclaration(id, null, tsType)
           const trimmedQuery = extractedQuery.query.replace(/(\r\n|\n|\r)/gm, '').trim()
           const ast = t.addComments(t.exportNamedDeclaration(typeAlias), 'leading', [
