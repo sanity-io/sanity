@@ -7,9 +7,6 @@ import execa from 'execa'
 
 import {debug} from '../../debug'
 import {type CliCommandContext, type CliPrompter} from '../../types'
-import {getCliToken} from '../../util/clientWrapper'
-
-const MCP_SERVER_URL = 'https://mcp.sanity.io'
 
 export interface Editor {
   name: 'Cursor' | 'VS Code' | 'Claude Code'
@@ -23,11 +20,8 @@ interface MCPConfig {
 }
 
 interface ServerConfig {
-  type: 'http'
-  url: string
-  headers: {
-    Authorization: string
-  }
+  command: string
+  args?: string[]
 }
 
 /**
@@ -126,20 +120,6 @@ async function promptForMCPSetup(
 }
 
 /**
- * Get the CLI authentication token
- * This token is already authenticated and can be used for MCP
- */
-function getMCPToken(): string {
-  const token = getCliToken()
-
-  if (!token) {
-    throw new Error('Not authenticated. Please run `sanity login` first.')
-  }
-
-  return token
-}
-
-/**
  * Check which editors already have Sanity MCP configured
  */
 async function getEditorsWithExistingConfig(editors: Editor[]): Promise<Editor[]> {
@@ -149,7 +129,7 @@ async function getEditorsWithExistingConfig(editors: Editor[]): Promise<Editor[]
       try {
         const content = await fs.readFile(editor.configPath, 'utf-8')
         const config = JSON.parse(content) as MCPConfig
-        if (config[editor.configKey]?.Sanity) {
+        if (config[editor.configKey]?.sanity) {
           configured.push(editor)
         }
       } catch (err) {
@@ -164,9 +144,8 @@ async function getEditorsWithExistingConfig(editors: Editor[]): Promise<Editor[]
 /**
  * Write MCP configuration to editor config file
  * Merges with existing config if present
- * Uses existing CLI authentication token
  */
-async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
+async function writeMCPConfig(editor: Editor): Promise<void> {
   const configPath = editor.configPath
 
   // 1. Read existing config (if exists)
@@ -187,12 +166,9 @@ async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
     existingConfig[serverKey] = {}
   }
 
-  existingConfig[serverKey].Sanity = {
-    type: 'http',
-    url: MCP_SERVER_URL,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  existingConfig[serverKey].sanity = {
+    command: 'npx',
+    args: ['-y', '@sanity/mcp'],
   }
 
   // 3. Ensure parent directory exists
@@ -238,12 +214,9 @@ export async function setupMCP(
       return null
     }
 
-    // 5. Get CLI token for MCP
-    const token = getMCPToken()
-
-    // 6. Write configs for each selected editor
+    // 5. Write configs for each selected editor
     for (const editor of selected) {
-      await writeMCPConfig(editor, token)
+      await writeMCPConfig(editor)
       output.success(`MCP configured for ${editor.name}`)
     }
 
