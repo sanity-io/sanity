@@ -29,6 +29,7 @@ export function DeploymentNotificationToast() {
         status: 'info',
         title: t('deployment-notifier.title'),
         closable: true,
+        duration: +Infinity,
         description: (
           <Stack space={3}>
             <Text size={1}>{t('deployment-notifier.description')}</Text>
