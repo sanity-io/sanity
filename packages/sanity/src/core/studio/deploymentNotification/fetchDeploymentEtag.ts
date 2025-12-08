@@ -5,7 +5,7 @@
  */
 export async function fetchDeploymentEtag(): Promise<string | null> {
   try {
-    const response = await fetch('/', {method: 'HEAD'})
+    const response = await fetch('/', {method: 'HEAD', redirect: 'error', mode: 'same-origin'})
     if (!response.ok) {
       return null
     }
