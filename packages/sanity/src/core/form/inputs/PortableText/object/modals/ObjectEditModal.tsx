@@ -2,8 +2,8 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../../../i18n'
+import {EditPortal} from '../../../..'
 import {_getModalOption} from '../helpers'
-import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
 
 export function ObjectEditModal(props: {
@@ -61,13 +61,8 @@ export function ObjectEditModal(props: {
   }
 
   return (
-    <DefaultEditDialog
-      onClose={handleClose}
-      title={modalTitle}
-      width={modalWidth}
-      autoFocus={autoFocus}
-    >
+    <EditPortal type="dialog" onClose={onClose} header={modalTitle} width={1}>
       {props.children}
-    </DefaultEditDialog>
+    </EditPortal>
   )
 }

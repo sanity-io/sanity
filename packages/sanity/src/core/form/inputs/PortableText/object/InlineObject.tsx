@@ -13,7 +13,6 @@ import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
-import {EditPortal} from '../../../components/EditPortal'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
@@ -33,6 +32,7 @@ import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
+import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface InlineObjectProps {
   floatingBoundary: HTMLElement | null
@@ -324,9 +324,17 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
         />
       )}
       {open && (
-        <EditPortal type="dialog" onClose={onClose} header={popoverTitle} width={1}>
+        <ObjectEditModal
+          autoFocus
+          defaultType="popover"
+          floatingBoundary={floatingBoundary}
+          onClose={onClose}
+          referenceBoundary={referenceBoundary}
+          referenceElement={referenceElement}
+          schemaType={schemaType}
+        >
           {children}
-        </EditPortal>
+        </ObjectEditModal>
       )}
     </>
   )
