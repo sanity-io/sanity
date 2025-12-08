@@ -41,7 +41,7 @@ import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {EnhancedObjectDialogProvider, useEnhancedObjectDialog} from './tree-editing'
+import {EnhancedObjectDialogProvider} from './tree-editing'
 
 /**
  * @alpha
@@ -346,13 +346,8 @@ interface RootInputProps {
 
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
-  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
-
-  const arrayEditingModal = undefined
 
   return renderInput({
     ...rootInputProps,
-    // eslint-disable-next-line camelcase
-    __internal_enhancedbjectDialog: arrayEditingModal,
   })
 }

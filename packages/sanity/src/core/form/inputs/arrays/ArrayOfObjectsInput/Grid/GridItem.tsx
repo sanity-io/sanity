@@ -12,7 +12,7 @@ import {type FIXME} from '../../../../../FIXME'
 import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
 import {getSchemaTypeTitle} from '../../../../../schema'
-import {FormFieldValidationStatus} from '../../../../components'
+import {EnhancedObjectDialog, FormFieldValidationStatus} from '../../../../components'
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -88,17 +88,18 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled, isDialogAvailable} = useEnhancedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
   const uploadProgress =
     typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
-  const shouldUseEnhancedDialog = enhancedObjectDialogEnabled && isDialogAvailable
   // The edit portal should open if the item is open and:
   // - EnhancedObjectDialog is disabled
   // - the EnhancedObjectDialog is not available
-  const openPortal = open
+  const openPortal = open && !enhancedObjectDialogEnabled
+
+  const openEnhancedDialog = open && enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -307,6 +308,22 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         >
           {children}
         </EditPortal>
+      )}
+      {openEnhancedDialog && (
+        <EnhancedObjectDialog
+          header={
+            readOnly
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
+          }
+          type="dialog"
+          width={parentSchemaType?.options?.modal?.width ?? 1}
+          id={value._key}
+          onClose={onClose}
+          autofocus={focused}
+        >
+          {children}
+        </EnhancedObjectDialog>
       )}
     </EnhancedObjectDialogProvider>
   )

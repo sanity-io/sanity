@@ -28,7 +28,6 @@ import {
   type FocusEventHandler,
   type FormEventHandler,
   type MutableRefObject,
-  type ReactNode,
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
@@ -176,17 +175,6 @@ export interface ObjectInputProps<
    * @hidden
    * @beta */
   elementProps: ComplexElementProps
-
-  /**
-   * @deprecated – DO NOT USE
-   *
-   * The node for the array editing modal.
-   * This node renders the array editing modal as a child of the root input.
-   * It is necessary for the array editing dialog to be a child of the root input
-   * because the root input may be wrapped in a React context using the Components API,
-   * which is utilized by inputs in the form.
-   */
-  __internal_enhancedbjectDialog?: ReactNode
 }
 
 /**
