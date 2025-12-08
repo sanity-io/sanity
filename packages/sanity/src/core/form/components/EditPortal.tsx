@@ -7,6 +7,7 @@ import {PopoverDialog} from '../../components'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
@@ -76,6 +77,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+  const {onPathOpen} = useFormCallbacks()
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
     absolutePath?: Path
     path?: Path
@@ -86,7 +88,7 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack, close, navigateUp} = useDialogStack({
+  const {dialogId, isTop, stack, close} = useDialogStack({
     path: currentPath,
   })
 
@@ -106,16 +108,28 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
       // Only the top dialog should respond to the keyboard shortcut
       if (isTop && (event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') {
         event.preventDefault()
-        navigateUp()
+
+        const lastStackPath = stack[stack.length - 1]?.path
+
+        if (lastStackPath && lastStackPath.length > 1) {
+          const newLastStackPath = lastStackPath.slice(0, -1)
+
+          onPathOpen(newLastStackPath)
+        }
+
+        if (stack.length === 0) {
+          onClose?.()
+          close()
+        }
       }
     },
-    [isTop, navigateUp],
+    [isTop, stack, onPathOpen, onClose, close],
   )
 
   const handleClose = useCallback(() => {
     // close() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
-    close()
     onClose?.()
+    close()
   }, [close, onClose])
 
   useGlobalKeyDown(handleGlobalKeyDown)
