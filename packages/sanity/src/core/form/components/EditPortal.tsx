@@ -114,12 +114,12 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
         if (lastStackPath && lastStackPath.length > 1) {
           const newLastStackPath = lastStackPath.slice(0, -1)
 
-          onPathOpen(newLastStackPath)
-        }
-
-        if (stack.length === 0) {
-          onClose?.()
-          close()
+          if (newLastStackPath.length > 1) {
+            onPathOpen(newLastStackPath)
+          } else {
+            onClose?.()
+            close()
+          }
         }
       }
     },
