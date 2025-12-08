@@ -303,7 +303,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
 
             const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
             expect(types.toString()).toContain(
-              `'*[_type == "page" && slug.current == $slug][0]': PAGE_QUERYResult;`,
+              `'*[_type == "page" && slug.current == $slug][0]': PAGE_QUERY_RESULT;`,
             )
           },
         ),
