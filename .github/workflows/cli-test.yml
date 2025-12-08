@@ -82,16 +82,11 @@ jobs:
         run: |
           echo "Only examples files changed, skipping CLI tests"
           exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
+
+      - uses: ./.github/actions/setup
         if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install project dependencies
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: Build CLI
         if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
