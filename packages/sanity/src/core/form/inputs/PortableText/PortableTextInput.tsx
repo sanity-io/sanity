@@ -199,18 +199,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => {
-      const next = !v
-      if (next) {
-        telemetry.log(PortableTextInputExpanded)
-      } else {
-        telemetry.log(PortableTextInputCollapsed)
-      }
-      setFullscreenPath(path, next)
-      onFullScreenChange?.(next)
-      return next
-    })
-  }, [onFullScreenChange, setFullscreenPath, path, telemetry])
+    const next = !isFullscreen
+    if (next) {
+      telemetry.log(PortableTextInputExpanded)
+    } else {
+      telemetry.log(PortableTextInputCollapsed)
+    }
+    setFullscreenPath(path, next)
+    onFullScreenChange?.(next)
+    setIsFullscreen(next)
+  }, [telemetry, path, setFullscreenPath, onFullScreenChange, isFullscreen])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
