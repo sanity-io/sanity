@@ -1,6 +1,9 @@
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
+Options
+  --verbose  Provide detailed information about issues
+
 Examples:
   # Check the health of the current Blueprint project
   sanity blueprints doctor --verbose
@@ -20,7 +23,7 @@ const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
   group: 'blueprints',
   helpText,
   signature: '[--verbose]',
-  description: 'Check the health of a Blueprint project',
+  description: 'Diagnose potential issues with Blueprint configuration',
 
   async action(args, context) {
     const {apiClient, output} = context

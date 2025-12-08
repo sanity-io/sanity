@@ -7,6 +7,8 @@ import {
 } from 'sanity'
 
 import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
+import {CustomEnhancedObjectField} from './customEnhancedObjectField'
+import {CustomEnhancedObjectInput} from './customEnhancedObjectInput'
 import {PageBlockAnchor} from './PageBlockAnchor'
 
 const animal = defineField({
@@ -18,6 +20,17 @@ const animal = defineField({
       name: 'name',
       type: 'string',
       title: 'Animal name',
+    },
+    {
+      name: 'arrayOfNumbersAnimals',
+      type: 'array',
+      title: 'Array of numbers animals',
+      of: [
+        {
+          type: 'number',
+          title: 'Number',
+        },
+      ],
     },
     {
       type: 'array',
@@ -245,6 +258,32 @@ const animal = defineField({
           name: 'species',
           title: 'Species',
           to: [{type: 'species'}],
+        },
+      ],
+    },
+    {
+      name: 'arrayWithNoTitle',
+      title: 'Array with custom field',
+      type: 'array',
+      components: {
+        field: CustomEnhancedObjectField,
+        input: CustomEnhancedObjectInput,
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'obj',
+          title: 'Some object',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'description',
+              type: 'string',
+            },
+          ],
         },
       ],
     },
@@ -938,6 +977,17 @@ export const objectsDebug = defineType({
       name: 'title',
       type: 'string',
     },
+    {
+      name: 'arrayOfNumbers',
+      type: 'array',
+      title: 'Array of numbers',
+      of: [
+        {
+          type: 'number',
+          title: 'Number',
+        },
+      ],
+    },
     /** Internationalized array string */
     defineField({
       name: 'greeting',
@@ -971,6 +1021,32 @@ export const objectsDebug = defineType({
       ],
     }),
     animals,
+    {
+      name: 'arrayWithNoTitle_2',
+      title: 'Array with custom field 2',
+      type: 'array',
+      components: {
+        field: CustomEnhancedObjectField,
+        input: CustomEnhancedObjectInput,
+      },
+      of: [
+        {
+          type: 'object',
+          name: 'obj_2',
+          title: 'Some object',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+            },
+            {
+              name: 'description',
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    },
     arrayOfMixedTypes,
     body,
     fieldsetArray,

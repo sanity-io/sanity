@@ -50,6 +50,8 @@ import type {
   HoveredFieldContext,
   HoveredFieldContextValue,
   IsLastPaneContext,
+  LiveUserApplicationContext,
+  LiveUserApplicationContextValue,
   LocaleContext,
   LocaleContextValue,
   MediaLibraryIdsContext,
@@ -110,6 +112,7 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
+  UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
@@ -257,6 +260,12 @@ describe('sanity/_singletons', () => {
   })
   test('IsLastPaneContext', () => {
     expectTypeOf<typeof IsLastPaneContext>().not.toBeNever()
+  })
+  test('LiveUserApplicationContext', () => {
+    expectTypeOf<typeof LiveUserApplicationContext>().not.toBeNever()
+  })
+  test('LiveUserApplicationContextValue', () => {
+    expectTypeOf<LiveUserApplicationContextValue>().not.toBeNever()
   })
   test('LocaleContext', () => {
     expectTypeOf<typeof LocaleContext>().not.toBeNever()
@@ -437,6 +446,9 @@ describe('sanity/_singletons', () => {
   })
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
+  })
+  test('UserApplicationCacheContext', () => {
+    expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()
   })
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()

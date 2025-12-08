@@ -16,7 +16,6 @@ import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
-import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
@@ -124,11 +123,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
     // This handles both direct block selection and nested paths within the block
     const openPathStartsWithBlock = startsWith(blockPath, openPath)
 
-    if (
-      openPathStartsWithBlock &&
-      shouldBeInBreadcrumb(blockPath, openPath, documentValue) &&
-      !hasCustomInputComponent(rootSchemaType.fields, blockPath)
-    ) {
+    if (openPathStartsWithBlock && shouldBeInBreadcrumb(blockPath, openPath, documentValue)) {
       const blockBreadcrumb: DialogItem = {
         children: EMPTY_ARRAY,
         parentSchemaType: childField.type as ArraySchemaType,
@@ -188,10 +183,7 @@ export function buildArrayStatePTE(props: BuildArrayStatePTEProps): {
           // But ensure the value is at least an empty array for processing
           const arrayFieldValue = Array.isArray(blockFieldValue) ? blockFieldValue : []
 
-          if (
-            shouldBeInBreadcrumb(blockFieldPath, openPath, documentValue) &&
-            !hasCustomInputComponent(rootSchemaType.fields, blockFieldPath)
-          ) {
+          if (shouldBeInBreadcrumb(blockFieldPath, openPath, documentValue)) {
             const breadcrumbsResult = buildBreadcrumbsState({
               arraySchemaType: blockField.type as ArraySchemaType,
               arrayValue: arrayFieldValue as Record<string, unknown>[],
