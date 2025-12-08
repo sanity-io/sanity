@@ -129,7 +129,7 @@ async function getEditorsWithExistingConfig(editors: Editor[]): Promise<Editor[]
       try {
         const content = await fs.readFile(editor.configPath, 'utf-8')
         const config = JSON.parse(content) as MCPConfig
-        if (config[editor.configKey]?.sanity) {
+        if (config[editor.configKey]?.sanity || config[editor.configKey]?.Sanity) {
           configured.push(editor)
         }
       } catch (err) {
@@ -166,7 +166,10 @@ async function writeMCPConfig(editor: Editor): Promise<void> {
     existingConfig[serverKey] = {}
   }
 
-  existingConfig[serverKey].sanity = {
+  // Overwrite any pre-existing key (`sanity` or `Sanity`), defaulting to the lowercase
+  // variant (`sanity`) if none is currently defined.
+  const existingKey = existingConfig[serverKey].Sanity ? 'Sanity' : 'sanity'
+  existingConfig[serverKey][existingKey] = {
     command: 'npx',
     args: ['-y', '@sanity/mcp'],
   }
