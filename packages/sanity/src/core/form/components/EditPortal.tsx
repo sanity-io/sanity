@@ -81,6 +81,9 @@ export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element
     path?: Path
   }
 
+  // Absolute paths have the full path including opened key, while path has only the current path
+  // This is important for the breadcrumbs to show the correct path
+  // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
   const {dialogId, isTop, stack, close, navigateUp} = useDialogStack({
