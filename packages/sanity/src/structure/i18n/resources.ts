@@ -240,36 +240,35 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
-
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner when the document is a draft and in editable mode*/
+  'canvas.banner.editable.linked-text.draft':
+    'This draft document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The text for the canvas linked banner when the document is a live document and in editable mode*/
+  'canvas.banner.editable.linked-text.published':
+    'This live document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The text for the canvas linked banner when the document is a version document and in editable mode*/
+  'canvas.banner.editable.linked-text.version':
+    'This version document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The description for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-description':
+    'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
+  /** The heading for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-heading': 'Free-form writing',
   /** The text for the canvas linked banner when the document is a draft */
   'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
   /** The text for the canvas linked banner when the document is a live document */
   'canvas.banner.linked-text.published': 'This live document is linked to Canvas',
   /** The text for the canvas linked banner when the document is a version document */
   'canvas.banner.linked-text.version': 'This version document is linked to Canvas',
-  /** The text for the canvas linked banner when the document is a draft */
-  'canvas.banner.editable.linked-text.draft':
-    'This draft document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
-  /** The text for the canvas linked banner when the document is a live document */
-  'canvas.banner.editable.linked-text.published':
-    'This live document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
-  /** The text for the canvas linked banner when the document is a version document */
-  'canvas.banner.editable.linked-text.version':
-    'This version document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
   /** The text for the canvas linked banner popover button */
   'canvas.banner.popover-button-text': 'Learn more',
   /** The description for the canvas linked banner popover */
   'canvas.banner.popover-description':
     'Canvas lets you author in a free-form editor that automatically maps back to the Studio as structured content - as you type.',
-  /** The description for the canvas linked banner popover */
-  'canvas.banner.editable.popover-description':
-    'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
   /** The heading for the canvas linked banner popover */
   'canvas.banner.popover-heading': 'Idea first authoring',
-  /** The heading for the canvas linked banner popover */
-  'canvas.banner.editable.popover-heading': 'Free-form writing',
   /** The description for the changes banner */
   'changes.banner.description':
     'Showing the history for the <strong>{{perspective}}</strong> version of this document.',

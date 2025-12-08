@@ -1,4 +1,4 @@
-import {SanityDocument, type SanityClient} from '@sanity/client'
+import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {catchError, map, type Observable, of, shareReplay, startWith, switchMap} from 'rxjs'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
@@ -20,6 +20,10 @@ const INITIAL_VALUE: CompanionDocs = {
   loading: true,
 }
 
+function isCompanionDoc(doc: SanityDocument | undefined): doc is SanityDocument & CompanionDoc {
+  return !!doc && 'canvasDocumentId' in doc && 'studioDocumentId' in doc
+}
+
 const getCompanionDocs = memoize(
   (
     publishedId: string,
@@ -30,30 +34,20 @@ const getCompanionDocs = memoize(
       .unstable_observeDocumentIdSet(`sanity::versionOf($publishedId)`, {publishedId})
       .pipe(map((result) => result.documentIds))
 
-    const companionDocsIdsListener$ = allVersionIds$.pipe(
+    const companionDocIdsListener$ = allVersionIds$.pipe(
       switchMap((versionIds) =>
         previewStore.unstable_observeDocumentIdSet(
           `_type == "sanity.canvas.link" && studioDocumentId in $ids`,
           {ids: versionIds},
         ),
       ),
+      map((result) => result.documentIds),
     )
 
-    return companionDocsIdsListener$.pipe(
-      switchMap((value) => {
-        const ids = value.documentIds
-
-        if (ids.length === 0) {
-          return of({error: null, data: [], loading: false})
-        }
-        return previewStore.unstable_observeDocuments(ids).pipe(
-          map((docs) => ({
-            error: null,
-            data: docs.filter((doc): doc is SanityDocument & CompanionDoc => Boolean(doc?._id)),
-            loading: false,
-          })),
-        )
-      }),
+    return companionDocIdsListener$.pipe(
+      switchMap((ids) => (ids.length === 0 ? of([]) : previewStore.unstable_observeDocuments(ids))),
+      map((docs) => docs.filter(isCompanionDoc)),
+      map((docs) => ({error: null, data: docs, loading: false})),
       catchError((error) => of({error, data: [], loading: false})),
       startWith(INITIAL_VALUE),
       shareReplay(1),
@@ -80,7 +74,9 @@ export function createCanvasCompanionDocsStore({
   previewStore: DocumentPreviewStore
 }): CanvasCompanionDocsStore {
   return {
-    getCompanionDocs: (documentId: string) =>
-      getCompanionDocs(getPublishedId(documentId), client, previewStore),
+    getCompanionDocs: (documentId: string) => {
+      const publishedId = getPublishedId(documentId)
+      return getCompanionDocs(publishedId, client, previewStore)
+    },
   }
 }
