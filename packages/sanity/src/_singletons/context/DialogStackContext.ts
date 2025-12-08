@@ -25,8 +25,6 @@ export interface DialogStackContextValue {
   remove: (id: string) => void
   /** Close all dial  ogs by clearing the stack */
   close: () => void
-  /** Navigate up in the stack */
-  navigateUp: () => void
 }
 
 /**
