@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {SanityDocument, type SanityClient} from '@sanity/client'
 import {catchError, map, type Observable, of, shareReplay, startWith, switchMap} from 'rxjs'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
@@ -42,24 +42,16 @@ const getCompanionDocs = memoize(
     return companionDocsIdsListener$.pipe(
       switchMap((value) => {
         const ids = value.documentIds
+
         if (ids.length === 0) {
-          return of({error: null, data: [] as CompanionDoc[], loading: false})
+          return of({error: null, data: [], loading: false})
         }
         return previewStore.unstable_observeDocuments(ids).pipe(
-          map((docs) =>
-            docs
-              .filter((doc): doc is NonNullable<typeof doc> => Boolean(doc?._id))
-              .map(
-                (doc) =>
-                  ({
-                    _id: doc._id,
-                    canvasDocumentId: doc.canvasDocumentId,
-                    studioDocumentId: doc.studioDocumentId,
-                    isStudioDocumentEditable: doc.isStudioDocumentEditable,
-                  }) as CompanionDoc,
-              ),
-          ),
-          map((data) => ({error: null, data, loading: false})),
+          map((docs) => ({
+            error: null,
+            data: docs.filter((doc): doc is SanityDocument & CompanionDoc => Boolean(doc?._id)),
+            loading: false,
+          })),
         )
       }),
       catchError((error) => of({error, data: [], loading: false})),
