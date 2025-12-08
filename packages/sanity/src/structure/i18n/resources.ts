@@ -242,15 +242,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-group-button.title': 'Close pane group',
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
-  /** The text for the canvas linked banner when the document is a draft and in editable mode*/
-  'canvas.banner.editable.linked-text.draft':
-    'This draft document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
-  /** The text for the canvas linked banner when the document is a live document and in editable mode*/
-  'canvas.banner.editable.linked-text.published':
-    'This live document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
-  /** The text for the canvas linked banner when the document is a version document and in editable mode*/
-  'canvas.banner.editable.linked-text.version':
-    'This version document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  /** The text for the canvas linked banner when the document in editable mode*/
+  'canvas.banner.editable.linked-text':
+    'This document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
   /** The description for the canvas linked banner popover in editable mode*/
   'canvas.banner.editable.popover-description':
     'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
