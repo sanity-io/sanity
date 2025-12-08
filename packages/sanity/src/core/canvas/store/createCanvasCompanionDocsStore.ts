@@ -74,9 +74,7 @@ export function createCanvasCompanionDocsStore({
   previewStore: DocumentPreviewStore
 }): CanvasCompanionDocsStore {
   return {
-    getCompanionDocs: (documentId: string) => {
-      const publishedId = getPublishedId(documentId)
-      return getCompanionDocs(publishedId, client, previewStore)
-    },
+    getCompanionDocs: (documentId: string) =>
+      getCompanionDocs(getPublishedId(documentId), client, previewStore),
   }
 }

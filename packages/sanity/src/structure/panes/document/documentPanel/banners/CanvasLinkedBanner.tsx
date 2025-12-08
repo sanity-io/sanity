@@ -27,11 +27,16 @@ const CANVAS_IMAGE_URL =
 
 const CANVAS_APP_NAME = 'Canvas'
 
-const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
+const CanvasPopoverContent = ({
+  onClose,
+  isLockedByCanvas,
+}: {
+  onClose: () => void
+  isLockedByCanvas: boolean
+}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const ref = useRef<HTMLDivElement | null>(null)
   useClickOutsideEvent(onClose, () => [ref.current])
-  const {isLockedByCanvas} = useCanvasCompanionDoc(documentId)
 
   const popoverHeading = isLockedByCanvas
     ? t('canvas.banner.popover-heading')
@@ -113,7 +118,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
         tone="default"
         portal
         placement="bottom-start"
-        content={<CanvasPopoverContent onClose={onClose} />}
+        content={<CanvasPopoverContent onClose={onClose} isLockedByCanvas={isLockedByCanvas} />}
       >
         <Button
           tooltipProps={null}
