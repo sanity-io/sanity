@@ -1,9 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Source, type WorkspaceSummary} from '../../../config/types'
+import {type AuthStore} from '../../../store'
 import {type UserApplication} from '../../../store/userApplications'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
 
@@ -18,12 +18,9 @@ describe('registerStudioManifest', () => {
   const mockRequest = vi.fn()
   const mockWithConfig = vi.fn()
 
-  const mockClient = {
-    withConfig: mockWithConfig,
-  } as unknown as SanityClient
-
   const mockConfiguredClient = {
     request: mockRequest,
+    withConfig: mockWithConfig,
   }
 
   const mockUserApplication: UserApplication = {
@@ -57,7 +54,8 @@ describe('registerStudioManifest', () => {
     }> = {},
   ): WorkspaceSummary {
     const name = overrides.name ?? 'default'
-    const projectId = overrides.projectId ?? 'test-project'
+    // Default to 'app-project' to match mockUserApplication.projectId
+    const projectId = overrides.projectId ?? 'app-project'
     const dataset = overrides.dataset ?? 'production'
     const title = overrides.title ?? 'Test Workspace'
     const subtitle = overrides.subtitle
@@ -73,6 +71,14 @@ describe('registerStudioManifest', () => {
       },
     } as unknown as Source
 
+    const mockAuth: AuthStore = {
+      state: of({
+        authenticated: true,
+        client: mockConfiguredClient,
+        currentUser: null,
+      }),
+    } as unknown as AuthStore
+
     return {
       type: 'workspace-summary',
       name,
@@ -84,6 +90,7 @@ describe('registerStudioManifest', () => {
       icon: null,
       customIcon: false,
       mediaLibrary,
+      auth: mockAuth,
       __internal: {
         sources: [
           {
@@ -99,14 +106,13 @@ describe('registerStudioManifest', () => {
   }
 
   describe('client configuration', () => {
-    it('should configure client with projectId and apiHost from userApplication', async () => {
+    it('should configure client with DEFAULT_STUDIO_CLIENT_OPTIONS', async () => {
       const workspace = createMockWorkspace()
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       expect(mockWithConfig).toHaveBeenCalledWith({
-        projectId: 'app-project',
-        apiHost: 'https://api.sanity.io',
+        apiVersion: '2025-02-19',
       })
     })
   })
@@ -115,7 +121,7 @@ describe('registerStudioManifest', () => {
     it('should post manifest to the correct endpoint', async () => {
       const workspace = createMockWorkspace()
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       expect(mockRequest).toHaveBeenCalledWith({
         method: 'POST',
@@ -132,7 +138,7 @@ describe('registerStudioManifest', () => {
     it('should include all workspace properties in manifest', async () => {
       const workspace = createMockWorkspace({
         name: 'my-workspace',
-        projectId: 'proj-456',
+        projectId: 'app-project',
         dataset: 'staging',
         title: 'My Workspace',
         subtitle: 'Development',
@@ -140,7 +146,7 @@ describe('registerStudioManifest', () => {
         schemaDescriptorId: 'schema-abc',
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -149,7 +155,7 @@ describe('registerStudioManifest', () => {
               workspaces: [
                 {
                   name: 'my-workspace',
-                  projectId: 'proj-456',
+                  projectId: 'app-project',
                   dataset: 'staging',
                   schemaDescriptorId: 'schema-abc',
                   basePath: '/studio',
@@ -166,9 +172,10 @@ describe('registerStudioManifest', () => {
     })
 
     it('should handle multiple workspaces', async () => {
+      // At least one workspace must match the userApplication projectId for auth
       const workspace1 = createMockWorkspace({
         name: 'workspace-1',
-        projectId: 'proj-1',
+        projectId: 'app-project',
         schemaDescriptorId: 'schema-1',
       })
       const workspace2 = createMockWorkspace({
@@ -177,12 +184,7 @@ describe('registerStudioManifest', () => {
         schemaDescriptorId: 'schema-2',
       })
 
-      await registerStudioManifest(
-        mockClient,
-        mockUserApplication,
-        [workspace1, workspace2],
-        mockTheme,
-      )
+      await registerStudioManifest(mockUserApplication, [workspace1, workspace2], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces).toHaveLength(2)
@@ -195,7 +197,7 @@ describe('registerStudioManifest', () => {
         mediaLibrary: {enabled: true, libraryId: 'lib-123'},
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].mediaLibraryId).toBe('lib-123')
@@ -206,7 +208,7 @@ describe('registerStudioManifest', () => {
         mediaLibrary: {enabled: false, libraryId: 'lib-123'},
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].mediaLibraryId).toBeUndefined()
@@ -219,13 +221,13 @@ describe('registerStudioManifest', () => {
         schemaDescriptorId: undefined,
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       expect(mockRequest).not.toHaveBeenCalled()
     })
 
     it('should skip registration when workspaces array is empty', async () => {
-      await registerStudioManifest(mockClient, mockUserApplication, [], mockTheme)
+      await registerStudioManifest(mockUserApplication, [], mockTheme)
 
       expect(mockRequest).not.toHaveBeenCalled()
     })
@@ -241,7 +243,6 @@ describe('registerStudioManifest', () => {
       })
 
       await registerStudioManifest(
-        mockClient,
         mockUserApplication,
         [validWorkspace, invalidWorkspace],
         mockTheme,
@@ -259,7 +260,7 @@ describe('registerStudioManifest', () => {
       // Override to have empty sources
       workspace.__internal.sources = []
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       // Should skip since no source means no schemaDescriptorId
       expect(mockRequest).not.toHaveBeenCalled()
@@ -272,7 +273,7 @@ describe('registerStudioManifest', () => {
         basePath: '',
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].basePath).toBeUndefined()
@@ -283,7 +284,7 @@ describe('registerStudioManifest', () => {
         title: '',
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].title).toBeUndefined()
@@ -294,7 +295,7 @@ describe('registerStudioManifest', () => {
         subtitle: undefined,
       })
 
-      await registerStudioManifest(mockClient, mockUserApplication, [workspace], mockTheme)
+      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
 
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces[0].subtitle).toBeUndefined()
