@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import {type CliCommandAction} from '@sanity/cli'
-import exportDataset from '@sanity/export'
+import {exportDataset} from '@sanity/export'
 
 import {type ProgressEvent} from '../../commands/dataset/exportDatasetCommand'
 import {MINIMUM_API_VERSION} from './constants'

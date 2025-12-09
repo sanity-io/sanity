@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import {type CliCommandDefinition, type CliPrompter} from '@sanity/cli'
-import exportDataset from '@sanity/export'
+import {exportDataset} from '@sanity/export'
 import {absolutify} from '@sanity/util/fs'
 import prettyMs from 'pretty-ms'
 
