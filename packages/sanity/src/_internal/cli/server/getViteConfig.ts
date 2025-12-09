@@ -148,6 +148,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
+      '__SANITY_BUILD_TIMESTAMP__': JSON.stringify(Date.now()),
       'process.env.PKG_BUILD_VERSION': JSON.stringify(process.env.PKG_BUILD_VERSION),
       'process.env.MODE': JSON.stringify(mode),
       /**

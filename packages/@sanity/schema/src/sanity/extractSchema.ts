@@ -158,7 +158,7 @@ export function extractSchema(
     // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
     // and we return an inline type referencing it instead
     if (schemaType.type?.name && sortedSchemaTypeNames.indexOf(schemaType.type?.name) > -1) {
-      return {type: 'inline', name: schemaType.name} satisfies InlineTypeNode
+      return {type: 'inline', name: schemaType.type?.name} satisfies InlineTypeNode
     }
 
     if (isStringType(schemaType)) {

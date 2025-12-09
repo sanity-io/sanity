@@ -15,12 +15,15 @@ import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsel
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
+import {UserApplicationCacheProvider} from '../store/userApplications'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
+import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
+import {LiveManifestRegisterProvider} from './manifest'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
@@ -76,16 +79,21 @@ export function StudioProvider({
             <PackageVersionStatusProvider>
               <MaybeEnableErrorReporting errorReporter={errorReporter} />
               <ResourceCacheProvider>
-                <AppIdCacheProvider>
-                  <ComlinkRouteHandler />
-                  <StudioAnnouncementsProvider>
-                    <GlobalPerspectiveProvider>
-                      <DocumentLimitUpsellProvider>
-                        <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
-                      </DocumentLimitUpsellProvider>
-                    </GlobalPerspectiveProvider>
-                  </StudioAnnouncementsProvider>
-                </AppIdCacheProvider>
+                <UserApplicationCacheProvider>
+                  <AppIdCacheProvider>
+                    <LiveUserApplicationProvider>
+                      <LiveManifestRegisterProvider />
+                      <ComlinkRouteHandler />
+                      <StudioAnnouncementsProvider>
+                        <GlobalPerspectiveProvider>
+                          <DocumentLimitUpsellProvider>
+                            <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                          </DocumentLimitUpsellProvider>
+                        </GlobalPerspectiveProvider>
+                      </StudioAnnouncementsProvider>
+                    </LiveUserApplicationProvider>
+                  </AppIdCacheProvider>
+                </UserApplicationCacheProvider>
               </ResourceCacheProvider>
             </PackageVersionStatusProvider>
           </LocaleProvider>

@@ -4,7 +4,6 @@ import {
   EditorProvider,
   type EditorSelection,
   type InvalidValue,
-  type OnPasteFn,
   type Patch,
   PortableTextEditor,
   type RangeDecoration,
@@ -14,9 +13,8 @@ import {
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {sortBy} from 'lodash'
 import {
   forwardRef,
   type ReactNode,
@@ -29,7 +27,6 @@ import {
   useState,
 } from 'react'
 
-import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../validation/util/pathToString'
@@ -40,9 +37,7 @@ import {
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
-import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -58,13 +53,7 @@ import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
 } from './presence-cursors'
-import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
-
-interface UploadTask {
-  file: File
-  uploaderCandidates: ResolvedUploader[]
-}
 
 function keyGenerator() {
   return randomKey(12)
@@ -129,8 +118,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     renderCustomMarkers,
     schemaType,
     value,
-    resolveUploader,
-    onUpload,
     displayInlineChanges,
   } = props
 
@@ -157,7 +144,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
       displayInlineChanges,
     })
 
-  const {t} = useTranslation()
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isActive, setIsActive] = useState(initialActive ?? true)
@@ -199,18 +185,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => {
-      const next = !v
-      if (next) {
-        telemetry.log(PortableTextInputExpanded)
-      } else {
-        telemetry.log(PortableTextInputCollapsed)
-      }
-      setFullscreenPath(path, next)
-      onFullScreenChange?.(next)
-      return next
-    })
-  }, [onFullScreenChange, setFullscreenPath, path, telemetry])
+    const next = !isFullscreen
+    if (next) {
+      telemetry.log(PortableTextInputExpanded)
+    } else {
+      telemetry.log(PortableTextInputCollapsed)
+    }
+    setFullscreenPath(path, next)
+    onFullScreenChange?.(next)
+    setIsFullscreen(next)
+  }, [telemetry, path, setFullscreenPath, onFullScreenChange, isFullscreen])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -354,85 +338,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
 
-  const uploadFile = useCallback(
-    (file: File, resolvedUploader: ResolvedUploader) => {
-      const {type, uploader} = resolvedUploader
-      onUpload?.({file, schemaType: type, uploader})
-    },
-    [onUpload],
-  )
-
-  const handleFiles = useCallback(
-    (files: File[]) => {
-      if (!resolveUploader) {
-        return
-      }
-      const tasks: UploadTask[] = files.map((file) => ({
-        file,
-        uploaderCandidates: getUploadCandidates(schemaType.of, resolveUploader, file),
-      }))
-      const readyTasks = tasks.filter((task) => task.uploaderCandidates.length > 0)
-      const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
-
-      if (rejected.length > 0) {
-        toast.push({
-          closable: true,
-          status: 'warning',
-          title: t('inputs.array.error.cannot-upload-unable-to-convert', {
-            count: rejected.length,
-          }),
-          description: rejected.map((task, i) => (
-            // oxlint-disable-next-line no-array-index-key
-            <Flex key={i} gap={2} padding={2}>
-              <Box>
-                <Text weight="medium">{task.file.name}</Text>
-              </Box>
-              <Box>
-                <Text size={1}>({task.file.type})</Text>
-              </Box>
-            </Flex>
-          )),
-        })
-      }
-
-      // todo: consider if we should to ask the user here
-      // the list of candidates is sorted by their priority and the first one is selected
-      readyTasks.forEach((task) => {
-        uploadFile(
-          task.file,
-          sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0],
-        )
-      })
-    },
-    [toast, resolveUploader, schemaType, uploadFile, t],
-  )
-
-  const handlePaste: OnPasteFn = useCallback(
-    (input) => {
-      const {event} = input
-
-      // Some applications may put both text and files on the clipboard when content is copied.
-      // If we have both text and html on the clipboard, just ignore the files if this is a paste event.
-      // Drop events will most probably be files so skip this test for those.
-      const eventType = event.type === 'paste' ? 'paste' : 'drop'
-      const hasHtml = !!event.clipboardData.getData('text/html')
-      const hasText = !!event.clipboardData.getData('text/plain')
-      if (eventType === 'paste' && hasHtml && hasText) {
-        return onPaste?.(input)
-      }
-
-      void extractPastedFiles(event.clipboardData)
-        .then((files) => {
-          return files.length > 0 ? files : []
-        })
-        .then((files) => {
-          handleFiles(files)
-        })
-      return onPaste?.(input)
-    },
-    [handleFiles, onPaste],
-  )
-
   return (
     <Box>
       {!ignoreValidationError && respondToInvalidContent}
@@ -467,7 +372,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
-                onPaste={handlePaste}
+                onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
                 readOnly={readOnly || !ready}

@@ -40,7 +40,7 @@ import {ImageInputHotspotInput} from './ImageInputHotspotInput'
 import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
-import {type BaseImageInputProps, type BaseImageInputValue, type FileInfo} from './types'
+import {type BaseImageInputProps, type BaseImageInputValue} from './types'
 
 export {BaseImageInputProps, BaseImageInputValue}
 
@@ -75,7 +75,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
-  const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isStale, setIsStale] = useState(false)
   const [hotspotButtonElement, setHotspotButtonElement] = useState<HTMLButtonElement | null>(null)
   // Get the menu button element in `ImageActionsMenu` so that focus can be restored to
@@ -91,34 +90,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     uploader: AssetSourceUploader
   } | null>(null)
 
-  const getFileTone = useCallback(() => {
-    const acceptedFiles = hoveringFiles.filter((file) => resolveUploader(schemaType, file))
-    const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
-
-    if (hoveringFiles.length > 0) {
-      if (rejectedFilesCount > 0 || directUploads === false) {
-        return 'critical'
-      }
-    }
-
-    if (!value?._upload && !readOnly && hoveringFiles.length > 0) {
-      return 'primary'
-    }
-
-    if (readOnly) {
-      return 'transparent'
-    }
-
-    return value?._upload && value?.asset ? 'transparent' : 'default'
-  }, [
-    directUploads,
-    hoveringFiles,
-    readOnly,
-    resolveUploader,
-    schemaType,
-    value?._upload,
-    value?.asset,
-  ])
   const isImageToolEnabled = useCallback(() => {
     const hotspotOptions = get(schemaType, 'options.hotspot')
     return typeof hotspotOptions === 'object' || hotspotOptions === true
@@ -227,7 +198,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         type: schemaType,
         resolveUploader,
         uploadWith,
-        isImage: true,
       })
 
       setSelectedAssetSource(null)
@@ -249,11 +219,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     setIsStale(true)
   }, [])
 
-  const handleSelectFilesToUpload = useCallback(
-    (assetSource: AssetSource, files: File[]) => {
-      if (files.length === 0) {
-        return
-      }
+  const handleSelectFileToUpload = useCallback(
+    (assetSource: AssetSource, file: File) => {
       setSelectedAssetSource(assetSource)
       if (assetSource.Uploader) {
         // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
@@ -273,8 +240,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                   )
                   break
                 case 'error':
-                  event.files.forEach((file) => {
-                    console.error(file.error)
+                  event.files.forEach((eventFile) => {
+                    console.error(eventFile.error)
                   })
                   push({
                     status: 'error',
@@ -285,7 +252,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                 case 'all-complete': {
                   // Asset limit errors only come through after all file uploads attemps have been made
                   const hasAssetLimitError = event.files.some(
-                    (file) => file.status === 'error' && isAssetLimitError(file.error),
+                    (eventFile) =>
+                      eventFile.status === 'error' && isAssetLimitError(eventFile.error),
                   )
                   if (hasAssetLimitError) {
                     handleAssetLimitUpsellDialog('field_action')
@@ -300,8 +268,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
             uploader,
           })
           setIsUploading(true)
-          onChange(PatchEvent.from(createInitialUploadPatches(files[0])))
-          uploader.upload(files, {schemaType, onChange: onChange as (patch: unknown) => void})
+          onChange(PatchEvent.from(createInitialUploadPatches(file)))
+          uploader.upload([file], {schemaType, onChange: onChange as (patch: unknown) => void})
         }
         try {
           run()
@@ -349,27 +317,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     return (
       <ImageInputPreview
         client={client}
-        directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
-        hoveringFiles={hoveringFiles}
         imageUrlBuilder={imageUrlBuilder}
         readOnly={readOnly}
-        resolveUploader={resolveUploader}
-        schemaType={schemaType}
         value={value}
       />
     )
-  }, [
-    client,
-    directUploads,
-    handleOpenDialog,
-    hoveringFiles,
-    imageUrlBuilder,
-    readOnly,
-    resolveUploader,
-    schemaType,
-    value,
-  ])
+  }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
+
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
@@ -377,7 +332,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
-        onSelectFiles={handleSelectFilesToUpload}
+        onSelectFile={handleSelectFileToUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
         isImageToolEnabled={isImageToolEnabled()}
@@ -396,7 +351,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFilesToUpload,
+    handleSelectFileToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -419,29 +374,19 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
+
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
-        onSelectFiles={handleSelectFilesToUpload}
-        hoveringFiles={hoveringFiles}
+        onSelectFile={handleSelectFileToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
-        resolveUploader={resolveUploader}
         schemaType={schemaType}
       />
     )
-  }, [
-    assetSources,
-    directUploads,
-    handleSelectFilesToUpload,
-    hoveringFiles,
-    readOnly,
-    renderBrowser,
-    resolveUploader,
-    schemaType,
-  ])
+  }, [assetSources, directUploads, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (
@@ -465,19 +410,16 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           directUploads={directUploads !== false}
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
-          hoveringFiles={hoveringFiles}
           inputProps={inputProps}
           isStale={isStale}
-          onSelectFiles={handleSelectFilesToUpload}
+          onSelectFile={handleSelectFileToUpload}
           readOnly={readOnly}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
           renderUploadPlaceholder={renderUploadPlaceholder}
           renderUploadState={renderUploadState}
           schemaType={schemaType}
-          setHoveringFiles={setHoveringFiles}
           selectedAssetSource={selectedAssetSource}
-          tone={getFileTone()}
           value={value}
         />
       )
@@ -486,11 +428,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       assetSources,
       directUploads,
       elementProps,
-      getFileTone,
       handleClearField,
       handleClearUploadState,
-      handleSelectFilesToUpload,
-      hoveringFiles,
+      handleSelectFileToUpload,
       isStale,
       readOnly,
       renderAssetMenu,

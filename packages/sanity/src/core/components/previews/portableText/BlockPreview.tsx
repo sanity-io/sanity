@@ -2,6 +2,7 @@ import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
+import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
@@ -29,9 +30,12 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
     description,
     mediaDimensions = DEFAULT_MEDIA_DIMENSIONS,
     media,
+    progress,
     status,
     children,
   } = props
+
+  const isUploading = typeof progress === 'number' && progress > -1
 
   return (
     <Stack data-testid="block-preview" space={1}>
@@ -56,6 +60,12 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
               <Text muted size={1} textOverflow="ellipsis">
                 {renderPreviewNode(description, 'block')}
               </Text>
+            </Box>
+          )}
+
+          {isUploading && (
+            <Box marginTop={3}>
+              <LinearProgress value={progress} />
             </Box>
           )}
         </Box>
