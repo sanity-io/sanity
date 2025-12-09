@@ -9143,10 +9143,6 @@ packages:
   graphmatch@1.1.0:
     resolution: {integrity: sha512-0E62MaTW5rPZVRLyIJZG/YejmdA/Xr1QydHEw3Vt+qOKkMIOE8WDLc9ZX2bmAjtJFZcId4lEdrdmASsEy7D1QA==}
 
-  groq-js@1.22.0:
-    resolution: {integrity: sha512-AKdkUorjSJ0nwCrGP/CMsGnzXgmz+UweL02BUS4skYTI5WHk5hxwUJV1elV97NczsLlV8+euCeQFkzwaWmIhMA==}
-    engines: {node: '>= 14'}
-
   groq-js@1.23.0:
     resolution: {integrity: sha512-5NAIMuK8BYLbgvBPimnh+KZOSqp+09gSrtn0kYtstOFNF6lN77bPKHezdJDRRLQvfbR/RWJ7B0ygtG/KbMX90g==}
     engines: {node: '>= 14'}
@@ -17141,7 +17137,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': 3.99.0(@types/react@19.2.7)(debug@4.4.3)
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.22.0
+      groq-js: 1.23.0
       lodash-es: 4.17.21
       reselect: 5.1.1
       rxjs: 7.8.2
@@ -21332,12 +21328,6 @@ snapshots:
   graphemer@1.4.0: {}
 
   graphmatch@1.1.0: {}
-
-  groq-js@1.22.0:
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - supports-color
 
   groq-js@1.23.0:
     dependencies:
