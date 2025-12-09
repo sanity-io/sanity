@@ -51,9 +51,12 @@ let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
  * also prefix the studio version in their entities so we can concurrently run tests against
  * multiple studio versions without conflicts.
  *
+ * Note: We need to keep this within the character limit for dataset names, thus
+ * somewhat concise.
+ *
  * Examples:
- *   - Local : t-168262061-dar-v16-0-14-wode-11664
- *   - GitHub: t-168262061-lin-v14-18-15-gh-1234
+ *   - Local : t-168262061-mac-v16-0-14-wode-11664
+ *   - GitHub: t-168262061-lin-v14-18-15-gh-1234-1
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -63,10 +66,11 @@ const getTestId = () => {
   const localId = readFileSync(testIdPath, 'utf8').trim().slice(0, 5)
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
   const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_JOB_ID || process.env.GITHUB_RUN_ATTEMPT}`
-  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
+  const githubIndex = process.env.GITHUB_JOB_INDEX ? `-${process.env.GITHUB_JOB_INDEX}` : ''
+  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}${githubIndex}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
-  const osPlatform = platform().slice(0, 3)
+  const osPlatform = platform().slice(0, 3).replace(/^dar$/, 'mac') // darwin => mac
   cachedTestId = `t-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${nodeMinorVersion}-${runId}`
 
   // We're setting this to the environment because the global setup and the tests run in

@@ -19,6 +19,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      GITHUB_JOB_INDEX: ${{ strategy.job-index }} # For uniqueness in integration tests
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
