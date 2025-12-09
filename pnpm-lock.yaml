@@ -1974,8 +1974,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/export':
-        specifier: ^5.0.1
-        version: 5.0.1
+        specifier: ^6.0.1
+        version: 6.0.1
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.1)
@@ -5616,8 +5616,8 @@ packages:
   '@sanity/eventsource@5.0.2':
     resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
-  '@sanity/export@5.0.1':
-    resolution: {integrity: sha512-ATHXvRNup6mTYYxlGXvJpzAodx1GuXfNcIdxy027LmAKPRoUExwp7rg2yfU/Nxu0gvpfeDbUPneJ2H5gPQmNWg==}
+  '@sanity/export@6.0.1':
+    resolution: {integrity: sha512-n9RgFZpGN45Nsx6AvvXLQMKqoDmt9vVPJmRzejR6gMv60YYciaY1Ldm8aw8SelwqFtX2S93lwC/ZGsFY7tybOQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/generate-help-url@3.0.1':
@@ -16767,14 +16767,13 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@5.0.1':
+  '@sanity/export@6.0.1':
     dependencies:
       archiver: 7.0.1
       debug: 4.4.3(supports-color@8.1.1)
       get-it: 8.7.0(debug@4.4.3)
       json-stream-stringify: 3.1.6
       p-queue: 9.0.1
-      rimraf: 6.1.2
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
