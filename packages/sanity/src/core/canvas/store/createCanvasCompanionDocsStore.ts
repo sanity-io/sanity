@@ -1,5 +1,16 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
-import {catchError, map, type Observable, of, shareReplay, startWith, switchMap} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {
+  catchError,
+  map,
+  type Observable,
+  of,
+  retry,
+  shareReplay,
+  startWith,
+  switchMap,
+  timer,
+} from 'rxjs'
+import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
@@ -20,10 +31,6 @@ const INITIAL_VALUE: CompanionDocs = {
   loading: true,
 }
 
-function isCompanionDoc(doc: SanityDocument | undefined): doc is SanityDocument & CompanionDoc {
-  return !!doc && 'canvasDocumentId' in doc && 'studioDocumentId' in doc
-}
-
 const getCompanionDocs = memoize(
   (
     publishedId: string,
@@ -34,20 +41,47 @@ const getCompanionDocs = memoize(
       .unstable_observeDocumentIdSet(`sanity::versionOf($publishedId)`, {publishedId})
       .pipe(map((result) => result.documentIds))
 
-    const companionDocIdsListener$ = allVersionIds$.pipe(
+    const companionDocsIdsListener$ = allVersionIds$.pipe(
       switchMap((versionIds) =>
         previewStore.unstable_observeDocumentIdSet(
           `_type == "sanity.canvas.link" && studioDocumentId in $ids`,
           {ids: versionIds},
         ),
       ),
-      map((result) => result.documentIds),
     )
 
-    return companionDocIdsListener$.pipe(
-      switchMap((ids) => (ids.length === 0 ? of([]) : previewStore.unstable_observeDocuments(ids))),
-      map((docs) => docs.filter(isCompanionDoc)),
-      map((docs) => ({error: null, data: docs, loading: false})),
+    const getCompanionDoc$ = (id: string) =>
+      client.observable
+        .fetch<CompanionDoc | null>(
+          `*[_id == $id][0]{ _id, canvasDocumentId, studioDocumentId}`,
+          {id},
+          {tag: 'canvas.companion-docs'},
+        )
+        .pipe(
+          map((response) => {
+            if (!response?._id) {
+              // In some race scenarios we can get the response in the listener before the document is available to be fetched.
+              // This will only retry "not ready" errors, other errors will be propagated immediately
+              throw new Error('Companion doc not ready')
+            }
+            return response
+          }),
+          retry({
+            count: 2,
+            delay: (error) => {
+              if (error instanceof Error && error.message === 'Companion doc not ready') {
+                return timer(1000)
+              }
+
+              throw error
+            },
+          }),
+        )
+
+    return companionDocsIdsListener$.pipe(
+      map((value) => value.documentIds),
+      mergeMapArray(getCompanionDoc$),
+      map((value) => ({error: null, data: value, loading: false})),
       catchError((error) => of({error, data: [], loading: false})),
       startWith(INITIAL_VALUE),
       shareReplay(1),
