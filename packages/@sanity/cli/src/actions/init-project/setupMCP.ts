@@ -6,7 +6,7 @@ import path from 'node:path'
 import execa from 'execa'
 
 import {debug} from '../../debug'
-import {type CliCommandContext, type CliPrompter} from '../../types'
+import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../../types'
 import {getCliToken} from '../../util/clientWrapper'
 
 const MCP_SERVER_URL = 'https://mcp.sanity.io'
@@ -126,17 +126,36 @@ async function promptForMCPSetup(
 }
 
 /**
- * Get the CLI authentication token
- * This token is already authenticated and can be used for MCP
+ * Create a child token for MCP usage
+ * This token is tied to the parent CLI token and will be invalidated
+ * when the parent token is invalidated (e.g., on logout)
  */
-function getMCPToken(): string {
-  const token = getCliToken()
-
-  if (!token) {
+async function createMCPToken(apiClient: CliApiClient): Promise<string> {
+  const parentToken = getCliToken()
+  if (!parentToken) {
     throw new Error('Not authenticated. Please run `sanity login` first.')
   }
 
-  return token
+  const client = apiClient({requireUser: true, requireProject: false})
+    .clone()
+    .config({apiVersion: '2025-12-09'})
+
+  const sessionResponse = await client.request<{sid: string; id: string}>({
+    method: 'POST',
+    uri: '/auth/session/create',
+    body: {
+      sourceId: 'sanity-mcp',
+      withStamp: false,
+    },
+  })
+
+  const tokenResponse = await client.request<{token: string; label: string}>({
+    method: 'GET',
+    uri: '/auth/fetch',
+    query: {sid: sessionResponse.sid},
+  })
+
+  return tokenResponse.token
 }
 
 /**
@@ -238,8 +257,8 @@ export async function setupMCP(
       return null
     }
 
-    // 5. Get CLI token for MCP
-    const token = getMCPToken()
+    // 5. Create child token for MCP
+    const token = await createMCPToken(context.apiClient)
 
     // 6. Write configs for each selected editor
     for (const editor of selected) {
