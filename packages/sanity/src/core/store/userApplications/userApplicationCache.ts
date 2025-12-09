@@ -3,6 +3,7 @@ import debugit from 'debug'
 import {firstValueFrom} from 'rxjs'
 
 import {getFeatures} from '../../hooks/useFeatureEnabled'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 
 const debug = debugit('sanity:store')
 
@@ -39,7 +40,6 @@ export interface UserApplication {
   title?: string
   urlType: 'internal' | 'external'
   appHost: string
-  apiHost: string
 }
 
 /**
@@ -52,7 +52,7 @@ export interface UserApplicationCache {
    * Get user applications for a project.
    * Returns cached results if available, otherwise fetches from API.
    */
-  get: (projectId: string, apiHost?: string) => Promise<UserApplication[]>
+  get: (client: SanityClient) => Promise<UserApplication[]>
 }
 
 /**
@@ -60,14 +60,20 @@ export interface UserApplicationCache {
  * Uses a single cache keyed by app ID, with a separate index for project lookups.
  * @internal
  */
-export function createUserApplicationCache(client: SanityClient): UserApplicationCache {
-  // Main cache storing apps by ID
+export function createUserApplicationCache(): UserApplicationCache {
+  // This cache uses the pattern of storing Promise | Value to deduplicate
+  // concurrent requests. The promise is stored immediately to prevent duplicate
+  // fetches, then replaced with the resolved value for efficiency.
   const appCache: Record<string, Promise<UserApplication> | UserApplication> = {}
-  // Index mapping projectId -> app IDs (or a promise while fetching)
   const projectIndex: Record<string, Promise<string[]> | string[]> = {}
 
   return {
-    get: async (projectId, apiHost) => {
+    get: async (client) => {
+      const {projectId} = client.config()
+      if (projectId === undefined) {
+        return []
+      }
+
       const existingIndex = projectIndex[projectId]
       if (existingIndex) {
         // If we have the index, resolve apps from the main cache
@@ -75,12 +81,7 @@ export function createUserApplicationCache(client: SanityClient): UserApplicatio
         return Promise.all(appIds.map((id) => appCache[id])) as Promise<UserApplication[]>
       }
 
-      const targetHost = typeof apiHost === 'undefined' ? 'https://api.sanity.io' : apiHost
-
-      const projectClient = client.withConfig({
-        projectId,
-        apiHost: targetHost,
-      })
+      const projectClient = client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
       if (!(await isEnabled(projectClient))) {
         return []
@@ -93,17 +94,15 @@ export function createUserApplicationCache(client: SanityClient): UserApplicatio
           tag: 'user-application-cache.fetch-user-applications',
         })
         .then((apps: UserApplication[]) => {
-          // Store each app in the main cache with apiHost and collect IDs
-          const appsWithApiHost = apps.map((app) => {
-            const appWithApiHost = {...app, apiHost: targetHost}
-            appCache[app.id] = appWithApiHost
-            return appWithApiHost
+          // Store each app in the main cache and replace promise with resolved IDs
+          projectIndex[projectId] = apps.map((app) => {
+            appCache[app.id] = app
+            return app.id
           })
-          // Replace promise with resolved IDs
-          projectIndex[projectId] = appsWithApiHost.map((app) => app.id)
-          return appsWithApiHost
+          return apps
         })
-        .catch(() => {
+        .catch((err) => {
+          debug(`Fetching user application failed.`, {err})
           // Clear index entry on error so it can be retried
           delete projectIndex[projectId]
           return []

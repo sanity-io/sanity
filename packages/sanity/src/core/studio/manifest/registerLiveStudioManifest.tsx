@@ -1,9 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {type RootTheme} from '@sanity/ui/theme'
 import {firstValueFrom} from 'rxjs'
 
 import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {resolveIcon} from './icon'
 
 const buildId: string | undefined =
@@ -112,7 +112,6 @@ async function generateStudioManifest(
  * Uploads the studio manifest containing all workspace information to the backend.
  * Each workspace manifest includes its associated schemaDescriptorId.
  *
- * @param client - The Sanity client to use for the API request
  * @param userApplication - The user application
  * @param workspaces - Array of all workspaces in the Studio
  * @param theme - The Studio theme to use for rendering icons
@@ -120,11 +119,18 @@ async function generateStudioManifest(
  * @internal
  */
 export async function registerStudioManifest(
-  client: SanityClient,
   userApplication: UserApplication,
   workspaces: WorkspaceSummary[],
   theme: RootTheme,
 ): Promise<void> {
+  const {id, projectId} = userApplication
+
+  const workspace = workspaces.find((ws) => ws.projectId === projectId)
+  if (!workspace) {
+    // Skip registering if the user application doesn't correspond to a workspace
+    return
+  }
+
   const liveManifest = await generateStudioManifest(workspaces, theme)
 
   // Skip registering if the manifest does not have any valid workspaces
@@ -132,20 +138,19 @@ export async function registerStudioManifest(
     return
   }
 
-  const {id, projectId, apiHost} = userApplication
+  const {client, authenticated} = await firstValueFrom(workspace.auth.state)
+
+  if (!authenticated) {
+    return // if the user isn't authenticated, nothing to do
+  }
 
   // Post the live manifest via the global api
-  await client
-    .withConfig({
-      projectId,
-      apiHost,
-    })
-    .request({
-      method: 'POST',
-      uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
-      body: {
-        value: liveManifest,
-      },
-      tag: 'live-manifest-register',
-    })
+  await client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS).request({
+    method: 'POST',
+    uri: `/projects/${projectId}/user-applications/${id}/config/live-manifest`,
+    body: {
+      value: liveManifest,
+    },
+    tag: 'live-manifest-register',
+  })
 }

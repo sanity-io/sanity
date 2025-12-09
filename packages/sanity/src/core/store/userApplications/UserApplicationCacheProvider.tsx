@@ -1,8 +1,6 @@
 import {type ReactNode, useContext, useMemo} from 'react'
 import {UserApplicationCacheContext} from 'sanity/_singletons'
 
-import {useClient} from '../../hooks/useClient'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createUserApplicationCache, type UserApplicationCache} from './userApplicationCache'
 
 interface UserApplicationCacheProviderProps {
@@ -15,13 +13,9 @@ interface UserApplicationCacheProviderProps {
  * @internal
  */
 export function UserApplicationCacheProvider({children}: UserApplicationCacheProviderProps) {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const parentCache = useContext(UserApplicationCacheContext)
 
-  const cache = useMemo(
-    () => parentCache || createUserApplicationCache(client),
-    [parentCache, client],
-  )
+  const cache = useMemo(() => parentCache || createUserApplicationCache(), [parentCache])
 
   return (
     <UserApplicationCacheContext.Provider value={cache}>

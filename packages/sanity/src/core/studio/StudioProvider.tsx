@@ -73,16 +73,19 @@ export function StudioProvider({
 
   const _children = useMemo(
     () => (
-      <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
-        <StudioTelemetryProvider config={config}>
-          <LocaleProvider>
-            <PackageVersionStatusProvider>
-              <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>
-                <UserApplicationCacheProvider>
-                  <AppIdCacheProvider>
-                    <LiveUserApplicationProvider>
-                      <LiveManifestRegisterProvider />
+      <UserApplicationCacheProvider>
+        <LiveUserApplicationProvider>
+          <LiveManifestRegisterProvider />
+          <WorkspaceLoader
+            LoadingComponent={LoadingBlock}
+            ConfigErrorsComponent={ConfigErrorsScreen}
+          >
+            <StudioTelemetryProvider config={config}>
+              <LocaleProvider>
+                <PackageVersionStatusProvider>
+                  <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                  <ResourceCacheProvider>
+                    <AppIdCacheProvider>
                       <ComlinkRouteHandler />
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>
@@ -91,14 +94,14 @@ export function StudioProvider({
                           </DocumentLimitUpsellProvider>
                         </GlobalPerspectiveProvider>
                       </StudioAnnouncementsProvider>
-                    </LiveUserApplicationProvider>
-                  </AppIdCacheProvider>
-                </UserApplicationCacheProvider>
-              </ResourceCacheProvider>
-            </PackageVersionStatusProvider>
-          </LocaleProvider>
-        </StudioTelemetryProvider>
-      </WorkspaceLoader>
+                    </AppIdCacheProvider>
+                  </ResourceCacheProvider>
+                </PackageVersionStatusProvider>
+              </LocaleProvider>
+            </StudioTelemetryProvider>
+          </WorkspaceLoader>
+        </LiveUserApplicationProvider>
+      </UserApplicationCacheProvider>
     ),
     [children, config],
   )
