@@ -22,7 +22,7 @@
     "@portabletext/editor": "^3.3.5",
     "@portabletext/plugin-character-pair-decorator": "^4.0.25",
     "@portabletext/react": "^5.0.0",
-    "@portabletext/toolkit": "^4.0.0",
+    "@portabletext/toolkit": "^5.0.0",
     "@sanity/assist": "^5.0.2",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "catalog:",
