@@ -29,23 +29,6 @@ import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 
-/**
- * Helper function to create a TZDate from a Date's components in a specific timezone.
- * This is useful for interpreting local date/time values as being in a specific timezone.
- */
-function createTZDateFromComponents(date: Date, timeZone: string): TZDate {
-  return new TZDate(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes(),
-    date.getSeconds(),
-    date.getMilliseconds(),
-    timeZone,
-  )
-}
-
 export const MONTH_PICKER_VARIANT = {
   select: 'select',
   carousel: 'carousel',
@@ -53,6 +36,9 @@ export const MONTH_PICKER_VARIANT = {
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
+  /**
+   * Provide timezone aware date.
+   */
   selectedDate: Date
   timeStep?: number
   onSelect: (date: Date) => void
@@ -155,11 +141,8 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(newDate)
         return
       }
-      // Create a TZDate in the timezone with the new date values
-      // This interprets the local date/time as being in the specified timezone
-      const tzDate = createTZDateFromComponents(newDate, timeZone.name)
       // Convert to regular Date to save as UTC instead of preserving timezone offset
-      const utcDate = zoneDateToUtc(tzDate)
+      const utcDate = zoneDateToUtc(newDate)
       onSelect(utcDate)
     },
     [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
@@ -174,10 +157,8 @@ export const Calendar = forwardRef(function Calendar(
       // Get the date in the timezone
       const zonedDate = new TZDate(savedSelectedDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
-      // Create a TZDate with the new time in the timezone
-      const tzDate = createTZDateFromComponents(newZonedDate, timeZone.name)
       // Convert to regular Date to save as UTC instead of preserving timezone offset
-      const utcDate = zoneDateToUtc(tzDate)
+      const utcDate = zoneDateToUtc(newZonedDate)
       onSelect(utcDate)
     },
     [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
