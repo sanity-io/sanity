@@ -93,7 +93,7 @@ export const Calendar = forwardRef(function Calendar(
   const {
     selectTime,
     onFocusedDateChange,
-    selectedDate,
+    selectedDate: savedSelectedDate,
     focusedDate: _focusedDate,
     timeStep = 1,
     onSelect,
@@ -106,9 +106,9 @@ export const Calendar = forwardRef(function Calendar(
     ...restProps
   } = props
 
-  const focusedDate = _focusedDate ?? selectedDate
+  const focusedDate = _focusedDate ?? savedSelectedDate
 
-  const {timeZone} = useTimeZone(timeZoneScope)
+  const {timeZone, zoneDateToUtc} = useTimeZone(timeZoneScope)
 
   const [displayMonth, displayYear] = useMemo(() => {
     return [
@@ -119,28 +119,6 @@ export const Calendar = forwardRef(function Calendar(
   }, [focusedDate, timeZone?.name])
 
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
-
-  const [savedSelectedDate, setSavedSelectedDate] = useState<Date>(selectedDate)
-
-  useEffect(() => {
-    if (timeZone) {
-      // Replicate the old date-fns-tz behavior:
-      // fromZonedTime(selectedDate, tz) interprets selectedDate components as being in the timezone
-      const utcDate = createTZDateFromComponents(selectedDate, timeZone.name)
-      // toZonedTime(utcDate, tz) converts to timezone and returns a Date with local getters
-      const tzDate = new TZDate(utcDate, timeZone.name)
-      const zonedDate = new Date(
-        tzDate.getFullYear(),
-        tzDate.getMonth(),
-        tzDate.getDate(),
-        tzDate.getHours(),
-        tzDate.getMinutes(),
-        tzDate.getSeconds(),
-        tzDate.getMilliseconds(),
-      )
-      setSavedSelectedDate(zonedDate)
-    }
-  }, [selectedDate, timeZone])
 
   const setFocusedDate = useCallback(
     (date: Date) => onFocusedDateChange(date),
@@ -177,14 +155,14 @@ export const Calendar = forwardRef(function Calendar(
         onSelect(newDate)
         return
       }
-
       // Create a TZDate in the timezone with the new date values
       // This interprets the local date/time as being in the specified timezone
       const tzDate = createTZDateFromComponents(newDate, timeZone.name)
-
-      onSelect(tzDate)
+      // Convert to regular Date to save as UTC instead of preserving timezone offset
+      const utcDate = zoneDateToUtc(tzDate)
+      onSelect(utcDate)
     },
-    [onSelect, savedSelectedDate, timeZone],
+    [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
   )
 
   const handleTimeChange = useCallback(
@@ -198,12 +176,17 @@ export const Calendar = forwardRef(function Calendar(
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
       // Create a TZDate with the new time in the timezone
       const tzDate = createTZDateFromComponents(newZonedDate, timeZone.name)
-      onSelect(tzDate)
+      // Convert to regular Date to save as UTC instead of preserving timezone offset
+      const utcDate = zoneDateToUtc(tzDate)
+      onSelect(utcDate)
     },
-    [onSelect, savedSelectedDate, timeZone],
+    [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
   )
 
-  const timeFromDate = useMemo(() => format(savedSelectedDate, 'HH:mm'), [savedSelectedDate])
+  const timeFromDate = useMemo(
+    () => format(savedSelectedDate, 'HH:mm', {timeZone: timeZone?.name}),
+    [savedSelectedDate, timeZone?.name],
+  )
   const [timeValue, setTimeValue] = useState<string | undefined>(timeFromDate)
 
   useEffect(() => {
@@ -373,7 +356,6 @@ export const Calendar = forwardRef(function Calendar(
   ])
 
   const handleNowClick = useCallback(() => onSelect(new Date()), [onSelect])
-
   return (
     <Box data-testid="calendar" data-ui="Calendar" {...restProps} ref={ref}>
       {/* Select date */}
