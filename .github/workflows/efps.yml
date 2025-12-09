@@ -33,13 +33,7 @@ jobs:
       preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Pull Vercel Environment Information
         env:
@@ -133,10 +127,7 @@ jobs:
         shardTotal: [3]
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
+      - uses: ./.github/actions/setup
 
       - name: Add PR comment placeholder
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
@@ -147,9 +138,6 @@ jobs:
             ### ⚡️ Editor Performance Report
 
             Deploying studio and running performance tests…
-
-      - name: Install project dependencies
-        run: pnpm install
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -216,16 +204,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
 
       - name: remove node_modules in folder efps
         run: rm -rf ./dev/efps/node_modules && rm -rf pnpm-lock.yaml
 
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v5

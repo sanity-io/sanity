@@ -43,16 +43,9 @@ jobs:
         run: |
           echo "Only examples files changed, skipping export tests"
           exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        with:
-          node-version: lts/*
 
-      - name: Install project dependencies
+      - uses: ./.github/actions/setup
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: Check export conditions in native node ESM and CJS, and TypeScript DTS
         if: steps.check_examples_only.outputs.examples_only != 'true'

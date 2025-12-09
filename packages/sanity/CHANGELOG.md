@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Features
+
+* **build:** expose build id ([18221e9](https://github.com/sanity-io/sanity/commit/18221e9840e9f686c853648c53ee0fdc86607535)) by Dain Cilke (dain.cilke@gmail.com)
+* **studioManifest:** register live manifest with content operating system ([2271b97](https://github.com/sanity-io/sanity/commit/2271b97a8f1c98781b24837fd770af97e8d8c6bb)) by Dain Cilke (dain.cilke@gmail.com)
+* **userApplications:** add live user application provider ([801d868](https://github.com/sanity-io/sanity/commit/801d868a17e4aad3a592e5cc03331f89936ec492)) by Dain Cilke (dain.cilke@gmail.com)
+
+### Bug Fixes
+
+* allow for more flexibility for custom components? and using the enhanced object dialog ([#11358](https://github.com/sanity-io/sanity/issues/11358)) ([9ea5074](https://github.com/sanity-io/sanity/commit/9ea507489ffcd925ec5a8d1802629b6f9ad1f4aa)) by RitaDias (rita@sanity.io)
+* **core:** `revisionNotFound` wait until document is ready ([#11279](https://github.com/sanity-io/sanity/issues/11279)) ([727b190](https://github.com/sanity-io/sanity/commit/727b1909b79fb8f07b84a577c3cf5fc685ef462e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** always save UTC timezone in date input ([#11435](https://github.com/sanity-io/sanity/issues/11435)) ([5126428](https://github.com/sanity-io/sanity/commit/5126428ef78fe9ee7aef8cab975ce1d870d10b17)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency get-it to ^8.7.0 ([#11395](https://github.com/sanity-io/sanity/issues/11395)) ([5f4487a](https://github.com/sanity-io/sanity/commit/5f4487aff99167094b2d1ea91058a45771198833)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.23.0 ([#11429](https://github.com/sanity-io/sanity/issues/11429)) ([b100ba4](https://github.com/sanity-io/sanity/commit/b100ba48cf49f31c0230c92095450aa0690e7d4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency motion to ^12.23.25 ([#11401](https://github.com/sanity-io/sanity/issues/11401)) ([9509da7](https://github.com/sanity-io/sanity/commit/9509da7f6a8686d79cdffae3b21b60ae86939655)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11388](https://github.com/sanity-io/sanity/issues/11388)) ([5f63f2f](https://github.com/sanity-io/sanity/commit/5f63f2f0964cb1f6d8c2708e12ba6d8106682743)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11407](https://github.com/sanity-io/sanity/issues/11407)) ([a9b92c9](https://github.com/sanity-io/sanity/commit/a9b92c93b0f663040f317bcda78b0c21e5d3fc25)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* fix position for telemetry requests which were wrong + make sure that the requests don't have miltiple calls accidentally ([#11408](https://github.com/sanity-io/sanity/issues/11408)) ([bb9cff4](https://github.com/sanity-io/sanity/commit/bb9cff4aca35266921540bf97d6f0049adc33faf)) by RitaDias (rita@sanity.io)
+
 ## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
 
 **Note:** Version bump only for package sanity

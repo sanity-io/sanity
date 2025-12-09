@@ -369,7 +369,10 @@ export const useTimeZone = (scope: TimeZoneScope) => {
     (date: Date) => {
       if (!timeZone) return date
       // Create a TZDate by interpreting the date components as being in the timezone
-      return createTZDateFromComponents(date, timeZone.name)
+      const tzDate = createTZDateFromComponents(date, timeZone.name)
+      // Convert to regular Date to save as UTC instead of preserving timezone offset
+      const utcDate = new Date(tzDate)
+      return utcDate
     },
     [timeZone],
   )

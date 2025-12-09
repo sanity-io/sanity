@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Features
+
+* setup mcp on sanity init and add mcp add command to cli ([#11409](https://github.com/sanity-io/sanity/issues/11409)) ([4752fb1](https://github.com/sanity-io/sanity/commit/4752fb174ad862817d40e0eeba07074fa62d3801)) by James Woods (jwwoods01@gmail.com)
+* setup mcp on sanity init and add mcp add command to cli ([#11434](https://github.com/sanity-io/sanity/issues/11434)) ([e27bea7](https://github.com/sanity-io/sanity/commit/e27bea79c96cd743931f1d52cf9ceed52dd88f88)) by James Woods (jwwoods01@gmail.com)
+* Update runtime-cli to v12 ([#11410](https://github.com/sanity-io/sanity/issues/11410)) ([3fea96a](https://github.com/sanity-io/sanity/commit/3fea96acee0a8e5ccdd2c63a78eaa7fb273e39e0)) by Dave Sewell (snocorp@gmail.com)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.7.0 ([#11395](https://github.com/sanity-io/sanity/issues/11395)) ([5f4487a](https://github.com/sanity-io/sanity/commit/5f4487aff99167094b2d1ea91058a45771198833)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.23.0 ([#11429](https://github.com/sanity-io/sanity/issues/11429)) ([b100ba4](https://github.com/sanity-io/sanity/commit/b100ba48cf49f31c0230c92095450aa0690e7d4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
 
 ### Bug Fixes
