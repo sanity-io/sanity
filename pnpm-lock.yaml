@@ -1418,8 +1418,8 @@ importers:
         specifier: 'catalog:'
         version: 7.13.1(debug@4.4.3)
       '@sanity/mutate':
-        specifier: ^0.14.0
-        version: 0.14.0(debug@4.4.3)
+        specifier: ^0.15.0
+        version: 0.15.0(debug@4.4.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -5710,8 +5710,8 @@ packages:
     resolution: {integrity: sha512-Ai9Dy0C79yUALnuLe0ealwqgz11T+ngpWCzTyZv01xdjB6coQo+KoM8E0FeRTK5Zr/IAgKphYuYLU5DFCB9cGw==}
     engines: {node: '>=18'}
 
-  '@sanity/mutate@0.14.0':
-    resolution: {integrity: sha512-KQuCY/NgCgaBywopcbPaJWgCb6wAa0AjabdPyQm0ndp5pgu9H8umj59ulHO0WBE85cswTGRmkzQH73a6FKUNFw==}
+  '@sanity/mutate@0.15.0':
+    resolution: {integrity: sha512-q91tzqOoGguLm0BSoCCKAbVSQNtQE/agGHWD31v1e2uh3E2fEZ1cPcAUsQVlTXc1nvuP86QX5A8/P6QR9Gpt6g==}
     engines: {node: '>=18'}
 
   '@sanity/mutator@3.99.0':
@@ -16937,7 +16937,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.14.0(debug@4.4.3)':
+  '@sanity/mutate@0.15.0(debug@4.4.3)':
     dependencies:
       '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
