@@ -32,10 +32,7 @@ jobs:
         project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
+      - uses: ./.github/actions/setup
 
       - name: Add PR Comment placeholder for e2e Preview Environment
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
@@ -56,9 +53,6 @@ jobs:
             ### 📊 Playwright Test Report
 
             Waiting for E2E tests to finish…
-
-      - name: Install project dependencies
-        run: pnpm install
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -87,16 +81,10 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
+      - uses: ./.github/actions/setup
 
       - name: Echo Vercel preview URL
         run: echo ${{ github.event.deployment_status.target_url }}
-
-      - name: Install project dependencies
-        run: pnpm install
 
       - name: Build CLI
         if: ${{ github.event_name == 'pull_request' }}
@@ -133,13 +121,7 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Pull Vercel Environment Information
         env:
@@ -243,14 +225,9 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
       - name: Echo the base URL
         run: echo "$SANITY_E2E_BASE_URL"
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -314,13 +291,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v5

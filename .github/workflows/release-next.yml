@@ -36,13 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Bump canary versions
         # Note: ubuntu-latest ships with lerna installed on the system

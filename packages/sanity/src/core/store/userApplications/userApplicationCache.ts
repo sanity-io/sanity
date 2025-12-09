@@ -1,4 +1,31 @@
 import {type SanityClient} from '@sanity/client'
+import debugit from 'debug'
+import {firstValueFrom} from 'rxjs'
+
+import {getFeatures} from '../../hooks/useFeatureEnabled'
+
+const debug = debugit('sanity:store')
+
+const TOGGLE = 'toggle.user-application.upload-live-manifest'
+
+async function isEnabled(client: SanityClient): Promise<boolean> {
+  if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_USER_APPLICATION_CACHE) {
+    return true
+  }
+
+  const {projectId} = client.config()
+  if (!projectId) return false
+
+  return firstValueFrom(getFeatures({projectId, versionedClient: client}))
+    .then((features) => features.includes(TOGGLE))
+    .catch((err) => {
+      debug(
+        `Fetching features failed. User applications cache not enabled for project ${projectId}.`,
+        {err},
+      )
+      return false
+    })
+}
 
 /**
  * User application from the API
@@ -50,11 +77,16 @@ export function createUserApplicationCache(client: SanityClient): UserApplicatio
 
       const targetHost = typeof apiHost === 'undefined' ? 'https://api.sanity.io' : apiHost
 
-      const promise = client
-        .withConfig({
-          projectId,
-          apiHost: targetHost,
-        })
+      const projectClient = client.withConfig({
+        projectId,
+        apiHost: targetHost,
+      })
+
+      if (!(await isEnabled(projectClient))) {
+        return []
+      }
+
+      const promise = projectClient
         .request<UserApplication[]>({
           method: 'GET',
           url: `/projects/${projectId}/user-applications`,

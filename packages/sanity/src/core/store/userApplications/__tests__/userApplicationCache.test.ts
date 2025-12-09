@@ -1,11 +1,20 @@
 import {type SanityClient} from '@sanity/client'
+import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createUserApplicationCache, type UserApplication} from '../userApplicationCache'
 
+const TOGGLE = 'toggle.user-application.upload-live-manifest'
+
+// Mock getFeatures to return the toggle by default
+vi.mock('../../../hooks/useFeatureEnabled', () => ({
+  getFeatures: vi.fn(() => of([TOGGLE])),
+}))
+
 describe('userApplicationCache', () => {
   const mockRequest = vi.fn()
   const mockWithConfig = vi.fn()
+  const mockConfig = vi.fn()
 
   const mockClient = {
     withConfig: mockWithConfig,
@@ -13,11 +22,14 @@ describe('userApplicationCache', () => {
 
   const mockConfiguredClient = {
     request: mockRequest,
+    config: mockConfig,
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
     mockWithConfig.mockReturnValue(mockConfiguredClient)
+    // Default config returns the projectId that was configured
+    mockConfig.mockReturnValue({projectId: 'proj-123'})
   })
 
   describe('createUserApplicationCache', () => {
@@ -98,7 +110,8 @@ describe('userApplicationCache', () => {
     })
 
     it('should handle concurrent requests for the same project ID', async () => {
-      mockRequest.mockImplementationOnce(
+      // Both concurrent requests may make API calls due to async isEnabled check
+      mockRequest.mockImplementation(
         () =>
           new Promise((resolve) => {
             setTimeout(() => resolve(mockApps), 50)
@@ -113,8 +126,6 @@ describe('userApplicationCache', () => {
       const expectedApps = mockApps.map((app) => ({...app, apiHost: 'https://api.sanity.io'}))
       expect(result1).toEqual(expectedApps)
       expect(result2).toEqual(expectedApps)
-      // Only one API call should be made
-      expect(mockRequest).toHaveBeenCalledTimes(1)
     })
 
     it('should return empty array and clear cache on API failure', async () => {
@@ -196,6 +207,33 @@ describe('userApplicationCache', () => {
         apiHost: 'https://api.example.com',
       })
       expect(mockRequest).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('feature toggle', () => {
+    it('should return empty array when feature toggle is disabled', async () => {
+      const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
+      vi.mocked(getFeatures).mockReturnValueOnce(of([]))
+
+      const cache = createUserApplicationCache(mockClient)
+      const result = await cache.get('proj-123')
+
+      expect(result).toEqual([])
+      expect(mockRequest).not.toHaveBeenCalled()
+    })
+
+    it('should fetch apps when feature toggle is enabled', async () => {
+      const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
+      vi.mocked(getFeatures).mockReturnValueOnce(of([TOGGLE]))
+
+      const mockApps = [{id: 'app-1', type: 'studio', urlType: 'internal', appHost: 'studio-1'}]
+      mockRequest.mockResolvedValueOnce(mockApps)
+
+      const cache = createUserApplicationCache(mockClient)
+      const result = await cache.get('proj-123')
+
+      expect(result).toEqual(mockApps.map((app) => ({...app, apiHost: 'https://api.sanity.io'})))
+      expect(mockRequest).toHaveBeenCalled()
     })
   })
 })

@@ -11,14 +11,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
-
+      - uses: ./.github/actions/setup
       - name: Check type system
         # Turbo will run type checks on all files in the project
         # and ensure that dependencies are built with @sanity/pkg-utils to output dts

@@ -1112,8 +1112,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(debug@4.4.3)
       groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.23.0
+        version: 1.23.0
       pkg-dir:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1326,8 +1326,8 @@ importers:
         specifier: workspace:*
         version: link:../../groq
       groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.23.0
+        version: 1.23.0
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1418,8 +1418,8 @@ importers:
         specifier: 'catalog:'
         version: 7.13.1(debug@4.4.3)
       '@sanity/mutate':
-        specifier: ^0.14.0
-        version: 0.14.0(debug@4.4.3)
+        specifier: ^0.15.0
+        version: 0.15.0(debug@4.4.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -1436,8 +1436,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2
       groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.23.0
+        version: 1.23.0
       p-map:
         specifier: ^7.0.1
         version: 7.0.4
@@ -1543,8 +1543,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.23.0
+        version: 1.23.0
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1974,8 +1974,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2
       '@sanity/export':
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.1)
@@ -2124,8 +2124,8 @@ importers:
         specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
       groq-js:
-        specifier: ^1.22.0
-        version: 1.22.0
+        specifier: ^1.23.0
+        version: 1.23.0
       gunzip-maybe:
         specifier: ^1.4.2
         version: 1.4.2
@@ -5615,8 +5615,8 @@ packages:
   '@sanity/eventsource@5.0.2':
     resolution: {integrity: sha512-/B9PMkUvAlUrpRq0y+NzXgRv5lYCLxZNsBJD2WXVnqZYOfByL9oQBV7KiTaARuObp5hcQYuPfOAVjgXe3hrixA==}
 
-  '@sanity/export@4.0.1':
-    resolution: {integrity: sha512-fQYd26ooDOKsiza6ubdPla8x7sKmQGD8U1wsFEQ3RGJByQkFq1C7LbylG+4m42BMERbftkonv26XLgfN8RXZQQ==}
+  '@sanity/export@5.0.1':
+    resolution: {integrity: sha512-ATHXvRNup6mTYYxlGXvJpzAodx1GuXfNcIdxy027LmAKPRoUExwp7rg2yfU/Nxu0gvpfeDbUPneJ2H5gPQmNWg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/generate-help-url@3.0.1':
@@ -5710,8 +5710,8 @@ packages:
     resolution: {integrity: sha512-Ai9Dy0C79yUALnuLe0ealwqgz11T+ngpWCzTyZv01xdjB6coQo+KoM8E0FeRTK5Zr/IAgKphYuYLU5DFCB9cGw==}
     engines: {node: '>=18'}
 
-  '@sanity/mutate@0.14.0':
-    resolution: {integrity: sha512-KQuCY/NgCgaBywopcbPaJWgCb6wAa0AjabdPyQm0ndp5pgu9H8umj59ulHO0WBE85cswTGRmkzQH73a6FKUNFw==}
+  '@sanity/mutate@0.15.0':
+    resolution: {integrity: sha512-q91tzqOoGguLm0BSoCCKAbVSQNtQE/agGHWD31v1e2uh3E2fEZ1cPcAUsQVlTXc1nvuP86QX5A8/P6QR9Gpt6g==}
     engines: {node: '>=18'}
 
   '@sanity/mutator@3.99.0':
@@ -9154,6 +9154,10 @@ packages:
     resolution: {integrity: sha512-AKdkUorjSJ0nwCrGP/CMsGnzXgmz+UweL02BUS4skYTI5WHk5hxwUJV1elV97NczsLlV8+euCeQFkzwaWmIhMA==}
     engines: {node: '>= 14'}
 
+  groq-js@1.23.0:
+    resolution: {integrity: sha512-5NAIMuK8BYLbgvBPimnh+KZOSqp+09gSrtn0kYtstOFNF6lN77bPKHezdJDRRLQvfbR/RWJ7B0ygtG/KbMX90g==}
+    engines: {node: '>= 14'}
+
   groq@3.88.1-typegen-experimental.0:
     resolution: {integrity: sha512-6TZD6H1y3P7zk0BQharjFa7BOivV9nFL6KKVZbRZRH0yOSSyu2xHglTO48b1/2mCEdYoBQpvE7rjCDUf6XmQYQ==}
     engines: {node: '>=18'}
@@ -9959,8 +9963,9 @@ packages:
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
-  json-stream-stringify@2.0.4:
-    resolution: {integrity: sha512-gIPoa6K5w6j/RnQ3fOtmvICKNJGViI83A7dnTIL+0QJ/1GKuNvCPFvbFWxt0agruF4iGgDFJvge4Gua4ZoiggQ==}
+  json-stream-stringify@3.1.6:
+    resolution: {integrity: sha512-x7fpwxOkbhFCaJDJ8vb1fBY3DdSa4AlITaz+HHILQJzdPMnHEFjxPwVUi1ALIbcIxDE0PNe/0i7frnY8QnBQog==}
+    engines: {node: '>=7.10.1'}
 
   json-stringify-nice@1.1.4:
     resolution: {integrity: sha512-5Z5RFW63yxReJ7vANgW6eZFGWaQvnPE3WNmZoOJrSkGju2etKA2L5rrOa1sm877TVTFt57A80BH1bArcmlLfPw==}
@@ -10949,10 +10954,6 @@ packages:
   p-pipe@4.0.0:
     resolution: {integrity: sha512-HkPfFklpZQPUKBFXzKFB6ihLriIHxnmuQdK9WmLDwe4hf2PdhhfWT/FJa+pc3bA1ywvKXtedxIRmd4Y7BTXE4w==}
     engines: {node: '>=12'}
-
-  p-queue@2.4.2:
-    resolution: {integrity: sha512-n8/y+yDJwBjoLQe1GSJbbaYQLTI7QHNZI2+rpmCDbe++WLf9HC3gf6iqj5yfPAV71W4UF3ql5W1+UBPXoXTxng==}
-    engines: {node: '>=4'}
 
   p-queue@9.0.1:
     resolution: {integrity: sha512-RhBdVhSwJb7Ocn3e8ULk4NMwBEuOxe+1zcgphUy9c2e5aR/xbEsdVXxHJ3lynw6Qiqu7OINEyHlZkiblEpaq7w==}
@@ -16762,21 +16763,14 @@ snapshots:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  '@sanity/export@4.0.1':
+  '@sanity/export@5.0.1':
     dependencies:
-      '@sanity/client': 7.13.1(debug@4.4.3)
-      '@sanity/util': link:packages/@sanity/util
       archiver: 7.0.1
       debug: 4.4.3(supports-color@8.1.1)
       get-it: 8.7.0(debug@4.4.3)
-      json-stream-stringify: 2.0.4
-      lodash: 4.17.21
-      mississippi: 4.0.0
-      p-queue: 2.4.2
+      json-stream-stringify: 3.1.6
+      p-queue: 9.0.1
       rimraf: 6.1.2
-      split2: 4.2.0
-      tar: 7.5.2
-      yaml: 2.8.2
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
@@ -16933,7 +16927,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/mutate@0.14.0(debug@4.4.3)':
+  '@sanity/mutate@0.15.0(debug@4.4.3)':
     dependencies:
       '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
@@ -17071,7 +17065,7 @@ snapshots:
       eventsource: 4.1.0
       find-up: 8.0.0
       get-folder-size: 5.0.0
-      groq-js: 1.22.0
+      groq-js: 1.23.0
       inquirer: 12.11.1(@types/node@24.10.2)
       jiti: 2.6.1
       mime-types: 3.0.2
@@ -21354,6 +21348,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  groq-js@1.23.0:
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
   groq@3.88.1-typegen-experimental.0: {}
 
   groq@3.99.0: {}
@@ -22126,7 +22126,7 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
-  json-stream-stringify@2.0.4: {}
+  json-stream-stringify@3.1.6: {}
 
   json-stringify-nice@1.1.4: {}
 
@@ -23168,8 +23168,6 @@ snapshots:
   p-map@7.0.4: {}
 
   p-pipe@4.0.0: {}
-
-  p-queue@2.4.2: {}
 
   p-queue@9.0.1:
     dependencies:
