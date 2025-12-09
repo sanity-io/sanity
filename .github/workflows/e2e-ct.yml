@@ -19,13 +19,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Build packages
         # This warms up the turborepo remote cache
@@ -47,13 +41,7 @@ jobs:
         shardTotal: [2]
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -96,13 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v5

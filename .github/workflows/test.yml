@@ -70,16 +70,11 @@ jobs:
         run: |
           echo "Only examples files changed, skipping unit tests"
           exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
+
+      - uses: ./.github/actions/setup
         if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: Build packages
         if: steps.check_examples_only.outputs.examples_only != 'true'
@@ -152,16 +147,8 @@ jobs:
           echo "Only examples files changed, skipping coverage report"
           exit 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: "Download coverage artifacts"
         if: steps.check_examples_only.outputs.examples_only != 'true'
