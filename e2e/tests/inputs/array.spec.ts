@@ -43,6 +43,9 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Drop the file.
   await list.dispatchEvent('drop', {dataTransfer})
 
+  // Select asset source
+  await page.getByTestId('upload-destination-sanity-default').click()
+
   // Ensure the list contains one item.
   await expect(item).toHaveCount(1)
 

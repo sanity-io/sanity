@@ -4,12 +4,13 @@ import {Box, Inline, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
-import {type FileLike, type UploaderResolver} from '../../../studio/uploads/types'
+import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
+import {type FileLike} from '../../../studio/uploads/types'
+import {useFormBuilder} from '../../../useFormBuilder'
 
 interface Props {
   hoveringFiles: FileLike[]
   types: SchemaType[]
-  resolveUploader: UploaderResolver
 }
 
 const Sticky = styled(Box)`
@@ -20,9 +21,10 @@ const Sticky = styled(Box)`
 `
 
 export function DropMessage(props: Props) {
-  const {hoveringFiles, types, resolveUploader} = props
+  const {hoveringFiles, types} = props
+  const formBuilder = useFormBuilder()
   const acceptedFiles = hoveringFiles.filter((file) =>
-    types.some((type) => resolveUploader(type, file)),
+    types.some((type) => resolveUploadAssetSources(type, formBuilder, file).length > 0),
   )
   const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
   const multiple = types.length > 1

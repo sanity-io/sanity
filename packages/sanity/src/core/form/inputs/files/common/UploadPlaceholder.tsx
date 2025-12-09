@@ -1,6 +1,7 @@
 import {UploadIcon} from '@sanity/icons'
-import {type AssetSource} from '@sanity/types'
+import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Flex, useElementSize} from '@sanity/ui'
+import {get} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useSource} from '../../../../../core/studio'
@@ -17,31 +18,19 @@ import {PlaceholderText} from './PlaceholderText'
 import {UploadDropDownMenu} from './UploadDropDownMenu'
 
 interface UploadPlaceholderProps {
-  accept: string
-  acceptedFiles: FileLike[]
   assetSources: AssetSource[]
   browse?: ReactNode
   directUploads?: boolean
-  hoveringFiles: FileLike[]
+  hoveringFiles?: FileLike[]
   onUpload?: (assetSource: AssetSource, files: File[]) => void
   readOnly?: boolean
-  rejectedFilesCount: number
+  schemaType: SchemaType
   type: string
 }
 
 function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
-  const {
-    accept,
-    acceptedFiles,
-    assetSources,
-    browse,
-    directUploads,
-    hoveringFiles,
-    onUpload,
-    readOnly,
-    rejectedFilesCount,
-    type,
-  } = props
+  const {assetSources, browse, directUploads, hoveringFiles, onUpload, readOnly, schemaType, type} =
+    props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rect = useElementSize(rootElement)
@@ -76,6 +65,8 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
     },
     [onUpload],
   )
+
+  const accept = get(schemaType, 'options.accept', '')
 
   const uploadButton = useMemo(() => {
     switch (assetSourcesWithUpload.length) {
@@ -121,11 +112,9 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
     >
       <Flex flex={1}>
         <PlaceholderText
-          acceptedFiles={acceptedFiles}
           directUploads={directUploads}
           hoveringFiles={hoveringFiles}
           readOnly={readOnly}
-          rejectedFilesCount={rejectedFilesCount}
           type={type}
         />
       </Flex>

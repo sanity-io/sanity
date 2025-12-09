@@ -9,6 +9,7 @@ import {
 } from '@portabletext/editor'
 import {
   type ArraySchemaType,
+  type AssetSource,
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
@@ -64,6 +65,15 @@ import {
  * @beta */
 export interface OnPathFocusPayload {
   selection?: EditorSelection
+}
+
+/**
+ * @hidden
+ * @beta */
+export interface InputOnSelectFileFunctionProps {
+  assetSource: AssetSource
+  schemaType: SchemaType
+  file: File
 }
 
 /**
@@ -246,7 +256,12 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onUpload: (event: UploadEvent) => void
+  onUpload?: (event: UploadEvent) => void
+
+  /**
+   * @hidden
+   * @beta */
+  onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
 
   /**
    * @hidden
