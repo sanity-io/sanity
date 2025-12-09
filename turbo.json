@@ -62,6 +62,7 @@
     "npm_config_user_agent",
     "SystemRoot",
     "SYSTEMROOT",
+    "APPDATA",
     "VISUAL",
     "EDITOR",
     // These should be passed through but not be used as cache keys since they are tokens
