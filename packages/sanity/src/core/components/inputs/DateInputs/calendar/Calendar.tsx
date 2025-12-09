@@ -37,13 +37,11 @@ export const MONTH_PICKER_VARIANT = {
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   /**
-   * Provide timezone aware date.
+   * Use UTC date for the value, the calendar will display it in the timezone scope.
    */
-  selectedDate: Date
+  value: Date
   timeStep?: number
   onSelect: (date: Date) => void
-  focusedDate: Date
-  onFocusedDateChange: (index: Date) => void
   labels: CalendarLabels
   monthPickerVariant?: (typeof MONTH_PICKER_VARIANT)[keyof typeof MONTH_PICKER_VARIANT]
   padding?: number
@@ -78,9 +76,7 @@ export const Calendar = forwardRef(function Calendar(
 ) {
   const {
     selectTime,
-    onFocusedDateChange,
-    selectedDate: savedSelectedDate,
-    focusedDate: _focusedDate,
+    value,
     timeStep = 1,
     onSelect,
     labels,
@@ -92,9 +88,9 @@ export const Calendar = forwardRef(function Calendar(
     ...restProps
   } = props
 
-  const focusedDate = _focusedDate ?? savedSelectedDate
-
-  const {timeZone, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {timeZone, zoneDateToUtc, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
+  const currentTzDate = useMemo(() => utcToCurrentZoneDate(value), [utcToCurrentZoneDate, value])
+  const [focusedDate, setFocusedDate] = useState<Date>(value)
 
   const [displayMonth, displayYear] = useMemo(() => {
     return [
@@ -105,11 +101,6 @@ export const Calendar = forwardRef(function Calendar(
   }, [focusedDate, timeZone?.name])
 
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
-
-  const setFocusedDate = useCallback(
-    (date: Date) => onFocusedDateChange(date),
-    [onFocusedDateChange],
-  )
 
   const setFocusedDateMonth = useCallback(
     (month: number) => setFocusedDate(setDate(setMonth(focusedDate, month), 1)),
@@ -134,8 +125,8 @@ export const Calendar = forwardRef(function Calendar(
   const handleDateChange = useCallback(
     (date: Date) => {
       const newDate = setMinutes(
-        setHours(date, savedSelectedDate.getHours()),
-        savedSelectedDate.getMinutes(),
+        setHours(date, currentTzDate.getHours()),
+        currentTzDate.getMinutes(),
       )
       if (!timeZone) {
         onSelect(newDate)
@@ -145,28 +136,28 @@ export const Calendar = forwardRef(function Calendar(
       const utcDate = zoneDateToUtc(newDate)
       onSelect(utcDate)
     },
-    [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
+    [onSelect, currentTzDate, timeZone, zoneDateToUtc],
   )
 
   const handleTimeChange = useCallback(
     (hours: number, mins: number) => {
       if (!timeZone) {
-        onSelect(setHours(setMinutes(savedSelectedDate, mins), hours))
+        onSelect(setHours(setMinutes(currentTzDate, mins), hours))
         return
       }
       // Get the date in the timezone
-      const zonedDate = new TZDate(savedSelectedDate, timeZone.name)
+      const zonedDate = new TZDate(currentTzDate, timeZone.name)
       const newZonedDate = setHours(setMinutes(zonedDate, mins), hours)
       // Convert to regular Date to save as UTC instead of preserving timezone offset
       const utcDate = zoneDateToUtc(newZonedDate)
       onSelect(utcDate)
     },
-    [onSelect, savedSelectedDate, timeZone, zoneDateToUtc],
+    [onSelect, currentTzDate, timeZone, zoneDateToUtc],
   )
 
   const timeFromDate = useMemo(
-    () => format(savedSelectedDate, 'HH:mm', {timeZone: timeZone?.name}),
-    [savedSelectedDate, timeZone?.name],
+    () => format(currentTzDate, 'HH:mm', {timeZone: timeZone?.name}),
+    [currentTzDate, timeZone?.name],
   )
   const [timeValue, setTimeValue] = useState<string | undefined>(timeFromDate)
 
@@ -178,9 +169,9 @@ export const Calendar = forwardRef(function Calendar(
 
   const handleTimeChangeInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const value = event.currentTarget.value
-      if (value) {
-        const date = parse(value, 'HH:mm', new Date())
+      const nextValue = event.currentTarget.value
+      if (nextValue) {
+        const date = parse(nextValue, 'HH:mm', new Date())
         handleTimeChange(date.getHours(), date.getMinutes())
       } else {
         // Setting the timeValue to undefined will let the input behave correctly as a time input while the user types.
@@ -212,21 +203,21 @@ export const Calendar = forwardRef(function Calendar(
         return
       }
       if (event.key === 'ArrowUp') {
-        onFocusedDateChange(addDays(focusedDate, -7))
+        setFocusedDate(addDays(focusedDate, -7))
       }
       if (event.key === 'ArrowDown') {
-        onFocusedDateChange(addDays(focusedDate, 7))
+        setFocusedDate(addDays(focusedDate, 7))
       }
       if (event.key === 'ArrowLeft') {
-        onFocusedDateChange(addDays(focusedDate, -1))
+        setFocusedDate(addDays(focusedDate, -1))
       }
       if (event.key === 'ArrowRight') {
-        onFocusedDateChange(addDays(focusedDate, 1))
+        setFocusedDate(addDays(focusedDate, 1))
       }
       // set focus temporarily on this element to make sure focus is still inside the calendar-grid after re-render
       ref.current?.querySelector<HTMLElement>('[data-preserve-focus]')?.focus()
     },
-    [ref, focusCurrentWeekDay, onFocusedDateChange, focusedDate],
+    [ref, focusCurrentWeekDay, focusedDate],
   )
 
   useEffect(() => {
@@ -366,7 +357,7 @@ export const Calendar = forwardRef(function Calendar(
             date={focusedDate}
             focused={focusedDate}
             onSelect={handleDateChange}
-            selected={savedSelectedDate}
+            selected={currentTzDate}
             isPastDisabled={isPastDisabled}
           />
           {PRESERVE_FOCUS_ELEMENT}
@@ -417,7 +408,7 @@ export const Calendar = forwardRef(function Calendar(
                         minutes={minutes}
                         onTimeChange={handleTimeChange}
                         text={text}
-                        aria-label={labels.setToTimePreset(text, savedSelectedDate)}
+                        aria-label={labels.setToTimePreset(text, currentTzDate)}
                       />
                     )
                   })}
