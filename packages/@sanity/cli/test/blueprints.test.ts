@@ -219,8 +219,9 @@ describe('blueprints commands with mocked cores', () => {
       await doctorBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDoctorCore).toHaveBeenCalledWith({
-        ...config,
-        blueprint: localBlueprint,
+        bin: 'sanity',
+        log: expect.any(Function),
+        token,
         flags: {verbose: true},
       })
     })
