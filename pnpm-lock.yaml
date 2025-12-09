@@ -1106,7 +1106,7 @@ importers:
         specifier: 'catalog:'
         version: 3.6.0(esbuild@0.27.0)
       get-it:
-        specifier: ^8.6.10
+        specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
       get-latest-version:
         specifier: ^5.1.0
@@ -2121,7 +2121,7 @@ importers:
         specifier: ^4.0.5
         version: 4.0.5
       get-it:
-        specifier: ^8.6.10
+        specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
       groq-js:
         specifier: ^1.22.0
