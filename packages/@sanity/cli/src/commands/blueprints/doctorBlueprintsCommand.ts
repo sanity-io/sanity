@@ -36,19 +36,12 @@ const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
     const {token} = client.config()
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const {initDeployedBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {blueprintDoctorCore} = await import('@sanity/runtime-cli/cores/blueprints')
 
-    const cmdConfig = await initDeployedBlueprintConfig({
+    const {success, error} = await blueprintDoctorCore({
       bin: 'sanity',
       log: (message) => output.print(message),
       token,
-    })
-
-    if (!cmdConfig.ok) throw new Error(cmdConfig.error)
-
-    const {success, error} = await blueprintDoctorCore({
-      ...cmdConfig.value,
       flags,
     })
 
