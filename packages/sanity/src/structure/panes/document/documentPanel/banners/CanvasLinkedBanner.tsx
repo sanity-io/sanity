@@ -90,7 +90,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const {isLockedByCanvas} = useCanvasCompanionDoc(documentId)
 
   const variantText = useMemo(() => {
-    if (isLockedByCanvas) {
+    if (!isLockedByCanvas) {
       return t('canvas.banner.editable.linked-text')
     }
 
