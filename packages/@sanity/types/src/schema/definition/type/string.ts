@@ -31,6 +31,7 @@ export interface StringDefinition extends BaseSchemaDefinition {
   type: 'string'
   options?: StringOptions
   placeholder?: string
+  elideIf?: string
   validation?: ValidationBuilder<StringRule, string>
   initialValue?: InitialValueProperty<any, string>
 }

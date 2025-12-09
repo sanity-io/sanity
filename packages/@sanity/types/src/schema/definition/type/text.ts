@@ -16,6 +16,7 @@ export interface TextDefinition extends BaseSchemaDefinition {
   rows?: number
   options?: TextOptions
   placeholder?: string
+  elideIf?: string
   validation?: ValidationBuilder<TextRule, string>
   initialValue?: InitialValueProperty<any, string>
 }
