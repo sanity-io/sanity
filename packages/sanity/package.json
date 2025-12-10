@@ -139,7 +139,7 @@
     "@portabletext/plugin-one-line": "^3.0.25",
     "@portabletext/plugin-typography": "^4.0.25",
     "@portabletext/react": "^5.0.0",
-    "@portabletext/toolkit": "^4.0.0",
+    "@portabletext/toolkit": "^5.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^0.4.1",
