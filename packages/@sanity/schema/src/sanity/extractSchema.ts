@@ -585,7 +585,6 @@ function sortByDependencies(compiledSchema: SchemaDef): {
     seen.add(schemaType)
 
     if ('fields' in schemaType) {
-      console.log('START Gatthring fields', path.join('.'))
       for (const field of gatherFields(schemaType)) {
         const last = lastType(field.type)
         if (last!.name === 'document') {
@@ -608,11 +607,9 @@ function sortByDependencies(compiledSchema: SchemaDef): {
 
           if (hoistRepetitions && !compiledSchema.get(field.type.name)) {
             const fieldPath = path.concat([field.name])
-            console.log('FOUND!', field.name, '@', fieldPath.join('.'))
             if (objectMap.has(field)) {
               // eslint-disable-next-line max-depth
               if (!repeated.has(field)) {
-                console.log('FOUND!!!', field.name, '@', fieldPath.join('.'), field)
                 repeated.set(field, pickRepeatedName(fieldPath))
               }
             }
@@ -624,7 +621,6 @@ function sortByDependencies(compiledSchema: SchemaDef): {
         }
         walkDependencies(field.type, dependencies, path.concat([field.name]))
       }
-      console.log('END Gatthring fields', path.join('.'))
     } else if ('of' in schemaType) {
       for (const item of schemaType.of) {
         walkDependencies(item, dependencies, path.concat(item.name), true)
