@@ -14,7 +14,13 @@ import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revision, release}) => {
+export const useHistoryRestoreAction: DocumentActionComponent = ({
+  id,
+  type,
+  revision,
+  release,
+  liveEdit,
+}) => {
   const {restore} = useDocumentOperation(id, type, release)
   const {revisionNotFound} = useDocumentPane()
   const event = useDocumentOperationEvent(id, type)
@@ -67,7 +73,7 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
   const isRevisionLatest = revision === undefined // undefined means latest revision
 
   return useMemo(() => {
-    if (isRevisionLatest || revisionNotFound) {
+    if (isRevisionLatest || revisionNotFound || liveEdit) {
       return null
     }
 
@@ -84,7 +90,7 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
       dialog,
       disabled: isRevisionInitial,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, revisionNotFound, t])
+  }, [dialog, handle, isRevisionInitial, isRevisionLatest, liveEdit, revisionNotFound, t])
 }
 
 useHistoryRestoreAction.action = 'restore'
