@@ -29,7 +29,7 @@ function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = fa
 }
 
 describe('Extract schema test', () => {
-  test('Extracts  schema general', () => {
+  test('Extracts schema general', () => {
     const schema = createSchema({
       name: 'test',
       types: [
