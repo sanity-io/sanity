@@ -45,6 +45,17 @@ export function RouterDebug() {
           >
             Resolve intent
           </IntentLink>
+
+          <IntentLink
+            intent="edit"
+            params={{
+              id: 'grrm',
+              type: 'author',
+              mode: 'focus',
+            }}
+          >
+            Open in focus mode
+          </IntentLink>
           <Button
             onClick={() => {
               navigate({
