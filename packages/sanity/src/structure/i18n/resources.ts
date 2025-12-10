@@ -243,8 +243,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
   /** The text for the canvas linked banner when the document in editable mode*/
-  'canvas.banner.editable.linked-text':
-    'This document can be edited in Canvas. Canvas updates may overwrite Studio edits.',
+  'canvas.banner.editable.linked-text': 'This document can be edited in Canvas.',
   /** The description for the canvas linked banner popover in editable mode*/
   'canvas.banner.editable.popover-description':
     'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
