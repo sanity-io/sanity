@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
@@ -94,6 +94,23 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const renderValue = useCallback((_value: string, option?: NormalizedTimeZone) => {
     if (!option) return ''
     return `${option.alternativeName} (${option.namePretty})`
+  }, [])
+
+  // Prevent clicks inside this dialog from closing the parent DateTimeInput popover.
+  // The DateTimeInput uses useClickOutsideEvent which listens for mousedown on the
+  // document. This dialog renders via portal outside the popover's DOM tree, so
+  // clicks inside it would otherwise be detected as "outside" and close the picker.
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as Element
+      // Check if click is inside the time-zone dialog or its autocomplete popover
+      if (target.closest('#time-zone') || target.closest('[role="listbox"]')) {
+        e.stopPropagation()
+      }
+    }
+    // Use capture phase to intercept before useClickOutsideEvent's bubble listener
+    document.addEventListener('mousedown', handleMouseDown, true)
+    return () => document.removeEventListener('mousedown', handleMouseDown, true)
   }, [])
 
   return (
