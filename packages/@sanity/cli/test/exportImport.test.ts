@@ -80,5 +80,19 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
       expect(result.stdout).toMatch(/done!/i)
       expect(result.code).toBe(0)
     })
+
+    testConcurrent('import with --yes creates non-existing dataset', async () => {
+      const newDataset = `${testRunArgs.dataset}-import-yes`
+      const result = await runSanityCmdCommand(studioName, [
+        'dataset',
+        'import',
+        testRunArgs.importTarballPath,
+        newDataset,
+        '--missing',
+        '--yes',
+      ])
+      expect(result.stdout).toMatch(/done!/i)
+      expect(result.code).toBe(0)
+    })
   })
 })
