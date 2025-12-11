@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {type DocumentActionComponent, definePlugin} from 'sanity'
+import {definePlugin, type DocumentActionComponent} from 'sanity'
 
 import {
   useDeleteAction,
