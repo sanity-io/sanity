@@ -71,6 +71,12 @@ export function StudioProvider({
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
+  // Extract the first workspace's projectId for use in error screens
+  const primaryProjectId = useMemo(() => {
+    const workspace = Array.isArray(config) ? config[0] : config
+    return workspace?.projectId
+  }, [config])
+
   const _children = useMemo(
     () => (
       <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
@@ -106,8 +112,8 @@ export function StudioProvider({
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <StudioErrorBoundary>
-          <StudioRootErrorHandler>
+        <StudioErrorBoundary primaryProjectId={primaryProjectId}>
+          <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
             <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
               <ActiveWorkspaceMatcher
                 unstable_history={history}
