@@ -100,6 +100,20 @@ test.describe('Array revert changes', () => {
     await expect(page.getByRole('button', {name: 'Item 2 description'})).toBeVisible()
     await expect(page.getByRole('button', {name: 'Item 3 description'})).toBeVisible()
 
+    await expect(
+      page.getByTestId('field-inlineEditingArray').getByTestId('change-bar-wrapper').nth(1),
+    ).toBeVisible()
+    await expect(
+      page
+        .getByTestId('field-inlineEditingArray')
+        .getByTestId('change-bar-wrapper')
+        .nth(1)
+        .getByRole('button', {name: 'Item 2 description'}),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('field-inlineEditingArray').getByTestId('change-bar-wrapper'),
+    ).toHaveCount(3)
+
     await expect(page.getByTestId('alert-non-unique-keys')).not.toBeVisible()
   })
 })
