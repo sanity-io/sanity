@@ -19,8 +19,8 @@ interface PackageInfo {
 // NOTE: when doing changes here, also remember to update versions in help docs at
 // https://sanity.io/admin/structure/docs;helpArticle;upgrade-packages
 const PACKAGES = [
-  {name: 'react', supported: ['^18', '^19.2'], deprecatedBelow: '^19.2'},
-  {name: 'react-dom', supported: ['^18', '^19.2'], deprecatedBelow: '^19.2'},
+  {name: 'react', supported: ['^18', '^19.2.1'], deprecatedBelow: '^19.2.1'},
+  {name: 'react-dom', supported: ['^18', '^19.2.1'], deprecatedBelow: '^19.2.1'},
   {name: 'styled-components', supported: ['^6'], deprecatedBelow: null},
   {name: '@sanity/ui', supported: ['^2', '^3'], deprecatedBelow: '^3'},
 ]
@@ -132,7 +132,7 @@ function getUpgradeInstructions(pkgs: PackageInfo[]) {
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@${highestSupported}"`
+      return `"${pkg.name}@^${highestSupported}"`
     })
     .join(' ')
 
@@ -159,7 +159,7 @@ function getDowngradeInstructions(pkgs: PackageInfo[]) {
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@${highestSupported}"`
+      return `"${pkg.name}@^${highestSupported}"`
     })
     .join(' ')
 
