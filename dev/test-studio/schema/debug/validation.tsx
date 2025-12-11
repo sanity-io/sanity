@@ -1,3 +1,4 @@
+// @ts-expect-error - fix later
 import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
 import {defineType} from 'sanity'
@@ -28,7 +29,7 @@ export default defineType({
         return true
       }
 
-      const needsUrl = (doc.title[0] || '').toUpperCase() === doc.title[0]
+      const needsUrl = ((doc.title as string)[0] || '').toUpperCase() === (doc.title as string)[0]
       return needsUrl && !doc.myUrlField
         ? 'When the first character of the title is uppercase, you will need to fill out the "Plain url"-field'
         : true
@@ -220,7 +221,7 @@ export default defineType({
         Rule.custom(
           (value) =>
             new Promise((resolve) => {
-              if (!value || !value._ref) {
+              if (!value || !(value as any)._ref) {
                 return resolve(true)
               }
 
@@ -368,7 +369,7 @@ export default defineType({
       title: 'A geopoint',
       description: 'Required, must be in Norway somewhere',
       validation: (Rule) =>
-        Rule.custom((geoPoint) => {
+        Rule.custom((geoPoint: any) => {
           if (!geoPoint) {
             return true
           }

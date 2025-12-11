@@ -365,7 +365,7 @@ export default defineType({
             ],
           },
           of: [
-            {
+            defineArrayMember({
               type: 'image',
               title: 'Image',
               fields: [
@@ -378,7 +378,7 @@ export default defineType({
                   of: [{type: 'author', title: 'Author'}],
                 },
               ],
-            },
+            }),
           ],
         },
       ],

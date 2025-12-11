@@ -32,7 +32,7 @@
     "SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST",
     "SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID",
     "SANITY_STUDIO_EFPS_REFERENCE_DATASET",
-    "SANITY_STUDIO_EFPS_REFERENCE_API_HOST"
+    "SANITY_STUDIO_EFPS_REFERENCE_API_HOST",
   ],
   // Variables that should be passed through but not invalidate the cache
   "globalPassThroughEnv": [
@@ -72,52 +72,36 @@
     "EFPS_SANITY_TOKEN_PROD,",
     "SANITY_E2E_SESSION_TOKEN",
     "SANITY_CI_CLI_AUTH_TOKEN_STAGING",
-    "SANITY_AUTH_TOKEN"
+    "SANITY_AUTH_TOKEN",
   ],
-  "globalDependencies": [
-    "pnpm-workspace.yaml",
-    ".oxlintrc.json",
-    "lerna.json"
-  ],
+  "globalDependencies": ["pnpm-workspace.yaml", ".oxlintrc.json", "lerna.json"],
   "tasks": {
     "build": {
-      "outputs": [
-        "lib/**",
-        "*.js"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
-      "outputLogs": "new-only"
+      "outputs": ["lib/**", "*.js"],
+      "dependsOn": ["^build"],
+      "outputLogs": "new-only",
     },
     "build:bundle": {
-      "outputs": [
-        "dist/**"
-      ],
-      "dependsOn": [
-        "build"
-      ],
-      "outputLogs": "new-only"
+      "outputs": ["dist/**"],
+      "dependsOn": ["build"],
+      "outputLogs": "new-only",
     },
     "check:types": {
       "outputs": [],
-      "dependsOn": [
-        "^build"
-      ]
     },
     "transit": {
-      "dependsOn": ["^transit"]
+      "dependsOn": ["^transit"],
     },
     "lint": {
-      "dependsOn": ["transit"]
+      "dependsOn": ["transit"],
     },
     "//#check:format": {},
     "//#check:oxlint": {
-      "cache": false
+      "cache": false,
     },
     "//#chore:format:fix": {},
     "//#chore:oxlint:fix": {
-      "cache": false
-    }
-  }
+      "cache": false,
+    },
+  },
 }

@@ -24,6 +24,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "eslint": "catalog:"
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "vite": "catalog:"
   }
 }

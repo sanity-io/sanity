@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/cli/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -89,6 +89,7 @@
     "@types/lodash": "^4.17.20",
     "@types/minimist": "^1.2.5",
     "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "@types/semver": "^7.7.0",
     "@types/semver-compare": "^1.0.3",
     "@types/tar": "^6.1.13",

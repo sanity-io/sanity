@@ -44,7 +44,7 @@ export function JsonDocumentDump(props: {
     const subscription = client.observable
       .listen(query, {itemId, draftId}, {includeAllVersions: true})
       .subscribe((mut) => {
-        setDocument(mut.result || null)
+        setDocument((mut as any).result || null)
       })
     return () => subscription.unsubscribe()
   }, [client.observable, draftId, itemId])

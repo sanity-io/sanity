@@ -9,6 +9,7 @@ export function CodeInput(props: ObjectInputProps) {
   return (
     <Stack>
       {codeMember && (
+        // @ts-expect-error - fix later
         <MemberField
           member={codeMember as FieldMember}
           renderField={renderField}

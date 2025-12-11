@@ -25,7 +25,7 @@
     "src"
   ],
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/bundle-manager/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "tsgo --noEmit",
     "lint": "eslint .",
     "test": "vitest run"
   },
@@ -43,6 +43,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
+    "@types/semver": "^7.7.1",
     "eslint": "catalog:",
     "vitest": "catalog:"
   },

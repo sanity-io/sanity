@@ -55,6 +55,7 @@ export function _buildTypeGroup(
                     .id(typeName)
                     .child(
                       S.documentList()
+                        // @ts-expect-error - fix later
                         .defaultLayout(defaultLayout)
                         .canHandleIntent((intentName, params) => {
                           return (

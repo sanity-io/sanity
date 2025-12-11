@@ -9,7 +9,11 @@
     "./node_modules/@sanity/util/src",
     "./node_modules/@sanity/codegen/src"
   ],
-  "exclude": ["./test/**/__fixtures__", "./node_modules/@sanity/codegen/src/typescript/__tests__"],
+  "exclude": [
+    "./test/**/__fixtures__",
+    "./templates/**",
+    "./node_modules/@sanity/codegen/src/typescript/__tests__"
+  ],
   "compilerOptions": {
     "rootDir": ".",
     "paths": {

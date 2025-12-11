@@ -1,4 +1,4 @@
-import {type ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
+import {usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import {createMemoryHistory} from 'history'
 import {useState} from 'react'
@@ -22,7 +22,9 @@ const history = createMemoryHistory({initialEntries: [{pathname: '/test'}]})
 
 function Main() {
   const prefersDark = usePrefersDark()
-  const [scheme, setScheme] = useState<ThemeColorSchemeKey>(prefersDark ? 'dark' : 'light')
+  const [scheme, setScheme] = useState<React.ComponentProps<typeof StudioProvider>['scheme']>(
+    prefersDark ? 'dark' : 'light',
+  )
 
   return (
     <StudioProvider

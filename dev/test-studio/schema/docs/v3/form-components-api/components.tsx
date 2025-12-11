@@ -84,7 +84,7 @@ export function CustomItem(props: ItemProps & {testId: string}) {
   )
 }
 
-export function CustomPreview(props: PreviewProps & {testId: string}) {
+export function CustomPreview(props: PreviewProps & {testId?: string}) {
   return (
     <Box
       data-testid={props.testId}

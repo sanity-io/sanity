@@ -30,10 +30,10 @@ export function LongList(): React.JSX.Element {
     <Stack padding={4} space={4}>
       <Box>
         <Heading as="h1" size={1}>
-          {data.title}
+          {data?.title}
         </Heading>
       </Box>
-      {data.objectArrayWithPrefinedStringField.map((item, i) => (
+      {data?.objectArrayWithPrefinedStringField.map((item, i) => (
         <Card key={item._key} padding={4} shadow={2} radius={2}>
           <Flex align="flex-start" justify="space-between" gap={3}>
             <Stack space={2}>

@@ -7,7 +7,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "tsgo --noEmit",
     "lint": "eslint ."
   },
   "dependencies": {
