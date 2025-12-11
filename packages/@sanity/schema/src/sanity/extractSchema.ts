@@ -71,6 +71,9 @@ export function extractSchema(
   const documentTypes = new Map<string, DocumentSchemaType>()
   const schema: SchemaType = []
 
+  // Track which reference types we've created hoisted types for
+  const referenceTypes = new Set<string>()
+
   // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
   const sortedSchemaTypeNames = sortByDependencies(schemaDef)
   sortedSchemaTypeNames.forEach((typeName) => {
@@ -309,6 +312,33 @@ export function extractSchema(
     }
   }
 
+  function createReferenceTypeNodeDefintion(
+    reference: ReferenceSchemaType,
+  ): InlineTypeNode | UnionTypeNode<InlineTypeNode> {
+    const references = gatherReferenceNames(reference)
+
+    // Ensure hoisted reference types exist for each referenced document type
+    for (const name of references) {
+      if (!referenceTypes.has(name)) {
+        referenceTypes.add(name)
+        schema.push({
+          type: 'type',
+          name: `${name}.reference`,
+          value: createReferenceTypeNode(name),
+        })
+      }
+    }
+
+    if (references.length === 1) {
+      return {type: 'inline', name: `${references[0]}.reference`}
+    }
+
+    return {
+      type: 'union',
+      of: references.map((name) => ({type: 'inline', name: `${name}.reference`})),
+    }
+  }
+
   return schema
 }
 
@@ -458,20 +488,6 @@ function createNumberTypeNodeDefintion(
   }
   return {
     type: 'number',
-  }
-}
-
-function createReferenceTypeNodeDefintion(
-  reference: ReferenceSchemaType,
-): ObjectTypeNode | UnionTypeNode<ObjectTypeNode> {
-  const references = gatherReferenceNames(reference)
-  if (references.length === 1) {
-    return createReferenceTypeNode(references[0])
-  }
-
-  return {
-    type: 'union',
-    of: references.map((name) => createReferenceTypeNode(name)),
   }
 }
 
