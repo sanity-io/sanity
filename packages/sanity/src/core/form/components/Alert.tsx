@@ -22,7 +22,13 @@ export function Alert(props: AlertProps) {
   const {children, status = 'warning', suffix, title, ...rest} = props
 
   return (
-    <Card radius={2} tone={STATUS_TONES[status]} {...rest} data-ui="Alert">
+    <Card
+      radius={2}
+      tone={STATUS_TONES[status]}
+      {...rest}
+      data-ui="Alert"
+      data-testid={`alert-${title?.toString().toLowerCase().replace(/ /g, '-')}`}
+    >
       <Flex padding={4}>
         <Box>
           <Text size={1}>
