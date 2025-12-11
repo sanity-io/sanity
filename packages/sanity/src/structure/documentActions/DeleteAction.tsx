@@ -19,12 +19,7 @@ const DISABLED_REASON_TITLE_KEY = {
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDeleteAction: DocumentActionComponent = ({
-  id,
-  type,
-  draft,
-  release,
-}) => {
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
   const {delete: deleteOp} = useDocumentOperation(id, type, release)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
