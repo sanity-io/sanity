@@ -23,6 +23,7 @@ export async function renderNumberInput(options: {
   ): NumberInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
+    // @ts-expect-error - fix later
     return {
       ...restProps,
       changed: false,

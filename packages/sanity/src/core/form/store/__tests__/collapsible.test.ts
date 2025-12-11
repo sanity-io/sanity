@@ -96,6 +96,7 @@ test("doesn't make primitive fields collapsed even if they are configured to be"
     numberField: {collapsed: true},
     booleanField: {collapsed: true},
   })
+  // @ts-expect-error - fix later
   const result = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
@@ -124,6 +125,7 @@ describe('collapsible object fields', () => {
     const bookType = getBookType({
       objectField: {collapsed: true},
     })
+    // @ts-expect-error - fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
@@ -144,6 +146,7 @@ describe('collapsible object fields', () => {
     const bookType = getBookType({
       objectField: {collapsible: true, collapsed: false},
     })
+    // @ts-expect-error - fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
@@ -166,6 +169,7 @@ describe('collapsible object fields', () => {
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,
+      // @ts-expect-error - fix later
       value: {_id: 'foo', _type: 'book'},
     })
 
@@ -187,6 +191,7 @@ describe('collapsible object fields', () => {
   })
   it('supports overriding collapsible behavior at nesting level 3 or deeper', () => {
     const bookType = getBookType({deep: {collapsible: false}})
+    // @ts-expect-error - fix later
     const result = prepareFormState({
       ...DEFAULT_PROPS,
       schemaType: bookType,

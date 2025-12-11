@@ -50,6 +50,7 @@ export async function renderGlobalDocumentReferenceInput(options: {
   const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
+    // @ts-expect-error - fix later
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 

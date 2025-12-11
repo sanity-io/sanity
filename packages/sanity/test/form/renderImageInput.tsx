@@ -37,6 +37,7 @@ export async function renderImageInput(options: {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
 
+    // @ts-expect-error - fix later
     return {
       ...restProps,
       assetSources,

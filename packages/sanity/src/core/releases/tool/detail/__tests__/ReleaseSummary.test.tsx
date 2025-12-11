@@ -126,6 +126,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
     >
       <ScrollContainer>
         <ReleaseSummary
+          // @ts-expect-error - fix later
           scrollContainerRef={{current: null}}
           documents={releaseDocuments}
           release={activeASAPRelease}

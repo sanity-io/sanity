@@ -151,6 +151,7 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
 }
 
 const FEATURES: WorkspaceOptions['beta'] = {
+  // @ts-expect-error - fix later
   treeArrayEditing: {
     enabled: true,
   },

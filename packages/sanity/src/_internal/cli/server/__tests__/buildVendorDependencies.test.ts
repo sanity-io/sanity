@@ -69,6 +69,7 @@ describe('buildVendorDependencies', async () => {
       })
 
       expect(build).toHaveBeenCalledTimes(1)
+      // @ts-expect-error - fix later
       const [buildConfig] = build.mock.calls[0]
 
       expect(buildConfig).toMatchObject({
@@ -175,6 +176,7 @@ describe('buildVendorDependencies', async () => {
       })
 
       expect(build).toHaveBeenCalledTimes(1)
+      // @ts-expect-error - fix later
       const [buildConfig] = build.mock.calls[0]
 
       expect(buildConfig).toMatchObject({

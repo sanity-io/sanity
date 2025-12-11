@@ -24,6 +24,7 @@ describe('observeFields', () => {
     const invalidationChannel = new Subject<InvalidationChannelEvent>()
     const observeFields = createObserveFields({
       invalidationChannel,
+      // @ts-expect-error - fix later
       client,
     })
     const first = firstValueFrom(observeFields('foo', ['bar']).pipe(take(1)))

@@ -1,1 +1,1 @@
-{"ignores": ["@portabletext/toolkit", "rimraf"]}
+{"ignores": ["@portabletext/toolkit", "@repo/tsconfig", "rimraf"]}

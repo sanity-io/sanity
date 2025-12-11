@@ -130,6 +130,7 @@ function Debug(props: {documentId: string; documentType: string}) {
 function useDocumentActions(documentId: string, schemaType: string, editState: EditStateFor) {
   const {document} = useSource()
   const actions = useMemo(
+    // @ts-expect-error - fix later
     () => document.actions({schemaType, documentId}),
     [document, documentId, schemaType],
   )

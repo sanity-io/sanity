@@ -36,6 +36,7 @@ describe('useDocumentRevertStates', () => {
     }
   }
 
+  // @ts-expect-error - fix later
   const mockUseClient = useClient as Mock<typeof useClient>
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 

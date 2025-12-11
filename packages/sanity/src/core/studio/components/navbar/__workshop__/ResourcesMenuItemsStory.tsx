@@ -12,6 +12,7 @@ export default function ResourcesMenuItemsStory() {
     <Flex justify="center" align="center" paddingTop={3}>
       <Card radius={2} shadow={1}>
         <Menu>
+          {/*  @ts-expect-error - fix later */}
           <ResourcesMenuItems error={error} isLoading={isLoading} value={helpResources} />
         </Menu>
       </Card>

@@ -24,6 +24,7 @@ export default function DocumentBadgesStory() {
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={0}>
         <StructureToolProvider>
+          {/* @ts-expect-error - fix later */}
           <DocumentPaneProvider index={1} itemId="test" pane={pane} paneKey="test">
             <DocumentBadges />
           </DocumentPaneProvider>

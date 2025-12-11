@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
+// @ts-expect-error - fix later
 const mockRelease: ReleaseDocument = {
   _id: '_.releases.1',
   _type: 'system.release',

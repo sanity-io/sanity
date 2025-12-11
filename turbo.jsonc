@@ -87,6 +87,7 @@
       "outputLogs": "new-only",
     },
     "check:types": {
+      "cache": false,
       "outputs": [],
     },
     "transit": {

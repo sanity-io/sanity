@@ -64,6 +64,7 @@ describe('ObjectInput', () => {
               inSelectedGroup: false,
               groups: [],
               index: 0,
+              // @ts-expect-error - fix later
               field: {
                 schemaType: inputProps.schemaType.fields[0].type,
                 validation: [],

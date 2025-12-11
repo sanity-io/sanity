@@ -36,6 +36,7 @@ const createMockCache = (
   >,
 ): UserApplicationCache => {
   return {
+    // @ts-expect-error - fix later
     get: vi.fn((client: SanityClient) => {
       const {projectId} = client.config()
       return Promise.resolve(

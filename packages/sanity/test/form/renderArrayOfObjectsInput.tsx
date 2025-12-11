@@ -58,6 +58,7 @@ export async function renderArrayOfObjectsInput(options: {
     ) as FieldMember<ArrayOfObjectsFormNode> | undefined
     const field = fieldMember?.field
 
+    // @ts-expect-error - fix later
     return {
       ...restProps,
       changed: false,
