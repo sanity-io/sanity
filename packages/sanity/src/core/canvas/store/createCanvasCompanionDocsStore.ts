@@ -53,7 +53,7 @@ const getCompanionDocs = memoize(
     const getCompanionDoc$ = (id: string) =>
       client.observable
         .fetch<CompanionDoc | null>(
-          `*[_id == $id][0]{ _id, canvasDocumentId, studioDocumentId}`,
+          `*[_id == $id][0]{ _id, canvasDocumentId, studioDocumentId, isStudioDocumentEditable}`,
           {id},
           {tag: 'canvas.companion-docs'},
         )

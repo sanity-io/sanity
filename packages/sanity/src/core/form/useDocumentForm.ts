@@ -325,7 +325,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         : false,
     [selectedPerspective],
   )
-  const {isLinked} = useCanvasCompanionDoc(value._id)
+  const {isLockedByCanvas} = useCanvasCompanionDoc(value._id)
 
   // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
@@ -374,7 +374,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
     const isReadOnly =
       !ready ||
-      isLinked ||
+      isLockedByCanvas ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -389,7 +389,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return Boolean(readOnlyProp)
   }, [
     isPermissionsLoading,
-    isLinked,
+    isLockedByCanvas,
     permissions?.granted,
     schemaType,
     isNonExistent,
