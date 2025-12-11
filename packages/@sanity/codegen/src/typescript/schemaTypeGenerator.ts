@@ -13,8 +13,13 @@ import {
 } from 'groq-js'
 
 import {safeParseQuery} from '../safeParseQuery'
-import {INTERNAL_REFERENCE_SYMBOL} from './constants'
-import {getUniqueIdentifierForName, sanitizeIdentifier, weakMapMemo} from './helpers'
+import {ARRAY_MEMBER, INTERNAL_REFERENCE_SYMBOL} from './constants'
+import {
+  getUniqueIdentifierForName,
+  isObjectArrayMember,
+  sanitizeIdentifier,
+  weakMapMemo,
+} from './helpers'
 import {type ExtractedQuery, type TypeEvaluationStats} from './types'
 
 export class SchemaTypeGenerator {
@@ -127,7 +132,11 @@ export class SchemaTypeGenerator {
   // Helper function used to generate TS types for object type nodes.
   private generateObjectTsType(typeNode: ObjectTypeNode): t.TSType {
     const props: t.TSPropertySignature[] = []
+    const isArrayMember = isObjectArrayMember(typeNode)
+
+    // Skip _key if this is an array member - it will be added via ArrayMember<T>
     Object.entries(typeNode.attributes).forEach(([key, attribute]) => {
+      if (isArrayMember && key === '_key') return
       props.push(this.generateTsObjectProperty(key, attribute))
     })
     const rest = typeNode.rest
@@ -138,7 +147,9 @@ export class SchemaTypeGenerator {
           return t.tsUnknownKeyword()
         }
         case 'object': {
+          // Skip _key - it will be added via ArrayMember<T> wrapper
           Object.entries(rest.attributes).forEach(([key, attribute]) => {
+            if (key === '_key') return
             props.push(this.generateTsObjectProperty(key, attribute))
           })
           break
@@ -147,6 +158,10 @@ export class SchemaTypeGenerator {
           const resolved = this.generateInlineTsType(rest)
           // if object rest is unknown, we can't generate a type literal for it
           if (t.isTSUnknownKeyword(resolved)) return resolved
+          // If this is an array member, wrap inline type with ArrayMember
+          if (isArrayMember) {
+            return t.tsTypeReference(ARRAY_MEMBER, t.tsTypeParameterInstantiation([resolved]))
+          }
           return t.tsIntersectionType([t.tsTypeLiteral(props), resolved])
         }
         default: {
@@ -165,6 +180,14 @@ export class SchemaTypeGenerator {
         {computed: true, optional: true},
       )
       props.push(derefType)
+    }
+
+    // Wrap with ArrayMember if this is an array member pattern
+    if (isArrayMember) {
+      return t.tsTypeReference(
+        ARRAY_MEMBER,
+        t.tsTypeParameterInstantiation([t.tsTypeLiteral(props)]),
+      )
     }
 
     return t.tsTypeLiteral(props)

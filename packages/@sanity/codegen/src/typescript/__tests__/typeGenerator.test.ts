@@ -190,6 +190,10 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
+      export type ArrayMember<T> = T & {
+        _key: string;
+      };
+
       // Source: foo.ts
       // Variable: queryFoo
       // Query: *[_type == "foo"]
@@ -294,6 +298,10 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
+      export type ArrayMember<T> = T & {
+        _key: string;
+      };
+
       // Source: foo.ts
       // Variable: queryFoo
       // Query: *[_type == "foo"]
@@ -361,6 +369,10 @@ describe(TypeGenerator.name, () => {
       export type AllSanitySchemaTypes = Foo | Bar;
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      export type ArrayMember<T> = T & {
+        _key: string;
+      };
 
       "
     `)
@@ -595,21 +607,25 @@ describe(TypeGenerator.name, () => {
     const result = await typeGenerator.generateTypes({schema})
 
     expect(result.code).toMatchInlineSnapshot(`
-"export type Author = {
-  images: Array<{
-    asset: {
-      _ref: string;
-      _type: "reference";
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-  }>;
-};
+      "export type Author = {
+        images: Array<{
+          asset: {
+            _ref: string;
+            _type: "reference";
+            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+          };
+        }>;
+      };
 
-export type AllSanitySchemaTypes = Author;
+      export type AllSanitySchemaTypes = Author;
 
-export declare const internalGroqTypeReferenceTo: unique symbol;
+      export declare const internalGroqTypeReferenceTo: unique symbol;
 
-"
-`)
+      export type ArrayMember<T> = T & {
+        _key: string;
+      };
+
+      "
+    `)
   })
 })
