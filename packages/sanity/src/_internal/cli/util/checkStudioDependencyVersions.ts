@@ -132,7 +132,7 @@ function getUpgradeInstructions(pkgs: PackageInfo[]) {
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@${highestSupported}"`
+      return `"${pkg.name}@^${highestSupported}"`
     })
     .join(' ')
 
