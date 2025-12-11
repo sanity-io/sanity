@@ -1,9 +1,8 @@
 import path from 'node:path'
 
 import {type CliCommandAction} from '@sanity/cli'
-import {exportDataset} from '@sanity/export'
+import {exportDataset, type ExportProgress} from '@sanity/export'
 
-import {type ProgressEvent} from '../../commands/dataset/exportDatasetCommand'
 import {MINIMUM_API_VERSION} from './constants'
 import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
 
@@ -46,7 +45,7 @@ const exportAssetsAction: CliCommandAction<ExportAssetsFlags> = async (args, con
       types: ['sanity.asset'],
       assetConcurrency: DEFAULT_CONCURRENCY,
       mode: 'stream',
-      onProgress: (progress: ProgressEvent) => {
+      onProgress: (progress: ExportProgress) => {
         if (progress.step !== currentStep) {
           spinner.succeed()
           spinner = output.spinner(progress.step).start()
@@ -78,7 +77,7 @@ const exportAssetsAction: CliCommandAction<ExportAssetsFlags> = async (args, con
       },
       // Media Library archives only record asset aspect data. All other data can be safely
       // ommitted.
-      transformDocument: (doc: unknown) => {
+      transformDocument: (doc) => {
         if (
           typeof doc !== 'object' ||
           doc === null ||
