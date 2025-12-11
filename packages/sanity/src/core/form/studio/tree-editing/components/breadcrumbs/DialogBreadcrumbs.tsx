@@ -1,3 +1,5 @@
+/* eslint-disable i18next/no-literal-string */
+/* eslint-disable react/jsx-pascal-case */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
@@ -8,6 +10,7 @@ import {
   Card, // Custom button needed, special padding support required
   Flex,
   Inline,
+  KBD,
   Menu,
   Text,
   useElementSize,
@@ -26,7 +29,9 @@ import {
 import {css, styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../ui-components'
+import {HintPopover} from '../../../../../components/hint/hintPopover'
 import {pathToString} from '../../../../../field/paths/helpers'
+import {GLOBAL_SEARCH_KEY_MODIFIER} from '../../../../../studio/components/navbar/search/constants'
 import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
 import {useValuePreviewWithFallback} from '../../hooks'
 import {type DialogItem} from '../../types'
@@ -100,7 +105,7 @@ const MenuCard = function MenuCard(
     })
   }, [onPathSelect, item.path, telemetry])
 
-  return (
+  const cardContent = (
     <Card
       as="button"
       padding={1}
@@ -136,6 +141,26 @@ const MenuCard = function MenuCard(
         </Box>
       </Flex>
     </Card>
+  )
+
+  return isLast ? (
+    <HintPopover
+      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+      localStorageKey="breadcrumb-key-hint"
+      content={
+        <Flex direction="row" align="center" gap={1}>
+          <Flex align="center" height="fill">
+            <KBD>{GLOBAL_SEARCH_KEY_MODIFIER}</KBD>
+            <KBD>↑</KBD>
+          </Flex>
+          <Text size={1}>to navigate to the parent object</Text>
+        </Flex>
+      }
+    >
+      {cardContent}
+    </HintPopover>
+  ) : (
+    cardContent
   )
 }
 
