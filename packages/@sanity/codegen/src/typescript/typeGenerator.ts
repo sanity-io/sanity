@@ -6,7 +6,12 @@ import {type SchemaType} from 'groq-js'
 import {createSelector} from 'reselect'
 
 import {resultSuffix} from '../casing'
-import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL, SANITY_QUERIES} from './constants'
+import {
+  ALL_SANITY_SCHEMA_TYPES,
+  ARRAY_MEMBER,
+  INTERNAL_REFERENCE_SYMBOL,
+  SANITY_QUERIES,
+} from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
 import {
@@ -77,6 +82,27 @@ export class TypeGenerator {
     const code = generateCode(ast)
 
     return {id, code, ast}
+  })
+
+  private getArrayMemberDeclaration = computeOnce(() => {
+    // Creates: export type ArrayMember<T> = T & { _key: string };
+    const typeParam = t.tsTypeParameter(null, null, 'T')
+    const intersectionType = t.tsIntersectionType([
+      t.tsTypeReference(t.identifier('T')),
+      t.tsTypeLiteral([
+        t.tsPropertySignature(t.identifier('_key'), t.tsTypeAnnotation(t.tsStringKeyword())),
+      ]),
+    ])
+
+    const typeAlias = t.tsTypeAliasDeclaration(
+      ARRAY_MEMBER,
+      t.tsTypeParameterDeclaration([typeParam]),
+      intersectionType,
+    )
+    const ast = t.exportNamedDeclaration(typeAlias)
+    const code = generateCode(ast)
+
+    return {id: ARRAY_MEMBER, code, ast}
   })
 
   private getSchemaTypeGenerator = createSelector(
@@ -236,6 +262,7 @@ export class TypeGenerator {
   async generateTypes(options: GenerateTypesOptions) {
     const {reporter: report} = options
     const internalReferenceSymbol = this.getInternalReferenceSymbolDeclaration()
+    const arrayMemberDeclaration = this.getArrayMemberDeclaration()
     const schemaTypeDeclarations = this.getSchemaTypeDeclarations(options)
     const allSanitySchemaTypesDeclaration = this.getAllSanitySchemaTypesDeclaration(options)
 
@@ -258,6 +285,9 @@ export class TypeGenerator {
 
     program.body.push(internalReferenceSymbol.ast)
     code += internalReferenceSymbol.code
+
+    program.body.push(arrayMemberDeclaration.ast)
+    code += arrayMemberDeclaration.code
 
     const evaluatedModules = await TypeGenerator.getEvaluatedModules({
       ...options,
