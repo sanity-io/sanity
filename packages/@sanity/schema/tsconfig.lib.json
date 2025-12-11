@@ -3,6 +3,7 @@
   "include": ["./example", "./src", "./typings"],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "noCheck": true
   }
 }
