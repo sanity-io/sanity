@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/react to v6 ([#11440](https://github.com/sanity-io/sanity/issues/11440)) ([953b513](https://github.com/sanity-io/sanity/commit/953b513b798b1e68d9d3813839a0dbc68ea299e1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11431](https://github.com/sanity-io/sanity/issues/11431)) ([ebfdc6e](https://github.com/sanity-io/sanity/commit/ebfdc6e1f5eb8e9bca1caa082bab32fb7745b301)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11438](https://github.com/sanity-io/sanity/issues/11438)) ([dbc98f7](https://github.com/sanity-io/sanity/commit/dbc98f75a617381779975be26e14f07ad02d16cd)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
 
 ### Bug Fixes

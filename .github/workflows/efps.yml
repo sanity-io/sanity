@@ -206,7 +206,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: remove node_modules in folder efps
-        run: rm -rf ./dev/efps/node_modules && rm -rf pnpm-lock.yaml
+        run: rm -rf ./dev/efps/node_modules
 
       - uses: ./.github/actions/setup
 
