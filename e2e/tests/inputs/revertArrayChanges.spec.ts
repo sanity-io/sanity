@@ -95,7 +95,7 @@ test.describe('Array revert changes', () => {
     await expect(page.getByTestId('confirm-popover-confirm-button')).toBeVisible()
     await page.getByTestId('confirm-popover-confirm-button').click()
 
-    /** check that the middle item is deleted */
+    /** check that the middle item has been restored after reverting the deletion */
     await expect(page.getByRole('button', {name: 'Item 1 description'})).toBeVisible()
     await expect(page.getByRole('button', {name: 'Item 2 description'})).toBeVisible()
     await expect(page.getByRole('button', {name: 'Item 3 description'})).toBeVisible()
