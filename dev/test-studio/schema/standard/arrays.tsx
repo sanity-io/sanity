@@ -111,7 +111,6 @@ export default defineType({
               level2array: 'level2array',
             },
             prepare({title, description, level2array}) {
-              const level2Count = level2array ? level2array.length : 0
               return {
                 title: title,
                 subtitle: description,
