@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import {CodeGenerator} from '@babel/generator'
 import * as t from '@babel/types'
+import {type ObjectTypeNode} from 'groq-js'
 
 import {RESERVED_IDENTIFIERS} from './constants'
 
@@ -56,4 +57,9 @@ export function weakMapMemo<TParam extends object, TReturn>(fn: (arg: TParam) =>
 
 export function generateCode(node: t.Node) {
   return `${new CodeGenerator(node).generate().code.trim()}\n\n`
+}
+
+export function isObjectArrayMember(typeNode: ObjectTypeNode): boolean {
+  const {attributes, rest} = typeNode
+  return '_key' in attributes || (rest?.type === 'object' && '_key' in rest.attributes)
 }
