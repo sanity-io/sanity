@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+### Bug Fixes
+
+* **cli:** use caret for upgrade command, mark react < 19.2.1 as deprecated ([#11470](https://github.com/sanity-io/sanity/issues/11470)) ([91b861a](https://github.com/sanity-io/sanity/commit/91b861a5d1390113ccacb06cd94b964e557f8ff2)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** diffs author and timestamp missing when removing data ([#11404](https://github.com/sanity-io/sanity/issues/11404)) ([bdb099f](https://github.com/sanity-io/sanity/commit/bdb099f6d017302c1f0541af6efc19f59052e65b)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency @portabletext/react to v6 ([#11440](https://github.com/sanity-io/sanity/issues/11440)) ([953b513](https://github.com/sanity-io/sanity/commit/953b513b798b1e68d9d3813839a0dbc68ea299e1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11431](https://github.com/sanity-io/sanity/issues/11431)) ([ebfdc6e](https://github.com/sanity-io/sanity/commit/ebfdc6e1f5eb8e9bca1caa082bab32fb7745b301)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11438](https://github.com/sanity-io/sanity/issues/11438)) ([dbc98f7](https://github.com/sanity-io/sanity/commit/dbc98f75a617381779975be26e14f07ad02d16cd)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* restore fonts for schema icon extract ([#11442](https://github.com/sanity-io/sanity/issues/11442)) ([671ebc3](https://github.com/sanity-io/sanity/commit/671ebc33af4a7887c8b144b3fb73a4d75b16f570)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
 
 ### Features
