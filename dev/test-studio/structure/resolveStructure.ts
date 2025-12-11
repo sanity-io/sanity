@@ -23,6 +23,8 @@ import {
 
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
+import {CustomListView} from '../components/listViews/CustomListView'
+import {ListOverview} from '../components/listViews/ListOverview'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
 import {_buildTypeGroup} from './_buildTypeGroup'
@@ -255,6 +257,83 @@ export const structure: StructureResolver = (
                       filter: '_type == "author" || _type == "book"',
                     },
                   }).apiVersion('2023-07-28'),
+                ),
+
+              // Test list with custom views
+              S.listItem()
+                .title('List with Views (Test)')
+                .id('list-with-views-test')
+                .child(
+                  S.list()
+                    .title('Authors')
+                    .id('authors-with-views')
+                    .items([
+                      S.documentListItem().id('grrm').schemaType('author'),
+                      S.documentListItem().id('jrr-tolkien').schemaType('author'),
+                      S.divider(),
+                      S.listItem()
+                        .title('All Authors')
+                        .id('all-authors')
+                        .child(
+                          S.documentList({
+                            id: 'all-authors-list',
+                            title: 'All Authors',
+                            options: {filter: '_type == "author"'},
+                          }),
+                        ),
+                    ])
+                    .views([
+                      S.view
+                        .component(CustomListView)
+                        .id('custom-view')
+                        .title('Custom View')
+                        .options({message: 'Hello from custom view!', showDetails: true}),
+                      S.view
+                        .component(CustomListView)
+                        .id('another-view')
+                        .title('Another View')
+                        .options({message: 'This is another custom view'}),
+                    ]),
+                ),
+
+              // Test list with overview component
+              S.listItem()
+                .title('List with Overview (Test)')
+                .id('list-with-overview-test')
+                .child(
+                  S.list()
+                    .title('Books')
+                    .id('books-with-overview')
+                    .items([
+                      S.documentListItem().id('grrm').schemaType('author'),
+                      S.documentListItem().id('jrr-tolkien').schemaType('author'),
+                      S.divider(),
+                      S.listItem()
+                        .title('All Books')
+                        .id('all-books')
+                        .child(
+                          S.documentList({
+                            id: 'all-books-list',
+                            title: 'All Books',
+                            options: {filter: '_type == "book"'},
+                          }),
+                        ),
+                    ])
+                    .overview(
+                      S.component(ListOverview)
+                        .id('books-overview')
+                        .options({
+                          customMessage: 'Select an item to view details',
+                          showStats: true,
+                        }),
+                    )
+                    .views([
+                      S.view
+                        .component(CustomListView)
+                        .id('custom-books-view')
+                        .title('Custom Books View')
+                        .options({message: 'Custom view of books!'}),
+                    ]),
                 ),
 
               // A singleton not using `documentListItem`, eg no built-in preview
