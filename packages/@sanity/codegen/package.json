@@ -38,7 +38,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsgo --noEmit",
+    "check:types": "tsgo --noEmit --project tsconfig.check.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
