@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+### Bug Fixes
+
+* **cli:** blueprints doctor does not require existing blueprint config ([#11444](https://github.com/sanity-io/sanity/issues/11444)) ([b8d9a94](https://github.com/sanity-io/sanity/commit/b8d9a94e4b142aa2860b7ce0e928f3c7c72a257e)) by Taylor Beseda (tbeseda@gmail.com)
+* mcp cli wording ([#11457](https://github.com/sanity-io/sanity/issues/11457)) ([2aa0766](https://github.com/sanity-io/sanity/commit/2aa0766f7c5ad5f57c39a10525584489283a3a1f)) by James Woods (jwwoods01@gmail.com)
+
 ## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
 
 ### Features
