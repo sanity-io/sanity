@@ -27,10 +27,7 @@ const documentActions = [
   useHistoryRestoreAction,
 ]
 
-const destructiveActionNames: DocumentActionComponent['action'][] = [
-  'delete',
-  'discardChanges',
-]
+const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', 'discardChanges']
 
 const documentBadges = [useLiveEditBadge]
 
