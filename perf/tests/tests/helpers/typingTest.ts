@@ -1,4 +1,4 @@
-import {triggerEditEvent} from './utils/triggerEdit'
+import {triggerEditEvent} from './utils/triggerEdit.ts'
 
 const LAG_CHECK_MS = 16 // ~60fps
 interface Sample {

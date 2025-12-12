@@ -12,7 +12,7 @@ const TEXT = encoder.encode(
 export function loremBytes(byteSize: number): Uint8Array {
   const result = new Uint8Array(byteSize)
   for (let i = 0; i < byteSize; i++) {
-    result[i] = TEXT[i % TEXT.byteLength]
+    result[i] = TEXT[i % TEXT.byteLength]!
   }
   return result
 }

@@ -2,7 +2,6 @@
   "extends": "@repo/tsconfig/check.json",
   "include": ["./src"],
   "compilerOptions": {
-    "rootDir": ".",
-    "skipLibCheck": true
+    "rootDir": "."
   }
 }

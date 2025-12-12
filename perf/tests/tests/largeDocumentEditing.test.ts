@@ -1,6 +1,6 @@
-import {type PerformanceTestProps} from '../runner/types'
-import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
-import {generateParagraphs} from './helpers/utils/generateParagraphs'
+import {type PerformanceTestProps} from '../runner/types.ts'
+import {KNOWN_TEST_IDS} from '../runner/utils/testIds.ts'
+import {generateParagraphs} from './helpers/utils/generateParagraphs.ts'
 
 export default {
   id: KNOWN_TEST_IDS['large-document-editing'],

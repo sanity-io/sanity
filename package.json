@@ -107,7 +107,6 @@
     "@lerna-lite/list": "^4.9.4",
     "@lerna-lite/publish": "^4.9.4",
     "@repo/bundle-manager": "workspace:*",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
@@ -140,6 +139,5 @@
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.25.0",
-  "//": "pnpm settings moved to pnpm-workspace.yaml",
-  "isSanityMonorepo": true
+  "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

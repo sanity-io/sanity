@@ -6,14 +6,14 @@ import {createClient} from '@sanity/client'
 import {config} from 'dotenv'
 import globby from 'globby'
 
-import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
-import {findEnv, readEnv} from './config/envVars'
-import * as queries from './queries'
-import {run} from './runner/runner'
-import {type Deployment} from './runner/types'
-import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
-import {sanityIdify} from './runner/utils/sanityIdIfy'
-import {KNOWN_TEST_IDS} from './runner/utils/testIds'
+import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants.ts'
+import {findEnv, readEnv} from './config/envVars.ts'
+import * as queries from './queries.ts'
+import {run} from './runner/runner.ts'
+import {type Deployment} from './runner/types.ts'
+import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils.ts'
+import {sanityIdify} from './runner/utils/sanityIdIfy.ts'
+import {KNOWN_TEST_IDS} from './runner/utils/testIds.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

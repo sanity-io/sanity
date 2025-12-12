@@ -12,7 +12,7 @@
     "check:types": "tsgo --noEmit",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
-    "dev": "sanity dev",
+    "dev": "NODE_OPTIONS=--conditions=development SANITY_CLI_RUN_FROM_SOURCE=1 sanity dev",
     "start": "sanity preview"
   },
   "dependencies": {

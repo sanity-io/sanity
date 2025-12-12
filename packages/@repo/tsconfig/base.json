@@ -11,6 +11,8 @@
 
     // Some defaults in `@sanity/tsconfig` does not agree with this repo
     "noPropertyAccessFromIndexSignature": false,
-    "useUnknownInCatchVariables": false
+    "useUnknownInCatchVariables": false,
+    "allowJs": false,
+    "checkJs": false
   }
 }

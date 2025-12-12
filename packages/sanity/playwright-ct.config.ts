@@ -2,7 +2,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
-import aliases from '@repo/dev-aliases'
+import {defaultClientConditions} from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -11,7 +11,6 @@ const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')
 const HTML_REPORT_PATH = path.join(__dirname, 'playwright-ct', 'report')
 const ARTIFACT_OUTPUT_PATH = path.join(__dirname, 'playwright-ct', 'results')
 const isCI = !!process.env.CI
-const monorepoPath = path.resolve(__dirname, '..', '..')
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -51,11 +50,7 @@ export default defineConfig({
     /* Configure Playwright vite config */
     ctViteConfig: {
       resolve: {
-        alias: Object.fromEntries(
-          Object.entries(aliases).map(([pkgName, pkgPath]) => {
-            return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
-          }),
-        ),
+        conditions: [...defaultClientConditions, 'development'],
         dedupe: ['@sanity/ui', 'styled-components'],
       },
     },

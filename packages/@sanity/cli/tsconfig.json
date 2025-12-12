@@ -1,7 +1,7 @@
 {
   "extends": "@repo/tsconfig/check.json",
   "include": ["./src", "./test", "./typings", "./package.json"],
-  "exclude": ["./test/**/__fixtures__"],
+  "exclude": ["./test/**/__fixtures__", "./node_modules"],
   "compilerOptions": {
     "rootDir": "."
   }

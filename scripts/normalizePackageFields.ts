@@ -18,7 +18,7 @@ transformPkgs((pkgManifest: PackageManifest, {relativeDir}) => {
     bugs: {
       url: 'https://github.com/sanity-io/sanity/issues',
     },
-    keywords: uniq(COMMON_KEYWORDS.concat(name).concat(pkgManifest.keywords || [])),
+    keywords: uniq(COMMON_KEYWORDS.concat(name!).concat(pkgManifest.keywords || [])),
     homepage: 'https://www.sanity.io/',
     repository: {
       type: 'git',

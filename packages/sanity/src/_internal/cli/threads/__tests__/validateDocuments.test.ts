@@ -7,7 +7,6 @@ import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
-import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
@@ -127,7 +126,7 @@ describe('validateDocuments', () => {
           .filter((key) => key.startsWith('$'))
           .reduce<Record<string, string | string[]>>((acc, key) => {
             const values = searchParams.getAll(key)
-            acc[key.slice(1)] = values.length === 1 ? values[0] : values
+            acc[key.slice(1)] = values.length === 1 ? values[0]! : values
             return acc
           }, {})
 
@@ -143,7 +142,7 @@ describe('validateDocuments', () => {
               return
             }
             case 'doc': {
-              const ids = rest[1].split(',')
+              const ids = rest[1]!.split(',')
               const nonExistentIds = ids.filter((id) => !documents.find((doc) => doc._id === id))
 
               json({omitted: nonExistentIds.map((id) => ({id, reason: 'existence'}))})
@@ -204,16 +203,14 @@ describe('validateDocuments', () => {
 
     const worker = new Worker(
       `
-        const moduleAlias = require('module-alias')
         const { register } = require('esbuild-register/dist/node')
-
-        moduleAlias.addAliases(${JSON.stringify(await getMonorepoAliases(path.resolve(__dirname, '../../../../../../..')))})
 
         const { unregister } = register({
           target: 'node18',
           format: 'cjs',
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
           jsx: 'automatic',
+          conditions: ['development'],
         })
 
         require(${JSON.stringify(filepath)})
