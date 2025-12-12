@@ -45,7 +45,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/cli/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

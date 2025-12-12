@@ -7,6 +7,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "check:types": "tsgo --noEmit",
     "generate:dts-exports": "node generate.mjs",
     "lint": "eslint .",
     "test": "vitest run"

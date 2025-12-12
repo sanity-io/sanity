@@ -7,7 +7,7 @@
   "main": "./src/package.config.ts",
   "types": "./src/package.config.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/package.config/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "tsgo --noEmit",
     "lint": "eslint ."
   },
   "devDependencies": {

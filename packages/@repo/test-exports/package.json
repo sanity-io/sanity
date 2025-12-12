@@ -23,7 +23,6 @@
     "sanity": "workspace:*"
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
     "node-test-github-reporter": "^1.3.1"
   }
 }

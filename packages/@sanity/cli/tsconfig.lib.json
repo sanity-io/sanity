@@ -9,7 +9,6 @@
     "./src/**/*.test.tsx"
   ],
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "./lib"
+    "rootDir": "."
   }
 }
