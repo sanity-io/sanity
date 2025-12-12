@@ -107,7 +107,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
 
   const swrKey = JSON.stringify({
-    fiilter: groqFilter,
+    filter: groqFilter,
     limit,
     params,
     searchQuery,
