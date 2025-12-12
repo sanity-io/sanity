@@ -15,8 +15,8 @@
   "dependencies": {
     "@sanity/sdk": "^2.1.2",
     "@sanity/sdk-react": "^0.0.3",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "catalog:",
