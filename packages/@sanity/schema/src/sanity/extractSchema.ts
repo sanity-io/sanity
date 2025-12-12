@@ -72,7 +72,7 @@ export function extractSchema(
   const schema: SchemaType = []
 
   // Track which reference types we've created hoisted types for
-  const referenceTypes = new Set<string>()
+  const referenceTypes = new Map<string, string>()
 
   // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
   const sortedSchemaTypeNames = sortByDependencies(schemaDef)
@@ -94,6 +94,29 @@ export function extractSchema(
 
     schema.push(base)
   })
+
+  /**
+   * Get unique schema name for document reference to a document of the given typeName
+   */
+  function getRefTypeName(typeName: string) {
+    const refName = referenceTypes.get(typeName)
+    if (refName) return refName
+
+    for (let i = 0; i < 5; i++) {
+      const uniqueRefName = `${typeName}.reference${i || ''}`
+
+      // if the list of schema types contain the uniqueRefName we need to try the next prefix
+      if (sortedSchemaTypeNames.includes(uniqueRefName)) continue
+
+      // the type name is unique
+      referenceTypes.set(typeName, uniqueRefName)
+      return uniqueRefName
+    }
+
+    throw new Error(
+      `Unable to generate unique type name for reference to ${typeName}. Tried ${typeName}.reference, and also tried adding prefixes 1-5 without luck.`,
+    )
+  }
 
   function convertBaseType(
     schemaType: SanitySchemaType,
@@ -320,22 +343,21 @@ export function extractSchema(
     // Ensure hoisted reference types exist for each referenced document type
     for (const name of references) {
       if (!referenceTypes.has(name)) {
-        referenceTypes.add(name)
         schema.push({
           type: 'type',
-          name: `${name}.reference`,
+          name: getRefTypeName(name),
           value: createReferenceTypeNode(name),
         })
       }
     }
 
     if (references.length === 1) {
-      return {type: 'inline', name: `${references[0]}.reference`}
+      return {type: 'inline', name: getRefTypeName(references[0])}
     }
 
     return {
       type: 'union',
-      of: references.map((name) => ({type: 'inline', name: `${name}.reference`})),
+      of: references.map((name) => ({type: 'inline', name: getRefTypeName(name)})),
     }
   }
 

@@ -4598,6 +4598,117 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
 }
 `;
 
+exports[`Extract schema test > inline reference types should not conflict with the ones defined by the user 1`] = `
+[
+  {
+    "name": "blog.reference1",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "blog",
+      "type": "object",
+    },
+  },
+  {
+    "name": "blog.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "blog.reference",
+          },
+        },
+        "blogPost": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "name": "blog.reference1",
+            "type": "inline",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "blog",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "relevant": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "blog.reference",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "blog",
+    "type": "document",
+  },
+]
+`;
+
 exports[`Extract schema test > inline reference types works 1`] = `
 [
   {

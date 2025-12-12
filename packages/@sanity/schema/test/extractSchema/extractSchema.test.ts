@@ -808,6 +808,52 @@ describe('Extract schema test', () => {
     assert(inlineRef.value.type === 'inline')
     expect(inlineRef.value.name).toBe('thing.reference')
   })
+
+  test('inline reference types should not conflict with the ones defined by the user', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Blog post',
+            name: 'blog',
+            type: 'document',
+            fields: [
+              {
+                type: 'blog.reference',
+                name: 'relevant',
+              },
+            ],
+          }),
+          defineType({
+            name: 'blog.reference',
+            type: 'object',
+            fields: [
+              {name: 'title', type: 'string'},
+              {name: 'blogPost', type: 'reference', to: [{type: 'blog'}]},
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'blog.reference1', // the doc ref type
+      'blog.reference', // the user defined object type
+      'blog',
+    ])
+
+    expect(extracted).toMatchSnapshot()
+    const userDefinedObjType = extracted.find((type) => type.name === 'blog.reference')
+    expect(userDefinedObjType).toBeDefined()
+    assert(userDefinedObjType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(userDefinedObjType.type).toBe('type')
+    assert(userDefinedObjType.type === 'type')
+    expect(userDefinedObjType.value.type).toBe('object')
+  })
 })
 
 test('inline regression: inline type that references other inline type', () => {
