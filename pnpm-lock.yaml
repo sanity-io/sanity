@@ -869,6 +869,9 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.1.1(vite@7.2.6(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -881,9 +884,6 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 7.2.6(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      vite-tsconfig-paths:
-        specifier: ^5.1.4
-        version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/@repo/package.config:
     devDependencies:

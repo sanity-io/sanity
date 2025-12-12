@@ -1,10 +1,8 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./perf", "./src", "./test", "./node_modules/@sanity/types/src"],
+  "include": ["./perf", "./src", "./test"],
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@sanity/types": ["./node_modules/@sanity/types/src"]
-    }
+    "customConditions": ["development"]
   }
 }

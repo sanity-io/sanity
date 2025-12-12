@@ -1,22 +1,9 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": [
-    "./src",
-    "./test",
-    "./typings",
-    "./package.json",
-    "./node_modules/@sanity/types/src",
-    "./node_modules/@sanity/util/src",
-    "./node_modules/@sanity/codegen/src"
-  ],
-  "exclude": ["./test/**/__fixtures__", "./node_modules/@sanity/codegen/src/typescript/__tests__"],
+  "include": ["./src", "./test", "./typings", "./package.json"],
+  "exclude": ["./test/**/__fixtures__"],
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],
-      "@sanity/types": ["./node_modules/@sanity/types/src"],
-      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
-      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"]
-    }
+    "customConditions": ["development"]
   }
 }
