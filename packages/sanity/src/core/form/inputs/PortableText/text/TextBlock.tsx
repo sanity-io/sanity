@@ -2,7 +2,7 @@ import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -105,11 +105,18 @@ export function TextBlock(props: TextBlockProps) {
   const {onChange} = useFormCallbacks()
   const hoveredChange = useHoveredChange()
 
-  // Cache the last valid memberItem data to prevent DOM mutations during text selection.
-  // When memberItem becomes undefined (due to the performance optimization that removes
-  // unfocused blocks from the context), we keep the ChangeIndicatorWrapper mounted
-  // using the cached data. This prevents selection from breaking during backward drag-select.
+  /**
+   * Save the last valid memberItem data to prevent DOM mutations during text selection.
+   * When memberItem becomes undefined
+   * (due to the performance optimization that removes unfocused blocks from the context),
+   * we keep the ChangeIndicatorWrapper mounted
+   */
   const [lastMemberItem, setLastMemberItem] = useState(memberItem)
+  useEffect(() => {
+    if (memberItem) {
+      setLastMemberItem(memberItem)
+    }
+  }, [memberItem])
 
   const changeHovered =
     hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
@@ -332,13 +339,14 @@ export function TextBlock(props: TextBlockProps) {
 
           {changeIndicatorVisible && (
             <ChangeIndicatorWrapper
-              $hasChanges={lastMemberItem!.member.item.changed}
+              // Use current memberItem when available for accurate data, fallback to cached for stability
+              $hasChanges={(memberItem ?? lastMemberItem)!.member.item.changed}
               contentEditable={false}
             >
               <StyledChangeIndicatorWithProvidedFullPath
                 hasFocus={focused}
-                isChanged={lastMemberItem!.member.item.changed}
-                path={lastMemberItem!.member.item.path}
+                isChanged={(memberItem ?? lastMemberItem)!.member.item.changed}
+                path={(memberItem ?? lastMemberItem)!.member.item.path}
                 withHoverEffect={false}
               />
             </ChangeIndicatorWrapper>
