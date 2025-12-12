@@ -61,6 +61,66 @@ export default defineType({
       of: [{type: 'reference', to: [{type: 'author'}]}],
     },
     predefinedStringArray,
+    defineField({
+      name: 'inlineEditingArray',
+      title: 'Inline Editing Array',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'itemWithInlineEditing',
+          title: 'Item with Inline Editing',
+          type: 'object',
+
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+            }),
+            defineField({
+              name: 'description',
+              type: 'string',
+            }),
+            defineField({
+              name: 'level2array',
+              title: 'Level 2 Array',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  name: 'level2item',
+                  title: 'Level 2 Item',
+                  type: 'object',
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      type: 'string',
+                    }),
+                    defineField({
+                      name: 'description',
+                      type: 'string',
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              description: 'description',
+              level2array: 'level2array',
+            },
+            prepare({title, description, level2array}) {
+              return {
+                title: title,
+                subtitle: description,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+
     {
       name: 'objectArrayWithPrefinedStringField',
       title: 'Array of objects',

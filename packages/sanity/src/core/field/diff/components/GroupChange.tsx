@@ -116,7 +116,7 @@ export function GroupChange(
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={readOnly}
-                  data-testid={`group-change-revert-button-${group.fieldsetName}`}
+                  data-testid={`group-change-revert-button-${group.key}`}
                 />
               </Box>
             )}
@@ -134,7 +134,6 @@ export function GroupChange(
     [
       changes,
       confirmRevertOpen,
-      group.fieldsetName,
       group.path.length,
       handleRevertChangesConfirm,
       hidden,
@@ -147,6 +146,7 @@ export function GroupChange(
       handleRevertChanges,
       closeRevertChangesConfirmDialog,
       revertButtonElement,
+      group.key,
     ],
   )
 
