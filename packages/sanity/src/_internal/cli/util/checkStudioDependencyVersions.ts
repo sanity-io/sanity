@@ -129,6 +129,7 @@ function getUpgradeInstructions(pkgs: PackageInfo[]) {
   const inst = pkgs
     .map((pkg) => {
       const [highestSupported] = pkg.supported
+        .concat(pkg.deprecatedBelow || [])
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
