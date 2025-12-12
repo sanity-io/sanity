@@ -25,14 +25,13 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 4000",
     "lint": "eslint .",
     "start": "sanity preview --port 4000"
   },
   "dependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
@@ -42,6 +41,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "rimraf": "^5.0.10"
   }

@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
     "dev": "sanity dev",

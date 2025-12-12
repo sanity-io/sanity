@@ -3,7 +3,8 @@
   "version": "4.21.1",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build && sanity manifest extract",
+    "build": "vite build && sanity manifest extract",
+    "check:types": "tsgo --noEmit",
     "dev": "vite",
     "preview": "vite preview"
   },

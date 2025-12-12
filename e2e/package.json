@@ -7,6 +7,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",
   "scripts": {
+    "check:types": "tsgo --noEmit",
     "cleanup:pr": "tsx -r dotenv-flow/config scripts/cleanupPr",
     "codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "dev": "pnpm --filter studio-e2e-testing dev",
