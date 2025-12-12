@@ -6,6 +6,8 @@ import {
   EMPTY_ARRAY,
   getDocumentIdForCanvasLink,
   GetHookCollectionState,
+  getReleaseIdFromReleaseDocumentId,
+  useActiveReleases,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
@@ -22,21 +24,29 @@ interface ResolvedAction extends DocumentActionDescription {
 export function DocumentActionsProvider(props: {children: React.ReactNode}) {
   const {children} = props
 
+  const {data: activeReleases} = useActiveReleases()
+
   const {actions, editState, isInitialValueLoading, revisionId} = useDocumentPane()
 
   const onCompleteRef = useRef<() => void>(null)
 
-  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
-    () =>
-      editState
-        ? {
-            ...editState,
-            revision: revisionId || undefined,
-            initialValueResolved: !isInitialValueLoading,
-          }
-        : null,
-    [editState, isInitialValueLoading, revisionId],
-  )
+  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(() => {
+    // note: this is actually the bundle id of the current document
+
+    const matchingReleaseName = activeReleases
+      .map((r) => getReleaseIdFromReleaseDocumentId(r._id))
+      .find((candidate) => candidate === editState?.release)
+
+    return editState
+      ? {
+          ...editState,
+          release: matchingReleaseName,
+          bundle: matchingReleaseName ? undefined : editState.release,
+          revision: revisionId || undefined,
+          initialValueResolved: !isInitialValueLoading,
+        }
+      : null
+  }, [editState, isInitialValueLoading, revisionId, activeReleases])
 
   if (!actionProps) {
     return null

@@ -30,7 +30,7 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
   const schema = useSchemaType(type)
   const draftId = getDraftId(id)
   const publishedId = getPublishedId(id)
-  const validationStatus = useValidationStatus(draftId, type)
+  const validationStatus = useValidationStatus(draftId, type, true)
   const {hasError} = useValidationState(validationStatus.validation)
 
   if (!hasError) {
