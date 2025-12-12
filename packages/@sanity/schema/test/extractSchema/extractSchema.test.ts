@@ -226,7 +226,7 @@ describe('Extract schema test', () => {
     })
 
     const extracted = extractSchema(schema)
-    expect(extracted.length).toBe(22)
+    expect(extracted.length).toBe(27)
     expect(extracted.map((v) => v.name)).toStrictEqual([
       'sanity.imagePaletteSwatch',
       'sanity.imagePalette',
@@ -238,15 +238,20 @@ describe('Extract schema test', () => {
       'slug',
       'sanity.assetSourceData',
       'someTextType',
+      'sanity.fileAsset.reference',
+      'author.reference',
       'manuscript',
       'sanity.fileAsset',
       'code',
       'customStringType',
       'obj',
+      'sanity.imageAsset.reference',
+      'book.reference',
       'blocksTest',
       'book',
       'author',
       'sanity.imageAsset',
+      'otherValidDocument.reference',
       'validDocument',
       'otherValidDocument',
       'customUrlType',
@@ -635,7 +640,11 @@ describe('Extract schema test', () => {
     )
 
     const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual(['validDocument', 'author'])
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'author.reference',
+      'validDocument',
+      'author',
+    ])
     const validDocument = extracted.find((type) => type.name === 'validDocument')
     expect(validDocument).toBeDefined()
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
@@ -783,14 +792,67 @@ describe('Extract schema test', () => {
     )
 
     const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual(['inlineRef', 'validDocument', 'thing'])
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'thing.reference',
+      'inlineRef',
+      'validDocument',
+      'thing',
+    ])
     expect(extracted).toMatchSnapshot()
     const inlineRef = extracted.find((type) => type.name === 'inlineRef')
     expect(inlineRef).toBeDefined()
     assert(inlineRef !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(inlineRef.type).toBe('type')
     assert(inlineRef.type === 'type')
-    assert(inlineRef.value.type === 'object')
-    expect(inlineRef.value.dereferencesTo).toBe('thing')
+    expect(inlineRef.value.type).toBe('inline')
+    assert(inlineRef.value.type === 'inline')
+    expect(inlineRef.value.name).toBe('thing.reference')
+  })
+
+  test('inline reference types should not conflict with the ones defined by the user', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            title: 'Blog post',
+            name: 'blog',
+            type: 'document',
+            fields: [
+              {
+                type: 'blog.reference',
+                name: 'relevant',
+              },
+            ],
+          }),
+          defineType({
+            name: 'blog.reference',
+            type: 'object',
+            fields: [
+              {name: 'title', type: 'string'},
+              {name: 'blogPost', type: 'reference', to: [{type: 'blog'}]},
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'blog.reference1', // the doc ref type
+      'blog.reference', // the user defined object type
+      'blog',
+    ])
+
+    expect(extracted).toMatchSnapshot()
+    const userDefinedObjType = extracted.find((type) => type.name === 'blog.reference')
+    expect(userDefinedObjType).toBeDefined()
+    assert(userDefinedObjType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(userDefinedObjType.type).toBe('type')
+    assert(userDefinedObjType.type === 'type')
+    expect(userDefinedObjType.value.type).toBe('object')
   })
 })
 
