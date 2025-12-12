@@ -85,7 +85,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 
 // eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
@@ -394,6 +394,28 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             }}
           />
         ))}
+      {displayed?._id &&
+        !isReleaseDocument(selectedPerspective) &&
+        getVersionFromId(displayed._id) === selectedPerspective && (
+          <VersionChip
+            key={selectedPerspective}
+            text={selectedPerspective}
+            locked={false}
+            onCopyToDraftsNavigate={() => {}}
+            contextValues={{
+              documentId: displayed?._id || '',
+              releases: filteredReleases.notCurrentReleases,
+              releasesLoading: loading,
+              documentType: documentType,
+              isVersion: true,
+              // displayed, in this instance is not going to be the version to compare to
+              // since it's going to be the published version
+              isGoingToUnpublish: editState?.version
+                ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                : false,
+            }}
+          />
+        )}
     </>
   )
 })
