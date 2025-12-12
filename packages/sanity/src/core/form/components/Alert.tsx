@@ -27,7 +27,7 @@ export function Alert(props: AlertProps) {
       tone={STATUS_TONES[status]}
       {...rest}
       data-ui="Alert"
-      data-testid={`alert-${title?.toString().toLowerCase().replace(/ /g, '-')}`}
+      data-testid={`alert-${status}`}
     >
       <Flex padding={4}>
         <Box>

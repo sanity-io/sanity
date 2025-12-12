@@ -6,7 +6,6 @@ test.describe('Array revert changes', () => {
   test('should revert deletion of middle array item without duplicate key error', async ({
     page,
     createDraftDocument,
-    sanityClient,
   }) => {
     test.slow()
     // Create a draft document
@@ -89,9 +88,13 @@ test.describe('Array revert changes', () => {
     await expect(page.getByRole('button', {name: 'Item 2 description'})).not.toBeVisible()
 
     /** revert changes */
-    await expect(page.getByTestId('group-change-undefined')).toBeVisible()
-    await expect(page.getByTestId('group-change-revert-button-undefined')).toBeVisible()
-    await page.getByTestId('group-change-revert-button-undefined').click()
+    const groupChangesButton = page.getByTestId(
+      /group-change-revert-button-inlineEditingArray\[.*\]/,
+    )
+
+    await expect(groupChangesButton).toBeVisible()
+    await expect(groupChangesButton).toBeVisible()
+    await groupChangesButton.click()
     await expect(page.getByTestId('confirm-popover-confirm-button')).toBeVisible()
     await page.getByTestId('confirm-popover-confirm-button').click()
 
@@ -114,6 +117,6 @@ test.describe('Array revert changes', () => {
       page.getByTestId('field-inlineEditingArray').getByTestId('change-bar-wrapper'),
     ).toHaveCount(3)
 
-    await expect(page.getByTestId('alert-non-unique-keys')).not.toBeVisible()
+    await expect(page.getByTestId('alert-warning')).not.toBeVisible()
   })
 })
