@@ -3,8 +3,7 @@
   "description": "Used for type checking with oxlint and the IDE, in regular `tsconfig.json` files",
   "extends": "./base.json",
   "compilerOptions": {
-    // @TODO the section below is handled in a different PR
     // This is what allows us to not use `tsconfig.json#paths` trickery, and how we can see up to date typings in the IDE without first running a build step
-    // "customConditions": ["development"]
+    "customConditions": ["development"]
   }
 }
