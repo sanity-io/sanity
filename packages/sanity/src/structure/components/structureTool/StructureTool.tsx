@@ -160,7 +160,7 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       }),
     )
 
-    navigate({panes: panesWithoutFocus})
+    navigate({panes: panesWithoutFocus}, {replace: true})
   }, [navigate, paneDataItems, routerState?.panes, setMaximizedPane])
 
   // Manage maximised pane: sync with navigation and handle cleanup
