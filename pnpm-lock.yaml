@@ -489,30 +489,6 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
 
-  dev/strict-studio:
-    dependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/@repo/eslint-config
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.1(jiti@2.6.1)
-      react:
-        specifier: 'catalog:'
-        version: 19.2.3
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.3(react@19.2.3)
-      rimraf:
-        specifier: ^5.0.10
-        version: 5.0.10
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
-
   dev/studio-e2e-testing:
     dependencies:
       '@repo/utils':

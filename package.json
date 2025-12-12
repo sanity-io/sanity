@@ -40,7 +40,6 @@
     "dev:i18n:reverse": "SANITY_STUDIO_DEBUG_I18N=reverse pnpm start",
     "dev:page-building-studio": "pnpm --filter sanity-page-building-studio dev",
     "dev:starter-studio": "pnpm --filter sanity-starter-studio dev",
-    "dev:strict-studio": "pnpm --filter sanity-strict-studio dev",
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
