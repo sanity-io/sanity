@@ -128,12 +128,12 @@ function listPackages(pkgs: PackageInfo[]) {
 function getUpgradeInstructions(pkgs: PackageInfo[]) {
   const inst = pkgs
     .map((pkg) => {
-      const [highestSupported] = pkg.supported
+      const [recommendedVersion] = pkg.supported
         .concat(pkg.deprecatedBelow || [])
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@^${highestSupported}"`
+      return `"${pkg.name}@^${recommendedVersion}"`
     })
     .join(' ')
 
