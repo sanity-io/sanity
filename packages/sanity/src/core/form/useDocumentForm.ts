@@ -51,6 +51,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isSystemBundle,
   useUnique,
 } from '../util'
 import {
@@ -178,6 +179,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       : undefined
 
   const activeDocumentReleaseId = useMemo(() => {
+    if (isSystemBundle(selectedPerspectiveName)) {
+      return undefined
+    }
     // if a document version exists with the selected release id, then it should use that
     if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
       return selectedPerspectiveName

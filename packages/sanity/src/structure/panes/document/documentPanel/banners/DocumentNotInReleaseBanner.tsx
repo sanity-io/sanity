@@ -75,7 +75,6 @@ export function DocumentNotInReleaseBanner({
     title: t('banners.release.waiting.title'),
     description: t('banners.release.waiting.description'),
   })
-
   return (
     <Banner
       tone={tone}
