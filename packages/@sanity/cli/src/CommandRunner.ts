@@ -1,11 +1,11 @@
 import chalk from 'chalk'
 import {cloneDeep, sortBy} from 'lodash'
 
-import {baseCommands} from './commands'
-import {debug} from './debug'
-import cliOutputter from './outputters/cliOutputter'
-import {cliPackageManager} from './packageManager'
-import {prompt as cliPrompter} from './prompters/cliPrompter'
+import {baseCommands} from './commands/index.ts'
+import {debug} from './debug.ts'
+import cliOutputter from './outputters/cliOutputter.ts'
+import {cliPackageManager} from './packageManager.ts'
+import {prompt as cliPrompter} from './prompters/cliPrompter.ts'
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -15,14 +15,14 @@ import {
   type CliPrompter,
   type CommandRunnerOptions,
   type ResolvedCliCommand,
-} from './types'
-import {getClientWrapper} from './util/clientWrapper'
+} from './types.ts'
+import {getClientWrapper} from './util/clientWrapper.ts'
 import {
   generateCommandDocumentation,
   generateCommandsDocumentation,
-} from './util/generateCommandsDocumentation'
-import {isCommandGroup} from './util/isCommandGroup'
-import {getNoSuchCommandText} from './util/noSuchCommandText'
+} from './util/generateCommandsDocumentation.ts'
+import {isCommandGroup} from './util/isCommandGroup.ts'
+import {getNoSuchCommandText} from './util/noSuchCommandText.ts'
 
 interface Handlers {
   outputter: CliOutputter

@@ -18,6 +18,7 @@ export default defineConfig([
       'complexity': [1, 18],
       // Should be enabled in the future
       '@typescript-eslint/no-empty-object-type': 'off',
+      'import/extensions': ['error', {pattern: {ts: 'always', json: 'always'}}],
     },
   },
   {
