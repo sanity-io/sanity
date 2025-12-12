@@ -1,9 +1,8 @@
-import {STUDIO_PROJECT_ID} from './config/constants'
-import {readEnv} from './config/envVars'
-import {createSanitySessionCookie} from './runner/utils/createSanitySessionCookie'
+import {chromium} from '@playwright/test'
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const {chromium} = require('@playwright/test')
+import {STUDIO_PROJECT_ID} from './config/constants.ts'
+import {readEnv} from './config/envVars.ts'
+import {createSanitySessionCookie} from './runner/utils/createSanitySessionCookie.ts'
 
 async function run({projectId, token, url}: {projectId: string; token: string; url: string}) {
   // Make sure to run headed.

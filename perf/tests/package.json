@@ -5,12 +5,13 @@
   "description": "Sanity Studio perf tests",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
   "scripts": {
     "build": "pnpm build:cli && (cd studio && pnpm build)",
     "lint": "eslint .",
-    "perf:codegen": "ts-node --files -r dotenv/config codegen",
-    "perf:test": "ts-node --files cli",
-    "perf:test:ci": "ts-node --files cli",
+    "perf:codegen": "node -r dotenv/config codegen.ts",
+    "perf:test": "node cli.ts",
+    "perf:test:ci": "node cli.ts",
     "studio": "cd perf/studio && (pnpm build && pnpm start)",
     "studio:dev": "cd perf/studio && SANITY_STUDIO_DATASET=dev pnpm dev"
   },
@@ -21,18 +22,17 @@
     "dotenv": "^16.6.1",
     "execa": "^2.1.0",
     "globby": "^11.1.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
     "esbuild": "catalog:",
     "eslint": "catalog:",
-    "ts-node": "^10.9.2",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

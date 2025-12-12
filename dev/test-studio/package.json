@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "run-s workshop:build sanity:build sanity:manifest",
-    "check:types": "tsc --noEmit",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "run-p workshop:dev sanity:dev",
     "lint": "eslint .",
@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

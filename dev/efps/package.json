@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "dev": "sanity dev",
     "lint": "eslint .",
     "start": "tsx ./index.ts",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@types/react": "catalog:",

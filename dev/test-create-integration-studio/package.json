@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
     "dev": "sanity dev",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "rimraf": "^5.0.10"
   }

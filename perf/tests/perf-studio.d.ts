@@ -1,4 +1,4 @@
-import type * as perfHelpers from './tests/helpers'
+import type * as perfHelpers from './tests/helpers/index.ts'
 
 declare global {
   interface Window {

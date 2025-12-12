@@ -25,83 +25,63 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "development": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
+      "development": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
+      "development": "./src/_exports/_singletons.ts",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
+      "development": "./src/_exports/_createContext.ts",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
+      "development": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
+      "development": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
+      "development": "./src/_exports/presentation.ts",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
+      "development": "./src/_exports/router.ts",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
+      "development": "./src/_exports/structure.ts",
       "default": "./lib/structure.js"
     },
     "./media-library": {
       "source": "./src/_exports/media-library.ts",
+      "development": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
+      "development": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ],
-      "_singletons": [
-        "./lib/_singletons.d.ts"
-      ],
-      "_createContext": [
-        "./lib/_createContext.d.ts"
-      ],
-      "cli": [
-        "./lib/cli.d.ts"
-      ],
-      "desk": [
-        "./lib/desk.d.ts"
-      ],
-      "migrate": [
-        "./lib/migrate.d.ts"
-      ],
-      "presentation": [
-        "./lib/presentation.d.ts"
-      ],
-      "router": [
-        "./lib/router.d.ts"
-      ],
-      "structure": [
-        "./lib/structure.d.ts"
-      ]
-    }
-  },
   "bin": {
     "sanity": "./bin/sanity"
   },
@@ -151,7 +131,7 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/diff-patch": "^5.0.0",
     "@sanity/eventsource": "^5.0.2",
-    "@sanity/export": "^6.0.1",
+    "@sanity/export": "^6.0.2",
     "@sanity/icons": "^3.7.4",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.0.1",
@@ -217,7 +197,6 @@
     "lodash": "^4.17.21",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
-    "module-alias": "^2.2.3",
     "motion": "^12.23.25",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
@@ -273,7 +252,6 @@
   "devDependencies": {
     "@playwright/experimental-ct-react": "catalog:",
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
@@ -297,7 +275,6 @@
     "@types/jsdom": "27.0.0",
     "@types/lodash": "^4.17.20",
     "@types/log-symbols": "^2.0.0",
-    "@types/module-alias": "^2.0.4",
     "@types/node": "catalog:",
     "@types/raf": "^3.4.3",
     "@types/react": "catalog:",
@@ -329,5 +306,21 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./_singletons": "./lib/_singletons.js",
+      "./_createContext": "./lib/_createContext.js",
+      "./cli": "./lib/cli.js",
+      "./desk": "./lib/desk.js",
+      "./presentation": "./lib/presentation.js",
+      "./router": "./lib/router.js",
+      "./structure": "./lib/structure.js",
+      "./media-library": "./lib/media-library.js",
+      "./migrate": "./lib/migrate.js",
+      "./package.json": "./package.json"
+    }
   }
 }

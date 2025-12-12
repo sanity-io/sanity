@@ -3,7 +3,8 @@
   "version": "4.21.1",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "check:types": "tsgo --noEmit",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",
@@ -17,7 +18,7 @@
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",

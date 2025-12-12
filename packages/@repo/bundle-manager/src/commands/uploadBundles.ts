@@ -205,8 +205,8 @@ async function rewriteSource(options: {
     return source
   }
 
-  const pkgName = pathParts[0].startsWith('@') ? `${pathParts[0]}/${pathParts[1]}` : pathParts[0]
-  const pkgVersion = monoRepoPackageVersions[pkgName]
+  const pkgName = pathParts[0]!.startsWith('@') ? `${pathParts[0]}/${pathParts[1]}` : pathParts[0]
+  const pkgVersion = monoRepoPackageVersions[pkgName!]
   if (!pkgVersion) {
     console.warn(`Failed to rewrite source path, could not find version for ${pkgName}`)
     return source

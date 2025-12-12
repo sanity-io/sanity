@@ -55,7 +55,7 @@ const templates = {
   species: species,
 }
 
-const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cwd(), process.argv[1])} --template <template> [arguments]
+const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cwd(), process.argv[1]!)} --template <template> [arguments]
 
      Arguments:
       --template, -t <template>: Template to use (required). Possible values: ${Object.keys(templates).join(', ')}
