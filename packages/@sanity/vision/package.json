@@ -102,6 +102,7 @@
   },
   "peerDependencies": {
     "react": "^18 || ^19.0.0",
+    "sanity": "workspace:^",
     "styled-components": "^6.1.15"
   }
 }
