@@ -5,7 +5,7 @@ import {test} from '../../studio-test'
 
 const name = 'Test Name'
 
-test(`unpublished documents can't be deleted`, async ({page, createDraftDocument}) => {
+test(`unpublished documents can be deleted`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
@@ -14,7 +14,10 @@ test(`unpublished documents can't be deleted`, async ({page, createDraftDocument
   await expectCreatedStatus(paneFooter)
 
   await page.getByTestId('action-menu-button').click()
-  await expect(page.getByTestId('action-Delete')).toBeHidden()
+  await page.getByTestId('action-Delete').click()
+  await page.getByRole('button', {name: 'Delete all versions'}).click()
+
+  await expect(page.getByText('The document was successfully deleted')).toBeVisible()
 })
 
 test(`published documents can be deleted`, async ({page, createDraftDocument}) => {
