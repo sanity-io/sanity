@@ -65,7 +65,7 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
-import {type Editor, setupMCP} from './setupMCP'
+import {type EditorName, setupMCP} from './setupMCP'
 import templates from './templates'
 import {
   sanityCliTemplate,
@@ -398,7 +398,7 @@ export default async function initSanity(
   }
 
   let useTypeScript = flagOrDefault('typescript', true)
-  let mcpConfigured: Editor[] | null = null
+  let mcpConfigured: EditorName[] = []
   if (initNext) {
     if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
@@ -548,7 +548,17 @@ export default async function initSanity(
     }
 
     // Set up MCP integration
-    mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
+    const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+    trace.log({
+      step: 'mcpSetup',
+      detectedEditors: mcpResult.detectedEditors,
+      configuredEditors: mcpResult.configuredEditors,
+      skipped: mcpResult.skipped,
+    })
+    if (mcpResult.error) {
+      trace.error(mcpResult.error)
+    }
+    mcpConfigured = mcpResult.configuredEditors
 
     const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
@@ -586,8 +596,8 @@ export default async function initSanity(
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
+    if (mcpConfigured.length > 0) {
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
@@ -659,7 +669,17 @@ export default async function initSanity(
   }
 
   // Set up MCP integration
-  mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
+  const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+  trace.log({
+    step: 'mcpSetup',
+    detectedEditors: mcpResult.detectedEditors,
+    configuredEditors: mcpResult.configuredEditors,
+    skipped: mcpResult.skipped,
+  })
+  if (mcpResult.error) {
+    trace.error(mcpResult.error)
+  }
+  mcpConfigured = mcpResult.configuredEditors
 
   // we enable auto-updates by default, but allow users to specify otherwise
   let autoUpdates = true
@@ -734,8 +754,8 @@ export default async function initSanity(
     )
     print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
     print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
+    if (mcpConfigured.length > 0) {
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
@@ -751,10 +771,10 @@ export default async function initSanity(
     print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
     if (!isCurrentDir) print(goToProjectDir)
     print(
-      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio’s development server`,
+      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
-    if (mcpConfigured && mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured.map((e) => e.name))
+    if (mcpConfigured.length > 0) {
+      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
         `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
       )
