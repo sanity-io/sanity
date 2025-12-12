@@ -1,11 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import chokidar from 'chokidar'
 import globby from 'globby'
 
-const ROOT_PATH = path.resolve(__dirname, '../../../..')
-const WORKSHOP_SRC_PATH = path.resolve(__dirname, '../../workshop')
+const DIRNAME = path.dirname(fileURLToPath(import.meta.url))
+
+const ROOT_PATH = path.resolve(DIRNAME, '../../../..')
+const WORKSHOP_SRC_PATH = path.resolve(DIRNAME, '../../workshop')
 const WORKSHOP_SCOPES_PATH = path.resolve(WORKSHOP_SRC_PATH, 'scopes.js')
 
 const WORKSHOP_PATTERNS = [
