@@ -63,6 +63,19 @@ export interface ExtractSchemaOptions {
   enforceRequiredFields?: boolean
 }
 
+/**
+ * Extracts a GROQ-compatible schema from a Sanity schema definition. The extraction happens in three passes:
+ *
+ * 1. **Dependency analysis & hoisting detection** (`sortByDependencies`): Walks the entire schema to sort
+ *    types topologically and identifies inline object fields that are used multiple times (candidates
+ *    for "hoisting").
+ *
+ * 2. **Hoisted type creation**: For any repeated inline fields, we create top-level named type definitions
+ *    first, so they exist before being referenced.
+ *
+ * 3. **Main type conversion**: Processes each schema type in dependency order. When a field was marked for
+ *    hoisting, we emit an `inline` reference to the hoisted type instead of duplicating the structure.
+ */
 export function extractSchema(
   schemaDef: SchemaDef,
   extractOptions: ExtractSchemaOptions = {},
@@ -71,8 +84,24 @@ export function extractSchema(
   const documentTypes = new Map<string, DocumentSchemaType>()
   const schema: SchemaType = []
 
-  // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
-  const sortedSchemaTypeNames = sortByDependencies(schemaDef)
+  // `repeated` maps ObjectField instances → hoisted type names. When the same inline type (e.g., `blocksTest`)
+  // is used in multiple documents, Sanity's compiled schema reuses the same ObjectField object reference. This
+  // allows us to detect repetition via object identity, not structural comparison.
+  const {sortedSchemaTypeNames, repeated} = sortByDependencies(schemaDef)
+
+  // Create top-level type definitions for hoisted (repeated) inline types. These must be added to the schema
+  // before we process the main types, so that inline references to them can resolve correctly.
+  repeated.forEach((key, objectField) => {
+    const base = convertSchemaType(objectField.type)
+    if (base === null) {
+      return
+    }
+    schema.push({
+      type: 'type',
+      name: key,
+      value: base,
+    })
+  })
   sortedSchemaTypeNames.forEach((typeName) => {
     const schemaType = schemaDef.get(typeName)
     if (schemaType === undefined) {
@@ -206,7 +235,6 @@ export function extractSchema(
 
     throw new Error(`Type "${schemaType.name}" not found`)
   }
-
   function createObject(
     schemaType: ObjectSchemaType | SanitySchemaType,
   ): ObjectTypeNode | UnknownTypeNode {
@@ -215,15 +243,31 @@ export function extractSchema(
     const fields = gatherFields(schemaType)
     for (const field of fields) {
       const fieldIsRequired = isFieldRequired(field?.type?.validation)
-      const value = convertSchemaType(field.type)
-      if (value === null) {
-        continue
-      }
+      let value: TypeNode
 
-      // if the field sets assetRequired() we will mark the asset attribute as required
-      // also guard against the case where the field is not an object, though type validation should catch this
-      if (hasAssetRequired(field?.type?.validation) && value.type === 'object') {
-        value.attributes.asset.optional = false
+      const hoisted = repeated.get(field)
+      const isTopLevelSchemaType = sortedSchemaTypeNames.includes(field.type.name)
+
+      // Check if this field should use a hoisted type reference instead of inlining. We only hoist if:
+      // - The field is in the `repeated` map (used more than once) AND
+      // - The field's type is NOT a top-level schema type (those are already named)
+      if (hoisted && !isTopLevelSchemaType) {
+        // This field is hoisted, hoist it with an inline type
+        value = {
+          type: 'inline',
+          name: hoisted,
+        }
+      } else {
+        value = convertSchemaType(field.type)
+        if (value === null) {
+          continue
+        }
+
+        // if the field sets assetRequired() we will mark the asset attribute as required
+        // also guard against the case where the field is not an object, though type validation should catch this
+        if (hasAssetRequired(field?.type?.validation) && value.type === 'object') {
+          value.attributes.asset.optional = false
+        }
       }
 
       // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
@@ -529,14 +573,50 @@ function lastType(typeDef: SanitySchemaType): SanitySchemaType | undefined {
   return undefined
 }
 
-// Sorts the types by their dependencies by using a topological sort depth-first algorithm.
-function sortByDependencies(compiledSchema: SchemaDef): string[] {
+/**
+ * Sorts schema types topologically by their dependencies using depth-first traversal.
+ *
+ * Also detects "repeated" inline object fields - fields that appear in multiple places in the schema. These
+ * are candidates for hoisting to avoid duplication in the output.
+ *
+ * @returns
+ * - `sortedSchemaTypeNames`: Type names in dependency order (dependencies come first)
+ * - `repeated`: Map from ObjectField → generated hoisted type name (e.g., "blocks.content")
+ *
+ * Detection relies on object identity: Sanity's compiled schema reuses the same ObjectField instance when an
+ * inline type is referenced multiple times.
+ */
+function sortByDependencies(compiledSchema: SchemaDef): {
+  sortedSchemaTypeNames: string[]
+  repeated: Map<ObjectField, string>
+} {
   const seen = new Set<SanitySchemaType>()
+  const objectMap = new Set<ObjectField>()
+  const repeated = new Map<ObjectField, string>()
+  const repeatedNames = new Set<string>()
+
+  /**
+   * Generates a unique name for a hoisted type based on its field path.
+   * Tries shortest suffix first (e.g., "content"), then progressively longer
+   * paths (e.g., "blocks.content", "post.blocks.content") until finding a unique name.
+   */
+  function pickRepeatedName(path: string[]): string {
+    for (let idx = path.length - 1; idx >= 0; idx--) {
+      const name = path.slice(idx).join('.')
+      if (!repeatedNames.has(name)) {
+        repeatedNames.add(name)
+        return name
+      }
+    }
+    throw new Error(`Unable to pick repeated name: ${path.join('.')}`)
+  }
 
   // Walks the dependencies of a schema type and adds them to the dependencies set
   function walkDependencies(
     schemaType: SanitySchemaType,
     dependencies: Set<SanitySchemaType>,
+    path: string[],
+    hoistRepetitions = true,
   ): void {
     if (seen.has(schemaType)) {
       return
@@ -563,14 +643,31 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
           } else {
             dependencies.add(field.type)
           }
+
+          // Hoisting detection: Only consider inline types (not in compiledSchema). If we've seen this exact
+          // ObjectField before, it's used in multiple places and should be hoisted to a named type to avoid
+          // duplication.
+          if (hoistRepetitions && !compiledSchema.get(field.type.name)) {
+            const fieldPath = path.concat([field.name])
+            if (objectMap.has(field)) {
+              // eslint-disable-next-line max-depth
+              if (!repeated.has(field)) {
+                // Second occurrence - mark for hoisting with a unique name
+                repeated.set(field, pickRepeatedName(fieldPath))
+              }
+            }
+
+            // Track all inline object fields we encounter
+            objectMap.add(field)
+          }
         } else if (field.type) {
           dependencies.add(field.type)
         }
-        walkDependencies(field.type, dependencies)
+        walkDependencies(field.type, dependencies, path.concat([field.name]))
       }
     } else if ('of' in schemaType) {
       for (const item of schemaType.of) {
-        walkDependencies(item, dependencies)
+        walkDependencies(item, dependencies, path.concat(item.name), true)
       }
     }
   }
@@ -585,7 +682,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     validSchemaNames.add(typeName)
     const dependencies = new Set<SanitySchemaType>()
 
-    walkDependencies(schemaType, dependencies)
+    walkDependencies(schemaType, dependencies, [typeName])
     dependencyMap.set(schemaType, dependencies)
     seen.clear() // Clear the seen set for the next type
   })
@@ -626,5 +723,8 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     visit(type)
   }
 
-  return typeNames.filter((typeName) => validSchemaNames.has(typeName))
+  return {
+    sortedSchemaTypeNames: typeNames.filter((typeName) => validSchemaNames.has(typeName)),
+    repeated,
+  }
 }

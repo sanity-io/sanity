@@ -29,7 +29,7 @@ function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = fa
 }
 
 describe('Extract schema test', () => {
-  test('Extracts  schema general', () => {
+  test('Extracts schema general', () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -301,6 +301,111 @@ describe('Extract schema test', () => {
     expect(
       Object.keys(validDocument.attributes.blocks.value.of.attributes.children.value.of.attributes),
     ).toStrictEqual(['marks', 'text', '_type'])
+
+    expect(extracted).toMatchSnapshot()
+  })
+
+  test('Hoist repeated objects', () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        {
+          title: 'Blocks Test',
+          name: 'blocksTest',
+          type: 'object',
+          fields: [
+            {
+              title: 'Blocks',
+              name: 'blocks',
+              type: 'array',
+              of: [{type: 'block'}],
+            },
+          ],
+        },
+        defineType({
+          title: 'Document #1',
+          name: 'documentOne',
+          type: 'document',
+          fields: [
+            {
+              title: 'Blocks',
+              name: 'blocks',
+              type: 'array',
+              of: [{type: 'blocksTest'}],
+            },
+          ],
+        }),
+        defineType({
+          title: 'Document #2',
+          name: 'documentTwo',
+          type: 'document',
+          fields: [
+            {
+              title: 'Blocks',
+              name: 'blocks',
+              type: 'array',
+              of: [{type: 'blocksTest'}],
+            },
+          ],
+        }),
+      ],
+    })
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'sanity.imagePaletteSwatch',
+      'sanity.imagePalette',
+      'sanity.imageDimensions',
+      'sanity.imageMetadata',
+      'sanity.imageHotspot',
+      'sanity.imageCrop',
+      'sanity.fileAsset',
+      'sanity.assetSourceData',
+      'sanity.imageAsset',
+      'geopoint',
+      'slug',
+      'documentTwo',
+      'documentOne',
+      'blocksTest',
+    ])
+
+    // Check that the repeated type was hoisted
+    const hoistedType = extracted.find((type) => type.name === 'blocksTest')
+    expect(hoistedType).toBeDefined()
+    assert(hoistedType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    expect(hoistedType.name).toEqual('blocksTest')
+    assert(hoistedType.type === 'type') // this is a workaround for TS https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41179
+    assert(hoistedType.value.type === 'object') // this is a workaround for TS
+    expect(Object.keys(hoistedType.value.attributes)).toStrictEqual(['_type', 'blocks'])
+    assert(hoistedType.value.attributes.blocks.value.type === 'array')
+    assert(hoistedType.value.attributes.blocks.value.of.type === 'object')
+
+    // Check that the document correctly references the hoisted type
+    const validDocument = extracted.find((type) => type.name === 'documentOne')
+    expect(validDocument).toBeDefined()
+    assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(validDocument.name).toEqual('documentOne')
+    expect(validDocument.type).toEqual('document')
+    assert(validDocument.type === 'document') // this is a workaround for TS
+    expect(Object.keys(validDocument.attributes)).toStrictEqual([
+      '_id',
+      '_type',
+      '_createdAt',
+      '_updatedAt',
+      '_rev',
+      'blocks',
+    ])
+
+    // Check that the block type is extracted correctly, as an array
+    expect(validDocument.attributes.blocks.type).toEqual('objectAttribute')
+    expect(validDocument.attributes.blocks.value.type).toEqual('array')
+    assert(validDocument.attributes.blocks.value.type === 'array') // this is a workaround for TS
+    expect(validDocument.attributes.blocks.value.of.type).toEqual('object')
+    assert(validDocument.attributes.blocks.value.of.type === 'object') // this is a workaround for TS
+    expect(Object.keys(validDocument.attributes.blocks.value.of.attributes)).toStrictEqual(['_key'])
+    assert(validDocument.attributes.blocks.value.of.rest?.type === 'inline') // this is a workaround for TS
+    expect(validDocument.attributes.blocks.value.of.rest.name).toBe(hoistedType.name)
 
     expect(extracted).toMatchSnapshot()
   })
