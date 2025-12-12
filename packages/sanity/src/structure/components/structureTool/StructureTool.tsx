@@ -125,6 +125,44 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const previousSelectedIndexRef = useRef(-1)
 
+  useEffect(() => {
+    // find the first pane that has mode=focus as pane params
+    // if found:
+    // - make sure to set it as the maximized pane (documents only)
+    // - then remove the param from the router state
+    //  Ideally we'd persist it in the router somehow so it can survive reloads, but it's currently
+    //  tricky to solve in a good way because maximized pane state should follow user navigation, so
+    //  if you click a button opening another pane, now this new pane should be maximized. The
+    //  natural solve for this is to make mode=focus a sticky query param, and always make the
+    //  "current active" pane maximized. However, it doesn't seem like we have a concept of
+    //  "current active" pane (there's an "active" state on panes, but that's deduced from a set of
+    //  heuristics based things like pane order of appearance, screen width, etc.).
+
+    const focusedPaneAccordingToParams = paneDataItems.find((p) => p.params?.mode === 'focus')
+
+    if (!focusedPaneAccordingToParams) return
+
+    // Only allow document panes to be maximised
+    if (
+      focusedPaneAccordingToParams.pane !== LOADING_PANE &&
+      focusedPaneAccordingToParams.pane.type === 'document'
+    ) {
+      setMaximizedPane(focusedPaneAccordingToParams)
+    }
+
+    const currentPanes = (routerState?.panes || []) as RouterPanes
+
+    const panesWithoutFocus: RouterPanes = currentPanes.map((group) =>
+      group.map((pane) => {
+        const {mode: _omitMode, ...rest} = pane.params || {}
+        const nextParams = Object.keys(rest).length ? rest : undefined
+        return {...pane, params: nextParams}
+      }),
+    )
+
+    navigate({panes: panesWithoutFocus})
+  }, [navigate, paneDataItems, routerState?.panes, setMaximizedPane])
+
   // Manage maximised pane: sync with navigation and handle cleanup
   useEffect(() => {
     const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
