@@ -32,7 +32,7 @@ export type CodegenConfig = TypeGenConfig
  * Read, parse and process a config file
  * @internal
  */
-export async function readConfig(path: string): Promise<CodegenConfig> {
+export async function readConfig(path: string): Promise<TypeGenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
     const json = json5.parse(content)
