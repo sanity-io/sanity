@@ -9,6 +9,7 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
@@ -19,5 +20,8 @@
     "react": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*"
   }
 }

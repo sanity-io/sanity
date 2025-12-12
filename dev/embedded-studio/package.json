@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@repo/dev-aliases": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",

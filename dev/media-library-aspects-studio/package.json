@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "sanity": "workspace:^"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*"
   }
 }

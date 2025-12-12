@@ -21,6 +21,9 @@ catalogs:
     '@sanity/pkg-utils':
       specifier: ^10.1.3
       version: 10.1.3
+    '@sanity/tsconfig':
+      specifier: ^2.0.0
+      version: 2.0.0
     '@sanity/ui':
       specifier: ^3.1.11
       version: 3.1.11
@@ -218,6 +221,10 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
+    devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
 
   dev/depcheck-test: {}
 
@@ -226,6 +233,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       '@sanity/icons':
         specifier: ^3.7.4
         version: 3.7.4(react@19.2.3)
@@ -273,6 +283,9 @@ importers:
       '@repo/dev-aliases':
         specifier: workspace:*
         version: link:../../packages/@repo/dev-aliases
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -301,6 +314,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       '@repo/utils':
         specifier: workspace:*
         version: link:../../packages/@repo/utils
@@ -377,6 +393,9 @@ importers:
       '@repo/dev-aliases':
         specifier: workspace:*
         version: link:../../packages/@repo/dev-aliases
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -398,6 +417,10 @@ importers:
       sanity:
         specifier: workspace:^
         version: link:../../packages/sanity
+    devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
 
   dev/page-building-studio:
     dependencies:
@@ -426,6 +449,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
@@ -457,6 +483,9 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
     devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
@@ -482,6 +511,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
@@ -543,6 +575,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
@@ -568,6 +603,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       eslint:
         specifier: 'catalog:'
         version: 9.39.1(jiti@2.6.1)
@@ -716,6 +754,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/@repo/tsconfig
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1019,7 +1060,11 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1
 
-  packages/@repo/tsconfig: {}
+  packages/@repo/tsconfig:
+    dependencies:
+      '@sanity/tsconfig':
+        specifier: 'catalog:'
+        version: 2.0.0
 
   packages/@repo/utils:
     dependencies:
@@ -5769,6 +5814,9 @@ packages:
     resolution: {integrity: sha512-pce+x6opIjiL5jg4bJba6x0+mCT7pFDCwOjYcu5ZOmaQ/mWxypjjPtzWp3+QU6mfCP/bb9z4zKj+PSGIT3q/zw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
+
+  '@sanity/tsconfig@2.0.0':
+    resolution: {integrity: sha512-t3VkUo8Sz4g6TjffUTDXzDCghs+MelX+lTJHNPK+Htjrcv/+VJSfHZhp4Zi4GuKjmdd3VzCtFb37S7R42qpppw==}
 
   '@sanity/types@3.99.0':
     resolution: {integrity: sha512-a766U9VSoyOSWq+RZz9wsEo/Nnn+inDkEcdGu+rHFuygdepullB/RZpF2MxNsfUMCSPnajgG1Tm9lhwbSmlySA==}
@@ -17159,6 +17207,8 @@ snapshots:
       '@actions/core': 1.11.1
       '@actions/github': 6.0.1
       yaml: 2.8.2
+
+  '@sanity/tsconfig@2.0.0': {}
 
   '@sanity/types@3.99.0(@types/react@19.2.7)(debug@4.4.3)':
     dependencies:
