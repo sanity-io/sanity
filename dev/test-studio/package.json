@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

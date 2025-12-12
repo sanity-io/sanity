@@ -1,5 +1,14 @@
 {
   "name": "@repo/tsconfig",
   "version": "4.21.1",
-  "private": true
+  "private": true,
+  "exports": {
+    "./base.json": "./base.json",
+    "./build.json": "./build.json",
+    "./check.json": "./check.json",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@sanity/tsconfig": "catalog:"
+  }
 }

@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "eslint": "catalog:",
     "rimraf": "^5.0.10"
   }

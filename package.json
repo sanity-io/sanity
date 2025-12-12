@@ -20,7 +20,7 @@
     "check:lint": "turbo run lint --continue -- --quiet",
     "check:oxlint": "oxlint --type-aware --quiet",
     "check:test": "pnpm test -- --silent",
-    "check:types": "tsgo && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
+    "check:types": "tsgo && turbo run check:types --continue",
     "chore:format:fix": "prettier --cache --write .",
     "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",

@@ -9,6 +9,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "dev": "sanity dev --port 3339",
     "lint": "eslint .",
     "preview": "sanity preview --port 3339",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "eslint": "catalog:"
   }
 }

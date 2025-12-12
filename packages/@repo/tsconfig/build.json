@@ -1,10 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "description": "The shared configuration used by @sanity/pkg-utils to build workspaces and generate dts files",
+  "description": "Used for building with @sanity/pkg-utils, in `tsconfig.lib.json` files",
   "extends": "./base.json",
   "compilerOptions": {
-    "noEmitOnError": true,
-    // every package must declare this, by setting this here we ensure that accidents will write to ./node_modules/.sanity-monorepo/dts instead of generating .d.ts files that are colocated if `outDir` is accidentally missing
-    "outDir": "./node_modules/.sanity-monorepo/dts"
+    // The `${configDir}` is available since TS 5.5 and eliminates the need for every workspace to declare it
+    "outDir": "${configDir}/lib",
+    // The `noCheck` option disables type-checking during the `@sanity/pkg-utils` build process: https://github.com/sanity-io/pkg-utils/blob/d9c5ce667d344063b9de128464670092157c01b7/packages/%40sanity/pkg-utils/src/node/tasks/dts/buildTypes.ts#L22
+    "noCheck": true
   }
 }

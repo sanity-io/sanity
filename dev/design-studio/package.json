@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "react": "catalog:",

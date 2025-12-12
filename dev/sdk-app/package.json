@@ -22,6 +22,7 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
     "rimraf": "^5.0.10",
     "sanity": "workspace:"
   }

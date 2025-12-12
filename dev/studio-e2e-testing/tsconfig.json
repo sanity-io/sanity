@@ -1,18 +1,6 @@
 {
-  "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true
-  },
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@tsconfig/vite-react/tsconfig.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }
