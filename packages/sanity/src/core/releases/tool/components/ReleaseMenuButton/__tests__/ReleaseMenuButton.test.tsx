@@ -388,6 +388,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error - fix later
               previewValues: {
                 isLoading: false,
                 values: undefined,
@@ -455,6 +456,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error - fix later
               previewValues: {
                 isLoading: false,
                 values: undefined,

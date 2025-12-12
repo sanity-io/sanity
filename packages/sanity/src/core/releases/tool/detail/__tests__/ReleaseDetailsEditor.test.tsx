@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, vi, type Mock} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
@@ -60,7 +60,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
-      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
+      const updateReleaseMock = (useReleaseOperations as unknown as Mock).mock.results[0]?.value
         .updateRelease
 
       await userEvent.clear(input)
@@ -95,7 +95,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
-      const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
+      const updateReleaseMock = (useReleaseOperations as unknown as Mock).mock.results[0]?.value
         .updateRelease
 
       await userEvent.clear(input)

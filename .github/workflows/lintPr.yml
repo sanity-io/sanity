@@ -24,6 +24,7 @@ jobs:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
       - uses: ./.github/actions/setup
 
+      - run: pnpm build
       - name: Oxlint files
         run: pnpm turbo run check:oxlint -- --format github
 

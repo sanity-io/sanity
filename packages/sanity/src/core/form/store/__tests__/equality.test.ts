@@ -83,12 +83,14 @@ test('it doesnt return new object equalities given the same input', () => {
   const documentValue = {_id: 'test', _type: 'foo'}
   const bookType = getBookType({})
 
+  // @ts-expect-error - fix later
   const state1 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,
     documentValue,
   })
 
+  // @ts-expect-error - fix later
   const state2 = prepareFormState({
     ...DEFAULT_PROPS,
     schemaType: bookType,

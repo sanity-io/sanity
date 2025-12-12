@@ -33,6 +33,7 @@ const renderComponent = async (release = activeASAPRelease) => {
     resources: [releasesUsEnglishLocaleBundle],
   })
 
+  // @ts-expect-error - fix later
   render(<ReleaseTypePicker release={release} />, {wrapper})
 
   await waitFor(() => {

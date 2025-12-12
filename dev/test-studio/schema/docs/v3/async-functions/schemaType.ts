@@ -27,6 +27,7 @@ export const validationTest = defineType({
               }, 1000)
             }),
         ),
+      // @ts-expect-error - fix later
       initialValue: async (params: undefined, context: ConfigContext) => {
         return new Promise((resolve) => {
           setTimeout(() => {

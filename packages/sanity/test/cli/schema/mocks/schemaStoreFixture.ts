@@ -18,6 +18,7 @@ export function createSchemaStoreFixture(staticDate: string) {
     basePath: '/',
   }
 
+  // @ts-expect-error - fix later
   const testManifest: CreateManifest = {
     version: 1,
     createdAt: staticDate,

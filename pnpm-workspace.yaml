@@ -1,7 +1,8 @@
 packages:
   - dev/*
   - perf/*
-  - examples/*
+  # - examples/functions/*
+  # - examples/studios/*
   - scripts
   - e2e
   - packages/@repo/*
@@ -10,6 +11,8 @@ packages:
   - packages/groq
   - packages/sanity
   - packages/sanity/fixtures/examples/*
+  # - packages/@sanity/cli/test/__fixtures__/*
+  # - packages/@sanity/cli/templates/*
 
 catalog:
   '@playwright/experimental-ct-react': 1.56.1
@@ -47,6 +50,8 @@ catalog:
   typescript: 5.9.3
 
 overrides:
+  # Fixes strange type errors in react due to subtle duplicates of `@types/react`
+  # '@types/react': 'catalog:'
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of

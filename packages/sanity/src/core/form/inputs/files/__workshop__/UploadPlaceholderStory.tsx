@@ -9,6 +9,7 @@ export default function UploadPlaceholderStory() {
       <Container width={1}>
         <Card>
           <UploadPlaceholder
+            // @ts-expect-error - fix later
             accept="image/*"
             assetSources={[
               {

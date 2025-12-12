@@ -52,7 +52,7 @@ export default function KitchenSinkStory() {
   const toggleSelect = useCallback((index: number) => {
     setSelected((prevSelected) => ({
       ...prevSelected,
-      [index]: !prevSelected?.[index] ?? true,
+      [index]: !prevSelected?.[index],
     }))
   }, [])
 

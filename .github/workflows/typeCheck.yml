@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup
+      - run: pnpm build
       - name: Check type system
         # Turbo will run type checks on all files in the project
         # and ensure that dependencies are built with @sanity/pkg-utils to output dts

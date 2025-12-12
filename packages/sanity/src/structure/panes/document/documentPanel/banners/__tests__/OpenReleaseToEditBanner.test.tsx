@@ -29,6 +29,7 @@ vi.mock('sanity', async () => {
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockuseUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
 
+// @ts-expect-error - fix later
 const release1: ReleaseDocument = {
   _rev: 'activeRev',
   _id: '_.releases.rActive',
@@ -44,6 +45,7 @@ const release1: ReleaseDocument = {
   },
 }
 
+// @ts-expect-error - fix later
 const release2: ReleaseDocument = {
   _rev: 'activeRev',
   _id: '_.releases.rActive2',

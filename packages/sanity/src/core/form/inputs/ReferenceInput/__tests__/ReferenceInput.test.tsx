@@ -113,6 +113,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - fix later
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -132,6 +133,7 @@ describe.skip('if schema type is a strong reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - fix later
             published: undefined,
             draft: DRAFT_PREVIEW as any,
           },
@@ -154,6 +156,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: UNAVAILABLE_NOT_FOUND,
           preview: {
+            // @ts-expect-error - fix later
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },
@@ -174,6 +177,7 @@ describe.skip('if schema type is a weak reference', () => {
           type: 'actorReference',
           availability: AVAILABLE,
           preview: {
+            // @ts-expect-error - fix later
             published: PUBLISHED_PREVIEW as any,
             draft: DRAFT_PREVIEW as any,
           },

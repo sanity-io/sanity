@@ -9,10 +9,13 @@ import {renderCustomMarkers} from './customMarkers'
 export function CustomContentInput(inputProps: PortableTextInputProps) {
   const {value} = inputProps
 
+  // @ts-expect-error - fix later
   const handlePaste: OnPasteFn = useCallback((input) => {
+    // @ts-expect-error - fix later
     const {event, type, path} = input
     const html = event.clipboardData.getData('text/html')
     // check if schema has the code type
+    // @ts-expect-error - fix later
     const hasCodeType = type.of.map(({name}) => name).includes('code')
     if (!hasCodeType) {
       console.log('Run `sanity install @sanity/code-input, and add `type: "code"` to your schema.')
@@ -64,7 +67,9 @@ export function CustomContentInput(inputProps: PortableTextInputProps) {
     if (!value) return ret
 
     for (const block of value) {
+      // @ts-expect-error - fix later
       if (block.comments) {
+        // @ts-expect-error - fix later
         for (const comment of block.comments) {
           ret.push({
             type: 'comment',

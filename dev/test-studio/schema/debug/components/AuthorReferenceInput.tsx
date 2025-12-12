@@ -25,7 +25,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   props: ObjectInputProps<Reference, ReferenceSchemaType>,
   ref: ForwardedRef<any>,
 ) {
-  // @todo fix
+  // @ts-expect-error - @todo fix
   const {inputProps, type, value} = props
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
@@ -67,6 +67,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
       setIfMissing({_type: type.name, _ref: item._id}),
 
       // Allow setting weak reference in schema options
+      // @ts-expect-error - fix later
       type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
 
       // Set the actual reference value

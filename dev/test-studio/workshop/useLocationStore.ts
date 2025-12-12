@@ -1,5 +1,4 @@
 import {type WorkshopLocation, type WorkshopLocationStore} from '@sanity/ui-workshop'
-import qs from 'qs'
 import {useCallback, useMemo, useRef} from 'react'
 import {useRouter} from 'sanity/router'
 
@@ -16,13 +15,13 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
   const get = useCallback(() => {
     return {
       path: `/${segmentsRef.current.filter(Boolean).join('/')}`,
-      query: qs.parse(window.location.search.slice(1)) as any,
+      query: Object.fromEntries(new URLSearchParams(window.location.search)),
     }
   }, [])
 
   const push = useCallback(
     (nextLocation: Omit<WorkshopLocation, 'type'>) => {
-      const search = nextLocation.query ? `?${qs.stringify(nextLocation.query)}` : ''
+      const search = nextLocation.query ? `?${new URLSearchParams(nextLocation.query as any)}` : ''
 
       segmentsRef.current = nextLocation.path.split('/')
 
@@ -43,7 +42,7 @@ export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocati
 
   const replace = useCallback(
     (nextLocation: Omit<WorkshopLocation, 'type'>) => {
-      const search = nextLocation.query ? `?${qs.stringify(nextLocation.query)}` : ''
+      const search = nextLocation.query ? `?${new URLSearchParams(nextLocation.query as any)}` : ''
 
       segmentsRef.current = nextLocation.path.split('/')
 

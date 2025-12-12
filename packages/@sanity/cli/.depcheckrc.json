@@ -1,4 +1,4 @@
 {
-  "ignores": ["@babel/parser"],
+  "ignores": ["@babel/parser", "@types/react"],
   "ignore-patterns": ["templates/**"]
 }

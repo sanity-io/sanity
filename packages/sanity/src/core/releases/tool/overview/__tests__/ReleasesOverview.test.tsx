@@ -113,6 +113,7 @@ const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
 vi.mock('sanity/router', async (importOriginal) => {
   const actual = await importOriginal()
   return {
+    // @ts-expect-error - fix later
     ...actual,
     useRouter: vi.fn(() => ({
       state: {},

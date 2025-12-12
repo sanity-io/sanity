@@ -8,11 +8,11 @@ import {
   type SchemaTypeDefinition,
   type ValidationContext,
 } from '@sanity/types'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createSchema, type Workspace} from '../../src/core'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
-import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
+import {convertToValidationMarker as _convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {
   resolveTypeForArrayItem,
   validateDocument,
@@ -35,6 +35,10 @@ vi.mock('../../src/core/validation/util/convertToValidationMarker', async () => 
     ),
   }
 })
+
+const convertToValidationMarker = _convertToValidationMarker as MockedFunction<
+  typeof _convertToValidationMarker
+>
 
 beforeEach(() => {
   convertToValidationMarker.mockClear()

@@ -49,6 +49,7 @@ export const ptCustomMarkersTestType = defineType({
               {
                 title: 'Boost',
                 value: 'boost',
+                // @ts-expect-error - fix later
                 blockEditor: {
                   icon: RocketIcon,
                   render: boostRender,

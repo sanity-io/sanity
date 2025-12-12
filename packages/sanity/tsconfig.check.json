@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.settings.json",
+  "include": ["./package.json", "./playwright-ct", "./scripts", "./src", "./test", "./typings"],
+  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"]
+}
