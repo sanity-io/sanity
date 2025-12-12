@@ -29,8 +29,17 @@ const errorChannel = globalScope.__sanityErrorChannel
  * per Studio application.
  * To wrap React subtrees, use the {@link StudioErrorBoundary} component instead.
  */
-export function StudioRootErrorHandler(props: {children: ReactNode}) {
-  const {children} = props
+interface StudioRootErrorHandlerProps {
+  children: ReactNode
+  /**
+   * The project ID of the first workspace in the Studio config.
+   * Used to show the "Register Studio" option in the CORS error screen.
+   */
+  primaryProjectId?: string
+}
+
+export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
+  const {children, primaryProjectId} = props
   const [errorState, setErrorState] = useState<ErrorState>()
 
   const handleResetError = useCallback(() => setErrorState(undefined), [])
@@ -105,6 +114,7 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
       <CorsOriginErrorScreen
         projectId={errorState.error.projectId}
         isStaging={errorState.error.isStaging}
+        primaryProjectId={primaryProjectId}
       />
     )
   }
