@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
   "scripts": {
     "build": "run-s workshop:build sanity:build sanity:manifest",
     "check:types": "tsc --noEmit",
