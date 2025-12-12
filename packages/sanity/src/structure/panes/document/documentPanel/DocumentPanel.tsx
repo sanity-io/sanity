@@ -233,6 +233,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
+      isReleaseDocument(selectedPerspective) &&
       displayed?._id &&
       getVersionFromId(displayed._id) !== selectedReleaseId &&
       ready &&
@@ -243,7 +244,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return (
         <DocumentNotInReleaseBanner
           documentId={value._id}
-          currentRelease={selectedPerspective as ReleaseDocument}
+          currentRelease={selectedPerspective}
           isScheduledRelease={isScheduledRelease}
         />
       )
