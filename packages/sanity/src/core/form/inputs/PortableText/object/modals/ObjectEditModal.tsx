@@ -2,6 +2,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../../../i18n'
+import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
@@ -29,6 +30,8 @@ export function ObjectEditModal(props: {
   const {t} = useTranslation()
   const schemaModalOption = useMemo(() => _getModalOption(schemaType), [schemaType])
   const modalType = schemaModalOption?.type || defaultType
+
+  const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const schemaTypeTitle = schemaType.i18nTitleKey
     ? t(schemaType.i18nTitleKey)
@@ -60,7 +63,11 @@ export function ObjectEditModal(props: {
     )
   }
 
-  return (
+  return nestedObjectNavigationEnabled ? (
+    <EnhancedObjectDialog type="dialog" onClose={onClose} header={modalTitle} width={1}>
+      {props.children}
+    </EnhancedObjectDialog>
+  ) : (
     <DefaultEditDialog
       onClose={handleClose}
       title={modalTitle}

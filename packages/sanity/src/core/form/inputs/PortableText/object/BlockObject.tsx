@@ -123,10 +123,7 @@ export function BlockObject(props: BlockObjectProps) {
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
 
-  const {enabled: nestedObjectNavigationEnabled, isDialogAvailable} = useEnhancedObjectDialog()
-  // If there's an EnhancedObjectDialog available, it will handle the opening
-  // Otherwise, we render our own modal
-  const shouldUseEnhancedDialog = nestedObjectNavigationEnabled && isDialogAvailable
+  const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const selfSelection = useMemo(
     (): EditorSelection => ({
@@ -246,7 +243,6 @@ export function BlockObject(props: BlockObjectProps) {
       renderAnnotation,
       renderBlock,
       renderDefault: DefaultBlockObjectComponent,
-      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -275,7 +271,6 @@ export function BlockObject(props: BlockObjectProps) {
       readOnly,
       renderAnnotation,
       renderBlock,
-      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -361,15 +356,12 @@ function RenderBlock(
   return renderBlock(componentProps)
 }
 
-export const DefaultBlockObjectComponent = (
-  props: BlockProps & {shouldUseEnhancedDialog: boolean},
-) => {
+export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
     children,
-    shouldUseEnhancedDialog,
     focused,
     markers,
     onClose,
@@ -439,11 +431,7 @@ export const DefaultBlockObjectComponent = (
           value,
         })}
       </Root>
-      {/**
-       * In situations where we are using the new nested method, we do not want to show this object edit modal.
-       * However, in cases where we aren't, the old modal needs to work as expected
-       */}
-      {open && !shouldUseEnhancedDialog && (
+      {open && (
         <ObjectEditModal
           floatingBoundary={__unstable_floatingBoundary}
           defaultType="dialog"

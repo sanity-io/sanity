@@ -323,7 +323,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
           title={popoverTitle}
         />
       )}
-      {open && !shouldUseEnhancedDialog && (
+      {open && (
         <ObjectEditModal
           autoFocus
           defaultType="popover"
