@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-14)
+
+### Features
+
+* **sanity:** enable editing canvas documents ([#11421](https://github.com/sanity-io/sanity/issues/11421)) ([cb8ed7d](https://github.com/sanity-io/sanity/commit/cb8ed7d8979d96bd4ffe3ed474fd69462654bc48)) by Josef Hlavacek (josef.hlavacek@sanity.io)
+
+### Bug Fixes
+
+* **cli:** handle sanity binary as esm/cjs/executable ([#11460](https://github.com/sanity-io/sanity/issues/11460)) ([e88b4b7](https://github.com/sanity-io/sanity/commit/e88b4b7d96e1a8e446270d8fe46f56bab2d59606)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **cli:** mark react < 19.2.2 as deprecated ([#11482](https://github.com/sanity-io/sanity/issues/11482)) ([217ee0a](https://github.com/sanity-io/sanity/commit/217ee0a416e4d59cd9e929608136723a3f5ecaaa)) by Bjørge Næss (bjoerge@gmail.com)
+* **cli:** remove missing appId warning from sanity dev ([#11476](https://github.com/sanity-io/sanity/issues/11476)) ([1a087f8](https://github.com/sanity-io/sanity/commit/1a087f836e104bbccafc4e50edf2300b24d5d7df)) by Bjørge Næss (bjoerge@gmail.com)
+* **deps:** add `sanity` to peerDependencies in @sanity/vision ([#11480](https://github.com/sanity-io/sanity/issues/11480)) ([69cd79b](https://github.com/sanity-io/sanity/commit/69cd79b38fe15f0cbb3c099b3ea64de55f5cf1f2)) by Robbie Wadley (robbiethewadley@gmail.com)
+* **deps:** Update portabletext ([#11450](https://github.com/sanity-io/sanity/issues/11450)) ([735f7b4](https://github.com/sanity-io/sanity/commit/735f7b4d1c92d243abce393464197f058278b25d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **manifest:** better handling of user application clients ([48bf231](https://github.com/sanity-io/sanity/commit/48bf231d57b3170f6e3ca4a3031264c667976866)) by Dain Cilke (dain.cilke@gmail.com)
+
 ## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
 
 ### Bug Fixes
