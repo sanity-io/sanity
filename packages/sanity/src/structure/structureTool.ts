@@ -1,6 +1,6 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
-import {definePlugin} from 'sanity'
+import {definePlugin, type DocumentActionComponent} from 'sanity'
 
 import {
   useDeleteAction,
@@ -26,6 +26,8 @@ const documentActions = [
   useDeleteAction,
   useHistoryRestoreAction,
 ]
+
+const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', 'discardChanges']
 
 const documentBadges = [useLiveEditBadge]
 
@@ -84,19 +86,29 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
     name: 'sanity/structure',
     document: {
       actions: (prevActions, context) => {
+        const combinedActions = Array.from(new Set([...prevActions, ...documentActions]))
+
+        // Separate destructive actions to place at end
+        const destructiveActions = combinedActions.filter((action) =>
+          destructiveActionNames.includes(action.action),
+        )
+        const otherActions = combinedActions.filter(
+          (action) => !destructiveActionNames.includes(action.action),
+        )
+
         if (context.versionType === 'published') {
           // Place the unpublish action as the primary action if the document is the published version.
-          const sortedActions = [...documentActions].sort((a, b) => {
+          const sortedActions = [...otherActions].sort((a, b) => {
             if (a.action === 'unpublish') return -1
             if (b.action === 'unpublish') return 1
             return 0
           })
-          return Array.from(new Set([...prevActions, ...sortedActions]))
+          return [...sortedActions, ...destructiveActions]
         }
 
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document actions already exist in the Studio config
-        return Array.from(new Set([...prevActions, ...documentActions]))
+        return [...otherActions, ...destructiveActions]
       },
       badges: (prevBadges) => {
         // NOTE: since it's possible to have several structure tools in one Studio,
