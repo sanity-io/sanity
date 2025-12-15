@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {ArrowRightIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -18,6 +18,7 @@ interface CorsOriginErrorScreenProps {
 
 const CenteredContainer = styled(Flex)`
   min-height: 100vh;
+  box-sizing: border-box;
 `
 
 const ContentWrapper = styled(Box)`
@@ -78,7 +79,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   return (
     <Card height="fill">
       <CenteredContainer align="center" justify="center" padding={4}>
-        <ContentWrapper paddingY={5}>
+        <ContentWrapper paddingBottom={5}>
           <Stack space={5}>
             <Heading as="h1" size={2}>
               Connect this studio to your project
@@ -89,27 +90,26 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               to connect it.
             </Text>
 
-            <Grid columns={showRegisterOption ? [1, 1, 2] : 1} gap={4}>
+            <Grid columns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
               {/* Register Studio Option */}
               {showRegisterOption && (
-                <Card border padding={4} radius={3}>
+                <Card border padding={4} radius={4}>
                   <Flex direction="column" gap={4} height="fill">
                     <Stack space={4} flex={1}>
-                      <Text size={1} weight="medium">
+                      <Text size={2} weight="medium">
                         Register studio
                       </Text>
-                      <Box paddingY={2}>
-                        <Text size={1} muted>
-                          For production and editor-facing studios. Enables schema syncing, Content
-                          Agent, and other COS features.
-                        </Text>
-                      </Box>
+                      <Text size={1} muted>
+                        For production and editor-facing studios. Enables schema syncing, Content
+                        Agent, and other COS features.
+                      </Text>
                     </Stack>
                     <Button
                       as="a"
                       href={registerUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      size="large"
                       text="Register this studio"
                       width="fill"
                     />
@@ -118,26 +118,28 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               )}
 
               {/* Add Development Host Option */}
-              <Card border padding={4} radius={3}>
+              <Card border padding={4} radius={4}>
                 <Flex direction="column" gap={4} height="fill">
                   <Stack space={4} flex={1}>
-                    <Text size={1} weight="medium">
-                      Add as development host
+                    <Text size={2} weight="medium">
+                      Add development host
                     </Text>
-                    <Box paddingY={2}>
-                      <Text size={1} muted>
-                        For localhost and preview URLs. Does not register this Studio and does not
-                        sync schemas.
-                      </Text>
-                    </Box>
+
+                    <Text size={1} muted>
+                      For localhost and preview URLs. Does not register this Studio and does not
+                      sync schemas.
+                    </Text>
                   </Stack>
+
                   <Button
                     as="a"
                     href={corsUrl}
+                    iconRight={LaunchIcon}
                     target="_blank"
                     rel="noopener noreferrer"
                     text="Add development host"
                     mode="ghost"
+                    size="large"
                     width="fill"
                   />
                 </Flex>
@@ -158,8 +160,9 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                   href="https://www.sanity.io/docs/cors"
                   target="_blank"
                   rel="noopener noreferrer"
+                  style={{textDecoration: 'none'}}
                 >
-                  Need help? <ArrowRightIcon />
+                  Need help? &rarr;
                 </HelpLink>
               </Text>
             </Flex>
