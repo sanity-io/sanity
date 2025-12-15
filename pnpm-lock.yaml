@@ -1061,8 +1061,8 @@ importers:
         specifier: workspace:*
         version: link:../codegen
       '@sanity/runtime-cli':
-        specifier: ^12.1.0
-        version: 12.1.0(@types/node@24.10.2)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+        specifier: ^12.2.0
+        version: 12.2.0(@types/node@24.10.2)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.2.3)
@@ -5509,6 +5509,10 @@ packages:
     resolution: {integrity: sha512-kS/MU3r71MXExzatvP6lCO7J/mhnmxO2qSsC+/j+YXm1qZo9BoXTRMsC8f0M/Hi5r+1i/l/6NSk3RUsNEtHAyg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
+  '@sanity/blueprints@0.7.0':
+    resolution: {integrity: sha512-s83JaMnRcgkZJdDLIxRht5YTwhxEDRh9CWTiIJcMGQnG1ZjU0ttD8muAXuGbWEyQGzhTXyC6e7RbSywsgFzirQ==}
+    engines: {node: '>=20'}
+
   '@sanity/browserslist-config@1.0.5':
     resolution: {integrity: sha512-so+/UtCge8t1jq509hH0otbbptRz0zM/Aa0dh5MhMD7HGT6n2igWIL2VWH/9QR9e77Jn3dJsjz23mW1WCxT+sg==}
 
@@ -5729,8 +5733,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@12.1.0':
-    resolution: {integrity: sha512-Q4odwwUpbR0QD9rVOqOq6nmQtRgeSwQscpkrqtB6vEmCvu1uJL3DLB4PjgQFCCLUdlLGg0IHfG8cQmkm4H6zag==}
+  '@sanity/runtime-cli@12.2.0':
+    resolution: {integrity: sha512-ecjBzrQXkoZxTntDW7GcQ6BndUqCHtl7c8PirYxBCr5vKCaSY//+mGbwexkYQRwsRmtMxvjwJYkfn6Hke3TANg==}
     engines: {node: '>=20.19'}
     hasBin: true
 
@@ -16588,6 +16592,8 @@ snapshots:
 
   '@sanity/blueprints-parser@0.3.0': {}
 
+  '@sanity/blueprints@0.7.0': {}
+
   '@sanity/browserslist-config@1.0.5': {}
 
   '@sanity/client@6.29.1':
@@ -17003,13 +17009,14 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/runtime-cli@12.1.0(@types/node@24.10.2)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)':
+  '@sanity/runtime-cli@12.2.0(@types/node@24.10.2)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)':
     dependencies:
       '@architect/hydrate': 5.0.1
       '@architect/inventory': 5.0.0
       '@inquirer/prompts': 8.0.2(@types/node@24.10.2)
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
+      '@sanity/blueprints': 0.7.0
       '@sanity/blueprints-parser': 0.3.0
       '@sanity/client': 7.13.2(debug@4.4.3)
       adm-zip: 0.5.16
