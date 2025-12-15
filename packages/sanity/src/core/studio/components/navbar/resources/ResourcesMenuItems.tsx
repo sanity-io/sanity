@@ -43,10 +43,6 @@ export function ResourcesMenuItems({
     return <LoadingBlock showText />
   }
 
-  const isOutdated = latestTaggedVersion
-    ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
-    : false
-
   const fallbackLinks = (
     <>
       <MenuItem
@@ -67,22 +63,56 @@ export function ResourcesMenuItems({
         href="https://www.sanity.io/contact/sales?ref=studio"
         target="_blank"
       />
-      <MenuDivider />
     </>
   )
 
   return (
     <>
-      {/* Display fallback values on error / no response */}
-      {(value === undefined || error) && <div>{fallbackLinks}</div>}
+      {/* Studio version information */}
+      <StudioVersion
+        currentVersion={currentVersion}
+        newAutoUpdateVersion={newAutoUpdateVersion}
+        latestTaggedVersion={latestTaggedVersion}
+        onOpenStudioVersionDialog={onOpenStudioVersionDialog}
+      />
+      <MenuDivider />
 
       {!error &&
-        sections?.map((subSection) => {
+        sections?.map((subSection, i) => {
           if (!subSection) return null
-          return <SubSection key={subSection._key} subSection={subSection} />
+          return (
+            <>
+              <SubSection key={subSection._key} subSection={subSection} />
+              {i < sections.length - 1 && <MenuDivider />}
+            </>
+          )
         })}
 
-      {/* Studio version information */}
+      {/* Display fallback values on error / no response */}
+      {(value === undefined || error) && <div>{fallbackLinks}</div>}
+    </>
+  )
+}
+
+function StudioVersion({
+  currentVersion,
+  newAutoUpdateVersion,
+  latestTaggedVersion,
+  onOpenStudioVersionDialog,
+}: {
+  currentVersion: SemVer
+  newAutoUpdateVersion?: SemVer
+  latestTaggedVersion?: SemVer
+  onOpenStudioVersionDialog: () => void
+}) {
+  const {t} = useTranslation()
+
+  const isOutdated = latestTaggedVersion
+    ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
+    : false
+
+  return (
+    <>
       <MenuItem
         onClick={onOpenStudioVersionDialog}
         text={t('help-resources.studio-version', {
@@ -143,7 +173,6 @@ function SubSection({subSection}: {subSection: Section}) {
             return null
         }
       })}
-      <MenuDivider />
     </>
   )
 }
