@@ -45,6 +45,7 @@ catalog:
   vitest: ^3.2.4
   styled-components: npm:@sanity/styled-components@^6.1.24
   typescript: 5.9.3
+  groq-js: ^1.24.0
 
 overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
