@@ -778,9 +778,9 @@ export default async function initSanity(
       print(
         `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat.`,
       )
-      print(`Learn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
       print(
-        `Have feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
       )
     }
     print('\n')
