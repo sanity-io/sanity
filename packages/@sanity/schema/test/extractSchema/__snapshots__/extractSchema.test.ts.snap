@@ -3,6 +3,36 @@
 exports[`Extract schema test > Can extract inline documents 1`] = `
 [
   {
+    "name": "author.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "author",
+      "type": "object",
+    },
+  },
+  {
     "attributes": {
       "_createdAt": {
         "type": "objectAttribute",
@@ -69,30 +99,8 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
         "optional": true,
         "type": "objectAttribute",
         "value": {
-          "attributes": {
-            "_ref": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-              },
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "reference",
-              },
-            },
-            "_weak": {
-              "optional": true,
-              "type": "objectAttribute",
-              "value": {
-                "type": "boolean",
-              },
-            },
-          },
-          "dereferencesTo": "author",
-          "type": "object",
+          "name": "author.reference",
+          "type": "inline",
         },
       },
       "referenceAuthors": {
@@ -101,38 +109,16 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
         "value": {
           "of": {
             "attributes": {
-              "_ref": {
+              "_key": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string",
-                },
-              },
-              "_type": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string",
-                  "value": "reference",
-                },
-              },
-              "_weak": {
-                "optional": true,
-                "type": "objectAttribute",
-                "value": {
-                  "type": "boolean",
                 },
               },
             },
-            "dereferencesTo": "author",
             "rest": {
-              "attributes": {
-                "_key": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                  },
-                },
-              },
-              "type": "object",
+              "name": "author.reference",
+              "type": "inline",
             },
             "type": "object",
           },
@@ -693,6 +679,66 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
     },
   },
   {
+    "name": "sanity.fileAsset.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "sanity.fileAsset",
+      "type": "object",
+    },
+  },
+  {
+    "name": "author.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "author",
+      "type": "object",
+    },
+  },
+  {
     "name": "manuscript",
     "type": "type",
     "value": {
@@ -708,60 +754,16 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
           "optional": true,
           "type": "objectAttribute",
           "value": {
-            "attributes": {
-              "_ref": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string",
-                },
-              },
-              "_type": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string",
-                  "value": "reference",
-                },
-              },
-              "_weak": {
-                "optional": true,
-                "type": "objectAttribute",
-                "value": {
-                  "type": "boolean",
-                },
-              },
-            },
-            "dereferencesTo": "sanity.fileAsset",
-            "type": "object",
+            "name": "sanity.fileAsset.reference",
+            "type": "inline",
           },
         },
         "author": {
           "optional": true,
           "type": "objectAttribute",
           "value": {
-            "attributes": {
-              "_ref": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string",
-                },
-              },
-              "_type": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string",
-                  "value": "reference",
-                },
-              },
-              "_weak": {
-                "optional": true,
-                "type": "objectAttribute",
-                "value": {
-                  "type": "boolean",
-                },
-              },
-            },
-            "dereferencesTo": "author",
-            "type": "object",
+            "name": "author.reference",
+            "type": "inline",
           },
         },
         "description": {
@@ -975,6 +977,66 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
           },
         },
       },
+      "type": "object",
+    },
+  },
+  {
+    "name": "sanity.imageAsset.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "sanity.imageAsset",
+      "type": "object",
+    },
+  },
+  {
+    "name": "book.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "book",
       "type": "object",
     },
   },
@@ -1636,30 +1698,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                                   "optional": true,
                                   "type": "objectAttribute",
                                   "value": {
-                                    "attributes": {
-                                      "_ref": {
-                                        "type": "objectAttribute",
-                                        "value": {
-                                          "type": "string",
-                                        },
-                                      },
-                                      "_type": {
-                                        "type": "objectAttribute",
-                                        "value": {
-                                          "type": "string",
-                                          "value": "reference",
-                                        },
-                                      },
-                                      "_weak": {
-                                        "optional": true,
-                                        "type": "objectAttribute",
-                                        "value": {
-                                          "type": "boolean",
-                                        },
-                                      },
-                                    },
-                                    "dereferencesTo": "sanity.imageAsset",
-                                    "type": "object",
+                                    "name": "sanity.imageAsset.reference",
+                                    "type": "inline",
                                   },
                                 },
                                 "authors": {
@@ -1766,38 +1806,16 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                           "of": [
                             {
                               "attributes": {
-                                "_ref": {
+                                "_key": {
                                   "type": "objectAttribute",
                                   "value": {
                                     "type": "string",
-                                  },
-                                },
-                                "_type": {
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "string",
-                                    "value": "reference",
-                                  },
-                                },
-                                "_weak": {
-                                  "optional": true,
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "boolean",
                                   },
                                 },
                               },
-                              "dereferencesTo": "author",
                               "rest": {
-                                "attributes": {
-                                  "_key": {
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "string",
-                                    },
-                                  },
-                                },
-                                "type": "object",
+                                "name": "author.reference",
+                                "type": "inline",
                               },
                               "type": "object",
                             },
@@ -1906,30 +1924,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                             "optional": true,
                             "type": "objectAttribute",
                             "value": {
-                              "attributes": {
-                                "_ref": {
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "string",
-                                  },
-                                },
-                                "_type": {
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "string",
-                                    "value": "reference",
-                                  },
-                                },
-                                "_weak": {
-                                  "optional": true,
-                                  "type": "objectAttribute",
-                                  "value": {
-                                    "type": "boolean",
-                                  },
-                                },
-                              },
-                              "dereferencesTo": "sanity.imageAsset",
-                              "type": "object",
+                              "name": "sanity.imageAsset.reference",
+                              "type": "inline",
                             },
                           },
                           "crop": {
@@ -2070,38 +2066,16 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                             "value": {
                               "of": {
                                 "attributes": {
-                                  "_ref": {
+                                  "_key": {
                                     "type": "objectAttribute",
                                     "value": {
                                       "type": "string",
-                                    },
-                                  },
-                                  "_type": {
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "string",
-                                      "value": "reference",
-                                    },
-                                  },
-                                  "_weak": {
-                                    "optional": true,
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "boolean",
                                     },
                                   },
                                 },
-                                "dereferencesTo": "author",
                                 "rest": {
-                                  "attributes": {
-                                    "_key": {
-                                      "type": "objectAttribute",
-                                      "value": {
-                                        "type": "string",
-                                      },
-                                    },
-                                  },
-                                  "type": "object",
+                                  "name": "author.reference",
+                                  "type": "inline",
                                 },
                                 "type": "object",
                               },
@@ -2183,30 +2157,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "attributes": {
-                          "_ref": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                            },
-                          },
-                          "_type": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                              "value": "reference",
-                            },
-                          },
-                          "_weak": {
-                            "optional": true,
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "boolean",
-                            },
-                          },
-                        },
-                        "dereferencesTo": "sanity.imageAsset",
-                        "type": "object",
+                        "name": "sanity.imageAsset.reference",
+                        "type": "inline",
                       },
                     },
                     "crop": {
@@ -2248,75 +2200,31 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                 },
                 {
                   "attributes": {
-                    "_ref": {
+                    "_key": {
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
-                      },
-                    },
-                    "_type": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
-                    "_weak": {
-                      "optional": true,
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "boolean",
                       },
                     },
                   },
-                  "dereferencesTo": "author",
                   "rest": {
-                    "attributes": {
-                      "_key": {
-                        "type": "objectAttribute",
-                        "value": {
-                          "type": "string",
-                        },
-                      },
-                    },
-                    "type": "object",
+                    "name": "author.reference",
+                    "type": "inline",
                   },
                   "type": "object",
                 },
                 {
                   "attributes": {
-                    "_ref": {
+                    "_key": {
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
-                      },
-                    },
-                    "_type": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
-                    "_weak": {
-                      "optional": true,
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "boolean",
                       },
                     },
                   },
-                  "dereferencesTo": "book",
                   "rest": {
-                    "attributes": {
-                      "_key": {
-                        "type": "objectAttribute",
-                        "value": {
-                          "type": "string",
-                        },
-                      },
-                    },
-                    "type": "object",
+                    "name": "book.reference",
+                    "type": "inline",
                   },
                   "type": "object",
                 },
@@ -2339,30 +2247,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                               "optional": true,
                               "type": "objectAttribute",
                               "value": {
-                                "attributes": {
-                                  "_ref": {
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "string",
-                                    },
-                                  },
-                                  "_type": {
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "string",
-                                      "value": "reference",
-                                    },
-                                  },
-                                  "_weak": {
-                                    "optional": true,
-                                    "type": "objectAttribute",
-                                    "value": {
-                                      "type": "boolean",
-                                    },
-                                  },
-                                },
-                                "dereferencesTo": "author",
-                                "type": "object",
+                                "name": "author.reference",
+                                "type": "inline",
                               },
                             },
                             "title": {
@@ -2823,30 +2709,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "attributes": {
-                          "_ref": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                            },
-                          },
-                          "_type": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                              "value": "reference",
-                            },
-                          },
-                          "_weak": {
-                            "optional": true,
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "boolean",
-                            },
-                          },
-                        },
-                        "dereferencesTo": "sanity.imageAsset",
-                        "type": "object",
+                        "name": "sanity.imageAsset.reference",
+                        "type": "inline",
                       },
                     },
                     "crop": {
@@ -2888,75 +2752,31 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                 },
                 {
                   "attributes": {
-                    "_ref": {
+                    "_key": {
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
-                      },
-                    },
-                    "_type": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
-                    "_weak": {
-                      "optional": true,
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "boolean",
                       },
                     },
                   },
-                  "dereferencesTo": "author",
                   "rest": {
-                    "attributes": {
-                      "_key": {
-                        "type": "objectAttribute",
-                        "value": {
-                          "type": "string",
-                        },
-                      },
-                    },
-                    "type": "object",
+                    "name": "author.reference",
+                    "type": "inline",
                   },
                   "type": "object",
                 },
                 {
                   "attributes": {
-                    "_ref": {
+                    "_key": {
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
-                      },
-                    },
-                    "_type": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
-                    "_weak": {
-                      "optional": true,
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "boolean",
                       },
                     },
                   },
-                  "dereferencesTo": "book",
                   "rest": {
-                    "attributes": {
-                      "_key": {
-                        "type": "objectAttribute",
-                        "value": {
-                          "type": "string",
-                        },
-                      },
-                    },
-                    "type": "object",
+                    "name": "book.reference",
+                    "type": "inline",
                   },
                   "type": "object",
                 },
@@ -3425,30 +3245,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "attributes": {
-                          "_ref": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                            },
-                          },
-                          "_type": {
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "string",
-                              "value": "reference",
-                            },
-                          },
-                          "_weak": {
-                            "optional": true,
-                            "type": "objectAttribute",
-                            "value": {
-                              "type": "boolean",
-                            },
-                          },
-                        },
-                        "dereferencesTo": "sanity.imageAsset",
-                        "type": "object",
+                        "name": "sanity.imageAsset.reference",
+                        "type": "inline",
                       },
                     },
                     "caption": {
@@ -3983,30 +3781,8 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
               "optional": true,
               "type": "objectAttribute",
               "value": {
-                "attributes": {
-                  "_ref": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string",
-                    },
-                  },
-                  "_type": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string",
-                      "value": "reference",
-                    },
-                  },
-                  "_weak": {
-                    "optional": true,
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "boolean",
-                    },
-                  },
-                },
-                "dereferencesTo": "sanity.imageAsset",
-                "type": "object",
+                "name": "sanity.imageAsset.reference",
+                "type": "inline",
               },
             },
             "attribution": {
@@ -4197,6 +3973,36 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
     },
     "name": "sanity.imageAsset",
     "type": "document",
+  },
+  {
+    "name": "otherValidDocument.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "otherValidDocument",
+      "type": "object",
+    },
   },
   {
     "attributes": {
@@ -4466,60 +4272,16 @@ exports[`Extract schema test > Extracts  schema general 1`] = `
         "optional": true,
         "type": "objectAttribute",
         "value": {
-          "attributes": {
-            "_ref": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-              },
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "reference",
-              },
-            },
-            "_weak": {
-              "optional": true,
-              "type": "objectAttribute",
-              "value": {
-                "type": "boolean",
-              },
-            },
-          },
-          "dereferencesTo": "otherValidDocument",
-          "type": "object",
+          "name": "otherValidDocument.reference",
+          "type": "inline",
         },
       },
       "others": {
         "optional": true,
         "type": "objectAttribute",
         "value": {
-          "attributes": {
-            "_ref": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-              },
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "reference",
-              },
-            },
-            "_weak": {
-              "optional": true,
-              "type": "objectAttribute",
-              "value": {
-                "type": "boolean",
-              },
-            },
-          },
-          "dereferencesTo": "otherValidDocument",
-          "type": "object",
+          "name": "otherValidDocument.reference",
+          "type": "inline",
         },
       },
       "someInlinedObject": {
@@ -4653,30 +4415,8 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": false,
             "type": "objectAttribute",
             "value": {
-              "attributes": {
-                "_ref": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                  },
-                },
-                "_type": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                    "value": "reference",
-                  },
-                },
-                "_weak": {
-                  "optional": true,
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "boolean",
-                  },
-                },
-              },
-              "dereferencesTo": "sanity.fileAsset",
-              "type": "object",
+              "name": "sanity.fileAsset.reference",
+              "type": "inline",
             },
           },
           "media": {
@@ -4706,30 +4446,8 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": false,
             "type": "objectAttribute",
             "value": {
-              "attributes": {
-                "_ref": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                  },
-                },
-                "_type": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                    "value": "reference",
-                  },
-                },
-                "_weak": {
-                  "optional": true,
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "boolean",
-                  },
-                },
-              },
-              "dereferencesTo": "sanity.imageAsset",
-              "type": "object",
+              "name": "sanity.imageAsset.reference",
+              "type": "inline",
             },
           },
           "crop": {
@@ -4776,30 +4494,8 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
               "optional": false,
               "type": "objectAttribute",
               "value": {
-                "attributes": {
-                  "_ref": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string",
-                    },
-                  },
-                  "_type": {
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "string",
-                      "value": "reference",
-                    },
-                  },
-                  "_weak": {
-                    "optional": true,
-                    "type": "objectAttribute",
-                    "value": {
-                      "type": "boolean",
-                    },
-                  },
-                },
-                "dereferencesTo": "sanity.imageAsset",
-                "type": "object",
+                "name": "sanity.imageAsset.reference",
+                "type": "inline",
               },
             },
             "crop": {
@@ -4858,30 +4554,8 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": true,
             "type": "objectAttribute",
             "value": {
-              "attributes": {
-                "_ref": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                  },
-                },
-                "_type": {
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "string",
-                    "value": "reference",
-                  },
-                },
-                "_weak": {
-                  "optional": true,
-                  "type": "objectAttribute",
-                  "value": {
-                    "type": "boolean",
-                  },
-                },
-              },
-              "dereferencesTo": "sanity.imageAsset",
-              "type": "object",
+              "name": "sanity.imageAsset.reference",
+              "type": "inline",
             },
           },
           "crop": {
@@ -4924,10 +4598,121 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
 }
 `;
 
+exports[`Extract schema test > inline reference types should not conflict with the ones defined by the user 1`] = `
+[
+  {
+    "name": "blog.reference1",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "blog",
+      "type": "object",
+    },
+  },
+  {
+    "name": "blog.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "blog.reference",
+          },
+        },
+        "blogPost": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "name": "blog.reference1",
+            "type": "inline",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "blog",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "relevant": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "blog.reference",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "blog",
+    "type": "document",
+  },
+]
+`;
+
 exports[`Extract schema test > inline reference types works 1`] = `
 [
   {
-    "name": "inlineRef",
+    "name": "thing.reference",
     "type": "type",
     "value": {
       "attributes": {
@@ -4954,6 +4739,14 @@ exports[`Extract schema test > inline reference types works 1`] = `
       },
       "dereferencesTo": "thing",
       "type": "object",
+    },
+  },
+  {
+    "name": "inlineRef",
+    "type": "type",
+    "value": {
+      "name": "thing.reference",
+      "type": "inline",
     },
   },
   {
