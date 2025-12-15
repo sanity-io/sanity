@@ -111,10 +111,10 @@ export function TextBlock(props: TextBlockProps) {
    * (due to the performance optimization that removes unfocused blocks from the context),
    * we keep the ChangeIndicatorWrapper mounted
    */
-  const [lastMemberItem, setLastMemberItem] = useState(memberItem)
+  const [memberItemRef, setMemberItemRef] = useState(memberItem)
   useEffect(() => {
     if (memberItem) {
-      setLastMemberItem(memberItem)
+      setMemberItemRef(memberItem)
     }
   }, [memberItem])
 
@@ -279,7 +279,7 @@ export function TextBlock(props: TextBlockProps) {
 
   const blockActionsEnabled = renderBlockActions && !readOnly
 
-  const changeIndicatorVisible = isFullscreen && lastMemberItem
+  const changeIndicatorVisible = isFullscreen && memberItemRef
 
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
@@ -340,13 +340,13 @@ export function TextBlock(props: TextBlockProps) {
           {changeIndicatorVisible && (
             <ChangeIndicatorWrapper
               // Use current memberItem when available for accurate data, fallback to cached for stability
-              $hasChanges={(memberItem ?? lastMemberItem)!.member.item.changed}
+              $hasChanges={(memberItem ?? memberItemRef)!.member.item.changed}
               contentEditable={false}
             >
               <StyledChangeIndicatorWithProvidedFullPath
                 hasFocus={focused}
-                isChanged={(memberItem ?? lastMemberItem)!.member.item.changed}
-                path={(memberItem ?? lastMemberItem)!.member.item.path}
+                isChanged={(memberItem ?? memberItemRef)!.member.item.changed}
+                path={(memberItem ?? memberItemRef)!.member.item.path}
                 withHoverEffect={false}
               />
             </ChangeIndicatorWrapper>
