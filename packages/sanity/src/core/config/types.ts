@@ -220,6 +220,13 @@ export interface Tool<Options = any> {
     params: Record<string, unknown>,
     payload: unknown,
   ) => boolean | {[key: string]: boolean}
+
+  /**
+   * Internal application type identifier used to classify system tools.
+   *
+   * @internal
+   */
+  __internalApplicationType?: string
 }
 
 /** @public */
