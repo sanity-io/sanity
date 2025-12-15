@@ -105,3 +105,17 @@ jobs:
         run: pnpm -r publish --tag next-major --no-git-checks
         env:
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Build bundles for staging
+        env:
+          SANITY_INTERNAL_ENV: "staging" # sets the __SANITY_STAGING__ global variable to true in built bundles
+        run: pnpm run build:bundle
+
+      # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish
+      # ideally, the flow should be 1) bump packages using lerna version, 2) upload to module cdn, 3) lerna publish to npm from packages
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next-major
