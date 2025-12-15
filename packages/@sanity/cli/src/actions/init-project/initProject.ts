@@ -743,7 +743,7 @@ export default async function initSanity(
   const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
-  const goToProjectDir = `(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
+  const goToProjectDir = `\n(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
 
   if (isAppTemplate) {
     //output for custom apps here
