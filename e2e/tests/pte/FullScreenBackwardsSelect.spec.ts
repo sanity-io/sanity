@@ -30,29 +30,21 @@ test.describe('Portable Text Input - Fullscreen Backwards Select', () => {
     const textbox = page.getByTestId('document-panel-portal').getByRole('textbox')
     await textbox.click()
 
-    await textbox.pressSequentially(
+    const paragraphs = [
       'Paragraph 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum mi libero, bibendum vitae nisl tristique, vehicula auctor magna. Donec ornare blandit sagittis. Nulla ullamcorper urna vitae mi fringilla condimentum. Phasellus vulputate purus a leo lobortis convallis. Nam in justo sed est imperdiet dictum. Quisque vitae odio at arcu eleifend fringilla. Morbi eu ipsum odio. Praesent sagittis porta est.',
-    )
-    await textbox.press('Enter')
-
-    await textbox.pressSequentially(
       'Paragraph 2. Suspendisse quis molestie lorem. Pellentesque pulvinar mi non nisi egestas, et sagittis orci tempor. Vivamus quis dictum justo. Aenean nibh diam, volutpat eget est nec, tincidunt mattis purus. In bibendum dictum ultricies. Quisque porttitor sagittis porttitor. Duis dapibus, massa vel semper faucibus, sem metus blandit eros, dignissim ultrices enim justo non est. Nam commodo eget nulla eget porttitor. Morbi lobortis elementum erat, at vehicula velit ultricies non.',
-    )
-    await textbox.press('Enter')
-
-    await textbox.pressSequentially(
       'Paragraph 3. Fusce at arcu sed purus molestie gravida. Donec imperdiet lorem ex, ut sollicitudin mi ornare et. Cras sollicitudin facilisis purus id vestibulum. Nulla eu pulvinar sem. Vivamus dolor eros, semper ut mauris a, malesuada facilisis leo. Donec ut nibh convallis, vulputate velit in, euismod velit. Morbi dapibus elit in ligula dignissim, non pulvinar ligula faucibus. Nam vulputate vestibulum nibh sed dignissim. Sed pretium imperdiet urna eu semper. Donec ornare lacus eu neque luctus convallis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum aliquam fermentum est, vel congue sapien pretium non. Mauris iaculis, diam vitae egestas auctor, turpis nibh varius turpis, id molestie lectus ligula vel ligula.',
-    )
-    await textbox.press('Enter')
-
-    await textbox.pressSequentially(
       'Paragraph 4. Ut et sem velit. Nunc et ligula nisi. Suspendisse id mollis velit, id consequat leo. Aliquam mollis erat sit amet nibh ullamcorper laoreet. Donec consectetur arcu magna, quis tincidunt lectus ullamcorper cursus. Quisque varius fringilla iaculis. Mauris diam risus, blandit eu lobortis nec, aliquam euismod metus. Nullam pharetra pulvinar ipsum sed sollicitudin. Nulla at eleifend quam, quis tincidunt metus. Maecenas scelerisque scelerisque aliquam.',
-    )
-    await textbox.press('Enter')
-
-    await textbox.pressSequentially(
       'Paragraph 5. Suspendisse sed tortor non nisi auctor dapibus eleifend eget tellus. Proin id dolor rhoncus, lacinia quam non, ultrices sem. Curabitur porta, enim fermentum vulputate elementum, enim sem dictum tortor, ac interdum metus lectus sit amet magna. Fusce gravida, libero nec consequat elementum, erat turpis ornare nunc, eu sollicitudin odio elit eu turpis. Mauris pharetra dictum risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam condimentum fermentum risus ut placerat. Duis eleifend augue vitae erat vestibulum, ut dignissim elit pellentesque. Sed vulputate sapien sem, sit amet facilisis risus porttitor nec. Nullam vel eleifend justo. Mauris quam turpis, porttitor eget pharetra non, blandit ut lorem. Nunc eu purus leo. Sed sapien metus, consectetur vel euismod vitae, aliquam sit amet ligula. Sed sagittis quis metus convallis congue. Donec ornare velit odio, sit amet rutrum nunc pretium at.',
-    )
+    ]
+
+    for (let i = 0; i < paragraphs.length; i++) {
+      await page.keyboard.insertText(paragraphs[i].trim())
+
+      if (i < paragraphs.length - 1) {
+        await page.keyboard.press('Enter')
+      }
+    }
   })
 
   test('you should be able to backwards select text in fullscreen mode', async ({page}) => {
