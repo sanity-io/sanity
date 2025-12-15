@@ -1,6 +1,7 @@
 import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
 
 import {type Tool} from '../../config'
+import {isSystemTool} from '../../config/isSystemTool'
 import {isRecord} from '../../util/isRecord'
 import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
@@ -10,7 +11,7 @@ const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
   const orderedTools = getOrderedTools(tools)
-  const defaultTool = orderedTools[0]
+  const defaultTool = orderedTools.find((tool) => !isSystemTool(tool))
 
   if (!state || state.tool || !defaultTool) {
     return state
