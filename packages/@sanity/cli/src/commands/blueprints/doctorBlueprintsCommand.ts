@@ -3,18 +3,25 @@ import {type CliCommandDefinition} from '../../types'
 const helpText = `
 Options
   --verbose  Provide detailed information about issues
+  --fix      Interactively update the Blueprint configuration to fix issues
 
 Examples:
   # Check the health of the current Blueprint project
   sanity blueprints doctor --verbose
+
+  # Fix issues in the current Blueprint project
+  sanity blueprints doctor --fix
 `
 
 export interface BlueprintsDoctorFlags {
-  // path?: string // not supported yet
+  // path?: string // available in the future
+  fix?: boolean
   verbose?: boolean
 }
 
 const defaultFlags: BlueprintsDoctorFlags = {
+  // path: undefined,
+  fix: false,
   verbose: false,
 }
 
@@ -22,7 +29,7 @@ const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
   name: 'doctor',
   group: 'blueprints',
   helpText,
-  signature: '[--verbose]',
+  signature: '[--verbose] [--fix]',
   description: 'Diagnose potential issues with Blueprint configuration',
 
   async action(args, context) {
