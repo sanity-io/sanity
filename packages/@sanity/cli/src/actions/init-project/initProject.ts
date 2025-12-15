@@ -776,9 +776,12 @@ export default async function initSanity(
     if (mcpConfigured.length > 0) {
       const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
-        `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
+        `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat.`,
       )
       print(`Learn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(
+        `Have feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+      )
     }
     print('\n')
     print(`Other helpful commands:`)
