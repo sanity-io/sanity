@@ -208,7 +208,7 @@
     "import-fresh": "^3.3.1",
     "is-hotkey-esm": "^1.0.0",
     "is-tar": "^1.0.0",
-    "isomorphic-dompurify": "^2.26.0",
+    "isomorphic-dompurify": "^2.34.0",
     "jsdom": "catalog:",
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",

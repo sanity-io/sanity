@@ -2121,8 +2121,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       isomorphic-dompurify:
-        specifier: ^2.26.0
-        version: 2.33.0
+        specifier: ^2.34.0
+        version: 2.34.0
       jsdom:
         specifier: 26.1.0
         version: 26.1.0
@@ -7976,8 +7976,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@3.3.0:
-    resolution: {integrity: sha512-r+f6MYR1gGN1eJv0TVQbhA7if/U7P87cdPl3HN5rikqaBSBxLiCb/b9O+2eG0cxz0ghyU+mU1QkbsOwERMYlWQ==}
+  dompurify@3.3.1:
+    resolution: {integrity: sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -9797,8 +9797,8 @@ packages:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
 
-  isomorphic-dompurify@2.33.0:
-    resolution: {integrity: sha512-pXGR3rAHAXb5Bvr56pc5aV0Lh8laubLo7/60F+soOzDFmwks6MtgDhL7p46VoxLnwgIsjgmVhQpUt4mUlL/XEw==}
+  isomorphic-dompurify@2.34.0:
+    resolution: {integrity: sha512-7VeB/tDBQ8jt1+syT563hmmejY01nuwizpUIFPfM1aw3iTgLLiVP4/Nh+PKhNoa1V/H+E6ZlNcowsXLbChPCpw==}
     engines: {node: '>=20.19.5'}
 
   istanbul-lib-coverage@3.2.2:
@@ -19812,7 +19812,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.3.0:
+  dompurify@3.3.1:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -21926,9 +21926,9 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-dompurify@2.33.0:
+  isomorphic-dompurify@2.34.0:
     dependencies:
-      dompurify: 3.3.0
+      dompurify: 3.3.1
       jsdom: 26.1.0
     transitivePeerDependencies:
       - bufferutil
