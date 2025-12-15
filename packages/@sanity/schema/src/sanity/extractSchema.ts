@@ -107,6 +107,12 @@ export function extractSchema(
       repeated.delete(objectField)
       return
     }
+    // Skip creating hoisted types for unknown types - there's no point hoisting types we don't understand.
+    // Remove from `repeated` so the field falls through to convertSchemaType in createObject.
+    if (base.type === 'unknown') {
+      repeated.delete(objectField)
+      return
+    }
     schema.push({
       type: 'type',
       name: getGeneratedTypeName(key),
