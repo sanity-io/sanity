@@ -5491,6 +5491,10 @@ packages:
     resolution: {integrity: sha512-BQRCMeDlBxwnMbFtB61HUxFf9aSb4HNVrpfrC7IFVqFf4cwcc3o5H8/nlrL9U3cDFedbe4W0AXt1mQzwbY/ljw==}
     engines: {node: '>=14.18'}
 
+  '@sanity/client@7.13.1':
+    resolution: {integrity: sha512-Bs+Bg5Fd/2tSR7AYS3+ehUlHtHjrXgH9MwNfTaKUfke158KjAQ4jw1mJVX+jp+171BLwlaaVKYw+mfRkmOCvHw==}
+    engines: {node: '>=20'}
+
   '@sanity/client@7.13.2':
     resolution: {integrity: sha512-bXuQGWgrpkSInZy8lfCMmOgdTNpsoZ7PORW0+zXss8qVpNo1DC002l1c8to6kfxNF0OaL9v7LwsPqKcTZ/VWrw==}
     engines: {node: '>=20'}
@@ -16568,6 +16572,15 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@sanity/client@7.13.1(debug@4.4.3)':
+    dependencies:
+      '@sanity/eventsource': 5.0.2
+      get-it: 8.7.0(debug@4.4.3)
+      nanoid: 3.3.11
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/client@7.13.2(debug@4.4.3)':
     dependencies:
       '@sanity/eventsource': 5.0.2
@@ -16840,7 +16853,7 @@ snapshots:
 
   '@sanity/mutate@0.12.6(debug@4.4.3)':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
@@ -17020,7 +17033,7 @@ snapshots:
 
   '@sanity/sdk-react@2.3.1(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/message-protocol': 0.12.0
       '@sanity/sdk': 2.3.1(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
       '@sanity/types': 3.99.0(@types/react@19.2.7)(debug@4.4.3)
@@ -17065,7 +17078,7 @@ snapshots:
   '@sanity/sdk@2.3.1(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))':
     dependencies:
       '@sanity/bifur-client': 0.4.1
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/comlink': 3.1.1
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -17118,7 +17131,7 @@ snapshots:
 
   '@sanity/types@3.99.0(@types/react@19.2.7)(debug@4.4.3)':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/media-library-types': 1.0.1
       '@types/react': 19.2.7
     transitivePeerDependencies:
@@ -17223,7 +17236,7 @@ snapshots:
     dependencies:
       '@date-fns/tz': 1.4.1
       '@date-fns/utc': 2.1.1
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.13.1(debug@4.4.3)
       '@sanity/types': 3.99.0(@types/react@19.2.7)(debug@4.4.3)
       date-fns: 4.1.0
       get-random-values-esm: 1.0.2
