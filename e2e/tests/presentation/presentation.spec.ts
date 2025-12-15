@@ -4,21 +4,25 @@ import {test} from '../../studio-test'
 import {getPresentationRegions, openPresentationTool} from './utils'
 
 test.describe('Presentation', () => {
-  test('should be able to load a simple preview', async ({page}) => {
+  test.beforeEach(async ({page}) => {
+    test.slow()
     await openPresentationTool(page)
+  })
 
+  test('should be able to load a simple preview', async ({page}) => {
     const {previewIframeContents} = await getPresentationRegions(page)
 
-    // Checks that the preview iframe has loaded visual editing
+    // Checks that the preview ifra
+    //
+    await expect(previewIframeContents.locator('sanity-visual-editing')).toBeVisible()
     await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
   })
 
   test('should be able to toggle preview viewport', async ({page}) => {
-    await openPresentationTool(page)
-
     const {root} = await getPresentationRegions(page)
     const viewportToggle = root.getByTestId('preview-viewport-toggle')
 
+    await expect(viewportToggle).toBeVisible()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
     await viewportToggle.click()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'mobile')
