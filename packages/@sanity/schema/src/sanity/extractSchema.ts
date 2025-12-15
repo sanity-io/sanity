@@ -120,7 +120,7 @@ export function extractSchema(
     }
 
     throw new Error(
-      `Unable to generate unique type name for ${typeName}. Tried ${typeName}${suffix}, and also tried adding suffixes 1-5 without luck.`,
+      `Unable to generate unique type name for ${typeName}.`,
     )
   }
 
