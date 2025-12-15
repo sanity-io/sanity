@@ -23,10 +23,11 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "development": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -44,7 +45,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/cli/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "tsc --noEmit",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -139,5 +140,11 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

@@ -1,3 +1,3 @@
-import * as perfHelpers from './index'
+import * as perfHelpers from './index.ts'
 
 window.perf = perfHelpers

@@ -5,10 +5,10 @@ import {capitalize} from 'lodash'
 import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
 
-import {type Deployment, type PerformanceTestProps} from './types'
-import {bundle} from './utils/bundlePerfHelpers'
-import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
-import {getDeviceInfo} from './utils/getDeviceInfo'
+import {type Deployment, type PerformanceTestProps} from './types.ts'
+import {bundle} from './utils/bundlePerfHelpers.ts'
+import {createSanitySessionCookie} from './utils/createSanitySessionCookie.ts'
+import {getDeviceInfo} from './utils/getDeviceInfo.ts'
 
 interface RunCompareOptions {
   deployments: Deployment[]

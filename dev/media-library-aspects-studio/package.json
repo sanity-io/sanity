@@ -8,9 +8,12 @@
   "author": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "check:types": "tsgo --noEmit"
   },
   "dependencies": {
     "sanity": "workspace:^"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*"
   }
 }

@@ -1,7 +1,7 @@
 import {range} from 'lodash'
 
-import {type PerformanceTestProps} from '../runner/types'
-import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
+import {type PerformanceTestProps} from '../runner/types.ts'
+import {KNOWN_TEST_IDS} from '../runner/utils/testIds.ts'
 
 export default {
   id: KNOWN_TEST_IDS['array-of-1k-items'],

@@ -72,13 +72,13 @@ pkgs.forEach((pkg) => {
   Object.keys(pkg.deps).forEach((depName) => {
     const version = pkg.deps[depName]
     versionRanges[depName] = versionRanges[depName] || {}
-    versionRanges[depName][version] = versionRanges[depName][version] || []
-    versionRanges[depName][version].push(pkg.name)
+    versionRanges[depName][version!] = versionRanges[depName][version!] || []
+    versionRanges[depName][version!]!.push(pkg.name)
   })
 })
 
 Object.keys(versionRanges).forEach((depName) => {
-  const versions = Object.keys(versionRanges[depName])
+  const versions = Object.keys(versionRanges[depName]!)
   if (versions.length === 1) {
     return
   }
@@ -89,19 +89,19 @@ Object.keys(versionRanges).forEach((depName) => {
     .sort(semver.rcompare)
 
   const greatestVersion = plain[0]
-  const greatestMajor = `${semver.major(greatestVersion)}.0.0`
+  const greatestMajor = `${semver.major(greatestVersion!)}.0.0`
   const greatestRange = `^${greatestVersion}`
 
   console.log('')
   console.log(chalk.cyan(depName))
 
   sortRanges(versions).forEach((range) => {
-    const packages = versionRanges[depName][range]
+    const packages = versionRanges[depName]![range]
 
     let isFixable
     try {
       isFixable = semver.satisfies(stripRange(range), `^${greatestMajor}`)
-    } catch (err) {
+    } catch {
       return
     }
 
@@ -110,7 +110,7 @@ Object.keys(versionRanges).forEach((depName) => {
 
     console.log(`  ${chalk[isGreatest ? 'green' : 'yellow'](range)}:`)
     console.log(
-      `    ${sign} ${packages
+      `    ${sign} ${packages!
         .map((pkgName) => {
           // eslint-disable-next-line max-nested-callbacks
           const pkg = pkgs.find((p) => p.name === pkgName)!
@@ -124,7 +124,7 @@ Object.keys(versionRanges).forEach((depName) => {
       return
     }
 
-    packages.forEach((pkgName) => {
+    packages!.forEach((pkgName) => {
       fixable[pkgName] = fixable[pkgName] || []
       fixable[pkgName].push({depName, version: greatestRange})
     })
@@ -152,7 +152,7 @@ fixablePackages.forEach((pkg) => {
     return
   }
 
-  toFix.forEach((dep) => {
+  toFix!.forEach((dep) => {
     const depSection = (manifest.dependencies || {})[dep.depName]
       ? manifest.dependencies
       : manifest.devDependencies

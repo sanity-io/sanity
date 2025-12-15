@@ -29,6 +29,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "development": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -104,5 +105,11 @@
     "react": "^18 || ^19.0.0",
     "sanity": "^4.0.0-0 || ^5.0.0-0",
     "styled-components": "^6.1.15"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

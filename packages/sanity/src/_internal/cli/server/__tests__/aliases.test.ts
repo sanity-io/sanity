@@ -10,7 +10,6 @@ import {
   browserCompatibleSanityPackageSpecifiers,
   getSanityPkgExportAliases,
 } from '../getBrowserAliases'
-import {getMonorepoAliases} from '../sanityMonorepo'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -94,30 +93,5 @@ describe('getAliases', () => {
     )
 
     expect(aliases).toEqual(expectedAliases)
-  })
-
-  it('returns the correct aliases for the monorepo', async () => {
-    const monorepoPath = '/path/to/monorepo'
-    const devAliases = {
-      'sanity/_singletons': 'sanity/src/_singletons.ts',
-      'sanity/desk': 'sanity/src/desk.ts',
-      'sanity/presentation': 'sanity/src/presentation.ts',
-    }
-
-    const expectedAliases = {
-      'sanity/_singletons': '/path/to/monorepo/packages/sanity/src/_singletons.ts',
-      'sanity/desk': '/path/to/monorepo/packages/sanity/src/desk.ts',
-      'sanity/presentation': '/path/to/monorepo/packages/sanity/src/presentation.ts',
-    }
-
-    vi.doMock('@repo/dev-aliases', () => {
-      return {
-        default: devAliases,
-      }
-    })
-
-    const aliases = await getMonorepoAliases(monorepoPath)
-
-    expect(aliases).toMatchObject(expectedAliases)
   })
 })

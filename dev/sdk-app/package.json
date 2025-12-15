@@ -9,6 +9,7 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsgo --noEmit",
     "deploy": "sanity deploy",
     "dev": "sanity dev",
     "start": "sanity start"
@@ -22,7 +23,8 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
     "rimraf": "^5.0.10",
-    "sanity": "workspace:"
+    "sanity": "workspace:*"
   }
 }
