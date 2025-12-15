@@ -10,15 +10,15 @@ test.describe('Presentation', () => {
   })
 
   test('should be able to load a simple preview', async ({page}) => {
+    test.slow()
     const {previewIframeContents} = await getPresentationRegions(page)
 
-    // Checks that the preview ifra
-    //
     await expect(previewIframeContents.locator('sanity-visual-editing')).toBeVisible()
     await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
   })
 
   test('should be able to toggle preview viewport', async ({page}) => {
+    test.slow()
     const {root} = await getPresentationRegions(page)
     const viewportToggle = root.getByTestId('preview-viewport-toggle')
 

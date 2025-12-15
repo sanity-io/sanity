@@ -9,6 +9,8 @@ export async function openPresentationTool(page: Page): Promise<void> {
 export async function getPresentationRegions(page: Page) {
   const root = page.getByTestId('presentation-root')
   const previewIframe = root.locator('iframe')
+  await expect(previewIframe).toBeVisible()
+  await expect(previewIframe.first()).toBeVisible()
   const previewIframeContents = previewIframe.first().contentFrame()
   return {root, previewIframe, previewIframeContents}
 }
