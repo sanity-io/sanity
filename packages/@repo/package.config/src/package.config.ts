@@ -6,6 +6,9 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    // We already check types with `check:types` scripts
+    checkTypes: false,
+
     customTags: [
       {
         name: 'hidden',
