@@ -227,9 +227,8 @@ describe('Extract schema test', () => {
 
     const extracted = extractSchema(schema)
 
-    expect(extracted.length).toBe(30)
+    expect(extracted.length).toBe(29)
     expect(extracted.map((v) => v.name)).toStrictEqual([
-      'media',
       'sanity.imageAsset.reference',
       'author.reference',
       'deep',

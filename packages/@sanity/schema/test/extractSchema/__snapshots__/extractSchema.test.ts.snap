@@ -2550,13 +2550,6 @@ exports[`Extract schema test > Can not extract global document references at the
 exports[`Extract schema test > Extracts schema general 1`] = `
 [
   {
-    "name": "media",
-    "type": "type",
-    "value": {
-      "type": "unknown",
-    },
-  },
-  {
     "name": "sanity.imageAsset.reference",
     "type": "type",
     "value": {
@@ -6133,8 +6126,7 @@ exports[`Extract schema test > Extracts schema general 1`] = `
               "optional": true,
               "type": "objectAttribute",
               "value": {
-                "name": "media",
-                "type": "inline",
+                "type": "unknown",
               },
             },
           },
