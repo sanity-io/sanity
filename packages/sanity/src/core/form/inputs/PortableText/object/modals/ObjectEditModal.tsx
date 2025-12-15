@@ -57,6 +57,7 @@ export function ObjectEditModal(props: {
         referenceElement={referenceElement}
         title={<>{modalTitle}</>}
         width={modalWidth}
+        data-testid="popover-edit-dialog"
       >
         {props.children}
       </PopoverEditDialog>
