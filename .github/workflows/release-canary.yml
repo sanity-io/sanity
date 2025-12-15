@@ -79,7 +79,7 @@ jobs:
           done
 
       - name: Re-install after version bump
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
