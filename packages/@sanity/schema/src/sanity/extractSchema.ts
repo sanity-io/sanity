@@ -119,9 +119,7 @@ export function extractSchema(
       return uniqueName
     }
 
-    throw new Error(
-      `Unable to generate unique type name for ${typeName}.`,
-    )
+    throw new Error(`Unable to generate unique type name for ${typeName}.`)
   }
 
   function convertBaseType(
