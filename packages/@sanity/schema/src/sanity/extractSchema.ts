@@ -71,6 +71,11 @@ export function extractSchema(
   const documentTypes = new Map<string, DocumentSchemaType>()
   const schema: SchemaType = []
 
+  /**
+   * A map for keeping track of the unique names we generate in addition to the user defined types
+   */
+  const generatedTypes = new Map<string, string>()
+
   // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
   const sortedSchemaTypeNames = sortByDependencies(schemaDef)
   sortedSchemaTypeNames.forEach((typeName) => {
@@ -91,6 +96,31 @@ export function extractSchema(
 
     schema.push(base)
   })
+
+  /**
+   * Get unique schema name for a type name. It checks for collisions with names from the user defined
+   * types and allows specifying a suffix to add to the name of the type
+   *
+   * @param typeName - the type name to get unique name for
+   * @param suffix - the suffix to append
+   */
+  function getGeneratedTypeName(typeName: string, suffix?: string) {
+    const name = generatedTypes.get(typeName)
+    if (name) return name
+
+    for (let i = 0; i < 5; i++) {
+      const uniqueName = `${typeName}${suffix}${i || ''}`
+
+      // if the list of schema types contain the uniqueName we need to try the next prefix
+      if (sortedSchemaTypeNames.includes(uniqueName)) continue
+
+      // the type name is unique
+      generatedTypes.set(typeName, uniqueName)
+      return uniqueName
+    }
+
+    throw new Error(`Unable to generate unique type name for ${typeName}.`)
+  }
 
   function convertBaseType(
     schemaType: SanitySchemaType,
@@ -309,6 +339,35 @@ export function extractSchema(
     }
   }
 
+  function createReferenceTypeNodeDefintion(
+    reference: ReferenceSchemaType,
+  ): InlineTypeNode | UnionTypeNode<InlineTypeNode> {
+    const references = gatherReferenceNames(reference)
+
+    // Ensure hoisted reference types exist for each referenced document type
+    for (const name of references) {
+      if (!generatedTypes.has(name)) {
+        schema.push({
+          type: 'type',
+          name: getGeneratedTypeName(name, '.reference'),
+          value: createReferenceTypeNode(name),
+        })
+      }
+    }
+
+    if (references.length === 1) {
+      return {type: 'inline', name: getGeneratedTypeName(references[0], '.reference')}
+    }
+
+    return {
+      type: 'union',
+      of: references.map((name) => ({
+        type: 'inline',
+        name: getGeneratedTypeName(name, '.reference'),
+      })),
+    }
+  }
+
   return schema
 }
 
@@ -458,20 +517,6 @@ function createNumberTypeNodeDefintion(
   }
   return {
     type: 'number',
-  }
-}
-
-function createReferenceTypeNodeDefintion(
-  reference: ReferenceSchemaType,
-): ObjectTypeNode | UnionTypeNode<ObjectTypeNode> {
-  const references = gatherReferenceNames(reference)
-  if (references.length === 1) {
-    return createReferenceTypeNode(references[0])
-  }
-
-  return {
-    type: 'union',
-    of: references.map((name) => createReferenceTypeNode(name)),
   }
 }
 
