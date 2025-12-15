@@ -718,7 +718,7 @@ function sortByDependencies(compiledSchema: SchemaDef): {
       }
     } else if ('of' in schemaType) {
       for (const item of schemaType.of) {
-        walkDependencies(item, dependencies, path.concat(item.name), true)
+        walkDependencies(item, dependencies, path.concat(item.name), !isReferenceType(schemaType))
       }
     }
   }
