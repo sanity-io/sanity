@@ -1,9 +1,12 @@
+import debugit from 'debug'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {LiveUserApplicationContext} from 'sanity/_singletons'
 
 import {type UserApplication, useUserApplicationCache} from '../../store/userApplications'
 import {useWorkspaces} from '../workspaces'
 import {findUserApplication} from './liveUserApplication'
+
+const debug = debugit('studio:live-user-application')
 
 /** @internal */
 interface LiveUserApplicationProviderProps {
@@ -31,7 +34,7 @@ export function LiveUserApplicationProvider({children}: LiveUserApplicationProvi
         }
       })
       .catch((error) => {
-        console.error('Error when determining live user application id:', error)
+        debug('Error when determining live user application id:', error)
         if (hasSubscriber) {
           setUserApplication(undefined)
         }

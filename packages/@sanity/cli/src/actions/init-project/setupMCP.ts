@@ -110,7 +110,7 @@ async function promptForMCPSetup(
     {
       type: 'checkbox',
       name: 'selectedEditors',
-      message: 'Configure Sanity MCP server',
+      message: 'Configure Sanity MCP server?',
       choices: editorChoices,
     },
   ])
@@ -263,8 +263,8 @@ export async function setupMCP(
     // 6. Write configs for each selected editor
     for (const editor of selected) {
       await writeMCPConfig(editor, token)
-      output.success(`MCP configured for ${editor.name}`)
     }
+    output.success(`MCP configured for ${selected.map((e) => e.name).join(', ')}`)
 
     return selected
   } catch (error) {

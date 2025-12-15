@@ -22,5 +22,10 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),
     [companionDocs, documentId],
   )
-  return {isLinked: Boolean(companionDoc), companionDoc, loading: companionDocs?.loading}
+  return {
+    isLinked: Boolean(companionDoc),
+    isLockedByCanvas: companionDoc ? !companionDoc.isStudioDocumentEditable : false,
+    companionDoc,
+    loading: companionDocs?.loading,
+  }
 }

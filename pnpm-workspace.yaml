@@ -14,9 +14,9 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.56.1
   '@playwright/test': 1.56.1
-  '@sanity/client': ^7.13.1
+  '@sanity/client': ^7.13.2
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.1.2
+  '@sanity/pkg-utils': ^10.1.3
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
@@ -31,9 +31,9 @@ catalog:
   globals: ^16.2.0
   playwright: 1.56.1
   prettier: ^3.7.3
-  react: ^19.2.1
-  react-dom: ^19.2.1
-  react-is: ^19.2.1
+  react: ^19.2.3
+  react-dom: ^19.2.3
+  react-is: ^19.2.3
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.

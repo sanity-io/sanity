@@ -1,3 +1,5 @@
+import {type SanityClient} from '@sanity/client'
+import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
@@ -16,20 +18,31 @@ const mockWindowLocation = (origin: string | undefined, pathname: string = '/') 
   }
 }
 
-// Mock cache factory
+// Create a mock client for testing
+const createMockClient = (projectId: string) => {
+  const client = {
+    withConfig: vi.fn().mockReturnThis(),
+    request: vi.fn(),
+    config: vi.fn().mockReturnValue({projectId}),
+  }
+  return client as unknown as SanityClient
+}
+
+// Mock cache factory - now takes client and extracts projectId from client.config()
 const createMockCache = (
   appsByProject?: Record<
     string,
-    Array<{id: string; urlType: string; appHost: string; type?: string}>
+    Array<{id: string; urlType: string; appHost: string; type?: string; projectId?: string}>
   >,
 ): UserApplicationCache => {
   return {
-    get: vi.fn((projectId: string, apiHost?: string) => {
+    get: vi.fn((client: SanityClient) => {
+      const {projectId} = client.config()
       return Promise.resolve(
-        (appsByProject?.[projectId] || []).map((app) => ({
+        (appsByProject?.[projectId ?? ''] || []).map((app) => ({
           ...app,
           type: app.type || 'studio',
-          apiHost,
+          projectId: app.projectId || projectId,
         })),
       )
     }),
@@ -38,11 +51,17 @@ const createMockCache = (
 
 // Mock workspace factory
 const createWorkspaces = (
-  projects: Array<{projectId: string; apiHost?: string}>,
+  projects: Array<{projectId: string; authenticated?: boolean; apiHost?: string}>,
 ): WorkspaceSummary[] => {
   return projects.map((p) => ({
     projectId: p.projectId,
     apiHost: p.apiHost,
+    auth: {
+      state: of({
+        authenticated: p.authenticated !== false,
+        client: createMockClient(p.projectId),
+      }),
+    },
   })) as unknown as WorkspaceSummary[]
 }
 
@@ -114,7 +133,7 @@ describe('findUserApplication', () => {
       expect(result?.id).toBe('app-456')
     })
 
-    it('does not match production domain when app has staging apiHost', async () => {
+    it('does not match production domain when workspace has staging apiHost', async () => {
       // Window is at production URL
       mockWindowLocation('https://my-studio.sanity.studio')
 
@@ -132,7 +151,7 @@ describe('findUserApplication', () => {
       expect(result).toBeUndefined()
     })
 
-    it('does not match staging domain when app has production apiHost', async () => {
+    it('does not match staging domain when workspace has production apiHost', async () => {
       // Window is at staging URL
       mockWindowLocation('https://my-studio.studio.sanity.work')
 
@@ -222,8 +241,8 @@ describe('findUserApplication', () => {
     })
   })
 
-  describe('multiple projects', () => {
-    it('searches across all unique project IDs from workspaces', async () => {
+  describe('first workspace behavior', () => {
+    it('only checks the first workspace when multiple workspaces exist', async () => {
       mockWindowLocation('https://my-studio.sanity.studio')
 
       const cache = createMockCache({
@@ -231,77 +250,56 @@ describe('findUserApplication', () => {
         proj2: [{id: 'app-proj2', urlType: 'internal', appHost: 'my-studio'}],
       })
 
+      // Even though proj2 has a matching app, only proj1 (first workspace) is checked
       const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1', 'proj2']))
 
-      expect(result?.id).toBe('app-proj2')
-    })
-
-    it('deduplicates project IDs from workspaces', async () => {
-      mockWindowLocation('https://my-studio.sanity.studio')
-
-      const cache = createMockCache({
-        proj1: [{id: 'app-proj1', urlType: 'internal', appHost: 'my-studio'}],
-      })
-
-      // Multiple workspaces with the same projectId
-      const result = await findUserApplication(
-        cache,
-        createWorkspacesFromIds(['proj1', 'proj1', 'proj1']),
-      )
-
-      expect(result?.id).toBe('app-proj1')
-      // Should only fetch once for the deduplicated project
+      // Returns undefined because the first workspace (proj1) doesn't have a matching app
+      expect(result).toBeUndefined()
+      // Only the first workspace's project is fetched
       expect(cache.get).toHaveBeenCalledTimes(1)
     })
 
-    it('returns any match when multiple projects have apps with equal length URLs', async () => {
+    it('returns match when first workspace has matching app', async () => {
       mockWindowLocation('https://my-studio.sanity.studio')
 
       const cache = createMockCache({
         proj1: [{id: 'app-proj1', urlType: 'internal', appHost: 'my-studio'}],
-        proj2: [{id: 'app-proj2', urlType: 'internal', appHost: 'my-studio'}],
       })
 
-      const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1', 'proj2']))
+      const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1']))
 
-      // Both apps have the same URL length, so returns the first one encountered
       expect(result?.id).toBe('app-proj1')
+      expect(cache.get).toHaveBeenCalledTimes(1)
     })
 
-    it('passes apiHost to cache.get when workspace has apiHost', async () => {
+    it('passes client to cache.get when workspace is authenticated', async () => {
       mockWindowLocation('https://my-studio.sanity.studio')
 
       const cache = createMockCache({
         proj1: [{id: 'app-proj1', urlType: 'internal', appHost: 'my-studio'}],
       })
 
-      await findUserApplication(
-        cache,
-        createWorkspaces([{projectId: 'proj1', apiHost: 'https://api.example.com'}]),
-      )
-
-      expect(cache.get).toHaveBeenCalledWith('proj1', 'https://api.example.com')
-    })
-
-    it('deduplicates by projectId using last apiHost value', async () => {
-      mockWindowLocation('https://my-studio.sanity.studio')
-
-      const cache = createMockCache({
-        proj1: [{id: 'app-proj1', urlType: 'internal', appHost: 'my-studio'}],
-      })
-
-      // Multiple workspaces with same projectId but different apiHost - Map keeps last value
-      await findUserApplication(
-        cache,
-        createWorkspaces([
-          {projectId: 'proj1', apiHost: 'https://api1.example.com'},
-          {projectId: 'proj1', apiHost: 'https://api2.example.com'},
-        ]),
-      )
+      await findUserApplication(cache, createWorkspacesFromIds(['proj1']))
 
       expect(cache.get).toHaveBeenCalledTimes(1)
-      // Map keeps the last value for duplicate keys
-      expect(cache.get).toHaveBeenCalledWith('proj1', 'https://api2.example.com')
+      // cache.get now receives only the client
+      expect(cache.get).toHaveBeenCalledWith(expect.any(Object))
+    })
+
+    it('does not call cache.get for unauthenticated workspaces', async () => {
+      mockWindowLocation('https://my-studio.sanity.studio')
+
+      const cache = createMockCache({
+        proj1: [{id: 'app-proj1', urlType: 'internal', appHost: 'my-studio'}],
+      })
+
+      // Create workspace with authenticated: false
+      await findUserApplication(
+        cache,
+        createWorkspaces([{projectId: 'proj1', authenticated: false}]),
+      )
+
+      expect(cache.get).not.toHaveBeenCalled()
     })
   })
 
@@ -309,7 +307,7 @@ describe('findUserApplication', () => {
     // Note: The UserApplicationCache catches errors internally and returns []
     // These tests verify the behavior when the cache returns empty results
 
-    it('returns undefined when cache returns empty for all projects', async () => {
+    it('returns undefined when cache returns empty for the first workspace', async () => {
       mockWindowLocation('https://my-studio.sanity.studio')
 
       // Simulate cache behavior when underlying fetch fails (returns empty array)
@@ -322,14 +320,16 @@ describe('findUserApplication', () => {
       expect(result).toBeUndefined()
     })
 
-    it('finds match when only some projects have apps', async () => {
+    it('returns undefined when first workspace has no matching apps even if others do', async () => {
       mockWindowLocation('https://my-studio.sanity.studio')
 
-      // Simulate cache behavior: proj1 returns empty (as if fetch failed), proj2 has apps
+      // Only the first workspace is checked, so even though proj2 has matching apps,
+      // if proj1 is empty, the result is undefined
       const cache: UserApplicationCache = {
-        get: vi.fn((projectId: string) => {
+        get: vi.fn((client: SanityClient) => {
+          const {projectId} = client.config()
           if (projectId === 'proj1') {
-            return Promise.resolve([]) // Simulates cache returning empty on underlying error
+            return Promise.resolve([]) // First workspace has no apps
           }
           if (projectId === 'proj2') {
             return Promise.resolve([
@@ -340,9 +340,10 @@ describe('findUserApplication', () => {
         }),
       }
 
+      // Only first workspace (proj1) is checked
       const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1', 'proj2']))
 
-      expect(result?.id).toBe('app-proj2')
+      expect(result).toBeUndefined()
     })
   })
 
@@ -394,7 +395,7 @@ describe('findUserApplication', () => {
       expect(result?.id).toBe('app-long')
     })
 
-    it('returns the longest match across multiple projects', async () => {
+    it('only considers apps from first workspace for longest match', async () => {
       mockWindowLocation('https://cms.co', '/admin/settings')
 
       const cache = createMockCache({
@@ -404,8 +405,8 @@ describe('findUserApplication', () => {
 
       const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1', 'proj2']))
 
-      // The longest match should win even if it's in a later project
-      expect(result?.id).toBe('app-long')
+      // Only first workspace (proj1) is checked, so app-short is returned
+      expect(result?.id).toBe('app-short')
     })
   })
 
