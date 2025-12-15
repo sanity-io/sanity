@@ -226,8 +226,14 @@ describe('Extract schema test', () => {
     })
 
     const extracted = extractSchema(schema)
-    expect(extracted.length).toBe(27)
+
+    expect(extracted.length).toBe(30)
     expect(extracted.map((v) => v.name)).toStrictEqual([
+      'media',
+      'sanity.imageAsset.reference',
+      'author.reference',
+      'deep',
+      'recursive',
       'sanity.imagePaletteSwatch',
       'sanity.imagePalette',
       'sanity.imageDimensions',
@@ -239,13 +245,11 @@ describe('Extract schema test', () => {
       'sanity.assetSourceData',
       'someTextType',
       'sanity.fileAsset.reference',
-      'author.reference',
       'manuscript',
       'sanity.fileAsset',
       'code',
       'customStringType',
       'obj',
-      'sanity.imageAsset.reference',
       'book.reference',
       'blocksTest',
       'book',
@@ -310,109 +314,244 @@ describe('Extract schema test', () => {
     expect(extracted).toMatchSnapshot()
   })
 
-  test('Hoist repeated objects', () => {
-    const schema = createSchema({
-      name: 'test',
-      types: [
-        {
-          title: 'Blocks Test',
-          name: 'blocksTest',
-          type: 'object',
-          fields: [
-            {
-              title: 'Blocks',
-              name: 'blocks',
-              type: 'array',
-              of: [{type: 'block'}],
-            },
-          ],
-        },
-        defineType({
-          title: 'Document #1',
-          name: 'documentOne',
-          type: 'document',
-          fields: [
-            {
-              title: 'Blocks',
-              name: 'blocks',
-              type: 'array',
-              of: [{type: 'blocksTest'}],
-            },
-          ],
-        }),
-        defineType({
-          title: 'Document #2',
-          name: 'documentTwo',
-          type: 'document',
-          fields: [
-            {
-              title: 'Blocks',
-              name: 'blocks',
-              type: 'array',
-              of: [{type: 'blocksTest'}],
-            },
-          ],
-        }),
-      ],
+  describe('Can hoist types', () => {
+    test('Hoist repeated objects', () => {
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          {
+            title: 'Blocks Test',
+            name: 'blocksTest',
+            type: 'object',
+            fields: [
+              {
+                title: 'Blocks',
+                name: 'blocks',
+                type: 'array',
+                of: [{type: 'block'}],
+              },
+            ],
+          },
+          defineType({
+            title: 'Document #1',
+            name: 'documentOne',
+            type: 'document',
+            fields: [
+              {
+                title: 'Blocks',
+                name: 'blocks',
+                type: 'array',
+                of: [{type: 'blocksTest'}],
+              },
+            ],
+          }),
+          defineType({
+            title: 'Document #2',
+            name: 'documentTwo',
+            type: 'document',
+            fields: [
+              {
+                title: 'Blocks',
+                name: 'blocks',
+                type: 'array',
+                of: [{type: 'blocksTest'}],
+              },
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractSchema(schema)
+      expect(extracted.map((v) => v.name)).toStrictEqual([
+        'sanity.imagePaletteSwatch',
+        'sanity.imagePalette',
+        'sanity.imageDimensions',
+        'sanity.imageMetadata',
+        'sanity.imageHotspot',
+        'sanity.imageCrop',
+        'sanity.fileAsset',
+        'sanity.assetSourceData',
+        'sanity.imageAsset',
+        'geopoint',
+        'slug',
+        'documentTwo',
+        'documentOne',
+        'blocksTest',
+      ])
+
+      // Check that the repeated type was hoisted
+      const hoistedType = extracted.find((type) => type.name === 'blocksTest')
+      expect(hoistedType).toBeDefined()
+      assert(hoistedType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+      expect(hoistedType.name).toEqual('blocksTest')
+      assert(hoistedType.type === 'type') // this is a workaround for TS https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41179
+      assert(hoistedType.value.type === 'object') // this is a workaround for TS
+      expect(Object.keys(hoistedType.value.attributes)).toStrictEqual(['_type', 'blocks'])
+      assert(hoistedType.value.attributes.blocks.value.type === 'array')
+      assert(hoistedType.value.attributes.blocks.value.of.type === 'object')
+
+      // Check that the document correctly references the hoisted type
+      const validDocument = extracted.find((type) => type.name === 'documentOne')
+      expect(validDocument).toBeDefined()
+      assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+      expect(validDocument.name).toEqual('documentOne')
+      expect(validDocument.type).toEqual('document')
+      assert(validDocument.type === 'document') // this is a workaround for TS
+      expect(Object.keys(validDocument.attributes)).toStrictEqual([
+        '_id',
+        '_type',
+        '_createdAt',
+        '_updatedAt',
+        '_rev',
+        'blocks',
+      ])
+
+      // Check that the block type is extracted correctly, as an array
+      expect(validDocument.attributes.blocks.type).toEqual('objectAttribute')
+      expect(validDocument.attributes.blocks.value.type).toEqual('array')
+      assert(validDocument.attributes.blocks.value.type === 'array') // this is a workaround for TS
+      expect(validDocument.attributes.blocks.value.of.type).toEqual('object')
+      assert(validDocument.attributes.blocks.value.of.type === 'object') // this is a workaround for TS
+      expect(Object.keys(validDocument.attributes.blocks.value.of.attributes)).toStrictEqual([
+        '_key',
+      ])
+      assert(validDocument.attributes.blocks.value.of.rest?.type === 'inline') // this is a workaround for TS
+      expect(validDocument.attributes.blocks.value.of.rest.name).toBe(hoistedType.name)
+
+      expect(extracted).toMatchSnapshot()
     })
 
-    const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual([
-      'sanity.imagePaletteSwatch',
-      'sanity.imagePalette',
-      'sanity.imageDimensions',
-      'sanity.imageMetadata',
-      'sanity.imageHotspot',
-      'sanity.imageCrop',
-      'sanity.fileAsset',
-      'sanity.assetSourceData',
-      'sanity.imageAsset',
-      'geopoint',
-      'slug',
-      'documentTwo',
-      'documentOne',
-      'blocksTest',
-    ])
+    test('inline reference types should not conflict with the ones defined by the user', () => {
+      const schema = createSchema(
+        {
+          name: 'test',
+          types: [
+            defineType({
+              title: 'Blog post',
+              name: 'blog',
+              type: 'document',
+              fields: [
+                {
+                  type: 'blog.reference',
+                  name: 'relevant',
+                },
+              ],
+            }),
+            defineType({
+              name: 'blog.reference',
+              type: 'object',
+              fields: [
+                {name: 'title', type: 'string'},
+                {name: 'blogPost', type: 'reference', to: [{type: 'blog'}]},
+              ],
+            }),
+          ],
+        },
+        true,
+      )
 
-    // Check that the repeated type was hoisted
-    const hoistedType = extracted.find((type) => type.name === 'blocksTest')
-    expect(hoistedType).toBeDefined()
-    assert(hoistedType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+      const extracted = extractSchema(schema)
 
-    expect(hoistedType.name).toEqual('blocksTest')
-    assert(hoistedType.type === 'type') // this is a workaround for TS https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41179
-    assert(hoistedType.value.type === 'object') // this is a workaround for TS
-    expect(Object.keys(hoistedType.value.attributes)).toStrictEqual(['_type', 'blocks'])
-    assert(hoistedType.value.attributes.blocks.value.type === 'array')
-    assert(hoistedType.value.attributes.blocks.value.of.type === 'object')
+      expect(extracted.map((v) => v.name)).toStrictEqual([
+        'blog.reference1', // the doc ref type
+        'blog.reference', // the user defined object type
+        'blog',
+      ])
 
-    // Check that the document correctly references the hoisted type
-    const validDocument = extracted.find((type) => type.name === 'documentOne')
-    expect(validDocument).toBeDefined()
-    assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
-    expect(validDocument.name).toEqual('documentOne')
-    expect(validDocument.type).toEqual('document')
-    assert(validDocument.type === 'document') // this is a workaround for TS
-    expect(Object.keys(validDocument.attributes)).toStrictEqual([
-      '_id',
-      '_type',
-      '_createdAt',
-      '_updatedAt',
-      '_rev',
-      'blocks',
-    ])
+      expect(extracted).toMatchSnapshot()
+      const userDefinedObjType = extracted.find((type) => type.name === 'blog.reference')
+      expect(userDefinedObjType).toBeDefined()
+      assert(userDefinedObjType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+      expect(userDefinedObjType.type).toBe('type')
+      assert(userDefinedObjType.type === 'type')
+      expect(userDefinedObjType.value.type).toBe('object')
+    })
 
-    // Check that the block type is extracted correctly, as an array
-    expect(validDocument.attributes.blocks.type).toEqual('objectAttribute')
-    expect(validDocument.attributes.blocks.value.type).toEqual('array')
-    assert(validDocument.attributes.blocks.value.type === 'array') // this is a workaround for TS
-    expect(validDocument.attributes.blocks.value.of.type).toEqual('object')
-    assert(validDocument.attributes.blocks.value.of.type === 'object') // this is a workaround for TS
-    expect(Object.keys(validDocument.attributes.blocks.value.of.attributes)).toStrictEqual(['_key'])
-    assert(validDocument.attributes.blocks.value.of.rest?.type === 'inline') // this is a workaround for TS
-    expect(validDocument.attributes.blocks.value.of.rest.name).toBe(hoistedType.name)
+    test('hoisted inline types should not conflict with user defined schema types', () => {
+      const myAwesomeTypeObject = defineField({
+        name: 'myAwesomeType',
+        type: 'object',
+        fields: [{type: 'string', name: 'title'}],
+      })
 
-    expect(extracted).toMatchSnapshot()
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            name: 'myAwesomeType',
+            type: 'string',
+          }),
+          defineType({
+            title: 'Document #1',
+            name: 'documentOne',
+            type: 'document',
+            fields: [
+              myAwesomeTypeObject,
+              {
+                type: 'array',
+                name: 'blocks',
+                of: [{type: 'block'}],
+              },
+            ],
+          }),
+          defineType({
+            title: 'Document #2',
+            name: 'documentTwo',
+            type: 'document',
+            fields: [
+              myAwesomeTypeObject,
+              {
+                type: 'array',
+                name: 'blocks',
+                of: [{type: 'block'}],
+              },
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractSchema(schema)
+      expect(extracted.map((v) => v.name)).toStrictEqual([
+        'myAwesomeType1',
+        'sanity.imagePaletteSwatch',
+        'sanity.imagePalette',
+        'sanity.imageDimensions',
+        'sanity.imageMetadata',
+        'sanity.imageHotspot',
+        'sanity.imageCrop',
+        'sanity.fileAsset',
+        'sanity.assetSourceData',
+        'sanity.imageAsset',
+        'geopoint',
+        'slug',
+        'documentTwo',
+        'documentOne',
+        'myAwesomeType',
+      ])
+
+      // Check that the user defined typed has the expected name
+      const userDefinedType = extracted.find((type) => type.name === 'myAwesomeType')
+      expect(userDefinedType).toBeDefined()
+      expect(userDefinedType).toEqual({
+        name: 'myAwesomeType',
+        type: 'type',
+        value: {
+          type: 'string',
+        },
+      })
+
+      // Check that the repeated type was hoisted
+      const hoistedType = extracted.find((type) => type.name === 'myAwesomeType1')
+      expect(hoistedType).toBeDefined()
+      assert(hoistedType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+      expect(hoistedType.name).toEqual('myAwesomeType1')
+      assert(hoistedType.type === 'type') // this is a workaround for TS https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41179
+      assert(hoistedType.value.type === 'object') // this is a workaround for TS
+      expect(Object.keys(hoistedType.value.attributes)).toStrictEqual(['title'])
+
+      expect(extracted).toMatchSnapshot()
+    })
   })
 
   test('order of types does not matter', () => {
@@ -912,52 +1051,6 @@ describe('Extract schema test', () => {
     expect(inlineRef.value.type).toBe('inline')
     assert(inlineRef.value.type === 'inline')
     expect(inlineRef.value.name).toBe('thing.reference')
-  })
-
-  test('inline reference types should not conflict with the ones defined by the user', () => {
-    const schema = createSchema(
-      {
-        name: 'test',
-        types: [
-          defineType({
-            title: 'Blog post',
-            name: 'blog',
-            type: 'document',
-            fields: [
-              {
-                type: 'blog.reference',
-                name: 'relevant',
-              },
-            ],
-          }),
-          defineType({
-            name: 'blog.reference',
-            type: 'object',
-            fields: [
-              {name: 'title', type: 'string'},
-              {name: 'blogPost', type: 'reference', to: [{type: 'blog'}]},
-            ],
-          }),
-        ],
-      },
-      true,
-    )
-
-    const extracted = extractSchema(schema)
-
-    expect(extracted.map((v) => v.name)).toStrictEqual([
-      'blog.reference1', // the doc ref type
-      'blog.reference', // the user defined object type
-      'blog',
-    ])
-
-    expect(extracted).toMatchSnapshot()
-    const userDefinedObjType = extracted.find((type) => type.name === 'blog.reference')
-    expect(userDefinedObjType).toBeDefined()
-    assert(userDefinedObjType !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
-    expect(userDefinedObjType.type).toBe('type')
-    assert(userDefinedObjType.type === 'type')
-    expect(userDefinedObjType.value.type).toBe('object')
   })
 })
 

@@ -101,9 +101,15 @@ export function extractSchema(
     if (base === null) {
       return
     }
+    // Skip creating hoisted types that would just be inline references to existing types.
+    // Remove from `repeated` so the field falls through to convertSchemaType in createObject.
+    if (base.type === 'inline') {
+      repeated.delete(objectField)
+      return
+    }
     schema.push({
       type: 'type',
-      name: key,
+      name: getGeneratedTypeName(key),
       value: base,
     })
   })
@@ -133,7 +139,7 @@ export function extractSchema(
    * @param typeName - the type name to get unique name for
    * @param suffix - the suffix to append
    */
-  function getGeneratedTypeName(typeName: string, suffix?: string) {
+  function getGeneratedTypeName(typeName: string, suffix = '') {
     const name = generatedTypes.get(typeName)
     if (name) return name
 
@@ -285,7 +291,7 @@ export function extractSchema(
         // This field is hoisted, hoist it with an inline type
         value = {
           type: 'inline',
-          name: hoisted,
+          name: getGeneratedTypeName(hoisted),
         }
       } else {
         value = convertSchemaType(field.type)
@@ -684,26 +690,26 @@ function sortByDependencies(compiledSchema: SchemaDef): {
         }
         if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
+            // Reference types are handled by createReferenceTypeNodeDefintion - add their targets as dependencies
+            // but skip hoisting detection since references have their own hoisting mechanism
             field.type.to.forEach((ref) => dependencies.add(ref.type!))
           } else {
             dependencies.add(field.type)
-          }
 
-          // Hoisting detection: Only consider inline types (not in compiledSchema). If we've seen this exact
-          // ObjectField before, it's used in multiple places and should be hoisted to a named type to avoid
-          // duplication.
-          if (hoistRepetitions && !compiledSchema.get(field.type.name)) {
-            const fieldPath = path.concat([field.name])
-            if (objectMap.has(field)) {
+            // Hoisting detection: Only consider inline types (not in compiledSchema). If we've seen this exact
+            // ObjectField before, it's used in multiple places and should be hoisted to a named type to avoid
+            // duplication.
+            if (hoistRepetitions && !validSchemaNames.has(field.type.name)) {
+              const fieldPath = path.concat([field.name])
               // eslint-disable-next-line max-depth
-              if (!repeated.has(field)) {
-                // Second occurrence - mark for hoisting with a unique name
+              if (!repeated.has(field) && objectMap.has(field)) {
+                // The field is not in the repeated set, but it's the second time we see it – time to add it
                 repeated.set(field, pickRepeatedName(fieldPath))
               }
-            }
 
-            // Track all inline object fields we encounter
-            objectMap.add(field)
+              // Track all inline object fields we encounter
+              objectMap.add(field)
+            }
           }
         } else if (field.type) {
           dependencies.add(field.type)
