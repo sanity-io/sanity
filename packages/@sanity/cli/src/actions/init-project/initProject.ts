@@ -771,12 +771,12 @@ export default async function initSanity(
     print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
     if (!isCurrentDir) print(goToProjectDir)
     print(
-      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
+      `\nGet started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
     if (mcpConfigured.length > 0) {
       const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
-        `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat.`,
+        `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat`,
       )
       print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
       print(
