@@ -5,6 +5,7 @@ import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
+import {isProd} from '../../environment'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string
@@ -48,7 +49,6 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
   const origin = window.location.origin
   const manageBaseUrl = isStaging ? 'https://sanity.work' : 'https://sanity.io'
-  const isLocalhost = origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')
 
   const corsUrl = useMemo(() => {
     const url = new URL(`/manage/project/${projectId}/api`, manageBaseUrl)
@@ -145,7 +145,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 </Flex>
               </Card>
 
-              {showRegisterOption && !isLocalhost && (
+              {showRegisterOption && isProd && (
                 <Flex justify="center">
                   <Text size={1} muted>
                     Recommended
