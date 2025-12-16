@@ -14,8 +14,8 @@
     "start": "sanity start"
   },
   "dependencies": {
-    "@sanity/sdk": "^2.3.1",
-    "@sanity/sdk-react": "^2.3.1",
+    "@sanity/sdk": "^2.4.0",
+    "@sanity/sdk-react": "^2.4.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
