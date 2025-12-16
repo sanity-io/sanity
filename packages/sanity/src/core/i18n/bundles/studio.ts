@@ -603,13 +603,23 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is v{{latestVersion}}',
 
+  /** Name of the sanity studio */
+  'help-resources.studio': 'Sanity Studio',
+
   /** Menu item for reloading Studio to update */
   'help-resources.studio-auto-update-now': 'Reload to update to v{{newVersion}}',
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
+
+  /** Label for studio's which are up to date */
+  'help-resources.up-to-date': 'Up to date',
+
+  /** Version text */
+  'help-resources.version': 'v{{version}}',
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',

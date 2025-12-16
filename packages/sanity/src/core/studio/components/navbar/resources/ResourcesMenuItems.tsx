@@ -1,5 +1,7 @@
-import {DotIcon} from '@sanity/icons'
-import {MenuDivider, Text} from '@sanity/ui'
+/* eslint-disable  no-restricted-imports */
+// The design of the Studio version menu item doesn't align with the limitations of the
+// 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
+import {Badge, type CardTone, Flex, MenuDivider, MenuItem as UIMenuItem, Text} from '@sanity/ui'
 import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
@@ -17,12 +19,6 @@ interface ResourcesMenuItemProps {
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
 }
-
-const UpdateDot = () => (
-  <Text size={2}>
-    <DotIcon style={{color: `var(--card-badge-primary-dot-color)`}} />
-  </Text>
-)
 
 function reload() {
   document.location.reload()
@@ -83,7 +79,7 @@ export function ResourcesMenuItems({
           return (
             <>
               <SubSection key={subSection._key} subSection={subSection} />
-              {i < sections.length - 1 && <MenuDivider />}
+              {i < sections.length - 1 && <MenuDivider key={`${subSection._key}/divider`} />}
             </>
           )
         })}
@@ -111,35 +107,42 @@ function StudioVersion({
     ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
     : false
 
+  let versionTone: CardTone = 'positive'
+  let subtitle = t('help-resources.up-to-date')
+  let action = onOpenStudioVersionDialog
+  let testId = 'menu-item-studio-version'
+
+  if (newAutoUpdateVersion) {
+    subtitle = t('help-resources.studio-auto-update-now', {
+      newVersion: newAutoUpdateVersion.version,
+    })
+    versionTone = 'caution'
+    action = reload
+    testId = 'menu-item-update-studio-now'
+  } else if (isOutdated) {
+    subtitle = t('help-resources.latest-sanity-version', {
+      latestVersion: latestTaggedVersion?.version,
+    })
+    versionTone = 'caution'
+  }
+
   return (
-    <>
-      <MenuItem
-        onClick={onOpenStudioVersionDialog}
-        text={t('help-resources.studio-version', {
-          studioVersion: currentVersion.version,
-        })}
-      />
-      {newAutoUpdateVersion ? (
-        <MenuItem
-          tone="primary"
-          onClick={reload}
-          data-testid="menu-item-update-studio-now"
-          text={t('help-resources.studio-auto-update-now', {
-            newVersion: newAutoUpdateVersion.version,
-          })}
-          iconRight={UpdateDot}
-        />
-      ) : isOutdated ? (
-        <MenuItem
-          tone="primary"
-          onClick={onOpenStudioVersionDialog}
-          text={t('help-resources.latest-sanity-version', {
-            latestVersion: latestTaggedVersion?.version,
-          })}
-          iconRight={UpdateDot}
-        />
-      ) : null}
-    </>
+    <UIMenuItem padding={2} onClick={action} data-testid={testId}>
+      <Flex align="flex-start">
+        <Flex direction="column" flex={1} gap={2} padding={1}>
+          <Text size={1} weight="medium">
+            {t('help-resources.studio')}
+          </Text>
+          <Text muted size={1}>
+            {subtitle}
+          </Text>
+        </Flex>
+
+        <Badge tone={versionTone}>
+          {t('help-resources.version', {version: currentVersion.version})}
+        </Badge>
+      </Flex>
+    </UIMenuItem>
   )
 }
 
