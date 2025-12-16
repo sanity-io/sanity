@@ -71,7 +71,7 @@ export function WorkspaceMenuButton() {
               <>
                 <MenuDivider style={{padding: 0}} />
                 <Box paddingTop={2} paddingBottom={1}>
-                  <Box paddingRight={5} paddingLeft={4} paddingBottom={2}>
+                  <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
                     <Text size={0} weight="medium">
                       {t('workspaces.action.switch-workspace')}
                     </Text>
