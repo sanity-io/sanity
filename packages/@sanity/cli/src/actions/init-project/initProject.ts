@@ -743,7 +743,7 @@ export default async function initSanity(
   const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
-  const goToProjectDir = `(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
+  const goToProjectDir = `\n(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
 
   if (isAppTemplate) {
     //output for custom apps here
@@ -771,14 +771,17 @@ export default async function initSanity(
     print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
     if (!isCurrentDir) print(goToProjectDir)
     print(
-      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
+      `\nGet started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
     if (mcpConfigured.length > 0) {
       const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
       print(
-        `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
+        `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat`,
       )
-      print(`Learn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+      )
     }
     print('\n')
     print(`Other helpful commands:`)
