@@ -14,6 +14,7 @@ test.describe('Presentation', () => {
   test('should be able to load a simple preview', async ({page}) => {
     test.slow()
     const root = page.getByTestId('presentation-root')
+    await expect(root).toBeVisible()
     const previewIframe = root.locator('iframe')
 
     // Wait for iframe element to be attached to the DOM
@@ -29,6 +30,7 @@ test.describe('Presentation', () => {
   test('should be able to toggle preview viewport', async ({page}) => {
     test.slow()
     const root = page.getByTestId('presentation-root')
+    await expect(root).toBeVisible()
     const viewportToggle = root.getByTestId('preview-viewport-toggle')
 
     await expect(viewportToggle).toBeVisible()
