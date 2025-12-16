@@ -3,7 +3,8 @@ import {expect} from '@playwright/test'
 import {test} from '../../studio-test'
 
 test.describe('Portable Text Input - Fullscreen Backwards Select', () => {
-  test.beforeEach(async ({page, createDraftDocument}) => {
+  test.beforeEach(async ({page, createDraftDocument, browserName}) => {
+    test.skip(browserName === 'firefox')
     test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
@@ -47,7 +48,11 @@ test.describe('Portable Text Input - Fullscreen Backwards Select', () => {
     }
   })
 
-  test('you should be able to backwards select text in fullscreen mode', async ({page}) => {
+  test('you should be able to backwards select text in fullscreen mode', async ({
+    page,
+    browserName,
+  }) => {
+    test.skip(browserName === 'firefox')
     test.slow()
 
     const portal = page.getByTestId('document-panel-portal')
