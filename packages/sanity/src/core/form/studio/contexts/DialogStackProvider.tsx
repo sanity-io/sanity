@@ -34,6 +34,10 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     setStack((prev) => prev.filter((entry) => entry.id !== id))
   }, [])
 
+  const update = useCallback((id: string, path?: Path) => {
+    setStack((prev) => prev.map((entry) => (entry.id === id ? {...entry, path} : entry)))
+  }, [])
+
   const findAncestorFullscreenPath = useCallback(
     (currentPath: Path): string[] => {
       return allFullscreenPaths.filter((pathStr: string) => {
@@ -128,7 +132,10 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     closeAll()
   }, [closeWithFullscreen, closeAll, stack, hasAnyFullscreen, allFullscreenPaths])
 
-  const value = useMemo(() => ({stack, push, remove, close}), [stack, push, remove, close])
+  const value = useMemo(
+    () => ({stack, push, remove, update, close}),
+    [stack, push, remove, update, close],
+  )
 
   return <DialogStackContext.Provider value={value}>{children}</DialogStackContext.Provider>
 }

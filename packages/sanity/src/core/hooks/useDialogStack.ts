@@ -13,22 +13,29 @@ export function useDialogStack({path}: {path?: Path} = {}) {
   const id = useId()
   const hasRegistered = useRef(false)
 
-  // Get stable references to push/remove
+  // Get stable references to push/remove/update
   const push = context?.push
   const remove = context?.remove
+  const update = context?.update
 
-  // Push on mount with path, remove on unmount
+  // Register on mount, remove on unmount (stable deps = runs once)
   useEffect(() => {
-    if (push && remove && !hasRegistered.current) {
-      hasRegistered.current = true
-      push(id, path)
-      return () => {
-        hasRegistered.current = false
-        remove(id)
-      }
+    if (!push || !remove) return undefined
+
+    hasRegistered.current = true
+    push(id, path)
+
+    return () => {
+      hasRegistered.current = false
+      remove(id)
     }
-    return undefined
-  }, [push, remove, id, path])
+  }, [push, remove, id])
+
+  useEffect(() => {
+    if (update && hasRegistered.current) {
+      update(id, path)
+    }
+  }, [update, id, path])
 
   const stack = context?.stack ?? []
   const topEntry = stack.length > 0 ? stack[stack.length - 1] : null
