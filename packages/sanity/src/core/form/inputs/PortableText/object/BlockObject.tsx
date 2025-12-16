@@ -25,7 +25,6 @@ import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {
   type BlockProps,
@@ -122,8 +121,6 @@ export function BlockObject(props: BlockObjectProps) {
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
-
-  const {enabled: nestedObjectNavigationEnabled} = useEnhancedObjectDialog()
 
   const selfSelection = useMemo(
     (): EditorSelection => ({
