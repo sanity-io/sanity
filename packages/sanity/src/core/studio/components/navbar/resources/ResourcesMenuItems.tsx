@@ -1,13 +1,28 @@
 /* eslint-disable  no-restricted-imports */
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
-import {Badge, type CardTone, Flex, MenuDivider, MenuItem as UIMenuItem, Text} from '@sanity/ui'
+import {CopyIcon, LaunchIcon} from '@sanity/icons'
+import {
+  Badge,
+  Box,
+  Card,
+  type CardTone,
+  Flex,
+  Inline,
+  MenuDivider,
+  MenuItem as UIMenuItem,
+  Text,
+  useToast,
+} from '@sanity/ui'
+import {useCallback} from 'react'
 import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
+import {useWorkspaces} from '../../../workspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -71,6 +86,9 @@ export function ResourcesMenuItems({
         latestTaggedVersion={latestTaggedVersion}
         onOpenStudioVersionDialog={onOpenStudioVersionDialog}
       />
+      <MenuDivider />
+
+      <StudioRegistration />
       <MenuDivider />
 
       {!error &&
@@ -143,6 +161,79 @@ function StudioVersion({
         </Badge>
       </Flex>
     </UIMenuItem>
+  )
+}
+
+function StudioRegistration() {
+  const {t} = useTranslation()
+  const {push: pushToast} = useToast()
+  const {userApplication} = useLiveUserApplication()
+  const workspaces = useWorkspaces()
+  const projectId = workspaces[0]?.projectId
+
+  let manageBaseUrl = 'https://www.sanity.io'
+  if (workspaces[0]?.apiHost === 'https://api.sanity.work') {
+    manageBaseUrl = 'https://www.sanity.work'
+  }
+
+  const handleRegisterStudio = useCallback(() => {
+    if (!projectId) return
+    const currentOrigin = typeof window === 'undefined' ? '' : window.location.origin
+    const registrationUrl = `${manageBaseUrl}/manage/project/${projectId}/studios?studio=add&origin=${encodeURIComponent(currentOrigin)}`
+    window.open(registrationUrl, '_blank', 'noopener,noreferrer')
+  }, [projectId, manageBaseUrl])
+
+  const handleCopyAppId = useCallback(() => {
+    if (userApplication?.id) {
+      navigator.clipboard
+        .writeText(userApplication.id)
+        .then(() => {
+          pushToast({
+            closable: true,
+            status: 'success',
+            title: t('help-resources.studio-id-copied'),
+          })
+        })
+        .catch(() => {
+          pushToast({
+            closable: true,
+            status: 'error',
+            title: t('help-resources.studio-id-copy-error'),
+          })
+        })
+    }
+  }, [userApplication, pushToast, t])
+
+  if (userApplication) {
+    return (
+      <MenuItem
+        text={t('help-resources.copy-app-id')}
+        iconRight={<CopyIcon />}
+        onClick={handleCopyAppId}
+      />
+    )
+  }
+
+  return (
+    <Card tone="caution">
+      <UIMenuItem onClick={handleRegisterStudio}>
+        <Flex direction="column" flex={1} gap={2}>
+          <Box paddingY={2}>
+            <Text size={1} weight="medium">
+              {t('help-resources.studio-not-registered')}
+            </Text>
+          </Box>
+          <Card paddingY={2} radius={4} border tone="caution">
+            <Flex justify="space-around">
+              <Inline space={2}>
+                <Text size={1}>{t('help-resources.register-studio')} </Text>
+                <LaunchIcon />
+              </Inline>
+            </Flex>
+          </Card>
+        </Flex>
+      </UIMenuItem>
+    </Card>
   )
 }
 
