@@ -120,7 +120,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const hasNestedDialogs = stack.length > 1
 
   const handleGlobalKeyDown = useCallback(
-    (event: any) => {
+    (event: KeyboardEvent) => {
       // Only the top dialog should respond to the keyboard shortcut
       if (isTop && (event.metaKey || event.ctrlKey) && event.key === 'ArrowUp') {
         event.preventDefault()
