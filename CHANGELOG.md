@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* **schema:** add schema inline hoisting (#11521)
+* **typegen:** return same case when generating types (#11330)
+* drop support for react < 19.2 (#11383)
+
+### Features
+
+* **core:** enable typographic behaviors in Portable Text Inputs by default ([eaffcde](https://github.com/sanity-io/sanity/commit/eaffcdec863fa70f1006bef62c2c3cbb86517171)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **schema:** add schema inline hoisting ([#11521](https://github.com/sanity-io/sanity/issues/11521)) ([f81e3cc](https://github.com/sanity-io/sanity/commit/f81e3cc03f9a8dfaeac7ffd2ac890346225be447)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **schema:** hoist reference types and use inline objects to reference them ([#11471](https://github.com/sanity-io/sanity/issues/11471)) ([16ce107](https://github.com/sanity-io/sanity/commit/16ce1075f8b3d3a6b0c0edec8fe1fa9500baef45)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **typegen:** memoizations, refactoring add improved progress reporting ([#10294](https://github.com/sanity-io/sanity/issues/10294)) ([5d6ac17](https://github.com/sanity-io/sanity/commit/5d6ac171739442c4db418eed8176d1845cb8181a)), closes [#8950](https://github.com/sanity-io/sanity/issues/8950) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **typegen:** return same case when generating types ([#11330](https://github.com/sanity-io/sanity/issues/11330)) ([0402647](https://github.com/sanity-io/sanity/commit/0402647eb06a4dde3d1c93ebf70192c47ee52e36)) by Sindre Gulseth (sgulseth@gmail.com)
+
+### Bug Fixes
+
+* drop support for react < 19.2 ([#11383](https://github.com/sanity-io/sanity/issues/11383)) ([169be63](https://github.com/sanity-io/sanity/commit/169be63ead210763b7cef232e263b93ffd3b80dd)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
 
 ### Features
