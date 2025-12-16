@@ -1,5 +1,5 @@
 import DOMPurify from 'isomorphic-dompurify'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {renderToString} from 'react-dom/server'
 import {
   type ArraySchemaType,

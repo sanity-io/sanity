@@ -1,4 +1,4 @@
-import {size, sortBy} from 'lodash'
+import {size, sortBy} from 'lodash-es'
 
 import {type CliCommandDefinition} from '../../types'
 

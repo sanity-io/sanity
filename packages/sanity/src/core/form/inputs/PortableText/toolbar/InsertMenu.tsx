@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {upperFirst} from 'lodash'
+import {upperFirst} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
 
 import {type PopoverProps} from '../../../../../ui-components'

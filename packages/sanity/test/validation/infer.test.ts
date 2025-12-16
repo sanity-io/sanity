@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
-import {has} from 'lodash'
+import {has} from 'lodash-es'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config'

@@ -1,5 +1,5 @@
 import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {memo, useMemo} from 'react'
 
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'

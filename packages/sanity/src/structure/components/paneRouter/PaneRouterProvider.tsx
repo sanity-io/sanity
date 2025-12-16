@@ -1,5 +1,5 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {useRouter, useRouterState} from 'sanity/router'

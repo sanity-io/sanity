@@ -6,7 +6,7 @@ import {type CliCommandContext, type CliCommandDefinition, type CliOutputter} fr
 import sanityImport from '@sanity/import'
 import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
-import {padStart} from 'lodash'
+import {padStart} from 'lodash-es'
 import prettyMs from 'pretty-ms'
 
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'

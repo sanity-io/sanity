@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
 import {OWN_PROPS_NAME} from '../constants'

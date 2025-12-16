@@ -64,7 +64,7 @@
     "groq-js": "^1.24.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "object-inspect": "^1.13.4"
   },
   "devDependencies": {
@@ -74,7 +74,7 @@
     "@repo/tsconfig": "workspace:*",
     "@sanity/icons": "^3.7.4",
     "@sanity/pkg-utils": "catalog:",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash-es": "^4.17.12",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",

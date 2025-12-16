@@ -5,7 +5,7 @@ import {
 } from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import debugit from 'debug'
-import {max, sum} from 'lodash'
+import {max, sum} from 'lodash-es'
 import {firstValueFrom} from 'rxjs'
 
 import {isDev} from '../environment'

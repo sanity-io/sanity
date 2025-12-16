@@ -1,4 +1,4 @@
-import {upperFirst} from 'lodash'
+import {upperFirst} from 'lodash-es'
 
 import {internal} from '../extractFromSanitySchema'
 import {isDocumentType, isUnion} from '../helpers'

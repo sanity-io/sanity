@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {intersection, isEmpty} from 'lodash'
+import {intersection, isEmpty} from 'lodash-es'
 
 import {isNonNullable} from '../../../../../util'
 import {

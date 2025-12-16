@@ -1,5 +1,5 @@
 import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {difference, flatten, memoize} from 'lodash'
+import {difference, flatten, memoize} from 'lodash-es'
 import {
   combineLatest,
   concat,

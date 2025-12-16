@@ -9,7 +9,7 @@ import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {startTransition, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
 
 import {useCurrentUser} from '../../store'

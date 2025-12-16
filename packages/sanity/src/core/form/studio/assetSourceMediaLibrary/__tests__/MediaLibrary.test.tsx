@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {render, waitFor} from '@testing-library/react'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
