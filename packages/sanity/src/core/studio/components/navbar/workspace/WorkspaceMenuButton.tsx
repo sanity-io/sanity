@@ -105,7 +105,7 @@ export function WorkspaceMenuButton() {
                           __unstable_subtitle={workspace.subtitle}
                           text={workspace?.title || workspace.name}
                           style={{
-                            marginLeft: '1.25rem',
+                            marginLeft: '1rem',
                             marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
                           }}
                           __unstable_space={0}
