@@ -65,7 +65,13 @@ export function ObjectEditModal(props: {
   }
 
   return nestedObjectNavigationEnabled ? (
-    <EnhancedObjectDialog type="dialog" onClose={onClose} header={modalTitle} width={1}>
+    <EnhancedObjectDialog
+      type="dialog"
+      onClose={onClose}
+      header={modalTitle}
+      width={1}
+      autofocus={autoFocus}
+    >
       {props.children}
     </EnhancedObjectDialog>
   ) : (
