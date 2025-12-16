@@ -14,13 +14,7 @@
   "packageRules": [
     {
       "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
-      "matchPackageNames": [
-        "/^@sanity\\//",
-        "/^@portabletext\\//",
-        "/^react-rx$/",
-        "/^use-effect-event$/",
-        "/^groq-js$/"
-      ],
+      "matchPackageNames": ["/^@sanity\\//", "/^@portabletext\\//", "/^react-rx$/", "/^groq-js$/"],
       "minimumReleaseAge": "0 days"
     },
     {
@@ -133,8 +127,6 @@
   ],
   "ignorePaths": [
     "packages/@sanity/cli/test/__fixtures__/v2/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-18/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-19/package.json",
-    "packages/sanity/fixtures/examples/prj-with-styled-components-5/package.json"
+    "packages/sanity/fixtures/examples/prj-with-react-19/package.json"
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "4.21.1",
+  "version": "5.0.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",

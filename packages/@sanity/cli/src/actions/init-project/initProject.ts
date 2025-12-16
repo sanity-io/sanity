@@ -66,7 +66,7 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
-import {type Editor, setupMCP} from './setupMCP'
+import {type Editor, type EditorName, setupMCP} from './setupMCP'
 import templates from './templates'
 import {
   sanityCliTemplate,
@@ -399,7 +399,7 @@ export default async function initSanity(
   }
 
   let useTypeScript = flagOrDefault('typescript', true)
-  let mcpConfigured: Editor[] | null = null
+  let mcpConfigured: EditorName[] = []
   if (initNext) {
     if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
@@ -549,7 +549,17 @@ export default async function initSanity(
     }
 
     // Set up MCP integration
-    mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
+    const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+    trace.log({
+      step: 'mcpSetup',
+      detectedEditors: mcpResult.detectedEditors,
+      configuredEditors: mcpResult.configuredEditors,
+      skipped: mcpResult.skipped,
+    })
+    if (mcpResult.error) {
+      trace.error(mcpResult.error)
+    }
+    mcpConfigured = mcpResult.configuredEditors
 
     const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
@@ -661,7 +671,17 @@ export default async function initSanity(
   }
 
   // Set up MCP integration
-  mcpConfigured = await setupMCP(context, {mcp: cliFlags.mcp})
+  const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+  trace.log({
+    step: 'mcpSetup',
+    detectedEditors: mcpResult.detectedEditors,
+    configuredEditors: mcpResult.configuredEditors,
+    skipped: mcpResult.skipped,
+  })
+  if (mcpResult.error) {
+    trace.error(mcpResult.error)
+  }
+  mcpConfigured = mcpResult.configuredEditors
 
   // we enable auto-updates by default, but allow users to specify otherwise
   let autoUpdates = true
@@ -866,10 +886,13 @@ export default async function initSanity(
     }
   }
 
-  async function getPostInitMCPPrompt(editors: Editor[]): Promise<string> {
-    const editorNames = new Intl.ListFormat('en').format(editors.map((e) => e.name))
+  async function getPostInitMCPPrompt(editorsNames: EditorName[]): Promise<string> {
     const promptClient = apiClient({requireUser: false, requireProject: false})
-    return fetchPostInitPrompt({client: promptClient, editorNames, chalk})
+    return fetchPostInitPrompt({
+      client: promptClient,
+      editorNames: new Intl.ListFormat('en').format(editorsNames),
+      chalk,
+    })
   }
 
   // eslint-disable-next-line complexity

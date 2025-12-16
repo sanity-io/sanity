@@ -2,7 +2,7 @@ import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
 
-test.describe('In PTE - references in popover', () => {
+test.skip('In PTE - references in popover', () => {
   test.beforeEach(async ({page, createDraftDocument}, testInfo) => {
     testInfo.setTimeout(testInfo.timeout + 60_000)
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')

@@ -33,6 +33,7 @@ export const schedules = definePlugin({
       title: 'Releases',
       component: ReleasesTool,
       router: route.create('/', [route.create('/:releaseId')]),
+      __internalApplicationType: 'sanity/schedules',
       canHandleIntent: (intent) =>
         Boolean(intent === RELEASES_INTENT || intent === RELEASES_SCHEDULED_DRAFTS_INTENT),
       getIntentState(intent, params) {

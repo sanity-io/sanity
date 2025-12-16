@@ -17,7 +17,16 @@ import {
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
@@ -30,7 +39,6 @@ import {
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'

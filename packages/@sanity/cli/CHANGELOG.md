@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* **typegen:** return same case when generating types (#11330)
+
+### Features
+
+* **typegen:** memoizations, refactoring add improved progress reporting ([#10294](https://github.com/sanity-io/sanity/issues/10294)) ([5d6ac17](https://github.com/sanity-io/sanity/commit/5d6ac171739442c4db418eed8176d1845cb8181a)), closes [#8950](https://github.com/sanity-io/sanity/issues/8950) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **typegen:** return same case when generating types ([#11330](https://github.com/sanity-io/sanity/issues/11330)) ([0402647](https://github.com/sanity-io/sanity/commit/0402647eb06a4dde3d1c93ebf70192c47ee52e36)) by Sindre Gulseth (sgulseth@gmail.com)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Features
+
+* update mcp configured prompt text ([#11514](https://github.com/sanity-io/sanity/issues/11514)) ([b595fee](https://github.com/sanity-io/sanity/commit/b595fee91a0f780b99ab0adaa593839df30f6cf7)) by Matthew Ritter (matthew.ritter@sanity.io)
+
+### Bug Fixes
+
+* **cli:** telemetry in MCP commands ([#11487](https://github.com/sanity-io/sanity/issues/11487)) ([9e805d6](https://github.com/sanity-io/sanity/commit/9e805d64ae4e7f36c4bdc6632789cfd7aedab6a8)) by James Woods (jwwoods01@gmail.com)
+* **cli:** update runtime commands ([#11513](https://github.com/sanity-io/sanity/issues/11513)) ([6f9ae4f](https://github.com/sanity-io/sanity/commit/6f9ae4f90456f5b592363aba4c188b24f3d38d4c)) by Taylor Beseda (tbeseda@gmail.com)
+
 ## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
 
 ### Bug Fixes

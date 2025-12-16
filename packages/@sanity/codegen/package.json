@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "4.21.1",
+  "version": "5.0.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -54,11 +54,13 @@
     "@babel/register": "^7.28.3",
     "@babel/traverse": "^7.28.5",
     "@babel/types": "^7.28.5",
+    "@sanity/worker-channels": "^1.1.0",
     "debug": "^4.4.3",
     "globby": "^11.1.0",
     "groq": "workspace:*",
-    "groq-js": "^1.23.0",
+    "groq-js": "^1.24.0",
     "json5": "^2.2.3",
+    "reselect": "^5.1.1",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.76"
   },

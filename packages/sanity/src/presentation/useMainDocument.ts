@@ -1,9 +1,8 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {match, type Path} from 'path-to-regexp'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useEffectEvent, useRef, useState} from 'react'
 import {useClient} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION} from './constants'
 import {

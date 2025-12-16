@@ -125,6 +125,7 @@ const importDatasetCommand: CliCommandDefinition = {
     } = flags
 
     const operation = getMutationOperation(args.extOptions)
+    const releasesOperation = getReleasesOperation(flags)
     const client = apiClient()
 
     const [file, target] = args.argsWithoutOptions
@@ -258,6 +259,7 @@ const importDatasetCommand: CliCommandDefinition = {
         client: importClient,
         assetsBase,
         operation,
+        releasesOperation,
         onProgress,
         allowFailingAssets,
         allowAssetsInDifferentDataset,
@@ -359,6 +361,17 @@ function getMutationOperation(flags: ParsedImportFlags) {
   }
 
   return 'create'
+}
+
+function getReleasesOperation(flags: ParsedImportFlags): 'fail' | 'ignore' | 'replace' {
+  const {replace, missing} = flags
+  if (replace) {
+    return 'replace'
+  }
+  if (missing) {
+    return 'ignore'
+  }
+  return 'fail'
 }
 
 function getPercentage(opts: ProgressEvent) {
