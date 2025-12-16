@@ -29,7 +29,7 @@ export function useDialogStack({path}: {path?: Path} = {}) {
       hasRegistered.current = false
       remove(id)
     }
-  }, [push, remove, id])
+  }, [push, remove, id, path])
 
   useEffect(() => {
     if (update && hasRegistered.current) {
