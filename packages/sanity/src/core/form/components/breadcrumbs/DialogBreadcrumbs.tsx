@@ -104,6 +104,8 @@ function BreadcrumbButton({
       onClick={handleClick}
       style={{minWidth: 0, maxWidth: '250px'}}
       title={title}
+      aria-label={title}
+      aria-current={isSelected ? 'location' : false}
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
@@ -281,7 +283,13 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
             button={
               <Button mode="bleed" padding={1} style={overflowButtonStyle}>
                 <Flex overflow="hidden">
-                  <Text size={1} weight="medium" textOverflow="ellipsis" style={overflowTextStyle}>
+                  <Text
+                    size={1}
+                    weight="medium"
+                    textOverflow="ellipsis"
+                    style={overflowTextStyle}
+                    aria-label="More breadcrumb items"
+                  >
                     ...
                   </Text>
                 </Flex>
@@ -351,6 +359,7 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
         onClick={() => handlePathSelect([])}
         style={{minWidth: 0, maxWidth: '250px'}}
         title={rootFieldName}
+        aria-label={rootFieldName}
       >
         <Text
           muted
