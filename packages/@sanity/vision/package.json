@@ -72,8 +72,7 @@
     "quick-lru": "^5.1.1",
     "react-fast-compare": "^3.2.2",
     "react-rx": "^4.2.2",
-    "rxjs": "^7.8.2",
-    "use-effect-event": "^2.0.3"
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

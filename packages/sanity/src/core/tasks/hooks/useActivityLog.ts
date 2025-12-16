@@ -1,5 +1,4 @@
-import {useCallback, useEffect, useState} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useCallback, useEffect, useEffectEvent, useState} from 'react'
 
 import {useClient} from '../../hooks'
 import {getTransactionsLogs} from '../../store/translog/getTransactionsLogs'

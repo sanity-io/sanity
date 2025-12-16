@@ -1749,9 +1749,6 @@ importers:
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
-      use-effect-event:
-        specifier: ^2.0.3
-        version: 2.0.3(react@19.2.3)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -2273,9 +2270,6 @@ importers:
       use-device-pixel-ratio:
         specifier: ^1.1.2
         version: 1.1.2(react@19.2.3)
-      use-effect-event:
-        specifier: ^2.0.3
-        version: 2.0.3(react@19.2.3)
       use-hot-module-reload:
         specifier: ^2.0.0
         version: 2.0.0(react@19.2.3)

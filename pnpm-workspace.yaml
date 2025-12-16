@@ -78,7 +78,6 @@ minimumReleaseAgeExclude:
   - 'react-dom'
   - 'react-is'
   - 'react-rx'
-  - 'use-effect-event'
 
 trustPolicy: no-downgrade
 

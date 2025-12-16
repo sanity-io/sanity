@@ -10,8 +10,7 @@ import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} fr
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash'
-import {startTransition, useEffect, useMemo, useRef, useState} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {startTransition, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
 
 import {useCurrentUser} from '../../store'
 import {type CommentDocument} from '../types'

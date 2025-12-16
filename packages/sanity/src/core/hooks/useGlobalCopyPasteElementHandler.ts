@@ -1,7 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
-import {useEffect} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useEffect, useEffectEvent} from 'react'
 
 import {isFileTargetElement} from '../form/inputs/files/common/fileTarget/fileTarget'
 import {type FormDocumentValue} from '../form/types/formDocumentValue'
