@@ -2038,7 +2038,7 @@ importers:
         version: 5.1.1(vite@7.2.6(@types/node@24.10.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@xstate/react':
         specifier: ^6.0.0
-        version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0)
+        version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.0)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -2293,7 +2293,7 @@ importers:
         version: 5.0.0
       xstate:
         specifier: ^5.24.0
-        version: 5.24.0
+        version: 5.25.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -4870,10 +4870,6 @@ packages:
 
   '@portabletext/sanity-bridge@2.0.0':
     resolution: {integrity: sha512-lh5+4Z25huoHejtl8IUyoYqK7m7za1R8MNSjJ4riLqntu7wii7/2QFLj8X/EG3euCekftVmZ1zAcIugpwo92Mg==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-
-  '@portabletext/schema@2.1.0':
-    resolution: {integrity: sha512-wtTYmMslVZFlONd5Ncm8wpb3MChw6s5w73icPHPZBHd+TTJn0lMGuROHhE+9XEQuD7Ly465ooH+7T/k2eQVxHg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@portabletext/schema@2.1.1':
@@ -8949,10 +8945,6 @@ packages:
 
   graphmatch@1.1.0:
     resolution: {integrity: sha512-0E62MaTW5rPZVRLyIJZG/YejmdA/Xr1QydHEw3Vt+qOKkMIOE8WDLc9ZX2bmAjtJFZcId4lEdrdmASsEy7D1QA==}
-
-  groq-js@1.23.0:
-    resolution: {integrity: sha512-5NAIMuK8BYLbgvBPimnh+KZOSqp+09gSrtn0kYtstOFNF6lN77bPKHezdJDRRLQvfbR/RWJ7B0ygtG/KbMX90g==}
-    engines: {node: '>= 14'}
 
   groq-js@1.24.0:
     resolution: {integrity: sha512-lQe6UCCFmraajJrvfBouwaRacL5l2+ZNBoqZHRVe1F3sCq8mApMFOP9vIT3JfWZsG4sRxP8dACr/D8oJzltZ4g==}
@@ -13216,9 +13208,6 @@ packages:
   xregexp@2.0.0:
     resolution: {integrity: sha512-xl/50/Cf32VsGq/1R8jJE5ajH1yMCQkpmoS10QbFZWl2Oor4H0Me64Pu2yxvsRWK3m6soJbmGfzSR7BYmDcWAA==}
 
-  xstate@5.24.0:
-    resolution: {integrity: sha512-h/213ThFfZbOefUWrLc9ZvYggEVBr0jrD2dNxErxNMLQfZRN19v+80TaXFho17hs8Q2E1mULtm/6nv12um0C4A==}
-
   xstate@5.25.0:
     resolution: {integrity: sha512-yyWzfhVRoTHNLjLoMmdwZGagAYfmnzpm9gPjlX2MhJZsDojXGqRxODDOi4BsgGRKD46NZRAdcLp6CKOyvQS0Bw==}
 
@@ -15903,7 +15892,7 @@ snapshots:
   '@portabletext/block-tools@4.1.11':
     dependencies:
       '@portabletext/sanity-bridge': 1.2.14
-      '@portabletext/schema': 2.1.0
+      '@portabletext/schema': 2.1.1
       '@sanity/types': link:packages/@sanity/types
     transitivePeerDependencies:
       - supports-color
@@ -16004,7 +15993,7 @@ snapshots:
 
   '@portabletext/sanity-bridge@1.2.14':
     dependencies:
-      '@portabletext/schema': 2.1.0
+      '@portabletext/schema': 2.1.1
       '@sanity/schema': 4.21.1
       '@sanity/types': link:packages/@sanity/types
     transitivePeerDependencies:
@@ -16015,8 +16004,6 @@ snapshots:
       '@portabletext/schema': 2.1.1
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/types': link:packages/@sanity/types
-
-  '@portabletext/schema@2.1.0': {}
 
   '@portabletext/schema@2.1.1': {}
 
@@ -16437,13 +16424,13 @@ snapshots:
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.24.0
+      xstate: 5.25.0
 
   '@sanity/comlink@4.0.1':
     dependencies:
       rxjs: 7.8.2
       uuid: 13.0.0
-      xstate: 5.24.0
+      xstate: 5.25.0
 
   '@sanity/core-loader@2.0.0(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
@@ -16619,7 +16606,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/mutate@0.11.0-canary.4(xstate@5.24.0)':
+  '@sanity/mutate@0.11.0-canary.4(xstate@5.25.0)':
     dependencies:
       '@sanity/client': 6.29.1
       '@sanity/diff-match-patch': 3.2.0
@@ -16629,7 +16616,7 @@ snapshots:
       mendoza: 3.0.8
       rxjs: 7.8.2
     optionalDependencies:
-      xstate: 5.24.0
+      xstate: 5.25.0
     transitivePeerDependencies:
       - debug
 
@@ -16784,7 +16771,7 @@ snapshots:
       eventsource: 4.1.0
       find-up: 8.0.0
       get-folder-size: 5.0.0
-      groq-js: 1.23.0
+      groq-js: 1.24.0
       inquirer: 12.11.1(@types/node@24.10.2)
       jiti: 2.6.1
       mime-types: 3.0.2
@@ -16883,7 +16870,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.23.0
+      groq-js: 1.24.0
       lodash-es: 4.17.21
       reselect: 5.1.1
       rxjs: 7.8.2
@@ -17068,7 +17055,7 @@ snapshots:
       '@sanity/comlink': 4.0.1
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/insert-menu': 2.1.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@sanity/types@packages+@sanity+types)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
-      '@sanity/mutate': 0.11.0-canary.4(xstate@5.24.0)
+      '@sanity/mutate': 0.11.0-canary.4(xstate@5.25.0)
       '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 3.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/icons@3.7.4(react@19.2.3))(sanity@packages+sanity)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
@@ -17082,7 +17069,7 @@ snapshots:
       scroll-into-view-if-needed: 3.1.0
       styled-components: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
       use-effect-event: 2.0.3(react@19.2.3)
-      xstate: 5.24.0
+      xstate: 5.25.0
     optionalDependencies:
       '@sanity/client': 7.13.2(debug@4.4.3)
     transitivePeerDependencies:
@@ -18299,16 +18286,6 @@ snapshots:
       '@vue/shared': 3.5.25
 
   '@vue/shared@3.5.25': {}
-
-  '@xstate/react@6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.24.0)':
-    dependencies:
-      react: 19.2.3
-      use-isomorphic-layout-effect: 1.2.1(@types/react@19.2.7)(react@19.2.3)
-      use-sync-external-store: 1.6.0(react@19.2.3)
-    optionalDependencies:
-      xstate: 5.24.0
-    transitivePeerDependencies:
-      - '@types/react'
 
   '@xstate/react@6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.0)':
     dependencies:
@@ -21035,12 +21012,6 @@ snapshots:
   graphemer@1.4.0: {}
 
   graphmatch@1.1.0: {}
-
-  groq-js@1.23.0:
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - supports-color
 
   groq-js@1.24.0:
     dependencies:
@@ -25586,8 +25557,6 @@ snapshots:
   xmlchars@2.2.0: {}
 
   xregexp@2.0.0: {}
-
-  xstate@5.24.0: {}
 
   xstate@5.25.0: {}
 
