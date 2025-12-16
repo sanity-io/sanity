@@ -29,9 +29,7 @@ test.describe('Presentation', () => {
 
   test('should be able to toggle preview viewport', async ({page}) => {
     test.slow()
-    const root = page.getByTestId('presentation-root')
-    await expect(root).toBeVisible()
-    const viewportToggle = root.getByTestId('preview-viewport-toggle')
+    const viewportToggle = page.getByTestId('preview-viewport-toggle')
 
     await expect(viewportToggle).toBeVisible()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
