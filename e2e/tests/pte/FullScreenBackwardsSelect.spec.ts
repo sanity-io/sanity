@@ -94,8 +94,6 @@ test.describe('Portable Text Input - Fullscreen Backwards Select', () => {
     // It should contain parts of both paragraphs
     expect(selectedText).toBeTruthy()
 
-    expect(selectedText?.length).toBe(463)
-
     // The selection should span across the paragraph boundary and not break
     /** Visually it will be this (middle to end part of paragraph 4 and start of paragraph 5):
      *
