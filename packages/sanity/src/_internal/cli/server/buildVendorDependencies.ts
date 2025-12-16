@@ -66,6 +66,7 @@ const VENDOR_IMPORTS: VendorImports = {
       '.': './cjs/react.production.js',
       './jsx-runtime': './cjs/react-jsx-runtime.production.js',
       './jsx-dev-runtime': './cjs/react-jsx-dev-runtime.production.js',
+      './compiler-runtime': './cjs/react-compiler-runtime.production.js',
       './package.json': './package.json',
     },
   },
