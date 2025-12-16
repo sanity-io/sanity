@@ -66,7 +66,7 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
-import {type Editor, type EditorName, setupMCP} from './setupMCP'
+import {type EditorName, setupMCP} from './setupMCP'
 import templates from './templates'
 import {
   sanityCliTemplate,
