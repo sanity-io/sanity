@@ -1,13 +1,26 @@
 /* eslint-disable  no-restricted-imports */
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
-import {Badge, type CardTone, Flex, MenuDivider, MenuItem as UIMenuItem, Text} from '@sanity/ui'
+import {CopyIcon, LaunchIcon} from '@sanity/icons'
+import {
+  Badge,
+  Card,
+  type CardTone,
+  Flex,
+  MenuDivider,
+  MenuItem as UIMenuItem,
+  Text,
+  useToast,
+} from '@sanity/ui'
+import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
+import {useWorkspaces} from '../../../workspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -71,16 +84,18 @@ export function ResourcesMenuItems({
         latestTaggedVersion={latestTaggedVersion}
         onOpenStudioVersionDialog={onOpenStudioVersionDialog}
       />
+
+      <StudioRegistration />
       <MenuDivider />
 
       {!error &&
         sections?.map((subSection, i) => {
           if (!subSection) return null
           return (
-            <>
-              <SubSection key={subSection._key} subSection={subSection} />
-              {i < sections.length - 1 && <MenuDivider key={`${subSection._key}/divider`} />}
-            </>
+            <Fragment key={subSection._key}>
+              <SubSection subSection={subSection} />
+              {i < sections.length - 1 && <MenuDivider />}
+            </Fragment>
           )
         })}
 
@@ -143,6 +158,68 @@ function StudioVersion({
         </Badge>
       </Flex>
     </UIMenuItem>
+  )
+}
+
+function StudioRegistration() {
+  const {t} = useTranslation()
+  const {push: pushToast} = useToast()
+  const {userApplication} = useLiveUserApplication()
+  const workspaces = useWorkspaces()
+  const projectId = workspaces[0]?.projectId
+
+  let manageBaseUrl = 'https://www.sanity.io'
+  if (workspaces[0]?.apiHost === 'https://api.sanity.work') {
+    manageBaseUrl = 'https://www.sanity.work'
+  }
+
+  const handleRegisterStudio = useCallback(() => {
+    if (!projectId) return
+    const currentOrigin = typeof window === 'undefined' ? '' : window.location.origin
+    const registrationUrl = `${manageBaseUrl}/manage/project/${projectId}/studios?studio=add&origin=${encodeURIComponent(currentOrigin)}`
+    window.open(registrationUrl, '_blank', 'noopener,noreferrer')
+  }, [projectId, manageBaseUrl])
+
+  const handleCopyAppId = useCallback(() => {
+    if (userApplication?.id) {
+      navigator.clipboard
+        .writeText(userApplication.id)
+        .then(() => {
+          pushToast({
+            closable: true,
+            status: 'success',
+            title: t('help-resources.studio-app-id-copied'),
+          })
+        })
+        .catch(() => {
+          pushToast({
+            closable: true,
+            status: 'error',
+            title: t('help-resources.studio-app-id-copy-error'),
+          })
+        })
+    }
+  }, [userApplication, pushToast, t])
+
+  if (userApplication) {
+    return (
+      <MenuItem
+        text={t('help-resources.studio-app-id')}
+        iconRight={<CopyIcon />}
+        onClick={handleCopyAppId}
+      />
+    )
+  }
+
+  return (
+    <Card tone="caution" radius={4}>
+      <MenuItem
+        text={t('help-resources.register-studio')}
+        iconRight={<LaunchIcon />}
+        onClick={handleRegisterStudio}
+        tone="caution"
+      />
+    </Card>
   )
 }
 
