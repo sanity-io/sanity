@@ -8,5 +8,5 @@ const NON_DEFAULT_ROUTE_TOOL_TYPES = ['sanity/schedules']
  * @internal
  */
 export function isDefaultRouteTool(tool: Tool): boolean {
-  return !NON_DEFAULT_ROUTE_TOOL_TYPES.includes(tool.__internalApplicationType)
+  return !tool.__internalApplicationType || !NON_DEFAULT_ROUTE_TOOL_TYPES.includes(tool.__internalApplicationType)
 }
