@@ -2335,8 +2335,8 @@ importers:
         specifier: 'catalog:'
         version: 3.4.0(@sanity/ui@3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3))(@types/node@24.10.2)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       '@sanity/visual-editing-csm':
-        specifier: ^3.0.0
-        version: 3.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
+        specifier: ^3.0.1
+        version: 3.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
       '@sentry/types':
         specifier: ^8.55.0
         version: 8.55.0
@@ -5625,8 +5625,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^7.11.2
 
-  '@sanity/visual-editing-csm@3.0.0':
-    resolution: {integrity: sha512-hc4SK9JGlLPhOX7Esl1RdJOW4jDf4V38xd9bVGkaSlgLkZxU38vmDgJNKhdWpy8Vv1yMDT6/cu/PnP34sAq4nw==}
+  '@sanity/visual-editing-csm@3.0.1':
+    resolution: {integrity: sha512-G2nzYIr420eBxncuXymFDG1GxRkBb7CSYanBfgz0tYRIp76lHEFEE76hWmifrZ7+ggpzbKUeK1AsNa430221wA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.13.2
@@ -17005,7 +17005,7 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@3.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
+  '@sanity/visual-editing-csm@3.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
       '@sanity/client': 7.13.2(debug@4.4.3)
       '@sanity/visual-editing-types': 2.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)
