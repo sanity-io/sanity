@@ -1968,7 +1968,7 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@sanity/message-protocol':
-        specifier: ^0.17.6
+        specifier: ^0.17.8
         version: 0.17.8
       '@sanity/migrate':
         specifier: workspace:*
