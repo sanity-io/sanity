@@ -1,24 +1,37 @@
 import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
-import {getPresentationRegions, openPresentationTool} from './utils'
 
 test.describe('Presentation', () => {
+  test.beforeEach(async ({page}) => {
+    test.slow()
+
+    await page.goto('/presentation')
+    // Wait for presentation to be visible
+    await expect(page.getByTestId('presentation-root')).toBeVisible()
+  })
+
   test('should be able to load a simple preview', async ({page}) => {
-    await openPresentationTool(page)
+    test.slow()
+    const root = page.getByTestId('presentation-root')
+    await expect(root).toBeVisible()
+    const previewIframe = root.locator('iframe')
 
-    const {previewIframeContents} = await getPresentationRegions(page)
+    // Wait for iframe element to be attached to the DOM
+    await expect(previewIframe.first()).toBeAttached()
 
-    // Checks that the preview iframe has loaded visual editing
+    const previewIframeContents = previewIframe.first().contentFrame()
+
+    // Wait for the visual editing component to be ready inside the iframe
+    // This ensures the React app has hydrated and the useEffect has run
     await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
   })
 
   test('should be able to toggle preview viewport', async ({page}) => {
-    await openPresentationTool(page)
+    test.slow()
+    const viewportToggle = page.getByTestId('preview-viewport-toggle')
 
-    const {root} = await getPresentationRegions(page)
-    const viewportToggle = root.getByTestId('preview-viewport-toggle')
-
+    await expect(viewportToggle).toBeVisible()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
     await viewportToggle.click()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'mobile')
