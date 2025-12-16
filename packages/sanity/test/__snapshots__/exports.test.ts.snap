@@ -542,6 +542,7 @@ exports[`exports snapshot 1`] = `
     "useCurrentUser": "function",
     "useDataset": "function",
     "useDateTimeFormat": "function",
+    "useDialogStack": "function",
     "useDidUpdate": "function",
     "useDiffAnnotationColor": "function",
     "useDocumentChange": "function",
