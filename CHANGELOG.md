@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Features
+
+* **cors:** add registration to cors error screen ([#11484](https://github.com/sanity-io/sanity/issues/11484)) ([7b8e9be](https://github.com/sanity-io/sanity/commit/7b8e9bee8dab6d538ca99c9aa83af7397f7f74f9)) by Dain Cilke (dain.cilke@gmail.com)
+* **sanity:** enable editing canvas documents ([#11421](https://github.com/sanity-io/sanity/issues/11421)) ([cb8ed7d](https://github.com/sanity-io/sanity/commit/cb8ed7d8979d96bd4ffe3ed474fd69462654bc48)) by Josef Hlavacek (josef.hlavacek@sanity.io)
+* **structure:** support linking to documents in focus mode ([#11489](https://github.com/sanity-io/sanity/issues/11489)) ([cb74919](https://github.com/sanity-io/sanity/commit/cb74919e6dc18d828ffd3715791c71f9d08619b7)) by Bjørge Næss (bjoerge@gmail.com)
+* update mcp configured prompt text ([#11514](https://github.com/sanity-io/sanity/issues/11514)) ([b595fee](https://github.com/sanity-io/sanity/commit/b595fee91a0f780b99ab0adaa593839df30f6cf7)) by Matthew Ritter (matthew.ritter@sanity.io)
+
+### Bug Fixes
+
+* **cli:** handle sanity binary as esm/cjs/executable ([#11460](https://github.com/sanity-io/sanity/issues/11460)) ([e88b4b7](https://github.com/sanity-io/sanity/commit/e88b4b7d96e1a8e446270d8fe46f56bab2d59606)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **cli:** mark react < 19.2.2 as deprecated ([#11482](https://github.com/sanity-io/sanity/issues/11482)) ([217ee0a](https://github.com/sanity-io/sanity/commit/217ee0a416e4d59cd9e929608136723a3f5ecaaa)) by Bjørge Næss (bjoerge@gmail.com)
+* **cli:** pass releasesOperation to @sanity/import when using --replace or --missing ([#11515](https://github.com/sanity-io/sanity/issues/11515)) ([f4d980e](https://github.com/sanity-io/sanity/commit/f4d980e78b45751acc3dd5183000278bbf854407)) by Tonina Zhelyazkova (zhelyazkova.tonina@gmail.com)
+* **cli:** remove missing appId warning from sanity dev ([#11476](https://github.com/sanity-io/sanity/issues/11476)) ([1a087f8](https://github.com/sanity-io/sanity/commit/1a087f836e104bbccafc4e50edf2300b24d5d7df)) by Bjørge Næss (bjoerge@gmail.com)
+* **cli:** telemetry in MCP commands ([#11487](https://github.com/sanity-io/sanity/issues/11487)) ([9e805d6](https://github.com/sanity-io/sanity/commit/9e805d64ae4e7f36c4bdc6632789cfd7aedab6a8)) by James Woods (jwwoods01@gmail.com)
+* **cli:** update runtime commands ([#11513](https://github.com/sanity-io/sanity/issues/11513)) ([6f9ae4f](https://github.com/sanity-io/sanity/commit/6f9ae4f90456f5b592363aba4c188b24f3d38d4c)) by Taylor Beseda (tbeseda@gmail.com)
+* delete all versions ([#11474](https://github.com/sanity-io/sanity/issues/11474)) ([78c96f1](https://github.com/sanity-io/sanity/commit/78c96f14d888e4fe253b061f31e320435b6d6b11)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** add `sanity` to peerDependencies in @sanity/vision ([#11480](https://github.com/sanity-io/sanity/issues/11480)) ([69cd79b](https://github.com/sanity-io/sanity/commit/69cd79b38fe15f0cbb3c099b3ea64de55f5cf1f2)) by Robbie Wadley (robbiethewadley@gmail.com)
+* **deps:** pin `isomorphic-dompurify` to solve `jsdom` errors on next.js ([#11497](https://github.com/sanity-io/sanity/issues/11497)) ([d63ef28](https://github.com/sanity-io/sanity/commit/d63ef282808147ca675864b1c977c8fe4783ee5f)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** update dependency @sanity/export to ^6.0.2 ([#11491](https://github.com/sanity-io/sanity/issues/11491)) ([3aa21a9](https://github.com/sanity-io/sanity/commit/3aa21a9ffce330b81024893dba78c820cba96735)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11494](https://github.com/sanity-io/sanity/issues/11494)) ([2973d7d](https://github.com/sanity-io/sanity/commit/2973d7dc4fbab38dba7512e020a6d1d96f3f671a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11450](https://github.com/sanity-io/sanity/issues/11450)) ([735f7b4](https://github.com/sanity-io/sanity/commit/735f7b4d1c92d243abce393464197f058278b25d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11518](https://github.com/sanity-io/sanity/issues/11518)) ([f2adcc3](https://github.com/sanity-io/sanity/commit/f2adcc39c4c0c003ae823e7b6da24cee45d35d48)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* excluding releases and scheduled plugins from list of plugins to reroute ([#11505](https://github.com/sanity-io/sanity/issues/11505)) ([6f19a3c](https://github.com/sanity-io/sanity/commit/6f19a3c31a8c687f44a17f2acf5a29480112aa23)) by Jordan Lawrence (jordanl17@me.com)
+* fix issue where backward drag and selecting text in fullscreen pte would skip the focus ([#11492](https://github.com/sanity-io/sanity/issues/11492)) ([b47f9f6](https://github.com/sanity-io/sanity/commit/b47f9f65e1d7cfe30792d25211ece6cc6a552fe8)) by RitaDias (rita@sanity.io)
+* fix when deleting and reverting objects of arrays in the middle of an array ([#11455](https://github.com/sanity-io/sanity/issues/11455)) ([684cc41](https://github.com/sanity-io/sanity/commit/684cc4121507e30bdd2f8b520d1b1905aeaba139)) by RitaDias (rita@sanity.io)
+* **manifest:** better handling of user application clients ([48bf231](https://github.com/sanity-io/sanity/commit/48bf231d57b3170f6e3ca4a3031264c667976866)) by Dain Cilke (dain.cilke@gmail.com)
+* release-next with `--fix-lockfile` ([#11501](https://github.com/sanity-io/sanity/issues/11501)) ([7d2aa14](https://github.com/sanity-io/sanity/commit/7d2aa1497f8934fd3504b441898478b51ab8a267)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* selected items in the collapseoverflow menu ([#11452](https://github.com/sanity-io/sanity/issues/11452)) ([8b2ccb3](https://github.com/sanity-io/sanity/commit/8b2ccb3b06ae827494a98db2932262d571ab616e)) by RitaDias (rita@sanity.io)
+* use the same peer dependency range for vision as regular plugins ([#11499](https://github.com/sanity-io/sanity/issues/11499)) ([e4e65b4](https://github.com/sanity-io/sanity/commit/e4e65b4817684d0b86e99c08278e7a7d5e3d5920)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
 
 ### Bug Fixes
