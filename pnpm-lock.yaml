@@ -1902,8 +1902,8 @@ importers:
         specifier: ^4.0.36
         version: 4.0.36(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/plugin-one-line':
-        specifier: ^3.0.36
-        version: 3.0.36(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
+        specifier: ^4.0.0
+        version: 4.0.0(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
       '@portabletext/plugin-typography':
         specifier: ^4.0.36
         version: 4.0.36(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
@@ -4844,12 +4844,12 @@ packages:
       '@portabletext/editor': ^3.3.16
       react: ^18.3 || ^19
 
-  '@portabletext/plugin-one-line@3.0.36':
-    resolution: {integrity: sha512-+BMRtWUk2Sy9wgYbLHOc5kaTHbqpoJwft59UpjYAwCQ7wy/vrWruLEAzKYWiPzYMraSwuFBpnskGUiuuY3gITw==}
+  '@portabletext/plugin-one-line@4.0.0':
+    resolution: {integrity: sha512-jwdSeq3/wzHhXRRx8/XUVGzJ4dYZvcY5CFzo4lMlsOSFmIUaAoPDi0bB6Q4Ma1SyW1NwbzoWoxBC/2ol//Bplg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^3.3.16
-      react: ^18.3 || ^19
+      '@portabletext/editor': ^4.0.0
+      react: ^19.2
 
   '@portabletext/plugin-typography@4.0.36':
     resolution: {integrity: sha512-X42ZEDUEK/bUpZ1N7pERBtemdekpR1lV36vxhCL3iDw2b7DqHDlVbpdzQ4FFYC7Kb/B8pt8RXUIEHbtr8/2zaQ==}
@@ -15970,11 +15970,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@3.0.36(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
+  '@portabletext/plugin-one-line@4.0.0(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
     dependencies:
       '@portabletext/editor': 4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       react: 19.2.3
-      react-compiler-runtime: 1.0.0(react@19.2.3)
 
   '@portabletext/plugin-typography@4.0.36(@portabletext/editor@4.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
