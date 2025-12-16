@@ -1811,7 +1811,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       sanity:
-        specifier: workspace:*
+        specifier: ^4.22.0
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'

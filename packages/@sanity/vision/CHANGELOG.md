@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Bug Fixes
+
+* **deps:** add `sanity` to peerDependencies in @sanity/vision ([#11480](https://github.com/sanity-io/sanity/issues/11480)) ([69cd79b](https://github.com/sanity-io/sanity/commit/69cd79b38fe15f0cbb3c099b3ea64de55f5cf1f2)) by Robbie Wadley (robbiethewadley@gmail.com)
+* use the same peer dependency range for vision as regular plugins ([#11499](https://github.com/sanity-io/sanity/issues/11499)) ([e4e65b4](https://github.com/sanity-io/sanity/commit/e4e65b4817684d0b86e99c08278e7a7d5e3d5920)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
 
 **Note:** Version bump only for package @sanity/vision

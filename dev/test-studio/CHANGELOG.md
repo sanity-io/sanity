@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Features
+
+* **structure:** support linking to documents in focus mode ([#11489](https://github.com/sanity-io/sanity/issues/11489)) ([cb74919](https://github.com/sanity-io/sanity/commit/cb74919e6dc18d828ffd3715791c71f9d08619b7)) by Bjørge Næss (bjoerge@gmail.com)
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major ([#11494](https://github.com/sanity-io/sanity/issues/11494)) ([2973d7d](https://github.com/sanity-io/sanity/commit/2973d7dc4fbab38dba7512e020a6d1d96f3f671a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11450](https://github.com/sanity-io/sanity/issues/11450)) ([735f7b4](https://github.com/sanity-io/sanity/commit/735f7b4d1c92d243abce393464197f058278b25d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11518](https://github.com/sanity-io/sanity/issues/11518)) ([f2adcc3](https://github.com/sanity-io/sanity/commit/f2adcc39c4c0c003ae823e7b6da24cee45d35d48)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* fix when deleting and reverting objects of arrays in the middle of an array ([#11455](https://github.com/sanity-io/sanity/issues/11455)) ([684cc41](https://github.com/sanity-io/sanity/commit/684cc4121507e30bdd2f8b520d1b1905aeaba139)) by RitaDias (rita@sanity.io)
+
 ## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
 
 ### Bug Fixes
