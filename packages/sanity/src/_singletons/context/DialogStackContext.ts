@@ -23,7 +23,7 @@ export interface DialogStackContextValue {
   push: (id: string, path?: Path) => void
   /** Remove a dialog from the stack */
   remove: (id: string) => void
-  /** Close all dialogs by clearing the stack */
+  /** Close dialogs (might not close all of them, depending on fullscreen mode) */
   close: () => void
 }
 
