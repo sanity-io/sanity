@@ -218,7 +218,7 @@
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
     "module-alias": "^2.2.3",
-    "motion": "^12.23.25",
+    "motion": "^12.23.26",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
     "node-html-parser": "^6.1.13",
