@@ -27,10 +27,10 @@ catalog:
   '@vitejs/plugin-react': ^5.1.1
   esbuild: 0.27.1
   esbuild-register: ^3.6.0
-  eslint: ^9.39.1
+  eslint: ^9.39.2
   globals: ^16.2.0
   playwright: 1.56.1
-  prettier: ^3.7.3
+  prettier: ^3.7.4
   react: ^19.2.3
   react-dom: ^19.2.3
   react-is: ^19.2.3
