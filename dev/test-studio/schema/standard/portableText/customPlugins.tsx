@@ -266,8 +266,37 @@ export const customPlugins = defineType({
                 ...props.plugins,
                 typography: {
                   ...props.plugins.typography,
-                  enabled: true,
                   preset: 'all',
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * No Typographic rules enabled
+     */
+    {
+      type: 'array',
+      name: 'noTypographicRulesEnabled',
+      title: 'No Typographic Rules Enabled',
+      description: 'No typographic rules are enabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                typography: {
+                  enabled: false,
                 },
               },
             })
