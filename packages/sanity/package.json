@@ -283,7 +283,7 @@
     "@sanity/generate-help-url": "^3.0.1",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/ui-workshop": "catalog:",
-    "@sanity/visual-editing-csm": "^2.0.26",
+    "@sanity/visual-editing-csm": "^3.0.0",
     "@sentry/types": "^8.55.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
