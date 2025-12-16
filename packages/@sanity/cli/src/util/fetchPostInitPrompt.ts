@@ -17,8 +17,15 @@ const DEFAULT_MESSAGE =
 /**
  * Applies cyan formatting to text wrapped in **markers**.
  */
-function applyCyanFormatting(text: string, chalk: Chalk): string {
+export function applyCyanFormatting(text: string, chalk: Chalk): string {
   return text.replace(/\*\*([^*]+)\*\*/g, (_, content) => chalk.cyan(content))
+}
+
+/**
+ * Interpolates the editor names into the template.
+ */
+export function interpolateTemplate(template: string, editorNames: string): string {
+  return template.replace(/\{\{editorNames\}\}/g, editorNames)
 }
 
 /**
@@ -38,10 +45,10 @@ export async function fetchPostInitPrompt({
       timeout: 1000,
     })
     const template = data?.message || DEFAULT_MESSAGE
-    const interpolated = template.replace(/\{\{editorNames\}\}/g, editorNames)
+    const interpolated = interpolateTemplate(template, editorNames)
     return applyCyanFormatting(interpolated, chalk)
   } catch {
-    const interpolated = DEFAULT_MESSAGE.replace(/\{\{editorNames\}\}/g, editorNames)
+    const interpolated = interpolateTemplate(DEFAULT_MESSAGE, editorNames)
     return applyCyanFormatting(interpolated, chalk)
   }
 }
