@@ -2292,7 +2292,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       xstate:
-        specifier: ^5.24.0
+        specifier: ^5.25.0
         version: 5.25.0
       yargs:
         specifier: ^17.7.2
