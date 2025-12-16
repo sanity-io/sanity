@@ -1580,8 +1580,8 @@ importers:
         specifier: 'catalog:'
         version: 7.13.2(debug@4.4.3)
       '@sanity/media-library-types':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1968,8 +1968,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.3)
       '@sanity/media-library-types':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.0.2
+        version: 1.0.2
       '@sanity/message-protocol':
         specifier: ^0.17.6
         version: 0.17.8
@@ -5481,8 +5481,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
-  '@sanity/media-library-types@1.0.1':
-    resolution: {integrity: sha512-lyjDQqq0IkVMBKPsm1+IeTpOki3OeFvSCyFms8pPTYcMaH0U5S+wK553QDI4HnmmPx0SiWpOWtLlTh1qkh+IFA==}
+  '@sanity/media-library-types@1.0.2':
+    resolution: {integrity: sha512-OrAZ7mLDn3nd8fsRKPU6b4kNYMPLCFEXM1ghwC5xvcdD6k97b1sGR15USyG7e0exWIdH3S6Gm9xG/Jcfw+8l5A==}
 
   '@sanity/message-protocol@0.12.0':
     resolution: {integrity: sha512-RMRWQG5yVkCZnnBHW3qxVbZGUOeXPBzFPdD9+pynQCTVZI7zYBEzjnY8lcSYjty+0unDHqeoqMPfBXhqs0rg2g==}
@@ -16596,7 +16596,7 @@ snapshots:
       '@sanity/color': 3.0.6
       react: 19.2.3
 
-  '@sanity/media-library-types@1.0.1': {}
+  '@sanity/media-library-types@1.0.2': {}
 
   '@sanity/message-protocol@0.12.0':
     dependencies:
