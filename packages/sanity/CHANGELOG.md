@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for react < 19.2 (#11383)
+
+### Features
+
+* **core:** enable typographic behaviors in Portable Text Inputs by default ([eaffcde](https://github.com/sanity-io/sanity/commit/eaffcdec863fa70f1006bef62c2c3cbb86517171)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+
+### Bug Fixes
+
+* drop support for react < 19.2 ([#11383](https://github.com/sanity-io/sanity/issues/11383)) ([169be63](https://github.com/sanity-io/sanity/commit/169be63ead210763b7cef232e263b93ffd3b80dd)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
 
 ### Features
