@@ -6,14 +6,16 @@ import {actionsApiClient} from '../utils/actionsApiClient'
 export const del: OperationImpl<[versions: string[]], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
   execute: ({client, idPair, snapshots}, versions) => {
-    //the delete action requires a published doc -- discard if not present
+    //the delete action requires a published doc -- discard versions if not present
     if (!snapshots.published) {
       return actionsApiClient(client, idPair).observable.action(
+        versions.map((versionId) => ({
+          actionType: 'sanity.action.document.version.discard',
+          versionId,
+        })),
         {
-          actionType: 'sanity.action.document.discard',
-          draftId: idPair.draftId,
+          skipCrossDatasetReferenceValidation: true,
         },
-        {tag: 'document.delete'},
       )
     }
 

@@ -3,7 +3,7 @@ import {expect} from '@playwright/test'
 import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
-test(`it is possible to discard changes if a changed document has no published version, delete is disabled`, async ({
+test(`it is possible to discard changes if a changed document has no published version`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -18,7 +18,7 @@ test(`it is possible to discard changes if a changed document has no published v
   await titleInput.fill('This is a book')
 
   await actionMenuButton.click()
-  await expect(deleteButton).toBeHidden()
+  await expect(deleteButton).toBeEnabled()
   await expect(discardChangesButton).toBeEnabled()
   await discardChangesButton.click()
   await confirmButton.click()
