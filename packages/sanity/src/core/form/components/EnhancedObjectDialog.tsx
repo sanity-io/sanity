@@ -101,7 +101,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   // Log telemetry when the dialog opens
   useEffect(() => {
-    if (stack.length === 1) {
+    if (stack.length === 0) {
       telemetry.log(NestedDialogOpened, {
         path: pathToString([]),
       })
