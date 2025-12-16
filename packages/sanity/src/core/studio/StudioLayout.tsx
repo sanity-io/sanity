@@ -7,6 +7,7 @@ import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
@@ -89,6 +90,8 @@ export function StudioLayoutComponent() {
   // In the background, check if the network protocol used to communicate with the
   // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
   useNetworkProtocolCheck()
+
+  const defaultRouteTools = useMemo(() => tools.filter(isDefaultRouteTool), [tools])
 
   const router = useRouter()
   const activeToolName = useRouterState(
@@ -188,7 +191,7 @@ export function StudioLayoutComponent() {
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
-      {tools.length === 0 && <NoToolsScreen />}
+      {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
       {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
