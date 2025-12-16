@@ -49,6 +49,9 @@ catalog:
 overrides:
   # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
   '@sanity/ui@3': '$@sanity/ui'
+  # temporary workaround for portabletext taking in @sanity/types v4
+  # can be removed once portable text dependency is on sanity@5
+  '@sanity/types': '^5.0.0'
   # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
   # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
   jsdom: 26.1.0
