@@ -207,28 +207,50 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   const handlePathSelect = useCallback(
     (path: Path) => {
-      // If it's an array item breadcrumb, open to the first field in that item
+      // If it's an array item breadcrumb, try to open to the field being viewed
       if (isKeySegment(path[path.length - 1])) {
-        // When clicking on an array item breadcrumb, open to the first field in that item
-        const itemSchemaType = resolveSchemaTypeForPath(documentSchemaType, path, documentValue)
+        // Check if currentPath extends this path with at least one field name
+        // Example: path = ['animals', {_key: 'x'}], currentPath = ['animals', {_key: 'x'}, 'friend', ...]
+        // What this means is that we are then moving back in the stack of dialogs
+        if (currentPath && currentPath.length > path.length) {
+          const pathsMatch = path.every((segment, index) => {
+            const currentSegment = currentPath[index]
+            return isKeySegment(segment) && isKeySegment(currentSegment)
+              ? segment._key === currentSegment._key
+              : segment === currentSegment
+          })
 
-        if (isObjectSchemaType(itemSchemaType) && itemSchemaType.fields.length > 0) {
-          // Find the first field that exists (skip hidden fields if possible)
-          const firstField =
-            itemSchemaType.fields.find((field) => !field.type.hidden) || itemSchemaType.fields[0]
-          if (firstField) {
-            onPathOpen([...path, firstField.name])
-            return
+          if (pathsMatch) {
+            const nextSegment = currentPath[path.length]
+            // If the next segment is not a key segment, it's a field name
+            if (!isKeySegment(nextSegment)) {
+              // Verify the field exists in the schema
+              const itemSchemaType = resolveSchemaTypeForPath(
+                documentSchemaType,
+                path,
+                documentValue,
+              )
+              // eslint-disable-next-line max-depth
+              if (
+                isObjectSchemaType(itemSchemaType) &&
+                itemSchemaType.fields.some((field) => field.name === nextSegment)
+              ) {
+                // What this means is that we're opening to the field that was being viewed
+                // Which means that it will focus on the field
+                onPathOpen([...path, nextSegment])
+                return
+              }
+            }
           }
         }
 
-        // Fallback: if no fields found, just open to the item itself
+        // Fallback: open to the item itself
         onPathOpen(path)
       } else {
         onPathOpen(path)
       }
     },
-    [onPathOpen, documentSchemaType, documentValue],
+    [onPathOpen, documentSchemaType, documentValue, currentPath],
   )
 
   // Calculate max visible items based on container width
