@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
+import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
 import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
 import {
@@ -13,6 +13,7 @@ import {
 
 import {MenuButton} from '../../../../ui-components'
 import {pathToString} from '../../../field/paths/helpers'
+import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
@@ -206,13 +207,28 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   const handlePathSelect = useCallback(
     (path: Path) => {
+      // If it's an array item breadcrumb, open to the first field in that item
       if (isKeySegment(path[path.length - 1])) {
+        // When clicking on an array item breadcrumb, open to the first field in that item
+        const itemSchemaType = resolveSchemaTypeForPath(documentSchemaType, path, documentValue)
+
+        if (isObjectSchemaType(itemSchemaType) && itemSchemaType.fields.length > 0) {
+          // Find the first field that exists (skip hidden fields if possible)
+          const firstField =
+            itemSchemaType.fields.find((field) => !field.type.hidden) || itemSchemaType.fields[0]
+          if (firstField) {
+            onPathOpen([...path, firstField.name])
+            return
+          }
+        }
+
+        // Fallback: if no fields found, just open to the item itself
         onPathOpen(path)
       } else {
-        onPathOpen(path.slice(0, -1))
+        onPathOpen(path)
       }
     },
-    [onPathOpen],
+    [onPathOpen, documentSchemaType, documentValue],
   )
 
   // Calculate max visible items based on container width
