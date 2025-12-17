@@ -18,7 +18,7 @@ import {
   type SchemaType,
   type SpanSchemaType,
 } from '@sanity/types'
-import {flatten, isEqual, orderBy} from 'lodash'
+import {flatten, isEqual, orderBy} from 'lodash-es'
 
 import {
   type ArrayDiff,

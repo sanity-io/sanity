@@ -7,7 +7,7 @@ import {
   isImageSchemaType,
   type SanityDocument,
 } from '@sanity/types'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {useCallback} from 'react'
 import {
   delay,

@@ -1,4 +1,4 @@
-import {isFinite, uniqBy} from 'lodash'
+import {isFinite, uniqBy} from 'lodash-es'
 
 export const DEFAULT_MAX_FIELD_DEPTH = 5
 

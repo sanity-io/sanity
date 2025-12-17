@@ -4,7 +4,7 @@
  * Inspired by https://github.com/component/normalized-upload
  */
 
-import {flatten} from 'lodash'
+import {flatten} from 'lodash-es'
 
 import {type FIXME} from '../../../../../../FIXME'
 

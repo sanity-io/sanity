@@ -12,7 +12,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {findIndex} from 'lodash'
+import {findIndex} from 'lodash-es'
 
 import {getValueAtPath} from '../../field'
 import {resolveConditionalProperty} from '../../form'

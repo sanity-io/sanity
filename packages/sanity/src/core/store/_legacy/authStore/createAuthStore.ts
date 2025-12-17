@@ -3,7 +3,7 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {isEqual, memoize} from 'lodash'
+import {isEqual, memoize} from 'lodash-es'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
@@ -322,4 +322,4 @@ function hash(value: unknown): string {
 /**
  * @internal
  */
-export const createAuthStore = memoize(_createAuthStore, hash)
+export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)

@@ -80,6 +80,10 @@
           {
             "group": ["**/scheduled-publishing/**"],
             "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+          },
+          {
+            "group": ["lodash.*", "lodash/*", "lodash"],
+            "message": "Please use the default import from 'lodash-es' instead."
           }
         ]
       }

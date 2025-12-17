@@ -1,5 +1,5 @@
 import {type ArraySchemaType, isReferenceSchemaType, type Path} from '@sanity/types'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'

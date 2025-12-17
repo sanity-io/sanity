@@ -5,7 +5,7 @@ import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'

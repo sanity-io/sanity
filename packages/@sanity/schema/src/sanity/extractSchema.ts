@@ -85,9 +85,9 @@ export function extractSchema(
   const schema: SchemaType = []
 
   /**
-   * A map for keeping track of the unique names we generate in addition to the user defined types
+   * A map for keeping track of the unique names we generate for hoisted references
    */
-  const generatedTypes = new Map<string, string>()
+  const hoistedRefMap = new Map<string, string>()
 
   // `repeated` maps ObjectField instances → hoisted type names. When the same inline type (e.g., `blocksTest`)
   // is used in multiple documents, Sanity's compiled schema reuses the same ObjectField object reference. This
@@ -115,7 +115,7 @@ export function extractSchema(
     }
     schema.push({
       type: 'type',
-      name: getGeneratedTypeName(key),
+      name: key,
       value: base,
     })
   })
@@ -142,25 +142,24 @@ export function extractSchema(
    * Get unique schema name for a type name. It checks for collisions with names from the user defined
    * types and allows specifying a suffix to add to the name of the type
    *
-   * @param typeName - the type name to get unique name for
-   * @param suffix - the suffix to append
+   * @param refName - the ref name to get unique name for
    */
-  function getGeneratedTypeName(typeName: string, suffix = '') {
-    const name = generatedTypes.get(typeName)
+  function reserveRefName(refName: string) {
+    const name = hoistedRefMap.get(refName)
     if (name) return name
 
     for (let i = 0; i < 5; i++) {
-      const uniqueName = `${typeName}${suffix}${i || ''}`
+      const uniqueName = `${refName}${i || ''}`
 
       // if the list of schema types contain the uniqueName we need to try the next prefix
-      if (sortedSchemaTypeNames.includes(uniqueName)) continue
+      if (schemaDef.has(uniqueName)) continue
 
       // the type name is unique
-      generatedTypes.set(typeName, uniqueName)
+      hoistedRefMap.set(refName, uniqueName)
       return uniqueName
     }
 
-    throw new Error(`Unable to generate unique type name for ${typeName}.`)
+    return null
   }
 
   function convertBaseType(
@@ -297,7 +296,7 @@ export function extractSchema(
         // This field is hoisted, hoist it with an inline type
         value = {
           type: 'inline',
-          name: getGeneratedTypeName(hoisted),
+          name: hoisted,
         }
       } else {
         value = convertSchemaType(field.type)
@@ -397,34 +396,49 @@ export function extractSchema(
 
   function createReferenceTypeNodeDefintion(
     reference: ReferenceSchemaType,
-  ): InlineTypeNode | UnionTypeNode<InlineTypeNode> {
+  ): ObjectTypeNode | InlineTypeNode | UnionTypeNode<InlineTypeNode | ObjectTypeNode> {
     const references = gatherReferenceNames(reference)
 
     // Ensure hoisted reference types exist for each referenced document type
     for (const name of references) {
-      if (!generatedTypes.has(name)) {
-        schema.push({
-          type: 'type',
-          name: getGeneratedTypeName(name, '.reference'),
-          value: createReferenceTypeNode(name),
-        })
+      const refName = getInlineRefName(name)
+      if (!hoistedRefMap.has(refName)) {
+        const inlined = reserveRefName(refName)
+        if (inlined) {
+          schema.push({
+            type: 'type',
+            name: inlined,
+            value: createReferenceTypeNode(name),
+          })
+        }
       }
     }
 
     if (references.length === 1) {
-      return {type: 'inline', name: getGeneratedTypeName(references[0], '.reference')}
+      const inlined = hoistedRefMap.get(getInlineRefName(references[0]))
+      if (inlined) {
+        return {type: 'inline', name: inlined}
+      }
+      return createReferenceTypeNode(references[0])
     }
 
     return {
       type: 'union',
-      of: references.map((name) => ({
-        type: 'inline',
-        name: getGeneratedTypeName(name, '.reference'),
-      })),
+      of: references.map((name) => {
+        const inlined = hoistedRefMap.get(getInlineRefName(name))
+        if (inlined) {
+          return {type: 'inline', name: inlined}
+        }
+        return createReferenceTypeNode(name)
+      }),
     }
   }
 
   return schema
+}
+
+function getInlineRefName(typeName: string) {
+  return `${typeName}.reference`
 }
 
 function createKeyField(): ObjectAttribute<StringTypeNode> {
@@ -657,15 +671,24 @@ function sortByDependencies(compiledSchema: SchemaDef): {
    * Tries shortest suffix first (e.g., "content"), then progressively longer
    * paths (e.g., "blocks.content", "post.blocks.content") until finding a unique name.
    */
-  function pickRepeatedName(path: string[]): string {
-    for (let idx = path.length - 1; idx >= 0; idx--) {
+  function pickRepeatedName(path: string[]): string | null {
+    for (let idx = path.length - 1; idx >= 1; idx--) {
       const name = path.slice(idx).join('.')
-      if (!repeatedNames.has(name)) {
+      if (!repeatedNames.has(name) && !compiledSchema.get(name)) {
         repeatedNames.add(name)
         return name
       }
     }
-    throw new Error(`Unable to pick repeated name: ${path.join('.')}`)
+    for (let i = 1; i < 10; i++) {
+      for (let idx = path.length - 1; idx >= 1; idx--) {
+        const name = `${path.slice(idx).join('.')}${i}`
+        if (!repeatedNames.has(name) && !compiledSchema.get(name)) {
+          repeatedNames.add(name)
+          return name
+        }
+      }
+    }
+    return null
   }
 
   // Walks the dependencies of a schema type and adds them to the dependencies set
@@ -710,7 +733,13 @@ function sortByDependencies(compiledSchema: SchemaDef): {
               // eslint-disable-next-line max-depth
               if (!repeated.has(field) && objectMap.has(field)) {
                 // The field is not in the repeated set, but it's the second time we see it – time to add it
-                repeated.set(field, pickRepeatedName(fieldPath))
+                const name = pickRepeatedName(fieldPath)
+
+                // If we couldn't pick a name, we skip hoisting for this field
+                // eslint-disable-next-line max-depth
+                if (name !== null) {
+                  repeated.set(field, name)
+                }
               }
 
               // Track all inline object fields we encounter

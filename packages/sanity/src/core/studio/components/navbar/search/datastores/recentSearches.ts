@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
-import {isEqual, omit} from 'lodash'
+import {isEqual, omit} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {useSchema} from '../../../../../hooks'

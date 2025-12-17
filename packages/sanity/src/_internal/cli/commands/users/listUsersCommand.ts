@@ -1,5 +1,5 @@
 import {type CliCommandDefinition} from '@sanity/cli'
-import {size, sortBy} from 'lodash'
+import {size, sortBy} from 'lodash-es'
 
 import {type Invite, type PartialProjectResponse, type User} from './types'
 

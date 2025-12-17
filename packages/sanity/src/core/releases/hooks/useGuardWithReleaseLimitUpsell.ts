@@ -1,4 +1,4 @@
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {useEffect, useState} from 'react'
 
 import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
