@@ -7354,3 +7354,373 @@ exports[`inline regression: inline type that references other inline type 1`] = 
   },
 ]
 `;
+
+exports[`reference regression: references pointing to hoisted type 1`] = `
+[
+  {
+    "name": "author11",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "name": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "name": "author2",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "author1": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "name": "author11",
+            "type": "inline",
+          },
+        },
+        "name": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "name": "author.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "author",
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "post",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author2",
+          "type": "inline",
+        },
+      },
+      "authorRef": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author.reference",
+          "type": "inline",
+        },
+      },
+      "something": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "author": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "name": "author2",
+                "type": "inline",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+    },
+    "name": "post",
+    "type": "document",
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "author",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author2",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "author",
+    "type": "document",
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "something.author",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author2",
+          "type": "inline",
+        },
+      },
+      "title": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "something.author",
+    "type": "document",
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "post.something.author",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author2",
+          "type": "inline",
+        },
+      },
+      "author1": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author11",
+          "type": "inline",
+        },
+      },
+      "listOfAuthors": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": {
+            "attributes": {
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "author",
+                },
+              },
+              "author1": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "name": "author11",
+                  "type": "inline",
+                },
+              },
+              "name": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+            },
+            "rest": {
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "title": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "post.something.author",
+    "type": "document",
+  },
+  {
+    "name": "author1",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "author1",
+          },
+        },
+        "name": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+]
+`;
