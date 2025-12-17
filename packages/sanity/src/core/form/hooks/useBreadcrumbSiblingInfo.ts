@@ -20,6 +20,9 @@ export function useBreadcrumbSiblingInfo(
   documentSchemaType: SchemaType,
   documentValue: unknown,
 ): {index: number; count: number} | null {
+  // Check if the last segment is a key segment (determines if we're in an array)
+  const hasKeySegment = isKeySegment(itemPath[itemPath.length - 1])
+
   // Find the last key segment in the path
   const lastKeySegmentIndex = itemPath.findLastIndex(isKeySegment)
 
@@ -58,6 +61,9 @@ export function useBreadcrumbSiblingInfo(
   )
 
   return useMemo(() => {
+    // Early exit if not a key segment, this means that it will be an array itself and not a nested object
+    if (!hasKeySegment) return null
+
     if (lastKeySegmentIndex < 0) return null
 
     const isObjectType = isObjectSchemaType(itemSchemaType)
@@ -87,6 +93,7 @@ export function useBreadcrumbSiblingInfo(
       count: arrayValue.length,
     }
   }, [
+    hasKeySegment,
     itemPath,
     lastKeySegmentIndex,
     parentArrayValue,
