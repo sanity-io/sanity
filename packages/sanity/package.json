@@ -156,7 +156,7 @@
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.0.1",
     "@sanity/import": "^3.38.3",
-    "@sanity/insert-menu": "^2.1.0",
+    "@sanity/insert-menu": "^3.0.1",
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.0.2",
     "@sanity/message-protocol": "^0.17.8",
