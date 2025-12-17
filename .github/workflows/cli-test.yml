@@ -21,6 +21,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       GITHUB_JOB_INDEX: ${{ strategy.job-index }} # For uniqueness in integration tests
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For rate limiting with GitHub API
+      SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
