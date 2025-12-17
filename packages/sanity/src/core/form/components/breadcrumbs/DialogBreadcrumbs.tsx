@@ -206,7 +206,11 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   const handlePathSelect = useCallback(
     (path: Path) => {
-      onPathOpen(path)
+      if (isKeySegment(path[path.length - 1])) {
+        onPathOpen(path)
+      } else {
+        onPathOpen(path.slice(0, -1))
+      }
     },
     [onPathOpen],
   )
@@ -231,14 +235,12 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
     currentPath.forEach((segment, index) => {
       // Only include key segments (array items)
-      if (isKeySegment(segment)) {
-        const itemPath = currentPath.slice(0, index + 1)
-        // Use shouldBeInBreadcrumb to filter out PTE blocks
-        if (shouldBeInBreadcrumb(itemPath, currentPath, documentValue)) {
-          result.push({
-            path: itemPath,
-          })
-        }
+      const itemPath = currentPath.slice(0, index + 1)
+      // Use shouldBeInBreadcrumb to filter out PTE blocks
+      if (shouldBeInBreadcrumb(itemPath, currentPath, documentValue)) {
+        result.push({
+          path: itemPath,
+        })
       }
     })
 
@@ -352,25 +354,6 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   return (
     <Inline ref={setRootElement} style={rootInlineStyle}>
-      <Button
-        mode="bleed"
-        padding={2}
-        radius={2}
-        onClick={() => handlePathSelect([])}
-        style={{minWidth: 0, maxWidth: '250px'}}
-        title={rootFieldName}
-        aria-label={rootFieldName}
-      >
-        <Text
-          muted
-          size={1}
-          textOverflow="ellipsis"
-          style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
-        >
-          {rootFieldName}
-        </Text>
-      </Button>
-      <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
     </Inline>
   )
