@@ -176,6 +176,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           containerElement={containerElement}
         >
           <Dialog
+            __unstable_autoFocus={isTop ? props.autofocus : false}
             contentRef={setDocumentScrollElement}
             data-testid="nested-object-dialog"
             header={<DialogBreadcrumbs currentPath={currentPath} />}
@@ -184,7 +185,6 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
             onDragEnter={onDragEnter}
             onDrop={onDrop}
             width={width}
-            animate={!shouldDisableAnimation}
           >
             {contents}
           </Dialog>
