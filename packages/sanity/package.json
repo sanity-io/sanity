@@ -163,7 +163,7 @@
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.0.1",
-    "@sanity/preview-url-secret": "^4.0.0",
+    "@sanity/preview-url-secret": "^4.0.1",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "2.1.2",
     "@sanity/telemetry": "^0.8.0",
