@@ -14,21 +14,17 @@ import {DESCRIPTOR_CONVERTER} from '../schema'
 
 const debug = debugit('sanity:config')
 
-const TOGGLE = 'toggle.schema.upload-pause'
+const DISABLE_TOGGLE = 'toggle.schema.upload-pause.disable'
 
 async function isEnabled(client: SanityClient): Promise<boolean> {
-  if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
-    return true
-  }
-
   const {projectId} = client.config()
   if (!projectId) return false
 
   return firstValueFrom(getFeatures({projectId, versionedClient: client}))
-    .then((features) => features.includes(TOGGLE))
+    .then((features) => !features.includes(DISABLE_TOGGLE))
     .catch((err) => {
-      debug('Fetching features failed. NOT sending schema to server.', {err})
-      return false
+      debug('Fetching features failed. Sending schema to server.', {err})
+      return true
     })
 }
 
