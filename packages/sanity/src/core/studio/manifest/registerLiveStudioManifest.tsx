@@ -4,6 +4,7 @@ import {firstValueFrom} from 'rxjs'
 import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {SANITY_VERSION} from '../../version'
 import {resolveIcon} from './icon'
 
 const buildId: string | undefined =
@@ -34,6 +35,7 @@ interface WorkspaceManifest {
 interface StudioManifest {
   version?: string
   buildId?: string
+  bundleVersion?: string
   workspaces: WorkspaceManifest[]
 }
 
@@ -103,6 +105,7 @@ async function generateStudioManifest(
 
   return {
     buildId,
+    bundleVersion: SANITY_VERSION,
     // Filter out null entries (workspaces without schemaDescriptorId)
     workspaces: workspaceManifests.filter((config): config is WorkspaceManifest => config !== null),
   }
