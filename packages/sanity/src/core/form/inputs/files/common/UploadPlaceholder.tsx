@@ -1,7 +1,7 @@
 import {UploadIcon} from '@sanity/icons'
 import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Flex, useElementSize} from '@sanity/ui'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useSource} from '../../../../../core/studio'

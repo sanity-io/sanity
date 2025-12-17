@@ -6,7 +6,7 @@ import {
   type UploadState,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
 import {type Observable} from 'rxjs'
 

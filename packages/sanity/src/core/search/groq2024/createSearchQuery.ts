@@ -4,7 +4,7 @@ import {
   type GlobalDocumentReferenceType,
   type SchemaType,
 } from '@sanity/types'
-import {groupBy} from 'lodash'
+import {groupBy} from 'lodash-es'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'

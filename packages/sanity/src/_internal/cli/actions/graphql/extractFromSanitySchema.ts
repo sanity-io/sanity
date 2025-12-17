@@ -12,7 +12,7 @@ import {
   type Schema as CompiledSchema,
   type SchemaType,
 } from '@sanity/types'
-import {startCase, uniqBy} from 'lodash'
+import {startCase, uniqBy} from 'lodash-es'
 import oneline from 'oneline'
 
 import * as helpUrls from './helpUrls'

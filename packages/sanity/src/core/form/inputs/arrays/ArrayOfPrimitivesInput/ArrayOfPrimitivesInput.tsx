@@ -1,5 +1,5 @@
 import {Card, Stack} from '@sanity/ui'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'

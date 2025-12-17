@@ -1,6 +1,6 @@
 import {type Schema, type SchemaType} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
-import {difference, startCase} from 'lodash'
+import {difference, startCase} from 'lodash-es'
 
 import {type TFunction} from '../../../../../../../i18n'
 import {isNonNullable} from '../../../../../../../util'

@@ -5,7 +5,7 @@ import {
   type SchemaType,
   type TitledListValue,
 } from '@sanity/types'
-import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
+import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash-es'
 
 import {isRecord} from '../../util'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'

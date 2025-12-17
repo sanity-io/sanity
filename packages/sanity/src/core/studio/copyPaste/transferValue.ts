@@ -33,7 +33,7 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
-import {last} from 'lodash'
+import {last} from 'lodash-es'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {type FIXME} from '../../FIXME'

@@ -1,6 +1,6 @@
 /* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'

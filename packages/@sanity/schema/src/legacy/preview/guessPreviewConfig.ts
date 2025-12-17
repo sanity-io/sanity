@@ -1,5 +1,5 @@
 import arrify from 'arrify'
-import {isUndefined, omitBy} from 'lodash'
+import {isUndefined, omitBy} from 'lodash-es'
 
 import {createFallbackPrepare} from './fallbackPrepare'
 import {isBlockField} from './portableText'
@@ -44,7 +44,11 @@ function resolveFileAssetPath(typeDef: any) {
   return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
 }
 
-export default function guessPreviewFields(rawObjectTypeDef: any) {
+export default function guessPreviewFields(
+  rawObjectTypeDef: any,
+):
+  | {select: any; prepare: (value: any) => {title: any}}
+  | {prepare?: undefined; select: {[index: string]: any}} {
   const objectTypeDef = {fields: [], ...rawObjectTypeDef}
 
   const stringFieldNames = objectTypeDef.fields

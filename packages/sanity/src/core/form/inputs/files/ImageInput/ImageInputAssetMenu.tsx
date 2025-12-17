@@ -1,7 +1,7 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
-import {get, startCase} from 'lodash'
+import {get, startCase} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'

@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
-import {debounce} from 'lodash'
+import {debounce} from 'lodash-es'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 

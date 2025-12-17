@@ -1,5 +1,5 @@
 import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
-import {pickBy} from 'lodash'
+import {pickBy} from 'lodash-es'
 
 import {
   isVideoSchemaType,

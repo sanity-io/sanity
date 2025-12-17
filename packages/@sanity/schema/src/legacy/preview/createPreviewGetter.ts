@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import {warnIfPreviewHasFields, warnIfPreviewOnOptions} from './deprecationUtils'
 import guessPreviewConfig from './guessPreviewConfig'

@@ -5,7 +5,7 @@ import {
 } from '@sanity/descriptors'
 import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-import {capitalize, cloneDeep, startCase} from 'lodash'
+import {capitalize, cloneDeep, startCase} from 'lodash-es'
 import {expect} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'

@@ -28,9 +28,6 @@ export default defineConfig({
       'ae-missing-release-tag': 'off',
     },
   },
-  rollup: {
-    optimizeLodash: true,
-  },
   tsconfig: 'tsconfig.lib.json',
   strictOptions: {
     noImplicitBrowsersList: 'off',

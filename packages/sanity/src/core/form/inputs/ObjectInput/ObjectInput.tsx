@@ -1,6 +1,6 @@
 import {isKeySegment} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import {last} from 'lodash'
+import {last} from 'lodash-es'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 

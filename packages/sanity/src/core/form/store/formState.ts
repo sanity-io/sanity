@@ -22,7 +22,7 @@ import {
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
-import {castArray, isEqual as _isEqual} from 'lodash'
+import {castArray, isEqual as _isEqual} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'

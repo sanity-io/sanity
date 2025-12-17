@@ -1,4 +1,4 @@
-import {escapeRegExp} from 'lodash'
+import {escapeRegExp} from 'lodash-es'
 
 import {type NormalizedWorkspace} from './types'
 

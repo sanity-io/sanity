@@ -1,4 +1,4 @@
-import {uniqBy} from 'lodash'
+import {uniqBy} from 'lodash-es'
 
 import {type ManifestWorkspaceFile} from '../../../../manifest/manifestTypes'
 

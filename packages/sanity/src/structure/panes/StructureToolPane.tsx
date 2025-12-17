@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {lazy, memo, Suspense} from 'react'
 
 import {PaneRouterProvider} from '../components/paneRouter'

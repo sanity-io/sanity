@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import {cloneDeep, sortBy} from 'lodash'
+import {cloneDeep, sortBy} from 'lodash-es'
 
 import {baseCommands} from './commands'
 import {debug} from './debug'

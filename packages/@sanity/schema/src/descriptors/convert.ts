@@ -14,7 +14,7 @@ import {
   type Schema,
   type SchemaType,
 } from '@sanity/types'
-import {isEqual, isObject} from 'lodash'
+import {isEqual, isObject} from 'lodash-es'
 
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'

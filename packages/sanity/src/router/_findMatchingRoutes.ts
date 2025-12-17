@@ -1,4 +1,4 @@
-import {difference, intersection, isPlainObject, pick} from 'lodash'
+import {difference, intersection, isPlainObject, pick} from 'lodash-es'
 
 import {
   type InternalSearchParam,
