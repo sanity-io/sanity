@@ -219,8 +219,8 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
   const maxLength = useMemo(() => {
     const w = size?.border.width
     if (!w) return MAX_LENGTH
-    if (w < 500) return 3
-    if (w < 700) return 4
+    if (w < 500) return 5
+    if (w < 700) return 6
     return MAX_LENGTH
   }, [size?.border.width])
 
