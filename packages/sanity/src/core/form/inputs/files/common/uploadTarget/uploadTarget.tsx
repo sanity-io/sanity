@@ -81,6 +81,30 @@ export function uploadTarget<Props>(
 
     const assetSourceDestinationName = useRef<string | null>(null)
 
+    const alertRejectedFiles = useCallback(
+      (rejected: FileEntry[]) => {
+        pushToast({
+          closable: true,
+          status: 'warning',
+          title: t('inputs.array.error.cannot-upload-unable-to-convert', {
+            count: rejected.length,
+          }),
+          description: rejected.map((task, i) => (
+            // oxlint-disable-next-line no-array-index-key
+            <Flex key={i} gap={2} padding={2}>
+              <Box>
+                <Text weight="medium">{task.file.name}</Text>
+              </Box>
+              <Box>
+                <Text size={1}>({task.file.type})</Text>
+              </Box>
+            </Flex>
+          )),
+        })
+      },
+      [pushToast, t],
+    )
+
     // This is called after the user has dropped or pasted files and selected an asset source destination (if applicable)
     const handleUploadFiles = useCallback(
       (files: File[]) => {
@@ -95,24 +119,7 @@ export function uploadTarget<Props>(
         const rejected = filesAndAssetSources.filter((entry) => entry.assetSource === null)
 
         if (rejected.length > 0) {
-          pushToast({
-            closable: true,
-            status: 'warning',
-            title: t('inputs.array.error.cannot-upload-unable-to-convert', {
-              count: rejected.length,
-            }),
-            description: rejected.map((task, i) => (
-              // oxlint-disable-next-line no-array-index-key
-              <Flex key={i} gap={2} padding={2}>
-                <Box>
-                  <Text weight="medium">{task.file.name}</Text>
-                </Box>
-                <Box>
-                  <Text size={1}>({task.file.type})</Text>
-                </Box>
-              </Flex>
-            )),
-          })
+          alertRejectedFiles(rejected)
         }
         if (onSelectFile) {
           ready.forEach((entry) => {
@@ -124,7 +131,7 @@ export function uploadTarget<Props>(
           })
         }
       },
-      [types, formBuilder, assetSourceDestinationName, pushToast, t, onSelectFile],
+      [alertRejectedFiles, formBuilder, onSelectFile, types],
     )
 
     // This is called when files are dropped or pasted onto the upload target. It may show the asset source destination picker if needed.
@@ -141,6 +148,7 @@ export function uploadTarget<Props>(
         )
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         if (ready.length === 0) {
+          alertRejectedFiles(filesAndAssetSources)
           return
         }
         const allAssetSources = types.flatMap(
@@ -156,7 +164,7 @@ export function uploadTarget<Props>(
         setFilesToUpload([])
         handleUploadFiles(ready.map((entry) => entry.file))
       },
-      [isReadOnly, types, formBuilder, handleUploadFiles],
+      [alertRejectedFiles, isReadOnly, types, formBuilder, handleUploadFiles],
     )
 
     const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
@@ -270,35 +278,31 @@ function getFilesAndAssetSources(
   formBuilder: FIXME,
 ): FileEntry[] {
   const imageType = types.find((type) => type.name === 'image')
-  const imageAssetSource =
-    (imageType &&
-      resolveUploadAssetSources(imageType, formBuilder).find(
-        (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
-      )) ||
-    null
   const fileType = types.find((type) => type.name === 'file')
-  const fileAssetSource =
-    (fileType &&
-      resolveUploadAssetSources(fileType, formBuilder).find(
-        (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
-      )) ||
-    null
 
   return files.map((file) => {
+    const imageAssetSource =
+      (imageType &&
+        resolveUploadAssetSources(imageType, formBuilder, file).find(
+          (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
+        )) ||
+      null
     const isImage = imageType && file.type.startsWith('image/') && imageAssetSource
-    const acceptedImage =
-      imageType && (!imageType.options.accept || imageType.options.accept?.includes(file.type))
-    if (isImage && acceptedImage) {
+    if (isImage) {
       return {
         file,
         schemaType: imageType,
         assetSource: imageAssetSource,
       }
     }
+    const fileAssetSource =
+      (fileType &&
+        resolveUploadAssetSources(fileType, formBuilder, file).find(
+          (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
+        )) ||
+      null
     const isFile = fileType && fileAssetSource
-    const acceptedFile =
-      fileType && (!fileType.options.accept || fileType.options.accept?.includes(file.type))
-    if (isFile && acceptedFile) {
+    if (isFile) {
       return {
         file,
         schemaType: fileType,
