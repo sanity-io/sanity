@@ -116,8 +116,19 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     </PresenceOverlay>
   )
 
-  // Disable animation when there are nested dialogs (stack > 1)
-  const hasNestedDialogs = stack.length > 1
+  // Track if we've ever had nested dialogs during this dialog's lifetime
+  // Once nested, animation should stay disabled (even when going back to first dialog)
+  const [hasEverBeenNested, setHasEverBeenNested] = useState(false)
+
+  // Update state when we have nested dialogs
+  useEffect(() => {
+    if (stack.length > 1 && !hasEverBeenNested) {
+      setHasEverBeenNested(true)
+    }
+  }, [stack.length, hasEverBeenNested])
+
+  // Disable animation when there are or have been nested dialogs
+  const shouldDisableAnimation = stack.length > 1 || hasEverBeenNested
 
   const handleGlobalKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -165,7 +176,6 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           containerElement={containerElement}
         >
           <Dialog
-            __unstable_autoFocus={isTop ? props.autofocus : false}
             contentRef={setDocumentScrollElement}
             data-testid="nested-object-dialog"
             header={<DialogBreadcrumbs currentPath={currentPath} />}
@@ -174,7 +184,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
             onDragEnter={onDragEnter}
             onDrop={onDrop}
             width={width}
-            animate={!hasNestedDialogs}
+            animate={!shouldDisableAnimation}
           >
             {contents}
           </Dialog>
