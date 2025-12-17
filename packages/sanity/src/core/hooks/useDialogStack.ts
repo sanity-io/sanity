@@ -1,7 +1,10 @@
 import {type Path} from '@sanity/types'
-import {noop} from 'lodash'
 import {useContext, useEffect, useId, useRef} from 'react'
 import {DialogStackContext} from 'sanity/_singletons'
+
+const noop = (): void => {
+  return undefined
+}
 
 /**
  * Hook to register a dialog in the stack and check if it's the top-most one.
