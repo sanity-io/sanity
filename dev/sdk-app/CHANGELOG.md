@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major to ^2.4.0 ([#11544](https://github.com/sanity-io/sanity/issues/11544)) ([19b1b9e](https://github.com/sanity-io/sanity/commit/19b1b9ec8d3b000172423a75bd964beaeab2f148)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
 
 **Note:** Version bump only for package example-sdk-app
