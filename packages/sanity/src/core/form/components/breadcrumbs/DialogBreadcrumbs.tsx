@@ -265,9 +265,6 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
     return rawItems
   }, [rawItems, maxLength])
 
-  // Get the root field name (first segment of the path)
-  const rootFieldName = currentPath?.[0]?.toString()
-
   if (!currentPath || currentPath.length === 0) {
     return null
   }
