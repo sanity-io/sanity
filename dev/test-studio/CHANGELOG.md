@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to v4 ([#11532](https://github.com/sanity-io/sanity/issues/11532)) ([36ff000](https://github.com/sanity-io/sanity/commit/36ff000eb5532b8b33421328c64fb68748d23c83)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to v4 ([#11560](https://github.com/sanity-io/sanity/issues/11560)) ([f86089d](https://github.com/sanity-io/sanity/commit/f86089d40e6761ce3eb7a2e3c72ad537b9e50f8d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11574](https://github.com/sanity-io/sanity/issues/11574)) ([1d0f1cb](https://github.com/sanity-io/sanity/commit/1d0f1cb5e23f5ea7749a2b7ffdb050b636847554)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11531](https://github.com/sanity-io/sanity/issues/11531)) ([9acea25](https://github.com/sanity-io/sanity/commit/9acea25826b80a3886b7ee6abc7541bde7d4cea3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11570](https://github.com/sanity-io/sanity/issues/11570)) ([c798574](https://github.com/sanity-io/sanity/commit/c798574f2bea921f5c562c2c981e99cc4e542a7f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11537](https://github.com/sanity-io/sanity/issues/11537)) ([33f7115](https://github.com/sanity-io/sanity/commit/33f71158a67aa4b42f3163cf4615b379c3206130)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
 
 ### Features

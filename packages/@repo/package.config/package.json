@@ -1,6 +1,6 @@
 {
   "name": "@repo/package.config",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "private": true,
   "description": "Shared @sanity/pkg-utils configuration",
   "type": "module",
