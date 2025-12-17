@@ -45,7 +45,13 @@ for (const packageName of Object.keys(dependencies)) {
 const prettierConfig = await resolvePrettierConfig(path.join(fixturesDir, 'mock.test-d.ts'))
 
 for (const [bareIdentifier, [dtsFilePath, fixturePath]] of fixtures) {
-  const project = new Project()
+  const project = new Project({
+    skipAddingFilesFromTsConfig: true,
+    compilerOptions: {
+      declaration: true,
+      skipLibCheck: true,
+    },
+  })
   const sourceFile = project.addSourceFileAtPath(`../../../packages/${dtsFilePath}`)
   const exps = sourceFile.getExportedDeclarations()
   if (exps.size === 0) {
@@ -72,8 +78,29 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
   for (const name of imports) {
     const exportName = name === 'default' ? '_default' : name
     const testName = JSON.stringify(name)
-    const decls = exps.get(name)
-    if (!decls || decls.length === 0) {
+    let decls = exps.get(name) || []
+    
+    // If no declarations found, check if this is a re-exported type
+    if (decls.length === 0) {
+      // Get all export declarations in the source file
+      const exportDeclarations = sourceFile.getExportDeclarations()
+      
+      for (const exportDecl of exportDeclarations) {
+        const namedExports = exportDecl.getNamedExports()
+        for (const namedExport of namedExports) {
+          const exportedName = namedExport.getName()
+          if (exportedName === name) {
+            // This is a re-exported type, we can infer it's a type alias or interface
+            // Create a synthetic declaration marker
+            decls = [namedExport]
+            break
+          }
+        }
+        if (decls.length > 0) break
+      }
+    }
+    
+    if (decls.length === 0) {
       testContent += `test.todo(${testName} /* FIXME: no declarations found */)
 `
 
@@ -148,6 +175,11 @@ function getTestContent(syntaxKindName, exportName, genericParams) {
 `
     case 'EnumDeclaration':
       return `expectTypeOf<typeof ${exportName}>().toBeObject();
+`
+    case 'ExportSpecifier':
+      // This is a re-exported type from an external module
+      // We can't determine the exact type, so use a generic test
+      return `expectTypeOf<${exportName}>().not.toBeNever();
 `
     default:
       return `// FIXME: ${syntaxKindName} isn't implemented in generate.mjs yet
