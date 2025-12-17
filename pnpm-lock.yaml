@@ -2338,8 +2338,8 @@ importers:
         specifier: 'catalog:'
         version: 3.4.0(@sanity/ui@3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3))(@types/node@24.10.2)(babel-plugin-macros@3.1.0)(jiti@2.6.1)(lightningcss@1.30.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       '@sanity/visual-editing-csm':
-        specifier: ^3.0.1
-        version: 3.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
+        specifier: ^3.0.2
+        version: 3.0.2(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
       '@sentry/types':
         specifier: ^8.55.0
         version: 8.55.0
@@ -5648,8 +5648,8 @@ packages:
     peerDependencies:
       '@sanity/client': ^7.11.2
 
-  '@sanity/visual-editing-csm@3.0.1':
-    resolution: {integrity: sha512-G2nzYIr420eBxncuXymFDG1GxRkBb7CSYanBfgz0tYRIp76lHEFEE76hWmifrZ7+ggpzbKUeK1AsNa430221wA==}
+  '@sanity/visual-editing-csm@3.0.2':
+    resolution: {integrity: sha512-Gb/i3uCJWUpQfMjxL00OTYgIkTaAJxFUYo4P5RLwlQ3twJd3n6b/cPcnBwJETjoK4ltxlG67X8C+acc14FfI5Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.13.2
@@ -5664,8 +5664,8 @@ packages:
       '@sanity/types':
         optional: true
 
-  '@sanity/visual-editing-types@2.0.0':
-    resolution: {integrity: sha512-ncRywvnqao6n9BEZoZYjb3vSqNa8uJSdsuSDMx7aEE8cc0P4+Q9IbbKzditzVd0K0jR59XBD4N1t727E11SjWw==}
+  '@sanity/visual-editing-types@2.0.1':
+    resolution: {integrity: sha512-CXCVPIg1T2du4CfH8npLv462N9DBDj0sZwD1VyxqzSI65dJO7GfYPf0ju4MJnVsyPaw7AzFwV92ZvP7aj6hNUA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.13.2
@@ -17054,10 +17054,10 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@3.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
+  '@sanity/visual-editing-csm@3.0.2(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
       '@sanity/client': 7.13.2(debug@4.4.3)
-      '@sanity/visual-editing-types': 2.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-types': 2.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       valibot: 1.2.0(typescript@5.9.3)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -17069,7 +17069,7 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing-types@2.0.0(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)':
+  '@sanity/visual-editing-types@2.0.1(@sanity/client@7.13.2(debug@4.4.3))(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/client': 7.13.2(debug@4.4.3)
     optionalDependencies:
