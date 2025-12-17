@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to v4 ([#11532](https://github.com/sanity-io/sanity/issues/11532)) ([36ff000](https://github.com/sanity-io/sanity/commit/36ff000eb5532b8b33421328c64fb68748d23c83)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @portabletext/plugin-one-line to v4 ([#11536](https://github.com/sanity-io/sanity/issues/11536)) ([0cb97d9](https://github.com/sanity-io/sanity/commit/0cb97d93b812622ac6b6a5853c13de3fa6981c7e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/import to v4 ([#11553](https://github.com/sanity-io/sanity/issues/11553)) ([a4b0a3f](https://github.com/sanity-io/sanity/commit/a4b0a3fc3c99776703033078014779be0799bc89)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** update dependency @sanity/insert-menu to v3 ([#11559](https://github.com/sanity-io/sanity/issues/11559)) ([90dfc47](https://github.com/sanity-io/sanity/commit/90dfc4736f9392df473e6c0a3167f97fe619509f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/insert-menu to v3.0.2 ([#11572](https://github.com/sanity-io/sanity/issues/11572)) ([a6264ef](https://github.com/sanity-io/sanity/commit/a6264ef21b72407a9c60e106cc19e9578071fccb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.1 ([#11573](https://github.com/sanity-io/sanity/issues/11573)) ([e05918f](https://github.com/sanity-io/sanity/commit/e05918f39ac19e0fc59fb29d0c684bf527f195b1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to v4 ([#11560](https://github.com/sanity-io/sanity/issues/11560)) ([f86089d](https://github.com/sanity-io/sanity/commit/f86089d40e6761ce3eb7a2e3c72ad537b9e50f8d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.24.0 ([#11534](https://github.com/sanity-io/sanity/issues/11534)) ([e1c46d5](https://github.com/sanity-io/sanity/commit/e1c46d572cf703090eb4fd224486ebab1e6b9b4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency motion to ^12.23.26 ([#11552](https://github.com/sanity-io/sanity/issues/11552)) ([57c9f1c](https://github.com/sanity-io/sanity/commit/57c9f1cdee254606165cb12ba343087adbe5c8d3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency xstate to ^5.25.0 ([#11542](https://github.com/sanity-io/sanity/issues/11542)) ([ec49ea1](https://github.com/sanity-io/sanity/commit/ec49ea1f7eca94e06eec858913fec6829c2899b5)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11574](https://github.com/sanity-io/sanity/issues/11574)) ([1d0f1cb](https://github.com/sanity-io/sanity/commit/1d0f1cb5e23f5ea7749a2b7ffdb050b636847554)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major to ^2.4.0 ([#11544](https://github.com/sanity-io/sanity/issues/11544)) ([19b1b9e](https://github.com/sanity-io/sanity/commit/19b1b9ec8d3b000172423a75bd964beaeab2f148)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11531](https://github.com/sanity-io/sanity/issues/11531)) ([9acea25](https://github.com/sanity-io/sanity/commit/9acea25826b80a3886b7ee6abc7541bde7d4cea3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11570](https://github.com/sanity-io/sanity/issues/11570)) ([c798574](https://github.com/sanity-io/sanity/commit/c798574f2bea921f5c562c2c981e99cc4e542a7f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11537](https://github.com/sanity-io/sanity/issues/11537)) ([33f7115](https://github.com/sanity-io/sanity/commit/33f71158a67aa4b42f3163cf4615b379c3206130)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* put back missing support for file extension type file accept ([#11582](https://github.com/sanity-io/sanity/issues/11582)) ([b3a4fe2](https://github.com/sanity-io/sanity/commit/b3a4fe2b2feeca7e477a34994b21b9bd1af3038f)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **schema:** sort out conflict between hoisted ref types and other types ([#11579](https://github.com/sanity-io/sanity/issues/11579)) ([85d65b1](https://github.com/sanity-io/sanity/commit/85d65b166b4597ce15a7b73b9e86821ab39563f4)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
 
 ### ⚠ BREAKING CHANGES
