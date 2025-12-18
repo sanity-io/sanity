@@ -26,6 +26,9 @@ const {values: args} = parseArgs({
     bundle: {
       type: 'string',
     },
+    bundles: {
+      type: 'string',
+    },
     draft: {
       type: 'boolean',
       default: true,
@@ -66,7 +69,7 @@ const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cw
       --amount, -n <int>: Number of documents to generate
       --draft: Generate draft documents
       --published: Generate published documents
-      --bundle <string>: Bundle to generate documents in
+      --bundle <string>[,<string>,...<stringN>]: Bundle(s) to generate documents in
       --size <bytes>: Size (in bytes) of the generated document (will be approximated)
       --concurrency, -c <int>: Number of concurrent requests
       --help, -h: Show this help message
@@ -104,7 +107,10 @@ const client = createClient({
 })
 
 run({
-  bundle: args.bundle,
+  bundles: args.bundle
+    ?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
   draft: args.draft,
   published: args.published,
   concurrency: args.concurrency ? Number(args.concurrency) : undefined,

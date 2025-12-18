@@ -9,13 +9,13 @@ export type ProgramArgs = {
   published?: boolean
   size?: number
   draft?: boolean
-  bundle?: string
+  bundles?: string[]
   template: DocGenTemplate
   concurrency?: number
 }
 
 export function run(_args: ProgramArgs) {
-  const {client, bundle, draft, concurrency, published, template, number, size} = _args
+  const {client, bundles, draft, concurrency, published, template, number, size} = _args
   const runId = Date.now()
 
   return range(0, number || 1).pipe(
@@ -40,15 +40,17 @@ export function run(_args: ProgramArgs) {
           }
         : undefined
 
-      const bundleDocument = bundle
-        ? {
+      const bundleDocuments = bundles
+        ? bundles.map((b) => ({
             ...template({...templateOptions, title: `${title} - Published`}),
-            _id: `versions.${bundle}.${id}`,
-            title: `${title} - Bundle: ${bundle}`,
-          }
-        : undefined
+            _id: `versions.${b}.${id}`,
+            title: `${title} - Bundle: ${bundles}`,
+          }))
+        : []
 
-      return [publishedDocument, draftDocument, bundleDocument].flatMap((d) => (d ? [d] : []))
+      return [published && publishedDocument, draft && draftDocument, bundleDocuments].flatMap(
+        (d) => (d ? d : []),
+      )
     }),
     mergeMap((doc) => {
       console.log('Creating', doc._id)
