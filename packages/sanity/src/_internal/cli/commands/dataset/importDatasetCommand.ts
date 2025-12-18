@@ -12,6 +12,7 @@ import prettyMs from 'pretty-ms'
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
+import {isInteractive} from '../../util/isInteractive'
 
 const yellow = (str: string) => `\u001b[33m${str}\u001b[39m`
 
@@ -334,9 +335,12 @@ async function determineTargetDataset(
   spinner.succeed('[100%] Fetching available datasets')
 
   let targetDataset = target ? `${target}` : null
+  const skipPrompts = unattended || !isInteractive
   if (!targetDataset) {
-    if (unattended) {
-      throw new Error('Target dataset must be specified when using --yes flag')
+    if (skipPrompts) {
+      throw new Error(
+        'Target dataset must be specified when using --yes flag or in non-interactive mode',
+      )
     }
     targetDataset = await chooseDatasetPrompt(context, {
       message: 'Select target dataset',
@@ -344,8 +348,8 @@ async function determineTargetDataset(
     })
   } else if (!datasets.find((dataset) => dataset.name === targetDataset)) {
     debug('Target dataset does not exist, prompting for creation')
-    let shouldCreate = unattended
-    if (!unattended) {
+    let shouldCreate = skipPrompts
+    if (!skipPrompts) {
       shouldCreate = await prompt.single({
         type: 'confirm',
         message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
