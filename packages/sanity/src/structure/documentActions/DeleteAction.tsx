@@ -2,6 +2,7 @@ import {TrashIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -19,8 +20,9 @@ const DISABLED_REASON_TITLE_KEY = {
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDeleteAction: DocumentActionComponent = ({id, type, draft, release}) => {
-  const {delete: deleteOp} = useDocumentOperation(id, type, release)
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft, version}) => {
+  const bundleId = version?._id && getVersionFromId(version._id)
+  const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
@@ -47,7 +49,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, relea
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: bundleId,
     permission: 'delete',
   })
 
