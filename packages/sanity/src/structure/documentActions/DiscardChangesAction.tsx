@@ -2,6 +2,7 @@ import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -27,14 +28,15 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   type,
   published,
   liveEdit,
-  release,
+  version,
 }) => {
-  const {discardChanges} = useDocumentOperation(id, type, release)
+  const bundleId = version?._id && getVersionFromId(version._id)
+  const {discardChanges} = useDocumentOperation(id, type, bundleId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: bundleId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
@@ -57,7 +59,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   }, [])
 
   return useMemo(() => {
-    if (liveEdit || isPublished) {
+    if (liveEdit && isPublished && !version) {
       return null
     }
 
@@ -98,6 +100,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     isConfirmDialogOpen,
     discardChanges.disabled,
     published,
+    version,
     handle,
     isPermissionsLoading,
     isPublished,
