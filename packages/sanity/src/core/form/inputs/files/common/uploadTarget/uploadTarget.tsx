@@ -17,6 +17,7 @@ import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useTranslation} from '../../../../../i18n'
+import {_isType} from '../../../../../util/schemaUtils'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
 import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
 import {useFormBuilder} from '../../../../useFormBuilder'
@@ -277,8 +278,10 @@ function getFilesAndAssetSources(
   assetSourceDestinationName: string | null,
   formBuilder: FIXME,
 ): FileEntry[] {
-  const imageType = types.find((type) => type.name === 'image')
-  const fileType = types.find((type) => type.name === 'file')
+  // Find the first image and file type in the provided types
+  // Note: these types could be hoisted, so use isType to check
+  const imageType = types.find((type) => _isType(type, 'image'))
+  const fileType = types.find((type) => _isType(type, 'file'))
 
   return files.map((file) => {
     const imageAssetSource =
