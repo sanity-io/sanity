@@ -1,6 +1,7 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
+import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -44,7 +45,7 @@ function getDisabledReason(
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const timeSincePublished = useRelativeTime(publishedAt, {useTemporalPhrase: true})
-  return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
+  return <Text>{t('action.publish.already-published.tooltip', {timeSincePublished})}</Text>
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
