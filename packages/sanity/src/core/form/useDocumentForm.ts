@@ -205,7 +205,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
-    if (selectedPerspectiveName) {
+    if (releaseId) {
       // in cases where the current version is going to be unpublished, we need to show the published document
       // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
       if (editState.version && isGoingToUnpublish(editState.version)) {
@@ -223,8 +223,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
             {_id: documentId, _type: documentType})
       )
     }
-    // if no version is selected, but there is only version, it should default to the version it finds
-    if (!selectedPerspectiveName && onlyHasVersions) {
+    // we have either a selected perspective that's not a release,
+    // or no version is selected, but there are only versions,
+    // so it should default to the version it finds
+    if (selectedPerspectiveName || onlyHasVersions) {
       return editState.version || editState.draft || editState.published || baseValue
     }
     return editState?.draft || editState?.published || baseValue
@@ -235,6 +237,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.published,
     editState.version,
     initialValue,
+    releaseId,
     liveEdit,
     selectedPerspectiveName,
     onlyHasVersions,
@@ -369,8 +372,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     // selected when they created it. This will cause it to be created in the dataset, attached to
     // the currently selected perspective.
     if (
-      selectedPerspectiveName &&
-      getVersionFromId(value._id) !== selectedPerspectiveName &&
+      releaseId &&
+      getVersionFromId(value._id) !== releaseId &&
       isNewDocument(editState) === false
     ) {
       return true
@@ -403,6 +406,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
     selectedPerspectiveName,
     liveEdit,
+    releaseId,
     ready,
     isCreateLinked,
     isReleaseLocked,
