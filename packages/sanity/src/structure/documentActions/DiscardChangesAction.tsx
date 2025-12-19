@@ -60,13 +60,12 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   }, [])
 
   return useMemo(() => {
-    // This document has neither a draft nor a published version.
-    // i.e., there isn't anything to discard
+    // This document has neither a draft nor a version so there isn't anything to discard
     if (!version && !draft) {
       return null
     }
-    // isPublished = we are currently editing the published version
-    if (liveEdit && isPublished) {
+    // isPublished = we are currently editing the published version and never want to show "Discard drafts" in this case
+    if (isPublished) {
       return null
     }
 
@@ -112,7 +111,6 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     handle,
     isPermissionsLoading,
     isPublished,
-    liveEdit,
     permissions?.granted,
     t,
   ])
