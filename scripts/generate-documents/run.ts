@@ -24,6 +24,7 @@ export function run(_args: ProgramArgs) {
 
       const templateOptions = {
         size: size ?? 256,
+        id,
       }
 
       const title = `Generated #${runId.toString(32).slice(2)}/${i}`
@@ -41,10 +42,10 @@ export function run(_args: ProgramArgs) {
         : undefined
 
       const bundleDocuments = bundles
-        ? bundles.map((b) => ({
-            ...template({...templateOptions, title: `${title} - Published`}),
-            _id: `versions.${b}.${id}`,
-            title: `${title} - Bundle: ${bundles}`,
+        ? bundles.map((bundle) => ({
+            ...baseDocument,
+            _id: `versions.${bundle}.${id}`,
+            title: `${title} - Bundle: ${bundle}`,
           }))
         : []
 
