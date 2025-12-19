@@ -6,8 +6,8 @@ import {
   type ReleaseDocument,
   type ReleaseId,
   useActiveReleases,
+  useDocumentVersions,
   useFilteredReleases,
-  useOnlyHasVersions,
   usePerspective,
   useSingleDocRelease,
 } from 'sanity'
@@ -33,6 +33,11 @@ vi.mock('sanity', async (importOriginal) => ({
   useFilteredReleases: vi.fn(),
   useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
+  useDocumentVersions: vi.fn().mockReturnValue({
+    data: [],
+    error: null,
+    loading: true,
+  }),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
@@ -68,9 +73,11 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
-const mockUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
+
 const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
+
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
   _id: '_.releases.rSpringDrop',
@@ -184,7 +191,10 @@ describe('DocumentPerspectiveList', () => {
       onSetScheduledDraftPerspective: vi.fn(),
     })
 
-    mockUseOnlyHasVersions.mockReturnValue(false)
+    mockUseDocumentVersions.mockReturnValue({
+      loading: false,
+      data: [],
+    })
 
     mockUseFilteredReleases.mockReturnValue({
       currentReleases: [mockCurrent],
@@ -217,7 +227,11 @@ describe('DocumentPerspectiveList', () => {
         getPaneMock({isCreatingDocument: true, displayedVersion: 'rSpringDrop'}),
       )
       // no document versions are available, but the user is creating this document, so we want to show the chip anyways.
-      mockUseOnlyHasVersions.mockReturnValue(false)
+
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: [],
+      })
 
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [mockCurrent],
@@ -242,8 +256,6 @@ describe('DocumentPerspectiveList', () => {
 
   describe('disabled chips', () => {
     beforeEach(() => {
-      mockUseOnlyHasVersions.mockReturnValue(false)
-
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [],
         notCurrentReleases: [],
@@ -301,8 +313,10 @@ describe('DocumentPerspectiveList', () => {
         ...usePerspectiveMockValue,
         selectedPerspectiveName: undefined,
       })
-      mockUseOnlyHasVersions.mockReturnValue(true)
-
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: ['versions.foo.xyz'],
+      })
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [mockCurrent],
         notCurrentReleases: [],
@@ -496,7 +510,10 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: ['versions.rSpringDrop.foo'],
+        })
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],
@@ -522,7 +539,11 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
+
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: [],
+        })
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],
@@ -549,7 +570,6 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],
