@@ -8,6 +8,7 @@ import {tap} from 'rxjs'
 
 import {run} from './run'
 import {book} from './templates/book'
+import {liveEdit} from './templates/liveEdit'
 import {species} from './templates/species'
 import {validation} from './templates/validation'
 
@@ -55,9 +56,10 @@ const {values: args} = parseArgs({
 })
 
 const templates = {
-  validation: validation,
-  book: book,
-  species: species,
+  validation,
+  book,
+  species,
+  liveEdit,
 }
 
 const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cwd(), process.argv[1])} --template <template> [arguments]
