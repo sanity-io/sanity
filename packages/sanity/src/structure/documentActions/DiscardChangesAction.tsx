@@ -29,6 +29,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   published,
   liveEdit,
   version,
+  draft,
 }) => {
   const bundleId = version?._id && getVersionFromId(version._id)
   const {discardChanges} = useDocumentOperation(id, type, bundleId)
@@ -59,7 +60,13 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   }, [])
 
   return useMemo(() => {
-    if (liveEdit && isPublished && !version) {
+    // This document has neither a draft nor a published version.
+    // i.e., there isn't anything to discard
+    if (!version && !draft) {
+      return null
+    }
+    // isPublished = we are currently editing the published version
+    if (liveEdit && isPublished) {
       return null
     }
 
@@ -101,6 +108,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     discardChanges.disabled,
     published,
     version,
+    draft,
     handle,
     isPermissionsLoading,
     isPublished,
