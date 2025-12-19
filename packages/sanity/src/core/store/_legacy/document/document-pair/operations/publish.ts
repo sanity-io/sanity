@@ -1,11 +1,11 @@
-import {isReference} from '@sanity/types'
+import {isReference, type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash-es'
 
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './index'
 
-function strengthenOnPublish<T = any>(obj: T): T {
+function strengthenOnPublish<T>(obj: T): T {
   if (isReference(obj)) {
     if (obj._strengthenOnPublish) {
       return omit(
@@ -29,20 +29,20 @@ export const publish: OperationImpl<[], DisabledReason> = {
     if (isLiveEditEnabled(schema, typeName)) {
       return 'LIVE_EDIT_ENABLED'
     }
-    if (!snapshots.draft) {
+    if (!snapshots.draft && !snapshots.version) {
       return snapshots.published ? 'ALREADY_PUBLISHED' : 'NO_CHANGES'
     }
     return false
   },
   execute: ({client, idPair, snapshots}) => {
-    if (!snapshots.draft) {
-      throw new Error('cannot execute "publish" when draft is missing')
+    if (!snapshots.draft && !snapshots.version) {
+      throw new Error('cannot execute "publish" when draft or version is missing')
     }
-    const value = strengthenOnPublish(omit(snapshots.draft, '_updatedAt'))
+
+    const value = strengthenOnPublish(
+      omit(snapshots.draft || snapshots.version, '_updatedAt') as SanityDocument,
+    )
     const tx = operationsApiClient(client, idPair).observable.transaction()
-    if (!snapshots.draft) {
-      throw new Error('cannot execute "publish" when draft is missing')
-    }
 
     if (snapshots.published) {
       // If it exists already, we only want to update it if the revision on the remote server
@@ -56,7 +56,6 @@ export const publish: OperationImpl<[], DisabledReason> = {
       tx.createOrReplace({
         ...value,
         _id: idPair.publishedId,
-        _type: snapshots.draft._type,
       })
     } else {
       // If the document has not been published, we want to create it - if it suddenly exists
@@ -64,11 +63,10 @@ export const publish: OperationImpl<[], DisabledReason> = {
       tx.create({
         ...value,
         _id: idPair.publishedId,
-        _type: snapshots.draft._type,
       })
     }
 
-    tx.delete(idPair.draftId)
+    tx.delete(value._id)
 
     return tx.commit({tag: 'document.publish', visibility: 'async'})
   },
