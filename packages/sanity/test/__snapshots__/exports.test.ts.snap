@@ -229,6 +229,7 @@ exports[`exports snapshot 1`] = `
     "_createAuthStore": "function",
     "_isCustomDocumentTypeDefinition": "function",
     "_isSanityDocumentTypeDefinition": "function",
+    "_isType": "function",
     "asLoadable": "function",
     "buildCommentRangeDecorations": "function",
     "buildLegacyTheme": "function",
