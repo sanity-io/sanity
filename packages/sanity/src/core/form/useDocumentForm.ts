@@ -369,8 +369,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     // selected when they created it. This will cause it to be created in the dataset, attached to
     // the currently selected perspective.
     if (
-      selectedPerspectiveName &&
-      getVersionFromId(value._id) !== selectedPerspectiveName &&
+      releaseId &&
+      getVersionFromId(value._id) !== releaseId &&
       isNewDocument(editState) === false
     ) {
       return true
@@ -403,6 +403,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
     selectedPerspectiveName,
     liveEdit,
+    releaseId,
     ready,
     isCreateLinked,
     isReleaseLocked,
