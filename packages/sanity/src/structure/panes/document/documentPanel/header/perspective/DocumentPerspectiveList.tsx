@@ -15,13 +15,14 @@ import {
   isVersionId,
   type ReleaseDocument,
   type SanityDocumentLike,
+  type TargetPerspective,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
+  useDocumentVersions,
   useFilteredReleases,
   useGetDefaultPerspective,
-  useOnlyHasVersions,
   usePerspective,
   useSchema,
   useSetPerspective,
@@ -85,7 +86,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 
 // eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
@@ -101,7 +102,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     documentId,
   })
 
-  const onlyHasVersions = useOnlyHasVersions({documentId})
+  const {data: documentVersions} = useDocumentVersions({documentId})
+
+  const onlyHasVersions =
+    documentVersions &&
+    documentVersions.length > 0 &&
+    !documentVersions.some((version) => !isVersionId(version))
+
   const workspace = useWorkspace()
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
@@ -118,7 +125,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   }, [params, setPerspective, onSetScheduledDraftPerspective])
 
   const handlePerspectiveChange = useCallback(
-    (perspective: 'published' | 'drafts' | ReleaseDocument) => () => {
+    (perspective: TargetPerspective) => () => {
       if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
         onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(perspective._id))
         return
@@ -259,6 +266,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
+  const nonReleaseVersions = documentVersions.filter((versionDocumentId) => {
+    if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
+      return false
+    }
+    const hasRelease = filteredReleases.currentReleases.some((release) => {
+      return getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(versionDocumentId)
+    })
+    return !hasRelease
+  })
+
   return (
     <>
       <VersionChip
@@ -394,6 +411,56 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             }}
           />
         ))}
+      {nonReleaseVersions.map((nonReleaseVersionId) => {
+        const bundle = getVersionFromId(nonReleaseVersionId)!
+        const selected = selectedPerspective === bundle
+
+        return (
+          <VersionChip
+            key={nonReleaseVersionId}
+            tooltipContent={
+              <Text size={1}>
+                {editState?.version ? (
+                  <>
+                    {editState?.version._updatedAt ? (
+                      <Translate
+                        t={t}
+                        i18nKey="release.chip.tooltip.edited-date"
+                        values={{
+                          date: dateTimeFormat.format(new Date(editState?.version._updatedAt)),
+                        }}
+                      />
+                    ) : (
+                      <Translate
+                        t={t}
+                        i18nKey="release.chip.tooltip.created-date"
+                        values={{
+                          date: dateTimeFormat.format(new Date(editState?.version._createdAt)),
+                        }}
+                      />
+                    )}
+                  </>
+                ) : null}
+              </Text>
+            }
+            selected={selected}
+            text={bundle}
+            tone="default"
+            onClick={handlePerspectiveChange(bundle)}
+            onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+            contextValues={{
+              documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
+              menuReleaseId:
+                editState?.draft?._id || editState?.published?._id || editState?.id || '',
+              releases: filteredReleases.notCurrentReleases,
+              releasesLoading: loading,
+              documentType: documentType,
+              fromRelease: bundle,
+              isVersion: true,
+            }}
+          />
+        )
+      })}
     </>
   )
 })

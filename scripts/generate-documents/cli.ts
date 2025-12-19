@@ -13,6 +13,7 @@ import {validation} from './templates/validation'
 
 const {values: args} = parseArgs({
   args: process.argv.slice(2),
+  allowNegative: true,
   options: {
     number: {
       type: 'string',
@@ -27,6 +28,7 @@ const {values: args} = parseArgs({
     },
     draft: {
       type: 'boolean',
+      default: true,
     },
     published: {
       type: 'boolean',
@@ -103,7 +105,7 @@ const client = createClient({
 
 run({
   bundle: args.bundle,
-  draft: args.draft || true,
+  draft: args.draft,
   published: args.published,
   concurrency: args.concurrency ? Number(args.concurrency) : undefined,
   number: args.number ? Number(args.number) : undefined,
