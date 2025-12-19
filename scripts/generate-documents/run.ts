@@ -1,4 +1,4 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {mergeMap, range} from 'rxjs'
 
 import {type DocGenTemplate} from './types'
@@ -29,17 +29,10 @@ export function run(_args: ProgramArgs) {
 
       const title = `Generated #${runId.toString(32).slice(2)}/${i}`
 
-      const publishedDocument = published
-        ? {...template({...templateOptions, title: `${title} - Published`}), _id: id}
-        : undefined
+      const baseDocument = {...template({...templateOptions, title}), _id: id}
 
-      const draftDocument = draft
-        ? {
-            ...template({...templateOptions, title: `${title} - Published`}),
-            _id: `drafts.${id}`,
-            title: `${title} - Draft`,
-          }
-        : undefined
+      const publishedDocument = {...baseDocument, title: `${title} - Published`}
+      const draftDocument = {...baseDocument, _id: `drafts.${id}`, title: `${title} - Draft`}
 
       const bundleDocuments = bundles
         ? bundles.map((bundle) => ({
@@ -55,7 +48,7 @@ export function run(_args: ProgramArgs) {
     }),
     mergeMap((doc) => {
       console.log('Creating', doc._id)
-      return client.observable.create(doc as SanityDocument, {autoGenerateArrayKeys: true})
+      return client.observable.create(doc, {autoGenerateArrayKeys: true})
     }, concurrency ?? 2),
   )
 }
