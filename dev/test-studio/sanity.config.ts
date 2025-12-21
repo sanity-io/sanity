@@ -236,11 +236,20 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [DECISION_PARAMETERS_SCHEMA]: {
-    audiences: ['aud-a', 'aud-b', 'aud-c'],
-    locales: ['en-GB', 'en-US'],
-    ages: ['20-29', '30-39'],
-  },
+  [DECISION_PARAMETERS_SCHEMA]: () => ({
+    audiences: {
+      title: 'Audience',
+      type: 'string',
+      options: [
+        {title: 'Audience A', value: 'aud-a'},
+        {title: 'Audience B', value: 'aud-b'},
+        {title: 'Audience C', value: 'aud-c'},
+      ],
+    },
+    locales: {title: 'Locale', type: 'string', options: ['en-GB', 'en-US']},
+    age: {title: 'Age', type: 'number'},
+    gender: {title: 'Gender', type: 'string', options: ['male', 'female']},
+  }),
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
