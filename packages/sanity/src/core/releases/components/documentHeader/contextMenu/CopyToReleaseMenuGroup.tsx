@@ -80,8 +80,12 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           )
         })}
       </ReleasesList>
-      {releases.length > 1 && <MenuDivider />}
-      {isReleasesEnabled && <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />}
+      {isReleasesEnabled && (
+        <>
+          <MenuDivider />
+          <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
+        </>
+      )}
     </MenuGroup>
   )
 })
