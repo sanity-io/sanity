@@ -1,4 +1,4 @@
-import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -83,7 +83,6 @@ export const VersionChip = memo(function VersionChip(props: {
     releasesLoading: boolean
     documentType: string
     fromRelease: string
-    releaseState?: ReleaseState
     isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
