@@ -79,10 +79,10 @@ export const VersionChip = memo(function VersionChip(props: {
   onCopyToDraftsNavigate: () => void
   contextValues: {
     documentId: string
+    documentType: string
     releases: ReleaseDocument[]
     releasesLoading: boolean
-    documentType: string
-    fromRelease: string
+    bundleId: string
     isVersion: boolean
     disabled?: boolean
     isGoingToUnpublish?: boolean
@@ -103,7 +103,7 @@ export const VersionChip = memo(function VersionChip(props: {
       releases,
       releasesLoading,
       documentType,
-      fromRelease,
+      bundleId,
       isVersion,
       disabled: contextMenuDisabled = false,
       isGoingToUnpublish = false,
@@ -111,7 +111,7 @@ export const VersionChip = memo(function VersionChip(props: {
     },
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
-  const isLinked = useVersionIsLinked(documentId, fromRelease)
+  const isLinked = useVersionIsLinked(documentId, bundleId)
 
   const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
     undefined,
@@ -125,7 +125,7 @@ export const VersionChip = memo(function VersionChip(props: {
     if (selected) chipRef.current?.scrollIntoView({inline: 'center'})
   }, [selected])
 
-  const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
+  const docId = isVersion ? getVersionId(documentId, bundleId) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
   const toast = useToast()
@@ -253,7 +253,7 @@ export const VersionChip = memo(function VersionChip(props: {
             documentId={documentId}
             releases={releases}
             releasesLoading={releasesLoading}
-            fromRelease={fromRelease}
+            fromRelease={bundleId}
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
@@ -281,7 +281,7 @@ export const VersionChip = memo(function VersionChip(props: {
       {dialogState === 'discard-version' && (
         <DiscardVersionDialog
           onClose={() => setDialogState('idle')}
-          documentId={isVersion ? getVersionId(documentId, fromRelease) : documentId}
+          documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
           fromPerspective={text}
           documentType={documentType}
         />
@@ -291,7 +291,7 @@ export const VersionChip = memo(function VersionChip(props: {
         <CopyToNewReleaseDialog
           onClose={() => setDialogState('idle')}
           onCreateVersion={handleAddVersion}
-          documentId={isVersion ? getVersionId(documentId, fromRelease) : documentId}
+          documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
           documentType={documentType}
           tone={tone}
           title={text}
@@ -302,7 +302,7 @@ export const VersionChip = memo(function VersionChip(props: {
         <CopyToDraftsDialog
           onClose={() => setDialogState('idle')}
           documentId={documentId}
-          fromRelease={fromRelease}
+          fromRelease={bundleId}
           onNavigate={onCopyToDraftsNavigate}
         />
       )}

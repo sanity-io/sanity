@@ -14,7 +14,7 @@ import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface ScheduledDraftContextMenuProps {
   releases: ReleaseDocument[]
-  fromRelease: string
+  bundleId: string
   onCreateRelease: () => void
   onCopyToDrafts: () => void
   onCopyToDraftsNavigate: () => void
@@ -25,6 +25,7 @@ interface ScheduledDraftContextMenuProps {
   scheduledDraftMenuActions: UseScheduledDraftMenuActionsReturn
   documentId: string
   documentType: string
+  release?: ReleaseDocument
 }
 
 export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu(
@@ -32,7 +33,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
 ) {
   const {
     releases,
-    fromRelease,
+    bundleId,
     onCreateRelease,
     onCopyToDrafts,
     onCopyToDraftsNavigate,
@@ -45,7 +46,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     documentType,
   } = props
   const {t} = useTranslation()
-  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, fromRelease)
+  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
@@ -70,7 +71,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
         <>
           <CopyToReleaseMenuGroup
             releases={copyToReleaseOptions}
-            fromRelease={fromRelease}
+            fromRelease={bundleId}
             onCreateRelease={onCreateRelease}
             onCopyToDrafts={onCopyToDrafts}
             onCopyToDraftsNavigate={onCopyToDraftsNavigate}
