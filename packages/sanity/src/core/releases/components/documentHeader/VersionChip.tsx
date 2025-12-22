@@ -13,6 +13,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -65,6 +66,8 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 
+const CONTEXT_MENU_CLOSED = {open: false as const}
+
 /**
  * @internal
  */
@@ -113,9 +116,9 @@ export const VersionChip = memo(function VersionChip(props: {
   const releasesToolAvailable = useReleasesToolAvailable()
   const isLinked = useVersionIsLinked(documentId, bundleId)
 
-  const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
-    undefined,
-  )
+  const [contextMenu, setContextMenu] = useState<
+    {open: true; translate: {x: number; y: number}} | {open: false}
+  >({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [dialogState, setDialogState] = useState<VersionChipDialogState>('idle')
 
@@ -131,22 +134,21 @@ export const VersionChip = memo(function VersionChip(props: {
   const toast = useToast()
   const {t} = useTranslation()
 
-  const close = useCallback(() => setContextMenuPoint(undefined), [])
+  const close = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
-  const handleContextMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+  const handleContextMenu = useEffectEvent((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+    const elementRect = event.currentTarget?.getBoundingClientRect()
+    setContextMenu({
+      open: true,
+      // note: this offsets the context menu popover position
+      // and depends on placement=bottom-start
+      translate: {x: event.clientX - elementRect.left, y: elementRect.top - event.clientY},
+    })
+  })
 
-    setContextMenuPoint({x: event.clientX, y: event.clientY})
-  }, [])
-
-  useClickOutsideEvent(
-    () => {
-      if (contextMenuPoint?.x && contextMenuPoint?.y) {
-        close()
-      }
-    },
-    () => [popoverRef.current],
-  )
+  useClickOutsideEvent(close, () => [popoverRef.current])
 
   useGlobalKeyDown(
     useCallback(
@@ -188,27 +190,6 @@ export const VersionChip = memo(function VersionChip(props: {
     },
     [close, createVersion, docId, t, toast],
   )
-
-  const referenceElement = useMemo(() => {
-    if (!contextMenuPoint) {
-      return null
-    }
-
-    return {
-      getBoundingClientRect() {
-        return {
-          x: contextMenuPoint.x,
-          y: contextMenuPoint.y,
-          left: contextMenuPoint.x,
-          top: contextMenuPoint.y,
-          right: contextMenuPoint.x,
-          bottom: contextMenuPoint.y,
-          width: 0,
-          height: 0,
-        }
-      },
-    } as HTMLElement
-  }, [contextMenuPoint])
 
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
@@ -270,12 +251,17 @@ export const VersionChip = memo(function VersionChip(props: {
           />
         }
         fallbackPlacements={[]}
-        open={Boolean(referenceElement)}
+        open={contextMenu.open}
         portal
         placement="bottom-start"
         ref={popoverRef}
         referenceElement={referenceElement}
         zOffset={10}
+        style={
+          contextMenu.open
+            ? {transform: `translate(${contextMenu.translate.x}px, ${contextMenu.translate.y}px)`}
+            : undefined
+        }
       />
 
       {dialogState === 'discard-version' && (
