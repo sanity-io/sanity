@@ -71,7 +71,7 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
 export const VersionChip = memo(function VersionChip(props: {
   disabled?: boolean
   selected: boolean
-  tooltipContent: ReactNode
+  tooltipContent?: ReactNode
   onClick: () => void
   text: string
   tone: BadgeTone
