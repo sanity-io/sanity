@@ -82,7 +82,6 @@ export const VersionChip = memo(function VersionChip(props: {
     releases: ReleaseDocument[]
     releasesLoading: boolean
     documentType: string
-    menuReleaseId: string
     fromRelease: string
     releaseState?: ReleaseState
     isVersion: boolean
@@ -105,7 +104,6 @@ export const VersionChip = memo(function VersionChip(props: {
       releases,
       releasesLoading,
       documentType,
-      menuReleaseId,
       fromRelease,
       isVersion,
       disabled: contextMenuDisabled = false,
@@ -284,11 +282,7 @@ export const VersionChip = memo(function VersionChip(props: {
       {dialogState === 'discard-version' && (
         <DiscardVersionDialog
           onClose={() => setDialogState('idle')}
-          documentId={
-            isVersion
-              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
-              : documentId
-          }
+          documentId={isVersion ? getVersionId(documentId, fromRelease) : documentId}
           fromPerspective={text}
           documentType={documentType}
         />
@@ -298,11 +292,7 @@ export const VersionChip = memo(function VersionChip(props: {
         <CopyToNewReleaseDialog
           onClose={() => setDialogState('idle')}
           onCreateVersion={handleAddVersion}
-          documentId={
-            isVersion
-              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
-              : documentId
-          }
+          documentId={isVersion ? getVersionId(documentId, fromRelease) : documentId}
           documentType={documentType}
           tone={tone}
           title={text}

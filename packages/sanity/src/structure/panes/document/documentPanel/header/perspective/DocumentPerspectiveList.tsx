@@ -300,7 +300,6 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
-          menuReleaseId: editState?.published?._id || editState?.id || '',
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
@@ -346,11 +345,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
             documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-            menuReleaseId:
-              editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            documentType: documentType,
             fromRelease: 'draft',
             isVersion: false,
           }}
@@ -368,12 +365,11 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           }
           onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
-            disabled: true, // disable the chip context menu, this one is in creation
             documentId: displayed?._id || '',
-            menuReleaseId: filteredReleases.inCreation._id,
+            documentType,
+            disabled: true, // disable the chip context menu, this one is in creation
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            documentType,
             fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
             releaseState: filteredReleases.inCreation.state,
             isVersion: true,
@@ -395,10 +391,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
             contextValues={{
               documentId: displayed?._id || '',
-              menuReleaseId: release._id,
+              documentType,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              documentType: documentType,
               fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
               releaseState: release.state,
               isVersion: true,
@@ -450,11 +445,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
             contextValues={{
               documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-              menuReleaseId:
-                editState?.draft?._id || editState?.published?._id || editState?.id || '',
+              documentType: documentType,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              documentType: documentType,
               fromRelease: bundle,
               isVersion: true,
             }}
