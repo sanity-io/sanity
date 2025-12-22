@@ -303,7 +303,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
-          fromRelease: 'published',
+          bundleId: 'published',
           isVersion: false,
           disabled: !editState?.published,
         }}
@@ -348,7 +348,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            fromRelease: 'draft',
+            bundleId: 'draft',
             isVersion: false,
           }}
         />
@@ -370,7 +370,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             disabled: true, // disable the chip context menu, this one is in creation
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
+            bundleId: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
             isVersion: true,
             release: filteredReleases.inCreation,
           }}
@@ -393,14 +393,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               documentType,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
+              bundleId: getReleaseIdFromReleaseDocumentId(release._id),
               isVersion: true,
+              release,
               // displayed, in this instance is not going to be the version to compare to
               // since it's going to be the published version
               isGoingToUnpublish: editState?.version
                 ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
                 : false,
-              release,
             }}
           />
         ))}
@@ -446,7 +446,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               documentType: documentType,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              fromRelease: bundle,
+              bundleId: bundle,
               isVersion: true,
             }}
           />

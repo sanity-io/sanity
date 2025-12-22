@@ -12,10 +12,9 @@ import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
-  releases: ReleaseDocument[]
-  releasesLoading: boolean
-  fromRelease: string
+  bundleId: string
   isVersion: boolean
+  release?: ReleaseDocument
   onDiscard: () => void
   onCreateRelease: () => void
   onCopyToDrafts: () => void
@@ -29,6 +28,8 @@ interface CanonicalReleaseContextMenuProps {
   isPublished: boolean
   documentId: string
   documentType: string
+  releases: ReleaseDocument[]
+  releasesLoading: boolean
 }
 
 export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContextMenu(
@@ -37,7 +38,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   const {
     releases,
     releasesLoading,
-    fromRelease,
+    bundleId,
     isVersion,
     onDiscard,
     onCreateRelease,
@@ -46,6 +47,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     onCreateVersion,
     disabled,
     locked,
+    release,
     isGoingToUnpublish = false,
     hasCreatePermission,
     hasDiscardPermission,
@@ -54,7 +56,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     documentType,
   } = props
   const {t} = useTranslation()
-  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, fromRelease)
+  const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
@@ -65,7 +67,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
       {isVersion && (
         <IntentLink
           intent={RELEASES_INTENT}
-          params={{id: fromRelease}}
+          params={{id: bundleId}}
           rel="noopener noreferrer"
           style={{textDecoration: 'none'}}
           disabled={disabled}
@@ -77,7 +79,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
       {showCopyToReleaseMenuItem && (
         <CopyToReleaseMenuGroup
           releases={copyToReleaseOptions}
-          fromRelease={fromRelease}
+          bundleId={bundleId}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
           onCopyToDraftsNavigate={onCopyToDraftsNavigate}
