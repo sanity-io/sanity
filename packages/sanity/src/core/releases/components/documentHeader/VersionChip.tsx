@@ -1,12 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
-import {
-  type BadgeTone,
-  Button, // eslint-disable-line no-restricted-imports
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-  useToast,
-} from '@sanity/ui'
+import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -19,7 +13,6 @@ import {
   useState,
 } from 'react'
 import {useObservable} from 'react-rx'
-import {styled} from 'styled-components'
 
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
@@ -30,23 +23,12 @@ import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {Chip} from '../Chip'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToDraftsDialog} from './dialog/CopyToDraftsDialog'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
-
-const ChipButtonContainer = styled.span`
-  display: inline-flex;
-  --border-color: var(--card-border-color);
-`
-
-const ChipButton = styled(Button)`
-  flex: none;
-  transition: none;
-  cursor: pointer;
-  --card-border-color: var(--border-color);
-`
 
 type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release' | 'copy-to-drafts'
 
@@ -205,26 +187,21 @@ export const VersionChip = memo(function VersionChip(props: {
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <ChipButtonContainer>
-          <ChipButton
+        <span ref={chipRef}>
+          <Chip
             data-testid={`document-header-${text.replaceAll(' ', '-')}-chip`}
-            ref={chipRef}
+            ref={setReferenceElement}
             disabled={disabled}
             mode={disabled ? 'ghost' : 'bleed'}
             onClick={onClick}
             selected={selected}
             tone={tone}
             onContextMenu={contextMenuHandler}
-            paddingY={2}
-            paddingLeft={2}
-            paddingRight={3}
-            space={2}
-            radius="full"
             icon={<ReleaseAvatarIcon tone={tone} />}
             iconRight={isLinked ? <ComposeSparklesIcon /> : locked && <LockIcon />}
             text={text}
           />
-        </ChipButtonContainer>
+        </span>
       </Tooltip>
 
       <Popover
