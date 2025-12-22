@@ -86,7 +86,7 @@ const DATE_TIME_FORMAT: UseDateTimeFormatOptions = {
 
 // eslint-disable-next-line complexity
 export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
-  const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const {params, setParams} = usePaneRouter()
