@@ -984,9 +984,6 @@ importers:
       '@sanity/diff':
         specifier: workspace:*
         version: link:../../@sanity/diff
-      '@sanity/migrate':
-        specifier: ^5.0.1
-        version: 5.0.1
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../../@sanity/mutator
