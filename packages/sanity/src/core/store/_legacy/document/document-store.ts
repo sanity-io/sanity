@@ -100,7 +100,11 @@ export interface DocumentStore {
     validation: (
       validationTargetId: string,
       type: string,
-      requireReferenceExistence: boolean,
+      // Whether to require referenced documents to be published
+      // if `true`, any reference to a document that's not published will yield a validation error
+      // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
+      // as the document we're validating
+      validatePublishedReferences: boolean,
     ) => Observable<ValidationStatus>
   }
 }
@@ -219,11 +223,11 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(validationTargetId, type, requireReferenceExistence) {
+      validation(validationTargetId, type, requirePublishedReferences) {
         const publishedId = getPublishedId(validationTargetId)
         const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
         const validationTarget = getDocumentVariantType(validationTargetId)
-        return validation(ctx, idPair, type, validationTarget, requireReferenceExistence)
+        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
       },
     },
   }

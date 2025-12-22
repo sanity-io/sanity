@@ -243,7 +243,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(value._id, documentType, !releaseId)
+  const {validation: validationRaw} = useValidationStatus(
+    value._id,
+    documentType,
+    // require referenced documents to be published unless the document is in a release
+    !releaseId,
+  )
 
   const validation = useUnique(validationRaw)
 
