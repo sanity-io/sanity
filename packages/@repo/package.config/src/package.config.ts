@@ -33,4 +33,7 @@ export default defineConfig({
     noImplicitBrowsersList: 'off',
     noImplicitSideEffects: 'error',
   },
+  dts: 'rolldown',
+  // Don't use `@typescript/native-preview` to generate dts yet, it's not ready
+  tsgo: false,
 })
