@@ -105,9 +105,9 @@ export function validateDocumentWithReferences(
     i18n: LocaleSource
   },
   document$: Observable<SanityDocument | null | undefined>,
-  // whether to allow references to non-published documents that does not exist as published
-  // set to true to allow references to versions as long they exist in the same bundle
-  allowReferencesToVersionsInSameBundle: boolean,
+  // whether to require all references to exist as published documents
+  // set to false to allow references to versions as long they exist in the same bundle
+  requirePublishedReferences: boolean,
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
     map((document) => findReferenceIds(document)),
@@ -123,12 +123,18 @@ export function validateDocumentWithReferences(
       refIds$.pipe(
         distinct(),
         mergeMap(([document, referenceId]) => {
+          // listen for reference document existence
+          // if we're require the referenced document to be published: pass undefined as version id
+          // as that will check for existence of published document
+          // Otherwise, pass the version of the referencing document
+          // to validate that the version exists in the same bundle
+          const versionId = requirePublishedReferences
+            ? undefined
+            : getVersionFromId(document?._id || '')
           return listenDocumentExists(
             ctx.observeDocumentPairAvailability,
             referenceId,
-            allowReferencesToVersionsInSameBundle
-              ? getVersionFromId(document?._id || '')
-              : undefined,
+            versionId,
           ).pipe(map((result) => [referenceId, result] as const))
         }),
       ),
