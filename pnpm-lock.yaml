@@ -617,8 +617,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.3)
       '@sanity/migrate':
-        specifier: workspace:*
-        version: link:../../packages/@sanity/migrate
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/preview-url-secret':
         specifier: ^4.0.1
         version: 4.0.1(@sanity/client@7.13.2(debug@4.4.3))
@@ -921,8 +921,8 @@ importers:
         specifier: workspace:*
         version: link:../../@sanity/diff
       '@sanity/migrate':
-        specifier: workspace:*
-        version: link:../../@sanity/migrate
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../../@sanity/mutator
@@ -985,8 +985,8 @@ importers:
         specifier: workspace:*
         version: link:../../@sanity/diff
       '@sanity/migrate':
-        specifier: workspace:*
-        version: link:../../@sanity/migrate
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../../@sanity/mutator
@@ -1390,67 +1390,6 @@ importers:
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
-
-  packages/@sanity/migrate:
-    dependencies:
-      '@sanity/client':
-        specifier: 'catalog:'
-        version: 7.13.2(debug@4.4.3)
-      '@sanity/mutate':
-        specifier: ^0.15.0
-        version: 0.15.0(debug@4.4.3)
-      '@sanity/types':
-        specifier: ^5.0.0
-        version: link:../types
-      '@sanity/util':
-        specifier: workspace:*
-        version: link:../util
-      arrify:
-        specifier: ^2.0.1
-        version: 2.0.1
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3(supports-color@8.1.1)
-      fast-fifo:
-        specifier: ^1.3.2
-        version: 1.3.2
-      groq-js:
-        specifier: ^1.24.0
-        version: 1.24.0
-      p-map:
-        specifier: ^7.0.1
-        version: 7.0.4
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../../@repo/eslint-config
-      '@repo/package.config':
-        specifier: workspace:*
-        version: link:../../@repo/package.config
-      '@repo/test-config':
-        specifier: workspace:*
-        version: link:../../@repo/test-config
-      '@repo/tsconfig':
-        specifier: workspace:*
-        version: link:../../@repo/tsconfig
-      '@sanity/pkg-utils':
-        specifier: 'catalog:'
-        version: 10.2.1(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20251128.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(typescript@5.9.3)
-      '@types/debug':
-        specifier: ^4.1.12
-        version: 4.1.12
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20251128.1
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      rimraf:
-        specifier: ^5.0.10
-        version: 5.0.10
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/@sanity/mutator:
     dependencies:
@@ -1974,8 +1913,8 @@ importers:
         specifier: ^0.17.8
         version: 0.17.8
       '@sanity/migrate':
-        specifier: workspace:*
-        version: link:../@sanity/migrate
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -5492,6 +5431,10 @@ packages:
   '@sanity/message-protocol@0.17.8':
     resolution: {integrity: sha512-bx/NvakGt7Pm1JcHGzL5GVnPINa3XLd/YPF5JNo3NOO/yZiHMYM54+HK0u98ECZTLhlDe7+ALtok+lyQh3S+3g==}
     engines: {node: '>=20.0.0'}
+
+  '@sanity/migrate@5.0.1':
+    resolution: {integrity: sha512-VSEA3qLaYWiTm7U5T3FK1FBmILNjvRrF4PJzXCN+6cWPTxGfQtmjga3Xh3/+zwWr4iTChkyFKZtJLU5XqgrfMg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/mutate@0.11.0-canary.4':
     resolution: {integrity: sha512-82jU3PvxQepY+jVJU1WaXQOf2Q9Q/fOCE2ksJZ4cnH3/WFOsg7RceYoOWb1XKthchTCD9zSBS9DRmb7FQ0Jlsg==}
@@ -16516,6 +16459,20 @@ snapshots:
   '@sanity/message-protocol@0.17.8':
     dependencies:
       '@sanity/comlink': 4.0.1
+
+  '@sanity/migrate@5.0.1':
+    dependencies:
+      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/mutate': 0.15.0(debug@4.4.3)
+      '@sanity/types': link:packages/@sanity/types
+      '@sanity/util': link:packages/@sanity/util
+      arrify: 2.0.1
+      debug: 4.4.3(supports-color@8.1.1)
+      fast-fifo: 1.3.2
+      groq-js: 1.24.0
+      p-map: 7.0.4
+    transitivePeerDependencies:
+      - supports-color
 
   '@sanity/mutate@0.11.0-canary.4(xstate@5.25.0)':
     dependencies:
