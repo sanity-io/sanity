@@ -38,7 +38,7 @@ export const validation: DocGenTemplate = (options) => ({
   relativeUrl: '/foo/bar',
   slug: {
     _type: 'slug',
-    current: 'slug',
+    current: `slug-${options.id}`,
   },
   switch: false,
   title: options.title,
