@@ -9,6 +9,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -30,6 +31,14 @@ export function WorkspaceMenuButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
+
+  const stackRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      const hasScroll = node.scrollHeight > node.clientHeight
+      setScrollbarWidth(hasScroll ? node.offsetWidth - node.clientWidth : 0)
+    }
+  }, [])
 
   const disabled = !authStates
 
@@ -62,13 +71,13 @@ export function WorkspaceMenuButton() {
               <>
                 <MenuDivider style={{padding: 0}} />
                 <Box paddingTop={2} paddingBottom={1}>
-                  <Box paddingRight={5} paddingLeft={4} paddingBottom={2}>
+                  <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
                     <Text size={0} weight="medium">
                       {t('workspaces.action.switch-workspace')}
                     </Text>
                   </Box>
 
-                  <Stack space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                  <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                     {workspaces.map((workspace) => {
                       const authState = authStates[workspace.name]
 
@@ -95,7 +104,10 @@ export function WorkspaceMenuButton() {
                           selected={isSelected}
                           __unstable_subtitle={workspace.subtitle}
                           text={workspace?.title || workspace.name}
-                          style={{marginLeft: '1.25rem', marginRight: '0.25rem'}}
+                          style={{
+                            marginLeft: '1rem',
+                            marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+                          }}
                           __unstable_space={0}
                         />
                       )
