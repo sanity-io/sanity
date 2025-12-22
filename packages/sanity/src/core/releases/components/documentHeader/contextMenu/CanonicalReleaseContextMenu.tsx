@@ -64,7 +64,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
 
   return (
     <Menu>
-      {isVersion && (
+      {release && (
         <IntentLink
           intent={RELEASES_INTENT}
           params={{id: bundleId}}
