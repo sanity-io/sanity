@@ -20,7 +20,7 @@ const ReleasesList = styled(Stack)`
 
 interface CopyToReleaseMenuGroupProps {
   releases: ReleaseDocument[]
-  fromRelease: string
+  bundleId: string
   onCreateRelease: () => void
   onCopyToDrafts: () => void
   onCopyToDraftsNavigate: () => void
@@ -36,7 +36,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
 ) {
   const {
     releases,
-    fromRelease,
+    bundleId,
     onCreateRelease,
     onCopyToDrafts,
     onCopyToDraftsNavigate,
@@ -61,11 +61,11 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       }}
       data-testid="copy-version-to-release-button-group"
     >
-      <ReleasesList key={fromRelease} space={1}>
+      <ReleasesList key={bundleId} space={1}>
         <CopyToDraftsMenuItem
           documentType={documentType}
           documentId={documentId}
-          fromRelease={fromRelease}
+          fromRelease={bundleId}
           onClick={onCopyToDrafts}
           onNavigate={onCopyToDraftsNavigate}
         />
@@ -80,8 +80,12 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           )
         })}
       </ReleasesList>
-      {releases.length > 1 && <MenuDivider />}
-      {isReleasesEnabled && <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />}
+      {isReleasesEnabled && (
+        <>
+          <MenuDivider />
+          <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
+        </>
+      )}
     </MenuGroup>
   )
 })

@@ -36,6 +36,7 @@ exports[`exports snapshot 1`] = `
     "ChangeResolver": "function",
     "ChangeTitleSegment": "function",
     "ChangesError": "function",
+    "Chip": "object",
     "CircularProgress": "function",
     "CollapseMenu": "object",
     "CollapseMenuButton": "object",
