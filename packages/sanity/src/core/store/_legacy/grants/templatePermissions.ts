@@ -102,6 +102,7 @@ export function getTemplatePermissions({
           permission: 'create',
           document: {
             _id: documentId,
+            _type: schemaType.name,
             ...resolvedInitialValue,
           },
         }).pipe(
