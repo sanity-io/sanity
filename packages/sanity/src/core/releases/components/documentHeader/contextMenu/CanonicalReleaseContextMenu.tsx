@@ -63,8 +63,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
 
-  const showCopyToReleaseMenuItem =
-    (copyToReleaseOptions.length > 0 && isReleasesEnabled) || hasCopyToDraftOption
+  const showCopyToReleaseMenuItem = isReleasesEnabled || hasCopyToDraftOption
 
   return (
     <Menu>
@@ -84,6 +83,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
         <CopyToReleaseMenuGroup
           releases={copyToReleaseOptions}
           hasCopyToDraftOption={hasCopyToDraftOption}
+          isReleasesEnabled={isReleasesEnabled}
           bundleId={bundleId}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}

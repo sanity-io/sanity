@@ -29,6 +29,7 @@ interface CopyToReleaseMenuGroupProps {
   documentId: string
   documentType: string
   hasCopyToDraftOption?: boolean
+  isReleasesEnabled?: boolean
 }
 
 export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
@@ -42,6 +43,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
     onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
+    isReleasesEnabled,
     hasCreatePermission,
     hasCopyToDraftOption,
     documentId,
@@ -61,33 +63,31 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       }}
       data-testid="copy-version-to-release-button-group"
     >
-      <ReleasesList key={bundleId} space={1}>
-        {hasCopyToDraftOption && (
-          <CopyToDraftsMenuItem
-            documentType={documentType}
-            documentId={documentId}
-            fromRelease={bundleId}
-            onClick={onCopyToDrafts}
-            onNavigate={onCopyToDraftsNavigate}
-          />
-        )}
-        {releases.map((targetRelease) => {
-          return (
-            <MenuItem
-              key={targetRelease._id}
-              as="a"
-              onClick={() => onCreateVersion(targetRelease._id)}
-              renderMenuItem={() => <VersionContextMenuItem release={targetRelease} />}
-            />
-          )
-        })}
-      </ReleasesList>
       {(hasCopyToDraftOption || releases.length > 0) && (
-        <>
-          <MenuDivider />
-          <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
-        </>
+        <ReleasesList key={bundleId} space={1}>
+          {hasCopyToDraftOption && (
+            <CopyToDraftsMenuItem
+              documentType={documentType}
+              documentId={documentId}
+              fromRelease={bundleId}
+              onClick={onCopyToDrafts}
+              onNavigate={onCopyToDraftsNavigate}
+            />
+          )}
+          {releases.map((targetRelease) => {
+            return (
+              <MenuItem
+                key={targetRelease._id}
+                as="a"
+                onClick={() => onCreateVersion(targetRelease._id)}
+                renderMenuItem={() => <VersionContextMenuItem release={targetRelease} />}
+              />
+            )
+          })}
+        </ReleasesList>
       )}
+      {isReleasesEnabled && (hasCopyToDraftOption || releases.length > 0) && <MenuDivider />}
+      {isReleasesEnabled && <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />}
     </MenuGroup>
   )
 })
