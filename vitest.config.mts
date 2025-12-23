@@ -6,7 +6,6 @@ import {defineConfig} from 'vitest/config'
 export default defineConfig({
   test: {
     projects: [
-      'packages/@sanity/migrate',
       'packages/@sanity/cli',
       'packages/@sanity/codegen',
       'packages/@sanity/mutator',

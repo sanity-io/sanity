@@ -34,7 +34,7 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/image-url": "^2.0.2",
     "@sanity/logos": "^2.2.2",
-    "@sanity/migrate": "workspace:*",
+    "@sanity/migrate": "^5.1.0",
     "@sanity/preview-url-secret": "^4.0.1",
     "@sanity/react-loader": "^2.0.4",
     "@sanity/types": "workspace:*",

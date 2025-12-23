@@ -15,7 +15,6 @@
     "@sanity/cli": "workspace:*",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
-    "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
