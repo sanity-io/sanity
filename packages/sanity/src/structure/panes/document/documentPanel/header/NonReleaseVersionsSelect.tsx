@@ -35,8 +35,18 @@ export function NonReleaseVersionsSelect(props: {
   const popoverRef = useRef(null)
 
   useClickOutsideEvent(
-    () => {
-      setNonReleaseDropdownOpen(false)
+    (event) => {
+      if (event.target instanceof HTMLElement) {
+        // note: this is an (ugly) workaround for useClickOutside not working through portals (as its based on elements.contains())
+        // do not close dropdown if click happens in a portal
+        // note: this *can* cause false positives if the user clicks outside
+        const isPortal = event.target?.matches('[data-portal] *')
+        if (!isPortal) {
+          setNonReleaseDropdownOpen(false)
+        }
+      } else {
+        setNonReleaseDropdownOpen(false)
+      }
     },
     () => [popoverRef.current],
   )
