@@ -246,8 +246,12 @@ function getRecentSearchTerms({
 /**
  * Sanitize stored search.
  *
- * Filters out searches with invalid document types or filters.
- * Mutates Local Storage if any invalid terms are found.
+ * Ignore searches containing:
+ * - Any number of invalid document schema types
+ * - Document types hidden from omnisearch with __experimental_omnisearch_visibility
+ * - Invalid filters
+ *
+ * This mutates Local Storage if any invalid terms are found.
  */
 function sanitizeStoredSearch({
   fieldDefinitions,
@@ -264,12 +268,15 @@ function sanitizeStoredSearch({
   storedSearch: StoredSearch
   setStoredSearch: (_value: StoredSearch) => void
 }): StoredSearch {
+  // Obtain all 'searchable' type names – defined as a type that exists in
+  // the current schema and also visible to omnisearch.
   const searchableTypeNames = getSearchableOmnisearchTypes(studioSchema).map(
     (schema) => schema.name,
   )
 
   const filteredSearch = storedSearch.recentSearches.filter((recentSearch) => {
     return (
+      // Has valid searchable types (not hidden by omnisearch)
       recentSearch.terms.typeNames.every((typeName) => searchableTypeNames.includes(typeName)) &&
       recentSearch.filters.every((filter) =>
         validateFilter({fieldDefinitions, filter, filterDefinitions, operatorDefinitions}),
