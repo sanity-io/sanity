@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 import {type Dirent, readdirSync, readFileSync} from 'node:fs'
 import {readdir, readFile, stat, writeFile} from 'node:fs/promises'
 import {type SourceMapPayload} from 'node:module'
@@ -217,12 +218,19 @@ async function rewriteSource(options: {
   return `https://github.com/sanity-io/sanity/blob/v${pkgVersion}/${cleanDir}`
 }
 
-export async function uploadBundles(args: {tag?: string; asVersion?: string}) {
-  const {tag, asVersion} = args
+export async function uploadBundles(args: {tags?: string[]; asVersion?: string}) {
+  const {tags, asVersion} = args
 
-  if (typeof tag !== 'undefined' && !isValidTag(tag)) {
-    throw new Error(`Unsupported tag, must be one of [${VALID_TAGS.join(', ')}] required options`)
-  }
+  const distTags =
+    tags &&
+    tags.filter((tag): tag is DistTag => {
+      if (typeof tag !== 'undefined' && !isValidTag(tag)) {
+        throw new Error(
+          `Unsupported tag "${tag}", must be one of [${VALID_TAGS.join(', ')}] required options`,
+        )
+      }
+      return Boolean(tag)
+    })
 
   // Clean up source maps
   await cleanupSourceMaps(MONOREPO_ROOT)
@@ -233,7 +241,7 @@ export async function uploadBundles(args: {tag?: string; asVersion?: string}) {
   console.log('**Completed copying all files** ✅')
 
   // Update the manifest json file
-  await updateManifest({tag, newVersions: pkgVersions})
+  await updateManifest({tags: distTags, newVersions: pkgVersions})
   console.log('**Completed updating manifest** ✅')
 }
 
@@ -289,8 +297,8 @@ function getMonorepoPackageVersions(): Record<string, string> {
   return versions
 }
 
-async function updateManifest(options: {tag?: DistTag; newVersions: Record<string, string>}) {
-  const {tag, newVersions} = options
+async function updateManifest(options: {tags?: DistTag[]; newVersions: Record<string, string>}) {
+  const {tags, newVersions} = options
   const timestamp = Math.floor(Date.now() / 1000)
   await updateManifestWith(bucket, (existingManifest) => {
     // Add the new version to the manifest with timestamp
@@ -302,13 +310,15 @@ async function updateManifest(options: {tag?: DistTag; newVersions: Record<strin
         let updatedPackage = addVersion(existingPackage, {version: version, timestamp})
 
         // tag the version in addition to adding it to the manifest
-        if (tag) {
-          updatedPackage = tagVersion(
-            updatedPackage,
-            tag,
-            {timestamp: currentUnixTime(), version},
-            {setAsDefault: tag === 'latest'},
-          )
+        if (tags) {
+          for (const tag of tags) {
+            updatedPackage = tagVersion(
+              updatedPackage,
+              tag,
+              {timestamp: currentUnixTime(), version},
+              {setAsDefault: tag === 'latest'},
+            )
+          }
         }
         return {
           ...acc,
