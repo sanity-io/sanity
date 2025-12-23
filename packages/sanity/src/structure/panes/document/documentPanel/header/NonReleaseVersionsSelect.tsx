@@ -101,49 +101,47 @@ export function NonReleaseVersionsSelect(props: {
         </Tooltip>
       ) : null}
 
-      {nonReleaseDropdownOpen && (
-        <Popover
-          animate={false}
-          open={nonReleaseDropdownOpen}
-          portal
-          arrow
-          ref={popoverRef}
-          placement="bottom"
-          referenceElement={popoverReferenceElement}
-          zOffset={10}
-          content={
-            <Container width={1}>
-              <Flex width={1} padding={3} gap={2} wrap="wrap">
-                {otherNonReleaseVersions.map((nonReleaseVersionId) => {
-                  const bundle = getVersionFromId(nonReleaseVersionId)!
-                  const selected = selectedPerspective === bundle
+      <Popover
+        animate={false}
+        open={nonReleaseDropdownOpen}
+        portal
+        arrow
+        ref={popoverRef}
+        placement="bottom"
+        referenceElement={popoverReferenceElement}
+        zOffset={10}
+        content={
+          <Container width={1}>
+            <Flex width={1} padding={3} gap={2} wrap="wrap">
+              {otherNonReleaseVersions.map((nonReleaseVersionId) => {
+                const bundle = getVersionFromId(nonReleaseVersionId)!
+                const selected = selectedPerspective === bundle
 
-                  return (
-                    <VersionChip
-                      key={nonReleaseVersionId}
-                      selected={selected}
-                      text={bundle}
-                      disabled={false}
-                      contextMenuPortal={false}
-                      tone="default"
-                      onClick={() => onSelectBundle(bundle)}
-                      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
-                      contextValues={{
-                        documentId: getPublishedId(nonReleaseVersionId),
-                        releases,
-                        releasesLoading: releasesLoading,
-                        documentType: documentType,
-                        bundleId: bundle,
-                        isVersion: true,
-                      }}
-                    />
-                  )
-                })}
-              </Flex>
-            </Container>
-          }
-        />
-      )}
+                return (
+                  <VersionChip
+                    key={nonReleaseVersionId}
+                    selected={selected}
+                    text={bundle}
+                    disabled={false}
+                    contextMenuPortal={false}
+                    tone="default"
+                    onClick={() => onSelectBundle(bundle)}
+                    onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+                    contextValues={{
+                      documentId: getPublishedId(nonReleaseVersionId),
+                      releases,
+                      releasesLoading: releasesLoading,
+                      documentType: documentType,
+                      bundleId: bundle,
+                      isVersion: true,
+                    }}
+                  />
+                )
+              })}
+            </Flex>
+          </Container>
+        }
+      />
     </>
   )
 }
