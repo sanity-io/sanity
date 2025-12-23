@@ -142,6 +142,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }).pipe(
           map(({hits}) => hits.map(({hit}) => hit)),
           switchMap((docs) => {
+            // if no hits, return empty array immediately
+            // note that combineLatest([]) will never emit (effectively the same as NEVER), so without this,
+            // the subscriber will never receive any result
             if (docs.length === 0) {
               return of([])
             }
