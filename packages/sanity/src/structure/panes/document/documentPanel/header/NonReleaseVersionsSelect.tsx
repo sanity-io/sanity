@@ -41,7 +41,8 @@ export function NonReleaseVersionsSelect(props: {
       if (event.target && 'matches' in event.target && typeof event.target.matches === 'function') {
         // note: this is an (ugly) workaround for useClickOutside not working through portals (as its based on elements.contains())
         // do not close dropdown if click happens in a portal
-        // note: this *can* cause false positives if the user clicks outside
+        // note: this *can* cause false positives if the user clicks outside any other portal
+        // element on the page and expects the dropdown to close
         const isPortal = (event.target as {matches: HTMLElement['matches']}).matches(
           '[data-portal] *',
         )
