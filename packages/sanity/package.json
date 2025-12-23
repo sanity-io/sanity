@@ -114,7 +114,7 @@
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
     "lint": "eslint .",
