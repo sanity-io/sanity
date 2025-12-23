@@ -39,7 +39,6 @@ export function NonReleaseVersionsSelect(props: {
       setNonReleaseDropdownOpen(false)
     },
     () => [popoverRef.current],
-    () => popoverReferenceElement,
   )
 
   if (nonReleaseVersions.length === 0) {
@@ -115,6 +114,7 @@ export function NonReleaseVersionsSelect(props: {
                       selected={selected}
                       text={bundle}
                       disabled={false}
+                      contextMenuPortal={false}
                       tone="default"
                       onClick={() => onSelectBundle(bundle)}
                       onCopyToDraftsNavigate={onCopyToDraftsNavigate}

@@ -59,6 +59,9 @@ export const VersionChip = memo(function VersionChip(props: {
   tooltipContent?: ReactNode
   onClick: () => void
   text: string
+  // if the VersionChip itself is contained in a portal (e.g., as in the NonReleaseVersionSelect)
+  // there is no need to also make the context menu a portal (and it also breaks useClickOutside)
+  contextMenuPortal?: boolean
   tone: BadgeTone
   locked?: boolean
   onCopyToDraftsNavigate: () => void
@@ -80,6 +83,7 @@ export const VersionChip = memo(function VersionChip(props: {
     tooltipContent,
     onClick,
     text,
+    contextMenuPortal = true,
     tone,
     locked = false,
     onCopyToDraftsNavigate,
@@ -229,7 +233,7 @@ export const VersionChip = memo(function VersionChip(props: {
         }
         fallbackPlacements={[]}
         open={contextMenu.open}
-        portal
+        portal={contextMenuPortal}
         placement="bottom-start"
         ref={popoverRef}
         referenceElement={referenceElement}
