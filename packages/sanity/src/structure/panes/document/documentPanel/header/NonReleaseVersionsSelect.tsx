@@ -35,8 +35,23 @@ export function NonReleaseVersionsSelect(props: {
   const popoverRef = useRef(null)
 
   useClickOutsideEvent(
-    () => {
-      setNonReleaseDropdownOpen(false)
+    (event) => {
+      // oxlint-disable-next-line no-debugger
+      debugger
+      if (event.target && 'matches' in event.target && typeof event.target.matches === 'function') {
+        // note: this is an (ugly) workaround for useClickOutside not working through portals (as its based on elements.contains())
+        // do not close dropdown if click happens in a portal
+        // note: this *can* cause false positives if the user clicks outside any other portal
+        // element on the page and expects the dropdown to close
+        const isPortal = (event.target as {matches: HTMLElement['matches']}).matches(
+          '[data-portal] *',
+        )
+        if (!isPortal) {
+          setNonReleaseDropdownOpen(false)
+        }
+      } else {
+        setNonReleaseDropdownOpen(false)
+      }
     },
     () => [popoverRef.current],
   )
@@ -91,49 +106,47 @@ export function NonReleaseVersionsSelect(props: {
         </Tooltip>
       ) : null}
 
-      {nonReleaseDropdownOpen && (
-        <Popover
-          animate={false}
-          open={nonReleaseDropdownOpen}
-          portal
-          arrow
-          ref={popoverRef}
-          placement="bottom"
-          referenceElement={popoverReferenceElement}
-          zOffset={10}
-          content={
-            <Container width={1}>
-              <Flex width={1} padding={3} gap={2} wrap="wrap">
-                {otherNonReleaseVersions.map((nonReleaseVersionId) => {
-                  const bundle = getVersionFromId(nonReleaseVersionId)!
-                  const selected = selectedPerspective === bundle
+      <Popover
+        animate={false}
+        open={nonReleaseDropdownOpen}
+        portal
+        arrow
+        ref={popoverRef}
+        placement="bottom"
+        referenceElement={popoverReferenceElement}
+        zOffset={10}
+        content={
+          <Container width={1}>
+            <Flex width={1} padding={3} gap={2} wrap="wrap">
+              {otherNonReleaseVersions.map((nonReleaseVersionId) => {
+                const bundle = getVersionFromId(nonReleaseVersionId)!
+                const selected = selectedPerspective === bundle
 
-                  return (
-                    <VersionChip
-                      key={nonReleaseVersionId}
-                      selected={selected}
-                      text={bundle}
-                      disabled={false}
-                      contextMenuPortal={false}
-                      tone="default"
-                      onClick={() => onSelectBundle(bundle)}
-                      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
-                      contextValues={{
-                        documentId: getPublishedId(nonReleaseVersionId),
-                        releases,
-                        releasesLoading: releasesLoading,
-                        documentType: documentType,
-                        bundleId: bundle,
-                        isVersion: true,
-                      }}
-                    />
-                  )
-                })}
-              </Flex>
-            </Container>
-          }
-        />
-      )}
+                return (
+                  <VersionChip
+                    key={nonReleaseVersionId}
+                    selected={selected}
+                    text={bundle}
+                    disabled={false}
+                    contextMenuPortal={false}
+                    tone="default"
+                    onClick={() => onSelectBundle(bundle)}
+                    onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+                    contextValues={{
+                      documentId: getPublishedId(nonReleaseVersionId),
+                      releases,
+                      releasesLoading: releasesLoading,
+                      documentType: documentType,
+                      bundleId: bundle,
+                      isVersion: true,
+                    }}
+                  />
+                )
+              })}
+            </Flex>
+          </Container>
+        }
+      />
     </>
   )
 }
