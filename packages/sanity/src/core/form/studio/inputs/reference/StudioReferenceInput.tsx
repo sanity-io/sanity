@@ -16,7 +16,7 @@ import {
   useEffectEvent,
   useMemo,
 } from 'react'
-import {combineLatest, from, throwError} from 'rxjs'
+import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
 import {useSchema} from '../../../../hooks'
@@ -142,6 +142,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }).pipe(
           map(({hits}) => hits.map(({hit}) => hit)),
           switchMap((docs) => {
+            if (docs.length === 0) {
+              return of([])
+            }
             // Note: we need to know whether a published version of each document exists
             // so we can correctly set `_strengthenOnPublish` when the user selects one
             // of them from the list of options
