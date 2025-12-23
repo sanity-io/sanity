@@ -95,7 +95,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           documentType={documentType}
         />
       )}
-      {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
+      {!isPublished && (showCopyToReleaseMenuItem || release) && <MenuDivider />}
       {!isPublished && (
         <MenuItem
           icon={TrashIcon}
