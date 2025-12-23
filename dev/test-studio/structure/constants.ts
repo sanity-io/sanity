@@ -51,6 +51,7 @@ export const DEBUG_INPUT_TYPES = [
   'dateValidation',
   'dateTimeValidation',
   'deprecatedFields',
+  'customerPuma',
   'deprecatedDocument',
   'documentActionsTest',
   'documentWithHoistedPt',

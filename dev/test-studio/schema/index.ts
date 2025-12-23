@@ -71,6 +71,7 @@ import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
 import removeRestoreAction from './debug/removeRestoreAction'
+import {countrySubtype, customer} from './debug/repro'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
@@ -202,6 +203,8 @@ export function createSchemaTypes(projectId: string) {
     button,
     collapsibleObjects,
     commentsDebug,
+    customer,
+    countrySubtype,
     conditionalFields,
     customInputs,
     customInputsWithPatches,

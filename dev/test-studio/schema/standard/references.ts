@@ -69,6 +69,7 @@ export default defineType({
       ],
     },
     {name: 'liveEditedDocument', type: 'reference', to: {type: 'thesis'}},
+
     defineField({
       title: 'Book with decade filter',
       description: 'Reference will only search for books within given decade',
