@@ -151,7 +151,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
       - name: Build bundles for production
         run: pnpm run build:bundle
@@ -161,7 +163,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
   notify-on-failure:
     needs: [npm-publish, bundle-upload]
