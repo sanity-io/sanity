@@ -35,6 +35,14 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
+vi.mock('../ViewContentReleasesMenuItem', () => ({
+  ViewContentReleasesMenuItem: () => null,
+}))
+
+vi.mock('../ScheduledDraftsMenuItem', () => ({
+  ScheduledDraftsMenuItem: () => null,
+}))
+
 const handleOpenBundleDialog = vi.fn()
 
 describe('ReleasesList', () => {
