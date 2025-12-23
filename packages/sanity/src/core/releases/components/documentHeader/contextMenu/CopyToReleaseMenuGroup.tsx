@@ -7,7 +7,6 @@ import {styled} from 'styled-components'
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
-import {useWorkspace} from '../../../../studio/workspace'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
@@ -29,6 +28,7 @@ interface CopyToReleaseMenuGroupProps {
   hasCreatePermission: boolean | null
   documentId: string
   documentType: string
+  hasCopyToDraftOption?: boolean
 }
 
 export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
@@ -43,11 +43,11 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
     onCreateVersion,
     disabled,
     hasCreatePermission,
+    hasCopyToDraftOption,
     documentId,
     documentType,
   } = props
   const {t} = useTranslation()
-  const isReleasesEnabled = !!useWorkspace().releases?.enabled
 
   return (
     <MenuGroup
@@ -62,13 +62,15 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       <ReleasesList key={bundleId} space={1}>
-        <CopyToDraftsMenuItem
-          documentType={documentType}
-          documentId={documentId}
-          fromRelease={bundleId}
-          onClick={onCopyToDrafts}
-          onNavigate={onCopyToDraftsNavigate}
-        />
+        {hasCopyToDraftOption && (
+          <CopyToDraftsMenuItem
+            documentType={documentType}
+            documentId={documentId}
+            fromRelease={bundleId}
+            onClick={onCopyToDrafts}
+            onNavigate={onCopyToDraftsNavigate}
+          />
+        )}
         {releases.map((targetRelease) => {
           return (
             <MenuItem
@@ -80,7 +82,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
           )
         })}
       </ReleasesList>
-      {isReleasesEnabled && (
+      {(hasCopyToDraftOption || releases.length > 0) && (
         <>
           <MenuDivider />
           <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
