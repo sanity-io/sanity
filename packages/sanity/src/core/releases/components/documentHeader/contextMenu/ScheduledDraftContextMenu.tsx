@@ -8,6 +8,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'
+import {useWorkspace} from '../../../../studio'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
@@ -50,7 +51,8 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const showCopyToReleaseMenuItem = isReleasesEnabled && copyToReleaseOptions.length > 0
 
   const {actions} = scheduledDraftMenuActions
 
@@ -67,11 +69,13 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
         <MenuItem icon={CalendarIcon} text={t('release.action.view-scheduled-drafts')} />
       </IntentLink>
       <MenuDivider />
-      {showCopyToReleaseMenuItem && (
+      {(showCopyToReleaseMenuItem || hasCopyToDraftOption) && (
         <>
           <CopyToReleaseMenuGroup
             releases={copyToReleaseOptions}
             bundleId={bundleId}
+            hasCopyToDraftOption={hasCopyToDraftOption}
+            isReleasesEnabled={isReleasesEnabled}
             onCreateRelease={onCreateRelease}
             onCopyToDrafts={onCopyToDrafts}
             onCopyToDraftsNavigate={onCopyToDraftsNavigate}
