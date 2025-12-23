@@ -7,7 +7,6 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
-  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -123,7 +122,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const close = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
-  const handleContextMenu = useEffectEvent((event: MouseEvent<HTMLButtonElement>) => {
+  const handleContextMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     const elementRect = event.currentTarget?.getBoundingClientRect()
     setContextMenu({
@@ -132,7 +131,7 @@ export const VersionChip = memo(function VersionChip(props: {
       // and depends on placement=bottom-start
       translate: {x: event.clientX - elementRect.left, y: elementRect.top - event.clientY},
     })
-  })
+  }, [])
 
   useClickOutsideEvent(close, () => [popoverRef.current])
 
