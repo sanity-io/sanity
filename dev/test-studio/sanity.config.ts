@@ -281,6 +281,10 @@ export default defineConfig([
     title: 'No releases',
     dataset: 'no-releases',
     basePath: '/no-releases',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
   },
   {
     ...defaultWorkspace,
