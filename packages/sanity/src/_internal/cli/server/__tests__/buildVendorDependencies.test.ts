@@ -46,8 +46,14 @@ describe('buildVendorDependencies', async () => {
       const cwd = path.join(examplesRoot, 'prj-with-react-19')
       const imports = await buildVendorDependencies({cwd, basePath, outputDir})
 
+      // @TODO loop over exports of react/package.json and react-dom/package.json and ensure we are not missing any exports
+
       expect(imports).toEqual({
         'react': `${expectedPath}vendor/react-index-12345.mjs`,
+        'react/compiler-runtime': `${expectedPath}vendor/react-compiler-runtime-12345.mjs`,
+        'react/jsx-dev-runtime': `${expectedPath}vendor/react-jsx-dev-runtime-12345.mjs`,
+        'react/jsx-runtime': `${expectedPath}vendor/react-jsx-runtime-12345.mjs`,
+        'react/package.json': `${expectedPath}vendor/react-package.json-12345.mjs`,
         'react-dom': `${expectedPath}vendor/react-dom-index-12345.mjs`,
         'react-dom/client': `${expectedPath}vendor/react-dom-client-12345.mjs`,
         'react-dom/package.json': `${expectedPath}vendor/react-dom-package.json-12345.mjs`,
@@ -55,10 +61,6 @@ describe('buildVendorDependencies', async () => {
         'react-dom/server.browser': `${expectedPath}vendor/react-dom-server.browser-12345.mjs`,
         'react-dom/static': `${expectedPath}vendor/react-dom-static-12345.mjs`,
         'react-dom/static.browser': `${expectedPath}vendor/react-dom-static.browser-12345.mjs`,
-        'react/compiler-runtime': `${expectedPath}vendor/react-compiler-runtime-12345.mjs`,
-        'react/jsx-dev-runtime': `${expectedPath}vendor/react-jsx-dev-runtime-12345.mjs`,
-        'react/jsx-runtime': `${expectedPath}vendor/react-jsx-runtime-12345.mjs`,
-        'react/package.json': `${expectedPath}vendor/react-package.json-12345.mjs`,
         'styled-components': `${expectedPath}vendor/styled-components-index-12345.mjs`,
         'styled-components/package.json': `${expectedPath}vendor/styled-components-package.json-12345.mjs`,
       })
