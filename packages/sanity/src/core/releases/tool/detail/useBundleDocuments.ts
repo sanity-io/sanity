@@ -79,7 +79,7 @@ const getActiveReleaseDocumentsObservable = ({
     // scheduledYield is used to provide some control over the main thread
     return from(schedulerYield(() => Promise.resolve())).pipe(
       switchMap(() =>
-        validateDocumentWithReferences(ctx, of(document), true).pipe(
+        validateDocumentWithReferences(ctx, of(document), false).pipe(
           map((validationStatus) => ({
             ...validationStatus,
             hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
