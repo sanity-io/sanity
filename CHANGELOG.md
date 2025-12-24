@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.1.1) (2025-12-24)
+
+### Bug Fixes
+
+* **releases:** don't validate references in releases ([#11622](https://github.com/sanity-io/sanity/issues/11622)) ([dd33f5b](https://github.com/sanity-io/sanity/commit/dd33f5b97528b9db17acc23fec82d4cfc410cf27)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** add clickOutside workaround for nested modals ([#11617](https://github.com/sanity-io/sanity/issues/11617)) ([49d252d](https://github.com/sanity-io/sanity/commit/49d252dcab140699590df3536efe9b6d08f0073f)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
 
 ### Features

@@ -1741,7 +1741,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       sanity:
-        specifier: ^5.1.0
+        specifier: ^5.1.1
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'
@@ -5559,6 +5559,10 @@ packages:
 
   '@sanity/util@4.22.0':
     resolution: {integrity: sha512-HpuPM1WVvURtj1/ysWvGaztUaNMAbL33O0QczxB+czWmPVgpVziPZiSL7TfNF+lQO0cH4F6s5YXaCQapDYvnPQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity/util@5.1.0':
+    resolution: {integrity: sha512-TBZghLnyLG92MD7IXFrmTTstBP4N0JdfPjch6ZQkdfxTWXmKDVq7bz5HP6zUrWP9kcI6xsYTDsp5K6XxWdgs2A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/uuid@3.0.2':
@@ -16459,7 +16463,7 @@ snapshots:
       '@sanity/client': 7.13.2(debug@4.4.3)
       '@sanity/mutate': 0.15.0(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/util': link:packages/@sanity/util
+      '@sanity/util': 5.1.0(debug@4.4.3)
       arrify: 2.0.1
       debug: 4.4.3(supports-color@8.1.1)
       fast-fifo: 1.3.2
@@ -16865,6 +16869,17 @@ snapshots:
       - debug
 
   '@sanity/util@4.22.0':
+    dependencies:
+      '@date-fns/tz': 1.4.1
+      '@date-fns/utc': 2.1.1
+      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/types': link:packages/@sanity/types
+      date-fns: 4.1.0
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/util@5.1.0(debug@4.4.3)':
     dependencies:
       '@date-fns/tz': 1.4.1
       '@date-fns/utc': 2.1.1
