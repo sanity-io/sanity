@@ -154,9 +154,14 @@ function canHandleCreateIntent(params: Record<string, unknown>) {
     return false
   }
 
-  // We can handle any create intent as long as it has a `type` parameter,
-  // but we also know how to deal with templates, where other tools might not
-  return 'template' in params ? {template: true} : true
+  const handle: Record<string, boolean> = {}
+  // We can handle any create intent as long as it has a `type` parameter
+  // but we are best at `structure` mode
+  if ('mode' in params) handle.mode = params.mode === 'structure'
+  // we also know how to deal with templates, where other tools might not
+  if ('template' in params) handle.template = true
+
+  return Object.keys(handle).length ? handle : true
 }
 
 function canHandleEditIntent(params: Record<string, unknown>) {
