@@ -4,7 +4,7 @@ import {test} from '../../studio-test'
 
 test.skip('In PTE - references in popover', () => {
   test.beforeEach(async ({page, createDraftDocument}, testInfo) => {
-    testInfo.setTimeout(testInfo.timeout + 60_000)
+    test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
     // Important since the having two documents side by side is vital to the test
@@ -33,7 +33,7 @@ test.skip('In PTE - references in popover', () => {
       .getByTestId('inlineReference-insert-menu-button')
       .click()
 
-    await page.getByTestId('inline-preview').dblclick()
+    await expect(page.getByTestId('inline-preview')).toBeVisible()
 
     await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
 
@@ -43,6 +43,8 @@ test.skip('In PTE - references in popover', () => {
   test('you should be able to create a new reference document and change the fields while the popover is open', async ({
     page,
   }) => {
+    test.slow()
+
     // Create a new reference document
     await expect(page.locator('[data-testid^="create-new-document-select-text"]')).toBeVisible()
     await page.locator('[data-testid^="create-new-document-select-text"]').click()

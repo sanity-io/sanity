@@ -141,6 +141,7 @@ function Content(props: PopoverEditDialogProps) {
                 mode="bleed"
                 onClick={handleClose}
                 tooltipProps={{content: 'Close'}}
+                data-testid="close-popover-edit-dialog-button"
               />
             </Flex>
           </ContentHeaderBox>

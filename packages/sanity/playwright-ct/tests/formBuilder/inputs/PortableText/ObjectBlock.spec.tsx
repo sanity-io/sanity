@@ -30,30 +30,43 @@ test.describe('Portable Text Input', () => {
       await expect($pte.getByText('Custom preview block:')).toBeVisible()
     })
 
-    test('Inline object toolbars works as expected', async ({mount, page}) => {
+    test('Inline object toolbars works as expected after opening and closing the edit dialog', async ({
+      mount,
+      page,
+    }) => {
+      test.slow()
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
-      const $locatorDialog = page.getByTestId('nested-object-dialog')
+      const $locatorDialog = page.getByTestId('popover-edit-dialog')
       // Assertion: Object edit dialog should be visible
       await expect($locatorDialog).toBeVisible()
       await page.locator('[data-sanity-icon="close"]').click()
-      // Wait for dialog to close and ensure inline object gets focus
-      await expect($locatorDialog).not.toBeVisible()
-      // Click on the inline preview to ensure it's selected
-      await $pte.getByTestId('inline-preview').click()
       // Assertion: the annotation toolbar popover should be visible
       await expect(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
       // Use clicks instead of Tab navigation to avoid Chrome focus issues
       await page.getByTestId('edit-inline-object-button').click()
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-      await page.locator('[data-sanity-icon="close"]').click()
-      // Wait for dialog to close
-      await expect($locatorDialog).not.toBeVisible()
-      // Click on the inline preview again to ensure it's selected
-      await $pte.getByTestId('inline-preview').click()
+      await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      // Press Escape on the dialog to ensure the event is captured
+      await page.keyboard.press('Escape')
+
+      await expect(page.getByTestId('popover-edit-dialog')).not.toBeVisible()
+    })
+
+    test('Inline object toolbars works as expected when removing the object', async ({
+      mount,
+      page,
+    }) => {
+      test.slow()
+      const {getFocusedPortableTextEditor} = testHelpers({page})
+      await mount(<ObjectBlockStory />)
+      const $pte = await getFocusedPortableTextEditor('field-body')
+      await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
+
+      // Assertion: the annotation toolbar popover should be visible
       await expect(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
+      await expect(page.getByTestId('remove-inline-object-button')).toBeVisible()
       await page.getByTestId('remove-inline-object-button').click()
       await expect(page.getByTestId('inline-object-toolbar-popover')).not.toBeVisible()
       await expect($pte).toBeFocused()

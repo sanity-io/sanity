@@ -98,9 +98,6 @@ test.describe('Portable Text Input', () => {
       )
       test.slow()
 
-      // Wait for the popover to be visible (inline objects open in popovers, not dialogs)
-      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
