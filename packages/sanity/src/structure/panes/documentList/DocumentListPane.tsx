@@ -247,6 +247,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         paneTitle={title}
         searchInputElement={searchInputElement}
         showIcons={showIcons}
+        sortOrder={sortOrder}
       />
     </>
   )
