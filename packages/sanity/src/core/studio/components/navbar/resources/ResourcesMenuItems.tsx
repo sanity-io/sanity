@@ -1,11 +1,28 @@
-import {DotIcon} from '@sanity/icons'
-import {MenuDivider, Text} from '@sanity/ui'
+/* eslint-disable  no-restricted-imports */
+// The design of the Studio version menu item doesn't align with the limitations of the
+// 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
+import {CopyIcon, LaunchIcon} from '@sanity/icons'
+import {
+  Badge,
+  Box,
+  Card,
+  type CardTone,
+  Flex,
+  Inline,
+  MenuDivider,
+  MenuItem as UIMenuItem,
+  Text,
+  useToast,
+} from '@sanity/ui'
+import {useCallback} from 'react'
 import {type SemVer} from 'semver'
 
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
+import {useWorkspaces} from '../../../workspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
@@ -17,12 +34,6 @@ interface ResourcesMenuItemProps {
   value?: ResourcesResponse
   onOpenStudioVersionDialog: () => void
 }
-
-const UpdateDot = () => (
-  <Text size={2}>
-    <DotIcon style={{color: `var(--card-badge-primary-dot-color)`}} />
-  </Text>
-)
 
 function reload() {
   document.location.reload()
@@ -42,10 +53,6 @@ export function ResourcesMenuItems({
   if (isLoading) {
     return <LoadingBlock showText />
   }
-
-  const isOutdated = latestTaggedVersion
-    ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
-    : false
 
   const fallbackLinks = (
     <>
@@ -67,49 +74,166 @@ export function ResourcesMenuItems({
         href="https://www.sanity.io/contact/sales?ref=studio"
         target="_blank"
       />
-      <MenuDivider />
     </>
   )
 
   return (
     <>
-      {/* Display fallback values on error / no response */}
-      {(value === undefined || error) && <div>{fallbackLinks}</div>}
+      {/* Studio version information */}
+      <StudioVersion
+        currentVersion={currentVersion}
+        newAutoUpdateVersion={newAutoUpdateVersion}
+        latestTaggedVersion={latestTaggedVersion}
+        onOpenStudioVersionDialog={onOpenStudioVersionDialog}
+      />
+      <MenuDivider />
+
+      <StudioRegistration />
+      <MenuDivider />
 
       {!error &&
-        sections?.map((subSection) => {
+        sections?.map((subSection, i) => {
           if (!subSection) return null
-          return <SubSection key={subSection._key} subSection={subSection} />
+          return (
+            <>
+              <SubSection key={subSection._key} subSection={subSection} />
+              {i < sections.length - 1 && <MenuDivider key={`${subSection._key}/divider`} />}
+            </>
+          )
         })}
 
-      {/* Studio version information */}
-      <MenuItem
-        onClick={onOpenStudioVersionDialog}
-        text={t('help-resources.studio-version', {
-          studioVersion: currentVersion.version,
-        })}
-      />
-      {newAutoUpdateVersion ? (
-        <MenuItem
-          tone="primary"
-          onClick={reload}
-          data-testid="menu-item-update-studio-now"
-          text={t('help-resources.studio-auto-update-now', {
-            newVersion: newAutoUpdateVersion.version,
-          })}
-          iconRight={UpdateDot}
-        />
-      ) : isOutdated ? (
-        <MenuItem
-          tone="primary"
-          onClick={onOpenStudioVersionDialog}
-          text={t('help-resources.latest-sanity-version', {
-            latestVersion: latestTaggedVersion?.version,
-          })}
-          iconRight={UpdateDot}
-        />
-      ) : null}
+      {/* Display fallback values on error / no response */}
+      {(value === undefined || error) && <div>{fallbackLinks}</div>}
     </>
+  )
+}
+
+function StudioVersion({
+  currentVersion,
+  newAutoUpdateVersion,
+  latestTaggedVersion,
+  onOpenStudioVersionDialog,
+}: {
+  currentVersion: SemVer
+  newAutoUpdateVersion?: SemVer
+  latestTaggedVersion?: SemVer
+  onOpenStudioVersionDialog: () => void
+}) {
+  const {t} = useTranslation()
+
+  const isOutdated = latestTaggedVersion
+    ? (currentVersion?.compareMain?.(latestTaggedVersion) ?? 0) < 0
+    : false
+
+  let versionTone: CardTone = 'positive'
+  let subtitle = t('help-resources.up-to-date')
+  let action = onOpenStudioVersionDialog
+  let testId = 'menu-item-studio-version'
+
+  if (newAutoUpdateVersion) {
+    subtitle = t('help-resources.studio-auto-update-now', {
+      newVersion: newAutoUpdateVersion.version,
+    })
+    versionTone = 'caution'
+    action = reload
+    testId = 'menu-item-update-studio-now'
+  } else if (isOutdated) {
+    subtitle = t('help-resources.latest-sanity-version', {
+      latestVersion: latestTaggedVersion?.version,
+    })
+    versionTone = 'caution'
+  }
+
+  return (
+    <UIMenuItem padding={2} onClick={action} data-testid={testId}>
+      <Flex align="flex-start">
+        <Flex direction="column" flex={1} gap={2} padding={1}>
+          <Text size={1} weight="medium">
+            {t('help-resources.studio')}
+          </Text>
+          <Text muted size={1}>
+            {subtitle}
+          </Text>
+        </Flex>
+
+        <Badge tone={versionTone}>
+          {t('help-resources.version', {version: currentVersion.version})}
+        </Badge>
+      </Flex>
+    </UIMenuItem>
+  )
+}
+
+function StudioRegistration() {
+  const {t} = useTranslation()
+  const {push: pushToast} = useToast()
+  const {userApplication} = useLiveUserApplication()
+  const workspaces = useWorkspaces()
+  const projectId = workspaces[0]?.projectId
+
+  let manageBaseUrl = 'https://www.sanity.io'
+  if (workspaces[0]?.apiHost === 'https://api.sanity.work') {
+    manageBaseUrl = 'https://www.sanity.work'
+  }
+
+  const handleRegisterStudio = useCallback(() => {
+    if (!projectId) return
+    const currentOrigin = typeof window === 'undefined' ? '' : window.location.origin
+    const registrationUrl = `${manageBaseUrl}/manage/project/${projectId}/studios?studio=add&origin=${encodeURIComponent(currentOrigin)}`
+    window.open(registrationUrl, '_blank', 'noopener,noreferrer')
+  }, [projectId, manageBaseUrl])
+
+  const handleCopyAppId = useCallback(() => {
+    if (userApplication?.id) {
+      navigator.clipboard
+        .writeText(userApplication.id)
+        .then(() => {
+          pushToast({
+            closable: true,
+            status: 'success',
+            title: t('help-resources.studio-id-copied'),
+          })
+        })
+        .catch(() => {
+          pushToast({
+            closable: true,
+            status: 'error',
+            title: t('help-resources.studio-id-copy-error'),
+          })
+        })
+    }
+  }, [userApplication, pushToast, t])
+
+  if (userApplication) {
+    return (
+      <MenuItem
+        text={t('help-resources.copy-app-id')}
+        iconRight={<CopyIcon />}
+        onClick={handleCopyAppId}
+      />
+    )
+  }
+
+  return (
+    <Card tone="caution">
+      <UIMenuItem onClick={handleRegisterStudio}>
+        <Flex direction="column" flex={1} gap={2}>
+          <Box paddingY={2}>
+            <Text size={1} weight="medium">
+              {t('help-resources.studio-not-registered')}
+            </Text>
+          </Box>
+          <Card paddingY={2} radius={4} border tone="caution">
+            <Flex justify="space-around">
+              <Inline space={2}>
+                <Text size={1}>{t('help-resources.register-studio')} </Text>
+                <LaunchIcon />
+              </Inline>
+            </Flex>
+          </Card>
+        </Flex>
+      </UIMenuItem>
+    </Card>
   )
 }
 
@@ -143,7 +267,6 @@ function SubSection({subSection}: {subSection: Section}) {
             return null
         }
       })}
-      <MenuDivider />
     </>
   )
 }

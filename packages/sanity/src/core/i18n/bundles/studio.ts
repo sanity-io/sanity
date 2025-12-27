@@ -600,16 +600,41 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   'help-resources.action.join-our-community': 'Join our community',
 
+  /** Menu item for copying app id */
+  'help-resources.copy-app-id': 'Copy App ID',
+
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is v{{latestVersion}}',
+
+  /** Text for link to register a studio */
+  'help-resources.register-studio': 'Register studio',
+
+  /** Name of the sanity studio */
+  'help-resources.studio': 'Sanity Studio',
 
   /** Menu item for reloading Studio to update */
   'help-resources.studio-auto-update-now': 'Reload to update to v{{newVersion}}',
 
+  /** Toast message when Studio ID is copied to clipboard */
+  'help-resources.studio-id-copied': 'Studio ID copied to clipboard',
+
+  /** Toast message when Studio ID copy fails */
+  'help-resources.studio-id-copy-error': 'Failed to copy Studio ID',
+
+  /** Menu item for Studio not registered */
+  'help-resources.studio-not-registered': 'This studio is not registered',
+
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
+
+  /** Label for studio's which are up to date */
+  'help-resources.up-to-date': 'Up to date',
+
+  /** Version text */
+  'help-resources.version': 'v{{version}}',
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
