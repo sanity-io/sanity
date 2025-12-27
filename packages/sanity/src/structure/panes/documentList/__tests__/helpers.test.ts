@@ -33,6 +33,10 @@ const mockSchema = Schema.compile({
       type: 'datetime',
     },
     {
+      name: 'aliasedDate',
+      type: 'date',
+    },
+    {
       name: 'article',
       title: 'Article',
       type: 'document',
@@ -61,6 +65,14 @@ const mockSchema = Schema.compile({
           name: 'relevantUntil',
           type: 'aliasedDateTime',
         },
+        {
+          name: 'releaseDate',
+          type: 'date',
+        },
+        {
+          name: 'expiryDate',
+          type: 'aliasedDate',
+        },
       ],
     },
   ],
@@ -81,6 +93,18 @@ describe('applyOrderingFunctions()', () => {
 
   test('applies `dateTime()` to shallow datetime field orderings', () => {
     const ordering = {by: [{field: 'publishDate', direction: 'desc' as const}]}
+    const withFn = applyOrderingFunctions(ordering, mockSchema.get('article'))
+    expect(withFn).toEqual({by: [{...ordering.by[0], mapWith: 'dateTime'}]})
+  })
+
+  test('applies `dateTime()` to shallow date field orderings', () => {
+    const ordering = {by: [{field: 'releaseDate', direction: 'desc' as const}]}
+    const withFn = applyOrderingFunctions(ordering, mockSchema.get('article'))
+    expect(withFn).toEqual({by: [{...ordering.by[0], mapWith: 'dateTime'}]})
+  })
+
+  test('applies `dateTime()` to aliased date field orderings', () => {
+    const ordering = {by: [{field: 'expiryDate', direction: 'desc' as const}]}
     const withFn = applyOrderingFunctions(ordering, mockSchema.get('article'))
     expect(withFn).toEqual({by: [{...ordering.by[0], mapWith: 'dateTime'}]})
   })
@@ -165,6 +189,22 @@ describe('fieldExtendsType()', () => {
     )!
 
     expect(fieldExtendsType(field, 'number')).toBe(false)
+  })
+
+  test('correctly identifies date fields', () => {
+    const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
+      (current) => current.name === 'releaseDate',
+    )!
+
+    expect(fieldExtendsType(field, 'date')).toBe(true)
+  })
+
+  test('correctly identifies aliased date fields as date', () => {
+    const field = (mockSchema.get('article') as ObjectSchemaType).fields.find(
+      (current) => current.name === 'expiryDate',
+    )!
+
+    expect(fieldExtendsType(field, 'date')).toBe(true)
   })
 })
 
