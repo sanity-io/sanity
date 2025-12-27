@@ -44,8 +44,10 @@ export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchem
     }
 
     // Note: order matters here, since the jsonType of a date field is `string`,
-    // but we want to apply `datetime()`, not `lower()`
-    if (fieldExtendsType(fieldType, 'datetime')) {
+    // but we want to apply `dateTime()`, not `lower()`.
+    // Both 'datetime' and 'date' types need the dateTime() GROQ function for proper sorting.
+    // See: https://github.com/sanity-io/sanity/issues/6355
+    if (fieldExtendsType(fieldType, 'datetime') || fieldExtendsType(fieldType, 'date')) {
       return {...by, mapWith: 'dateTime'}
     }
 
