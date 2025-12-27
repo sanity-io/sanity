@@ -6,6 +6,7 @@ import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
+import {useWorkspace} from '../../../../studio'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
@@ -60,7 +61,9 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
-  const showCopyToReleaseMenuItem = copyToReleaseOptions.length > 0 || hasCopyToDraftOption
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+
+  const showCopyToReleaseMenuItem = isReleasesEnabled || hasCopyToDraftOption
 
   return (
     <Menu>
@@ -79,6 +82,8 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
       {showCopyToReleaseMenuItem && (
         <CopyToReleaseMenuGroup
           releases={copyToReleaseOptions}
+          hasCopyToDraftOption={hasCopyToDraftOption}
+          isReleasesEnabled={isReleasesEnabled}
           bundleId={bundleId}
           onCreateRelease={onCreateRelease}
           onCopyToDrafts={onCopyToDrafts}
@@ -90,7 +95,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           documentType={documentType}
         />
       )}
-      {(isVersion || showCopyToReleaseMenuItem) && !isPublished && <MenuDivider />}
+      {!isPublished && (showCopyToReleaseMenuItem || release) && <MenuDivider />}
       {!isPublished && (
         <MenuItem
           icon={TrashIcon}
