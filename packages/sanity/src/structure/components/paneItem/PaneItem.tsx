@@ -32,12 +32,18 @@ import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
+/** Sort order information for preview viewOptions. Compatible with SortOrdering. */
+interface SortOrderInfo {
+  by: Array<{field: string; direction: 'asc' | 'desc'}>
+}
+
 interface PaneItemProps {
   id: string
   layout?: GeneralPreviewLayoutKey
   icon?: ComponentType<any> | false
   pressed?: boolean
   selected?: boolean
+  sortOrder?: SortOrderInfo
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
@@ -70,6 +76,7 @@ export function PaneItem(props: PaneItemProps) {
     pressed,
     schemaType,
     selected,
+    sortOrder,
     title,
     value,
     margin,
@@ -95,6 +102,7 @@ export function PaneItem(props: PaneItemProps) {
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
+          sortOrder={sortOrder}
           value={value}
           presence={documentPresence}
         />
@@ -122,6 +130,7 @@ export function PaneItem(props: PaneItemProps) {
     icon,
     layout,
     schemaType,
+    sortOrder,
     title,
     value,
     documentPresence,
