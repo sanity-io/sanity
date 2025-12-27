@@ -39,7 +39,6 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
           href={`${envAwareWebsiteUrl}/manage/project/${projectId}`}
           target="_blank"
           icon={CogIcon}
-          tooltipProps={{content: t('user-menu.action.manage-project-aria-label')}}
           text={t('user-menu.action.manage-project-aria-label')}
           // @ts-expect-error -- Custom CSS property for Button component, needs to be unset so the border works as default
           style={{'--card-border-color': 'unset'}}
@@ -51,7 +50,6 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
             href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
             target="_blank"
             icon={AddUserIcon}
-            tooltipProps={{content: t('user-menu.action.invite-members')}}
             text={t('user-menu.action.invite-members')}
             // @ts-expect-error -- Custom CSS property for Button component, needs to be unset so the border works as default
             style={{'--card-border-color': 'unset'}}
