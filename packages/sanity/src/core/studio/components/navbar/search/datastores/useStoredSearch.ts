@@ -5,7 +5,7 @@ import {useClient} from '../../../../../hooks'
 import {useKeyValueStore} from '../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 
-export const RECENT_SEARCH_VERSION = 2
+export const RECENT_SEARCH_VERSION = 3
 const STORED_SEARCHES_NAMESPACE = 'studio.search.recent'
 
 export interface StoredSearch {

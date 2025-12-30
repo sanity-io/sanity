@@ -10,7 +10,7 @@ import {FilterLabel} from '../FilterLabel'
 
 describe('FilterLabel', () => {
   const mockFilter: SearchFilter = {
-    fieldId: 'boolean-title-boolean-test',
+    fieldId: 'boolean-title-Title',
     filterName: 'boolean',
     operatorType: 'booleanEqual',
     value: true,
