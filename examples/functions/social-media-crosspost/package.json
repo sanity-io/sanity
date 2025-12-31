@@ -6,7 +6,7 @@
     "@humanwhocodes/crosspost": "^0.1.1",
     "@sanity/client": "^7.13.2",
     "@sanity/functions": "^1.1.0",
-    "@sanity/image-url": "^1.2.0"
+    "@sanity/image-url": "^2.0.2"
   },
   "blueprintResourceItem": {
     "type": "sanity.function.document",
