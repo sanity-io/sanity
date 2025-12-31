@@ -1753,22 +1753,6 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/create-sanity:
-    dependencies:
-      '@sanity/cli':
-        specifier: workspace:*
-        version: link:../@sanity/cli
-      resolve-pkg:
-        specifier: ^2.0.0
-        version: 2.0.0
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../@repo/eslint-config
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-
   packages/groq:
     devDependencies:
       '@repo/eslint-config':
@@ -11391,10 +11375,6 @@ packages:
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
-
-  resolve-pkg@2.0.0:
-    resolution: {integrity: sha512-+1lzwXehGCXSeryaISr6WujZzowloigEofRB+dj75y9RRa/obVcYgbHJd53tdYw8pvZj8GojXaaENws8Ktw/hQ==}
-    engines: {node: '>=8'}
 
   resolve-url@0.2.1:
     resolution: {integrity: sha512-ZuF55hVUQaaczgOIwqWzkEcEidmlD/xl44x1UZnhOXcYuFN2S6+rcxpG+C1N3So0wvNI3DmJICUFfu2SxhBmvg==}
@@ -23376,10 +23356,6 @@ snapshots:
   resolve-from@5.0.0: {}
 
   resolve-pkg-maps@1.0.0: {}
-
-  resolve-pkg@2.0.0:
-    dependencies:
-      resolve-from: 5.0.0
 
   resolve-url@0.2.1: {}
 

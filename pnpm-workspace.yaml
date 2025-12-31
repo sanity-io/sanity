@@ -6,7 +6,6 @@ packages:
   - e2e
   - packages/@repo/*
   - packages/@sanity/*
-  - packages/create-sanity
   - packages/groq
   - packages/sanity
   - packages/sanity/fixtures/examples/*

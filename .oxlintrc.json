@@ -201,7 +201,7 @@
     },
     {
       // We still allow CJS in some places, for legacy reasons
-      "files": ["packages/@sanity/cli/**/*", "packages/create-sanity/**/*", "scripts/**/*"],
+      "files": ["packages/@sanity/cli/**/*", "scripts/**/*"],
       "rules": {
         "import/no-commonjs ": "off",
         "no-restricted-globals": "off"
