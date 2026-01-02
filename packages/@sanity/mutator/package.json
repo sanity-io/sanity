@@ -50,7 +50,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "debug": "^4.4.3",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.22"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

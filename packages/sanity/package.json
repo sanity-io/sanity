@@ -214,7 +214,7 @@
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
     "json5": "^2.2.3",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
     "module-alias": "^2.2.3",
