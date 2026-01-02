@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "dotenv": "^16.6.1",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "ora": "^8.2.0"
   },
   "devDependencies": {
