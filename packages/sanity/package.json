@@ -109,7 +109,8 @@
     "bin",
     "lib",
     "dist",
-    "static"
+    "static",
+    "mock-browser-env-stub-loader.mjs"
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
