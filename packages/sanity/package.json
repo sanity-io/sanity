@@ -160,7 +160,7 @@
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.0.2",
     "@sanity/message-protocol": "^0.17.8",
-    "@sanity/migrate": "^5.1.0",
+    "@sanity/migrate": "catalog:",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.0.1",
     "@sanity/preview-url-secret": "^4.0.1",
