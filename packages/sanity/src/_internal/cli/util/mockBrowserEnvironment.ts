@@ -57,8 +57,11 @@ export function mockBrowserEnvironment(basePath: string): () => void {
       ...getStudioEnvironmentVariables({prefix: 'import.meta.env.', jsonEncode: true}),
     },
   })
+  // CSS imports are no-ops for cli commands that process `sanity.config.ts` but doesn't build it (like vite does, which handles CSS imports correctly)
+  const {unregister: unregisterCSSLoader} = registerESBuild({extensions: ['.css'], loader: 'empty'})
 
   return function cleanupBrowserEnvironment() {
+    unregisterCSSLoader()
     unregisterESBuild()
     cleanupFileLoader()
     globalCleanup()

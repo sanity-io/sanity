@@ -2,6 +2,8 @@
 /* oxlint-disable import/no-unassigned-import */
 const {register} = require('esbuild-register/dist/node')
 
+register({extensions: ['.css'], loader: 'empty'})
+
 register({
   target: `node${process.version.slice(1)}`,
   jsx: 'automatic',
