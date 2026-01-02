@@ -49,8 +49,8 @@ catalogs:
       specifier: ^5.1.1
       version: 5.1.2
     esbuild:
-      specifier: 0.27.1
-      version: 0.27.1
+      specifier: 0.27.2
+      version: 0.27.2
     esbuild-register:
       specifier: ^3.6.0
       version: 3.6.0
@@ -1074,10 +1074,10 @@ importers:
         version: 4.4.3(supports-color@8.1.1)
       esbuild:
         specifier: 'catalog:'
-        version: 0.27.1
+        version: 0.27.2
       esbuild-register:
         specifier: 'catalog:'
-        version: 3.6.0(esbuild@0.27.1)
+        version: 3.6.0(esbuild@0.27.2)
       get-it:
         specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
@@ -1997,10 +1997,10 @@ importers:
         version: 4.4.3(supports-color@8.1.1)
       esbuild:
         specifier: 'catalog:'
-        version: 0.27.1
+        version: 0.27.2
       esbuild-register:
         specifier: 'catalog:'
-        version: 3.6.0(esbuild@0.27.1)
+        version: 3.6.0(esbuild@0.27.2)
       execa:
         specifier: ^2.1.0
         version: 2.1.0
@@ -2453,7 +2453,7 @@ importers:
         version: 24.10.4
       esbuild:
         specifier: 'catalog:'
-        version: 0.27.1
+        version: 0.27.2
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -20227,10 +20227,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  esbuild-register@3.6.0(esbuild@0.27.1):
+  esbuild-register@3.6.0(esbuild@0.27.2):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      esbuild: 0.27.1
+      esbuild: 0.27.2
     transitivePeerDependencies:
       - supports-color
 
