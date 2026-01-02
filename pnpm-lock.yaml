@@ -1876,7 +1876,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@sanity/image-url':
-        specifier: ^2.0.1
+        specifier: ^2.0.2
         version: 2.0.2
       '@sanity/import':
         specifier: ^4.0.1
