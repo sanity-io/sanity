@@ -46,7 +46,7 @@ catalogs:
       specifier: 7.0.0-dev.20251128.1
       version: 7.0.0-dev.20251128.1
     '@vitejs/plugin-react':
-      specifier: ^5.1.1
+      specifier: ^5.1.2
       version: 5.1.2
     esbuild:
       specifier: 0.27.2
