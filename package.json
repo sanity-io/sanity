@@ -113,7 +113,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/prettier-config": "^1.0.6",
+    "@sanity/prettier-config": "^3.0.0",
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
