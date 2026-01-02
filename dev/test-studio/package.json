@@ -58,7 +58,7 @@
     "refractor": "^5.0.0",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-asset-source-unsplash": "^4.0.1",
+    "sanity-plugin-asset-source-unsplash": "^7.0.0",
     "sanity-plugin-hotspot-array": "^3.0.2",
     "sanity-plugin-internationalized-array": "^3.2.2",
     "sanity-plugin-markdown": "^6.0.0",
