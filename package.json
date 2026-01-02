@@ -136,7 +136,7 @@
     "tsx": "^4.21.0",
     "turbo": "^2.7.2",
     "typescript": "catalog:",
-    "vercel": "^48.6.0",
+    "vercel": "^48.12.1",
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.26.0",

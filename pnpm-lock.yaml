@@ -195,7 +195,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
       vercel:
-        specifier: ^48.6.0
+        specifier: ^48.12.1
         version: 48.12.1(encoding@0.1.13)(rollup@4.54.0)(typescript@5.9.3)
       vitest:
         specifier: ^3.2.4
@@ -18120,7 +18120,7 @@ snapshots:
       '@vanilla-extract/babel-plugin-debug-ids': 1.2.2
       '@vanilla-extract/css': 1.17.5(babel-plugin-macros@3.1.0)
       dedent: 1.7.0(babel-plugin-macros@3.1.0)
-      esbuild: 0.27.1
+      esbuild: 0.27.2
       eval: 0.1.8
       find-up: 5.0.0
       javascript-stringify: 2.1.0
