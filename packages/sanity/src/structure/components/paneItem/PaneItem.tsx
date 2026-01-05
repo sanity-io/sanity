@@ -4,6 +4,7 @@ import {
   type PreviewValue,
   type SanityDocument,
   type SchemaType,
+  type SortOrdering,
 } from '@sanity/types'
 import {Box, type CardProps, Text} from '@sanity/ui'
 import {
@@ -32,18 +33,13 @@ import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
 
-/** Sort order information for preview viewOptions. Compatible with SortOrdering. */
-interface SortOrderInfo {
-  by: Array<{field: string; direction: 'asc' | 'desc'}>
-}
-
 interface PaneItemProps {
   id: string
   layout?: GeneralPreviewLayoutKey
   icon?: ComponentType<any> | false
   pressed?: boolean
   selected?: boolean
-  sortOrder?: SortOrderInfo
+  sortOrder?: Pick<SortOrdering, 'by'>
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType

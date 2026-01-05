@@ -1,4 +1,9 @@
-import {type PrepareViewOptions, type SanityDocument, type SchemaType} from '@sanity/types'
+import {
+  type PrepareViewOptions,
+  type SanityDocument,
+  type SchemaType,
+  type SortOrdering,
+} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -18,18 +23,13 @@ import {
 
 import {TooltipDelayGroupProvider} from '../../../ui-components'
 
-/** Sort order information for preview viewOptions. */
-interface SortOrderInfo {
-  by: Array<{field: string; direction: 'asc' | 'desc'}>
-}
-
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
   icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
-  sortOrder?: SortOrderInfo
+  sortOrder?: Pick<SortOrdering, 'by'>
   value: SanityDocument | {_id: string; _type: string}
 }
 
