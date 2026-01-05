@@ -286,7 +286,7 @@
     "@sanity/visual-editing-csm": "^3.0.4",
     "@sentry/types": "^8.55.0",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/archiver": "^6.0.3",
     "@types/configstore": "^5.0.1",
