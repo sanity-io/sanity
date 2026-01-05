@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
+import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
 import {Badge, Box, Button, Flex, Inline, Menu, MenuItem, Text, useElementSize} from '@sanity/ui'
 import {
@@ -13,6 +13,7 @@ import {
 
 import {MenuButton} from '../../../../ui-components'
 import {pathToString} from '../../../field/paths/helpers'
+import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
 import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
@@ -160,16 +161,7 @@ function BreadcrumbMenuItem({
   return (
     <MenuItem padding={1} onClick={handleClick}>
       <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
-        <Box flex="none" padding={1}>
-          <Text size={1} muted>
-            {SEPARATOR}
-          </Text>
-        </Box>
-        {siblingInfo && (
-          <Box flex="none">
-            <Badge>#{siblingInfo.index}</Badge>
-          </Box>
-        )}
+        {siblingInfo && <Badge size={1}>#{siblingInfo.index}</Badge>}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}
           paddingY={1}
@@ -206,17 +198,58 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   const handlePathSelect = useCallback(
     (path: Path) => {
-      onPathOpen(path)
+      // If it's an array item breadcrumb, try to open to the field being viewed
+      if (isKeySegment(path[path.length - 1])) {
+        // Check if currentPath extends this path with at least one field name
+        // Example: path = ['animals', {_key: 'x'}], currentPath = ['animals', {_key: 'x'}, 'friend', ...]
+        // What this means is that we are then moving back in the stack of dialogs
+        if (currentPath && currentPath.length > path.length) {
+          const pathsMatch = path.every((segment, index) => {
+            const currentSegment = currentPath[index]
+            return isKeySegment(segment) && isKeySegment(currentSegment)
+              ? segment._key === currentSegment._key
+              : segment === currentSegment
+          })
+
+          if (pathsMatch) {
+            const nextSegment = currentPath[path.length]
+            // If the next segment is not a key segment, it's a field name
+            if (!isKeySegment(nextSegment)) {
+              // Verify the field exists in the schema
+              const itemSchemaType = resolveSchemaTypeForPath(
+                documentSchemaType,
+                path,
+                documentValue,
+              )
+              // eslint-disable-next-line max-depth
+              if (
+                isObjectSchemaType(itemSchemaType) &&
+                itemSchemaType.fields.some((field) => field.name === nextSegment)
+              ) {
+                // What this means is that we're opening to the field that was being viewed
+                // Which means that it will focus on the field
+                onPathOpen([...path, nextSegment])
+                return
+              }
+            }
+          }
+        }
+
+        // Fallback: open to the item itself
+        onPathOpen(path)
+      } else {
+        onPathOpen(path)
+      }
     },
-    [onPathOpen],
+    [onPathOpen, documentSchemaType, documentValue, currentPath],
   )
 
   // Calculate max visible items based on container width
   const maxLength = useMemo(() => {
     const w = size?.border.width
     if (!w) return MAX_LENGTH
-    if (w < 500) return 3
-    if (w < 700) return 4
+    if (w < 500) return 5
+    if (w < 700) return 6
     return MAX_LENGTH
   }, [size?.border.width])
 
@@ -231,14 +264,12 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
     currentPath.forEach((segment, index) => {
       // Only include key segments (array items)
-      if (isKeySegment(segment)) {
-        const itemPath = currentPath.slice(0, index + 1)
-        // Use shouldBeInBreadcrumb to filter out PTE blocks
-        if (shouldBeInBreadcrumb(itemPath, currentPath, documentValue)) {
-          result.push({
-            path: itemPath,
-          })
-        }
+      const itemPath = currentPath.slice(0, index + 1)
+      // Use shouldBeInBreadcrumb to filter out PTE blocks
+      if (shouldBeInBreadcrumb(itemPath, currentPath, documentValue)) {
+        result.push({
+          path: itemPath,
+        })
       }
     })
 
@@ -262,9 +293,6 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
     return rawItems
   }, [rawItems, maxLength])
-
-  // Get the root field name (first segment of the path)
-  const rootFieldName = currentPath?.[0]?.toString()
 
   if (!currentPath || currentPath.length === 0) {
     return null
@@ -352,25 +380,6 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
 
   return (
     <Inline ref={setRootElement} style={rootInlineStyle}>
-      <Button
-        mode="bleed"
-        padding={2}
-        radius={2}
-        onClick={() => handlePathSelect([])}
-        style={{minWidth: 0, maxWidth: '250px'}}
-        title={rootFieldName}
-        aria-label={rootFieldName}
-      >
-        <Text
-          muted
-          size={1}
-          textOverflow="ellipsis"
-          style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
-        >
-          {rootFieldName}
-        </Text>
-      </Button>
-      <SeparatorItem>{SEPARATOR}</SeparatorItem>
       {nodes}
     </Inline>
   )

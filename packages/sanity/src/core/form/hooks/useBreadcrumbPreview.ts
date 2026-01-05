@@ -1,4 +1,4 @@
-import {type Path, type SchemaType} from '@sanity/types'
+import {isArraySchemaType, type Path, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 
 import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
@@ -22,5 +22,5 @@ export function useBreadcrumbPreview(
 
   const {value: preview} = useValuePreviewWithFallback({schemaType, value})
 
-  return preview.title
+  return isArraySchemaType(schemaType) ? schemaType.title : preview.title
 }
