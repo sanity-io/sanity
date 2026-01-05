@@ -95,7 +95,9 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   // Callback to render the default preview, used when custom component calls renderDefault
   const renderDefault = useCallback(
-    (props: PreviewProps) => <SanityDefaultPreview {...props} icon={icon} tooltip={tooltip} />,
+    (defaultProps: PreviewProps) => (
+      <SanityDefaultPreview {...defaultProps} icon={icon} tooltip={tooltip} />
+    ),
     [icon, tooltip],
   )
 
