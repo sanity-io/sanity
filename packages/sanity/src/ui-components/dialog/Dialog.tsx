@@ -16,6 +16,7 @@ export type DialogProps = Pick<
   UIDialogProps,
   | '__unstable_autoFocus'
   | '__unstable_hideCloseButton'
+  | 'animate'
   | 'contentRef'
   | 'header'
   | 'id'
@@ -56,6 +57,7 @@ export type DialogProps = Pick<
  */
 export const Dialog = forwardRef(function Dialog(
   {
+    animate = true,
     bodyHeight,
     children,
     footer,
@@ -70,7 +72,7 @@ export const Dialog = forwardRef(function Dialog(
   return (
     <UIDialog
       {...props}
-      animate
+      animate={animate}
       zOffset={zOffset}
       ref={ref}
       footer={

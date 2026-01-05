@@ -165,7 +165,7 @@ test.describe('Portable Text Input', () => {
         await page.getByTestId('add-single-object-button').click()
 
         // nested PTE object item
-        await expect(page.getByRole('button', {name: 'Untitled'})).toBeVisible()
+        await expect(page.getByRole('button', {name: 'Untitled'}).nth(1)).toBeVisible()
 
         // get the nested PTE
         const $overlay = page.getByTestId('activate-overlay')
