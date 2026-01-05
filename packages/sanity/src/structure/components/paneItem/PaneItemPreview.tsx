@@ -1,6 +1,6 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Flex} from '@sanity/ui'
-import {type ComponentType, useMemo} from 'react'
+import {type ComponentType, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
@@ -11,6 +11,7 @@ import {
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  type PreviewProps,
   SanityDefaultPreview,
   useDocumentVersionInfo,
   usePerspective,
@@ -74,17 +75,48 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
+  const tooltip = useMemo(
+    () => (
+      <DocumentStatus
+        draft={versionsInfo.draft}
+        published={versionsInfo.published}
+        versions={versionsInfo.versions}
+      />
+    ),
+    [versionsInfo.draft, versionsInfo.published, versionsInfo.versions],
   )
 
+  // Check if the schema type has a custom preview component defined
+  const CustomPreviewComponent = schemaType.components?.preview as
+    | ComponentType<PreviewProps>
+    | undefined
+
+  const previewValue = getPreviewValueWithFallback({snapshot, original, fallback: value})
+
+  // Callback to render the default preview, used when custom component calls renderDefault
+  const renderDefault = useCallback(
+    (props: PreviewProps) => <SanityDefaultPreview {...props} icon={icon} tooltip={tooltip} />,
+    [icon, tooltip],
+  )
+
+  // If a custom preview component is defined, use it
+  if (CustomPreviewComponent) {
+    return (
+      <CustomPreviewComponent
+        {...previewValue}
+        schemaType={schemaType}
+        isPlaceholder={isLoading}
+        layout={layout}
+        status={status}
+        renderDefault={renderDefault}
+      />
+    )
+  }
+
+  // Otherwise, use the default preview
   return (
     <SanityDefaultPreview
-      {...getPreviewValueWithFallback({snapshot, original, fallback: value})}
+      {...previewValue}
       isPlaceholder={isLoading}
       icon={icon}
       layout={layout}
