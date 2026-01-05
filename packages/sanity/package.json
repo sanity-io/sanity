@@ -131,7 +131,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@juggle/resize-observer": "^3.4.0",
-    "@mux/mux-player-react": "^3.8.0",
+    "@mux/mux-player-react": "^3.10.2",
     "@portabletext/block-tools": "^5.0.0",
     "@portabletext/editor": "^4.1.5",
     "@portabletext/patches": "^2.0.4",
