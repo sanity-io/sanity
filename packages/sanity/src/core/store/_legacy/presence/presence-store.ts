@@ -327,7 +327,7 @@ export function createPresenceStore(context: {
               ? item.documentId === documentId
               : documentIdEquals(item.documentId, documentId),
           )
-          .map((item) => Object.assign(item.presence, {documentId: item.documentId})),
+          .map((item) => Object.assign({}, item.presence, {documentId: item.documentId})),
       ),
       // Only emit if the presence has changed for this document id
       distinctUntilChanged((prev, curr) => isEqual(prev, curr)),

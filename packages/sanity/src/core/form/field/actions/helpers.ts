@@ -9,7 +9,7 @@ export function filterActions(actions: DocumentFieldActionNode[]): DocumentField
     })
     .map((node) => {
       if (node.type === 'group') {
-        return Object.assign(node, {children: filterActions(node.children)})
+        return Object.assign({}, node, {children: filterActions(node.children)})
       }
 
       return node

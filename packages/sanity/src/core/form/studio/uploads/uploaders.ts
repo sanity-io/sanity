@@ -37,5 +37,5 @@ const UPLOAD_TEXT: UploaderDef = {
 }
 
 export const uploaders: Array<Uploader> = [UPLOAD_IMAGE, UPLOAD_TEXT, UPLOAD_FILE].map(
-  (uploader, i) => Object.assign(uploader, {priority: i}),
+  (uploader, i) => Object.assign({}, uploader, {priority: i}),
 )
