@@ -2,6 +2,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
@@ -15,6 +16,26 @@ import {
   NestedDialogOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
+
+/**
+ * Styled Dialog component that conditionally hides the dialog card and backdrop.
+ * Used to keep non-top dialogs in the DOM but hidden from view.
+ */
+const StyledDialog = styled(Dialog)<{$isHidden: boolean}>`
+  ${(props) =>
+    props.$isHidden &&
+    `
+    /* Hide the backdrop (the semi-transparent overlay) */
+    background: transparent !important;
+
+    /* Hide the dialog card */
+    [data-ui='DialogCard'] {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: scale(0.95) !important;
+    }
+  `}
+`
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -43,32 +64,6 @@ function onDragEnter(event: DragEvent<HTMLDivElement>) {
 
 function onDrop(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
-}
-
-/**
- * Injects CSS to hide a specific dialog by ID.
- * Hides the DialogCard and the backdrop.
- */
-function HiddenDialogStyle({dialogId}: {dialogId: string}): React.JSX.Element {
-  const escapedId = CSS.escape(dialogId)
-  return (
-    <style>
-      {`
-        /* Hide the dialog card */
-        #${escapedId} [data-ui="DialogCard"],
-        [id="${dialogId}"] [data-ui="DialogCard"] {
-          opacity: 0 !important;
-          pointer-events: none !important;
-          transform: scale(0.95) !important;
-        }
-        /* Hide the backdrop (the semi-transparent overlay) */
-        #${escapedId},
-        [id="${dialogId}"] {
-          background: transparent !important;
-        }
-      `}
-    </style>
-  )
 }
 
 /**
@@ -169,27 +164,26 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   if (type === 'dialog') {
     return (
-      <>
-        {!isTop && <HiddenDialogStyle dialogId={dialogId} />}
-        <VirtualizerScrollInstanceProvider
-          scrollElement={documentScrollElement}
-          containerElement={containerElement}
+      <VirtualizerScrollInstanceProvider
+        scrollElement={documentScrollElement}
+        containerElement={containerElement}
+      >
+        <StyledDialog
+          $isHidden={!isTop}
+          __unstable_autoFocus={isTop ? props.autofocus : false}
+          contentRef={setDocumentScrollElement}
+          data-testid="nested-object-dialog"
+          header={<DialogBreadcrumbs currentPath={currentPath} />}
+          id={dialogId}
+          onClose={handleClose}
+          onDragEnter={onDragEnter}
+          onDrop={onDrop}
+          width={width}
+          animate={!shouldDisableAnimation}
         >
-          <Dialog
-            __unstable_autoFocus={isTop ? props.autofocus : false}
-            contentRef={setDocumentScrollElement}
-            data-testid="nested-object-dialog"
-            header={<DialogBreadcrumbs currentPath={currentPath} />}
-            id={dialogId}
-            onClose={handleClose}
-            onDragEnter={onDragEnter}
-            onDrop={onDrop}
-            width={width}
-          >
-            {contents}
-          </Dialog>
-        </VirtualizerScrollInstanceProvider>
-      </>
+          {contents}
+        </StyledDialog>
+      </VirtualizerScrollInstanceProvider>
     )
   }
 
