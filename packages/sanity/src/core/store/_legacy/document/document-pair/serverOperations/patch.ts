@@ -20,7 +20,9 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
             },
           ])
         : [
-            version.create({
+            // Use createIfNotExists to handle race conditions where a version exists on the server
+            // but hasn't been loaded locally yet
+            version.createIfNotExists({
               ...initialDocument,
               _id: idPair.draftId,
               _type: typeName,
@@ -74,7 +76,9 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
           },
         ])
       : [
-          draft.create({
+          // Use createIfNotExists to handle race conditions where a draft exists on the server
+          // but hasn't been loaded locally yet (e.g., singleton documents with existing drafts)
+          draft.createIfNotExists({
             ...initialDocument,
             _id: idPair.draftId,
             _type: typeName,
