@@ -1446,7 +1446,7 @@ importers:
   packages/@sanity/schema:
     dependencies:
       '@sanity/descriptors':
-        specifier: ^1.2.1
+        specifier: ^1.3.0
         version: 1.3.0
       '@sanity/generate-help-url':
         specifier: ^3.0.1
@@ -2243,7 +2243,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/codegen
       '@sanity/descriptors':
-        specifier: ^1.2.1
+        specifier: ^1.3.0
         version: 1.3.0
       '@sanity/eslint-config-i18n':
         specifier: 'catalog:'
