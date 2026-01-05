@@ -1,9 +1,9 @@
-name: 'Check Examples Only'
-description: 'Checks if only files in the examples/ directory have changed'
+name: "Check Examples Only"
+description: "Checks if only files in the examples/ directory have changed"
 
 outputs:
   examples_only:
-    description: 'true if only examples/ files changed, false otherwise'
+    description: "true if only examples/ files changed, false otherwise"
     value: ${{ steps.check.outputs.examples_only }}
 
 runs:
