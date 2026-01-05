@@ -319,6 +319,7 @@ function normalizeIcon(
  * interfering with the main application's style sheet.
  */
 export const resolveIcon = (props: IconProps): string | undefined => {
+  // @TODO remove the usage of `ServerStyleSheet`
   const sheet = new ServerStyleSheet()
 
   try {
