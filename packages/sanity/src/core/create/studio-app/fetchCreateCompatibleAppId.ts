@@ -35,15 +35,12 @@ async function fetchStudiosWithUrl(
   projectId: string,
   internalSuffix: string,
 ) {
-  const apps = (await client.request({
+  const apps = await client.request({
     method: 'GET',
     url: `/projects/${projectId}/user-applications`,
-  })) as StudioAppResponse[]
+  })
 
-  return apps.map((app) => ({
-    ...app,
-    studioUrl: getStudioUrl(app, internalSuffix),
-  }))
+  return apps.map((app) => Object.assign(app, {studioUrl: getStudioUrl(app, internalSuffix)}))
 }
 
 export async function fetchCreateCompatibleAppId(args: {

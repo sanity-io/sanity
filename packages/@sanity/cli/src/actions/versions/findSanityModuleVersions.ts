@@ -85,7 +85,7 @@ export async function findSanityModuleVersions(
         ? semverCompare(current, mod.latest) === -1
         : typeof mod.latestInRange !== 'undefined' && mod.installed !== mod.latestInRange
 
-    return {...mod, needsUpdate}
+    return Object.assign({}, mod, {needsUpdate})
   })
 }
 

@@ -161,15 +161,14 @@ export const objectValidators: Validators = {
       ? result
       : [result].map((res) => {
           if (typeof res === 'string') {
-            return {...validationErrorMetadata, message: message || res}
+            return Object.assign(validationErrorMetadata, {message: message || res})
           }
           if (isLocalizedMessages(res)) {
-            return {
-              ...validationErrorMetadata,
+            return Object.assign(validationErrorMetadata, {
               message: message || localizeMessage(res, context.i18n),
-            }
+            })
           }
-          return {...validationErrorMetadata, ...res, message: message || res.message}
+          return Object.assign(validationErrorMetadata, res, {message: message || res.message})
         })
   },
 }

@@ -90,19 +90,22 @@ describe('GraphQL - Generation 3', () => {
 })
 
 function sortGraphQLSchema(schema: any) {
-  const interfaces = orderBy(schema.interfaces, (iface) => iface.name).map((iface) => ({
-    ...iface,
-    fields: orderBy(iface.fields, (field) => field.fieldName),
-  }))
-  const queries = orderBy(schema.queries, (query) => query.fieldName).map((query) => ({
-    ...query,
-    args: orderBy(query.args, (arg) => arg.name),
-  }))
+  const interfaces = orderBy(schema.interfaces, (iface) => iface.name).map((iface) =>
+    Object.assign({}, iface, {
+      fields: orderBy(iface.fields, (field) => field.fieldName),
+    }),
+  )
+  const queries = orderBy(schema.queries, (query) => query.fieldName).map((query) =>
+    Object.assign({}, query, {
+      args: orderBy(query.args, (arg) => arg.name),
+    }),
+  )
 
-  const types = orderBy(schema.types, (type) => type.name).map((type) => ({
-    ...type,
-    fields: orderBy(type.fields, (field) => field.fieldName),
-  }))
+  const types = orderBy(schema.types, (type) => type.name).map((type) =>
+    Object.assign({}, type, {
+      fields: orderBy(type.fields, (field) => field.fieldName),
+    }),
+  )
 
   return {interfaces, queries, types, generation: schema.generation}
 }

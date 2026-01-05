@@ -257,11 +257,11 @@ async function resolveInitialArrayValue<Params extends Record<string, unknown>>(
     initialArray.map(async (initialItem) => {
       const itemType = getItemType(type as ArraySchemaType, initialItem)!
       return isObjectSchemaType(itemType)
-        ? {
-            ...initialItem,
-            ...(await resolveInitialValueForType(itemType, params, maxDepth - 1, context, options)),
-            _key: randomKey(),
-          }
+        ? Object.assign(
+            initialItem,
+            await resolveInitialValueForType(itemType, params, maxDepth - 1, context, options),
+            {_key: randomKey()},
+          )
         : initialItem
     }),
   )

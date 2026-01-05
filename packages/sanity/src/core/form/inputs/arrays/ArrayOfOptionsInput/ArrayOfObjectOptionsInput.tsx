@@ -74,7 +74,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
   const options = useMemo(
     () =>
       ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
-        isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
+        isKeyedObject(option) ? option : Object.assign(option, {_key: `auto-generated-${index}`}),
       ),
     [schemaType.options],
   )

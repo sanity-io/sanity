@@ -28,10 +28,7 @@ export function PresenceScope(props: PresenceScopeProps) {
           .filter((presence) => {
             return PathUtils.startsWith(path, presence.path)
           })
-          .map((presence) => ({
-            ...presence,
-            path: trimChildPath(path, presence.path),
-          }))
+          .map((presence) => Object.assign(presence, {path: trimChildPath(path, presence.path)}))
   }, [contextPresence, path, readOnly])
 
   return (

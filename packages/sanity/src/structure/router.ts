@@ -149,16 +149,15 @@ export function parsePanesSegment(str: string): RouterPanes {
         return parseChunks(chunks, {id})
       })
 
-      return [
-        firstSibling,
-        ...restOfSiblings.map((sibling) => ({
-          ...firstSibling,
-          ...sibling,
-          id: sibling.id || firstSibling.id,
-          params: {...omit(firstSibling.params, exclusiveParams), ...sibling.params},
-          payload: sibling.payload || firstSibling.payload,
-        })),
-      ]
+      return [firstSibling].concat(
+        restOfSiblings.map((sibling) =>
+          Object.assign({}, firstSibling, sibling, {
+            id: sibling.id || firstSibling.id,
+            params: {...omit(firstSibling.params, exclusiveParams), ...sibling.params},
+            payload: sibling.payload || firstSibling.payload,
+          }),
+        ),
+      )
     })
     .filter((group) => group.length > 0)
 }

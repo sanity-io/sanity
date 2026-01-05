@@ -26,9 +26,7 @@ export async function ensureDocumentIdAndType(
   if (id && type) return {id, type}
   if (!id && type) return {id: uuid(), type}
   if (id && !type) {
-    const resolvedType = await firstValueFrom(
-      documentStore.resolveTypeForDocument(id) as Observable<string>,
-    )
+    const resolvedType = await firstValueFrom(documentStore.resolveTypeForDocument(id))
 
     return {id, type: resolvedType}
   }

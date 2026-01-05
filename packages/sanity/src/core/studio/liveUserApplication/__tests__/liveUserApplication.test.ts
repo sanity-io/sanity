@@ -39,11 +39,12 @@ const createMockCache = (
     get: vi.fn((client: SanityClient) => {
       const {projectId} = client.config()
       return Promise.resolve(
-        (appsByProject?.[projectId ?? ''] || []).map((app) => ({
-          ...app,
-          type: app.type || 'studio',
-          projectId: app.projectId || projectId,
-        })),
+        (appsByProject?.[projectId ?? ''] || []).map((app) =>
+          Object.assign({}, app, {
+            type: app.type || 'studio',
+            projectId: app.projectId || projectId,
+          }),
+        ),
       )
     }),
   }

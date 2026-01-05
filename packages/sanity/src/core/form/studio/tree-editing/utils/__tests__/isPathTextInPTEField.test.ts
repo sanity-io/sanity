@@ -185,7 +185,7 @@ const schema = Schema.compile({
 })
 
 const documentSchema = schema.get('testDocument') as ObjectSchemaType
-const fields = documentSchema.fields as ObjectField<SchemaType>[]
+const fields = documentSchema.fields as ObjectField[]
 
 describe('isPathTextInPTEField', () => {
   test('should return true if the path points to text content within a simple portable text field', () => {

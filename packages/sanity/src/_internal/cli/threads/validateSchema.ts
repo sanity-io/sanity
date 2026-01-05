@@ -98,12 +98,13 @@ async function main() {
 
     const result: ValidateSchemaWorkerResult = {
       validation: validation
-        .map((group) => ({
-          ...group,
-          problems: group.problems.filter((problem) =>
-            level === 'error' ? problem.severity === 'error' : true,
-          ),
-        }))
+        .map((group) =>
+          Object.assign({}, group, {
+            problems: group.problems.filter((problem) =>
+              level === 'error' ? problem.severity === 'error' : true,
+            ),
+          }),
+        )
         .filter((group) => group.problems.length),
       serializedDebug,
     }

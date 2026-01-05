@@ -183,29 +183,23 @@ export function prepareConfig(
 
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
-      return {
-        ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
-          /*
-           * @FIXME: with the introduction of global references, @sanity/assist broke
-           * As a quickfix the plugins was released with a know property on the plugin definition.
-           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
-           * This ensures auto updating studios can start, albeit without assist, it it is old.
-           */
-          .filter((plugin) => {
+      return Object.assign(source, {
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)].filter(
+          (plugin) => {
             const validPlugin =
-              plugin.name !== '@sanity/assist' ||
+              plugin.name !== `@sanity/assist` ||
               (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
             if (!validPlugin) {
               console.warn(
-                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
-                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+                `Found an incompatible version of @sanity/assist plugin. It has been disabled.
+` +
+                  `To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.`,
               )
             }
-
             return validPlugin
-          }),
-      }
+          },
+        ),
+      })
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
@@ -271,26 +265,30 @@ export function prepareConfig(
 
     const title = rootSource.title || startCase(rootSource.name)
 
-    const workspaceSummary: WorkspaceSummary = {
-      type: 'workspace-summary',
-      auth: resolvedSources[0].auth,
-      basePath: joinBasePath(rootPath, rootSource.basePath),
-      dataset: rootSource.dataset,
-      apiHost: rootSource.apiHost,
-      schema: resolvedSources[0].schema,
-      i18n: resolvedSources[0].i18n,
-      customIcon: !!rootSource.icon,
-      icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
-      name: rootSource.name || 'default',
-      projectId: rootSource.projectId,
-      theme: rootSource.theme || studioTheme,
-      title,
-      subtitle: rootSource.subtitle,
-      __internal: {
-        sources: resolvedSources,
+    const workspaceSummary: WorkspaceSummary = Object.assign(
+      {
+        type: `workspace-summary`,
+        auth: resolvedSources[0].auth,
+        basePath: joinBasePath(rootPath, rootSource.basePath),
+        dataset: rootSource.dataset,
+        apiHost: rootSource.apiHost,
+        schema: resolvedSources[0].schema,
+        i18n: resolvedSources[0].i18n,
+        customIcon: !!rootSource.icon,
+        icon: normalizeIcon(
+          rootSource.icon,
+          title,
+          `${rootSource.projectId} ${rootSource.dataset}`,
+        ),
+        name: rootSource.name || `default`,
+        projectId: rootSource.projectId,
+        theme: rootSource.theme || studioTheme,
+        title,
+        subtitle: rootSource.subtitle,
+        __internal: {sources: resolvedSources},
       },
-      ...defaultPluginsOptions,
-    }
+      defaultPluginsOptions,
+    )
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary
   })

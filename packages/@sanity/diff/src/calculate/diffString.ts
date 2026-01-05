@@ -107,7 +107,7 @@ export function removedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map((segment) => ({type: 'stringSegment', action: 'removed', ...segment}))
+        .map((segment) => Object.assign({type: 'stringSegment', action: 'removed'}, segment))
 
       return replaceProperty(this, 'segments', segments)
     },
@@ -130,7 +130,7 @@ export function addedString<A>(
     get segments(): StringDiffSegment<A>[] {
       const segments: StringDiffSegment<A>[] = input
         .sliceAnnotation(0, input.value.length)
-        .map((segment) => ({type: 'stringSegment', action: 'added', ...segment}))
+        .map((segment) => Object.assign({type: 'stringSegment', action: 'added'}, segment))
 
       return replaceProperty(this, 'segments', segments)
     },

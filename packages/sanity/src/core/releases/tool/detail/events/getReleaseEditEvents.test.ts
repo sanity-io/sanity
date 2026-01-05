@@ -168,21 +168,19 @@ describe('getReleaseEditEvents()', () => {
       const editEvents$ = getReleaseEditEvents({client: mockClient, observeDocument$})
       const mockFirstResponse$ = cold('-a|', {
         a: Array.from({length: 100}).map((_, index) => {
-          return {
-            ...MOCKED_TRANSACTION_LOGS[0],
+          return Object.assign({}, MOCKED_TRANSACTION_LOGS[0], {
             id:
               index === 0
                 ? MOCKED_TRANSACTION_LOGS[0].id
                 : `${MOCKED_TRANSACTION_LOGS[0].id}-${index + 1}`,
-          }
+          })
         }),
       })
       const mockSecondResponse$ = cold('-a|', {
         a: Array.from({length: 100}).map((_, index) => {
-          return {
-            ...MOCKED_TRANSACTION_LOGS[0],
+          return Object.assign({}, MOCKED_TRANSACTION_LOGS[0], {
             id: `${MOCKED_TRANSACTION_LOGS[0].id}-${index + 101}`,
-          }
+          })
         }),
       })
       const mockFinalResponse$ = cold('-a|', {a: MOCKED_TRANSACTION_LOGS})

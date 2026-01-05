@@ -255,7 +255,7 @@ export function checkoutPair(
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome'),
-  ) as Observable<ReconnectEvent | WelcomeEvent>
+  )
 
   const draft = createBufferedDocument(
     draftId,

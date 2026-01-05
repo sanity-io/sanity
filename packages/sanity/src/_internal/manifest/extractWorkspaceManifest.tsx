@@ -165,14 +165,14 @@ function transformFieldsets(
     ?.filter((fs): fs is MultiFieldSet => !fs.single)
     .map((fs) => {
       const options = isRecord(fs.options) ? {options: retainSerializableProps(fs.options)} : {}
-      return {
-        name: fs.name,
-        ...ensureCustomTitle(fs.name, fs.title),
-        ...ensureString('description', fs.description),
-        ...ensureConditional('readOnly', fs.readOnly),
-        ...ensureConditional('hidden', fs.hidden),
-        ...options,
-      }
+      return Object.assign(
+        {name: fs.name},
+        ensureCustomTitle(fs.name, fs.title),
+        ensureString(`description`, fs.description),
+        ensureConditional(`readOnly`, fs.readOnly),
+        ensureConditional(`hidden`, fs.hidden),
+        options,
+      )
     })
 
   return fieldsets?.length ? {fieldsets} : {}
@@ -308,10 +308,7 @@ function transformArrayMember(
 function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchemaType, 'to'> {
   return {
     to: (reference.to ?? []).map((type) => {
-      return {
-        ...retainCustomTypeProps(type),
-        type: type.name,
-      }
+      return Object.assign(retainCustomTypeProps(type), {type: type.name})
     }),
   }
 }
@@ -324,11 +321,11 @@ function transformCrossDatasetReference(
       const preview = crossDataset.preview?.select
         ? {preview: {select: crossDataset.preview.select}}
         : {}
-      return {
-        type: crossDataset.type,
-        ...ensureCustomTitle(crossDataset.type, crossDataset.title),
-        ...preview,
-      }
+      return Object.assign(
+        {type: crossDataset.type},
+        ensureCustomTitle(crossDataset.type, crossDataset.title),
+        preview,
+      )
     }),
   }
 }
@@ -341,11 +338,11 @@ function transformGlobalDocumentReference(
       const preview = crossDataset.preview?.select
         ? {preview: {select: crossDataset.preview.select}}
         : {}
-      return {
-        type: crossDataset.type,
-        ...ensureCustomTitle(crossDataset.type, crossDataset.title),
-        ...preview,
-      }
+      return Object.assign(
+        {type: crossDataset.type},
+        ensureCustomTitle(crossDataset.type, crossDataset.title),
+        preview,
+      )
     }),
   }
 }
@@ -414,11 +411,7 @@ function transformValidation(validation: SchemaValidationValue): Validation {
           return [...rules, transformedRule]
         }, [])
 
-      return {
-        rules: serializedRules,
-        level: _level,
-        ...message,
-      }
+      return Object.assign({rules: serializedRules, level: _level}, message)
     })
     .filter((group) => !!group.rules.length)
 
@@ -524,10 +517,10 @@ function resolveTitleValueArray(possibleArray: unknown): ManifestTitledValue[] |
       (d): d is {value: string; title?: string} => isRecord(d) && !!d.value && isString(d.value),
     )
     .map((item) => {
-      return {
-        value: item.value,
-        ...ensureString('title', item.title),
-      } satisfies ManifestTitledValue
+      return Object.assign(
+        {value: item.value},
+        ensureString(`title`, item.title),
+      ) satisfies ManifestTitledValue
     })
   if (!titledValues?.length) {
     return undefined

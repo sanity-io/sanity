@@ -198,11 +198,10 @@ export default (typeDef: any, visitorContext: any) => {
     fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field: any, index: any) => {
       const {name, ...fieldTypeDef} = field
       const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, index)
-      return {
+      return Object.assign({}, fieldType, {
         name,
-        ...fieldType,
         _problems: validateField(field, visitorContext).concat(_problems || []),
-      }
+      })
     }),
     _problems: problems,
   }

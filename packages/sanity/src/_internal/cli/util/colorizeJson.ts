@@ -32,7 +32,7 @@ export function colorizeJson(input: unknown, chalk: CliCommandContext['chalk']):
         prevToken.type === 'whitespace' &&
         /^\n\s+$/.test(prevToken.value)
       ) {
-        return {...token, type: 'key'}
+        return Object.assign({}, token, {type: 'key'})
       }
 
       return token

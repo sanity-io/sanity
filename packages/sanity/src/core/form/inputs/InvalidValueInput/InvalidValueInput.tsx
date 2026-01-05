@@ -23,11 +23,9 @@ function getConverters(value: unknown, actualType: string, validTypes: string[])
 
   return Object.keys(CONVERTERS[actualType])
     .filter((targetType) => validTypes.includes(targetType))
-    .map((targetType) => ({
-      from: actualType,
-      to: targetType,
-      ...CONVERTERS[actualType][targetType],
-    }))
+    .map((targetType) =>
+      Object.assign({from: actualType, to: targetType}, CONVERTERS[actualType][targetType]),
+    )
     .filter((converter) => converter.test(value))
 }
 

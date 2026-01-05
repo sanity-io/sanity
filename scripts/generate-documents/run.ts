@@ -35,11 +35,12 @@ export function run(_args: ProgramArgs) {
       const draftDocument = {...baseDocument, _id: `drafts.${id}`, title: `${title} - Draft`}
 
       const bundleDocuments = bundles
-        ? bundles.map((bundle) => ({
-            ...baseDocument,
-            _id: `versions.${bundle}.${id}`,
-            title: `${title} - Bundle: ${bundle}`,
-          }))
+        ? bundles.map((bundle) =>
+            Object.assign(baseDocument, {
+              _id: `versions.${bundle}.${id}`,
+              title: `${title} - Bundle: ${bundle}`,
+            }),
+          )
         : []
 
       return [published && publishedDocument, draft && draftDocument, bundleDocuments].flatMap(

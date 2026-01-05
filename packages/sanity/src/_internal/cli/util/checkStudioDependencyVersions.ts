@@ -62,13 +62,12 @@ export async function checkStudioDependencyVersions(workDir: string): Promise<vo
     // so users should be prompted to upgrade
     const isDeprecated = pkg.deprecatedBelow ? semver.ltr(installed, pkg.deprecatedBelow) : false
 
-    return {
-      ...pkg,
+    return Object.assign({}, pkg, {
       installed,
       isUnsupported,
       isDeprecated,
       isUntested,
-    }
+    })
   })
 
   const installedPackages = (await Promise.all(packageInfo)).filter(

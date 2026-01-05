@@ -31,20 +31,18 @@ const addSelectedStateToMenuItems = (options: {
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
-      return {
-        ...item,
+      return Object.assign({}, item, {
         selected: layout === item.params?.layout,
-      }
+      })
     }
 
     if (item?.params?.by) {
-      return {
-        ...item,
+      return Object.assign({}, item, {
         selected: isEqual(sortOrderRaw?.by, item?.params?.by || EMPTY_ARRAY),
-      }
+      })
     }
 
-    return {...item, selected: false}
+    return Object.assign({}, item, {selected: false})
   })
 }
 

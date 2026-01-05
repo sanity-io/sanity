@@ -22,7 +22,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: () => mockUseTimeZoneDefault(),
 }))
 
-const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+const DateTimeInputWithFormValue = (inputProps: StringInputProps) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
     <DateTimeInput {...inputProps} />
   </FormValueProvider>

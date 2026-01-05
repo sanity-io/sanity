@@ -22,7 +22,7 @@ import {pathToString} from '../../../../validation/util/pathToString'
  * ```
  */
 export function findPTEtypePaths(
-  fields: ObjectField<SchemaType>[],
+  fields: ObjectField[],
   basePath: Path = [],
   visitedTypes: Set<string> = new Set(),
 ): Path[] {
@@ -94,7 +94,7 @@ export function findPTEtypePaths(
  * ```
  */
 export function isPathTextInPTEField(
-  fields: ObjectField<SchemaType>[],
+  fields: ObjectField[],
   targetPath: Path,
   documentValue?: unknown,
 ): boolean {
@@ -145,10 +145,7 @@ export function isPathTextInPTEField(
  * Find the schema path for the Portable Text field that the target path belongs to, if any.
  * Returns the path to the PTE array field within the document schema (without key segments).
  */
-export function findPTEParentPathForTarget(
-  fields: ObjectField<SchemaType>[],
-  targetPath: Path,
-): Path | null {
+export function findPTEParentPathForTarget(fields: ObjectField[], targetPath: Path): Path | null {
   if (targetPath.length === 0) return null
 
   const allPTEPaths = findPTEtypePaths(fields)

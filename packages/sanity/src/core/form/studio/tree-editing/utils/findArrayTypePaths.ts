@@ -16,7 +16,7 @@ import {
  * // => [['field1', 'field2', 'arrayField'], ['field1', 'field2', 'arrayField2']]
  * ```
  */
-export function findArrayTypePaths(fields: ObjectField<SchemaType>[]): Path[] {
+export function findArrayTypePaths(fields: ObjectField[]): Path[] {
   // Array to store paths to array schema types
   const arrayPaths: Path[] = []
 
@@ -24,7 +24,7 @@ export function findArrayTypePaths(fields: ObjectField<SchemaType>[]): Path[] {
   let currentPath: Path = []
 
   // Recursive function to check fields for array schema types
-  function checkFields(nestedFields: ObjectField<SchemaType>[]) {
+  function checkFields(nestedFields: ObjectField[]) {
     nestedFields.forEach((field) => {
       // Create a new path by extending the current path with the current field's name
       const newPath = [...currentPath, field.name]

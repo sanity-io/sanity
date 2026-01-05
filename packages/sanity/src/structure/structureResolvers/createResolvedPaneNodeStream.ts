@@ -324,7 +324,7 @@ export function createResolvedPaneNodeStream({
           })),
         )
         // add in the flat index
-        .map((i, index) => ({...i, flatIndex: index}))
+        .map((i, index) => Object.assign(i, {flatIndex: index}))
 
       return flattenedRouterPanes
     }),

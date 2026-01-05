@@ -241,11 +241,9 @@ export function deriveSearchWeightsFromType({
   const result = {
     typeName: isSchemaType(schemaType) ? schemaType.name : schemaType.type,
     paths: processPaths(
-      Object.entries(weights).map(([path, {type, weight}]) => ({
-        path,
-        weight,
-        ...(type === 'pt' && {mapWith: 'pt::text'}),
-      })),
+      Object.entries(weights).map(([path, {type, weight}]) =>
+        Object.assign({path, weight}, type === `pt` && {mapWith: `pt::text`}),
+      ),
     ),
   }
 

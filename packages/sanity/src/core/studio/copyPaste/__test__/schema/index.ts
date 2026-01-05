@@ -49,4 +49,4 @@ export const mockTypes = [
 export const schema = createSchema({
   name: 'default',
   types: mockTypes,
-}) as Schema
+})

@@ -161,7 +161,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
         ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) ||
         ('parentId' in event && toEvent.id === event.parentId)
       ) {
-        return {...event, parentId: undefined}
+        return Object.assign({}, event, {parentId: undefined})
       }
       return event
     })

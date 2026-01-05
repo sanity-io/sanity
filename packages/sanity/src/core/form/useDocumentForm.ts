@@ -340,8 +340,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
-    const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
-    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
+    const updateActionDisabled = !isActionEnabled(schemaType, 'update')
+    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
@@ -495,7 +495,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useComlinkViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
-    const ops = getExpandOperations(formStateRef.current!, path)
+    const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {
         onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))

@@ -528,10 +528,9 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
           )
 
           if (prevDecoration?.payload?.dirty) {
-            return {
-              ...nextDecoration,
+            return Object.assign(nextDecoration, {
               payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
-            }
+            })
           }
 
           return nextDecoration

@@ -23,11 +23,10 @@ export function removePublishedWithDrafts(documents: SanityDocumentLike[]): Docu
     const doc = entry.draft || entry.published || entry.versions[0]
     const hasDraft = Boolean(entry.draft)
 
-    return {
-      ...doc,
+    return Object.assign({}, doc, {
       hasPublished: !!entry.published,
       hasDraft,
-    }
+    })
   }) as any
 }
 

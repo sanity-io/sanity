@@ -6,7 +6,7 @@ import {hasCustomInputComponent} from '../hasCustomInputComponent'
 
 describe('hasCustomInputComponent', () => {
   let testSchema: ReturnType<typeof Schema.compile>
-  let documentFields: ObjectField<SchemaType>[]
+  let documentFields: ObjectField[]
 
   beforeEach(() => {
     testSchema = Schema.compile({

@@ -26,10 +26,10 @@ export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<Res
 
   const apis = await getApisWithSchemaTypes(cliContext)
   const resolved = apis.map(
-    ({schemaTypes, ...api}): ResolvedSourceProperties => ({
-      schema: createSchema({name: 'default', types: schemaTypes.filter(isCustomType)}),
-      ...api,
-    }),
+    ({schemaTypes, ...api}): ResolvedSourceProperties =>
+      Object.assign({}, api, {
+        schema: createSchema({name: 'default', types: schemaTypes.filter(isCustomType)}),
+      }),
   )
 
   return resolved

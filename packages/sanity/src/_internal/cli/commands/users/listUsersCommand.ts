@@ -67,10 +67,13 @@ const listUsersCommand: CliCommandDefinition = {
       .then((user) => (Array.isArray(user) ? user : [user]))
 
     const projectMembers = project.members
-      .map((member) => ({
-        ...member,
-        ...getUserProps(users.find((candidate) => candidate.id === member.id)),
-      }))
+      .map((member) =>
+        Object.assign(
+          {},
+          member,
+          getUserProps(users.find((candidate) => candidate.id === member.id)),
+        ),
+      )
       .filter((member) => !member.isRobot || robots)
 
     const members = [...projectMembers, ...pendingInvitations]

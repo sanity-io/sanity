@@ -306,7 +306,7 @@ function inferInitialValueTemplates(
         schemaType,
       }),
     )
-    .map((option) => ({...option, icon: AddIcon}))
+    .map((option) => Object.assign(option, {icon: AddIcon}))
 }
 
 function inferTypeName(spec: PartialDocumentList): string | undefined {

@@ -84,11 +84,10 @@ export const CrossDatasetReferenceType = {
 
     lazyGetter(parsed, 'to', () => {
       return arrify(subTypeDef.to).map((toType: any) => {
-        return {
-          ...toType,
+        return Object.assign({}, toType, {
           // eslint-disable-next-line camelcase
           __experimental_search: resolveSearchConfigForBaseFieldPaths(toType),
-        }
+        })
       })
     })
 

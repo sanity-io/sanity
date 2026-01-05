@@ -71,9 +71,7 @@ export const GlobalDocumentReferenceType = {
 
     lazyGetter(parsed, 'to', () => {
       return arrify(subTypeDef.to).map((toType: any) => {
-        return {
-          ...toType,
-        }
+        return Object.assign({}, toType)
       })
     })
 

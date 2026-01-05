@@ -56,10 +56,9 @@ export const handler = documentEventHandler(async ({context, event}) => {
             ...PRETTIER_CONFIG,
           })
 
-          return {
-            ...block,
+          return Object.assign({}, block, {
             code: formattedCode,
-          }
+          })
         } catch (formatError) {
           console.warn(`Failed to format code block ${block._key}:`, formatError)
           // Return original block if formatting fails

@@ -53,9 +53,9 @@ export function useLogoComponent(): ComponentType<Omit<LogoProps, 'renderDefault
 /**
  * @internal
  */
-export function useLayoutComponent(): ComponentType<Omit<LayoutProps, 'renderDefault'>> {
+export function useLayoutComponent(): ComponentType {
   return useMiddlewareComponents({
-    defaultComponent: StudioLayoutComponent as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
+    defaultComponent: StudioLayoutComponent as ComponentType,
     pick: pickLayoutComponent,
   })
 }

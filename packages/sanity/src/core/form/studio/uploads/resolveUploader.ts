@@ -12,7 +12,7 @@ export function resolveUploader(type: SchemaType, file: FileLike): Uploader | nu
       return (
         is.type(uploader.type, type) &&
         accepts(file, uploader.accepts) &&
-        accepts(file, (type.options as FIXME)?.accept || '')
+        accepts(file, type.options?.accept || '')
       )
     }) || null
   )

@@ -80,26 +80,24 @@ function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]):
 
   return {
     top: orderByTop(grouped.top).map(
-      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
-        ...(withIntersection as RegionWithSpacerHeight),
-        indent: grp
-          .slice(i + 1)
-          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
-      }),
+      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent =>
+        Object.assign(withIntersection as RegionWithSpacerHeight, {
+          indent: grp
+            .slice(i + 1)
+            .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
+        }),
     ),
     inside: orderByTop(grouped.inside).map(
-      (withIntersection): RegionWithSpacerHeightAndIndent => ({
-        ...(withIntersection as RegionWithSpacerHeight),
-        indent: 0,
-      }),
+      (withIntersection): RegionWithSpacerHeightAndIndent =>
+        Object.assign(withIntersection as RegionWithSpacerHeight, {indent: 0}),
     ),
     bottom: orderByTop(grouped.bottom).map(
-      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent => ({
-        ...(withIntersection as RegionWithSpacerHeight),
-        indent: grp
-          .slice(0, i)
-          .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
-      }),
+      (withIntersection, i, grp): RegionWithSpacerHeightAndIndent =>
+        Object.assign(withIntersection as RegionWithSpacerHeight, {
+          indent: grp
+            .slice(0, i)
+            .reduce((w, _withIntersection) => w + _withIntersection.region.rect.width, 0),
+        }),
     ),
   }
 }

@@ -39,7 +39,7 @@ const getCommand: CliCommandDefinition<GetCommandFlags> = {
   description: 'Get an OpenAPI specification by slug',
   async action(args, context) {
     const {output} = context
-    const flags = args.extOptions as GetCommandFlags
+    const flags = args.extOptions
     const slug = args.argsWithoutOptions[0]
 
     if (!slug || typeof slug !== 'string') {

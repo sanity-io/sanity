@@ -35,10 +35,7 @@ export function usePatches(props: {path: Path}): {
       return patchChannel.subscribe(({snapshot, patches}) => {
         const filteredPatches = patches
           .filter((patch) => _startsWith(patch.path, path))
-          .map((patch) => ({
-            ...patch,
-            path: patch.path.slice(path.length),
-          }))
+          .map((patch) => Object.assign(patch, {path: patch.path.slice(path.length)}))
 
         if (filteredPatches.length) {
           subscriber({

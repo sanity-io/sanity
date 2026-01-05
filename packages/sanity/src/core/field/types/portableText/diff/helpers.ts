@@ -80,7 +80,7 @@ export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): Objec
 }
 
 export function getChildSchemaType(
-  fields: ObjectField<SchemaType>[],
+  fields: ObjectField[],
   child: PortableTextChild,
 ): ObjectSchemaType | undefined {
   const childrenField = fields.find((f) => f.name === 'children')
@@ -254,12 +254,14 @@ export function createPortableTextDiff(
                     isChanged: true,
                     fromValue: fromText,
                     toValue: toText,
-                    segments: buildSegments(fromText, toText).map((seg) => ({
-                      ...seg,
-                      ...(_diff.action !== 'unchanged' && _diff.annotation
-                        ? {annotation: _diff.annotation} // Fallback if we can't find a spesific original diff
-                        : {}),
-                    })),
+                    segments: buildSegments(fromText, toText).map((seg) =>
+                      Object.assign(
+                        seg,
+                        _diff.action !== `unchanged` && _diff.annotation
+                          ? {annotation: _diff.annotation}
+                          : {},
+                      ),
+                    ),
                   },
                 },
                 fromValue: fromPseudoValue.children[0],
