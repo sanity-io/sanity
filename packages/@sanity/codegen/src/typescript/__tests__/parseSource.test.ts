@@ -105,6 +105,6 @@ export default {
     const parsed = parseSourceFile(source, 'foo.svelte', {})
 
     expect(parsed.type).toBe('File')
-    expect(parsed.program.body.length).toBe(3)
+    expect(parsed.program.body.length).toBe(2)
   })
 })
