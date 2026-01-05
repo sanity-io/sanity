@@ -1299,8 +1299,8 @@ importers:
         specifier: workspace:*
         version: link:../../groq
       groq-js:
-        specifier: ^1.24.0
-        version: 1.24.0
+        specifier: ^1.24.1
+        version: 1.24.1
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1458,8 +1458,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       groq-js:
-        specifier: ^1.24.0
-        version: 1.24.0
+        specifier: ^1.24.1
+        version: 1.24.1
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -2017,8 +2017,8 @@ importers:
         specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
       groq-js:
-        specifier: ^1.24.0
-        version: 1.24.0
+        specifier: ^1.24.1
+        version: 1.24.1
       gunzip-maybe:
         specifier: ^1.4.2
         version: 1.4.2
@@ -8842,6 +8842,10 @@ packages:
 
   groq-js@1.24.0:
     resolution: {integrity: sha512-lQe6UCCFmraajJrvfBouwaRacL5l2+ZNBoqZHRVe1F3sCq8mApMFOP9vIT3JfWZsG4sRxP8dACr/D8oJzltZ4g==}
+    engines: {node: '>= 14'}
+
+  groq-js@1.24.1:
+    resolution: {integrity: sha512-xSTHTxN+lZt6gK5hm4S7CQm5Z8SUkZOd7sa1FlwqK/hbKgSnfc0zkmlWBF4rkkcqWCugHMDjPNRVIreeO3Vq8Q==}
     engines: {node: '>= 14'}
 
   groq@3.88.1-typegen-experimental.0:
@@ -20790,6 +20794,12 @@ snapshots:
   graphmatch@1.1.0: {}
 
   groq-js@1.24.0:
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  groq-js@1.24.1:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
