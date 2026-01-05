@@ -28,6 +28,19 @@ import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
 
+/**
+ * Sanitizes an input ID for use in timezone storage keys.
+ * The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
+ * This function replaces array key segments (e.g., `[_key=="abc123"]`) with a dot-based format.
+ *
+ * @internal
+ */
+export function sanitizeTimeZoneKeyId(id: string): string {
+  // Replace [_key=="..."] segments with .key-... format
+  // e.g., "dates[_key=="abc123"].date" becomes "dates.key-abc123.date"
+  return id.replace(/\[_key=="([^"]+)"\]/g, '.key-$1')
+}
+
 const Root = styled(Card)`
   line-height: 1;
 `
@@ -146,7 +159,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
       type: 'input' as TimeZoneScopeType,
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
-      id: `${published}.${id}${allowTimeZoneSwitch ? '' : '.fixed'}`,
+      // sanitize the id to remove special characters that the backend key-value API rejects
+      id: `${published}.${sanitizeTimeZoneKeyId(id)}${allowTimeZoneSwitch ? '' : '.fixed'}`,
       relativeDate: value ? new Date(value) : undefined,
     }),
     [allowTimeZoneSwitch, displayTimeZone, id, published, value],
