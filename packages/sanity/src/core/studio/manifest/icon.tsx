@@ -4,7 +4,6 @@ import DOMPurify from 'isomorphic-dompurify'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {isValidElementType} from 'react-is'
-import {ServerStyleSheet} from 'styled-components'
 
 import {createDefaultIcon} from '../../config/createDefaultIcon'
 
@@ -293,10 +292,6 @@ const purifyConfig = {
     'feTile',
     'feTurbulence',
   ],
-  /**
-   * Required to allow for the use of `style` tags,
-   * namely rendering the style tags from `styled-components`
-   */
   FORCE_BODY: true,
 }
 
@@ -319,26 +314,19 @@ function normalizeIcon(
  * interfering with the main application's style sheet.
  */
 export const resolveIcon = (props: IconProps): string | undefined => {
-  // @TODO remove the usage of `ServerStyleSheet`
-  const sheet = new ServerStyleSheet()
-
   try {
     // Create the icon element wrapped with theme provider
     const iconElement = normalizeIcon(props.icon, props.title, props.subtitle)
     const wrappedElement = <ThemeProvider theme={props.theme}>{iconElement}</ThemeProvider>
 
-    // Render to static markup while collecting styles
-    const elementHtml = renderToStaticMarkup(sheet.collectStyles(wrappedElement))
-    const styleHtml = sheet.getStyleTags()
+    // Render to static markup
+    const elementHtml = renderToStaticMarkup(wrappedElement)
 
     // Combine styles and element
-    const html = `${styleHtml}${elementHtml}`.trim()
+    const html = elementHtml.trim()
 
     return DOMPurify.sanitize(html, purifyConfig)
   } catch {
     return undefined
-  } finally {
-    // Always seal the sheet to prevent memory leaks
-    sheet.seal()
   }
 }
