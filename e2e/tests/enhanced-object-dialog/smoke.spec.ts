@@ -103,3 +103,31 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
   })
 })
+
+test.describe('Enhanced Object Dialog - popover dialog', () => {
+  test.beforeEach(async ({createDraftDocument, page}) => {
+    // wait for form to be attached
+    await createDraftDocument('/content/input-debug;objectsDebug')
+
+    await page
+      .getByTestId('field-animalsWithPopover')
+      .getByRole('button', {name: 'Add item'})
+      .click()
+  })
+
+  test(`the popover dialog should open on arrays that open with a popover and open the enhanced object dialog when opening nested objects`, async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('popover-dialog')).toBeVisible()
+  })
+
+  test(`the popover should open on arrays that open with a popover and open the enhanced object dialog when opening nested objects`, async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('popover-dialog')).toBeVisible()
+    const childrenField = page.getByTestId(/^field-animalsWithPopover\[_key=="[^"]+"\]\.children$/)
+    await expect(childrenField).toBeVisible()
+    await childrenField.getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+  })
+})

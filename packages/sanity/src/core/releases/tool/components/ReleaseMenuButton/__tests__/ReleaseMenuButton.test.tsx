@@ -32,11 +32,6 @@ import {
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
 
-// hoisted so that mockUseIsReleasesPlus can be set to false for tests also
-const {mockUseIsReleasesPlus} = vi.hoisted(() => ({
-  mockUseIsReleasesPlus: vi.fn(() => true),
-}))
-
 vi.mock('../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
@@ -47,10 +42,6 @@ vi.mock('../../../../store/useReleasePermissions', () => ({
 
 vi.mock('../../../detail/useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
-}))
-
-vi.mock('../../../../hooks/useIsReleasesPlus', () => ({
-  useIsReleasesPlus: mockUseIsReleasesPlus,
 }))
 
 vi.mock('../../../../contexts/upsell/useReleasesUpsell', () => ({
@@ -89,13 +80,11 @@ describe('ReleaseMenuButton', () => {
     mockUseBundleDocuments.mockRestore()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
-    mockUseIsReleasesPlus.mockReturnValue(true)
   })
 
   describe('when permission is provided', () => {
     beforeEach(() => {
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
-      mockUseIsReleasesPlus.mockReturnValue(true)
     })
 
     describe('archive release', () => {
@@ -555,17 +544,6 @@ describe('ReleaseMenuButton', () => {
         expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
       })
 
-      test('does not show duplicate menu item when useIsReleasesPlus returns false', async () => {
-        mockUseIsReleasesPlus.mockReturnValue(false)
-
-        await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
-
-        await screen.findByTestId('release-menu-button')
-        await userEvent.click(screen.getByTestId('release-menu-button'))
-
-        expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
-      })
-
       describe('when duplication fails', () => {
         beforeEach(() => {
           duplicateReleaseMock.mockRejectedValue(new Error('some duplication error'))
@@ -602,7 +580,6 @@ describe('ReleaseMenuButton', () => {
       mockUseBundleDocuments.mockRestore()
 
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
-      mockUseIsReleasesPlus.mockReturnValue(true)
     })
 
     test('will disable archive menu', async () => {

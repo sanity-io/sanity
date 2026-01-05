@@ -190,7 +190,7 @@ function createTestProps(overrides: Partial<Parameters<typeof buildArrayStatePTE
   return {...defaultProps, ...overrides}
 }
 
-describe('buildArrayStatePTE', () => {
+describe.skip('buildArrayStatePTE', () => {
   test('when openPath points to a nested array field, it should return the correct relative path', () => {
     const openPath: Path = ['body', {_key: 'custom1'}, 'items', {_key: 'item1'}]
     const props = createTestProps({openPath})

@@ -49,6 +49,11 @@
             "message": "Please use `import {styled} from 'styled-components'` instead."
           },
           {
+            "name": "styled-components",
+            "importNames": ["ServerStyleSheet"],
+            "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+          },
+          {
             "name": "react",
             "importNames": ["default"],
             "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
@@ -201,7 +206,7 @@
     },
     {
       // We still allow CJS in some places, for legacy reasons
-      "files": ["packages/@sanity/cli/**/*", "packages/create-sanity/**/*", "scripts/**/*"],
+      "files": ["packages/@sanity/cli/**/*", "scripts/**/*"],
       "rules": {
         "import/no-commonjs ": "off",
         "no-restricted-globals": "off"

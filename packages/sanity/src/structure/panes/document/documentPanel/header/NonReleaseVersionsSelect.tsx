@@ -36,8 +36,6 @@ export function NonReleaseVersionsSelect(props: {
 
   useClickOutsideEvent(
     (event) => {
-      // oxlint-disable-next-line no-debugger
-      debugger
       if (event.target && 'matches' in event.target && typeof event.target.matches === 'function') {
         // note: this is an (ugly) workaround for useClickOutside not working through portals (as its based on elements.contains())
         // do not close dropdown if click happens in a portal

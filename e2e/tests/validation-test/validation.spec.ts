@@ -28,6 +28,11 @@ test.describe('Validation test', () => {
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
+      await page
+        .getByTestId(/field-house\[.*\]\.name/)
+        .getByTestId('string-input')
+        .fill('Test Room')
+
       await page.getByRole('button', {name: 'Close dialog'}).click()
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()

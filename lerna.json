@@ -8,7 +8,6 @@
     "examples/*",
     "packages/@repo/*",
     "packages/@sanity/*",
-    "packages/create-sanity",
     "packages/groq",
     "packages/sanity"
   ],

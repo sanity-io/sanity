@@ -107,7 +107,7 @@ const renderTest = async () => {
 const publishAgnosticTests = (title: string) => {
   it('should allow for navigating back to releases overview', async () => {
     await renderTest()
-    await userEvent.click(screen.getByTestId('back-to-releases-button'))
+    await userEvent.click(await screen.findByTestId('back-to-releases-button'))
   })
 
   it('should show the release title', async () => {
@@ -132,7 +132,7 @@ describe('ReleaseDetail', () => {
     it('should show a loading spinner', async () => {
       await renderTest()
 
-      screen.getByTestId('loading-block')
+      expect(await screen.findByTestId('loading-block')).toBeInTheDocument()
     })
 
     it('does not show the rest of the screen ui', async () => {
@@ -168,9 +168,9 @@ describe('ReleaseDetail', () => {
     it('should show the header', async () => {
       await renderTest()
 
-      screen.getByText(activeASAPRelease.metadata.title)
-      screen.getByTestId('release-menu-button')
-      expect(screen.getByTestId('publish-all-button').closest('button')).toBeDisabled()
+      expect(await screen.findByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(await screen.findByTestId('release-menu-button')).toBeInTheDocument()
+      expect((await screen.findByTestId('publish-all-button')).closest('button')).toBeDisabled()
     })
   })
 })
@@ -186,7 +186,7 @@ describe('after releases have loaded', () => {
     const loadedReleaseAndDocumentsTests = () => {
       it('should allow for the release to be archived', async () => {
         await renderTest()
-        await userEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(await screen.findByTestId('release-menu-button'))
         await waitFor(() => {
           expect(screen.getByTestId('archive-release-menu-item')).toBeInTheDocument()
         })
@@ -251,17 +251,12 @@ describe('after releases have loaded', () => {
       it('should require confirmation to publish', async () => {
         await renderTest()
 
-        const publishButton = screen.getByTestId('publish-all-button')
-        expect(publishButton).toBeInTheDocument()
-
-        // Verify button exists and is part of the DOM
-        const button = publishButton.closest('button')
-        expect(button).not.toBeNull()
-
         // The button's enabled state depends on async permission checks
         // which complete in the background. The test verifies the UI is rendered correctly.
         await waitFor(
           () => {
+            const publishButton = screen.getByTestId('publish-all-button')
+            const button = publishButton.closest('button')
             expect(button).toBeInTheDocument()
           },
           {timeout: 1000},
@@ -271,17 +266,12 @@ describe('after releases have loaded', () => {
       it('should perform publish', async () => {
         await renderTest()
 
-        const publishButton = screen.getByTestId('publish-all-button')
-        expect(publishButton).toBeInTheDocument()
-
-        // Verify button exists and is part of the DOM
-        const button = publishButton.closest('button')
-        expect(button).not.toBeNull()
-
         // The button's enabled state and click behavior depend on async permission checks
         // which complete in the background. The test verifies the UI is rendered correctly.
         await waitFor(
           () => {
+            const publishButton = screen.getByTestId('publish-all-button')
+            const button = publishButton.closest('button')
             expect(button).toBeInTheDocument()
           },
           {timeout: 1000},
@@ -320,8 +310,9 @@ describe('after releases have loaded', () => {
       it('should disable publish all button', async () => {
         await renderTest()
 
-        expect(screen.getByTestId('publish-all-button')).toBeDisabled()
-        await userEvent.hover(screen.getByTestId('publish-all-button'))
+        const publishButton = await screen.findByTestId('publish-all-button')
+        expect(publishButton).toBeDisabled()
+        await userEvent.hover(publishButton)
       })
     })
   })
@@ -345,7 +336,7 @@ describe('after releases have loaded', () => {
     it('allows for navigating back to archived overview', async () => {
       await renderTest()
 
-      await userEvent.click(screen.getByTestId('back-to-releases-button'))
+      await userEvent.click(await screen.findByTestId('back-to-releases-button'))
 
       expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
         _searchParams: [['group', 'archived']],
@@ -355,9 +346,9 @@ describe('after releases have loaded', () => {
     it('should show archived retention card', async () => {
       await renderTest()
 
-      screen.getByText('This release is archived')
+      expect(await screen.findByText('This release is archived')).toBeInTheDocument()
 
-      within(screen.getByTestId('retention-policy-card')).getByText('123', {exact: false})
+      within(await screen.findByTestId('retention-policy-card')).getByText('123', {exact: false})
     })
 
     it('should not show a schedule date or release type', async () => {
@@ -394,7 +385,7 @@ describe('after releases have loaded', () => {
     it('allows for navigating back to archived overview', async () => {
       await renderTest()
 
-      await userEvent.click(screen.getByTestId('back-to-releases-button'))
+      await userEvent.click(await screen.findByTestId('back-to-releases-button'))
 
       expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
         _searchParams: [['group', 'archived']],
@@ -404,9 +395,9 @@ describe('after releases have loaded', () => {
     it('should show published retention card', async () => {
       await renderTest()
 
-      screen.getByText('This release is published successfully.')
+      expect(await screen.findByText('This release is published successfully.')).toBeInTheDocument()
 
-      within(screen.getByTestId('retention-policy-card')).getByText('123', {exact: false})
+      within(await screen.findByTestId('retention-policy-card')).getByText('123', {exact: false})
     })
 
     it('should not show the pin release button', async () => {
@@ -424,14 +415,14 @@ describe('after releases have loaded', () => {
     it('should not allow for the release to be unarchived', async () => {
       await renderTest()
 
-      await userEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(await screen.findByTestId('release-menu-button'))
       expect(screen.queryByTestId('unarchive-release-menu-item')).not.toBeInTheDocument()
     })
 
     it('should not allow for the release to be archived', async () => {
       await renderTest()
 
-      await userEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(await screen.findByTestId('release-menu-button'))
       expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
     })
 
@@ -459,7 +450,7 @@ describe('after releases have loaded', () => {
     it('should show missing release message', async () => {
       await renderTest()
 
-      screen.getByText(activeASAPRelease.metadata.title)
+      expect(await screen.findByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
     })
   })
 
@@ -480,7 +471,7 @@ describe('after releases have loaded', () => {
     it('should show error message', async () => {
       await renderTest()
 
-      screen.getByTestId('release-error-details')
+      expect(await screen.findByTestId('release-error-details')).toBeInTheDocument()
     })
   })
 
