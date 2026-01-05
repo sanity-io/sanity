@@ -547,8 +547,8 @@ importers:
   dev/test-create-integration-studio:
     dependencies:
       '@sanity/code-input':
-        specifier: ^7.0.2
-        version: 7.0.2(@babel/runtime@7.28.4)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(codemirror@6.0.2)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^7.0.4
+        version: 7.0.4(@babel/runtime@7.28.4)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(codemirror@6.0.2)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       react:
         specifier: 'catalog:'
         version: 19.2.3
@@ -605,8 +605,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       '@sanity/debug-preview-url-secret-plugin':
-        specifier: ^2.0.2
-        version: 2.0.2(@sanity/client@7.13.2)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^2.0.4
+        version: 2.0.4(@sanity/client@7.13.2)(react@19.2.3)(sanity@packages+sanity)
       '@sanity/google-maps-input':
         specifier: ^4.2.1
         version: 4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
@@ -5262,8 +5262,8 @@ packages:
     resolution: {integrity: sha512-bXuQGWgrpkSInZy8lfCMmOgdTNpsoZ7PORW0+zXss8qVpNo1DC002l1c8to6kfxNF0OaL9v7LwsPqKcTZ/VWrw==}
     engines: {node: '>=20'}
 
-  '@sanity/code-input@7.0.2':
-    resolution: {integrity: sha512-rK5OmRSQNBjlsvQIDTVsfee4D5VB0vZ/U/D5sg4jaQ16fyMjuyuinKnKOMm9xpOAtIZkdUAuppZ2XEK4l5v6rQ==}
+  '@sanity/code-input@7.0.4':
+    resolution: {integrity: sha512-yALM+eaKxjlohkqFBsskqzcZFfJBZjDebEW1wABW/s9E8IA5/yP5U+blmam/hmPxokZ2x3SbJyAGNPEh7s1NXA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -5298,8 +5298,8 @@ packages:
     resolution: {integrity: sha512-MbEcv27wyv5wZNUhZ+zGOb3z7YJGA6TjZ97xRtBTWLQCdpYdsijUgIPM0tCiUoQDKzQYP3X+5KHpW0B2ZHDiPg==}
     engines: {node: '>=18'}
 
-  '@sanity/debug-preview-url-secret-plugin@2.0.2':
-    resolution: {integrity: sha512-3Dt/u//IwP2hqi94tGWpGWWhzzTbWc5PPx2+LQnvv4+4fosuG6csmqmIfH15hO6v1yxv3eN7AkMrZyChLnMdGQ==}
+  '@sanity/debug-preview-url-secret-plugin@2.0.4':
+    resolution: {integrity: sha512-4FSCIkcTLMk2wU6NY/BZzv+7S+ZqEciKmEk13JGJhQx5aeOp6X3DCY58hOng9Psqi4NMJhnmFCv1T/ma7Ocf6g==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -16170,7 +16170,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/code-input@7.0.2(@babel/runtime@7.28.4)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(codemirror@6.0.2)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)':
+  '@sanity/code-input@7.0.4(@babel/runtime@7.28.4)(@codemirror/theme-one-dark@6.1.3)(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(codemirror@6.0.2)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)':
     dependencies:
       '@codemirror/autocomplete': 6.20.0
       '@codemirror/commands': 6.10.1
@@ -16251,7 +16251,7 @@ snapshots:
       - debug
       - typescript
 
-  '@sanity/debug-preview-url-secret-plugin@2.0.2(@sanity/client@7.13.2)(react@19.2.3)(sanity@packages+sanity)':
+  '@sanity/debug-preview-url-secret-plugin@2.0.4(@sanity/client@7.13.2)(react@19.2.3)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/preview-url-secret': 4.0.2(@sanity/client@7.13.2(debug@4.4.3))
