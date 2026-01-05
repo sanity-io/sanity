@@ -345,7 +345,5 @@ interface RootInputProps {
 function RootInput(props: RootInputProps) {
   const {rootInputProps, onPathOpen, openPath, renderInput} = props
 
-  return renderInput({
-    ...rootInputProps,
-  })
+  return renderInput(rootInputProps)
 }
