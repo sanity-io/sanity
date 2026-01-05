@@ -91,4 +91,20 @@ export default {
     expect(parsed.type).toBe('File')
     expect(parsed.program.body.length).toBe(3)
   })
+
+  test('should parse svelte', () => {
+    const source = `
+<script lang="ts">
+  import groq from 'groq'
+  const query = groq('*[_type == "myType"]')
+</script>
+
+<h1>Hello {name}!</h1>
+    `
+
+    const parsed = parseSourceFile(source, 'foo.svelte', {})
+
+    expect(parsed.type).toBe('File')
+    expect(parsed.program.body.length).toBe(3)
+  })
 })
