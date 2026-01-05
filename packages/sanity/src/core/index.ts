@@ -32,6 +32,7 @@ export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {
+  Chip,
   formatRelativeLocalePublishDate,
   getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,

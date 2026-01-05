@@ -22,7 +22,6 @@ const devAliases = {
   '@sanity/codegen': '@sanity/codegen/src/_exports',
   '@sanity/mutator': '@sanity/mutator/src',
   '@sanity/schema': '@sanity/schema/src/_exports',
-  '@sanity/migrate': '@sanity/migrate/src/_exports',
   '@sanity/types': '@sanity/types/src',
   '@sanity/util': '@sanity/util/src/_exports',
   '@sanity/vision': '@sanity/vision/src',

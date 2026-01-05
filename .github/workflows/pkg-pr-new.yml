@@ -108,15 +108,7 @@ jobs:
 
             const body = `## Preview this PR with [pkg.pr.new](https://pkg.pr.new)
 
-            ### Create a new project
-
-            ${BACKTICKS}sh
-            npx https://pkg.pr.new/create-sanity@23db03f
-            ${BACKTICKS}
-
-            _Note: This installs the latest Sanity Studio from the npm registry. To apply the changes from this PR in your newly created project, run the install commands below for each package listed in your package.json_
-
-            ### ...Or run the Sanity CLI
+            ### Run the Sanity CLI
 
             ${BACKTICKS}
             npx https://pkg.pr.new/@sanity/cli@23db03f <command>

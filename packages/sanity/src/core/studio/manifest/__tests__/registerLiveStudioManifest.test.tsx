@@ -151,7 +151,8 @@ describe('registerStudioManifest', () => {
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
-            value: {
+            value: expect.objectContaining({
+              bundleVersion: expect.any(String),
               workspaces: [
                 {
                   name: 'my-workspace',
@@ -165,7 +166,7 @@ describe('registerStudioManifest', () => {
                   mediaLibraryId: undefined,
                 },
               ],
-            },
+            }),
           },
         }),
       )

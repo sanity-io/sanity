@@ -277,6 +277,17 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
+    name: 'no-releases',
+    title: 'No releases',
+    dataset: 'no-releases',
+    basePath: '/no-releases',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
     name: 'unsplash',
     title: 'Only Unsplash Asset Source',
     basePath: '/unsplash',

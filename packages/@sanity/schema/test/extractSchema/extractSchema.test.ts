@@ -1089,3 +1089,122 @@ test('inline regression: inline type that references other inline type', () => {
   assert(inlineRef.value.type === 'inline')
   expect(inlineRef.value.name).toBe('iconPicker')
 })
+
+test('reference regression: references pointing to hoisted type', () => {
+  const author1Object = defineField({
+    name: 'author1',
+    type: 'object',
+    fields: [
+      {
+        name: 'name',
+        type: 'string',
+      },
+    ],
+  })
+  const authorObject = defineField({
+    name: 'author',
+    type: 'object',
+    fields: [
+      {
+        name: 'name',
+        type: 'string',
+      },
+      author1Object,
+    ],
+  })
+
+  const schema = createSchema(
+    {
+      name: 'test',
+      types: [
+        author1Object,
+        defineType({
+          name: 'post.something.author',
+          type: 'document',
+          fields: [
+            {type: 'string', name: 'title'},
+            authorObject,
+            author1Object,
+            {type: 'array', name: 'listOfAuthors', of: [authorObject]},
+          ],
+        }),
+        defineType({
+          name: 'something.author',
+          type: 'document',
+          fields: [{type: 'string', name: 'title'}, authorObject],
+        }),
+        defineType({
+          name: 'author',
+          type: 'document',
+          fields: [authorObject],
+        }),
+        defineType({
+          name: 'post',
+          type: 'document',
+          fields: [
+            {name: 'something', type: 'object', fields: [authorObject]},
+            {name: 'authorRef', type: 'reference', to: [{type: 'author'}]},
+            authorObject,
+          ],
+        }),
+      ],
+    },
+    true,
+  )
+
+  const extracted = extractSchema(schema)
+
+  expect(extracted).toMatchSnapshot()
+
+  expect(extracted.find((v) => v.name === 'author1')).toEqual({
+    name: 'author1',
+    type: 'type',
+    value: {
+      type: 'object',
+      attributes: {
+        _type: {
+          type: 'objectAttribute',
+          value: {
+            type: 'string',
+            value: 'author1',
+          },
+        },
+        name: expect.anything(),
+      },
+    },
+  })
+  expect(extracted.find((v) => v.name === 'author2')).toEqual({
+    name: 'author2',
+    type: 'type',
+    value: {
+      type: 'object',
+      attributes: {
+        name: expect.anything(),
+        author1: {
+          optional: true,
+          type: 'objectAttribute',
+          value: {
+            type: 'inline',
+            name: 'author11',
+          },
+        },
+      },
+    },
+  })
+  expect(extracted.map((v) => v.name)).toStrictEqual([
+    'author11',
+    'author2',
+    'author.reference',
+    'post',
+    'author',
+    'something.author',
+    'post.something.author',
+    'author1',
+  ])
+  const postType = extracted.find((v) => v.name === 'post')
+  expect(postType).toBeDefined()
+  assert(postType?.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+  expect(postType.attributes.authorRef.value.type).toEqual('inline')
+  assert(postType.attributes.authorRef.value.type === 'inline') // this is a workaround for TS
+  expect(postType.attributes.authorRef.value.name).toEqual('author.reference')
+})

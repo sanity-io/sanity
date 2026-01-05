@@ -5,11 +5,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {createUserApplicationCache, type UserApplication} from '../userApplicationCache'
 
-const TOGGLE = 'toggle.user-application.upload-live-manifest'
+const DISABLE_TOGGLE = 'toggle.user-application.upload-live-manifest.disable'
 
-// Mock getFeatures to return the toggle by default
+// Mock getFeatures to return empty array by default (feature enabled when disable toggle is absent)
 vi.mock('../../../hooks/useFeatureEnabled', () => ({
-  getFeatures: vi.fn(() => of([TOGGLE])),
+  getFeatures: vi.fn(() => of([])),
 }))
 
 describe('userApplicationCache', () => {
@@ -178,9 +178,9 @@ describe('userApplicationCache', () => {
   })
 
   describe('feature toggle', () => {
-    it('should return empty array when feature toggle is disabled', async () => {
+    it('should return empty array when feature is disabled (disable toggle present)', async () => {
       const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
-      vi.mocked(getFeatures).mockReturnValueOnce(of([]))
+      vi.mocked(getFeatures).mockReturnValueOnce(of([DISABLE_TOGGLE]))
 
       const cache = createUserApplicationCache()
       const result = await cache.get(mockClient)
@@ -189,9 +189,9 @@ describe('userApplicationCache', () => {
       expect(mockRequest).not.toHaveBeenCalled()
     })
 
-    it('should fetch apps when feature toggle is enabled', async () => {
+    it('should fetch apps when feature is enabled (disable toggle absent)', async () => {
       const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
-      vi.mocked(getFeatures).mockReturnValueOnce(of([TOGGLE]))
+      vi.mocked(getFeatures).mockReturnValueOnce(of([]))
 
       const mockApps = [{id: 'app-1', type: 'studio', urlType: 'internal', appHost: 'studio-1'}]
       mockRequest.mockResolvedValueOnce(mockApps)

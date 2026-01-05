@@ -47,14 +47,13 @@ interface Props {
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
-
+  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   return (
     <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
-        selectedReleaseId={selectedReleaseId}
+        selectedPerspectiveName={selectedPerspectiveName}
         areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />

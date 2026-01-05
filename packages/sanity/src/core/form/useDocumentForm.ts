@@ -49,6 +49,7 @@ import {
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isSystemBundle,
   useUnique,
 } from '../util'
 import {
@@ -176,23 +177,26 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       : undefined
 
   const activeDocumentReleaseId = useMemo(() => {
+    if (isSystemBundle(selectedPerspectiveName)) {
+      return undefined
+    }
     // if a document version exists with the selected release id, then it should use that
-    if (documentVersions.some((id) => getVersionFromId(id) === releaseId)) {
-      return releaseId
+    if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
+      return selectedPerspectiveName
     }
 
     // check if the selected version is the only version, if it isn't and it doesn't exist in the release
     // then it needs to use the documentVersions
-    if (releaseId && (!documentVersions || !onlyHasVersions)) {
-      return releaseId
+    if (selectedPerspectiveName && (!documentVersions.length || !onlyHasVersions)) {
+      return selectedPerspectiveName
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, releaseId, firstVersion])
+  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
-  const connectionState = useConnectionState(documentId, documentType, releaseId)
+  const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
@@ -217,8 +221,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
             {_id: documentId, _type: documentType})
       )
     }
-    // if no version is selected, but there is only version, it should default to the version it finds
-    if (!selectedPerspectiveName && onlyHasVersions) {
+    // we have either a selected perspective that's not a release,
+    // or no version is selected, but there are only versions,
+    // so it should default to the version it finds
+    if (selectedPerspectiveName || onlyHasVersions) {
       return editState.version || editState.draft || editState.published || baseValue
     }
     return editState?.draft || editState?.published || baseValue
@@ -229,13 +235,19 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.published,
     editState.version,
     initialValue,
-    liveEdit,
     releaseId,
+    liveEdit,
     selectedPerspectiveName,
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(value._id, documentType, releaseId)
+  const {validation: validationRaw} = useValidationStatus(
+    value._id,
+    documentType,
+    // require referenced documents to be published unless the document is in a release
+    !releaseId,
+  )
+
   const validation = useUnique(validationRaw)
 
   const {previousId: upstreamId} = useDocumentIdStack({
@@ -288,8 +300,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId = releaseId
-    ? getVersionId(publishedId, releaseId)
+  const targetDocumentId = activeDocumentReleaseId
+    ? getVersionId(publishedId, activeDocumentReleaseId)
     : // in cases where there is a draft in a live edit, we need to use it so that it can be published
       // in case if the user has permissions to do so otherwise just use the published id
       liveEdit
@@ -404,7 +416,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     readOnlyProp,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, releaseId)
+  const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(

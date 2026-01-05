@@ -91,7 +91,7 @@ export function createFieldDefinitionDictionary(
 }
 
 export function generateFieldId(field: SearchFieldDefinition): string {
-  return [field.type, field.fieldPath, field.filterName, field.documentTypes.join(',')].join('-')
+  return [field.type, field.fieldPath, field.title].join('-')
 }
 
 function getDocumentFieldDefinitions(

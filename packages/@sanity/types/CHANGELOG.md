@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/types
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3 ([#11559](https://github.com/sanity-io/sanity/issues/11559)) ([90dfc47](https://github.com/sanity-io/sanity/commit/90dfc4736f9392df473e6c0a3167f97fe619509f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/insert-menu to v3.0.2 ([#11572](https://github.com/sanity-io/sanity/issues/11572)) ([a6264ef](https://github.com/sanity-io/sanity/commit/a6264ef21b72407a9c60e106cc19e9578071fccb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
 
 ### ⚠ BREAKING CHANGES
