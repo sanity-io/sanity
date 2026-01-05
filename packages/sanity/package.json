@@ -173,7 +173,7 @@
     "@sanity/uuid": "^3.0.2",
     "@sentry/react": "^8.55.0",
     "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.13",
+    "@tanstack/react-virtual": "^3.13.14",
     "@types/react-is": "catalog:",
     "@types/shallow-equals": "^1.0.3",
     "@types/speakingurl": "^13.0.6",
