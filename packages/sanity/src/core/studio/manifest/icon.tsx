@@ -292,7 +292,6 @@ const purifyConfig = {
     'feTile',
     'feTurbulence',
   ],
-  FORCE_BODY: true,
 }
 
 /**
