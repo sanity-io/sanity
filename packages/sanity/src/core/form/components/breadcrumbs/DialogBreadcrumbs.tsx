@@ -161,16 +161,7 @@ function BreadcrumbMenuItem({
   return (
     <MenuItem padding={1} onClick={handleClick}>
       <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
-        <Box flex="none" padding={1}>
-          <Text size={1} muted>
-            {SEPARATOR}
-          </Text>
-        </Box>
-        {siblingInfo && (
-          <Box flex="none">
-            <Badge>#{siblingInfo.index}</Badge>
-          </Box>
-        )}
+        {siblingInfo && <Badge size={1}>#{siblingInfo.index}</Badge>}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}
           paddingY={1}
