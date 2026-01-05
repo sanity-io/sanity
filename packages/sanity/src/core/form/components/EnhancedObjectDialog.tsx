@@ -187,27 +187,20 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     )
   }
 
-  // For popovers, use inline style since they don't use portals the same way
-  const popoverStyle = isTop
-    ? undefined
-    : {visibility: 'hidden' as const, pointerEvents: 'none' as const}
-
   return (
-    <div style={popoverStyle}>
+    <VirtualizerScrollInstanceProvider
+      scrollElement={documentScrollElement}
+      containerElement={containerElement}
+    >
       <PopoverDialog
         header={header}
         onClose={handleClose}
-        referenceElement={props.legacy_referenceElement}
         width={width}
         containerRef={setDocumentScrollElement}
+        referenceElement={props.legacy_referenceElement}
       >
-        <VirtualizerScrollInstanceProvider
-          scrollElement={documentScrollElement}
-          containerElement={containerElement}
-        >
-          {contents}
-        </VirtualizerScrollInstanceProvider>
+        {contents}
       </PopoverDialog>
-    </div>
+    </VirtualizerScrollInstanceProvider>
   )
 }

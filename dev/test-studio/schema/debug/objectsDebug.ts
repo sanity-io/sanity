@@ -570,6 +570,16 @@ const animals = defineField({
   of: [animal],
 })
 
+const animalWithPopover = defineField({
+  type: 'array',
+  name: 'animalsWithPopover',
+  title: 'Animals with popover',
+  of: [animal],
+  options: {
+    modal: {type: 'popover'},
+  },
+})
+
 const fieldsetArray = defineField({
   type: 'array',
   name: 'fieldsetArray',
@@ -1056,5 +1066,6 @@ export const objectsDebug = defineType({
     arrayOfFiles,
     arrayWithNestedObjectsWithArray,
     arrayWithArrayInNestedObjects,
+    animalWithPopover,
   ],
 })

@@ -305,11 +305,12 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
               ? t('inputs.array.action.view', {itemTypeTitle})
               : t('inputs.array.action.edit', {itemTypeTitle})
           }
-          type="dialog"
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
           width={parentSchemaType?.options?.modal?.width ?? 1}
           id={value._key}
           onClose={onClose}
           autofocus={focused}
+          legacy_referenceElement={previewCardElement}
         >
           {children}
         </EnhancedObjectDialog>
