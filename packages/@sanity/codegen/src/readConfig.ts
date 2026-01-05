@@ -11,8 +11,8 @@ export const configDefinition = z.object({
     .string()
     .or(z.array(z.string()))
     .default([
-      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro}',
-      './app/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
+      './app/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
       './sanity/**/*.{ts,tsx,js,jsx,mjs,cjs}',
     ]),
   schema: z.string().default('./schema.json'),
