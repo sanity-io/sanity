@@ -36,7 +36,7 @@ export function run(_args: ProgramArgs) {
 
       const bundleDocuments = bundles
         ? bundles.map((bundle) =>
-            Object.assign(baseDocument, {
+            Object.assign({}, baseDocument, {
               _id: `versions.${bundle}.${id}`,
               title: `${title} - Bundle: ${bundle}`,
             }),

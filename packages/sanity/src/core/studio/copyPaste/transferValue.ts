@@ -699,7 +699,7 @@ async function collateObjectValue({
       })
 
     targetValue.markDefs = markDefs.map((item) =>
-      Object.assign(item, {_key: markDefKeyMap[item._key]}),
+      Object.assign({}, item, {_key: markDefKeyMap[item._key]}),
     )
   }
 

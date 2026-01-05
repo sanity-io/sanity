@@ -35,11 +35,11 @@ describe('GraphQL - Schema extraction', () => {
 
 function sortExtracted(schema: ApiSpecification) {
   const interfaces = orderBy(schema.interfaces, (iface) => iface.name).map((iface) =>
-    Object.assign(iface, {fields: orderBy(iface.fields, (field) => field.fieldName)}),
+    Object.assign({}, iface, {fields: orderBy(iface.fields, (field) => field.fieldName)}),
   )
 
   const types = orderBy(schema.types, (type) => type.name).map((type) =>
-    Object.assign(type, {fields: orderBy((type as any).fields, (field) => field.fieldName)}),
+    Object.assign({}, type, {fields: orderBy((type as any).fields, (field) => field.fieldName)}),
   )
 
   return {interfaces, types}
