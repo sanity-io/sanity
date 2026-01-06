@@ -32,7 +32,12 @@ test.describe('Array revert changes', () => {
       .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
       .getByTestId('string-input')
       .fill('description 1')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    const closeButton = page
+      .getByTestId('nested-object-dialog')
+      .getByRole('button', {name: 'Close dialog'})
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** item 2 */
@@ -51,7 +56,9 @@ test.describe('Array revert changes', () => {
       .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
       .getByTestId('string-input')
       .fill('description 2')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** item 3 */
@@ -70,7 +77,9 @@ test.describe('Array revert changes', () => {
       .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
       .getByTestId('string-input')
       .fill('description 3')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** publish */
