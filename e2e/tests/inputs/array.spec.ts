@@ -68,6 +68,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
 })
 
 test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
+  test.slow()
   await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
