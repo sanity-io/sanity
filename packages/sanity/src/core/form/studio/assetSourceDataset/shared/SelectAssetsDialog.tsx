@@ -1,4 +1,4 @@
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {CheckmarkIcon, DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {uniqueId} from 'lodash-es'
@@ -23,6 +23,13 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
+
+const FooterCard = styled(Card)`
+  border-top: 1px solid var(--card-border-color);
+  position: sticky;
+  bottom: 0;
+  z-index: 200;
+`
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
@@ -113,7 +120,19 @@ const SelectAssetsComponent = function SelectAssetsComponent(
   const [isLastPage, setIsLastPage] = useState(false)
   const [hasResetAutoFocus, setHasResetFocus] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const {selectedAssets, assetType = 'image', dialogHeaderTitle, onClose, onSelect, accept} = props
+  const {
+    selectedAssets,
+    assetType = 'image',
+    dialogHeaderTitle,
+    onClose,
+    onSelect,
+    accept,
+    selectionType = 'single',
+  } = props
+
+  // Multi-select state: track selected asset IDs
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const isMultiSelect = selectionType === 'multiple'
 
   const isImageOnlyWildCard = accept && accept === 'image/*' && assetType === 'image'
   const fetchPage = useCallback(
@@ -146,7 +165,8 @@ const SelectAssetsComponent = function SelectAssetsComponent(
     [setAssets],
   )
 
-  const select = useCallback(
+  // Single-select: immediately select and close
+  const selectSingle = useCallback(
     (id: string) => {
       const selected = assets.find((doc) => doc._id === id)
 
@@ -159,6 +179,31 @@ const SelectAssetsComponent = function SelectAssetsComponent(
     [assets, onSelect],
   )
 
+  // Multi-select: toggle selection state
+  const toggleSelection = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
+
+  // Multi-select: confirm selection and return all selected assets
+  const confirmMultiSelection = useCallback(() => {
+    if (selectedIds.size === 0) return
+
+    const selectedSource: AssetFromSource[] = Array.from(selectedIds).map((id) => ({
+      kind: 'assetDocumentId',
+      value: id,
+    }))
+
+    onSelect(selectedSource)
+  }, [selectedIds, onSelect])
+
   const handleItemClick = useCallback(
     (event: MouseEvent) => {
       event.preventDefault()
@@ -166,9 +211,13 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       if (!id) {
         throw new Error('Missing data-id attribute on item')
       }
-      select(id)
+      if (isMultiSelect) {
+        toggleSelection(id)
+      } else {
+        selectSingle(id)
+      }
     },
-    [select],
+    [isMultiSelect, selectSingle, toggleSelection],
   )
 
   const handleItemKeyPress = useCallback(
@@ -179,10 +228,14 @@ const SelectAssetsComponent = function SelectAssetsComponent(
         if (!id) {
           throw new Error('Missing data-id attribute on item')
         }
-        select(id)
+        if (isMultiSelect) {
+          toggleSelection(id)
+        } else {
+          selectSingle(id)
+        }
       }
     },
-    [select],
+    [isMultiSelect, selectSingle, toggleSelection],
   )
 
   const handleClose = useCallback(() => {
@@ -271,6 +324,8 @@ const SelectAssetsComponent = function SelectAssetsComponent(
             onItemKeyPress={handleItemKeyPress}
             isLoading={isLoading}
             selectedAssets={selectedAssets}
+            isMultiSelect={isMultiSelect}
+            selectedIds={selectedIds}
           />
         )}
         {assets.length > 0 && !isLastPage && (
@@ -287,6 +342,31 @@ const SelectAssetsComponent = function SelectAssetsComponent(
               />
             </Flex>
           </CardLoadMore>
+        )}
+        {/* Multi-select footer with Select/Cancel buttons */}
+        {isMultiSelect && (
+          <FooterCard tone="default" padding={4}>
+            <Flex justify="flex-end" gap={3}>
+              <Button
+                type="button"
+                mode="ghost"
+                text={t('asset-source.dialog.button.cancel')}
+                onClick={handleClose}
+              />
+              <Button
+                type="button"
+                icon={CheckmarkIcon}
+                tone="primary"
+                disabled={selectedIds.size === 0}
+                onClick={confirmMultiSelection}
+                text={
+                  selectedIds.size > 0
+                    ? t('asset-source.dialog.button.select-count', {count: selectedIds.size})
+                    : t('asset-source.dialog.button.select')
+                }
+              />
+            </Flex>
+          </FooterCard>
         )}
       </Stack>
     </Dialog>

@@ -1,8 +1,10 @@
+import {CheckmarkCircleIcon, CircleIcon} from '@sanity/icons'
 import {type Asset} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   Card,
+  Text,
   useToast,
 } from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -24,6 +26,8 @@ interface AssetProps {
   onClick?: (event: React.MouseEvent) => void
   onKeyPress?: (event: React.KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
+  /** Whether multi-select mode is enabled - shows checkbox indicator */
+  isMultiSelect?: boolean
 }
 
 // Get pixel density of the current device
@@ -85,11 +89,29 @@ const MenuContainer = styled.div`
   }
 `
 
+const CheckboxIndicator = styled.div`
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 3;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--card-bg-color);
+  color: var(--card-fg-color);
+
+  &[data-selected='true'] {
+    color: var(--card-badge-positive-bg-color, #2e7d32);
+  }
+`
+
 export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>(undefined)
-  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected} = props
+  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected, isMultiSelect = false} = props
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -221,6 +243,12 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
           {isDeleting && <LoadingBlock />}
         </Container>
       </Button>
+      {/* Checkbox indicator for multi-select mode */}
+      {isMultiSelect && (
+        <CheckboxIndicator data-selected={isSelected}>
+          <Text size={2}>{isSelected ? <CheckmarkCircleIcon /> : <CircleIcon />}</Text>
+        </CheckboxIndicator>
+      )}
       <MenuContainer>
         <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
       </MenuContainer>

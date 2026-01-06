@@ -400,8 +400,9 @@ export function ArrayOfObjectsField(props: {
             ]),
           )
         }
-        // Note: other asset kinds (file, base64, url) would need upload handling,
-        // but for MVP we focus on assetDocumentId which is what the default browser uses
+        // TODO(#4483): Add support for other asset kinds (file, base64, url) which would
+        // need upload handling. For MVP we focus on assetDocumentId which is what the
+        // default asset browser uses.
       })
     },
     [handleChange, handleInsert, member.field.schemaType.of],

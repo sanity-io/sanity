@@ -129,6 +129,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.dialog.button.cancel': 'Cancel',
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
+  /** Select asset dialog select-button with count (multi-select mode) */
+  'asset-source.dialog.button.select-count_one': 'Select {{count}} item',
+  'asset-source.dialog.button.select-count_other': 'Select {{count}} items',
   /** Keys shared between both image asset source and file asset source */
   /** Select asset dialog title for files */
   'asset-source.dialog.default-title_file': 'Select file',

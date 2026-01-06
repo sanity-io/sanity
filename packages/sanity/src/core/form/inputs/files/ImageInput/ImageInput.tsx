@@ -218,6 +218,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         const currentKey = extractKeyFromPathSegment(path.slice(-1)[0])
         if (currentKey) {
           effectiveOnInsertSiblingImages(assetsFromSource.slice(1), currentKey)
+        } else {
+          // This shouldn't happen in a properly configured array context, but log a warning
+          console.warn(
+            'ImageInput: Could not extract _key from path segment for sibling insertion. ' +
+              'Additional selected images will be skipped.',
+          )
         }
       }
 
