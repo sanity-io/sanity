@@ -2,9 +2,9 @@ import {useMemo} from 'react'
 import {
   isPublishedPerspective,
   prepareForPreview,
-  useValuePreview,
   usePerspective,
   useTranslation,
+  useValuePreview,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'

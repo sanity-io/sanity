@@ -287,7 +287,7 @@ describe('StructureTitle', () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      vi.spyOn(SANITY, 'useUnstableValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
