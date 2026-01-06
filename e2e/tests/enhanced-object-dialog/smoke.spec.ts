@@ -66,6 +66,8 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
 
 test.describe('Enhanced Object Dialog - when tab focusing on an array item', () => {
   test.beforeEach(async ({createDraftDocument, page}) => {
+    test.slow()
+
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
 
