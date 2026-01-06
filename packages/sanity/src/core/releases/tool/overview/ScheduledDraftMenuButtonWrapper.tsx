@@ -10,15 +10,9 @@ import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useSche
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {type Mode} from './queryParamUtils'
+import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 
-export const ScheduledDraftMenuButtonWrapper = ({
-  release,
-  releaseGroupMode,
-}: {
-  release: ReleaseDocument
-  releaseGroupMode: Mode
-}) => {
+export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
   const router = useRouter()
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -46,11 +40,11 @@ export const ScheduledDraftMenuButtonWrapper = ({
   })
 
   const displayedMenuItems = useMemo(() => {
-    if (releaseGroupMode === 'archived') {
+    if (release.state === 'archived') {
       return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
     }
 
-    if (releaseGroupMode === 'paused') {
+    if (isPausedScheduledDraft(release)) {
       return [
         <MenuItem key={'publish-now'} {...actions.publishNow} />,
         <MenuItem key={'schedule-publish'} {...actions.schedulePublish} />,
@@ -64,7 +58,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
       <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
       <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
     ]
-  }, [releaseGroupMode, actions])
+  }, [release, actions])
 
   const canPerformActions = Boolean(scheduledDraftDocument)
 

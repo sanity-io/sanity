@@ -1,13 +1,10 @@
-import {type ReleaseDocument, type ScheduleReleaseAction} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
 import {type MenuItem} from '../../../ui-components/menuItem'
-import {useClient} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getErrorMessage} from '../../util'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
@@ -60,7 +57,6 @@ export function useScheduledDraftMenuActions(
 
   const {t} = useTranslation()
   const toast = useToast()
-  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const operations = useScheduleDraftOperations()
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
@@ -120,13 +116,7 @@ export function useScheduledDraftMenuActions(
       setIsScheduling(true)
       // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
       const run = async () => {
-        const scheduleAction: ScheduleReleaseAction = {
-          actionType: 'sanity.action.release.schedule',
-          releaseId: getReleaseIdFromReleaseDocumentId(release._id),
-          publishAt: publishAt.toISOString(),
-        }
-
-        await client.action([scheduleAction])
+        await operations.rescheduleScheduledDraft(release, publishAt)
 
         toast.push({
           closable: true,
@@ -147,7 +137,7 @@ export function useScheduledDraftMenuActions(
       setIsScheduling(false)
       handleDialogClose()
     },
-    [release, client, toast, t, handleDialogClose],
+    [release, operations, toast, t, handleDialogClose],
   )
 
   const actions = useMemo(() => {

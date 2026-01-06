@@ -164,10 +164,6 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       newPublishAt: Date,
       opts?: BaseActionOptions,
     ): Promise<void> => {
-      // need to unschedule to bring release to `active` state
-      // so that it can be rescheduled with the new date
-      await releaseOperations.unschedule(release._id, opts)
-
       await releaseOperations.updateRelease(
         {
           _id: release._id,

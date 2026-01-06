@@ -31,7 +31,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
   const {t} = useTranslation(singleDocReleaseNamespace)
-  const {createScheduledDraft} = useScheduleDraftOperations()
+  const {createScheduledDraft, rescheduleScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
@@ -82,18 +82,8 @@ export const useSchedulePublishAction: DocumentActionComponent = (
       // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
       const run = async () => {
         if (isPaused && currentRelease) {
-          // Resume paused draft: update metadata and reschedule
-          await releaseOperations.updateRelease({
-            _id: currentRelease._id,
-            metadata: {
-              ...currentRelease.metadata,
-              intendedPublishAt: publishAt.toISOString(),
-            },
-          })
-          await releaseOperations.schedule(
-            currentRelease._id, // Pass full document ID directly
-            publishAt,
-          )
+          // Resume paused draft: reschedule with new date
+          await rescheduleScheduledDraft(currentRelease, publishAt)
         } else {
           // Normal flow: create new scheduled draft
           const releaseDocumentId = await createScheduledDraft(id, publishAt)
@@ -124,7 +114,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
       onSetScheduledDraftPerspective,
       isPaused,
       currentRelease,
-      releaseOperations,
+      rescheduleScheduledDraft,
     ],
   )
 

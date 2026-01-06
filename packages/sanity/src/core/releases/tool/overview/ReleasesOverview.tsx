@@ -384,9 +384,7 @@ export function ReleasesOverview() {
       if (release.isDeleted || release.isLoading) return null
 
       if (cardinalityView === 'drafts') {
-        return (
-          <ScheduledDraftMenuButtonWrapper release={release} releaseGroupMode={releaseGroupMode} />
-        )
+        return <ScheduledDraftMenuButtonWrapper release={release} />
       }
 
       const documentsCount =
