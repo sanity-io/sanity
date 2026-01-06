@@ -148,7 +148,7 @@ export interface AssetSourceComponentProps {
   assetSource: AssetSource
   assetType?: 'file' | 'image' | 'sanity.video'
   accept: string
-  selectionType: 'single'
+  selectionType: 'single' | 'multiple'
   dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
   onClose: () => void
