@@ -522,8 +522,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       sanity-plugin-markdown:
-        specifier: ^6.0.0
-        version: 6.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^8.0.2
+        version: 8.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       sanity-plugin-media:
         specifier: ^4.1.1
         version: 4.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
@@ -701,8 +701,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       sanity-plugin-markdown:
-        specifier: ^6.0.0
-        version: 6.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^8.0.2
+        version: 8.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       sanity-plugin-media:
         specifier: ^4.1.1
         version: 4.1.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
@@ -11614,13 +11614,13 @@ packages:
       sanity: ^3.52.4 || ^4.0.0-0 || ^5
       styled-components: ^6.1
 
-  sanity-plugin-markdown@6.0.0:
-    resolution: {integrity: sha512-HrfQMuEuAZOAgU5JdUWrbxAwUPbPnYPOzSvOwk65wYe2bHpC6rtkZQ1rCe9uTUsuRiFDh7KeG0NjaeD6vf/MHg==}
-    engines: {node: '>=18'}
+  sanity-plugin-markdown@8.0.2:
+    resolution: {integrity: sha512-hud+zlLtThSxLC8Cx7LjPsfETc7NlyZmKTZWGpZGqCQswmWlWwKbemkyfGAPh6wpzWYV49jVqHHpJIn31XFRZQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       easymde: ^2.18
-      react: ^18.3 || ^19
-      sanity: ^4
+      react: ^19.2
+      sanity: ^5
       styled-components: ^6.1
 
   sanity-plugin-media@4.1.1:
@@ -23789,9 +23789,8 @@ snapshots:
       - react-dom
       - react-is
 
-  sanity-plugin-markdown@6.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity):
+  sanity-plugin-markdown@8.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(easymde@2.20.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity):
     dependencies:
-      '@sanity/incompatible-plugin': 1.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
       easymde: 2.20.0
       react: 19.2.3
