@@ -114,6 +114,12 @@ export const requiredImageTypes = [
         readOnly: true,
       },
       {
+        name: 'thumbHash',
+        title: 'ThumbHash',
+        type: 'string',
+        readOnly: true,
+      },
+      {
         name: 'hasAlpha',
         title: 'Has alpha channel',
         type: 'boolean',
