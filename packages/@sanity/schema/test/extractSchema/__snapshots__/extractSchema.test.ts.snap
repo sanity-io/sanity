@@ -395,6 +395,13 @@ exports[`Extract schema test > Can hoist types > Hoist repeated objects 1`] = `
             "type": "inline",
           },
         },
+        "thumbHash": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
       },
       "type": "object",
     },
@@ -1420,6 +1427,13 @@ exports[`Extract schema test > Can hoist types > hoisted inline types should not
           "value": {
             "name": "sanity.imagePalette",
             "type": "inline",
+          },
+        },
+        "thumbHash": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
           },
         },
       },
@@ -3203,6 +3217,13 @@ exports[`Extract schema test > Extracts schema general 1`] = `
           "value": {
             "name": "sanity.imagePalette",
             "type": "inline",
+          },
+        },
+        "thumbHash": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
           },
         },
       },
