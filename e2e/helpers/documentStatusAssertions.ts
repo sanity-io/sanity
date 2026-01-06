@@ -32,6 +32,7 @@ export async function expectPublishedStatus(
   statusElement: Locator,
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
+  await expect(statusElement).toBeVisible()
   await expect(statusElement).toContainText(documentStatusPatterns.published, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
