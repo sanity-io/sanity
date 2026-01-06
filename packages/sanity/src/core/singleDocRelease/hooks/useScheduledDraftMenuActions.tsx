@@ -8,7 +8,6 @@ import {Translate, useTranslation} from '../../i18n'
 import {getErrorMessage} from '../../util'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
-import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
@@ -54,44 +53,42 @@ export function useScheduledDraftMenuActions(
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
 
-  const {firstDocumentPreview} = useScheduledDraftDocument(release?._id, {
+  // Safely handle undefined release by passing undefined to the hook
+  const {firstDocumentPreview, loading: documentLoading} = useScheduledDraftDocument(release?._id, {
     includePreview: true,
   })
 
-  const handleReschedule = useCallback(
-    async (newPublishAt: Date) => {
-      if (!release) return
+  const handleEditSchedule = useCallback(async () => {
+    if (!release) return
 
-      setIsPerformingOperation(true)
-      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
-      const run = async () => {
-        await operations.rescheduleScheduledDraft(release, newPublishAt)
-        onActionComplete?.()
-      }
-      try {
-        await run()
-      } catch (error) {
-        console.error('Failed to reschedule draft:', error)
-        toast.push({
-          closable: true,
-          status: 'error',
-          description: (
-            <Translate
-              t={t}
-              i18nKey="release.toast.reschedule-scheduled-draft.error"
-              values={{
-                title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
-                error: getErrorMessage(error),
-              }}
-            />
-          ),
-        })
-      }
-      setIsPerformingOperation(false)
-      setSelectedAction(null)
-    },
-    [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title],
-  )
+    setIsPerformingOperation(true)
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
+      await operations.pauseScheduledDraft(release)
+      onActionComplete?.()
+    }
+    try {
+      await run()
+    } catch (error) {
+      console.error('Failed to pause scheduled draft:', error)
+      toast.push({
+        closable: true,
+        status: 'error',
+        description: (
+          <Translate
+            t={t}
+            i18nKey="release.toast.pause-scheduled-draft.error"
+            values={{
+              title: firstDocumentPreview?.title || t('preview.default.title-fallback'),
+              error: getErrorMessage(error),
+            }}
+          />
+        ),
+      })
+    }
+    setIsPerformingOperation(false)
+    setSelectedAction(null)
+  }, [release, operations, onActionComplete, toast, t, firstDocumentPreview?.title])
 
   const handleMenuItemClick = useCallback((action: ScheduledDraftAction) => {
     setSelectedAction(action)
@@ -104,7 +101,7 @@ export function useScheduledDraftMenuActions(
   }, [isPerformingOperation])
 
   const actions = useMemo(() => {
-    const baseDisabled = disabled || isPerformingOperation
+    const baseDisabled = disabled || isPerformingOperation || documentLoading
 
     return {
       publishNow: {
@@ -119,7 +116,7 @@ export function useScheduledDraftMenuActions(
         'icon': EditIcon,
         'text': t('release.action.edit-schedule'),
         'tone': 'default' as const,
-        'onClick': () => handleMenuItemClick('edit-schedule'),
+        'onClick': handleEditSchedule,
         'disabled': baseDisabled,
         'data-testid': 'edit-schedule-menu-item',
       },
@@ -132,7 +129,7 @@ export function useScheduledDraftMenuActions(
         'data-testid': 'delete-schedule-menu-item',
       },
     }
-  }, [t, handleMenuItemClick, disabled, isPerformingOperation])
+  }, [t, handleMenuItemClick, handleEditSchedule, disabled, isPerformingOperation, documentLoading])
 
   const dialogs = useMemo(() => {
     if (!selectedAction || !release) return null
@@ -144,17 +141,6 @@ export function useScheduledDraftMenuActions(
             release={release}
             documentType={documentType}
             onClose={handleDialogClose}
-          />
-        )
-
-      case 'edit-schedule':
-        return (
-          <ScheduleDraftDialog
-            onClose={handleDialogClose}
-            onSchedule={handleReschedule}
-            variant="edit-schedule"
-            loading={isPerformingOperation}
-            initialDate={release.publishAt}
           />
         )
 
@@ -171,15 +157,7 @@ export function useScheduledDraftMenuActions(
       default:
         return null
     }
-  }, [
-    selectedAction,
-    release,
-    documentType,
-    documentId,
-    handleDialogClose,
-    handleReschedule,
-    isPerformingOperation,
-  ])
+  }, [selectedAction, release, documentType, documentId, handleDialogClose])
 
   return {
     actions,

@@ -45,6 +45,7 @@ const mockOperations = {
   rescheduleScheduledDraft: vi.fn(),
   deleteScheduledDraft: vi.fn(),
   createScheduledDraft: vi.fn(),
+  pauseScheduledDraft: vi.fn(),
 }
 
 // Mock toast push function

@@ -40,6 +40,7 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
+import {isPausedScheduledDraft} from '../../../core/releases/util/isPausedScheduledDraft'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
@@ -141,6 +142,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     }
   }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
+  const {data: releases = EMPTY_ARRAY} = useActiveReleases()
+
   const diffViewRouter = useDiffViewRouter()
 
   const initialValue = useDocumentPaneInitialValue({
@@ -206,15 +209,23 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
       const seeingHistoryDocument = Boolean(params.rev)
+
+      // Check if current perspective is a paused scheduled draft
+      const currentRelease = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+      const isPaused = isPausedScheduledDraft(currentRelease)
+
       return (
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
-        !isPerspectiveWriteable({
-          selectedPerspective: perspective.selectedPerspective,
-          isDraftModelEnabled,
-          schemaType,
-        }).result
+        (!isPaused &&
+          !isPerspectiveWriteable({
+            selectedPerspective: perspective.selectedPerspective,
+            isDraftModelEnabled,
+            schemaType,
+          }).result)
       )
     },
     [
@@ -224,6 +235,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       params.rev,
       perspective.selectedPerspective,
       schemaType,
+      releases,
+      selectedReleaseId,
     ],
   )
 
@@ -286,8 +299,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     getFormDocumentValue: getDisplayed,
     displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
   })
-
-  const {data: releases = []} = useActiveReleases()
 
   const actionsVersionType = useMemo(
     () =>

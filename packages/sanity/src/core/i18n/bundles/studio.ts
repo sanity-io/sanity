@@ -1516,6 +1516,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
+  /** Error toast for pausing a scheduled draft */
+  'release.toast.pause-scheduled-draft.error':
+    'Failed to pause the scheduled draft document <strong>{{title}}</strong>: {{error}}',
+  /** Success toast for pausing a scheduled draft */
+  'release.toast.pause-scheduled-draft.success':
+    'The scheduled draft document <strong>{{title}}</strong> is now paused and editable.',
   /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
    * @deprecated – no longer needed
    * */

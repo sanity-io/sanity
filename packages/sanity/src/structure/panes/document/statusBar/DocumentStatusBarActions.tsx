@@ -1,7 +1,13 @@
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
-import {Hotkeys, isSanityDefinedAction, usePerspective, useSource} from 'sanity'
+import {
+  Hotkeys,
+  isSanityDefinedAction,
+  usePausedScheduledDraft,
+  usePerspective,
+  useSource,
+} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
@@ -28,6 +34,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const {isPaused} = usePausedScheduledDraft()
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -53,8 +60,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const showFirstActionButton = showingRevision
     ? Boolean(firstActionState)
     : selectedReleaseId
-      ? // If the first action is a custom action and we are in a release document show it.
-        firstActionState && selectedReleaseId && !isSanityDefinedAction(firstActionState)
+      ? // For paused drafts, allow any action as primary
+        // Otherwise, only show custom (non-Sanity-defined) actions as primary
+        firstActionState && (isPaused || !isSanityDefinedAction(firstActionState))
       : firstActionState && (!editState?.liveEdit || editState?.version)
 
   const sideMenuItems = useMemo(() => {

@@ -207,6 +207,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text content for the scheduled draft override banner */
   'banners.scheduled-draft-override-banner.text':
     'A scheduled draft for this document exists. If you publish changes now they will be overwritten when the schedule runs.',
+  /** The text content for the paused scheduled draft banner */
+  'banners.paused-scheduled-draft.text':
+    'Schedule paused while editing. Press Schedule to reactivate or pick a new date.',
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
     'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release.',
