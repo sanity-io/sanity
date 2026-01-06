@@ -78,10 +78,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const {push} = useToast()
   const {t} = useTranslation()
 
-  // Get sibling insertion callback from context (for array contexts)
-  const {onInsertSiblingImages: onInsertSiblingImagesFromContext} = useSiblingImageInsertion()
+  // Get sibling insertion callbacks from context (for array contexts)
+  const {
+    onInsertSiblingImages: onInsertSiblingImagesFromContext,
+    onInsertSiblingFiles: onInsertSiblingFilesFromContext,
+  } = useSiblingImageInsertion()
   // Prefer prop over context, but context allows array to provide callback without modifying prop chain
   const effectiveOnInsertSiblingImages = onInsertSiblingImages ?? onInsertSiblingImagesFromContext
+  const effectiveOnInsertSiblingFiles = onInsertSiblingFilesFromContext
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -318,6 +322,31 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
   )
 
+  // Handle multiple files being selected for upload
+  // First file goes to current item, additional files go to sibling items via context
+  const handleSelectFilesToUpload = useCallback(
+    (assetSource: AssetSource, files: File[]) => {
+      if (files.length === 0) return
+
+      // Upload the first file to this image field
+      handleSelectFileToUpload(assetSource, files[0])
+
+      // If there are additional files and we're in array context, pass them to the parent
+      if (files.length > 1 && effectiveOnInsertSiblingFiles) {
+        const currentKey = extractKeyFromPathSegment(path.slice(-1)[0])
+        if (currentKey) {
+          effectiveOnInsertSiblingFiles(assetSource, files.slice(1), currentKey)
+        } else {
+          console.warn(
+            'ImageInput: Could not extract _key from path segment for sibling file uploads. ' +
+              'Additional files will be skipped.',
+          )
+        }
+      }
+    },
+    [handleSelectFileToUpload, effectiveOnInsertSiblingFiles, path],
+  )
+
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
@@ -359,7 +388,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
-        onSelectFile={handleSelectFileToUpload}
+        onSelectFiles={handleSelectFilesToUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
         isImageToolEnabled={isImageToolEnabled()}
@@ -378,7 +407,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFileToUpload,
+    handleSelectFilesToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -407,13 +436,13 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
-        onSelectFile={handleSelectFileToUpload}
+        onSelectFiles={handleSelectFilesToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
+  }, [assetSources, directUploads, handleSelectFilesToUpload, readOnly, renderBrowser, schemaType])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (
@@ -439,7 +468,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           handleClearUploadState={handleClearUploadState}
           inputProps={inputProps}
           isStale={isStale}
-          onSelectFile={handleSelectFileToUpload}
+          onSelectFiles={handleSelectFilesToUpload}
           readOnly={readOnly}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
@@ -457,7 +486,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       elementProps,
       handleClearField,
       handleClearUploadState,
-      handleSelectFileToUpload,
+      handleSelectFilesToUpload,
       isStale,
       readOnly,
       renderAssetMenu,

@@ -27,7 +27,7 @@ function ImageInputAssetMenuComponent(
   > & {
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFile: (assetSource: AssetSource, file: File) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
@@ -41,7 +41,7 @@ function ImageInputAssetMenuComponent(
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFile,
+    onSelectFiles,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -107,7 +107,7 @@ function ImageInputAssetMenuComponent(
       directUploads={directUploads}
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
-      onSelectFile={onSelectFile}
+      onSelectFiles={onSelectFiles}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
@@ -134,7 +134,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     browseMenuItem: ReactNode
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFile: (assetSource: AssetSource, file: File) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
@@ -151,7 +151,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFile,
+    onSelectFiles,
     imageUrlBuilder,
     isMenuOpen,
     observeAsset,
@@ -171,12 +171,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const asset = useObservable(observable)
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
-  // TODO: fix this in same style as FileInput
+  // Pass all files to the parent handler which will handle multi-file uploads
   const handleSelectFilesFromAssetSource = useCallback(
     (assetSource: AssetSource, files: File[]) => {
-      onSelectFile(assetSource, files[0])
+      onSelectFiles(assetSource, files)
     },
-    [onSelectFile],
+    [onSelectFiles],
   )
 
   const handleSelectFilesFromAssetSourceSingle = useCallback(

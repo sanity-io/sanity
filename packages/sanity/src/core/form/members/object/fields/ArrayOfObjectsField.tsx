@@ -1,5 +1,6 @@
 import {
   type AssetFromSource,
+  type AssetSource,
   type AssetSourceUploader,
   type Path,
   type SchemaType,
@@ -408,6 +409,128 @@ export function ArrayOfObjectsField(props: {
     [handleChange, handleInsert, member.field.schemaType.of],
   )
 
+  // Callback for inserting sibling images when multiple files are uploaded at once
+  // This is used by the ImageInput when uploading multiple files via drag-drop or file picker
+  const handleInsertSiblingFiles = useCallback(
+    (assetSource: AssetSource, files: File[], afterKey: string) => {
+      if (!assetSource.Uploader || files.length === 0) {
+        return
+      }
+
+      // Get the array's item schema type (should be image type for this to work)
+      const itemSchemaType = member.field.schemaType.of?.[0]
+      if (!itemSchemaType || itemSchemaType.name !== 'image') {
+        // Only support pure image arrays for now
+        return
+      }
+
+      // Create new array items for each file
+      const newItems = files.map(() => createProtoArrayValue(itemSchemaType))
+
+      // Insert all items after the reference item
+      handleInsert({
+        items: newItems,
+        position: 'after',
+        referenceItem: {_key: afterKey},
+        open: false,
+        skipInitialValue: true,
+      })
+
+      // Capture Uploader constructor before the loop (TypeScript narrowing doesn't work inside forEach)
+      const UploaderClass = assetSource.Uploader
+
+      // Set up uploaders for each file
+      files.forEach((file, index) => {
+        const key = newItems[index]._key
+
+        try {
+          // Initialize upload status for this item
+          handleChange(PatchEvent.from(createInitialUploadPatches(file)).prefixAll({_key: key}))
+
+          const uploader = new UploaderClass()
+
+          setAssetSourceUploadComponents((prev) => {
+            const AssetSourceComponent = assetSource.component
+            const assetSourceComponent = (
+              <AssetSourceComponent
+                key={key}
+                assetSource={assetSource}
+                action="upload"
+                onSelect={(assets) => handleSelectAssetsFromSource(assets, itemSchemaType, key)}
+                accept="*/*"
+                onClose={noop}
+                selectedAssets={[]}
+                selectionType="single"
+                uploader={uploader}
+              />
+            )
+            return [...prev, assetSourceComponent]
+          })
+
+          const unsubscribe = uploader.subscribe((event) => {
+            switch (event.type) {
+              case 'progress':
+                handleChange(
+                  PatchEvent.from([
+                    set(Math.max(2, event.progress), [{_key: key}, UPLOAD_STATUS_KEY, 'progress']),
+                    set(new Date().toISOString(), [{_key: key}, UPLOAD_STATUS_KEY, 'updatedAt']),
+                  ]),
+                )
+                break
+              case 'error':
+                event.files.forEach((_file) => {
+                  console.error(_file.error)
+                })
+                toast.push({
+                  status: 'error',
+                  description: t('asset-sources.common.uploader.upload-failed.description'),
+                  title: t('asset-sources.common.uploader.upload-failed.title'),
+                })
+                break
+              case 'all-complete':
+                handleChange(PatchEvent.from([unset([{_key: key}, UPLOAD_STATUS_KEY])]))
+                break
+              default:
+            }
+          })
+
+          assetSourceUploaderRef.current = {
+            ...assetSourceUploaderRef.current,
+            [key]: {
+              unsubscribe: () => {
+                // Remove the asset source component when upload is done or aborted
+                setAssetSourceUploadComponents((prev) => prev.filter((el) => el.key !== key))
+                return unsubscribe
+              },
+              uploader,
+            },
+          }
+
+          uploader.upload([file], {
+            schemaType: itemSchemaType,
+            onChange: (patches) => {
+              handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key}))
+            },
+          })
+        } catch (err) {
+          console.error(err)
+          assetSourceUploaderRef.current?.[key]?.unsubscribe()
+          handleChange(PatchEvent.from([unset(['_upload'])]).prefixAll({_key: key}))
+          handleRemoveItem(key)
+        }
+      })
+    },
+    [
+      handleInsert,
+      handleSelectAssetsFromSource,
+      handleChange,
+      toast,
+      t,
+      handleRemoveItem,
+      member.field.schemaType.of,
+    ],
+  )
+
   const handleSelectFile = useCallback(
     ({assetSource, schemaType, file}: InputOnSelectFileFunctionProps) => {
       if (assetSource.Uploader) {
@@ -592,7 +715,10 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      <SiblingImageInsertionProvider onInsertSiblingImages={handleInsertSiblingImages}>
+      <SiblingImageInsertionProvider
+        onInsertSiblingImages={handleInsertSiblingImages}
+        onInsertSiblingFiles={handleInsertSiblingFiles}
+      >
         <RenderField
           actions={fieldActions}
           name={member.name}

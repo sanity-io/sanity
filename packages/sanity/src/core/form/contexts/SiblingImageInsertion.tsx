@@ -1,4 +1,4 @@
-import {type AssetFromSource, type KeyedSegment} from '@sanity/types'
+import {type AssetFromSource, type AssetSource, type KeyedSegment} from '@sanity/types'
 import {createContext, type ReactNode, useContext, useMemo} from 'react'
 
 /**
@@ -10,8 +10,22 @@ import {createContext, type ReactNode, useContext, useMemo} from 'react'
 export type InsertSiblingImagesCallback = (assets: AssetFromSource[], afterKey: string) => void
 
 /**
- * Context for providing a callback to insert sibling images in array context.
- * Used when multiple images are selected from an asset source browser.
+ * Callback type for uploading and inserting sibling files in array context.
+ * @param assetSource - The asset source to use for uploading
+ * @param files - The files to upload and insert as new array items
+ * @param afterKey - The key of the array item to insert after
+ * @internal
+ */
+export type InsertSiblingFilesCallback = (
+  assetSource: AssetSource,
+  files: File[],
+  afterKey: string,
+) => void
+
+/**
+ * Context for providing callbacks to insert sibling images in array context.
+ * Used when multiple images are selected from an asset source browser or
+ * multiple files are uploaded at once.
  * @internal
  */
 export interface SiblingImageInsertionContextValue {
@@ -21,10 +35,17 @@ export interface SiblingImageInsertionContextValue {
    * along with the key of the item to insert after.
    */
   onInsertSiblingImages: InsertSiblingImagesCallback | undefined
+  /**
+   * Callback to upload and insert additional files as siblings in an array.
+   * Called with files after the first one when multiple are uploaded,
+   * along with the key of the item to insert after.
+   */
+  onInsertSiblingFiles: InsertSiblingFilesCallback | undefined
 }
 
 const SiblingImageInsertionContext = createContext<SiblingImageInsertionContextValue>({
   onInsertSiblingImages: undefined,
+  onInsertSiblingFiles: undefined,
 })
 
 /**
@@ -58,10 +79,14 @@ export function extractKeyFromPathSegment(segment: unknown): string | undefined 
  */
 export function SiblingImageInsertionProvider(props: {
   onInsertSiblingImages: InsertSiblingImagesCallback | undefined
+  onInsertSiblingFiles?: InsertSiblingFilesCallback | undefined
   children: ReactNode
 }) {
-  const {onInsertSiblingImages, children} = props
-  const value = useMemo(() => ({onInsertSiblingImages}), [onInsertSiblingImages])
+  const {onInsertSiblingImages, onInsertSiblingFiles, children} = props
+  const value = useMemo(
+    () => ({onInsertSiblingImages, onInsertSiblingFiles}),
+    [onInsertSiblingImages, onInsertSiblingFiles],
+  )
 
   return (
     <SiblingImageInsertionContext.Provider value={value}>

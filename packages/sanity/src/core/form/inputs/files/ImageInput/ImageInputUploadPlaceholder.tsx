@@ -8,18 +8,18 @@ import {type BaseImageInputProps} from './types'
 function ImageInputUploadPlaceholderComponent(props: {
   assetSources: BaseImageInputProps['assetSources']
   directUploads: boolean | undefined
-  onSelectFile: (assetSource: AssetSource, file: File) => void
+  onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   readOnly: boolean | undefined
   renderBrowser(): React.JSX.Element | null
   schemaType: BaseImageInputProps['schemaType']
 }) {
-  const {assetSources, directUploads, onSelectFile, readOnly, renderBrowser, schemaType} = props
+  const {assetSources, directUploads, onSelectFiles, readOnly, renderBrowser, schemaType} = props
 
   const handleOnUpload = useCallback(
     (assetSource: AssetSource, files: File[]) => {
-      onSelectFile(assetSource, files[0])
+      onSelectFiles(assetSource, files)
     },
-    [onSelectFile],
+    [onSelectFiles],
   )
 
   return (
