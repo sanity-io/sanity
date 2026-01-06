@@ -763,9 +763,9 @@ export default async function initSanity(
     }
     print('\n')
     print(`Other helpful commands:`)
-    print(`npx sanity docs       to open the documentation in a browser`)
-    print(`npx sanity dev        to start the development server for your app`)
-    print(`npx sanity deploy     to deploy your app`)
+    print(`npx sanity docs browse     to open the documentation in a browser`)
+    print(`npx sanity dev             to start the development server for your app`)
+    print(`npx sanity deploy          to deploy your app`)
   } else {
     //output for Studios here
     print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
@@ -785,9 +785,9 @@ export default async function initSanity(
     }
     print('\n')
     print(`Other helpful commands:`)
-    print(`npx sanity docs     to open the documentation in a browser`)
-    print(`npx sanity manage   to open the project settings in a browser`)
-    print(`npx sanity help     to explore the CLI manual`)
+    print(`npx sanity docs browse     to open the documentation in a browser`)
+    print(`npx sanity manage          to open the project settings in a browser`)
+    print(`npx sanity help            to explore the CLI manual`)
   }
 
   if (isFirstProject) {
