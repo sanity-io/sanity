@@ -381,6 +381,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
 
+  // Enable multi-file selection in array context (when sibling file insertion is available)
+  const isMultiFileUploadEnabled = Boolean(effectiveOnInsertSiblingFiles)
+
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
@@ -432,9 +435,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
-
-  // Enable multi-file selection in array context (when sibling file insertion is available)
-  const isMultiFileUploadEnabled = Boolean(effectiveOnInsertSiblingFiles)
 
   const renderUploadPlaceholder = useCallback(() => {
     return (
