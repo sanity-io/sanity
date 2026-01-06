@@ -5279,10 +5279,6 @@ packages:
     resolution: {integrity: sha512-BQRCMeDlBxwnMbFtB61HUxFf9aSb4HNVrpfrC7IFVqFf4cwcc3o5H8/nlrL9U3cDFedbe4W0AXt1mQzwbY/ljw==}
     engines: {node: '>=14.18'}
 
-  '@sanity/client@7.13.2':
-    resolution: {integrity: sha512-bXuQGWgrpkSInZy8lfCMmOgdTNpsoZ7PORW0+zXss8qVpNo1DC002l1c8to6kfxNF0OaL9v7LwsPqKcTZ/VWrw==}
-    engines: {node: '>=20'}
-
   '@sanity/client@7.14.0':
     resolution: {integrity: sha512-eXue3rc4MqJh89mvuTC0h0pdoY8lwXjlV8odFB3EF7aSFKF7F5BL0NU2mlTrCZYbPAlV3JTvMPPLGJCORqOKDw==}
     engines: {node: '>=20'}
@@ -8865,10 +8861,6 @@ packages:
 
   graphmatch@1.1.0:
     resolution: {integrity: sha512-0E62MaTW5rPZVRLyIJZG/YejmdA/Xr1QydHEw3Vt+qOKkMIOE8WDLc9ZX2bmAjtJFZcId4lEdrdmASsEy7D1QA==}
-
-  groq-js@1.24.1:
-    resolution: {integrity: sha512-xSTHTxN+lZt6gK5hm4S7CQm5Z8SUkZOd7sa1FlwqK/hbKgSnfc0zkmlWBF4rkkcqWCugHMDjPNRVIreeO3Vq8Q==}
-    engines: {node: '>= 14'}
 
   groq-js@1.25.0:
     resolution: {integrity: sha512-ShVrNkIg/IRxyyNQoh1orC/UD8FIUSKwwV5BKF4opIaoPCPeI0V/iFQL4jgB8ve67f5LZkDlmd4PCMT7I+3swA==}
@@ -16225,7 +16217,7 @@ snapshots:
     dependencies:
       '@inquirer/prompts': 8.1.0(@types/node@24.10.4)
       '@oclif/core': 4.8.0
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       babel-plugin-react-compiler: 1.0.0
       chalk: 5.6.2
@@ -16267,15 +16259,6 @@ snapshots:
     dependencies:
       '@sanity/eventsource': 5.0.2
       get-it: 8.7.0(debug@4.4.3)
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - debug
-
-  '@sanity/client@7.13.2(debug@4.4.3)':
-    dependencies:
-      '@sanity/eventsource': 5.0.2
-      get-it: 8.7.0(debug@4.4.3)
-      nanoid: 3.3.11
       rxjs: 7.8.2
     transitivePeerDependencies:
       - debug
@@ -16554,7 +16537,7 @@ snapshots:
       '@oclif/plugin-help': 6.2.36
       '@sanity/cli-core': 0.1.0-alpha.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/cli-test': 0.0.2-alpha.1
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/mutate': 0.15.0(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
@@ -16563,7 +16546,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       fast-fifo: 1.3.2
       get-tsconfig: 4.13.0
-      groq-js: 1.24.1
+      groq-js: 1.25.0
       lodash-es: 4.17.22
       p-map: 7.0.4
       tsx: 4.21.0
@@ -16599,7 +16582,7 @@ snapshots:
 
   '@sanity/mutate@0.12.6(debug@4.4.3)':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
@@ -16612,7 +16595,7 @@ snapshots:
 
   '@sanity/mutate@0.15.0(debug@4.4.3)':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
@@ -16745,7 +16728,7 @@ snapshots:
       eventsource: 4.1.0
       find-up: 8.0.0
       get-folder-size: 5.0.0
-      groq-js: 1.24.1
+      groq-js: 1.25.0
       inquirer: 12.11.1(@types/node@24.10.4)
       jiti: 2.6.1
       mime-types: 3.0.2
@@ -16776,7 +16759,7 @@ snapshots:
 
   '@sanity/sdk-react@2.5.0(@types/react@19.2.7)(immer@11.0.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))':
     dependencies:
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/message-protocol': 0.18.0
       '@sanity/sdk': 2.5.0(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
       '@sanity/types': link:packages/@sanity/types
@@ -16821,7 +16804,7 @@ snapshots:
   '@sanity/sdk@2.5.0(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))':
     dependencies:
       '@sanity/bifur-client': 0.4.1
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/comlink': 3.1.1
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -16830,7 +16813,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
-      groq-js: 1.24.1
+      groq-js: 1.25.0
       lodash-es: 4.17.22
       reselect: 5.1.1
       rxjs: 7.8.2
@@ -20929,12 +20912,6 @@ snapshots:
 
   graphmatch@1.1.0: {}
 
-  groq-js@1.24.1:
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-    transitivePeerDependencies:
-      - supports-color
-
   groq-js@1.25.0:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
@@ -23807,7 +23784,7 @@ snapshots:
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.68.0(react@19.2.3))
       '@reduxjs/toolkit': 2.11.1(react-redux@9.2.0(@types/react@19.2.7)(react@19.2.3)(redux@5.0.1))(react@19.2.3)
-      '@sanity/client': 7.13.2(debug@4.4.3)
+      '@sanity/client': 7.14.0(debug@4.4.3)
       '@sanity/color': 3.0.6
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/incompatible-plugin': 1.0.5(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
