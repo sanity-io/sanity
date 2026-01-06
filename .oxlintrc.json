@@ -189,9 +189,7 @@
     // Requires polyfills for older browsers
     "no-array-reverse": "off",
     "no-array-sort": "off",
-    // Disabled: Object.assign pattern is less readable than spread syntax
     "oxc/no-map-spread": "off",
-    // Disabled: False positives on template literals in ARIA attributes (dynamic IDs are valid)
     "jsx_a11y/aria-proptypes": "off"
   },
   "overrides": [
