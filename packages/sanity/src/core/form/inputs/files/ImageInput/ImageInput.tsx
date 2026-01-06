@@ -460,6 +460,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <ImageInputAssetSource
         handleAssetSourceClosed={handleAssetSourceClosed}
         handleSelectAssetFromSource={handleSelectAssetFromSource}
+        isArrayContext={valueIsArrayElement()}
         isUploading={isUploading}
         observeAsset={observeAsset}
         schemaType={schemaType}
@@ -477,6 +478,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     schemaType,
     selectedAssetSource,
     value,
+    valueIsArrayElement,
   ])
 
   // we use the hotspot field as the "owner" of both hotspot and crop
