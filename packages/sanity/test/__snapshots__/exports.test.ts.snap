@@ -600,6 +600,7 @@ exports[`exports snapshot 1`] = `
     "useNumberFormat": "function",
     "useOnScroll": "function",
     "useOnlyHasVersions": "function",
+    "usePausedScheduledDraft": "function",
     "usePerspective": "function",
     "usePresenceStore": "function",
     "usePreviewCard": "function",

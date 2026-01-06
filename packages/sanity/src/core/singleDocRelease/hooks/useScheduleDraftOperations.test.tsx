@@ -202,10 +202,7 @@ describe('useScheduleDraftOperations', () => {
       await result.current.rescheduleScheduledDraft(scheduledRelease, newPublishAt)
     })
 
-    expect(useReleaseOperationsMockReturn.unschedule).toHaveBeenCalledWith(
-      scheduledRelease._id,
-      undefined,
-    )
+    expect(useReleaseOperationsMockReturn.unschedule).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalledWith(
       {
         _id: scheduledRelease._id,
