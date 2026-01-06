@@ -116,7 +116,9 @@
     "jest/valid-expect": "off",
     "jest/valid-title": "off",
     "jest/valid-describe-callback": "off",
-    "vitest/no-disabled-tests": "off", // Allow .todo tests for placeholder test cases
+    "vitest/no-disabled-tests": "off",
+    "vitest/no-test-prefixes": "off",
+    "jest/no-disabled-tests": "off",
     "jsx_a11y/no-autofocus": "off",
     "jsx_a11y/no-static-element-interactions": "off", // Allow event handlers on static elements
     "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
