@@ -13,8 +13,7 @@
     "import",
     "jsx-a11y",
     "node",
-    "promise",
-    "vitest"
+    "promise"
   ],
   "ignorePatterns": [
     "**/etc/*",
