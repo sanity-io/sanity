@@ -30,6 +30,7 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
@@ -102,6 +103,14 @@ export function ReleasesOverview() {
   const archivedReleases = useMemo(
     () => allArchivedReleases.filter(shouldShowReleaseInView(cardinalityView)),
     [allArchivedReleases, cardinalityView],
+  )
+
+  const pausedReleases = useMemo(
+    () =>
+      cardinalityView === 'drafts'
+        ? releases.filter((release) => isPausedScheduledDraft(release))
+        : [],
+    [releases, cardinalityView],
   )
 
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
@@ -180,6 +189,11 @@ export function ReleasesOverview() {
     setReleaseGroupMode('active')
   }
 
+  // switch to open mode if on paused mode and there are no paused releases
+  if (releaseGroupMode === 'paused' && !loadingReleases && !pausedReleases.length) {
+    setReleaseGroupMode('active')
+  }
+
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
       setReleaseGroupMode(groupMode as Mode)
@@ -252,6 +266,25 @@ export function ReleasesOverview() {
           text={t('action.open')}
           value="active"
         />
+        {cardinalityView === 'drafts' && (
+          <Tooltip
+            disabled={pausedReleases.length !== 0}
+            content={t('no-paused-release')}
+            placement="bottom"
+          >
+            <div>
+              <MotionButton
+                key="paused-group"
+                {...groupModeButtonBaseProps}
+                disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
+                onClick={handleReleaseGroupModeChange}
+                selected={releaseGroupMode === 'paused'}
+                text={t('action.paused')}
+                value="paused"
+              />
+            </div>
+          </Tooltip>
+        )}
         <Tooltip
           disabled={archivedReleases.length !== 0}
           content={t('no-archived-release')}
@@ -279,6 +312,8 @@ export function ReleasesOverview() {
     releaseGroupMode,
     t,
     archivedReleases.length,
+    pausedReleases.length,
+    cardinalityView,
   ])
 
   const handleOnClickCreateRelease = useCallback(() => {
@@ -365,11 +400,25 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    const filterActiveIfNeeded = (items: TableRelease[]) =>
-      cardinalityView === 'drafts' ? items.filter((release) => release.state !== 'active') : items
+    const filterByMode = (items: TableRelease[]) => {
+      if (cardinalityView !== 'drafts') return items
+
+      if (releaseGroupMode === 'active') {
+        return items.filter(
+          (release) => release.state === 'scheduled' || release.state === 'scheduling',
+        )
+      }
+
+      if (releaseGroupMode === 'paused') {
+        return items.filter((release) => isPausedScheduledDraft(release))
+      }
+
+      return items
+    }
 
     if (!releaseFilterDate) {
-      return filterActiveIfNeeded(releaseGroupMode === 'active' ? tableReleases : archivedReleases)
+      const sourceReleases = releaseGroupMode === 'archived' ? archivedReleases : tableReleases
+      return filterByMode(sourceReleases)
     }
 
     const [startOfDayForTimeZone, endOfDayForTimeZone] =
@@ -381,7 +430,7 @@ export function ReleasesOverview() {
       return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
     })
 
-    return filterActiveIfNeeded(dateFiltered)
+    return filterByMode(dateFiltered)
   }, [
     releaseFilterDate,
     releaseGroupMode,
@@ -486,7 +535,11 @@ export function ReleasesOverview() {
             />
           )}
           {showConfirmActiveScheduledDraftsBanner && (
-            <ConfirmActiveScheduledDraftsBanner releases={releases} />
+            <ConfirmActiveScheduledDraftsBanner
+              releases={releases}
+              releaseGroupMode={releaseGroupMode}
+              setReleaseGroupMode={setReleaseGroupMode}
+            />
           )}
 
           {hasNoReleases ? (

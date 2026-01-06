@@ -37,7 +37,9 @@ export const scheduledDraftsOverviewColumnDefs: (
             text={
               releaseGroupMode === 'archived'
                 ? t('table-header.scheduled-draft.published-at')
-                : t('table-header.scheduled-for')
+                : releaseGroupMode === 'paused'
+                  ? t('table-header.intended-for')
+                  : t('table-header.scheduled-for')
             }
           />
         </Flex>

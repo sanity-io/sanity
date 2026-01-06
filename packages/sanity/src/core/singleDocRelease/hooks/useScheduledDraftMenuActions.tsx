@@ -1,17 +1,25 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
+import {type ReleaseDocument, type ScheduleReleaseAction} from '@sanity/client'
+import {CalendarIcon, EditIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {useToast} from '@sanity/ui'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 
 import {type MenuItem} from '../../../ui-components/menuItem'
+import {useClient} from '../../hooks'
 import {Translate, useTranslation} from '../../i18n'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getErrorMessage} from '../../util'
 import {DeleteScheduledDraftDialog} from '../components/DeleteScheduledDraftDialog'
 import {PublishScheduledDraftDialog} from '../components/PublishScheduledDraftDialog'
+import {ScheduleDraftDialog} from '../components/ScheduleDraftDialog'
 import {useScheduledDraftDocument} from './useScheduledDraftDocument'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
-export type ScheduledDraftAction = 'publish-now' | 'edit-schedule' | 'delete-schedule'
+export type ScheduledDraftAction =
+  | 'publish-now'
+  | 'edit-schedule'
+  | 'delete-schedule'
+  | 'schedule-publish'
 
 export interface UseScheduledDraftMenuActionsOptions {
   release: ReleaseDocument | undefined
@@ -30,7 +38,10 @@ interface ScheduledDraftActionProps {
 }
 
 export interface UseScheduledDraftMenuActionsReturn {
-  actions: Record<'publishNow' | 'editSchedule' | 'deleteSchedule', ScheduledDraftActionProps>
+  actions: Record<
+    'publishNow' | 'editSchedule' | 'deleteSchedule' | 'schedulePublish',
+    ScheduledDraftActionProps
+  >
   dialogs: React.ReactNode
   isPerformingOperation: boolean
   selectedAction: ScheduledDraftAction | null
@@ -49,9 +60,11 @@ export function useScheduledDraftMenuActions(
 
   const {t} = useTranslation()
   const toast = useToast()
+  const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
   const operations = useScheduleDraftOperations()
   const [selectedAction, setSelectedAction] = useState<ScheduledDraftAction | null>(null)
   const [isPerformingOperation, setIsPerformingOperation] = useState(false)
+  const [isScheduling, setIsScheduling] = useState(false)
 
   // Safely handle undefined release by passing undefined to the hook
   const {firstDocumentPreview, loading: documentLoading} = useScheduledDraftDocument(release?._id, {
@@ -100,6 +113,43 @@ export function useScheduledDraftMenuActions(
     }
   }, [isPerformingOperation])
 
+  const handleSchedulePublish = useCallback(
+    async (publishAt: Date) => {
+      if (!release) return
+
+      setIsScheduling(true)
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
+        const scheduleAction: ScheduleReleaseAction = {
+          actionType: 'sanity.action.release.schedule',
+          releaseId: getReleaseIdFromReleaseDocumentId(release._id),
+          publishAt: publishAt.toISOString(),
+        }
+
+        await client.action([scheduleAction])
+
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: t('release.toast.schedule-publish.success'),
+        })
+      }
+      try {
+        await run()
+      } catch (error) {
+        console.error('Failed to schedule draft:', error)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.toast.schedule-publish.error', {error: getErrorMessage(error)}),
+        })
+      }
+      setIsScheduling(false)
+      handleDialogClose()
+    },
+    [release, client, toast, t, handleDialogClose],
+  )
+
   const actions = useMemo(() => {
     const baseDisabled = disabled || isPerformingOperation || documentLoading
 
@@ -119,6 +169,14 @@ export function useScheduledDraftMenuActions(
         'onClick': handleEditSchedule,
         'disabled': baseDisabled,
         'data-testid': 'edit-schedule-menu-item',
+      },
+      schedulePublish: {
+        'icon': CalendarIcon,
+        'text': t('release.action.schedule-publish'),
+        'tone': 'default' as const,
+        'onClick': () => handleMenuItemClick('schedule-publish'),
+        'disabled': baseDisabled,
+        'data-testid': 'schedule-publish-menu-item',
       },
       deleteSchedule: {
         'icon': TrashIcon,
@@ -154,10 +212,29 @@ export function useScheduledDraftMenuActions(
           />
         )
 
+      case 'schedule-publish':
+        return (
+          <ScheduleDraftDialog
+            onClose={handleDialogClose}
+            onSchedule={handleSchedulePublish}
+            variant="schedule"
+            loading={isScheduling}
+            initialDate={release?.metadata?.intendedPublishAt}
+          />
+        )
+
       default:
         return null
     }
-  }, [selectedAction, release, documentType, documentId, handleDialogClose])
+  }, [
+    selectedAction,
+    release,
+    documentType,
+    documentId,
+    handleDialogClose,
+    handleSchedulePublish,
+    isScheduling,
+  ])
 
   return {
     actions,

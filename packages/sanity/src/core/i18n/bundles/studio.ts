@@ -1364,6 +1364,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.title':
     'Successfully reverted from setting to unpublish on release.',
+  /** Action message for scheduling a paused draft */
+  'release.action.schedule-publish': 'Schedule publish',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
@@ -1519,6 +1521,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
+  /** Error toast for scheduling a paused draft */
+  'release.toast.schedule-publish.error': 'Failed to schedule draft: {{error}}',
+  /** Success toast for scheduling a paused draft */
+  'release.toast.schedule-publish.success': 'Scheduled draft successfully',
   /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
    * @deprecated – no longer needed
    * */

@@ -10,7 +10,6 @@ import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useSche
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 import {type Mode} from './queryParamUtils'
 
 export const ScheduledDraftMenuButtonWrapper = ({
@@ -47,19 +46,25 @@ export const ScheduledDraftMenuButtonWrapper = ({
   })
 
   const displayedMenuItems = useMemo(() => {
-    const isPaused = isPausedScheduledDraft(release)
-
     if (releaseGroupMode === 'archived') {
       return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
     }
 
-    // When in active mode, show all options EXCEPT editSchedule if paused
+    if (releaseGroupMode === 'paused') {
+      return [
+        <MenuItem key={'publish-now'} {...actions.publishNow} />,
+        <MenuItem key={'schedule-publish'} {...actions.schedulePublish} />,
+        <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
+      ]
+    }
+
+    // Active mode
     return [
       <MenuItem key={'publish-now'} {...actions.publishNow} />,
-      !isPaused && <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
+      <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
       <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
-    ].filter(Boolean)
-  }, [releaseGroupMode, actions, release])
+    ]
+  }, [releaseGroupMode, actions])
 
   const canPerformActions = Boolean(scheduledDraftDocument)
 

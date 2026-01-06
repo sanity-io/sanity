@@ -1,16 +1,19 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type Dispatch, type SetStateAction, useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ConfirmScheduledDraftsDialog} from './ConfirmScheduledDraftsDialog'
+import {type Mode} from './queryParamUtils'
 
 interface ConfirmActiveScheduledDraftsBannerProps {
   releases: ReleaseDocument[]
+  releaseGroupMode: Mode
+  setReleaseGroupMode: Dispatch<SetStateAction<Mode>>
 }
 
 /**
@@ -18,6 +21,8 @@ interface ConfirmActiveScheduledDraftsBannerProps {
  */
 export function ConfirmActiveScheduledDraftsBanner({
   releases,
+  releaseGroupMode,
+  setReleaseGroupMode,
 }: ConfirmActiveScheduledDraftsBannerProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -27,6 +32,10 @@ export function ConfirmActiveScheduledDraftsBanner({
       releases.filter((release) => release.state === 'active' && isCardinalityOneRelease(release)),
     [releases],
   )
+
+  const handleNavigateToPaused = useCallback(() => {
+    setReleaseGroupMode('paused')
+  }, [setReleaseGroupMode])
 
   const handleOpenDialog = useCallback(() => {
     setIsDialogOpen(true)
@@ -59,10 +68,14 @@ export function ConfirmActiveScheduledDraftsBanner({
             </Flex>
             <Flex flex="none">
               <Button
-                text={t('banner.confirm-active-scheduled-drafts.button')}
+                text={
+                  releaseGroupMode === 'paused'
+                    ? t('banner.confirm-active-scheduled-drafts.button-paused')
+                    : t('banner.confirm-active-scheduled-drafts.button')
+                }
                 mode="bleed"
                 tone="caution"
-                onClick={handleOpenDialog}
+                onClick={releaseGroupMode === 'paused' ? handleOpenDialog : handleNavigateToPaused}
               />
             </Flex>
           </Flex>
