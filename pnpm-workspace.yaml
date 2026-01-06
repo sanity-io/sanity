@@ -14,7 +14,7 @@ catalog:
   '@playwright/experimental-ct-react': 1.56.1
   '@playwright/test': 1.56.1
   '@sanity/client': ^7.14.0
-  '@sanity/migrate': 5.1.0
+  '@sanity/migrate': ^5.2.1
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^10.2.5
   '@sanity/ui': ^3.1.11
