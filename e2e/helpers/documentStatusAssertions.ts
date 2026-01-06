@@ -46,6 +46,7 @@ export async function expectCreatedStatus(
   statusElement: Locator,
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
+  await expect(statusElement).toBeVisible()
   await expect(statusElement).toContainText(documentStatusPatterns.created, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
@@ -85,6 +86,7 @@ export async function expectEditedStatus(
   statusElement: Locator,
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
+  await expect(statusElement).toBeVisible()
   await expect(statusElement).toContainText(documentStatusPatterns.edited, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
