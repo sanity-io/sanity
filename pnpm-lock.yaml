@@ -19,7 +19,7 @@ catalogs:
       specifier: ^2.0.0
       version: 2.0.0
     '@sanity/migrate':
-      specifier: 5.2.1
+      specifier: ^5.2.1
       version: 5.2.1
     '@sanity/pkg-utils':
       specifier: ^10.2.5
@@ -16221,7 +16221,7 @@ snapshots:
     dependencies:
       '@inquirer/prompts': 8.1.0(@types/node@24.10.4)
       '@oclif/core': 4.8.0
-      '@sanity/client': 7.14.0(debug@4.4.3)
+      '@sanity/client': 7.13.2(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       babel-plugin-react-compiler: 1.0.0
       chalk: 5.6.2
@@ -16550,7 +16550,7 @@ snapshots:
       '@oclif/plugin-help': 6.2.36
       '@sanity/cli-core': 0.1.0-alpha.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/cli-test': 0.0.2-alpha.1
-      '@sanity/client': 7.14.0(debug@4.4.3)
+      '@sanity/client': 7.13.2(debug@4.4.3)
       '@sanity/mutate': 0.15.0(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
@@ -16608,7 +16608,7 @@ snapshots:
 
   '@sanity/mutate@0.15.0(debug@4.4.3)':
     dependencies:
-      '@sanity/client': 7.14.0(debug@4.4.3)
+      '@sanity/client': 7.13.2(debug@4.4.3)
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/uuid': 3.0.2
       hotscript: 1.0.13
