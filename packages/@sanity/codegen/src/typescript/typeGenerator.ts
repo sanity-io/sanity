@@ -85,7 +85,7 @@ export class TypeGenerator {
   })
 
   private getArrayMemberDeclaration = computeOnce(() => {
-    // Creates: export type ArrayMember<T> = T & { _key: string };
+    // Creates: type ArrayMember<T> = T & { _key: string };
     const typeParam = t.tsTypeParameter(null, null, 'T')
     const intersectionType = t.tsIntersectionType([
       t.tsTypeReference(t.identifier('T')),
@@ -94,12 +94,11 @@ export class TypeGenerator {
       ]),
     ])
 
-    const typeAlias = t.tsTypeAliasDeclaration(
+    const ast = t.tsTypeAliasDeclaration(
       ARRAY_MEMBER,
       t.tsTypeParameterDeclaration([typeParam]),
       intersectionType,
     )
-    const ast = t.exportNamedDeclaration(typeAlias)
     const code = generateCode(ast)
 
     return {id: ARRAY_MEMBER, code, ast}

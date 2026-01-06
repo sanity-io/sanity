@@ -190,7 +190,7 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
-      export type ArrayMember<T> = T & {
+      type ArrayMember<T> = T & {
         _key: string;
       };
 
@@ -298,7 +298,7 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
-      export type ArrayMember<T> = T & {
+      type ArrayMember<T> = T & {
         _key: string;
       };
 
@@ -370,7 +370,7 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
-      export type ArrayMember<T> = T & {
+      type ArrayMember<T> = T & {
         _key: string;
       };
 
@@ -621,7 +621,7 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
-      export type ArrayMember<T> = T & {
+      type ArrayMember<T> = T & {
         _key: string;
       };
 
