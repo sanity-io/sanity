@@ -11,17 +11,8 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
-
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
       - name: Check type system
-        if: steps.check_examples_only.outputs.examples_only != 'true'
         # Turbo will run type checks on all files in the project
         # and ensure that dependencies are built with @sanity/pkg-utils to output dts
         # used by other packages as they are type checked
