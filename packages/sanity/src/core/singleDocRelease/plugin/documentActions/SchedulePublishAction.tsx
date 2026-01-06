@@ -9,7 +9,7 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useValidationStatus} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../../releases/store/useReleaseOperations'
@@ -60,9 +60,10 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   )
 
   const isPaused = isPausedScheduledDraft(currentRelease)
-  const pausedScheduleDate = (currentRelease?.metadata as {pausedScheduleDate?: string} | undefined)
-    ?.pausedScheduleDate
-  const initialDate = isPaused && pausedScheduleDate ? new Date(pausedScheduleDate) : undefined
+  const initialDate =
+    isPaused && currentRelease?.metadata.intendedPublishAt
+      ? new Date(currentRelease.metadata.intendedPublishAt)
+      : undefined
   const handleOpenDialog = useCallback(() => {
     if (mode === 'upsell') {
       handleOpenUpsellDialog('document_action')
@@ -78,8 +79,8 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const handleSchedule = useCallback(
     async (publishAt: Date) => {
       setIsScheduling(true)
-
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
         if (isPaused && currentRelease) {
           // Resume paused draft: update metadata and reschedule
           await releaseOperations.updateRelease({
@@ -87,8 +88,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
             metadata: {
               ...currentRelease.metadata,
               intendedPublishAt: publishAt.toISOString(),
-              pausedScheduleDate: undefined, // Remove pause marker
-            } as typeof currentRelease.metadata & {pausedScheduleDate?: string},
+            },
           })
           await releaseOperations.schedule(
             currentRelease._id, // Pass full document ID directly
@@ -101,6 +101,9 @@ export const useSchedulePublishAction: DocumentActionComponent = (
         }
 
         setDialogOpen(false)
+      }
+      try {
+        await run()
       } catch (error) {
         console.error('Failed to schedule document publish:', error)
 

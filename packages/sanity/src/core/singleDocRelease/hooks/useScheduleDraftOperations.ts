@@ -174,8 +174,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
           metadata: {
             ...release.metadata,
             intendedPublishAt: newPublishAt.toISOString(),
-            pausedScheduleDate: undefined, // Clean up if previously paused
-          } as typeof release.metadata & {pausedScheduleDate?: string},
+          },
         },
         opts,
       )
@@ -187,20 +186,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
   const handlePauseScheduledDraft = useCallback(
     async (release: ReleaseDocument, opts?: BaseActionOptions): Promise<void> => {
-      // 1. Unschedule the release (brings to 'active' state)
       await releaseOperations.unschedule(release._id, opts)
-
-      // 2. Add pausedScheduleDate marker to metadata to preserve original date
-      await releaseOperations.updateRelease(
-        {
-          _id: release._id,
-          metadata: {
-            ...release.metadata,
-            pausedScheduleDate: release.metadata.intendedPublishAt,
-          } as typeof release.metadata & {pausedScheduleDate?: string},
-        },
-        opts,
-      )
     },
     [releaseOperations],
   )

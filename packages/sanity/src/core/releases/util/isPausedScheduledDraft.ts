@@ -16,6 +16,6 @@ export function isPausedScheduledDraft(release: ReleaseDocument | undefined): bo
     release.state === 'active' &&
     release.metadata.releaseType === 'scheduled' &&
     release.metadata.cardinality === 'one' &&
-    Boolean((release.metadata as {pausedScheduleDate?: string}).pausedScheduleDate)
+    Boolean(release.metadata.intendedPublishAt)
   )
 }
