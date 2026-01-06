@@ -14,19 +14,27 @@ const headers = {
 
 const severityValues = {error: 0, warning: 1}
 
+/**
+ * Formats a schema validation path into a human-readable dot/bracket notation string.
+ * e.g. `[{kind: 'type', name: 'post'}, {kind: 'property', name: 'of'}, {kind: 'type', name: 'image'}]`
+ * becomes `[image]` (array notation because parent property was 'of').
+ */
 function formatPath(pathSegments: SchemaValidationProblemPath) {
   const format = (
     [curr, ...next]: SchemaValidationProblemPath,
     mode: 'object' | 'array' = 'object',
   ): string => {
     if (!curr) return ''
+    // 'property' segments control notation for the next type segment:
+    // 'of' property means array items, so use bracket notation; otherwise use dot notation
     if (curr.kind === 'property') return format(next, curr.name === 'of' ? 'array' : 'object')
 
     const name = curr.name ? curr.name : `<anonymous_${curr.type}>`
     return `${mode === 'array' ? `[${name}]` : `.${name}`}${format(next)}`
   }
 
-  return format(pathSegments.slice(1)).slice(1) // removes the top-level type and leading `.`
+  // Skip the first segment (top-level type) and trim the leading '.' from the result
+  return format(pathSegments.slice(1)).slice(1)
 }
 
 export function getAggregatedSeverity(
@@ -42,6 +50,8 @@ export function getAggregatedSeverity(
 
 export function formatSchemaValidation(validation: SchemaValidationProblemGroup[]): string {
   let unnamedTopLevelTypeCount = 0
+  // Group validation problems by their top-level schema type (e.g., 'post', 'author')
+  // so errors can be displayed organized by which type they belong to
   const validationByType = Object.entries(
     validation.reduce<Record<string, SchemaValidationProblemGroup[]>>((acc, next) => {
       const [firstSegment] = next.path
@@ -59,6 +69,7 @@ export function formatSchemaValidation(validation: SchemaValidationProblemGroup[
     }, {}),
   )
 
+  // Sort types by severity (errors first), then alphabetically within each severity level
   const formatted = validationByType
     .sort((a, b) => {
       const [aType, aGroups] = a

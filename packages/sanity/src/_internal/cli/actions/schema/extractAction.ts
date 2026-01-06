@@ -122,6 +122,13 @@ export default async function extractAction(
   }
 }
 
+/**
+ * Extracts the `_validation` array from a CoreSchemaError's internal schema object.
+ *
+ * CoreSchemaError stores the compiled schema (which includes validation results) on
+ * `error.schema._validation`. This function safely navigates that structure and validates
+ * it conforms to the expected `SchemaValidationProblemGroup[]` shape before returning.
+ */
 function extractValidationFromCoreSchemaError(
   error: unknown,
 ): SchemaValidationProblemGroup[] | null {
@@ -138,6 +145,11 @@ function extractValidationFromCoreSchemaError(
   return isValid ? (v as SchemaValidationProblemGroup[]) : null
 }
 
+/**
+ * Type guard for SchemaError. Checks both `name` and `message` properties because
+ * errors from worker threads lose their prototype chain during serialization,
+ * and may only preserve the error name in the message string.
+ */
 function isSchemaError(err: unknown): err is {name: string} {
   if (typeof err !== 'object' || err === null) return false
   const obj = err as Record<string, unknown>
