@@ -18,7 +18,6 @@ const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
   const releaseLimits$ = fetchReleaseLimits(client, 'releaseLimits').pipe(
     map((data) => ({
-      defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
       datasetReleaseLimit: data.datasetReleaseLimit,
       orgActiveReleaseLimit: data.orgActiveReleaseLimit,
     })),

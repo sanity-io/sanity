@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.13.2",
+    "@sanity/client": "^7.14.0",
     "@sanity/functions": "^1.0.3",
     "algoliasearch": "^5.27.0"
   },

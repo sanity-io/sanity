@@ -1,6 +1,6 @@
 {
   "name": "@repo/eslint-config",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -15,10 +15,10 @@
     "eslint": "catalog:",
     "eslint-config-prettier": "^10.1.8",
     "eslint-config-sanity": "^7.1.4",
-    "eslint-config-turbo": "^2.6.3",
+    "eslint-config-turbo": "^2.7.2",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-oxlint": "1.31.0",
+    "eslint-plugin-oxlint": "1.37.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -26,6 +26,6 @@
     "eslint-plugin-unicorn": "^60.0.0",
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "catalog:",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.51.0"
   }
 }

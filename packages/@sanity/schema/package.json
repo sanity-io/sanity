@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -57,14 +57,14 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/descriptors": "^1.2.1",
+    "@sanity/descriptors": "^1.3.0",
     "@sanity/generate-help-url": "^3.0.1",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
-    "groq-js": "^1.24.0",
+    "groq-js": "^1.25.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "object-inspect": "^1.13.4"
   },
   "devDependencies": {

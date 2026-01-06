@@ -1359,6 +1359,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+  'release.chip.button.other-versions_one': '+{{count}} version',
+  'release.chip.button.other-versions_other': '+{{count}} versions',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
   /** Label for Draft chip in global header */
@@ -1380,6 +1382,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.no-edits': 'No edits',
   /** Label for tooltip in chip when document isn't published */
   'release.chip.tooltip.not-published': 'Not published',
+  'release.chip.tooltip.other-versions_one': 'One additional version outside of releases',
+  'release.chip.tooltip.other-versions_other': '{{count}} additional versions outside of releases',
   /** Label for tooltip in chip with the published date */
   'release.chip.tooltip.published-date': 'Published {{date}}',
   /** Label for tooltip in chip when document is in a release that has been scheduled */
@@ -1438,8 +1442,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.layer.hide': 'Hide release',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /** Menu item label for scheduled drafts */
+  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
+  /** Menu item label for viewing content releases */
+  'release.menu.view-releases': 'View Content Releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */

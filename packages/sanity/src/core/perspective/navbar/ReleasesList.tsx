@@ -1,6 +1,6 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useMemo} from 'react'
+import {type JSX, type RefObject, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
@@ -10,14 +10,15 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
-import {usePerspective} from '../usePerspective'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
+import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -45,7 +46,7 @@ export function ReleasesList({
   setScrollContainer,
   onScroll,
   isRangeVisible,
-  selectedReleaseId,
+  selectedPerspectiveName,
   handleOpenBundleDialog,
   scrollElementRef,
   menuItemProps,
@@ -54,13 +55,12 @@ export function ReleasesList({
   setScrollContainer: (el: HTMLDivElement) => void
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void
   isRangeVisible: boolean
-  selectedReleaseId: string | undefined
+  selectedPerspectiveName: string | undefined
   handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
-}): React.JSX.Element {
+}): JSX.Element {
   const {loading, data: allReleases} = useActiveReleases()
-  const {selectedPerspectiveName} = usePerspective()
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -105,7 +105,7 @@ export function ReleasesList({
       groupSubsetReleases.forEach((release, groupReleaseIndex) => {
         const index = offset + groupReleaseIndex
 
-        if (selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)) {
+        if (selectedPerspectiveName === getReleaseIdFromReleaseDocumentId(release._id)) {
           lastIndex = index
         }
       })
@@ -117,7 +117,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [isDraftModelEnabled, selectedPerspectiveName, selectedReleaseId, sortedReleaseTypeReleases])
+  }, [isDraftModelEnabled, selectedPerspectiveName, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
@@ -165,6 +165,8 @@ export function ReleasesList({
       {areReleasesEnabled && (
         <>
           <MenuDivider />
+          <ScheduledDraftsMenuItem />
+          <ViewContentReleasesMenuItem />
           <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
         </>
       )}

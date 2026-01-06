@@ -53,9 +53,9 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const showFirstActionButton = showingRevision
     ? Boolean(firstActionState)
     : selectedReleaseId
-      ? // If the first action is a custom action and we are in a version document show it.
-        firstActionState && !isSanityDefinedAction(firstActionState)
-      : firstActionState && !editState?.liveEdit
+      ? // If the first action is a custom action and we are in a release document show it.
+        firstActionState && selectedReleaseId && !isSanityDefinedAction(firstActionState)
+      : firstActionState && (!editState?.liveEdit || editState?.version)
 
   const sideMenuItems = useMemo(() => {
     return showFirstActionButton

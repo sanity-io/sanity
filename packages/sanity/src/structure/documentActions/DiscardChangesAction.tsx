@@ -2,6 +2,7 @@ import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -27,14 +28,16 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   type,
   published,
   liveEdit,
-  release,
+  version,
+  draft,
 }) => {
-  const {discardChanges} = useDocumentOperation(id, type, release)
+  const bundleId = version?._id && getVersionFromId(version._id)
+  const {discardChanges} = useDocumentOperation(id, type, bundleId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: bundleId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
@@ -57,7 +60,12 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   }, [])
 
   return useMemo(() => {
-    if (liveEdit || isPublished) {
+    // This document has neither a draft nor a version so there isn't anything to discard
+    if (!version && !draft) {
+      return null
+    }
+    // isPublished = we are currently editing the published version and never want to show "Discard drafts" in this case
+    if (isPublished) {
       return null
     }
 
@@ -98,10 +106,11 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     isConfirmDialogOpen,
     discardChanges.disabled,
     published,
+    version,
+    draft,
     handle,
     isPermissionsLoading,
     isPublished,
-    liveEdit,
     permissions?.granted,
     t,
   ])

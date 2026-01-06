@@ -10,7 +10,7 @@ import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
 import {getSchemaTypeTitle} from '../../../../../schema'
-import {FormFieldValidationStatus} from '../../../../components'
+import {EnhancedObjectDialog, FormFieldValidationStatus} from '../../../../components'
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
@@ -71,13 +71,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const {enabled: enhancedObjectDialogEnabled, isDialogAvailable} = useEnhancedObjectDialog()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
-  const shouldUseEnhancedDialog = enhancedObjectDialogEnabled && isDialogAvailable
   // The edit portal should open if the item is open and:
   // - EnhancedObjectDialog is disabled
   // - the EnhancedObjectDialog is not available
-  const openPortal = open && !shouldUseEnhancedDialog
+  const openPortal = open && !enhancedObjectDialogEnabled
+
+  const openEnhancedDialog = open && enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -296,6 +297,23 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         >
           {children}
         </EditPortal>
+      )}
+      {openEnhancedDialog && (
+        <EnhancedObjectDialog
+          header={
+            readOnly
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
+          }
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
+          width={parentSchemaType?.options?.modal?.width ?? 1}
+          id={value._key}
+          onClose={onClose}
+          autofocus={focused}
+          legacy_referenceElement={previewCardElement}
+        >
+          {children}
+        </EnhancedObjectDialog>
       )}
     </EnhancedObjectDialogProvider>
   )

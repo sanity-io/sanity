@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
@@ -15,7 +15,6 @@
     "@sanity/cli": "workspace:*",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
-    "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",

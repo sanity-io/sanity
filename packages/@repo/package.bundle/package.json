@@ -1,6 +1,6 @@
 {
   "name": "@repo/package.bundle",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "description": "Shared package bundle configuration",
   "main": "./src/package.bundle.ts",
@@ -14,7 +14,7 @@
     "@repo/tsconfig": "workspace:*",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "vite": "catalog:",
     "vite-tsconfig-paths": "^5.1.4"
   }

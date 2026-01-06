@@ -64,7 +64,11 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show release deleted banner when document was in a release', async () => {
-    const mockReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
+    const mockReleaseDocument = {
+      _id: '_.releases.rtest',
+      _type: 'system.release',
+      state: 'archived',
+    } as ReleaseDocument
     mockUsePerspective.mockReturnValue({selectedPerspective: mockReleaseDocument} as ReturnType<
       typeof usePerspective
     >)
@@ -77,6 +81,7 @@ describe('DeletedDocumentBanners', () => {
       releasesIds: [mockReleaseDocument._id],
     })
     mockUseDocumentPane.mockReturnValue({
+      documentId: 'foo',
       isDeleted: true,
       isDeleting: false,
       ready: true,

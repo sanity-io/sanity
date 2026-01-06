@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+### Features
+
+* **liveManifest:** include bundleVersion in manifest ([9ceb4a9](https://github.com/sanity-io/sanity/commit/9ceb4a9033a4e4b00e6a416c8ef0a405ab3142da)) by Dain Cilke (dain.cilke@gmail.com)
+* show selected non-release bundle name in global perspective menu ([#11600](https://github.com/sanity-io/sanity/issues/11600)) ([80653f7](https://github.com/sanity-io/sanity/commit/80653f7667cdbc59adacf021b02378aa23d4e439)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** display version chips for non-release-bundles ([#11601](https://github.com/sanity-io/sanity/issues/11601)) ([f441eea](https://github.com/sanity-io/sanity/commit/f441eea71bfa91b2249c6033d2912ec694fc522e)) by Bjørge Næss (bjoerge@gmail.com)
+* support discard, delete, and duplicate for non-release versions ([#11603](https://github.com/sanity-io/sanity/issues/11603)) ([3b26890](https://github.com/sanity-io/sanity/commit/3b26890238ca1d98aa56134ab7665f87a2dfb676)) by Bjørge Næss (bjoerge@gmail.com)
+* **toggles:** fail open schema and manifest toggles ([d496806](https://github.com/sanity-io/sanity/commit/d496806f046a27aa3223f4a4c73c14af5eae6b8d)) by Dain Cilke (dain.cilke@gmail.com)
+
+### Bug Fixes
+
+* **core:** test schema type for ancestor file and image type ([#11592](https://github.com/sanity-io/sanity/issues/11592)) ([d0a0119](https://github.com/sanity-io/sanity/commit/d0a0119c0c1e2e0b30401aa035b9399f4ee9fb42)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **core:** void selectedReleaseId if bundle is outside a release ([#11595](https://github.com/sanity-io/sanity/issues/11595)) ([e256c05](https://github.com/sanity-io/sanity/commit/e256c0554f42d014a932d4e997cc72c31d70989a)) by Bjørge Næss (bjoerge@gmail.com)
+* **form:** re-enable editing liveEdit documents in published perspective ([#11608](https://github.com/sanity-io/sanity/issues/11608)) ([df4d72c](https://github.com/sanity-io/sanity/commit/df4d72cb4578254fab4d8c4810cf4d9282d15838)) by Bjørge Næss (bjoerge@gmail.com)
+* **releases:** pass through publish action in version context ([#11598](https://github.com/sanity-io/sanity/issues/11598)) ([a0b47a9](https://github.com/sanity-io/sanity/commit/a0b47a9932b69daab414092d76a302d765996fab)) by Bjørge Næss (bjoerge@gmail.com)
+* **sanity:** fix false positive reference validation for release docs ([#11610](https://github.com/sanity-io/sanity/issues/11610)) ([588a76d](https://github.com/sanity-io/sanity/commit/588a76d788347f805d7d8abe101fa70cdc863a7f)) by Bjørge Næss (bjoerge@gmail.com)
+* show publish as primary action for non-release versions ([#11602](https://github.com/sanity-io/sanity/issues/11602)) ([a8190f8](https://github.com/sanity-io/sanity/commit/a8190f8806578b0bc2c0a8ef6ab7249465ffe832)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** consider selected bundle in "reference changed" check ([#11611](https://github.com/sanity-io/sanity/issues/11611)) ([44a8f20](https://github.com/sanity-io/sanity/commit/44a8f20193ac791b983bdb5763135f4bad55f1bd)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** fix unstyled text on publish action tooltip ([#11593](https://github.com/sanity-io/sanity/issues/11593)) ([e4b29c6](https://github.com/sanity-io/sanity/commit/e4b29c6836f5b56aced985c3b452d3becc1929cb)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** hide add to release banner for non-release versions ([#11596](https://github.com/sanity-io/sanity/issues/11596)) ([c2c10c1](https://github.com/sanity-io/sanity/commit/c2c10c15432161577da9e0717c00a01faad1f1f0)) by Bjørge Næss (bjoerge@gmail.com)
+* **structure:** void documentActionProps.release for non-release versions ([#11597](https://github.com/sanity-io/sanity/issues/11597)) ([dfae558](https://github.com/sanity-io/sanity/commit/dfae558a35a0c92b518f474f6b485b11bcc642cc)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
 
 ### Bug Fixes

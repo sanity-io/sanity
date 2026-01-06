@@ -33,7 +33,7 @@ interface ParentReferenceInfo {
 
 export const ReferenceChangedBanner = memo(() => {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedPerspectiveName} = usePerspective()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const routerReferenceId = routerPanesState[groupIndex]?.[0].id
   const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
@@ -79,7 +79,7 @@ export const ReferenceChangedBanner = memo(() => {
           publishedId,
           (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
           {
-            version: selectedReleaseId,
+            version: selectedPerspectiveName,
           },
         )
         .pipe(
@@ -110,7 +110,7 @@ export const ReferenceChangedBanner = memo(() => {
           ),
         ),
     )
-  }, [selectedReleaseId, documentPreviewStore, parentId, parentRefPath])
+  }, [selectedPerspectiveName, documentPreviewStore, parentId, parentRefPath])
   const referenceInfo = useObservable(referenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {

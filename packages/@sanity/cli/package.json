@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -57,7 +57,7 @@
     "@babel/traverse": "^7.28.5",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "workspace:*",
-    "@sanity/runtime-cli": "^12.2.0",
+    "@sanity/runtime-cli": "^12.3.0",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "@sanity/worker-channels": "^1.1.0",
@@ -110,7 +110,7 @@
     "inquirer": "^6.5.2",
     "is-installed-globally": "^0.4.0",
     "leven": "^3.1.0",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "minimist": "^1.2.8",
     "open": "^8.4.2",
     "ora": "^8.2.0",

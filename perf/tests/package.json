@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "dotenv": "^16.6.1",
     "execa": "^2.1.0",
     "globby": "^11.1.0",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

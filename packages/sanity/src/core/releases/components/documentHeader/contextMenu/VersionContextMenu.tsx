@@ -85,7 +85,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     return (
       <ScheduledDraftContextMenu
         releases={releases}
-        fromRelease={fromRelease}
+        bundleId={fromRelease}
+        release={release}
         onCreateRelease={onCreateRelease}
         onCopyToDrafts={onCopyToDrafts}
         onCopyToDraftsNavigate={onCopyToDraftsNavigate}
@@ -104,7 +105,8 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     <CanonicalReleaseContextMenu
       releases={releases}
       releasesLoading={releasesLoading}
-      fromRelease={fromRelease}
+      bundleId={fromRelease}
+      release={release}
       isVersion={isVersion}
       onDiscard={onDiscard}
       onCreateRelease={onCreateRelease}

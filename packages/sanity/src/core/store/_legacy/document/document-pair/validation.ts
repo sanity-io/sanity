@@ -38,6 +38,7 @@ export const validation = memoize(
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
+    validatePublishedReferences: boolean,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
       map((state) => {
@@ -59,9 +60,9 @@ export const validation = memoize(
       shareLatestWithRefCount(),
     )
 
-    return validateDocumentWithReferences(ctx, document$)
+    return validateDocumentWithReferences(ctx, document$, validatePublishedReferences)
   },
-  (ctx, idPair, typeName, validationTarget) => {
+  (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
     // Use the actual document ID being validated in the cache key for explicitness
     const documentId =
       validationTarget === 'draft'
@@ -69,6 +70,6 @@ export const validation = memoize(
         : validationTarget === 'version'
           ? idPair.versionId
           : idPair.publishedId
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}`
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}`
   },
 )

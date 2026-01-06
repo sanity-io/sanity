@@ -8,8 +8,15 @@ import {
   type ReferenceSchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
-import {combineLatest, from, throwError} from 'rxjs'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useEffectEvent,
+  useMemo,
+} from 'react'
+import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
 import {useSchema} from '../../../../hooks'
@@ -91,93 +98,86 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
   const getClient = source.getClient
 
-  const handleSearch = useCallback(
-    (searchString: string) =>
-      from(
-        resolveUserDefinedFilter({
-          options: schemaType.options,
-          document: documentValue,
-          perspective: perspectiveStack,
-          valuePath: path,
-          getClient,
-        }),
-      ).pipe(
-        mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
-          const invalidPerspectives = getInvalidUserDefinedPerspectives(
-            perspectiveStack,
-            userDefinedFilterPerspective,
+  const handleSearch = useEffectEvent((searchString: string) =>
+    from(
+      resolveUserDefinedFilter({
+        options: schemaType.options,
+        document: documentValue,
+        perspective: perspectiveStack,
+        valuePath: path,
+        getClient,
+      }),
+    ).pipe(
+      mergeMap(({filter, params, perspective: userDefinedFilterPerspective}) => {
+        const invalidPerspectives = getInvalidUserDefinedPerspectives(
+          perspectiveStack,
+          userDefinedFilterPerspective,
+        )
+
+        if (invalidPerspectives.length > 0) {
+          throw new Error(
+            `Custom reference filter returned an invalid perspective. Filters can only remove perspectives from the passed stack, not add new ones. Expected a subset of [${perspectiveStack.join(', ')}], but received [${userDefinedFilterPerspective}].`,
           )
+        }
 
-          if (invalidPerspectives.length > 0) {
-            throw new Error(
-              `Custom reference filter returned an invalid perspective. Filters can only remove perspectives from the passed stack, not add new ones. Expected a subset of [${perspectiveStack.join(', ')}], but received [${userDefinedFilterPerspective}].`,
-            )
-          }
+        const options = {
+          ...schemaType.options,
+          filter,
+          params,
+          tag: 'search.reference',
+          maxFieldDepth,
+          strategy: searchStrategy,
+          perspective: userDefinedFilterPerspective || perspectiveStack,
+        }
 
-          const options = {
-            ...schemaType.options,
-            filter,
-            params,
-            tag: 'search.reference',
-            maxFieldDepth,
-            strategy: searchStrategy,
-            perspective: userDefinedFilterPerspective || perspectiveStack,
-          }
+        const search = createSearch(schemaType.to, searchClient, {
+          ...options,
+          maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
+        })
 
-          const search = createSearch(schemaType.to, searchClient, {
-            ...options,
-            maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
-          })
-
-          return search(searchString, {
-            perspective: options.perspective,
-            // todo: consider using this to show a "More hits, please refine your search"-item at the end of the dropdown list
-            limit: 101,
-          }).pipe(
-            map(({hits}) => hits.map(({hit}) => hit)),
-            switchMap((docs) => {
-              // Note: we need to know whether a published version of each document exists
-              // so we can correctly set `_strengthenOnPublish` when the user selects one
-              // of them from the list of options
-              return combineLatest(
-                docs.map((doc) =>
-                  documentPreviewStore.observePaths({_id: getPublishedId(doc._id)}, ['_rev']).pipe(
-                    map((published) => ({
-                      id: doc._id,
-                      type: doc._type,
-                      published: Boolean(published),
-                    })),
-                  ),
+        return search(searchString, {
+          perspective: options.perspective,
+          // todo: consider using this to show a "More hits, please refine your search"-item at the end of the dropdown list
+          limit: 101,
+        }).pipe(
+          map(({hits}) => hits.map(({hit}) => hit)),
+          switchMap((docs) => {
+            // if no hits, return empty array immediately
+            // note that combineLatest([]) will never emit (effectively the same as NEVER), so without this,
+            // the subscriber will never receive any result
+            if (docs.length === 0) {
+              return of([])
+            }
+            // Note: we need to know whether a published version of each document exists
+            // so we can correctly set `_strengthenOnPublish` when the user selects one
+            // of them from the list of options
+            return combineLatest(
+              docs.map((doc) =>
+                documentPreviewStore.observePaths({_id: getPublishedId(doc._id)}, ['_rev']).pipe(
+                  map((published) => ({
+                    id: doc._id,
+                    type: doc._type,
+                    published: Boolean(published),
+                  })),
                 ),
-              )
-            }),
-          )
-        }),
-        catchError((err: SearchError) => {
-          const isQueryError = err.details && err.details.type === 'queryParseError'
-          if (schemaType.options?.filter && isQueryError) {
-            return throwError(
-              () =>
-                new Error(`Invalid reference filter, please check the custom "filter" option`, {
-                  cause: err,
-                }),
+              ),
             )
-          }
-          return throwError(() => err)
-        }),
-      ),
-    [
-      schemaType.options,
-      schemaType.to,
-      documentValue,
-      perspectiveStack,
-      path,
-      getClient,
-      maxFieldDepth,
-      searchStrategy,
-      searchClient,
-      documentPreviewStore,
-    ],
+          }),
+        )
+      }),
+      catchError((err: SearchError) => {
+        const isQueryError = err.details && err.details.type === 'queryParseError'
+        if (schemaType.options?.filter && isQueryError) {
+          return throwError(
+            () =>
+              new Error(`Invalid reference filter, please check the custom "filter" option`, {
+                cause: err,
+              }),
+          )
+        }
+        return throwError(() => err)
+      }),
+    ),
   )
 
   const template = props.value?._strengthenOnPublish?.template

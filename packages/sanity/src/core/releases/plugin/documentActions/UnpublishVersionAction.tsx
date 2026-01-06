@@ -57,7 +57,7 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
     }
   }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT])
 
-  if (!version) return null
+  if (!release || !version) return null
 
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 

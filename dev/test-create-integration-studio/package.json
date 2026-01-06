@@ -1,6 +1,6 @@
 {
   "name": "test-create-integration-studio",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -13,7 +13,7 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@sanity/code-input": "^6.0.3",
+    "@sanity/code-input": "^7.0.4",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",

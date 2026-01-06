@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "sanity",
@@ -50,7 +50,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "debug": "^4.4.3",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.22"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

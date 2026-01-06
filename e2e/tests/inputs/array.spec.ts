@@ -99,7 +99,7 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   // And when the "Title" input is filled
   const titleInput = insertDialog.getByLabel('Title')
   await titleInput.fill('Book title')
-  await expect(titleInput).toHaveValue('Book title')
+  await expect(titleInput.nth(1)).toHaveValue('Book title')
 
   // And the dialog is closed
   const closeDialogButton = insertDialog.getByLabel('Close dialog')

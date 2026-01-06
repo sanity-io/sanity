@@ -10,7 +10,6 @@ import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
-import {useIsReleasesPlus} from '../../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -252,8 +251,6 @@ export const ReleaseRevertButton = ({
     setIsPendingGuardResponse(false)
   }, [guardWithReleaseLimitUpsell])
 
-  const isReleasesPlus = useIsReleasesPlus()
-
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
@@ -265,8 +262,6 @@ export const ReleaseRevertButton = ({
       isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease])
-
-  if (!isReleasesPlus) return null
 
   return (
     <>

@@ -448,4 +448,47 @@ describe('findQueries with defineQuery', () => {
     const {queries} = findQueriesInSource(source, 'test.ts')
     expect(queries.length).toBe(0)
   })
+
+  test('can import from @sanity/sveltekit', () => {
+    const source = `
+    import { defineQuery } from "@sanity/sveltekit";
+    const postQuery = defineQuery("*[_type == 'author']");
+    const res = sanity.fetch(postQuery);
+  `
+
+    const {queries} = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(1)
+    const [queryResult] = queries
+
+    expect(queryResult?.query).toEqual("*[_type == 'author']")
+  })
+
+  test('can import from @sanity/sveltekit with template string', () => {
+    const source = `
+    import { defineQuery } from "@sanity/sveltekit";
+    const postQuery = defineQuery(\`*[_type == "author"]\`);
+    const res = sanity.fetch(postQuery);
+  `
+
+    const {queries} = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(1)
+    const [queryResult] = queries
+
+    expect(queryResult?.query).toEqual('*[_type == "author"]')
+  })
+
+  test('can import from @sanity/sveltekit with variables', () => {
+    const source = `
+    import { defineQuery } from "@sanity/sveltekit";
+    const type = "author";
+    const postQuery = defineQuery(\`*[_type == "\${type}"]\`);
+    const res = sanity.fetch(postQuery);
+  `
+
+    const {queries} = findQueriesInSource(source, 'test.ts')
+    expect(queries.length).toBe(1)
+    const [queryResult] = queries
+
+    expect(queryResult?.query).toEqual('*[_type == "author"]')
+  })
 })
