@@ -29,17 +29,37 @@ test.describe('Presentation', () => {
 
   test('should be able to toggle preview viewport', async ({page}) => {
     test.slow()
+
+    const root = page.getByTestId('presentation-root')
+    const previewIframe = root.locator('iframe')
+    await expect(previewIframe.first()).toBeAttached()
+
+    const previewIframeContents = previewIframe.first().contentFrame()
+    await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
+
     const viewportToggle = page.getByTestId('preview-viewport-toggle')
 
-    await expect(viewportToggle).toBeVisible()
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
-    await viewportToggle.click()
+    await expect(viewportToggle).toBeVisible()
+    await expect(viewportToggle).toBeEnabled()
+
+    // Click with extended timeout to handle any remaining animations
+    await viewportToggle.click({timeout: 15000})
     await expect(viewportToggle).toHaveAttribute('data-viewport', 'mobile')
 
     // Wait for URL to contain viewport=mobile parameter
     await expect(page).toHaveURL(/viewport=mobile/)
 
-    await viewportToggle.click()
+    // Wait for the viewport toggle to be ready for interaction again
+    await expect(viewportToggle).toHaveAttribute('data-viewport', 'mobile')
+
+    // Re-query the element to ensure we have a fresh reference after state change
+    const viewportToggleAfterSwitch = page.getByTestId('preview-viewport-toggle')
+    await expect(viewportToggleAfterSwitch).toBeVisible()
+    await expect(viewportToggleAfterSwitch).toBeEnabled()
+
+    // Click with extended timeout to handle any remaining animations
+    await viewportToggleAfterSwitch.click({timeout: 15000})
 
     // Wait for URL to no longer contain viewport=mobile parameter
     await expect(page).not.toHaveURL(/viewport=mobile/)
