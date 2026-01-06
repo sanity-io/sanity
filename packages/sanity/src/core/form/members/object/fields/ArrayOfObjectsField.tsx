@@ -19,6 +19,7 @@ import {tap} from 'rxjs/operators'
 
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
+import {SiblingImageInsertionProvider} from '../../../contexts/SiblingImageInsertion'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
@@ -365,6 +366,47 @@ export function ArrayOfObjectsField(props: {
     [handleChange, resolveUploader],
   )
 
+  // Callback for inserting sibling images when multiple are selected from an asset source
+  // This is used by the ImageInput when in multi-select mode
+  const handleInsertSiblingImages = useCallback(
+    (assets: AssetFromSource[], afterKey: string) => {
+      // Get the array's item schema type (should be image type for this to work)
+      const itemSchemaType = member.field.schemaType.of?.[0]
+      if (!itemSchemaType || itemSchemaType.name !== 'image') {
+        // Only support pure image arrays for now
+        return
+      }
+
+      // Create new array items for each asset
+      const newItems = assets.map(() => createProtoArrayValue(itemSchemaType))
+
+      // Insert all items after the reference item
+      handleInsert({
+        items: newItems,
+        position: 'after',
+        referenceItem: {_key: afterKey},
+        open: false,
+        skipInitialValue: true,
+      })
+
+      // For each asset, set the asset reference on its corresponding item
+      assets.forEach((asset, index) => {
+        const itemKey = newItems[index]._key
+        if (asset.kind === 'assetDocumentId') {
+          handleChange(
+            PatchEvent.from([
+              setIfMissing({_type: itemSchemaType.name}, [{_key: itemKey}]),
+              set({_type: 'reference', _ref: asset.value as string}, [{_key: itemKey}, 'asset']),
+            ]),
+          )
+        }
+        // Note: other asset kinds (file, base64, url) would need upload handling,
+        // but for MVP we focus on assetDocumentId which is what the default browser uses
+      })
+    },
+    [handleChange, handleInsert, member.field.schemaType.of],
+  )
+
   const handleSelectFile = useCallback(
     ({assetSource, schemaType, file}: InputOnSelectFileFunctionProps) => {
       if (assetSource.Uploader) {
@@ -549,30 +591,32 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      <RenderField
-        actions={fieldActions}
-        name={member.name}
-        index={member.index}
-        level={member.field.level}
-        value={member.field.value}
-        title={member.field.schemaType.title}
-        description={member.field.schemaType.description}
-        collapsible={member.collapsible}
-        collapsed={member.collapsed}
-        changed={member.field.changed}
-        onCollapse={handleCollapse}
-        onExpand={handleExpand}
-        schemaType={member.field.schemaType}
-        inputId={member.field.id}
-        path={member.field.path}
-        presence={member.field.presence}
-        validation={member.field.validation}
-        inputProps={inputProps as ArrayOfObjectsInputProps}
-        render={renderField}
-      >
-        <RenderInput {...inputProps} render={renderInput} />
-      </RenderField>
-      {assetSourceUploadComponents}
+      <SiblingImageInsertionProvider onInsertSiblingImages={handleInsertSiblingImages}>
+        <RenderField
+          actions={fieldActions}
+          name={member.name}
+          index={member.index}
+          level={member.field.level}
+          value={member.field.value}
+          title={member.field.schemaType.title}
+          description={member.field.schemaType.description}
+          collapsible={member.collapsible}
+          collapsed={member.collapsed}
+          changed={member.field.changed}
+          onCollapse={handleCollapse}
+          onExpand={handleExpand}
+          schemaType={member.field.schemaType}
+          inputId={member.field.id}
+          path={member.field.path}
+          presence={member.field.presence}
+          validation={member.field.validation}
+          inputProps={inputProps as ArrayOfObjectsInputProps}
+          render={renderField}
+        >
+          <RenderInput {...inputProps} render={renderInput} />
+        </RenderField>
+        {assetSourceUploadComponents}
+      </SiblingImageInsertionProvider>
     </FormCallbacksProvider>
   )
 }

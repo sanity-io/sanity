@@ -23,6 +23,10 @@ import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
+import {
+  extractKeyFromPathSegment,
+  useSiblingImageInsertion,
+} from '../../../contexts/SiblingImageInsertion'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
@@ -56,6 +60,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     members,
     observeAsset,
     onChange,
+    onInsertSiblingImages,
     onPathFocus,
     path,
     readOnly,
@@ -72,6 +77,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+
+  // Get sibling insertion callback from context (for array contexts)
+  const {onInsertSiblingImages: onInsertSiblingImagesFromContext} = useSiblingImageInsertion()
+  // Prefer prop over context, but context allows array to provide callback without modifying prop chain
+  const effectiveOnInsertSiblingImages = onInsertSiblingImages ?? onInsertSiblingImagesFromContext
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -192,18 +202,29 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const handleSelectAssetFromSource = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
+      // Process the first asset for this image field (existing behavior)
       handleSelectAssetFromSourceShared({
-        assetsFromSource,
+        assetsFromSource: assetsFromSource.slice(0, 1),
         onChange,
         type: schemaType,
         resolveUploader,
         uploadWith,
       })
 
+      // If multiple assets were selected and we have a callback for sibling insertion,
+      // pass the additional assets to the parent array to create new items
+      if (assetsFromSource.length > 1 && effectiveOnInsertSiblingImages) {
+        // Extract the current item's key from the path to insert after it
+        const currentKey = extractKeyFromPathSegment(path.slice(-1)[0])
+        if (currentKey) {
+          effectiveOnInsertSiblingImages(assetsFromSource.slice(1), currentKey)
+        }
+      }
+
       setSelectedAssetSource(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
-    [onChange, resolveUploader, schemaType, uploadWith],
+    [onChange, effectiveOnInsertSiblingImages, path, resolveUploader, schemaType, uploadWith],
   )
 
   const handleCancelUpload = useCallback(() => {
