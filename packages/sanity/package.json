@@ -310,7 +310,7 @@
     "blob-polyfill": "^9.0.20240710",
     "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.3.1",
-    "eslint-plugin-testing-library": "^7.13.6",
+    "eslint-plugin-testing-library": "^7.15.4",
     "globals": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
