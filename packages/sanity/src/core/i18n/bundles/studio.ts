@@ -612,12 +612,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Menu item for registered studios (i.e. copies app id) */
   'help-resources.studio-app-id': 'App id',
 
-  /** Toast message when Studio ID is copied to clipboard */
-  'help-resources.studio-app-id-copied': 'Studio app id copied to clipboard',
-
-  /** Toast message when Studio ID copy fails */
-  'help-resources.studio-app-id-copy-error': 'Failed to copy Studio app id',
-
   /** Menu item for reloading Studio to update */
   'help-resources.studio-auto-update-now': 'Reload to update to v{{newVersion}}',
 

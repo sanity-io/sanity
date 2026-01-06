@@ -1,7 +1,7 @@
 /* eslint-disable  no-restricted-imports */
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
-import {CopyIcon, LaunchIcon} from '@sanity/icons'
+import {LaunchIcon} from '@sanity/icons'
 import {
   Badge,
   Card,
@@ -10,7 +10,6 @@ import {
   MenuDivider,
   MenuItem as UIMenuItem,
   Text,
-  useToast,
 } from '@sanity/ui'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
@@ -163,7 +162,6 @@ function StudioVersion({
 
 function StudioRegistration() {
   const {t} = useTranslation()
-  const {push: pushToast} = useToast()
   const {userApplication} = useLiveUserApplication()
   const workspaces = useWorkspaces()
   const projectId = workspaces[0]?.projectId
@@ -180,35 +178,8 @@ function StudioRegistration() {
     window.open(registrationUrl, '_blank', 'noopener,noreferrer')
   }, [projectId, manageBaseUrl])
 
-  const handleCopyAppId = useCallback(() => {
-    if (userApplication?.id) {
-      navigator.clipboard
-        .writeText(userApplication.id)
-        .then(() => {
-          pushToast({
-            closable: true,
-            status: 'success',
-            title: t('help-resources.studio-app-id-copied'),
-          })
-        })
-        .catch(() => {
-          pushToast({
-            closable: true,
-            status: 'error',
-            title: t('help-resources.studio-app-id-copy-error'),
-          })
-        })
-    }
-  }, [userApplication, pushToast, t])
-
   if (userApplication) {
-    return (
-      <MenuItem
-        text={t('help-resources.studio-app-id')}
-        iconRight={<CopyIcon />}
-        onClick={handleCopyAppId}
-      />
-    )
+    return null
   }
 
   return (
