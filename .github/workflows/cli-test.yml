@@ -57,34 +57,7 @@ jobs:
       - name: Check if only examples files changed
         if: steps.check_release.outputs.skip != 'true'
         id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip CLI tests for examples-only changes
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping CLI tests"
-          exit 0
+        uses: ./.github/actions/check-examples-only
 
       - uses: ./.github/actions/setup
         if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
