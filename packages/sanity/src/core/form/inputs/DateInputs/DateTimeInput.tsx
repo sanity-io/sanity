@@ -1,4 +1,6 @@
+import {isKeySegment} from '@sanity/types'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {fromString as pathFromString} from '@sanity/util/paths'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -31,14 +33,28 @@ import {getCalendarLabels, isValidDate} from './utils'
 /**
  * Sanitizes an input ID for use in timezone storage keys.
  * The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
- * This function replaces array key segments (e.g., `[_key=="abc123"]`) with a dot-based format.
+ * This function parses the path string and converts it to a safe format using dots and "key-" prefix.
  *
  * @internal
  */
 export function sanitizeTimeZoneKeyId(id: string): string {
-  // Replace [_key=="..."] segments with .key-... format
-  // e.g., "dates[_key=="abc123"].date" becomes "dates.key-abc123.date"
-  return id.replace(/\[_key=="([^"]+)"\]/g, '.key-$1')
+  try {
+    const segments = pathFromString(id)
+    return segments
+      .map((segment) => {
+        if (isKeySegment(segment)) {
+          return `key-${segment._key}`
+        }
+        if (typeof segment === 'number') {
+          return `idx-${segment}`
+        }
+        return segment
+      })
+      .join('.')
+  } catch {
+    // Fallback: if parsing fails, strip problematic characters
+    return id.replace(/[[\]="']/g, '-')
+  }
 }
 
 const Root = styled(Card)`
