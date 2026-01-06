@@ -17,6 +17,7 @@ import {type SemVer} from 'semver'
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {useWorkspaces} from '../../../workspaces'
@@ -163,20 +164,17 @@ function StudioVersion({
 function StudioRegistration() {
   const {t} = useTranslation()
   const {userApplication} = useLiveUserApplication()
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   const workspaces = useWorkspaces()
   const projectId = workspaces[0]?.projectId
 
-  let manageBaseUrl = 'https://www.sanity.io'
-  if (workspaces[0]?.apiHost === 'https://api.sanity.work') {
-    manageBaseUrl = 'https://www.sanity.work'
-  }
-
   const handleRegisterStudio = useCallback(() => {
     if (!projectId) return
-    const currentOrigin = typeof window === 'undefined' ? '' : window.location.origin
-    const registrationUrl = `${manageBaseUrl}/manage/project/${projectId}/studios?studio=add&origin=${encodeURIComponent(currentOrigin)}`
-    window.open(registrationUrl, '_blank', 'noopener,noreferrer')
-  }, [projectId, manageBaseUrl])
+    const url = new URL(`${sanityWebsiteUrl}/manage/project/${projectId}/studios`)
+    url.searchParams.set('studio', 'add')
+    url.searchParams.set('origin', window.location.origin)
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }, [projectId, sanityWebsiteUrl])
 
   if (userApplication) {
     return null
