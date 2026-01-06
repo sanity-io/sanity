@@ -393,6 +393,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         imageUrlBuilder={imageUrlBuilder}
         isImageToolEnabled={isImageToolEnabled()}
         isMenuOpen={isMenuOpen}
+        multiple={isMultiFileUploadEnabled}
         observeAsset={observeAsset}
         readOnly={readOnly}
         schemaType={schemaType}
@@ -412,6 +413,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
+    isMultiFileUploadEnabled,
     observeAsset,
     readOnly,
     schemaType,
@@ -431,18 +433,30 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
 
+  // Enable multi-file selection in array context (when sibling file insertion is available)
+  const isMultiFileUploadEnabled = Boolean(effectiveOnInsertSiblingFiles)
+
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
+        multiple={isMultiFileUploadEnabled}
         onSelectFiles={handleSelectFilesToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, handleSelectFilesToUpload, readOnly, renderBrowser, schemaType])
+  }, [
+    assetSources,
+    directUploads,
+    handleSelectFilesToUpload,
+    isMultiFileUploadEnabled,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  ])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (

@@ -22,6 +22,8 @@ interface UploadPlaceholderProps {
   browse?: ReactNode
   directUploads?: boolean
   hoveringFiles?: FileLike[]
+  /** Enable multi-file selection in file picker dialog */
+  multiple?: boolean
   onUpload?: (assetSource: AssetSource, files: File[]) => void
   readOnly?: boolean
   schemaType: SchemaType
@@ -29,8 +31,17 @@ interface UploadPlaceholderProps {
 }
 
 function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
-  const {assetSources, browse, directUploads, hoveringFiles, onUpload, readOnly, schemaType, type} =
-    props
+  const {
+    assetSources,
+    browse,
+    directUploads,
+    hoveringFiles,
+    multiple,
+    onUpload,
+    readOnly,
+    schemaType,
+    type,
+  } = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rect = useElementSize(rootElement)
@@ -80,6 +91,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
             disabled={readOnly || directUploads === false}
             icon={UploadIcon}
             mode="bleed"
+            multiple={multiple}
             onSelect={(files) => {
               if (onUpload) {
                 onUpload(assetSourcesWithUpload[0], files)
@@ -94,12 +106,22 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
             accept={accept}
             assetSources={assetSourcesWithUpload}
             directUploads={directUploads}
+            multiple={multiple}
             onSelectFiles={handleSelectFiles}
             readOnly={readOnly}
           />
         )
     }
-  }, [accept, assetSourcesWithUpload, directUploads, handleSelectFiles, onUpload, readOnly, t])
+  }, [
+    accept,
+    assetSourcesWithUpload,
+    directUploads,
+    handleSelectFiles,
+    multiple,
+    onUpload,
+    readOnly,
+    t,
+  ])
 
   return assetSourcesWithUpload.length === 0 ? null : (
     <Flex

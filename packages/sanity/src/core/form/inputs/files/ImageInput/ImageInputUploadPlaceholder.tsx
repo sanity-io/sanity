@@ -8,12 +8,22 @@ import {type BaseImageInputProps} from './types'
 function ImageInputUploadPlaceholderComponent(props: {
   assetSources: BaseImageInputProps['assetSources']
   directUploads: boolean | undefined
+  /** Enable multi-file selection in file picker dialog */
+  multiple?: boolean
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   readOnly: boolean | undefined
   renderBrowser(): React.JSX.Element | null
   schemaType: BaseImageInputProps['schemaType']
 }) {
-  const {assetSources, directUploads, onSelectFiles, readOnly, renderBrowser, schemaType} = props
+  const {
+    assetSources,
+    directUploads,
+    multiple,
+    onSelectFiles,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  } = props
 
   const handleOnUpload = useCallback(
     (assetSource: AssetSource, files: File[]) => {
@@ -29,6 +39,7 @@ function ImageInputUploadPlaceholderComponent(props: {
           assetSources={assetSources}
           browse={renderBrowser()}
           directUploads={directUploads}
+          multiple={multiple}
           onUpload={handleOnUpload}
           schemaType={schemaType}
           readOnly={readOnly}

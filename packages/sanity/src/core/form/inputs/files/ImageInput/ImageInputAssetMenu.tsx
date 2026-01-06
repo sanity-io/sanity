@@ -31,6 +31,8 @@ function ImageInputAssetMenuComponent(
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
+    /** Enable multi-file selection in file picker dialog */
+    multiple?: boolean
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
     setMenuButtonElement: (el: HTMLButtonElement | null) => void
     setMenuOpen: (isOpen: boolean) => void
@@ -46,6 +48,7 @@ function ImageInputAssetMenuComponent(
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
+    multiple,
     observeAsset,
     readOnly,
     schemaType,
@@ -110,6 +113,7 @@ function ImageInputAssetMenuComponent(
       onSelectFiles={onSelectFiles}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
+      multiple={multiple}
       observeAsset={observeAsset}
       readOnly={readOnly}
       reference={asset}
@@ -136,6 +140,8 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleRemoveButtonClick: () => void
     onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     isMenuOpen: boolean
+    /** Enable multi-file selection in file picker dialog */
+    multiple?: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
@@ -154,6 +160,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     onSelectFiles,
     imageUrlBuilder,
     isMenuOpen,
+    multiple,
     observeAsset,
     readOnly,
     reference,
@@ -212,6 +219,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           onSelect={handleSelectFilesFromAssetSourceSingle}
           accept={accept}
           data-asset-source-name={assetSourcesWithUpload[0].name}
+          multiple={multiple}
           text={t('inputs.files.common.actions-menu.upload.label')}
           data-testid="file-input-upload-button"
           disabled={readOnly || directUploads === false}
@@ -224,6 +232,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           accept={accept}
           assetSources={assetSourcesWithUpload}
           directUploads={directUploads}
+          multiple={multiple}
           onSelectFiles={handleSelectFilesFromAssetSource}
           readOnly={readOnly}
           renderAsMenuGroup
