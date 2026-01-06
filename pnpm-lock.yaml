@@ -692,8 +692,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-asset-source-unsplash:
-        specifier: ^7.0.0
-        version: 7.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^7.0.1
+        version: 7.0.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       sanity-plugin-hotspot-array:
         specifier: ^3.0.2
         version: 3.0.2(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
@@ -11547,12 +11547,12 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sanity-plugin-asset-source-unsplash@7.0.0:
-    resolution: {integrity: sha512-xjPUMSw2eep5XOCDUCQWhUhD32ZMGxNY1A9n5riCbEyjOGso7zwDfXR/yYT4Yf7iLCSheRimZMgAmX9rZ3rUxQ==}
+  sanity-plugin-asset-source-unsplash@7.0.1:
+    resolution: {integrity: sha512-m7KVWeREoADk3Eo5b4ILmN6IsEcMx4ClONvLTuqW3iwT747d4rU/HCPoWzDfgX9jOxRkyVK/Wbm5o7DuS7HOkQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
-      sanity: ^5.0.0-0
+      sanity: ^5
       styled-components: ^6.1
 
   sanity-plugin-hotspot-array@3.0.2:
@@ -23583,7 +23583,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sanity-plugin-asset-source-unsplash@7.0.0(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity):
+  sanity-plugin-asset-source-unsplash@7.0.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity):
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
