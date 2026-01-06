@@ -22,6 +22,7 @@ import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserAp
 import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
 import {useWorkspaces} from '../../../workspaces'
 import {type ResourcesResponse, type Section} from './helper-functions/types'
+import {useCanDeployStudio} from './useCanDeployStudio'
 
 interface ResourcesMenuItemProps {
   error: Error | null
@@ -167,14 +168,15 @@ function StudioRegistration() {
   const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   const workspaces = useWorkspaces()
   const projectId = workspaces[0]?.projectId
+  const canDeployStudio = useCanDeployStudio(!userApplication)
 
   const handleRegisterStudio = useCallback(() => {
-    if (!projectId) return
+    if (!projectId || !canDeployStudio) return
     const url = new URL(`${sanityWebsiteUrl}/manage/project/${projectId}/studios`)
     url.searchParams.set('studio', 'add')
     url.searchParams.set('origin', window.location.origin)
     window.open(url, '_blank', 'noopener,noreferrer')
-  }, [projectId, sanityWebsiteUrl])
+  }, [projectId, sanityWebsiteUrl, canDeployStudio])
 
   if (userApplication) {
     return null
@@ -187,6 +189,7 @@ function StudioRegistration() {
         iconRight={<LaunchIcon />}
         onClick={handleRegisterStudio}
         tone="caution"
+        disabled={!canDeployStudio}
       />
     </Card>
   )
