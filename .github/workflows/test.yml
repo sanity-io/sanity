@@ -165,4 +165,4 @@ jobs:
 
       - name: Report coverage
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: davelosert/vitest-coverage-report-action@8ab049ff5a2c6e78f78af446329379b318544a1a # v2
+        uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2
