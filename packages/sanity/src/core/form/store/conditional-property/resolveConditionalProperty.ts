@@ -23,12 +23,10 @@ export function resolveConditionalProperty(
     return Boolean(property)
   }
 
-  return (
-    property({
-      document: document as any,
-      parent,
-      value,
-      currentUser,
-    }) === true // note: we can't strictly "trust" the return value here, so the conditional property should probably be typed as unknown
-  )
+  return property({
+    document: document as any,
+    parent,
+    value,
+    currentUser,
+  }) // note: we can't strictly "trust" the return value here, so the conditional property should probably be typed as unknown
 }

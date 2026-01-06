@@ -24,7 +24,7 @@ export function validateStructure(structure: any): UnresolvedPaneNode {
     throw new SerializeError('The root structure cannot have value `edit` as `id`', [], 'root')
   }
 
-  warnOnUnknownExports(structure as any)
+  warnOnUnknownExports(structure)
 
   if (!isStructure(structure)) {
     throw new Error(

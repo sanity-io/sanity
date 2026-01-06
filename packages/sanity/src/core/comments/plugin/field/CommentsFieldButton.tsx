@@ -35,7 +35,7 @@ interface CommentsFieldButtonProps {
   onClose: () => void
   onCommentAdd: () => void
   onDiscard: () => void
-  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onInputKeyDown?: (event: React.KeyboardEvent) => void
   open: boolean
   value: CommentMessage
 }
@@ -88,7 +88,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   }, [closePopover, hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: React.KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return

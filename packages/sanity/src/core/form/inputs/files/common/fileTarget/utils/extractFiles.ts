@@ -37,7 +37,7 @@ function normalizeItems(items: DataTransferItem[]) {
         // Edge throws
         try {
           entry = item.webkitGetAsEntry()
-        } catch (err) {
+        } catch {
           return toArray(item.getAsFile())
         }
         if (!entry) {

@@ -52,7 +52,7 @@ export function createObserveDocument({
     const _apiConfig = {
       dataset: apiConfig?.dataset || client.config().dataset!,
       projectId: apiConfig?.projectId || client.config().projectId!,
-      apiVersion: apiConfig?.apiVersion || client.config().apiVersion!,
+      apiVersion: apiConfig?.apiVersion || client.config().apiVersion,
     }
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(

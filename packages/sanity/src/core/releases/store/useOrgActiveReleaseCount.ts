@@ -26,7 +26,7 @@ function createOrgActiveReleaseCountStore(
     switchMap((state) => {
       if (
         state === null ||
-        staleFlag$.getValue() === true ||
+        staleFlag$.getValue() ||
         activeReleaseCountAtFetch.getValue() !== activeReleasesCount
       ) {
         staleFlag$.next(false)
