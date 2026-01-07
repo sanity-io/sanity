@@ -7,7 +7,7 @@ import {
 } from '../../../config/document/actions'
 import {useAllReleases} from '../../../releases/store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../../releases/util/isPausedScheduledDraft'
+import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
@@ -88,7 +88,7 @@ export const PublishScheduledDraftAction = createScheduledDraftAction('publishNo
  */
 export const EditScheduledDraftAction = createScheduledDraftAction(
   'editSchedule',
-  (release) => !isPausedScheduledDraft(release), // Hide when paused
+  (release) => !isPausedCardinalityOneRelease(release), // Hide when paused
 )
 
 /**

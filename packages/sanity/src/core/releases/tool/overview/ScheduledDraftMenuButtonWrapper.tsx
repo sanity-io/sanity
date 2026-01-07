@@ -9,8 +9,8 @@ import {useTranslation} from '../../../i18n'
 import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getPublishedId} from '../../../util/draftUtils'
+import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 
 export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
@@ -44,7 +44,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
     }
 
-    if (isPausedScheduledDraft(release)) {
+    if (isPausedCardinalityOneRelease(release)) {
       return [
         <MenuItem key={'publish-now'} {...actions.publishNow} />,
         <MenuItem key={'schedule-publish'} {...actions.schedulePublish} />,

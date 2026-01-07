@@ -19,10 +19,9 @@ import {useTranslation} from '../../../i18n'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 import {Chip} from '../Chip'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
@@ -187,7 +186,7 @@ export const VersionChip = memo(function VersionChip(props: {
     disabled: contextMenuDisabled,
   })
 
-  const isPaused = isPausedScheduledDraft(release)
+  const isPaused = isPausedCardinalityOneRelease(release)
 
   const rightIcon = useMemo(() => {
     if (isLinked) return <ComposeSparklesIcon />

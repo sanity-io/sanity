@@ -415,6 +415,7 @@ exports[`exports snapshot 1`] = `
     "isObjectItemProps": "function",
     "isObjectSchemaType": "function",
     "isPatchMutation": "function",
+    "isPausedCardinalityOneRelease": "function",
     "isPerspectiveRaw": "function",
     "isPerspectiveWriteable": "function",
     "isPortableTextListBlock": "function",

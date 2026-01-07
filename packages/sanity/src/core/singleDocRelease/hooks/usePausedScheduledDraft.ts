@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../releases/util/isPausedScheduledDraft'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 
 /**
  * Hook to check if the current perspective is viewing a paused scheduled draft.
@@ -25,7 +25,7 @@ export function usePausedScheduledDraft(): {
       : undefined
 
     return {
-      isPaused: isPausedScheduledDraft(currentRelease),
+      isPaused: isPausedCardinalityOneRelease(currentRelease),
       currentRelease,
     }
   }, [selectedReleaseId, allReleases])

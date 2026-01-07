@@ -18,6 +18,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   isGoingToUnpublish,
+  isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
@@ -40,7 +41,6 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
-import {isPausedScheduledDraft} from '../../../core/releases/util/isPausedScheduledDraft'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
@@ -214,7 +214,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       const currentRelease = releases.find(
         (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
       )
-      const isPaused = isPausedScheduledDraft(currentRelease)
+      const isPaused = isPausedCardinalityOneRelease(currentRelease)
 
       return (
         seeingHistoryDocument ||

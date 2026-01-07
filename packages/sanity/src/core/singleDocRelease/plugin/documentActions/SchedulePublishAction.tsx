@@ -14,8 +14,8 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {useReleaseOperations} from '../../../releases/store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isPausedScheduledDraft} from '../../../releases/util/isPausedScheduledDraft'
 import {getDraftId} from '../../../util/draftUtils'
+import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
 import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
@@ -59,7 +59,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     [releases, perspective.selectedReleaseId],
   )
 
-  const isPaused = isPausedScheduledDraft(currentRelease)
+  const isPaused = isPausedCardinalityOneRelease(currentRelease)
   const initialDate =
     isPaused && currentRelease?.metadata.intendedPublishAt
       ? new Date(currentRelease.metadata.intendedPublishAt)

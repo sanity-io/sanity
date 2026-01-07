@@ -18,7 +18,7 @@ import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/Sing
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -30,7 +30,6 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {isPausedScheduledDraft} from '../../util/isPausedScheduledDraft'
 import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
@@ -108,7 +107,7 @@ export function ReleasesOverview() {
   const pausedReleases = useMemo(
     () =>
       cardinalityView === 'drafts'
-        ? releases.filter((release) => isPausedScheduledDraft(release))
+        ? releases.filter((release) => isPausedCardinalityOneRelease(release))
         : [],
     [releases, cardinalityView],
   )
@@ -408,7 +407,7 @@ export function ReleasesOverview() {
       }
 
       if (releaseGroupMode === 'paused') {
-        return items.filter((release) => isPausedScheduledDraft(release))
+        return items.filter((release) => isPausedCardinalityOneRelease(release))
       }
 
       return items
