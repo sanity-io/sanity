@@ -13,10 +13,10 @@ import {
 } from 'groq-js'
 
 import {safeParseQuery} from '../safeParseQuery'
-import {ARRAY_MEMBER, INTERNAL_REFERENCE_SYMBOL} from './constants'
+import {ARRAY_OF, INTERNAL_REFERENCE_SYMBOL} from './constants'
 import {
+  getFilterArrayUnionType,
   getUniqueIdentifierForName,
-  isObjectArrayMember,
   sanitizeIdentifier,
   weakMapMemo,
 } from './helpers'
@@ -111,10 +111,47 @@ export class SchemaTypeGenerator {
     }
   }
 
-  // Helper function used to generate TS types for array type nodes.
-  private generateArrayTsType(typeNode: ArrayTypeNode): t.TSTypeReference {
+  /**
+   * Helper function used to generate TS types for arrays of inline types, or arrays of inline types
+   * wrapped in the ArrayOf wrapper that adds _key prop
+   */
+  private generateArrayOfTsType(typeNode: ArrayTypeNode): t.TSTypeReference {
     const typeNodes = this.generateTsType(typeNode.of)
-    return t.tsTypeReference(t.identifier('Array'), t.tsTypeParameterInstantiation([typeNodes]))
+    return t.tsTypeReference(ARRAY_OF, t.tsTypeParameterInstantiation([typeNodes]))
+  }
+
+  // Helper function used to generate TS types for array type nodes.
+  private generateArrayTsType(typeNode: ArrayTypeNode): t.TSTypeReference | t.TSUnionType {
+    // if it's an array of a single inline type, wrap it in ArrayOf
+    if (typeNode.of.type === 'inline') {
+      return this.generateArrayOfTsType(typeNode)
+    }
+
+    // if it's not an inline object and not a union, wrap in Array
+    if (typeNode.of.type !== 'union') {
+      const typeNodes = this.generateTsType(typeNode.of)
+      return t.tsTypeReference(t.identifier('Array'), t.tsTypeParameterInstantiation([typeNodes]))
+    }
+
+    // if it's not a union type or all of the union type members are non-inlines, wrap type in Array
+    if (typeNode.of.of.every((unionTypeNode) => unionTypeNode.type !== 'inline')) {
+      const typeNodes = this.generateTsType(typeNode.of)
+      return t.tsTypeReference(t.identifier('Array'), t.tsTypeParameterInstantiation([typeNodes]))
+    }
+
+    // all the union types nodes are inline
+    if (typeNode.of.of.every((unionMember) => unionMember.type === 'inline')) {
+      return this.generateArrayOfTsType(typeNode)
+    }
+
+    // some of the union types are inlines, while some are not - split and recurse
+    const arrayOfNonInline = getFilterArrayUnionType(typeNode, (member) => member.type !== 'inline')
+    const arrayOfInline = getFilterArrayUnionType(typeNode, (member) => member.type === 'inline')
+
+    return t.tsUnionType([
+      this.generateArrayTsType(arrayOfNonInline),
+      this.generateArrayTsType(arrayOfInline),
+    ])
   }
 
   // Helper function used to generate TS types for object properties.
@@ -132,11 +169,7 @@ export class SchemaTypeGenerator {
   // Helper function used to generate TS types for object type nodes.
   private generateObjectTsType(typeNode: ObjectTypeNode): t.TSType {
     const props: t.TSPropertySignature[] = []
-    const isArrayMember = isObjectArrayMember(typeNode)
-
-    // Skip _key if this is an array member - it will be added via ArrayMember<T>
     Object.entries(typeNode.attributes).forEach(([key, attribute]) => {
-      if (isArrayMember && key === '_key') return
       props.push(this.generateTsObjectProperty(key, attribute))
     })
     const rest = typeNode.rest
@@ -147,9 +180,7 @@ export class SchemaTypeGenerator {
           return t.tsUnknownKeyword()
         }
         case 'object': {
-          // Skip _key - it will be added via ArrayMember<T> wrapper
           Object.entries(rest.attributes).forEach(([key, attribute]) => {
-            if (key === '_key') return
             props.push(this.generateTsObjectProperty(key, attribute))
           })
           break
@@ -158,10 +189,6 @@ export class SchemaTypeGenerator {
           const resolved = this.generateInlineTsType(rest)
           // if object rest is unknown, we can't generate a type literal for it
           if (t.isTSUnknownKeyword(resolved)) return resolved
-          // If this is an array member, wrap inline type with ArrayMember
-          if (isArrayMember) {
-            return t.tsTypeReference(ARRAY_MEMBER, t.tsTypeParameterInstantiation([resolved]))
-          }
           return t.tsIntersectionType([t.tsTypeLiteral(props), resolved])
         }
         default: {
@@ -180,14 +207,6 @@ export class SchemaTypeGenerator {
         {computed: true, optional: true},
       )
       props.push(derefType)
-    }
-
-    // Wrap with ArrayMember if this is an array member pattern
-    if (isArrayMember) {
-      return t.tsTypeReference(
-        ARRAY_MEMBER,
-        t.tsTypeParameterInstantiation([t.tsTypeLiteral(props)]),
-      )
     }
 
     return t.tsTypeLiteral(props)
