@@ -287,6 +287,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The error message shown when the previous document for comparison could not be extracted from the URL */
   'compare-version.error.invalidPreviousDocumentParam':
     'The previous document parameter is invalid.',
+  /** The error message shown when releases failed to load */
+  'compare-version.error.loadReleases.title': 'Failed to load releases',
   /** The text for the tooltip when the "Compare versions" action for a document is disabled */
   'compare-versions.menu-item.disabled-reason':
     'There are no other versions of this document to compare.',
