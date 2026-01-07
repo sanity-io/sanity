@@ -293,7 +293,7 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -322,7 +322,7 @@ jobs:
 
       - name: Upload HTML report
         id: upload-playwright-report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report

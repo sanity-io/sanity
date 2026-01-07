@@ -97,7 +97,7 @@ jobs:
         run: pnpm embedded-studio-vite:test --project ${{ matrix.project }}
 
       - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}
