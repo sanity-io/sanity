@@ -62,6 +62,8 @@ export function mockBrowserEnvironment(basePath: string): () => void {
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
       // define the `import.meta.env` global
       ...getStudioEnvironmentVariables({prefix: 'import.meta.env.', jsonEncode: true}),
+      // define the `import.meta.hot` global, so we don't get `"import.meta" is not available with the "cjs" output format and will be empty` warnings
+      'import.meta.hot': 'false',
     },
   })
 
