@@ -11,6 +11,8 @@ import {getCliToken} from '../../util/clientWrapper'
 
 const MCP_SERVER_URL = 'https://mcp.sanity.io'
 
+export const NO_EDITORS_DETECTED_MESSAGE = `Couldn't auto-configure Sanity MCP server for your editor. Visit ${MCP_SERVER_URL} for setup instructions.`
+
 export type EditorName = 'Cursor' | 'VS Code' | 'Claude Code'
 
 export interface Editor {
@@ -255,7 +257,7 @@ export async function setupMCP(
   const detectedEditors = detected.map((e) => e.name)
 
   if (detected.length === 0) {
-    output.warn('No supported AI editors detected (Cursor, VS Code, Claude Code)')
+    output.warn(NO_EDITORS_DETECTED_MESSAGE)
     return {
       detectedEditors,
       configuredEditors: [],

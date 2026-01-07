@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {unstable_useValuePreview as useValuePreview} from '../../useValuePreview'
+import {useValuePreview} from '../../useValuePreview'
 import {useVisibility} from '../../useVisibility'
 import {PreviewLoader} from '../PreviewLoader'
 

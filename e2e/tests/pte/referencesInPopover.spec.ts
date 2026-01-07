@@ -2,8 +2,9 @@ import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
 
-test.skip('In PTE - references in popover', () => {
-  test.beforeEach(async ({page, createDraftDocument}, testInfo) => {
+test.describe('In PTE - references in popover', () => {
+  test.beforeEach(async ({page, createDraftDocument, browserName}, testInfo) => {
+    test.skip(browserName === 'firefox', 'Firefox has timing issues with PTE editor interaction')
     test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
@@ -12,15 +13,17 @@ test.skip('In PTE - references in popover', () => {
     await page.setViewportSize({width: 1920, height: 800})
 
     const pteEditor = page.getByTestId('field-text')
+    const textBlock = pteEditor.locator(
+      '[data-testid="text-block__text"]:not([data-read-only="true"])',
+    )
     // Wait for the text block to be editable
-    await expect(
-      pteEditor.locator('[data-testid="text-block__text"]:not([data-read-only="true"])'),
-    ).toBeVisible()
-    // Set up the portable text editor
-    await pteEditor.focus()
-    await pteEditor.click()
+    await expect(textBlock).toBeVisible()
+    // Click directly on the text block to focus the editor
+    await textBlock.click()
 
     // Open the insert menu
+    await expect(page.getByTestId('insert-menu-button')).toBeVisible()
+    await expect(page.getByTestId('insert-menu-button')).toBeEnabled()
     await page.getByTestId('insert-menu-button').click()
 
     // Set up the modal to open and reference input
@@ -53,6 +56,8 @@ test.skip('In PTE - references in popover', () => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText('Untitled')
 
     // While the popover is open, we should be able to change the fields of the new document
+    await expect(page.getByTestId('string-input').nth(1)).toBeVisible()
+    await expect(page.getByTestId('string-input').nth(1)).toBeEnabled()
     await page.getByTestId('string-input').nth(1).fill('Reference test')
 
     await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
@@ -68,6 +73,9 @@ test.skip('In PTE - references in popover', () => {
     await expect(
       page.getByTestId('reference-input').getByRole('button', {name: 'Open'}),
     ).toBeVisible()
+    await expect(
+      page.getByTestId('reference-input').getByRole('button', {name: 'Open'}),
+    ).toBeEnabled()
     await page.getByTestId('reference-input').getByRole('button', {name: 'Open'}).click()
 
     await expect(page.getByTestId('autocomplete-popover')).toBeVisible()
@@ -99,15 +107,24 @@ test.skip('In PTE - references in popover', () => {
         .getByTestId('default-preview')
         .getByTestId('default-preview__heading'),
     ).not.toBeVisible()
+    await expect(
+      page.getByTestId('popover-edit-dialog').getByTestId('default-preview'),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('popover-edit-dialog').getByTestId('default-preview'),
+    ).toBeEnabled()
     await page.getByTestId('popover-edit-dialog').getByTestId('default-preview').click()
 
     const referencedDocumentTitle = page.getByTestId('document-panel-document-title').nth(1)
     await expect(referencedDocumentTitle).toBeVisible()
 
     // While the popover is open, we should be able to change the fields of the new document
+    await expect(page.getByTestId('string-input').nth(1)).toBeVisible()
+    await expect(page.getByTestId('string-input').nth(1)).toBeEnabled()
     await page.getByTestId('string-input').nth(1).fill('Updated title')
 
     await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
+    await expect(referencedDocumentTitle).toBeVisible()
     await expect(referencedDocumentTitle).toContainText('Updated title')
   })
 })

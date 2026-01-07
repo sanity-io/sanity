@@ -1531,6 +1531,11 @@ exports[`GraphQL - Schema extraction > Should be able to extract a simple schema
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -2498,6 +2503,11 @@ exports[`GraphQL - Schema extraction > Should be able to extract schema with uni
         {
           "fieldName": "palette",
           "type": "SanityImagePalette",
+        },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
         },
       ],
       "kind": "Type",

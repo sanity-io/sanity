@@ -22,6 +22,7 @@ test.describe('auto-updating studio behavior', () => {
   test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({
     page,
   }) => {
+    test.slow()
     // Intercept the API request and provide a mock response
     await page.route('https://sanity-cdn.**/v1/modules/sanity/default/**', (route) => {
       return route.fulfill({
@@ -32,6 +33,8 @@ test.describe('auto-updating studio behavior', () => {
         }),
       })
     })
+    await expect(page.getByTestId('button-resources-menu')).toBeVisible()
+    await expect(page.getByTestId('button-resources-menu')).toBeEnabled()
     await page.getByTestId('button-resources-menu').click()
     await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible()
   })
