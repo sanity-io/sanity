@@ -17,3 +17,4 @@ export {
   type ExtractedQuery,
   QueryExtractionError,
 } from '../typescript/types'
+export {type Filter, type Get} from '../typeUtils'
