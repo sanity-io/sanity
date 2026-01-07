@@ -459,6 +459,7 @@ export default defineConfig([
   {
     ...testingLibrary.configs['flat/react'],
     files: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+    ignores: ['playwright-ct/**/*'],
     rules: {
       ...testingLibrary.configs['flat/react'].rules,
       'testing-library/prefer-user-event': 'error',
