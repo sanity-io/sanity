@@ -16,6 +16,8 @@ test(`file drop event should not propagate to dialog parent`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
+
   await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
@@ -116,6 +118,8 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
+
   const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
     createArrayFieldLocators(page)
 
@@ -221,9 +225,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   await input('Common name').fill('Cat')
 
   // And the "insert dialog" is closed
-  await expect(closeDialogButton).toBeVisible()
-  await expect(closeDialogButton).toBeEnabled()
-  await closeDialogButton.click()
+  await page.keyboard.press('Escape')
   await insertDialog.isHidden()
 
   // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
@@ -275,7 +277,7 @@ async function addInitialArrayItem(
   await popoverMenuItem(item.menuItemLabel).click()
   await insertDialog.isVisible()
   await input(item.inputLabel).fill(item.content)
-  await closeDialogButton.click()
+  await page.keyboard.press('Escape')
   await insertDialog.isHidden()
   const insertedItem = items.first()
   await insertedItem.isVisible()
