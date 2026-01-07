@@ -123,6 +123,17 @@ export default async function extractAction(
 }
 
 /**
+ * Type guard to check if an item conforms to the SchemaValidationProblemGroup shape.
+ */
+function isValidationProblemGroup(item: unknown): item is SchemaValidationProblemGroup {
+  if (typeof item !== 'object' || item === null) {
+    return false
+  }
+  const group = item as Record<string, unknown>
+  return Array.isArray(group.path) && Array.isArray(group.problems)
+}
+
+/**
  * Extracts the `_validation` array from a CoreSchemaError's internal schema object.
  *
  * CoreSchemaError stores the compiled schema (which includes validation results) on
@@ -132,17 +143,25 @@ export default async function extractAction(
 function extractValidationFromCoreSchemaError(
   error: unknown,
 ): SchemaValidationProblemGroup[] | null {
-  if (!(error instanceof CoreSchemaError)) return null
-  const schema: unknown = error.schema
-  if (!schema || typeof schema !== 'object') return null
-  const v = (schema as Record<string, unknown>)._validation
-  if (!Array.isArray(v)) return null
-  const isValid = v.every((group) => {
-    if (typeof group !== 'object' || group === null) return false
-    const g = group as Record<string, unknown>
-    return Array.isArray(g.path) && Array.isArray(g.problems)
-  })
-  return isValid ? (v as SchemaValidationProblemGroup[]) : null
+  if (!(error instanceof CoreSchemaError)) {
+    return null
+  }
+
+  const schema = error.schema as unknown as Record<string, unknown> | null | undefined
+  if (!schema || typeof schema !== 'object') {
+    return null
+  }
+
+  const validation = schema._validation
+  if (!Array.isArray(validation)) {
+    return null
+  }
+
+  if (!validation.every(isValidationProblemGroup)) {
+    return null
+  }
+
+  return validation
 }
 
 /**
@@ -150,10 +169,14 @@ function extractValidationFromCoreSchemaError(
  * errors from worker threads lose their prototype chain during serialization,
  * and may only preserve the error name in the message string.
  */
-function isSchemaError(err: unknown): err is {name: string} {
-  if (typeof err !== 'object' || err === null) return false
-  const obj = err as Record<string, unknown>
-  const name = typeof obj.name === 'string' ? obj.name : undefined
-  const message = typeof (obj as any).message === 'string' ? (obj as any).message : undefined
-  return name === 'SchemaError' || message === 'SchemaError'
+function isSchemaError(err: unknown): err is Error & {name: 'SchemaError'} {
+  if (typeof err !== 'object' || err === null) {
+    return false
+  }
+
+  const errorLike = err as {name?: unknown; message?: unknown}
+  const hasSchemaErrorName = errorLike.name === 'SchemaError'
+  const hasSchemaErrorMessage = errorLike.message === 'SchemaError'
+
+  return hasSchemaErrorName || hasSchemaErrorMessage
 }
