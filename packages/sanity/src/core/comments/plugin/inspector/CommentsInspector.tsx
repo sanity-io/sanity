@@ -339,7 +339,7 @@ function CommentsInspectorInner(
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
     const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
-    if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+    if (!loading && commentToScrollTo && !didScrollToCommentFromParam.current) {
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 

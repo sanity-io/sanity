@@ -126,12 +126,12 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
       file: {
         assetSources: file.assetSources,
-        directUploads: file?.directUploads !== false,
+        directUploads: file?.directUploads ?? true,
       },
       filterField: filterField || (() => true),
       image: {
         assetSources: image.assetSources,
-        directUploads: image?.directUploads !== false,
+        directUploads: image?.directUploads ?? true,
       },
       onChange,
     }),
