@@ -170,6 +170,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
   const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
     createArrayFieldLocators(page)
 
@@ -189,6 +190,8 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // When the "context menu" button is clicked
   const contextMenuButton = book.getByRole('button').nth(2)
+  await expect(contextMenuButton).toBeVisible()
+  await expect(contextMenuButton).toBeEnabled()
   await contextMenuButton.click()
 
   // Then the "context menu" appears
@@ -196,6 +199,8 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // And when the "Add item before.." menuitem is clicked
   const insertBeforeButton = popoverMenuItem('Add item after...')
+  await expect(insertBeforeButton).toBeVisible()
+  await expect(insertBeforeButton).toBeEnabled()
   await insertBeforeButton.click()
 
   // Then an "insert menu" appears
@@ -203,20 +208,28 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // And when the "Species" menuitem is clicked
   const speciesOption = popoverMenuItem('Species')
+  await expect(speciesOption).toBeVisible()
+  await expect(speciesOption).toBeEnabled()
   await speciesOption.click()
 
   // Then the "insert dialog" appears
   await expect(insertDialog).toBeVisible()
 
   // And when the "Common name" input is filled with "Dog"
+  await expect(input('Common name')).toBeVisible()
+  await expect(input('Common name')).toBeEnabled()
   await input('Common name').fill('Cat')
 
   // And the "insert dialog" is closed
+  await expect(closeDialogButton).toBeVisible()
+  await expect(closeDialogButton).toBeEnabled()
   await closeDialogButton.click()
   await insertDialog.isHidden()
 
   // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
+  await expect(items.first()).toBeVisible()
   await expect(items.first()).toHaveText('Book titleBy <unknown>')
+  await expect(items.nth(1)).toBeVisible()
   await expect(items.nth(1)).toHaveText('(Cat)Cat')
 })
 
