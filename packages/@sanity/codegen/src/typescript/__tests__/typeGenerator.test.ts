@@ -559,6 +559,109 @@ describe(TypeGenerator.name, () => {
     expect(q2.queryMapDeclaration).not.toBe(q3.queryMapDeclaration)
   })
 
+  test('should use ArrayMember generic for objects in arrays', async () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          // Inline object array
+          sections: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  _key: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                  },
+                  _type: {
+                    type: 'objectAttribute',
+                    value: {type: 'string', value: 'section'},
+                  },
+                  title: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                    optional: true,
+                  },
+                },
+              },
+            },
+            optional: true,
+          },
+          // Array of reusable type
+          tags: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'inline',
+                name: 'tag',
+              },
+            },
+            optional: true,
+          },
+        },
+      },
+      {
+        type: 'type',
+        name: 'tag',
+        value: {
+          type: 'object',
+          attributes: {
+            _key: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+            },
+            _type: {
+              type: 'objectAttribute',
+              value: {type: 'string', value: 'tag'},
+            },
+            label: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+              optional: true,
+            },
+          },
+        },
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator()
+    const result = await typeGenerator.generateTypes({schema})
+
+    expect(result.code).toMatchInlineSnapshot(`
+      "export type Post = {
+        _id: string;
+        _type: "post";
+        sections?: Array<ArrayMember<{
+          _type: "section";
+          title?: string;
+        }>>;
+        tags?: Array<Tag>;
+      };
+
+      export type Tag = ArrayMember<{
+        _type: "tag";
+        label?: string;
+      }>;
+
+      export type AllSanitySchemaTypes = Post | Tag;
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      type ArrayMember<T> = T & {
+        _key: string;
+      };
+
+      "
+    `)
+  })
+
   test('should handle required image array member', async () => {
     const schema: SchemaType = [
       {
