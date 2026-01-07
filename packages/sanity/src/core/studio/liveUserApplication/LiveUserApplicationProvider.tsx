@@ -21,22 +21,26 @@ interface LiveUserApplicationProviderProps {
  */
 export function LiveUserApplicationProvider({children}: LiveUserApplicationProviderProps) {
   const [userApplication, setUserApplication] = useState<UserApplication | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(true)
 
   const workspaces = useWorkspaces()
   const userApplicationCache = useUserApplicationCache()
 
   useEffect(() => {
     let hasSubscriber = true
+    setIsLoading(true)
     findUserApplication(userApplicationCache, workspaces)
       .then((found) => {
         if (hasSubscriber) {
           setUserApplication(found)
+          setIsLoading(false)
         }
       })
       .catch((error) => {
         debug('Error when determining live user application id:', error)
         if (hasSubscriber) {
           setUserApplication(undefined)
+          setIsLoading(false)
         }
       })
     return () => {
@@ -47,8 +51,9 @@ export function LiveUserApplicationProvider({children}: LiveUserApplicationProvi
   const contextValue = useMemo(
     () => ({
       userApplication,
+      isLoading,
     }),
-    [userApplication],
+    [userApplication, isLoading],
   )
   return (
     <LiveUserApplicationContext.Provider value={contextValue}>
