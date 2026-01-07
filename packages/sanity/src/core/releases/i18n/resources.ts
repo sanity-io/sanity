@@ -492,12 +492,12 @@ const releasesLocaleStrings = {
   'banner.confirm-active-scheduled-drafts_other':
     'There are {{count}} Scheduled Drafts that require scheduling confirmation',
   /** Button text for confirming scheduling of active drafts */
-  'banner.confirm-active-scheduled-drafts.button': 'Confirm scheduling',
+  'banner.confirm-active-scheduled-drafts.button': 'Resume scheduling',
   /** Button text when confirming schedules from paused mode */
-  'banner.confirm-active-scheduled-drafts.button-paused': 'Confirm all schedules',
+  'banner.confirm-active-scheduled-drafts.button-paused': 'Resume all schedules',
 
   /** Dialog title for confirming active scheduled drafts */
-  'confirm-active-scheduled-drafts-dialog.title': 'Confirm Scheduled Drafts',
+  'confirm-active-scheduled-drafts-dialog.title': 'Resume Scheduled Drafts',
   /** Dialog description for confirming active scheduled drafts */
   'confirm-active-scheduled-drafts-dialog.description':
     'Schedule all paused Scheduled Drafts for their intended publish dates',
