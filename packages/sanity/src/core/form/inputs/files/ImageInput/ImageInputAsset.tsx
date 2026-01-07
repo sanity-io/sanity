@@ -87,7 +87,10 @@ function ImageInputAssetComponent(props: {
       pendingFilesRef.current.assetSource = assetSource
       pendingFilesRef.current.files.push(file)
 
-      // Schedule flush after a short delay to collect all files from the same drop
+      // Schedule flush after a short delay to collect all files from the same drop.
+      // UploadTargetCard fires onSelectFile once per file during drag-drop (not batched),
+      // so we use a 50ms window to collect all files before processing them together.
+      // This allows multi-file drag-drop to work correctly with sibling insertion.
       flushTimeoutRef.current = setTimeout(flushPendingFiles, 50)
     },
     [flushPendingFiles],

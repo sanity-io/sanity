@@ -1,12 +1,11 @@
 import {type KeyedSegment} from '@sanity/types'
 import {type ReactNode, useContext, useMemo} from 'react'
-
 import {
   type InsertSiblingFilesCallback,
   type InsertSiblingImagesCallback,
   SiblingImageInsertionContext,
   type SiblingImageInsertionContextValue,
-} from '../../../_singletons/context/SiblingImageInsertionContext'
+} from 'sanity/_singletons'
 
 // Re-export types for convenience
 export type {

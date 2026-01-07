@@ -1,4 +1,4 @@
-import {type AssetFromSource, type AssetSource} from '@sanity/types'
+import type {AssetFromSource, AssetSource} from '@sanity/types'
 import {createContext} from 'sanity/_createContext'
 
 /**
@@ -11,6 +11,12 @@ export type InsertSiblingImagesCallback = (assets: AssetFromSource[], afterKey: 
 
 /**
  * Callback type for uploading and inserting sibling files in array context.
+ * This callback is used for multi-file upload via drag-drop in image arrays.
+ *
+ * Note: This PR focuses on multi-select images. The `files` callback is included
+ * to support drag-drop of multiple files, which naturally flows through the same
+ * code path. A future PR could extend this to file arrays if needed.
+ *
  * @param assetSource - The asset source to use for uploading
  * @param files - The files to upload and insert as new array items
  * @param afterKey - The key of the array item to insert after

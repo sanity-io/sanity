@@ -219,22 +219,32 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       // pass the additional assets to the parent array to create new items
       if (assetsFromSource.length > 1 && effectiveOnInsertSiblingImages) {
         // Extract the current item's key from the path to insert after it
-        const currentKey = extractKeyFromPathSegment(path.slice(-1)[0])
+        const currentKey = extractKeyFromPathSegment(path[path.length - 1])
         if (currentKey) {
           effectiveOnInsertSiblingImages(assetsFromSource.slice(1), currentKey)
         } else {
-          // This shouldn't happen in a properly configured array context, but log a warning
-          console.warn(
-            'ImageInput: Could not extract _key from path segment for sibling insertion. ' +
-              'Additional selected images will be skipped.',
-          )
+          // This shouldn't happen in a properly configured array context
+          push({
+            closable: true,
+            status: 'warning',
+            title: t('inputs.image.multi-select.warning.skipped-images'),
+          })
         }
       }
 
       setSelectedAssetSource(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
-    [onChange, effectiveOnInsertSiblingImages, path, resolveUploader, schemaType, uploadWith],
+    [
+      onChange,
+      effectiveOnInsertSiblingImages,
+      path,
+      push,
+      resolveUploader,
+      schemaType,
+      t,
+      uploadWith,
+    ],
   )
 
   const handleCancelUpload = useCallback(() => {
@@ -333,18 +343,20 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
       // If there are additional files and we're in array context, pass them to the parent
       if (files.length > 1 && effectiveOnInsertSiblingFiles) {
-        const currentKey = extractKeyFromPathSegment(path.slice(-1)[0])
+        const currentKey = extractKeyFromPathSegment(path[path.length - 1])
         if (currentKey) {
           effectiveOnInsertSiblingFiles(assetSource, files.slice(1), currentKey)
         } else {
-          console.warn(
-            'ImageInput: Could not extract _key from path segment for sibling file uploads. ' +
-              'Additional files will be skipped.',
-          )
+          // This shouldn't happen in a properly configured array context
+          push({
+            closable: true,
+            status: 'warning',
+            title: t('inputs.image.multi-select.warning.skipped-files'),
+          })
         }
       }
     },
-    [handleSelectFileToUpload, effectiveOnInsertSiblingFiles, path],
+    [effectiveOnInsertSiblingFiles, handleSelectFileToUpload, path, push, t],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts

@@ -15,7 +15,6 @@ import {
   useState,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {useClient, useListFormat} from '../../../../hooks'
@@ -24,12 +23,13 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
 
-const FooterCard = styled(Card)`
-  border-top: 1px solid var(--card-border-color);
-  position: sticky;
-  bottom: 0;
-  z-index: 200;
-`
+// Inline styles for footer card (replacing styled-component)
+const footerCardStyle: React.CSSProperties = {
+  borderTop: '1px solid var(--card-border-color)',
+  position: 'sticky',
+  bottom: 0,
+  zIndex: 200,
+}
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'
@@ -345,7 +345,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
         )}
         {/* Multi-select footer with Select/Cancel buttons */}
         {isMultiSelect && (
-          <FooterCard tone="default" padding={4}>
+          <Card tone="default" padding={4} style={footerCardStyle}>
             <Flex justify="flex-end" gap={3}>
               <Button
                 type="button"
@@ -366,7 +366,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
                 }
               />
             </Flex>
-          </FooterCard>
+          </Card>
         )}
       </Stack>
     </Dialog>

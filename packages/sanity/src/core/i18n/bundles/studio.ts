@@ -796,6 +796,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.invalid-image-warning.reset-button.text': 'Reset value',
   /** Invalid image value */
   'inputs.image.invalid-image-warning.title': 'Invalid image value',
+  /** Warning message when additional uploaded files could not be inserted due to array context issue */
+  'inputs.image.multi-select.warning.skipped-files':
+    'Some uploaded files could not be added. Only the first file was processed.',
+  /** Warning message when additional selected images could not be inserted due to array context issue */
+  'inputs.image.multi-select.warning.skipped-images':
+    'Some selected images could not be added. Only the first image was inserted.',
   /** Preview of uploaded image */
   'inputs.image.preview-uploaded-image': 'Preview of uploaded image',
   /** The upload could not be completed at this time. */

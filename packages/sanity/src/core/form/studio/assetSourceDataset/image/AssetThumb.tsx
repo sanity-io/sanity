@@ -1,10 +1,9 @@
-import {CheckmarkCircleIcon, CircleIcon} from '@sanity/icons'
 import {type Asset} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Text,
+  Checkbox,
   useToast,
 } from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -89,23 +88,13 @@ const MenuContainer = styled.div`
   }
 `
 
-const CheckboxIndicator = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  z-index: 3;
-  top: 6px;
-  left: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--card-bg-color);
-  color: var(--card-fg-color);
-
-  &[data-selected='true'] {
-    color: var(--card-badge-positive-bg-color, #2e7d32);
-  }
-`
+// Style for the checkbox container in multi-select mode
+const checkboxContainerStyle: React.CSSProperties = {
+  position: 'absolute',
+  zIndex: 3,
+  top: 6,
+  left: 6,
+}
 
 export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -245,9 +234,9 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
       </Button>
       {/* Checkbox indicator for multi-select mode */}
       {isMultiSelect && (
-        <CheckboxIndicator data-selected={isSelected}>
-          <Text size={2}>{isSelected ? <CheckmarkCircleIcon /> : <CircleIcon />}</Text>
-        </CheckboxIndicator>
+        <div style={checkboxContainerStyle}>
+          <Checkbox checked={isSelected} readOnly style={{pointerEvents: 'none'}} />
+        </div>
       )}
       <MenuContainer>
         <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
