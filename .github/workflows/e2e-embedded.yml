@@ -22,7 +22,7 @@ jobs:
       matrix:
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -69,7 +69,7 @@ jobs:
       matrix:
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
