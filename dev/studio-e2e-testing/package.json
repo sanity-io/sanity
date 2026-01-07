@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/color-input": "^5.0.4",
+    "@sanity/color-input": "^6.0.3",
     "@sanity/google-maps-input": "^4.2.1",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",

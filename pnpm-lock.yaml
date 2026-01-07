@@ -492,8 +492,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/utils
       '@sanity/color-input':
-        specifier: ^5.0.4
-        version: 5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^6.0.3
+        version: 6.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       '@sanity/google-maps-input':
         specifier: ^4.2.1
         version: 4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
@@ -602,8 +602,8 @@ importers:
         specifier: ^3.0.6
         version: 3.0.6
       '@sanity/color-input':
-        specifier: ^5.0.4
-        version: 5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
+        specifier: ^6.0.3
+        version: 6.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)
       '@sanity/debug-preview-url-secret-plugin':
         specifier: ^2.0.4
         version: 2.0.4(@sanity/client@7.14.0)(react@19.2.3)(sanity@packages+sanity)
@@ -5294,12 +5294,12 @@ packages:
       sanity: ^5
       styled-components: ^6.1
 
-  '@sanity/color-input@5.0.4':
-    resolution: {integrity: sha512-beU5gFApLuJuBmJJF6uvDJdcL87KVzLwTQmlmjCBdhoEbWGxupk8DzL+cv4kyPxryj6QIdirQ9impPWat1ldOg==}
+  '@sanity/color-input@6.0.3':
+    resolution: {integrity: sha512-BFZasSpq8BmIIATKtdICxUG2YukIP6LbCVgpLHYKsRHmfGWjpnBQ8fKljOhK9u013jraamd9coNsPWCg44nO6Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      react: ^18.3 || ^19
-      sanity: ^4.0.0-0 || ^5.0.0-0
+      react: ^19.2
+      sanity: ^5
       styled-components: ^6.1
 
   '@sanity/color@3.0.6':
@@ -16309,17 +16309,15 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/color-input@5.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)':
+  '@sanity/color-input@6.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
       react: 19.2.3
       react-color: 2.19.3(react@19.2.3)
-      react-compiler-runtime: 1.0.0(react@19.2.3)
       sanity: link:packages/sanity
       styled-components: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
       tinycolor2: 1.6.0
-      use-effect-event: 2.0.3(react@19.2.3)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - react-dom
