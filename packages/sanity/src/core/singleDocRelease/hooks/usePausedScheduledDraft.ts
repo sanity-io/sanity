@@ -21,7 +21,9 @@ export function usePausedScheduledDraft(): {
 
   return useMemo(() => {
     const currentRelease = selectedReleaseId
-      ? allReleases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId)
+      ? allReleases.find(
+          (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedReleaseId,
+        )
       : undefined
 
     return {

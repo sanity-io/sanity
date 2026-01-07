@@ -220,6 +220,47 @@ describe('useScheduleDraftOperations', () => {
     )
   })
 
+  it('should reschedule paused draft successfully', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    const newPublishAt = new Date('2025-01-15T12:00:00Z')
+
+    await act(async () => {
+      await result.current.rescheduleScheduledDraft(activeScheduledRelease, newPublishAt)
+    })
+
+    expect(useReleaseOperationsMockReturn.updateRelease).toHaveBeenCalledWith(
+      {
+        _id: activeScheduledRelease._id,
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          intendedPublishAt: newPublishAt.toISOString(),
+        },
+      },
+      undefined,
+    )
+    expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
+      activeScheduledRelease._id,
+      newPublishAt,
+      undefined,
+    )
+  })
+
+  it('should pause scheduled draft successfully', async () => {
+    const wrapper = await createTestProvider()
+    const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
+
+    await act(async () => {
+      await result.current.pauseScheduledDraft(scheduledRelease)
+    })
+
+    expect(useReleaseOperationsMockReturn.unschedule).toHaveBeenCalledWith(
+      scheduledRelease._id,
+      undefined,
+    )
+  })
+
   it('should handle createScheduledDraft errors gracefully', async () => {
     const wrapper = await createTestProvider()
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})

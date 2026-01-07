@@ -12,7 +12,6 @@ import {useValidationStatus} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
-import {useReleaseOperations} from '../../../releases/store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getDraftId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
@@ -49,7 +48,6 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   // Check if current release is a paused scheduled draft
   const {data: releases = []} = useActiveReleases()
   const perspective = usePerspective()
-  const releaseOperations = useReleaseOperations()
 
   const currentRelease = useMemo(
     () =>
@@ -118,6 +116,26 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     ],
   )
 
+  const disabled = isPaused
+    ? hasValidationErrors // Only check validation errors for paused drafts
+    : hasCardinalityOneReleaseVersions || hasValidationErrors // Full check for regular drafts
+
+  const title = useMemo(() => {
+    if (isPaused && hasValidationErrors) {
+      return t('action.schedule-publish.disabled.validation-issues')
+    }
+
+    if (hasCardinalityOneReleaseVersions) {
+      return t('action.schedule-publish.disabled.cardinality-one')
+    }
+
+    if (hasValidationErrors) {
+      return t('action.schedule-publish.disabled.validation-issues')
+    }
+
+    return t('action.schedule-publish')
+  }, [isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
+
   if (!singleDocReleaseEnabled) {
     return null
   }
@@ -126,20 +144,6 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   if (!draft && !isPaused) {
     return null
   }
-
-  // For paused drafts, allow rescheduling even if they're in cardinality one releases
-  const disabled = isPaused
-    ? hasValidationErrors // Only check validation errors for paused drafts
-    : hasCardinalityOneReleaseVersions || hasValidationErrors // Full check for regular drafts
-
-  const title =
-    isPaused && hasValidationErrors
-      ? t('action.schedule-publish.disabled.validation-issues')
-      : hasCardinalityOneReleaseVersions
-        ? t('action.schedule-publish.disabled.cardinality-one')
-        : hasValidationErrors
-          ? t('action.schedule-publish.disabled.validation-issues')
-          : t('action.schedule-publish')
 
   return {
     icon: CalendarIcon,

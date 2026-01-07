@@ -32,15 +32,12 @@ const createScheduledDraftAction = (
       (r) => getReleaseIdFromReleaseDocumentId(r._id) === release,
     )
 
-    // IMPORTANT: Always call hooks in the same order - cannot conditionally call hooks!
-    // Call useScheduledDraftMenuActions even if releaseDocument is undefined
     const {actions, dialogs} = useScheduledDraftMenuActions({
       release: releaseDocument,
       documentType: type,
       documentId: id,
     })
 
-    // Check custom visibility condition AFTER all hooks are called
     if (visibilityCheck && !visibilityCheck(releaseDocument)) {
       return null
     }
@@ -50,7 +47,6 @@ const createScheduledDraftAction = (
       return null
     }
 
-    // Add safety check for actions
     if (!actions || !actions[actionKey]) {
       return null
     }
