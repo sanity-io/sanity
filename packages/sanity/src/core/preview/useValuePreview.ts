@@ -69,7 +69,7 @@ export function useValuePreview(props: {
       : (chosenPerspectiveStack ?? perspectiveStack)
     const updatedDocId = isGoingToUnpublish(previewValue as SanityDocument)
       ? getPublishedId((previewValue as SanityDocument)._id)
-      : ((previewValue as SanityDocument)._id)
+      : (previewValue as SanityDocument)._id
 
     // allow for previewing the published document when a version is slated for unpublishing
     // but if it's not for unpublishing, then we want to preview the content as was before
