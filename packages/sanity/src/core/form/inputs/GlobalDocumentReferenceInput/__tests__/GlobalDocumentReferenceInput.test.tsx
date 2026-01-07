@@ -401,9 +401,9 @@ describe('user interaction happy paths', () => {
     const preview = screen.getByTestId('preview')
     expect(preview).toHaveTextContent('Product some-product')
     const menuButton = screen.getByTestId('menu-button')
-    await act(() => menuButton.click())
+    act(() => menuButton.click())
     const replaceMenuItem = screen.getByTestId('menu-item-clear')
-    await act(() => replaceMenuItem.click())
+    act(() => replaceMenuItem.click())
 
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([
