@@ -174,7 +174,7 @@ function tryGetAceGlobal(basePath: string) {
   try {
     // eslint-disable-next-line import/no-dynamic-require
     return require(acePath)
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

@@ -88,7 +88,7 @@ export async function bootstrapRemoteTemplate(
     })
 
     const port = getDefaultPortForFramework(packageFramework?.slug)
-    if (corsAdded.includes(port) === false) {
+    if (!corsAdded.includes(port)) {
       debug('Setting CORS origin to http://localhost:%d', port)
       await setCorsOrigin(`http://localhost:${port}`, variables.projectId, apiClient)
       corsAdded.push(port)

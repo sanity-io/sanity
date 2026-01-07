@@ -150,7 +150,7 @@ const getActiveReleaseDocumentsObservable = ({
       },
     )
     .pipe(
-      map((state) => (state.documentIds || []) as string[]),
+      map((state) => state.documentIds || []),
       switchMap((documentIds) => {
         // If no documents, return empty results immediately
         if (documentIds.length === 0) {

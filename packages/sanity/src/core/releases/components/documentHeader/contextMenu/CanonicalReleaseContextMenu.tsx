@@ -104,7 +104,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
           tone="critical"
           disabled={disabled || locked || !hasDiscardPermission}
           tooltipProps={{
-            disabled: hasDiscardPermission === true,
+            disabled: hasDiscardPermission,
             content: t('release.action.permission.error'),
           }}
         />

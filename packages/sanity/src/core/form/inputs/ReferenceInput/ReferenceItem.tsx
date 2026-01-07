@@ -223,7 +223,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       {loadableReferenceInfo.error && (
         <ReferenceMetadataLoadErrorAlertStrip
           errorMessage={loadableReferenceInfo.error.message}
-          onHandleRetry={loadableReferenceInfo.retry!}
+          onHandleRetry={loadableReferenceInfo.retry}
         />
       )}
     </>

@@ -8,7 +8,6 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
 } from '@sanity/types'
 import {startsWith, toString} from '@sanity/util/paths'
 
@@ -160,7 +159,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           const nestedArrayField = getSchemaField(
             childField.type,
             toString(arrayPath),
-          ) as ObjectField<SchemaType>
+          ) as ObjectField
 
           // Get the value of the array field.
           const arrayFieldValue_ = getValueAtPath(documentValue, fieldPath)
@@ -327,8 +326,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       menuItems.push({
         children: childrenMenuItems,
         parentSchemaType: arraySchemaType,
-        path: itemPath as Path,
-        schemaType: itemSchemaField as ObjectSchemaType,
+        path: itemPath,
+        schemaType: itemSchemaField,
         value: item,
       })
     }

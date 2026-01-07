@@ -27,7 +27,7 @@ export function DeletedDocumentBanners() {
     isReleaseDocument(selectedPerspective) &&
     selectedPerspective.state === 'archived'
   ) {
-    return <ArchivedReleaseBanner release={selectedPerspective as ReleaseDocument} />
+    return <ArchivedReleaseBanner release={selectedPerspective} />
   }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />
 }

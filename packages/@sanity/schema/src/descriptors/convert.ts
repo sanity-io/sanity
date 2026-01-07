@@ -565,7 +565,7 @@ function maybeValidation(val: unknown): Validation | undefined {
       }
 
       throw new Error('failed to convert to plain rule')
-    } catch (error) {
+    } catch {
       // If the function could not convert into a plain rule, mark it as custom
       return {
         level: 'error',
@@ -640,7 +640,7 @@ function isIRuleFunction(val: unknown): val is (rule: IRule) => IRule | undefine
 }
 
 // eslint-disable-next-line complexity
-function convertRuleSpec(spec: unknown, optional?: true | undefined): RuleType | undefined {
+function convertRuleSpec(spec: unknown, optional?: true): RuleType | undefined {
   if (!isObject(spec) || !('flag' in spec)) {
     return undefined
   }

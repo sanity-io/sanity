@@ -125,7 +125,7 @@ describe('useScheduledDraftMenuActions', () => {
         try {
           await mockOperations.publishScheduledDraft(release)
           onClose()
-        } catch (error) {
+        } catch {
           mockToastPush({
             closable: true,
             status: 'error',

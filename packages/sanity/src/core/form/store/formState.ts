@@ -803,7 +803,7 @@ export function createPrepareFormState({
       const fieldState = preparePrimitiveInputState({
         ...parent,
         comparisonValue: fieldComparisonValue,
-        value: fieldValue as boolean | string | number | undefined,
+        value: fieldValue,
         schemaType: field.type as PrimitiveSchemaType,
         path: fieldPath,
         readOnly: scopedReadOnly,

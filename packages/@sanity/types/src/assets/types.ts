@@ -179,7 +179,7 @@ export interface AssetSource {
 
   i18nKey?: string
   component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<EmptyProps>
+  icon?: ComponentType
   /** @beta */
   Uploader?: AssetSourceUploaderClass
 }
