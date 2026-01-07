@@ -1,12 +1,12 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {Fragment} from 'react'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
+import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
@@ -211,25 +211,39 @@ export const releasesOverviewColumnDefs: (
         id: 'error',
         sorting: false,
         width: 40,
-        header: () => <Fragment />,
-        cell: ({datum: {error, state}, cellProps}) => (
-          <Flex
-            {...cellProps}
-            align="center"
-            paddingX={2}
-            paddingY={3}
-            sizing="border"
-            data-testid="error-indicator"
-          >
-            {typeof error !== 'undefined' && state === 'active' && (
-              <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
-                <Text size={1}>
-                  <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                </Text>
-              </Tooltip>
-            )}
-          </Flex>
-        ),
+        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+        cell: ({datum, cellProps}) => {
+          const {error, state} = datum
+          const hasError = typeof error !== 'undefined' && state === 'active'
+          const hasWarning = state === 'active' && getIsScheduledDateInPast(datum)
+
+          return (
+            <Flex
+              {...cellProps}
+              align="center"
+              gap={2}
+              paddingX={2}
+              paddingY={3}
+              sizing="border"
+              data-testid="error-indicator"
+            >
+              {hasError && (
+                <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
+                  <Text size={1}>
+                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                  </Text>
+                </Tooltip>
+              )}
+              {hasWarning && (
+                <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
+                  <Text size={1}>
+                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+                  </Text>
+                </Tooltip>
+              )}
+            </Flex>
+          )
+        },
       },
       'all',
     ),

@@ -357,7 +357,7 @@ export interface CliConfig {
 
     /**
      * Enable auto-updates for studios.
-     * {@link https://www.sanity.io/docs/cli#auto-updates}
+     * {@link https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56}
      */
     autoUpdates?: boolean
   }

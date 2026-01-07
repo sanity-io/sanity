@@ -96,6 +96,7 @@ export default [
       ...sanityReact.rules,
       ...sanityImport.rules,
       ...sanityTypescript.rules,
+      'no-negated-condition': 'off',
       '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
       'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
       'import/named': 'off',

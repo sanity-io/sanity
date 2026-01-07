@@ -202,7 +202,7 @@ jobs:
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: efps-report-${{ matrix.shardIndex }}

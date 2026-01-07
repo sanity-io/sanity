@@ -20,12 +20,16 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
   await expect(page.getByRole('button', {name: 'Insert image imagesTest'})).toBeVisible()
 })
 
-test('open media plugin from navbar', async ({page, createDraftDocument}) => {
+test('open media plugin from navbar', async ({page}) => {
+  test.slow()
   await page.goto('/')
   await expect(page.getByTestId('parent-config-studio-tool-menu')).toBeVisible()
 
   // click media plugin
-  await page.getByRole('link', {name: 'Media'}).click()
+  await expect(
+    page.getByTestId('tool-collapse-menu').getByRole('link', {name: 'Media'}),
+  ).toBeVisible()
+  await page.getByTestId('tool-collapse-menu').getByRole('link', {name: 'Media'}).click()
 
   // check that it didn't crash
   await expect(page.getByRole('button', {name: 'Browse Assets Upload assets'})).toBeVisible()

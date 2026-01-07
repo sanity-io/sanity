@@ -292,6 +292,120 @@ describe('validateItem', () => {
     ])
   })
 
+  it('runs nested validation for Rule.fields() inside Rule.all() (issue #8290)', async () => {
+    // This tests that Rule.fields() works when nested inside Rule.all()
+    // Previously, _fieldRules were only extracted from top-level rules, not from nested ones
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          title: 'Test Object',
+          fields: [
+            {name: 'foo', type: 'string'},
+            {name: 'bar', type: 'string'},
+          ],
+          validation: (rule: Rule) =>
+            rule.all([
+              rule.required(),
+              rule.fields({
+                foo: (r) => r.required(),
+                bar: (r) => r.required(),
+              }),
+            ]),
+        },
+      ],
+    })
+
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
+
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {foo: 5},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toMatchObject([
+      {
+        item: {message: 'Expected type "String", got "Number"'},
+        level: 'error',
+        path: ['foo'],
+      },
+      {
+        item: {message: 'Required'},
+        level: 'error',
+        path: ['bar'],
+      },
+    ])
+  })
+
+  it('runs nested validation for Rule.fields() inside Rule.either()', async () => {
+    // This tests that Rule.fields() works when nested inside Rule.either()
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          title: 'Test Object',
+          fields: [
+            {name: 'foo', type: 'string'},
+            {name: 'bar', type: 'string'},
+          ],
+          validation: (rule: Rule) =>
+            rule.either([
+              rule.fields({
+                foo: (r) => r.required(),
+              }),
+              rule.fields({
+                bar: (r) => r.required(),
+              }),
+            ]),
+        },
+      ],
+    })
+
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
+
+    // When both foo and bar are missing, at least one of the either conditions should fail
+    // With our fix, the fields() validation inside either() should be found and executed
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toMatchObject([
+      {
+        item: {message: 'Required'},
+        level: 'error',
+        path: ['foo'],
+      },
+      {
+        item: {message: 'Required'},
+        level: 'error',
+        path: ['bar'],
+      },
+    ])
+  })
+
   // @todo this one fails, needs investigation for what is actually the expected outcome
   it.skip('runs nested validation for markDefs', async () => {
     const linkValidationSpy = vi.fn(() => true as const)
