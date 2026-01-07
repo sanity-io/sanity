@@ -21,7 +21,7 @@ import {type Previewable} from './types'
  * @deprecated use useValuePreview instead
  */
 export function unstable_useValuePreview(args: Parameters<typeof useValuePreview>[0]) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
   return useValuePreview(args)
 }
 
@@ -69,7 +69,7 @@ export function useValuePreview(props: {
       : (chosenPerspectiveStack ?? perspectiveStack)
     const updatedDocId = isGoingToUnpublish(previewValue as SanityDocument)
       ? getPublishedId((previewValue as SanityDocument)._id)
-      : ((previewValue as SanityDocument)._id as string)
+      : ((previewValue as SanityDocument)._id)
 
     // allow for previewing the published document when a version is slated for unpublishing
     // but if it's not for unpublishing, then we want to preview the content as was before
