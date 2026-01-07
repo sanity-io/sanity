@@ -45,7 +45,10 @@ export async function expectCreatedStatus(
   statusElement: Locator,
   options: DocumentStatusOptions = DEFAULT_OPTIONS,
 ) {
-  await expect(statusElement).toContainText(documentStatusPatterns.created, {
+  // The created status now won't be shown because we are creating the document in two transactions, the first one
+  // which wil create it with the initial value, either the copy of the published or the document initial values and the second
+  // transaction which will update the document with the new value.
+  await expect(statusElement).toContainText(documentStatusPatterns.edited, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
   })
