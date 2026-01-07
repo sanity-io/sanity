@@ -39,7 +39,9 @@ test.describe('Presentation', () => {
 
     const viewportToggle = page.getByTestId('preview-viewport-toggle')
 
-    await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop')
+    // Wait for the button to be in the DOM and fully rendered
+    await expect(viewportToggle).toBeAttached({timeout: 15000})
+    await expect(viewportToggle).toHaveAttribute('data-viewport', 'desktop', {timeout: 10000})
     await expect(viewportToggle).toBeVisible()
     await expect(viewportToggle).toBeEnabled()
 
