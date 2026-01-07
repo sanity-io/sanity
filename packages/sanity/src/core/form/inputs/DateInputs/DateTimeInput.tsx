@@ -1,6 +1,5 @@
 import {isKeySegment} from '@sanity/types'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
-import {fromString as pathFromString} from '@sanity/util/paths'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -9,6 +8,7 @@ import {
   parse,
   type ParseResult,
 } from '@sanity/util/legacyDateFormat'
+import {fromString as pathFromString} from '@sanity/util/paths'
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
