@@ -42,13 +42,11 @@ function DefaultIcon({title, subtitle}: {title: string; subtitle: string}): Reac
   const darkened = darken(color, 0.4)
   const lightened = lighten(color, 0.4)
 
-  /* eslint-disable no-negated-condition */
   const textColor = !hasBadContrast(color, 'readable', darkened)
     ? darkened
     : !hasBadContrast(color, 'readable', lightened)
       ? lightened
       : readableColor(color)
-  /* eslint-enable no-negated-condition */
 
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">

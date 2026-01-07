@@ -29,6 +29,7 @@ jobs:
           path: node_modules/.cache/prettier/.prettier-cache
           key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm lint:fix
+      - run: pnpm chore:format:fix
       - uses: actions/create-github-app-token@v2
         # Run even if `pnpm lint:fix` fails
         if: always()
