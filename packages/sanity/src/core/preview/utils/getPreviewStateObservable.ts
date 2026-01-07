@@ -1,4 +1,9 @@
-import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
+import {
+  type PrepareViewOptions,
+  type PreviewValue,
+  type SanityDocument,
+  type SchemaType,
+} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
@@ -32,11 +37,12 @@ export function getPreviewStateObservable(
   schemaType: SchemaType,
   documentId: string,
   perspective?: PerspectiveStack,
+  viewOptions?: PrepareViewOptions,
 ): Observable<PreviewState> {
   const perspectiveSnapshot = documentPreviewStore.observeForPreview(
     {_id: getPublishedId(documentId)},
     schemaType,
-    {perspective},
+    {perspective, viewOptions},
   )
 
   const versionOrDraftId = isVersionId(documentId) ? getVersionFromId(documentId) : 'drafts'
@@ -44,6 +50,7 @@ export function getPreviewStateObservable(
   const preparedVersionSnapshot = versionOrDraftId
     ? documentPreviewStore.observeForPreview({_id: getPublishedId(documentId)}, schemaType, {
         perspective: [versionOrDraftId],
+        viewOptions,
       })
     : of(null)
 

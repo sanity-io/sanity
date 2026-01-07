@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Features
+
+* add @sanity/sveltekit support to typegen query detection ([#11659](https://github.com/sanity-io/sanity/issues/11659)) ([7926a94](https://github.com/sanity-io/sanity/commit/7926a94242ae4d99cf51f0b6fbacb941aab34717)) by Copilot (198982749+Copilot@users.noreply.github.com)
+* add Scheduled Drafts menu item to the releases navbar ([#11202](https://github.com/sanity-io/sanity/issues/11202)) ([2b27e00](https://github.com/sanity-io/sanity/commit/2b27e008d30c5eb684137ce8b370bad67996bb2a)) by Jordan Lawrence (jordanl17@me.com)
+* **codegen:** support `.svelte` files ([#11677](https://github.com/sanity-io/sanity/issues/11677)) ([268ce47](https://github.com/sanity-io/sanity/commit/268ce47759038e1fdbbc8ba6773932999fafb75f)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **core:** weight `mode` param on create intents ([#5762](https://github.com/sanity-io/sanity/issues/5762)) ([8dae9a7](https://github.com/sanity-io/sanity/commit/8dae9a7bb632ce67a2d777b40a0f051c041dd5d4)) by Rupert Dunk (rupert@rupertdunk.com)
+* update ResourceMenu studio version and registration ([#11520](https://github.com/sanity-io/sanity/issues/11520)) ([6b48277](https://github.com/sanity-io/sanity/commit/6b482776044f7be5b057578e6c95b5fe63703c89)) by Dain Cilke (dain.cilke@gmail.com)
+
+### Bug Fixes
+
+* **cli:** update init output docs command text ([#10074](https://github.com/sanity-io/sanity/issues/10074)) ([ad1c6bd](https://github.com/sanity-io/sanity/commit/ad1c6bd7065820824e333395194c7a486a9a06a3)) by Mark Michon (mark.michon@sanity.io)
+* **codegen,cli:** handle CSS imports when require(esm) happens ([#11701](https://github.com/sanity-io/sanity/issues/11701)) ([8be4aa6](https://github.com/sanity-io/sanity/commit/8be4aa6b54f91e8c012782cf969fdb55c9a0c473)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **codegen:** don't warn on `import.meta.hot` ([#11726](https://github.com/sanity-io/sanity/issues/11726)) ([7f5bae1](https://github.com/sanity-io/sanity/commit/7f5bae1a9bbfd109b1cb1950c2b70fde6e3bdce2)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **core:** ensure `_type` is set on initial value templates ([#11621](https://github.com/sanity-io/sanity/issues/11621)) ([0378dce](https://github.com/sanity-io/sanity/commit/0378dce55746936e8becf71e83d15bda97efaa2f)) by Bjørge Næss (bjoerge@gmail.com)
+* **core:** remove redundant tooltips from workspace menu buttons ([#11448](https://github.com/sanity-io/sanity/issues/11448)) ([a8977ac](https://github.com/sanity-io/sanity/commit/a8977ac71b23f7e77c9d8dac2e8681514753d66a)) by David Annez (david.annez@gmail.com)
+* **deps:** Update CodeMirror ([#11640](https://github.com/sanity-io/sanity/issues/11640)) ([33ffc37](https://github.com/sanity-io/sanity/commit/33ffc37db7ba079320e1f55d25765bb78932701e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.14.0 ([#11691](https://github.com/sanity-io/sanity/issues/11691)) ([17d8aac](https://github.com/sanity-io/sanity/commit/17d8aac058bb96b2e3cd4083e5e4fdb21a7754c0)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/insert-menu to v3.0.3 ([#11643](https://github.com/sanity-io/sanity/issues/11643)) ([9360af4](https://github.com/sanity-io/sanity/commit/9360af46dbe0c944e4a7ddd916335be99e1f094c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to ^4.0.2 ([#11644](https://github.com/sanity-io/sanity/issues/11644)) ([1d62afb](https://github.com/sanity-io/sanity/commit/1d62afb00b8b64a70528a943cb67786011cc39f9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.24.1 ([#11679](https://github.com/sanity-io/sanity/issues/11679)) ([ce27be7](https://github.com/sanity-io/sanity/commit/ce27be7364e6d42bdff64d2477173f60d8274a62)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.25.0 ([#11697](https://github.com/sanity-io/sanity/issues/11697)) ([a58262b](https://github.com/sanity-io/sanity/commit/a58262bac5a0b7c97dad514910af6c9153a37426)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11641](https://github.com/sanity-io/sanity/issues/11641)) ([6f25f33](https://github.com/sanity-io/sanity/commit/6f25f33cfe282c00d5212435da58ebb78722fe27)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11673](https://github.com/sanity-io/sanity/issues/11673)) ([54c30a6](https://github.com/sanity-io/sanity/commit/54c30a65e5c9867753dc236e6f95bb7fd46c249c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11646](https://github.com/sanity-io/sanity/issues/11646)) ([795e94b](https://github.com/sanity-io/sanity/commit/795e94bb6f0e3dd13d6da4c6c71a214aa6b4f441)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11681](https://github.com/sanity-io/sanity/issues/11681)) ([72daebe](https://github.com/sanity-io/sanity/commit/72daebe63517d22764f68504d4cc2ec3830bafbf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **form:** pass current document to reference filter function ([#11619](https://github.com/sanity-io/sanity/issues/11619)) ([226d150](https://github.com/sanity-io/sanity/commit/226d15052b059378961d3823805854f7ff8421c8)) by Bjørge Næss (bjoerge@gmail.com)
+* **preview:** don't show schema icon when prepare() omits media ([#11623](https://github.com/sanity-io/sanity/issues/11623)) ([2878756](https://github.com/sanity-io/sanity/commit/28787561e762cdf24d49428a07b523657da8e77d)) by David Annez (david.annez@gmail.com)
+* **releases:** don't validate references in releases ([#11622](https://github.com/sanity-io/sanity/issues/11622)) ([dd33f5b](https://github.com/sanity-io/sanity/commit/dd33f5b97528b9db17acc23fec82d4cfc410cf27)) by Bjørge Næss (bjoerge@gmail.com)
+* **releases:** hide 'Copy to' context menu if no drafts or releases ([#11616](https://github.com/sanity-io/sanity/issues/11616)) ([946d211](https://github.com/sanity-io/sanity/commit/946d211bd95b01d76677f7ca9841099c6321f6db)) by Bjørge Næss (bjoerge@gmail.com)
+* remove `ServerStyleSheet` that snuck back in ([#11664](https://github.com/sanity-io/sanity/issues/11664)) ([029f8fe](https://github.com/sanity-io/sanity/commit/029f8fe061e8a2fbb0fedde3172e406a14003217)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **sanity:** allow display of anonymous versions in history inspector ([#11702](https://github.com/sanity-io/sanity/issues/11702)) ([26e2519](https://github.com/sanity-io/sanity/commit/26e2519a62f22ae9faf8264490f707e0d43e1e50)) by Ash (ash@sanity.io)
+* **structure:** add clickOutside workaround for nested modals ([#11617](https://github.com/sanity-io/sanity/issues/11617)) ([49d252d](https://github.com/sanity-io/sanity/commit/49d252dcab140699590df3536efe9b6d08f0073f)) by Bjørge Næss (bjoerge@gmail.com)
+* temporary pin `@sanity/migrate` to `5.1.0` ([#11656](https://github.com/sanity-io/sanity/issues/11656)) ([296c398](https://github.com/sanity-io/sanity/commit/296c398a3e135feeab60a4d764674ca95f3e6f52)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* timing issues causing test flake ([#11627](https://github.com/sanity-io/sanity/issues/11627)) ([3b99e38](https://github.com/sanity-io/sanity/commit/3b99e38be84bc3bbc4d8c9805e29b1bdb5855084)) by Jordan Lawrence (jordanl17@me.com)
+* update recent search version to 3 and improve search sanitization logic ([#11620](https://github.com/sanity-io/sanity/issues/11620)) ([ee5da89](https://github.com/sanity-io/sanity/commit/ee5da89184902032f2f6ccbd937aa8c541344394)) by Jordan Lawrence (jordanl17@me.com)
+* **validation:** extract Rule.fields() from nested Rule.all() and Rule.either() ([#11685](https://github.com/sanity-io/sanity/issues/11685)) ([ef88ca9](https://github.com/sanity-io/sanity/commit/ef88ca91c175356ce7ccb3edf9d0f5ed4a76f9b1)) by David Annez (david.annez@gmail.com)
+
 ## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
 
 ### Features

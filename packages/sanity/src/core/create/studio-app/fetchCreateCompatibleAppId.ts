@@ -35,10 +35,10 @@ async function fetchStudiosWithUrl(
   projectId: string,
   internalSuffix: string,
 ) {
-  const apps = (await client.request({
+  const apps = await client.request<StudioAppResponse[]>({
     method: 'GET',
     url: `/projects/${projectId}/user-applications`,
-  })) as StudioAppResponse[]
+  })
 
   return apps.map((app) => ({
     ...app,

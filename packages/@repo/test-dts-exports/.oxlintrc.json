@@ -5,6 +5,7 @@
     "no-console": "off",
     "no-await-in-loop": "off",
     "no-explicit-any": "off",
-    "no-unused-vars": "error"
+    "no-unused-vars": "error",
+    "no-unnecessary-type-arguments": "off"
   }
 }

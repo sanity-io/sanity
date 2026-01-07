@@ -6,7 +6,7 @@ import {isRecord} from '../../util/isRecord'
 import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
 
-const WEIGHTED_CREATE_INTENT_PARAMS = ['template']
+const WEIGHTED_CREATE_INTENT_PARAMS = ['mode', 'template']
 const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {

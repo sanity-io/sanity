@@ -11,11 +11,14 @@ export interface SanityMonorepo {
 
 export async function getMonorepoAliases(monorepoPath: string) {
   const {default: aliases} = await import('@repo/dev-aliases')
-  return Object.fromEntries(
-    Object.entries(aliases).map(([pkgName, pkgPath]) => {
-      return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
-    }),
-  )
+  const entries = Object.entries(aliases).map(([pkgName, pkgPath]) => {
+    return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
+  })
+  return Object.fromEntries([
+    // Ensure package.json imports are mapped correctly
+    ...entries.map(([pkgName]) => [`${pkgName}/package.json`, `${pkgName}/package.json`]),
+    ...entries,
+  ])
 }
 
 /**
