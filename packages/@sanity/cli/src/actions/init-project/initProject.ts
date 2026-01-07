@@ -50,6 +50,7 @@ import {
 } from '../../util/organizationUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
+import {type EditorName, setupMCP} from '../mcp/mcp'
 import {createProject} from '../project/createProject'
 import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
 import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
@@ -66,7 +67,6 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
-import {type EditorName, setupMCP} from './setupMCP'
 import templates from './templates'
 import {
   sanityCliTemplate,

@@ -1,6 +1,6 @@
 import {defineTrace} from '@sanity/telemetry'
 
-import {type EditorName} from '../../actions/init-project/setupMCP'
+import {type EditorName} from '../../actions/mcp/mcp'
 
 interface MCPConfigureTraceData {
   detectedEditors: EditorName[]
