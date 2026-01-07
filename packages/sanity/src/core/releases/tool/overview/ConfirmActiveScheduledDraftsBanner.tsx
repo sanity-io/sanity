@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
@@ -13,7 +13,8 @@ import {type Mode} from './queryParamUtils'
 interface ConfirmActiveScheduledDraftsBannerProps {
   releases: ReleaseDocument[]
   releaseGroupMode: Mode
-  setReleaseGroupMode: Dispatch<SetStateAction<Mode>>
+  hasDateFilter: boolean
+  onNavigateToPaused: () => void
 }
 
 /**
@@ -22,7 +23,8 @@ interface ConfirmActiveScheduledDraftsBannerProps {
 export function ConfirmActiveScheduledDraftsBanner({
   releases,
   releaseGroupMode,
-  setReleaseGroupMode,
+  hasDateFilter,
+  onNavigateToPaused,
 }: ConfirmActiveScheduledDraftsBannerProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -33,21 +35,17 @@ export function ConfirmActiveScheduledDraftsBanner({
     [releases],
   )
 
-  const handleNavigateToPaused = useCallback(() => {
-    setReleaseGroupMode('paused')
-  }, [setReleaseGroupMode])
-
-  const handleOpenDialog = useCallback(() => {
-    setIsDialogOpen(true)
-  }, [])
-
-  const handleCloseDialog = useCallback(() => {
-    setIsDialogOpen(false)
-  }, [])
-
   if (activeScheduledDrafts.length === 0) {
     return null
   }
+
+  const shouldOpenDialog = releaseGroupMode === 'paused' && !hasDateFilter
+
+  const buttonText = shouldOpenDialog
+    ? t('banner.confirm-active-scheduled-drafts.button-paused')
+    : t('banner.confirm-active-scheduled-drafts.button')
+
+  const handleClick = shouldOpenDialog ? () => setIsDialogOpen(true) : onNavigateToPaused
 
   return (
     <>
@@ -67,16 +65,7 @@ export function ConfirmActiveScheduledDraftsBanner({
               </Text>
             </Flex>
             <Flex flex="none">
-              <Button
-                text={
-                  releaseGroupMode === 'paused'
-                    ? t('banner.confirm-active-scheduled-drafts.button-paused')
-                    : t('banner.confirm-active-scheduled-drafts.button')
-                }
-                mode="bleed"
-                tone="caution"
-                onClick={releaseGroupMode === 'paused' ? handleOpenDialog : handleNavigateToPaused}
-              />
+              <Button text={buttonText} mode="bleed" tone="caution" onClick={handleClick} />
             </Flex>
           </Flex>
         </Card>
@@ -85,7 +74,7 @@ export function ConfirmActiveScheduledDraftsBanner({
       {isDialogOpen && (
         <ConfirmScheduledDraftsDialog
           activeScheduledDrafts={activeScheduledDrafts}
-          onClose={handleCloseDialog}
+          onClose={() => setIsDialogOpen(false)}
         />
       )}
     </>
