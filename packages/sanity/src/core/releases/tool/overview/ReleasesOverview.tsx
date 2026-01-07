@@ -30,7 +30,11 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
+import {
+  filterReleasesForOverview,
+  getReleaseDefaults,
+  shouldShowReleaseInView,
+} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
@@ -66,6 +70,11 @@ const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', directio
 const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   column: 'lastActivity',
   direction: 'desc',
+}
+
+function toLocalDateComponents(utcDate: Date, utcToZoneDate: (date: Date) => Date): Date {
+  const tz = utcToZoneDate(utcDate)
+  return new Date(tz.getFullYear(), tz.getMonth(), tz.getDate())
 }
 
 export function ReleasesOverview() {
@@ -156,9 +165,6 @@ export function ReleasesOverview() {
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
     cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
-  const showConfirmActiveScheduledDraftsBanner =
-    cardinalityView === 'drafts' &&
-    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
@@ -209,12 +215,8 @@ export function ReleasesOverview() {
     (date?: Date) =>
       setReleaseFilterDate((prevFilterDate) => {
         if (!date) return undefined
-
-        const timeZoneAdjustedDate = utcToCurrentZoneDate(date)
-
-        return prevFilterDate && isSameDay(prevFilterDate, timeZoneAdjustedDate)
-          ? undefined
-          : timeZoneAdjustedDate
+        const normalized = toLocalDateComponents(date, utcToCurrentZoneDate)
+        return prevFilterDate && isSameDay(prevFilterDate, normalized) ? undefined : normalized
       }),
     [utcToCurrentZoneDate],
   )
@@ -222,6 +224,11 @@ export function ReleasesOverview() {
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
     setReleaseGroupMode('active')
+  }, [])
+
+  const handleNavigateToPaused = useCallback(() => {
+    setReleaseFilterDate(undefined)
+    setReleaseGroupMode('paused')
   }, [])
 
   useEffect(() => {
@@ -397,45 +404,32 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    const filterByMode = (items: TableRelease[]) => {
-      if (cardinalityView !== 'drafts') return items
+    const dateFilter = releaseFilterDate
+      ? {
+          filterDate: releaseFilterDate,
+          getTimezoneAdjustedDateTimeRange,
+        }
+      : undefined
 
-      if (releaseGroupMode === 'active') {
-        return items.filter(
-          (release) => release.state === 'scheduled' || release.state === 'scheduling',
-        )
-      }
-
-      if (releaseGroupMode === 'paused') {
-        return items.filter((release) => isPausedCardinalityOneRelease(release))
-      }
-
-      return items
-    }
-
-    if (!releaseFilterDate) {
-      const sourceReleases = releaseGroupMode === 'archived' ? archivedReleases : tableReleases
-      return filterByMode(sourceReleases)
-    }
-
-    const [startOfDayForTimeZone, endOfDayForTimeZone] =
-      getTimezoneAdjustedDateTimeRange(releaseFilterDate)
-
-    const dateFiltered = tableReleases.filter((release) => {
-      if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
-      const publishDateUTC = new Date(release.publishAt)
-      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
+    return filterReleasesForOverview({
+      releases: tableReleases,
+      archivedReleases,
+      cardinalityView,
+      releaseGroupMode,
+      dateFilter,
     })
-
-    return filterByMode(dateFiltered)
   }, [
-    releaseFilterDate,
-    releaseGroupMode,
     tableReleases,
     archivedReleases,
-    getTimezoneAdjustedDateTimeRange,
     cardinalityView,
+    releaseGroupMode,
+    releaseFilterDate,
+    getTimezoneAdjustedDateTimeRange,
   ])
+
+  const showConfirmActiveScheduledDraftsBanner =
+    cardinalityView === 'drafts' &&
+    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
 
   const renderCalendarFilter = useMemo(() => {
     return (
@@ -535,7 +529,8 @@ export function ReleasesOverview() {
             <ConfirmActiveScheduledDraftsBanner
               releases={releases}
               releaseGroupMode={releaseGroupMode}
-              setReleaseGroupMode={setReleaseGroupMode}
+              hasDateFilter={Boolean(releaseFilterDate)}
+              onNavigateToPaused={handleNavigateToPaused}
             />
           )}
 
