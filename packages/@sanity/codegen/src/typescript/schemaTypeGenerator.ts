@@ -17,7 +17,7 @@ import {ARRAY_OF, INTERNAL_REFERENCE_SYMBOL} from './constants'
 import {
   getFilterArrayUnionType,
   getUniqueIdentifierForName,
-  sanitizeIdentifier,
+  isIdentifierName,
   weakMapMemo,
 } from './helpers'
 import {type ExtractedQuery, type TypeEvaluationStats} from './types'
@@ -157,10 +157,8 @@ export class SchemaTypeGenerator {
   // Helper function used to generate TS types for object properties.
   private generateTsObjectProperty(key: string, attribute: ObjectAttribute): t.TSPropertySignature {
     const type = this.generateTsType(attribute.value)
-    const propertySignature = t.tsPropertySignature(
-      t.identifier(sanitizeIdentifier(key)),
-      t.tsTypeAnnotation(type),
-    )
+    const keyNode = isIdentifierName(key) ? t.identifier(key) : t.stringLiteral(key)
+    const propertySignature = t.tsPropertySignature(keyNode, t.tsTypeAnnotation(type))
     propertySignature.optional = attribute.optional
 
     return propertySignature

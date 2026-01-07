@@ -47,11 +47,13 @@ describe(SchemaTypeGenerator.name, () => {
         members: [
           {
             key: {name: '_id', type: 'Identifier'},
+            optional: undefined,
             type: 'TSPropertySignature',
             typeAnnotation: {type: 'TSTypeAnnotation', typeAnnotation: {type: 'TSStringKeyword'}},
           },
           {
             key: {name: '_type', type: 'Identifier'},
+            optional: undefined,
             type: 'TSPropertySignature',
             typeAnnotation: {
               type: 'TSTypeAnnotation',
@@ -358,6 +360,52 @@ describe(SchemaTypeGenerator.name, () => {
       expect(generateCode(inlineAliasWithNoMatchingType)).toMatchInlineSnapshot(
         `"unknown // Unable to locate the referenced type "noMatchingType" in schema"`,
       )
+    })
+
+    test('quotes non-identifier keys, preserves valid identifier keys', () => {
+      const schema = new SchemaTypeGenerator([
+        {
+          type: 'type',
+          name: 'objectWithMixedKeys',
+          value: {
+            type: 'object',
+            attributes: {
+              // Valid identifiers - should NOT be quoted
+              'normalKey': {type: 'objectAttribute', value: {type: 'string'}},
+              '_privateKey': {type: 'objectAttribute', value: {type: 'string'}},
+              '$dollarKey': {type: 'objectAttribute', value: {type: 'string'}},
+              'camelCase': {type: 'objectAttribute', value: {type: 'string'}},
+              'PascalCase': {type: 'objectAttribute', value: {type: 'string'}},
+              'UPPER_SNAKE': {type: 'objectAttribute', value: {type: 'string'}},
+              // Invalid identifiers - MUST be quoted
+              'kebab-case': {type: 'objectAttribute', value: {type: 'string'}},
+              'dot.notation': {type: 'objectAttribute', value: {type: 'string'}},
+              'with spaces': {type: 'objectAttribute', value: {type: 'string'}},
+              '123startsWithNumber': {type: 'objectAttribute', value: {type: 'string'}},
+              'special@char': {type: 'objectAttribute', value: {type: 'string'}},
+              '': {type: 'objectAttribute', value: {type: 'string'}},
+            },
+          },
+        },
+      ])
+
+      const objectType = schema.getType('objectWithMixedKeys')?.tsType
+      expect(generateCode(objectType)).toMatchInlineSnapshot(`
+        "{
+          normalKey: string;
+          _privateKey: string;
+          $dollarKey: string;
+          camelCase: string;
+          PascalCase: string;
+          UPPER_SNAKE: string;
+          "kebab-case": string;
+          "dot.notation": string;
+          "with spaces": string;
+          "123startsWithNumber": string;
+          "special@char": string;
+          "": string;
+        }"
+      `)
     })
 
     test('generates TS Types for objects', () => {

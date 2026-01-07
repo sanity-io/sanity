@@ -15,6 +15,15 @@ export function sanitizeIdentifier(input: string): string {
   return `${input.replace(/^\d/, '_').replace(/[^$\w]+(.)/g, (_, char) => char.toUpperCase())}`
 }
 
+/**
+ * Checks if a string is a valid ECMAScript IdentifierName.
+ * IdentifierNames start with a letter, underscore, or $, and contain only
+ * alphanumeric characters, underscores, or $.
+ */
+export function isIdentifierName(input: string): boolean {
+  return /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(input)
+}
+
 export function normalizeIdentifier(input: string): string {
   const sanitized = sanitizeIdentifier(input)
   return `${sanitized.charAt(0).toUpperCase()}${sanitized.slice(1)}`
