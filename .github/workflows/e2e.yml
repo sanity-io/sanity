@@ -110,6 +110,7 @@ jobs:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
           echo "Creating dataset: ${{ env.CHROMIUM_DATASET }}"
           pnpm e2e:setup
@@ -120,6 +121,7 @@ jobs:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_DATASET: ${{ env.FIREFOX_DATASET }}
+          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
         run: |
           echo "Creating dataset: ${{ env.FIREFOX_DATASET }}"
           pnpm e2e:setup
