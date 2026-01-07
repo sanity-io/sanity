@@ -1,5 +1,5 @@
 import {type GlobalDocumentReferenceValue} from '@sanity/types'
-import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
+import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
