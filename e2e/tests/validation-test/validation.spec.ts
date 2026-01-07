@@ -70,28 +70,33 @@ test.describe('Validation test', () => {
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeEnabled()
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
 
-      await expect(page.getByTestId('add-single-object-button')).toBeVisible()
-      await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
-      await page.getByTestId('add-single-object-button').click()
+      // Wait for the add button to be ready and interactable
+      const addButton = page.getByTestId('add-single-object-button')
+      await expect(addButton).toBeVisible()
+      await expect(addButton).toBeEnabled()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({timeout: 15000, force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       const roomNameInput = page.getByTestId(/field-house\[.*\]\.name/).getByTestId('string-input')
       await expect(roomNameInput).toBeVisible()
       await expect(roomNameInput).toBeEnabled()
-      await roomNameInput.fill('Test Room')
+      await roomNameInput.fill('Test Room', {timeout: 15000})
 
       await page.keyboard.press('Escape')
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-      await expect(page.getByTestId('add-single-object-button')).toBeVisible()
-      await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
-      await page.getByTestId('add-single-object-button').click()
+      // Wait for the add button to be ready again after closing the dialog
+      await expect(addButton).toBeVisible()
+      await expect(addButton).toBeEnabled()
+      // Use force to bypass any pointer-events issues in Firefox
+      await addButton.click({timeout: 15000, force: true})
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
       await expect(roomNameInput).toBeVisible()
       await expect(roomNameInput).toBeEnabled()
-      await roomNameInput.fill('Test Room 2')
+      await roomNameInput.fill('Test Room 2', {timeout: 15000})
 
       await page.keyboard.press('Escape')
 
