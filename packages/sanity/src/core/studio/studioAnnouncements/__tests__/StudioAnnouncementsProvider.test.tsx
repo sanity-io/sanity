@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {render, renderHook, waitFor, screen} from '@testing-library/react'
+import {render, renderHook, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'

@@ -1,4 +1,4 @@
-import {defineField, type StringSchemaType} from '@sanity/types'
+import {defineField} from '@sanity/types'
 import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'

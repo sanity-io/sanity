@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {render, waitFor, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {noop} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 

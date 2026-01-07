@@ -1,5 +1,5 @@
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
-import {waitFor, screen} from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
