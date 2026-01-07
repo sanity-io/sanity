@@ -41,6 +41,6 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 export const unstable_useObserveDocument = (
   args: Parameters<typeof useUnstableObserveDocument>,
 ) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
+  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
   return useUnstableObserveDocument(...args)
 }

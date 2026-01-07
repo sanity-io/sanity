@@ -21,7 +21,7 @@ import {type Previewable} from './types'
  * @deprecated use useValuePreview instead
  */
 export function unstable_useValuePreview(args: Parameters<typeof useValuePreview>[0]) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
+  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
   return useValuePreview(args)
 }
 
