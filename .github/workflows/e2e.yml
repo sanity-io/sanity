@@ -10,9 +10,13 @@ env:
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+    paths-ignore:
+      - "examples/**"
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [main]
+    paths-ignore:
+      - "examples/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -22,8 +26,6 @@ jobs:
   install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    outputs:
-      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -37,16 +39,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
-
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
 
       - name: Add PR Comment placeholder for e2e Preview Environment
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples_only.outputs.examples_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -56,7 +53,7 @@ jobs:
 
       - name: Add PR Comment placeholder for e2e report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples_only.outputs.examples_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           comment-tag: "playwright-e2e-report"
           message: |
@@ -65,7 +62,6 @@ jobs:
             Waiting for E2E tests to finish…
 
       - name: Store Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -73,7 +69,6 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v4
         with:
@@ -81,11 +76,10 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.check_examples_only.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
   dataset-setup:
-    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: [install]
@@ -127,7 +121,6 @@ jobs:
           pnpm e2e:setup
       # TODO: Add a dataset setup for main for each project [chromium, firefox]
   deploy-preview:
-    if: needs.install.outputs.examples_only != 'true'
     runs-on: ubuntu-latest
     needs: [install]
     env:
@@ -223,7 +216,6 @@ jobs:
             </details>
 
   playwright-test:
-    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: [deploy-preview, dataset-setup]
@@ -303,7 +295,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always() && needs.install.outputs.examples_only != 'true'
+    if: always()
     needs: [install, playwright-test]
     runs-on: ubuntu-latest
     steps:
