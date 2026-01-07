@@ -1,4 +1,4 @@
-import {defineField, type StringSchemaType} from '@sanity/types'
+import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
@@ -22,7 +22,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: () => mockUseTimeZoneDefault(),
 }))
 
-const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+const DateTimeInputWithFormValue = (inputProps: StringInputProps) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
     <DateTimeInput {...inputProps} />
   </FormValueProvider>

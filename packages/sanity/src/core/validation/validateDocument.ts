@@ -63,7 +63,7 @@ function extractFieldRulesFromRule(rule: Rule): NonNullable<Rule['_fieldRules']>
   // Check for nested rules in 'all' or 'either' constraints
   for (const ruleSpec of rule._rules) {
     if (ruleSpec.flag === 'all' || ruleSpec.flag === 'either') {
-      const childRules = ruleSpec.constraint as Rule[]
+      const childRules = ruleSpec.constraint
       if (Array.isArray(childRules)) {
         for (const childRule of childRules) {
           results.push(...extractFieldRulesFromRule(childRule))

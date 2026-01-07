@@ -176,8 +176,8 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     filter((ev): ev is MutationEvent => ev.type === 'mutation'),
     withLatestFrom(currentBufferedDocument$),
     map(([mutationEvent, bufferedDocument]) => {
-      bufferedDocument!.arrive(new Mutation(mutationEvent))
-      return getUpdatedSnapshot(bufferedDocument!)
+      bufferedDocument.arrive(new Mutation(mutationEvent))
+      return getUpdatedSnapshot(bufferedDocument)
     }),
   )
 
@@ -186,10 +186,10 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     withLatestFrom(currentBufferedDocument$),
     tap(([action, bufferedDocument]: [Action, BufferedDocument]) => {
       if (action.type === 'mutation') {
-        bufferedDocument!.add(new Mutation({mutations: action.mutations}))
+        bufferedDocument.add(new Mutation({mutations: action.mutations}))
       }
       if (action.type === 'commit') {
-        void bufferedDocument!.commit()
+        void bufferedDocument.commit()
       }
     }),
     // We subscribe to this only for the side effects
@@ -206,14 +206,14 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
     currentBufferedDocument$
       .pipe(
         take(1),
-        tap((bufferedDocument) => bufferedDocument!.commit()),
+        tap((bufferedDocument) => bufferedDocument.commit()),
       )
       .subscribe()
   }
 
   // A stream of this document's snapshot
   const snapshot$ = merge(
-    currentBufferedDocument$.pipe(map((bufferedDocument) => bufferedDocument!.LOCAL)),
+    currentBufferedDocument$.pipe(map((bufferedDocument) => bufferedDocument.LOCAL)),
     mutations$.pipe(map(getDocument)),
     rebase$.pipe(map(getDocument)),
     snapshotAfterSync$,
@@ -221,7 +221,7 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
 
   const remoteSnapshot$: Observable<RemoteSnapshotEvent> = merge(
     currentBufferedDocument$.pipe(
-      map((bufferedDocument) => bufferedDocument!.document.HEAD as any),
+      map((bufferedDocument) => bufferedDocument.document.HEAD as any),
       map(toSnapshotEvent),
     ),
     remoteMutations,

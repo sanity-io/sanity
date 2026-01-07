@@ -77,7 +77,7 @@ export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
       let eventId: string | undefined
       // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
       const run = () => {
-        eventId = errorReporter.reportError(event.error as unknown as Error)?.eventId
+        eventId = errorReporter.reportError(event.error as Error)?.eventId
       }
       try {
         run()

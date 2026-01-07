@@ -68,7 +68,7 @@ export function createFieldDefinitions(
           acc.documentTypes[schemaType.name] = schemaType
         }
         if (isObjectDefinition(schemaType)) {
-          acc.objectTypes[schemaType.name] = schemaType as ObjectDefinition
+          acc.objectTypes[schemaType.name] = schemaType
         }
         return acc
       },

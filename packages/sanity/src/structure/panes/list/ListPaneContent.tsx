@@ -15,7 +15,7 @@ import {type PaneListItem, type PaneListItemDivider} from '../../types'
 interface ListPaneContentProps {
   childItemId?: string
   isActive?: boolean
-  items: (PaneListItem<unknown> | PaneListItemDivider)[] | undefined
+  items: (PaneListItem | PaneListItemDivider)[] | undefined
   layout?: GeneralPreviewLayoutKey
   showIcons: boolean
   title: string
@@ -84,17 +84,17 @@ export function ListPaneContent(props: ListPaneContentProps) {
 
       // Specific true/false on item should have precedence over list setting
       if (typeof itemShowIcon !== 'undefined') {
-        return itemShowIcon !== false // Boolean(item.icon)
+        return itemShowIcon // Boolean(item.icon)
       }
 
       // If no item setting is defined, defer to the pane settings
-      return showIcons !== false // Boolean(item.icon)
+      return showIcons // Boolean(item.icon)
     },
     [showIcons],
   )
 
   const renderItem = useCallback(
-    (item: PaneListItem<unknown> | PaneListItemDivider, ctx: CommandListItemContext) => {
+    (item: PaneListItem | PaneListItemDivider, ctx: CommandListItemContext) => {
       const {virtualIndex: itemIndex} = ctx
 
       if (item.type === 'divider') {
