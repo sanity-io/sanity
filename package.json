@@ -26,7 +26,7 @@
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",
     "chore:lint:inspect": "eslint --inspect-config",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
-    "chore:oxlint:fix": "oxlint --type-aware --fix --fix-suggestions --quiet",
+    "chore:oxlint:fix": "oxlint --type-aware --fix --quiet",
     "clean": "npm-run-all build:clean clean:deps",
     "clean:deps": "pnpm --r --parallel exec rm -Rf node_modules && rm -Rf node_modules",
     "depcheck": "pnpm check:deps",
