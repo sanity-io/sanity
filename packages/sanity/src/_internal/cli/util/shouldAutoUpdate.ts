@@ -45,7 +45,7 @@ export function shouldAutoUpdate({flags, cliConfig, output}: AutoUpdateSources):
         `The \`autoUpdates\` config has moved to \`deployment.autoUpdates\`.
 Please update \`sanity.cli.ts\` or \`sanity.cli.js\` and make the following change:
 ${chalk.red(`-  autoUpdates: ${cliConfig.autoUpdates},`)}
-${chalk.green(`+  deployment: {autoUpdates: ${cliConfig.autoUpdates}}}`)}
+${chalk.green(`+  deployment: {autoUpdates: ${cliConfig.autoUpdates}},`)}
 `,
       ),
     )

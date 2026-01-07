@@ -66,6 +66,8 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
 
 test.describe('Enhanced Object Dialog - when tab focusing on an array item', () => {
   test.beforeEach(async ({createDraftDocument, page}) => {
+    test.slow()
+
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
 
@@ -78,7 +80,13 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
       .getByTestId('string-input')
       .fill('Blue, the whale')
 
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    const closeButton = page
+      .getByTestId('nested-object-dialog')
+      .getByRole('button', {name: 'Close dialog'})
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+
+    await closeButton.click()
     await expect(modal).not.toBeVisible()
 
     await page.getByTestId('field-animals').focus()
