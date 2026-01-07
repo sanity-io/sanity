@@ -29,7 +29,7 @@ describe('PrimitiveField', () => {
       const {member, TestWrapper} = setupTest('number', undefined)
 
       // When
-      const {getByTestId} = render(
+      render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -39,7 +39,7 @@ describe('PrimitiveField', () => {
       )
 
       // Then
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('')
     })
@@ -49,7 +49,7 @@ describe('PrimitiveField', () => {
       const {member, TestWrapper} = setupTest('number', 42)
 
       // When
-      const {getByTestId} = render(
+      render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -59,7 +59,7 @@ describe('PrimitiveField', () => {
       )
 
       // Then
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('42')
     })
@@ -69,7 +69,7 @@ describe('PrimitiveField', () => {
       const {member, TestWrapper} = setupTest('number', 0)
 
       // When
-      const {getByTestId} = render(
+      render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -79,7 +79,7 @@ describe('PrimitiveField', () => {
       )
 
       // Then
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('0')
     })
@@ -126,7 +126,7 @@ describe('PrimitiveField', () => {
       // Given
       const {member, TestWrapper} = setupTest('number', 1)
 
-      const {getByTestId, rerender} = render(
+      const {rerender} = render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -147,7 +147,7 @@ describe('PrimitiveField', () => {
       )
 
       // Then
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       expect(input.value).toEqual('42')
     })
@@ -157,7 +157,7 @@ describe('PrimitiveField', () => {
       // Given
       const {member, TestWrapper} = setupTest('number', 1)
 
-      const {getByTestId, rerender} = render(
+      const {rerender} = render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -167,10 +167,12 @@ describe('PrimitiveField', () => {
       )
 
       // When
-      // await userEvent.type(getByTestId('number-input'), '.00')
+      // await userEvent.type(screen.getByTestId('number-input'), '.00')
       // uses fireEvent.change instead of userEvent.type due to https://github.com/testing-library/user-event/issues/1150
       // eslint-disable-next-line testing-library/prefer-user-event
-      fireEvent.change(getByTestId('number-input'), {target: {value: '1.00', valueAsNumber: 1}})
+      fireEvent.change(screen.getByTestId('number-input'), {
+        target: {value: '1.00', valueAsNumber: 1},
+      })
       member.field.value = 1
 
       rerender(
@@ -182,7 +184,7 @@ describe('PrimitiveField', () => {
       )
 
       // Then
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       expect(input).toBeInstanceOf(HTMLInputElement)
       await waitFor(() => expect(input.value).toEqual('1.00'))
     })
@@ -191,7 +193,7 @@ describe('PrimitiveField', () => {
       // Given
       const {formCallbacks, member, TestWrapper} = setupTest('number', undefined)
 
-      const {getByTestId} = render(
+      render(
         <PrimitiveField
           member={member}
           renderInput={defaultRenderInput}
@@ -201,7 +203,7 @@ describe('PrimitiveField', () => {
       )
 
       // When
-      const input = getByTestId('number-input') as HTMLInputElement
+      const input = screen.getByTestId('number-input') as HTMLInputElement
       await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 

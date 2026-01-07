@@ -1,5 +1,5 @@
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
-import {waitFor} from '@testing-library/react'
+import {waitFor, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
@@ -218,7 +218,7 @@ describe('FileInput with asset', () => {
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
-    // const {queryByTestId} = render(<BaseFileInput value={value} />)
+    // render(<BaseFileInput value={value} />)
     // const {result} = render({
     //   value,
     // })

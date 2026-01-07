@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {render, waitFor} from '@testing-library/react'
+import {render, waitFor, screen} from '@testing-library/react'
 import {noop} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
@@ -52,11 +52,11 @@ describe('provisioning', () => {
     })
     const TestProvider = await createWrapperComponent(client as any)
 
-    const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
+    render(<TestProvider>{assetSourceComponent}</TestProvider>)
 
     await waitFor(() => {
-      expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
-      expect(getByTestId('ERROR_NO_ORGANIZATION_FOUND')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-provision-error')).toBeInTheDocument()
+      expect(screen.getByTestId('ERROR_NO_ORGANIZATION_FOUND')).toBeInTheDocument()
     })
   })
 
@@ -73,10 +73,10 @@ describe('provisioning', () => {
     })
     const TestProvider = await createWrapperComponent(client as any)
 
-    const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
+    render(<TestProvider>{assetSourceComponent}</TestProvider>)
 
     await waitFor(() => {
-      expect(getByTestId('media-library-absent-warning')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-absent-warning')).toBeInTheDocument()
     })
   })
 
@@ -104,11 +104,11 @@ describe('provisioning', () => {
       },
     })
     const TestProvider = await createWrapperComponent(client as any)
-    const {getByTestId} = render(<TestProvider>{assetSourceComponent}</TestProvider>)
+    render(<TestProvider>{assetSourceComponent}</TestProvider>)
 
     await waitFor(() => {
-      expect(getByTestId('media-library-provision-error')).toBeInTheDocument()
-      expect(getByTestId('MEDIA_LIBRARY_ERROR_UNEXPECTED')).toBeInTheDocument()
+      expect(screen.getByTestId('media-library-provision-error')).toBeInTheDocument()
+      expect(screen.getByTestId('MEDIA_LIBRARY_ERROR_UNEXPECTED')).toBeInTheDocument()
     })
   })
 })

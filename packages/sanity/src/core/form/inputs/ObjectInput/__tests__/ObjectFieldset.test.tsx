@@ -48,13 +48,13 @@ describe('fieldset with default options', () => {
         )
       },
     })
-    const fieldset = result.queryByTestId('fieldset-withDefaults')
+    const fieldset = screen.queryByTestId('fieldset-withDefaults')
     expect(fieldset).toBeVisible()
     expect(fieldset!.tagName).toBe('FIELDSET')
     const legend = fieldset!.querySelector('legend')
     expect(legend).toBeVisible()
     expect(legend).toContainHTML('Fieldset with defaults')
-    const field1 = result.queryByTestId('input-withDefaults1')
+    const field1 = screen.queryByTestId('input-withDefaults1')
     expect(field1).toBeVisible()
     expect(fieldset).toContainElement(field1)
   })
@@ -80,7 +80,7 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     expect(fieldset!.tagName).toBe('FIELDSET')
     const legend = fieldset!.querySelector('legend')
@@ -94,7 +94,7 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     const toggleButton = fieldset!.querySelector('legend button')
     expect(toggleButton).toBeVisible()
@@ -106,9 +106,9 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
-    const field1 = result.queryByTestId('input-collapsibleWithDefaults1')
+    const field1 = screen.queryByTestId('input-collapsibleWithDefaults1')
     expect(field1).toBeNull()
   })
 
@@ -118,11 +118,11 @@ describe('collapsible fieldset with default options', () => {
       render: (inputProps) => <ObjectInput {...inputProps} />,
     })
 
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
     expect(fieldset).toBeVisible()
     const toggleButton = fieldset!.querySelector('legend button')
 
-    expect(result.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
+    expect(screen.queryByTestId('input-collapsibleWithDefaults1')).toBeNull()
 
     expect(toggleButton).toBeDefined()
     await userEvent.click(toggleButton!)
@@ -141,7 +141,7 @@ describe('collapsible fieldset with default options', () => {
       ),
     })
 
-    const fieldset = result.queryByTestId('fieldset-collapsibleWithDefaults')
+    const fieldset = screen.queryByTestId('fieldset-collapsibleWithDefaults')
 
     const toggleButton = fieldset!.querySelector('legend button')
     expect(toggleButton).toBeDefined()

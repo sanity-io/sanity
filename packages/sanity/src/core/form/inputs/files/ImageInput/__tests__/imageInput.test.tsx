@@ -131,8 +131,8 @@ describe('ImageInput with empty state', () => {
       render: (inputProps) => <BaseImageInput {...inputProps} />,
     })
     // const {result} = renderImageInput({type: imagesTest})
-    expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
-    expect(result.getByText('Drag or paste image here')).toBeInTheDocument()
+    expect(screen.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
+    expect(screen.getByText('Drag or paste image here')).toBeInTheDocument()
   })
 
   // it.todo('renders new image when a new image in uploaded')
@@ -142,15 +142,15 @@ describe('ImageInput with empty state', () => {
   // /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   // it('renders the browse button when it has at least one element in assetSources', () => {
-  //   // const {queryByTestId} = render(<BaseImageInput />)
+  //   // render(<BaseImageInput />)
   //   const {result} = renderImageInput({type: imagesTest})
 
-  //   expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-  //   expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
+  //   expect(screen.queryByTestId('file-input-upload-button')).toBeInTheDocument()
+  //   expect(screen.queryByTestId('file-input-browse-button')).toBeInTheDocument()
   // })
 
   // it('renders only the upload button when it has no assetSources', () => {
-  //   // const {queryByTestId} = render(<BaseImageInput assetSources={[]} />)
+  //   // render(<BaseImageInput assetSources={[]} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       assetSources: [],
@@ -158,8 +158,8 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-  //   expect(result.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
+  //   expect(screen.queryByTestId('file-input-upload-button')).toBeInTheDocument()
+  //   expect(screen.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
   // })
 
   // it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
@@ -169,23 +169,23 @@ describe('ImageInput with empty state', () => {
   //     },
   //     type: imagesTest,
   //   })
-  //   const browseButton = result.queryByTestId('file-input-multi-browse-button')
+  //   const browseButton = screen.queryByTestId('file-input-multi-browse-button')
 
-  //   expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
+  //   expect(screen.queryByTestId('file-input-upload-button')).toBeInTheDocument()
   //   expect(browseButton).toBeInTheDocument()
 
   //   fireEvent.click(browseButton!)
 
   //   await waitFor(() => {
-  //     expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-  //     expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+  //     expect(screen.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+  //     expect(screen.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
   //   })
   // })
 
   // /* directUploads - allows for user to upload images directly (default is true) */
 
   // it('renders the upload button as disabled when directUploads is false', () => {
-  //   // const {queryByTestId} = render(<BaseImageInput directUploads={false} />)
+  //   // render(<BaseImageInput directUploads={false} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       directUploads: false,
@@ -193,13 +193,13 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
+  //   expect(screen.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
   //     'true'
   //   )
   // })
 
   // it('has default text that mentions that you cannot upload images when directUploads is false', async () => {
-  //   // const {queryByText} = render(<BaseImageInput directUploads={false} />)
+  //   // render(<BaseImageInput directUploads={false} />)
   //   const {result} = renderImageInput({
   //     props: {
   //       directUploads: false,
@@ -207,13 +207,13 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   expect(result.queryByText(`Can't upload files here`)).toBeInTheDocument()
+  //   expect(screen.queryByText(`Can't upload files here`)).toBeInTheDocument()
   // })
 
   // /* readOnly - the image input is read only or not */
 
   // it('the upload button is disabled when the input is readOnly', () => {
-  //   // const {queryByTestId} = render(<BaseImageInput readOnly />)
+  //   // render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -221,13 +221,13 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
+  //   expect(screen.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
   //     'true'
   //   )
   // })
 
   // it('does not allow for browsing when input is readOnly', () => {
-  //   // const {queryByTestId} = render(<BaseImageInput readOnly />)
+  //   // render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -235,13 +235,13 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   expect(result.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
+  //   expect(screen.queryByTestId('file-input-browse-button')!.getAttribute('data-disabled')).toBe(
   //     'true'
   //   )
   // })
 
   // it('does not allow for upload when input is readOnly', async () => {
-  //   // const {queryByTestId, queryByText} = render(<BaseImageInput readOnly />)
+  //   // render(<BaseImageInput readOnly />)
   //   const {result} = renderImageInput({
   //     props: {
   //       readOnly: true,
@@ -249,7 +249,7 @@ describe('ImageInput with empty state', () => {
   //     type: imagesTest,
   //   })
 
-  //   const input = result.queryByTestId('file-button-input')
+  //   const input = screen.queryByTestId('file-button-input')
 
   //   fireEvent.change(input!, {
   //     target: {
@@ -258,7 +258,7 @@ describe('ImageInput with empty state', () => {
   //   })
 
   //   await waitFor(() => {
-  //     expect(result.queryByText(`Read only`)).toBeInTheDocument()
+  //     expect(screen.queryByText(`Read only`)).toBeInTheDocument()
   //   })
   // })
 
@@ -282,13 +282,13 @@ describe('ImageInput with empty state', () => {
 //   }
 
 //   it('renders the right url as default when it has asset', () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} />)
+//     // render(<BaseImageInput value={value} />)
 //     const {result} = renderImageInput({
 //       props: {value},
 //       type: imagesTest,
 //     })
 
-//     expect(result.queryByTestId('hotspot-image-input')!.getAttribute('src')).toBe(
+//     expect(screen.queryByTestId('hotspot-image-input')!.getAttribute('src')).toBe(
 //       'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png?w=2000&fit=max&auto=format'
 //     )
 //   })
@@ -300,35 +300,35 @@ describe('ImageInput with empty state', () => {
 //   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
 //   it('renders the browse button in the image menu when it has at least one element in assetSources', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} />)
+//     // render(<BaseImageInput value={value} />)
 //     const {result} = renderImageInput({
 //       props: {value},
 //       type: imagesTest,
 //     })
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-browse-button')).toBeInTheDocument()
+//       expect(screen.queryByTestId('file-input-browse-button')).toBeInTheDocument()
 //     })
 //   })
 
 //   it('renders the browse button in the image menu when it has no assetSources', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} assetSources={[]} />)
+//     // render(<BaseImageInput value={value} assetSources={[]} />)
 //     const {result} = renderImageInput({
 //       props: {assetSources: [], value},
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-upload-button')).toBeInTheDocument()
-//       expect(result.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
+//       expect(screen.queryByTestId('file-input-upload-button')).toBeInTheDocument()
+//       expect(screen.queryByTestId('file-input-browse-button')).not.toBeInTheDocument()
 //     })
 //   })
 
 //   it('renders the multiple browse buttons in the image menu when it has multiple assetSources', async () => {
-//     // const {queryByTestId} = render(
+//     // render(
 //     //   <BaseImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} />
 //     // )
 //     const {result} = renderImageInput({
@@ -339,18 +339,18 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-//       expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+//       expect(screen.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+//       expect(screen.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
 //     })
 //   })
 
 //   /* directUploads - allows for user to upload images directly (default is true) */
 
 //   it('renders the upload button as disabled when directUploads is false', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} directUploads={false} />)
+//     // render(<BaseImageInput value={value} directUploads={false} />)
 //     const {result} = renderImageInput({
 //       props: {
 //         directUploads: false,
@@ -359,10 +359,10 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
+//       expect(screen.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
 //         ''
 //       )
 //     })
@@ -371,7 +371,7 @@ describe('ImageInput with empty state', () => {
 //   /* readOnly - the image input is read only or not */
 
 //   it('the upload button in the dropdown menu is disabled when the input is readOnly', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
+//     // render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -380,17 +380,17 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
+//       expect(screen.queryByTestId('file-input-upload-button')!.getAttribute('data-disabled')).toBe(
 //         ''
 //       )
 //     })
 //   })
 
 //   it('does not allow for browsing when input is readOnly', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
+//     // render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -399,15 +399,15 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-browse-button')!.hasAttribute('data-disabled'))
+//       expect(screen.queryByTestId('file-input-browse-button')!.hasAttribute('data-disabled'))
 //     })
 //   })
 
 //   it('does not allow for browsing with multiple sources when input is readOnly', async () => {
-//     // const {queryByTestId} = render(
+//     // render(
 //     //   <BaseImageInput value={value} assetSources={[{name: 'source1'}, {name: 'source2'}]} readOnly />
 //     // )
 
@@ -420,20 +420,20 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
 //       expect(
-//         result.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled')
+//         screen.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled')
 //       )
 //       expect(
-//         result.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled')
+//         screen.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled')
 //       )
 //     })
 //   })
 
 //   it('does not allow for clearing the image when input is readOnly', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} readOnly />)
+//     // render(<BaseImageInput value={value} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -442,15 +442,15 @@ describe('ImageInput with empty state', () => {
 //       type: imagesTest,
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
+//       expect(screen.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
 //     })
 //   })
 
 //   it('can open the edit details (if the option exists) dialog when the input is readOnly', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} readOnly />)
+//     // render(<BaseImageInput value={value} type={imageType} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -459,13 +459,13 @@ describe('ImageInput with empty state', () => {
 //       type: {...imagesTest, ...imageType},
 //     })
 
-//     expect(result.queryByTestId('options-menu-edit-details')!.getAttribute('data-disabled')).toBe(
+//     expect(screen.queryByTestId('options-menu-edit-details')!.getAttribute('data-disabled')).toBe(
 //       'false'
 //     )
 //   })
 
 //   it('does not allow for upload when input is readOnly & the image src is the same', async () => {
-//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} readOnly />)
+//     // render(<BaseImageInput value={value} type={imageType} readOnly />)
 //     const {result} = renderImageInput({
 //       props: {
 //         readOnly: true,
@@ -474,16 +474,16 @@ describe('ImageInput with empty state', () => {
 //       type: {...imagesTest, ...imageType},
 //     })
 
-//     fireEvent.click(result.queryByTestId('options-menu-button')!)
+//     fireEvent.click(screen.queryByTestId('options-menu-button')!)
 
-//     fireEvent.change(result.queryByTestId('file-button-input')!, {
+//     fireEvent.change(screen.queryByTestId('file-button-input')!, {
 //       target: {
 //         files: [new File(['(⌐□_□)'], 'cool_sunglasses.png', {type: 'image/png'})],
 //       },
 //     })
 
 //     await waitFor(() => {
-//       expect(result.queryByTestId('hotspot-image-input')!.getAttribute('src')).toBe(
+//       expect(screen.queryByTestId('hotspot-image-input')!.getAttribute('src')).toBe(
 //         'https://cdn.sanity.io/images/some-project-id/some-dataset/4ae478f00c330e7089cbd0f6126d3626e432e595-702x908.png?w=2000&fit=max&auto=format'
 //       )
 //     })
@@ -501,7 +501,7 @@ describe('ImageInput with empty state', () => {
 //       type: {...imagesTest, ...imageType},
 //     })
 
-//     // const {queryByTestId} = render(<BaseImageInput value={value} type={imageType} />)
-//     expect(result.queryByTestId('options-menu-edit-details')).toBeInTheDocument()
+//     // render(<BaseImageInput value={value} type={imageType} />)
+//     expect(screen.queryByTestId('options-menu-edit-details')).toBeInTheDocument()
 //   })
 // })

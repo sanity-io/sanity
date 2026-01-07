@@ -100,7 +100,7 @@ describe('StudioAnnouncementsCard', () => {
 
     const wrapper = await createAnnouncementWrapper()
 
-    const {queryByText} = render(
+    render(
       <StudioAnnouncementsCard
         {...announcementCardProps}
         isOpen={false}
@@ -110,8 +110,8 @@ describe('StudioAnnouncementsCard', () => {
       {wrapper},
     )
 
-    expect(queryByText("What's new")).toBeNull()
-    expect(queryByText(announcementCardProps.title)).toBeNull()
+    expect(screen.queryByText("What's new")).toBeNull()
+    expect(screen.queryByText(announcementCardProps.title)).toBeNull()
   })
   test('calls onCardClick when the card is clicked', async () => {
     const onCardClickMock = vi.fn()
