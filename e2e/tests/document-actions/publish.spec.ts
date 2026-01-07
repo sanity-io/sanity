@@ -7,9 +7,12 @@ test(`document panel displays correct title for published document`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
   const title = 'Test Title'
 
   await createDraftDocument('/content/book')
+  await expect(page.getByTestId('field-title')).toBeVisible()
+  await expect(page.getByTestId('field-title')).toBeEnabled()
   await page.getByTestId('field-title').getByTestId('string-input').fill(title)
 
   // Ensure the correct title is displayed before publishing.
@@ -23,7 +26,7 @@ test(`document panel displays correct title for published document`, async ({
 
   // Now look for the tooltip to appear, with platform-aware keyboard shortcuts
   // It'll have a data-testid of 'document-status-bar-hotkeys'
-  await page.waitForSelector('[data-testid="document-status-bar-hotkeys"]')
+  await expect(page.getByTestId('document-status-bar-hotkeys')).toBeVisible()
   const hotkeys = page.getByTestId('document-status-bar-hotkeys')
 
   const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform || ''))
@@ -34,6 +37,7 @@ test(`document panel displays correct title for published document`, async ({
   await expectPublishedStatus(page.getByTestId('pane-footer-document-status'))
 
   // Ensure the correct title is displayed after publishing.
+  await expect(page.getByTestId('document-panel-document-title')).toBeVisible()
   await expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
 })
 

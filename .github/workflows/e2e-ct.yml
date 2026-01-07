@@ -83,7 +83,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -108,7 +108,7 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: full-playwright-ct-report

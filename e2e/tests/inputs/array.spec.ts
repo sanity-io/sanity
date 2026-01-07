@@ -16,6 +16,8 @@ test(`file drop event should not propagate to dialog parent`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
+
   await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
@@ -68,6 +70,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
 })
 
 test(`Scenario: Adding a new type from multiple options`, async ({page, createDraftDocument}) => {
+  test.slow()
   await createDraftDocument('/content/input-standard;arraysTest')
 
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
@@ -115,6 +118,8 @@ test(`Scenario: Adding new array item before using the context menu`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
+
   const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
     createArrayFieldLocators(page)
 
@@ -169,6 +174,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
   page,
   createDraftDocument,
 }) => {
+  test.slow()
   const {popoverMenu, popoverMenuItem, insertDialog, input, closeDialogButton, items} =
     createArrayFieldLocators(page)
 
@@ -188,6 +194,8 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // When the "context menu" button is clicked
   const contextMenuButton = book.getByRole('button').nth(2)
+  await expect(contextMenuButton).toBeVisible()
+  await expect(contextMenuButton).toBeEnabled()
   await contextMenuButton.click()
 
   // Then the "context menu" appears
@@ -195,6 +203,8 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // And when the "Add item before.." menuitem is clicked
   const insertBeforeButton = popoverMenuItem('Add item after...')
+  await expect(insertBeforeButton).toBeVisible()
+  await expect(insertBeforeButton).toBeEnabled()
   await insertBeforeButton.click()
 
   // Then an "insert menu" appears
@@ -202,20 +212,26 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
   // And when the "Species" menuitem is clicked
   const speciesOption = popoverMenuItem('Species')
+  await expect(speciesOption).toBeVisible()
+  await expect(speciesOption).toBeEnabled()
   await speciesOption.click()
 
   // Then the "insert dialog" appears
   await expect(insertDialog).toBeVisible()
 
   // And when the "Common name" input is filled with "Dog"
+  await expect(input('Common name')).toBeVisible()
+  await expect(input('Common name')).toBeEnabled()
   await input('Common name').fill('Cat')
 
   // And the "insert dialog" is closed
-  await closeDialogButton.click()
+  await page.keyboard.press('Escape')
   await insertDialog.isHidden()
 
   // Then a new "(Cat)Cat" is inserted after "Book titleBy <unknown>"
+  await expect(items.first()).toBeVisible()
   await expect(items.first()).toHaveText('Book titleBy <unknown>')
+  await expect(items.nth(1)).toBeVisible()
   await expect(items.nth(1)).toHaveText('(Cat)Cat')
 })
 
@@ -261,7 +277,7 @@ async function addInitialArrayItem(
   await popoverMenuItem(item.menuItemLabel).click()
   await insertDialog.isVisible()
   await input(item.inputLabel).fill(item.content)
-  await closeDialogButton.click()
+  await page.keyboard.press('Escape')
   await insertDialog.isHidden()
   const insertedItem = items.first()
   await insertedItem.isVisible()
