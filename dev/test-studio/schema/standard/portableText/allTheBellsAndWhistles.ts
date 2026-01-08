@@ -1,6 +1,6 @@
 import {BellIcon, ColorWheelIcon, DocumentPdfIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Rule} from '@sanity/types'
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType, type FieldProps} from 'sanity'
 
 import {InfoBoxPreview} from './InfoBoxPreview'
 
@@ -423,7 +423,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       type: 'array',
       title: 'Content, comments disabled',
       components: {
-        field: (props) => {
+        field: (props: FieldProps) => {
           // eslint-disable-next-line camelcase
           return props.renderDefault({...props, __internal_comments: undefined})
         },
