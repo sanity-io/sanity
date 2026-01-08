@@ -144,8 +144,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      // alias: getSanityPkgExportAliases(sanityPkgPath, mode),
-      // dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
       dedupe: ['styled-components'],
     },
     define: {
