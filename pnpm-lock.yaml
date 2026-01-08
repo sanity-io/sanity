@@ -2070,9 +2070,6 @@ importers:
       mendoza:
         specifier: ^3.0.8
         version: 3.0.8
-      module-alias:
-        specifier: ^2.2.3
-        version: 2.2.3
       motion:
         specifier: ^12.25.0
         version: 12.25.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2299,9 +2296,6 @@ importers:
       '@types/log-symbols':
         specifier: ^2.0.0
         version: 2.0.0
-      '@types/module-alias':
-        specifier: ^2.0.4
-        version: 2.0.4
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
@@ -5909,9 +5903,6 @@ packages:
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
-
-  '@types/module-alias@2.0.4':
-    resolution: {integrity: sha512-5+G/QXO/DvHZw60FjvbDzO4JmlD/nG5m2/vVGt25VN1eeP3w2bCoks1Wa7VuptMPM1TxJdx6RjO70N9Fw0nZPA==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -10180,9 +10171,6 @@ packages:
 
   modern-ahocorasick@1.1.0:
     resolution: {integrity: sha512-sEKPVl2rM+MNVkGQt3ChdmD8YsigmXdn5NifZn6jiwn9LRJpWm8F3guhaqrJT/JOat6pwpbXEk6kv+b9DMIjsQ==}
-
-  module-alias@2.2.3:
-    resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
 
   motion-dom@12.24.11:
     resolution: {integrity: sha512-DlWOmsXMJrV8lzZyd+LKjG2CXULUs++bkq8GZ2Sr0R0RRhs30K2wtY+LKiTjhmJU3W61HK+rB0GLz6XmPvTA1A==}
@@ -17254,8 +17242,6 @@ snapshots:
 
   '@types/minimist@1.2.5': {}
 
-  '@types/module-alias@2.0.4': {}
-
   '@types/ms@2.1.0': {}
 
   '@types/node@16.18.11': {}
@@ -22109,8 +22095,6 @@ snapshots:
       ufo: 1.6.1
 
   modern-ahocorasick@1.1.0: {}
-
-  module-alias@2.2.3: {}
 
   motion-dom@12.24.11:
     dependencies:

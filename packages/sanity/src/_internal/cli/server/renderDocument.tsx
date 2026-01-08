@@ -20,7 +20,6 @@ import {BasicDocument} from './components/BasicDocument'
 import {DefaultDocument} from './components/DefaultDocument'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
-import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -48,7 +47,6 @@ interface DocumentProps {
 }
 
 interface RenderDocumentOptions {
-  monorepo?: SanityMonorepo
   studioRootPath: string
   props?: DocumentProps
   importMap?: {
@@ -182,8 +180,7 @@ async function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap, isApp}: RenderDocumentOptions =
-    workerData || {}
+  const {studioRootPath, props, importMap, isApp}: RenderDocumentOptions = workerData || {}
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
@@ -202,14 +199,6 @@ async function renderDocumentFromWorkerData() {
   }
 
   // Require hook #1
-  // Alias monorepo modules
-  debug('Registering potential aliases')
-  if (monorepo) {
-    const {addAliases} = await import('module-alias')
-    addAliases(await getMonorepoAliases(monorepo.path))
-  }
-
-  // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
   const {register} = await import('esbuild-register/dist/node')
@@ -223,7 +212,7 @@ async function renderDocumentFromWorkerData() {
         format: 'cjs',
       })
 
-  // Require hook #3
+  // Require hook #2
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
   debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = __DEV__

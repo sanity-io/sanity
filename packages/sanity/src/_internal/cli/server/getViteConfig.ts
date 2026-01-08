@@ -136,7 +136,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
-      sanityBuildEntries({basePath, cwd, monorepo, importMap, isApp}),
+      sanityBuildEntries({basePath, cwd, importMap, isApp}),
     ],
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
