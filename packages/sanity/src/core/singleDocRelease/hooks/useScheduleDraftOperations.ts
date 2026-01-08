@@ -9,7 +9,7 @@ import {createReleaseId} from '../../releases/util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getDraftId} from '../../util'
+import {getDraftId, getVersionId} from '../../util'
 
 export interface ScheduleDraftOperationsValue {
   /**
