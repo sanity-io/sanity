@@ -7,13 +7,11 @@ import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
-import {getSanityPkgExportAliases} from './getBrowserAliases'
 import {
   getAppEnvironmentVariables,
   getStudioEnvironmentVariables,
 } from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
-import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
@@ -81,8 +79,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     reactCompiler,
     isApp,
   } = options
-
-  const monorepo = await loadSanityMonorepo(cwd)
   const basePath = normalizeBasePath(rawBasePath)
 
   const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
@@ -132,7 +128,14 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     mode,
     plugins: [
       viteReact(
-        reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
+        reactCompiler
+          ? {
+              babel: {
+                plugins: [['babel-plugin-react-compiler', reactCompiler]],
+                generatorOpts: {compact: true},
+              },
+            }
+          : {},
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
@@ -141,9 +144,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: monorepo?.path
-        ? await getMonorepoAliases(monorepo.path)
-        : getSanityPkgExportAliases(sanityPkgPath),
+      // alias: getSanityPkgExportAliases(sanityPkgPath, mode),
+      // dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
       dedupe: ['styled-components'],
     },
     define: {

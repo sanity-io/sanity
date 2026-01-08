@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react'
 import {escapeRegExp} from 'lodash-es'
 import {type UserConfig} from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 import {version} from '../package.json'
 
@@ -17,7 +16,6 @@ export const defaultConfig: UserConfig = {
     react({
       babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
     }),
-    tsconfigPaths(),
   ],
   build: {
     emptyOutDir: true,

@@ -30,16 +30,25 @@ export const browserCompatibleSanityPackageSpecifiers = [
   'sanity/package.json',
 ]
 
-/**
- * These conditions should align with the conditions present in the
- * `package.json` of the `'sanity'` module. they are given to `resolve.exports`
- * in order to determine the correct entrypoint for the browser-compatible
- * package specifiers listed above.
- */
-const conditions = ['import', 'browser', 'default']
-
 // locate the entry points for each subpath the Sanity module exports
-export function getSanityPkgExportAliases(sanityPkgPath: string) {
+export function getSanityPkgExportAliases(
+  sanityPkgPath: string,
+  mode: 'development' | 'production',
+) {
+  /**
+   * These conditions should align with the conditions present in the
+   * `package.json` of the `'sanity'` module. they are given to `resolve.exports`
+   * in order to determine the correct entrypoint for the browser-compatible
+   * package specifiers listed above.
+   */
+  const conditions = [
+    // This mimics the same behavior in vite and its special `development|production` condition:
+    // https://vite.dev/config/shared-options#resolve-conditions
+    mode === 'production' ? 'production' : 'development',
+    'browser',
+    'default',
+  ]
+
   // Load the package.json of the Sanity package
   // eslint-disable-next-line import/no-dynamic-require
   const pkg = require(sanityPkgPath)

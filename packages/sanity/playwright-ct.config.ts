@@ -51,6 +51,7 @@ export default defineConfig({
     /* Configure Playwright vite config */
     ctViteConfig: {
       resolve: {
+        // @TODO alias same way as core
         alias: Object.fromEntries(
           Object.entries(aliases).map(([pkgName, pkgPath]) => {
             return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
