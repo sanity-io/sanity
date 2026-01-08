@@ -27,6 +27,7 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
+import {startSchemaWatcher} from '../schema/schemaExtractorApi'
 
 export interface StartDevServerCommandFlags {
   'host'?: string
@@ -34,6 +35,8 @@ export interface StartDevServerCommandFlags {
   'load-in-dashboard'?: boolean
   'auto-updates'?: boolean
   'force'?: boolean
+  'extract-schema'?: boolean
+  'schema-path'?: string
 }
 
 const debug = debugIt.extend('dev')
@@ -122,7 +125,9 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('host', {type: 'string'})
     .options('port', {type: 'number'})
     .options('auto-updates', {type: 'boolean'})
-    .option('load-in-dashboard', {type: 'boolean', default: false}).argv
+    .option('load-in-dashboard', {type: 'boolean', default: false})
+    .option('extract-schema', {type: 'boolean', default: false})
+    .option('schema-path', {type: 'string'}).argv
 }
 
 export default async function startSanityDevServer(
@@ -277,6 +282,27 @@ export default async function startSanityDevServer(
           `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
           `and running at ${chalk.cyan(url)}`,
       )
+    }
+
+    // Start schema extraction watcher if enabled
+    if (flags.extractSchema) {
+      const schemaOutputPath = flags.schemaPath || path.join(workDir, 'schema.json')
+
+      output.print('')
+      output.print(`${logSymbols.info} Schema extraction enabled`)
+
+      const {stop: stopSchemaWatcher} = await startSchemaWatcher({
+        workDir,
+        outputPath: schemaOutputPath,
+        output,
+      })
+
+      // Clean up schema watcher on process exit
+      const cleanupSchemaWatcher = () => {
+        void stopSchemaWatcher()
+      }
+      process.on('SIGINT', cleanupSchemaWatcher)
+      process.on('SIGTERM', cleanupSchemaWatcher)
     }
   } catch (err) {
     debug(`Failed to start dev server: ${err}`)

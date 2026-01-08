@@ -21,10 +21,14 @@ Notes
 Options
   --port <port> TCP port to start server on. [default: 3333]
   --host <host> The local network interface at which to listen. [default: "127.0.0.1"]
+  --extract-schema Enable schema extraction in watch mode alongside the dev server
+  --schema-path <path> Path for extracted schema file [default: "schema.json"]
 
 Examples
   sanity dev --host=0.0.0.0
   sanity dev --port=1942
+  sanity dev --extract-schema
+  sanity dev --extract-schema --schema-path=./schemas/studio.json
 `
 
 const devCommand: CliCommandDefinition = {
