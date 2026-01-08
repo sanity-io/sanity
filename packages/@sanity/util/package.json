@@ -26,35 +26,43 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "development": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./fs": {
       "source": "./src/_exports/fs.ts",
+      "development": "./src/_exports/fs.ts",
       "default": "./lib/fs.js"
     },
     "./client": {
       "source": "./src/_exports/client.ts",
+      "development": "./src/_exports/client.ts",
       "default": "./lib/client.js"
     },
     "./concurrency-limiter": {
       "source": "./src/_exports/concurrency-limiter.ts",
+      "development": "./src/_exports/concurrency-limiter.ts",
       "default": "./lib/concurrency-limiter.js"
     },
     "./content": {
       "source": "./src/_exports/content.ts",
+      "development": "./src/_exports/content.ts",
       "default": "./lib/content.js"
     },
     "./createSafeJsonParser": {
       "source": "./src/_exports/createSafeJsonParser.ts",
+      "development": "./src/_exports/createSafeJsonParser.ts",
       "require": "./lib/createSafeJsonParser.cjs",
       "default": "./lib/createSafeJsonParser.js"
     },
     "./legacyDateFormat": {
       "source": "./src/_exports/legacyDateFormat.ts",
+      "development": "./src/_exports/legacyDateFormat.ts",
       "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
       "source": "./src/_exports/paths.ts",
+      "development": "./src/_exports/paths.ts",
       "default": "./lib/paths.js"
     },
     "./package.json": "./package.json"
@@ -120,5 +128,21 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./fs": "./lib/fs.js",
+      "./client": "./lib/client.js",
+      "./concurrency-limiter": "./lib/concurrency-limiter.js",
+      "./content": "./lib/content.js",
+      "./createSafeJsonParser": {
+        "require": "./lib/createSafeJsonParser.cjs",
+        "default": "./lib/createSafeJsonParser.js"
+      },
+      "./legacyDateFormat": "./lib/legacyDateFormat.js",
+      "./paths": "./lib/paths.js",
+      "./package.json": "./package.json"
+    }
   }
 }
