@@ -109,6 +109,7 @@ export const allNativeInputComponents = defineType({
       type: 'image',
       name: 'image',
       components: {
+        // @ts-expect-error - Test studio testing delegated input
         input: DelegatedImageInput,
       },
     }),

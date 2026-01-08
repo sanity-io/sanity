@@ -55,7 +55,7 @@ export function _buildTypeGroup(
                     .id(typeName)
                     .child(
                       S.documentList()
-                        .defaultLayout(defaultLayout)
+                        .defaultLayout(defaultLayout!)
                         .canHandleIntent((intentName, params) => {
                           return (
                             TYPE_GROUP_SUPPORTED_INTENTS.has(intentName) && typeName === params.type

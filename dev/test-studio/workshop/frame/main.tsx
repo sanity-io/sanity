@@ -1,14 +1,14 @@
 import {type ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import {createMemoryHistory} from 'history'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 import {registerLanguage} from 'react-refractor'
 import javascript from 'refractor/javascript'
 import json from 'refractor/json'
 import jsx from 'refractor/jsx'
 import typescript from 'refractor/typescript'
-import {StudioProvider} from 'sanity'
+import {type StudioThemeColorSchemeKey, StudioProvider} from 'sanity'
 
 import sanityConfig from '../../sanity.config'
 import {config} from '../config'
@@ -24,11 +24,18 @@ function Main() {
   const prefersDark = usePrefersDark()
   const [scheme, setScheme] = useState<ThemeColorSchemeKey>(prefersDark ? 'dark' : 'light')
 
+  const handleSchemeChange = useCallback((nextScheme: StudioThemeColorSchemeKey) => {
+    // Workshop only supports dark/light, not "system"
+    if (nextScheme === 'dark' || nextScheme === 'light') {
+      setScheme(nextScheme)
+    }
+  }, [])
+
   return (
     <StudioProvider
       config={sanityConfig}
       scheme={scheme}
-      onSchemeChange={setScheme}
+      onSchemeChange={handleSchemeChange}
       unstable_history={history}
     >
       <WorkshopFrame config={config} setScheme={setScheme} />

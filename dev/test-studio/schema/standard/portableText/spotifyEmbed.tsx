@@ -40,7 +40,7 @@ function parseSpotifyShareUrl(str: string): {type: string; id: string} | null {
   return null
 }
 
-function SpotifyEmbedPreview(props: PreviewProps) {
+function SpotifyEmbedPreview(props: PreviewProps & {value?: {url?: string}}) {
   if (!isValidPreview(props.value)) {
     return <div>Please provide a Spotify share URL</div>
   }

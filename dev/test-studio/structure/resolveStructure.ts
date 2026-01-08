@@ -59,11 +59,13 @@ export const structure: StructureResolver = (
             },
           )
 
+          // @ts-expect-error - Test studio component with custom options
           return S.component(PerspectiveExample).id('sections-by-perspective').options({doc$})
         }),
       S.listItem()
         .id('translate')
         .title('Translate Test')
+        // @ts-expect-error - Test studio component
         .child(S.component(TranslateExample).id('example')),
       S.listItem()
         .title('Untitled repro')
@@ -276,6 +278,7 @@ export const structure: StructureResolver = (
                 .title('GRRM')
                 .schemaType('author')
                 .child(
+                  // @ts-expect-error - Test studio component with custom props
                   S.component(JsonDocumentDump)
                     .id('json-dump')
                     .title('GRRM')
