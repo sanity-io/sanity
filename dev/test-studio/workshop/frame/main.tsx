@@ -8,7 +8,7 @@ import javascript from 'refractor/javascript'
 import json from 'refractor/json'
 import jsx from 'refractor/jsx'
 import typescript from 'refractor/typescript'
-import {type StudioThemeColorSchemeKey, StudioProvider} from 'sanity'
+import {StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
 
 import sanityConfig from '../../sanity.config'
 import {config} from '../config'

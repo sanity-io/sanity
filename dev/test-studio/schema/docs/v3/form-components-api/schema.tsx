@@ -1,10 +1,10 @@
 import {
   type ArrayOfObjectsInputProps,
+  defineType,
   type FieldProps,
   type InputProps,
   type ItemProps,
   type PreviewProps,
-  defineType,
 } from 'sanity'
 
 import {structureGroupOptions} from '../../../../structure/groupByOption'
