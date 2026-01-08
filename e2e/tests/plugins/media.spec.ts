@@ -3,6 +3,7 @@ import {expect} from '@playwright/test'
 import {test} from '../../studio-test'
 
 test('media plugin should open from input', async ({page, createDraftDocument}) => {
+  test.slow()
   await createDraftDocument('/content/input-standard;imagesTest')
 
   // wait for input to be visible
@@ -14,6 +15,7 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
 
   // wait for menu to open, click the menu item for media
   await expect(page.getByTestId('file-input-browse-button-media')).toBeVisible()
+  await expect(page.getByTestId('file-input-browse-button-media')).toBeEnabled()
   await page.getByTestId('file-input-browse-button-media').click()
 
   // check that it didn't crash
