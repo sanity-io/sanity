@@ -10,6 +10,7 @@ const documentStatusPatterns = {
   unpublished: /Unpublished (just now|\d+ sec\. ago)/i,
   edited: /Edited (just now|\d+ sec\. ago)/i,
   createdOrEdited: /(Created|Edited) (just now|\d+ sec\. ago)/i,
+  saved: /Saved/i,
 } as const
 
 /**
@@ -88,6 +89,17 @@ export async function expectEditedStatus(
 ) {
   await expect(statusElement).toBeVisible()
   await expect(statusElement).toContainText(documentStatusPatterns.edited, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+export async function expectSavedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toBeVisible()
+  await expect(statusElement).toContainText(documentStatusPatterns.saved, {
     useInnerText: options.useInnerText,
     timeout: options.timeout,
   })
