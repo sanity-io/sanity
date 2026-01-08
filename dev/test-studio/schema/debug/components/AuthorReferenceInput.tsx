@@ -25,7 +25,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   props: ObjectInputProps<Reference, ReferenceSchemaType>,
   ref: ForwardedRef<any>,
 ) {
-  // @todo fix
+  // @ts-expect-error - legacy API: inputProps and type no longer exist on ObjectInputProps
   const {inputProps, type, value} = props
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
@@ -65,11 +65,8 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
     props.onChange(
       // A reference is an object, so we need to initialize it before attempting to set subproperties
       setIfMissing({_type: type.name, _ref: item._id}),
-
-      // Allow setting weak reference in schema options
+      // @ts-expect-error - legacy API: onChange no longer accepts multiple arguments
       type.weak === true ? set(true, ['_weak']) : unset(['_weak']),
-
-      // Set the actual reference value
       set(item._id, ['_ref']),
     )
   }
