@@ -1,0 +1,8 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "isolatedModules": false,
+    "lib": ["dom", "es2020", "es2022.string", "es2022.error", "es2022.intl"]
+  }
+}
