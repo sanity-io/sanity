@@ -33,7 +33,7 @@ jobs:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -93,7 +93,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Echo Vercel preview URL
@@ -136,7 +136,7 @@ jobs:
     outputs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Pull Vercel Environment Information
@@ -241,7 +241,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Echo the base URL
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
@@ -307,7 +307,7 @@ jobs:
     needs: [install, playwright-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts

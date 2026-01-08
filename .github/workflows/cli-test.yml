@@ -49,7 +49,7 @@ jobs:
         env:
           MESSAGE: ${{ (github.event_name == 'pull_request' && github.event.pull_request.title) ||  (github.event_name == 'push' && github.event.head_commit.message)  }}
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: steps.check_release.outputs.skip != 'true'
         with:
           fetch-depth: 0
