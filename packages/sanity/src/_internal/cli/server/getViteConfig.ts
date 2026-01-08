@@ -144,7 +144,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      dedupe: ['styled-components'],
+      dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
     },
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
