@@ -172,7 +172,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -233,9 +233,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
-      isReleaseDocument(selectedPerspective) &&
+      !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -306,6 +306,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    selectedPerspectiveName,
     editState,
     ready,
     activeView.type,
