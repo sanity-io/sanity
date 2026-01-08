@@ -127,7 +127,7 @@
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
-    "import/no-commonjs ": "error",
+    "import/no-commonjs": "error",
     "no-restricted-globals": [
       "error",
       {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
@@ -213,9 +213,16 @@
     },
     {
       // We still allow CJS in some places, for legacy reasons
-      "files": ["packages/@sanity/cli/**/*", "scripts/**/*"],
+      "files": [
+        "packages/@sanity/cli/**/*",
+        "packages/sanity/src/_internal/cli/**/*",
+        "scripts/**/*",
+        "**/*.cjs",
+        "**/*.cts.ts",
+        "**/perf/**/*"
+      ],
       "rules": {
-        "import/no-commonjs ": "off",
+        "import/no-commonjs": "off",
         "no-restricted-globals": "off"
       }
     },
