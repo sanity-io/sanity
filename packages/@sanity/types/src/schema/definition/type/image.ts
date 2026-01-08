@@ -6,7 +6,14 @@ import {type FileOptions, type FileValue} from './file'
 import {type ObjectDefinition} from './object'
 
 /** @public */
-export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'image' | 'location'
+export type ImageMetadataType =
+  | 'blurhash'
+  | 'thumbhash'
+  | 'lqip'
+  | 'palette'
+  | 'exif'
+  | 'image'
+  | 'location'
 
 /** @public */
 export interface HotspotPreview {

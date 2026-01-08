@@ -37,6 +37,7 @@ import {
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
+import {fetchPostInitPrompt} from '../../util/fetchPostInitPrompt'
 import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDefaults'
 import {getProviderName} from '../../util/getProviderName'
 import {getUserConfig} from '../../util/getUserConfig'
@@ -596,12 +597,13 @@ export default async function initSanity(
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
-    if (mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
       print(
-        `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
       )
-      print(`Learn more: ${chalk.cyan('https://mcp.sanity.io')}`)
     }
 
     return
@@ -754,12 +756,13 @@ export default async function initSanity(
     )
     print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
     print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
-    if (mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
       print(
-        `\nSanity MCP server has been configured for ${editorNames}. You might need to restart your editor for this to take effect.`,
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
       )
-      print(`Learn more: ${chalk.cyan('https://mcp.sanity.io')}`)
     }
     print('\n')
     print(`Other helpful commands:`)
@@ -773,11 +776,9 @@ export default async function initSanity(
     print(
       `\nGet started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
-    if (mcpConfigured.length > 0) {
-      const editorNames = new Intl.ListFormat('en').format(mcpConfigured)
-      print(
-        `\nTo set up your project with the MCP server, restart ${editorNames} and type ${chalk.cyan('"Get started with Sanity"')} in the chat`,
-      )
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
       print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
       print(
         `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
@@ -883,6 +884,15 @@ export default async function initSanity(
       isFirstProject: project.isFirstProject,
       datasetName: dataset.datasetName,
     }
+  }
+
+  async function getPostInitMCPPrompt(editorsNames: EditorName[]): Promise<string> {
+    const promptClient = apiClient({requireUser: false, requireProject: false})
+    return fetchPostInitPrompt({
+      client: promptClient,
+      editorNames: new Intl.ListFormat('en').format(editorsNames),
+      chalk,
+    })
   }
 
   // eslint-disable-next-line complexity

@@ -342,7 +342,7 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
-      setPerspectiveState(newPerspective as SupportedPerspective | undefined)
+      setPerspectiveState(newPerspective)
       localStorage.set('perspective', newPerspective)
 
       handleQueryExecution({perspective: newPerspective})

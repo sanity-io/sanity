@@ -69,7 +69,7 @@ export async function installNewPackages(
   }
 
   const npmArgs = ['install', '--legacy-peer-deps', '--save', ...packages]
-  let install: Promise<ExecaReturnValue<string>> | undefined
+  let install: Promise<ExecaReturnValue> | undefined
   if (packageManager === 'npm') {
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
     install = execa('npm', npmArgs, execOptions)

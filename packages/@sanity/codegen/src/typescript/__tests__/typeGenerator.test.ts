@@ -190,6 +190,10 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
+      type ArrayOf<T> = Array<T & {
+        _key: string;
+      }>;
+
       // Source: foo.ts
       // Variable: queryFoo
       // Query: *[_type == "foo"]
@@ -294,6 +298,10 @@ describe(TypeGenerator.name, () => {
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
 
+      type ArrayOf<T> = Array<T & {
+        _key: string;
+      }>;
+
       // Source: foo.ts
       // Variable: queryFoo
       // Query: *[_type == "foo"]
@@ -361,6 +369,10 @@ describe(TypeGenerator.name, () => {
       export type AllSanitySchemaTypes = Foo | Bar;
 
       export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      type ArrayOf<T> = Array<T & {
+        _key: string;
+      }>;
 
       "
     `)
@@ -547,6 +559,323 @@ describe(TypeGenerator.name, () => {
     expect(q2.queryMapDeclaration).not.toBe(q3.queryMapDeclaration)
   })
 
+  test('should use ArrayMember generic for objects in arrays', async () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          // Inline object array
+          sections: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  _key: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                  },
+                  _type: {
+                    type: 'objectAttribute',
+                    value: {type: 'string', value: 'section'},
+                  },
+                  title: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                    optional: true,
+                  },
+                },
+              },
+            },
+            optional: true,
+          },
+          // Array of reusable types
+          tags: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'union',
+                of: [
+                  {
+                    type: 'inline',
+                    name: 'tag',
+                  },
+                  {
+                    type: 'inline',
+                    name: 'rag',
+                  },
+                ],
+              },
+            },
+            optional: true,
+          },
+          // Arrays of strings
+          strings: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'string',
+              },
+            },
+          },
+          // Arrays with both inline objects and other types should result in a union between Array and ArrayOf
+          mixed: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'union',
+                of: [
+                  // These should be a union wrapped in an Array
+                  {type: 'number'},
+                  {type: 'string'},
+                  {type: 'null'},
+
+                  // While this one should be in an ArrayOf
+                  {type: 'inline', name: 'tag'},
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        type: 'type',
+        name: 'tag',
+        value: {
+          type: 'object',
+          attributes: {
+            _key: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+            },
+            _type: {
+              type: 'objectAttribute',
+              value: {type: 'string', value: 'tag'},
+            },
+            label: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+              optional: true,
+            },
+          },
+        },
+      },
+      {
+        type: 'type',
+        name: 'rag',
+        value: {
+          type: 'object',
+          attributes: {
+            _key: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+            },
+            _type: {
+              type: 'objectAttribute',
+              value: {type: 'string', value: 'rag'},
+            },
+            color: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+              optional: true,
+            },
+          },
+        },
+      },
+    ]
+
+    const typeGenerator = new TypeGenerator()
+    const result = await typeGenerator.generateTypes({schema})
+
+    expect(result.code).toMatchInlineSnapshot(`
+      "export type Post = {
+        _id: string;
+        _type: "post";
+        sections?: Array<{
+          _key: string;
+          _type: "section";
+          title?: string;
+        }>;
+        tags?: ArrayOf<Tag | Rag>;
+        strings: Array<string>;
+        mixed: Array<number | string | null> | ArrayOf<Tag>;
+      };
+
+      export type Tag = {
+        _key: string;
+        _type: "tag";
+        label?: string;
+      };
+
+      export type Rag = {
+        _key: string;
+        _type: "rag";
+        color?: string;
+      };
+
+      export type AllSanitySchemaTypes = Post | Tag | Rag;
+
+      export declare const internalGroqTypeReferenceTo: unique symbol;
+
+      type ArrayOf<T> = Array<T & {
+        _key: string;
+      }>;
+
+      "
+    `)
+  })
+
+  test('ArrayOf should be handled for a complex query too', async () => {
+    const schema: SchemaType = [
+      {
+        type: 'document',
+        name: 'post',
+        attributes: {
+          _id: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'post'}},
+          // Inline object array
+          sections: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'object',
+                attributes: {
+                  _key: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                  },
+                  _type: {
+                    type: 'objectAttribute',
+                    value: {type: 'string', value: 'section'},
+                  },
+                  title: {
+                    type: 'objectAttribute',
+                    value: {type: 'string'},
+                    optional: true,
+                  },
+                },
+              },
+            },
+            optional: true,
+          },
+          // Array of reusable types
+          tags: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'union',
+                of: [
+                  {
+                    type: 'inline',
+                    name: 'tag',
+                  },
+                  {
+                    type: 'inline',
+                    name: 'rag',
+                  },
+                ],
+              },
+            },
+            optional: true,
+          },
+          // Arrays of strings
+          strings: {
+            type: 'objectAttribute',
+            value: {
+              type: 'array',
+              of: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+      {
+        type: 'type',
+        name: 'tag',
+        value: {
+          type: 'object',
+          attributes: {
+            _key: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+            },
+            _type: {
+              type: 'objectAttribute',
+              value: {type: 'string', value: 'tag'},
+            },
+            label: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+              optional: true,
+            },
+          },
+        },
+      },
+      {
+        type: 'type',
+        name: 'rag',
+        value: {
+          type: 'object',
+          attributes: {
+            _key: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+            },
+            _type: {
+              type: 'objectAttribute',
+              value: {type: 'string', value: 'rag'},
+            },
+            color: {
+              type: 'objectAttribute',
+              value: {type: 'string'},
+              optional: true,
+            },
+          },
+        },
+      },
+    ]
+
+    async function* getQueries(): AsyncGenerator<ExtractedModule> {
+      yield {
+        filename: '/src/foo.ts',
+        queries: [
+          {
+            filename: '/src/foo.ts',
+            query: `*[_type == "post"]{
+              sections[]{
+                ...,
+                "_key": 123
+              },
+              "surpriseField": coalesce(tags[_type == "rag"], *[_type == 'post'][0].strings, 123)
+            }`,
+            variable: {id: {type: 'Identifier', name: 'STRANGE_QUERY'}},
+          },
+        ],
+        errors: [],
+      }
+    }
+
+    const typeGenerator = new TypeGenerator()
+    const {code} = await typeGenerator.generateTypes({
+      root: '/src',
+      schema,
+      overloadClientMethods: false,
+      queries: getQueries(),
+    })
+
+    expect(code).toMatchSnapshot()
+  })
+
   test('should handle required image array member', async () => {
     const schema: SchemaType = [
       {
@@ -595,21 +924,25 @@ describe(TypeGenerator.name, () => {
     const result = await typeGenerator.generateTypes({schema})
 
     expect(result.code).toMatchInlineSnapshot(`
-"export type Author = {
-  images: Array<{
-    asset: {
-      _ref: string;
-      _type: "reference";
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-  }>;
-};
+      "export type Author = {
+        images: Array<{
+          asset: {
+            _ref: string;
+            _type: "reference";
+            [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+          };
+        }>;
+      };
 
-export type AllSanitySchemaTypes = Author;
+      export type AllSanitySchemaTypes = Author;
 
-export declare const internalGroqTypeReferenceTo: unique symbol;
+      export declare const internalGroqTypeReferenceTo: unique symbol;
 
-"
-`)
+      type ArrayOf<T> = Array<T & {
+        _key: string;
+      }>;
+
+      "
+    `)
   })
 })

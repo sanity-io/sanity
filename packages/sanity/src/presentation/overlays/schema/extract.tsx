@@ -308,7 +308,7 @@ export function extractSchema(workspace: Workspace): SchemaType[] {
         name: field.name,
         title: typeof field.type.title === 'string' ? field.type.title : undefined,
         value,
-        optional: isFieldRequired(field) === false,
+        optional: !isFieldRequired(field),
       }
     }
 
@@ -370,7 +370,7 @@ export function extractSchema(workspace: Workspace): SchemaType[] {
 
   function createUnionNodeOptions(
     schemaType: ArraySchemaType,
-    of: SchemaUnionOption<SchemaNode>[],
+    of: SchemaUnionOption[],
   ): SchemaUnionNodeOptions | undefined {
     const {options} = schemaType
     if (!options) return undefined

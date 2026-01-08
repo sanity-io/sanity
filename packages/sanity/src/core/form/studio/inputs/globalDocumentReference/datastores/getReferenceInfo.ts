@@ -117,10 +117,7 @@ function createObserveFields(context: {
   listener: Observable<ListenEvent<Record<string, any>>>
 }) {
   const {client, listener} = context
-  return function observeFields(
-    id: string,
-    fields: string[],
-  ): Observable<SanityDocument<Record<string, any>> | null> {
+  return function observeFields(id: string, fields: string[]): Observable<SanityDocument | null> {
     return listener.pipe(
       switchMap((event) => {
         if (event.type === 'welcome') {

@@ -16,7 +16,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
       - name: Patch increment version in package.json
         id: npm-version
@@ -26,7 +26,7 @@ jobs:
       - name: Namespace version with build run id
         run: npm version --no-git-commit-hooks --no-git-tag-version "${{ steps.npm-version.outputs.NPM_VERSION }}-gh.${{ github.run_id }}"
       - run: pnpm pack --pack-destination ./artifacts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -42,7 +42,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -72,7 +72,7 @@ jobs:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -92,7 +92,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -135,7 +135,7 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -156,7 +156,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -183,7 +183,7 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -195,7 +195,7 @@ jobs:
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
@@ -211,7 +211,7 @@ jobs:
         run: npx playwright merge-reports --reporter html ./playwright-report
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report

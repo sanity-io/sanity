@@ -19,7 +19,7 @@ const initialState: State = {
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'TOGGLE_TASKS_VIEW': {
-      if (action.payload === false) {
+      if (!action.payload) {
         return {
           ...initialState,
           isOpen: action.payload,

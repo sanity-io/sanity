@@ -340,13 +340,13 @@ export function TextBlock(props: TextBlockProps) {
           {changeIndicatorVisible && (
             <ChangeIndicatorWrapper
               // Use current memberItem when available for accurate data, fallback to cached for stability
-              $hasChanges={(memberItem ?? memberItemRef)!.member.item.changed}
+              $hasChanges={(memberItem ?? memberItemRef).member.item.changed}
               contentEditable={false}
             >
               <StyledChangeIndicatorWithProvidedFullPath
                 hasFocus={focused}
-                isChanged={(memberItem ?? memberItemRef)!.member.item.changed}
-                path={(memberItem ?? memberItemRef)!.member.item.path}
+                isChanged={(memberItem ?? memberItemRef).member.item.changed}
+                path={(memberItem ?? memberItemRef).member.item.path}
                 withHoverEffect={false}
               />
             </ChangeIndicatorWrapper>

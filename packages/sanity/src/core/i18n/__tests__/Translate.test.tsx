@@ -1,5 +1,5 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
 import {describe, expect, it} from 'vitest'
 
@@ -69,20 +69,20 @@ function TestComponent(props: TestComponentProps) {
 describe('Translate component', () => {
   it('it translates a key', async () => {
     const wrapper = await getWrapper([createBundle({title: 'English title'})])
-    const {findByTestId} = render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
-    expect((await findByTestId('output')).innerHTML).toEqual('English title')
+    render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
+    expect((await screen.findByTestId('output')).innerHTML).toEqual('English title')
   })
   it('it renders the key as-is if translation is missing', async () => {
     const wrapper = await getWrapper([createBundle({title: 'English title'})])
-    const {findByTestId} = render(<TestComponent i18nKey="does-not-exist" components={{}} />, {
+    render(<TestComponent i18nKey="does-not-exist" components={{}} />, {
       wrapper,
     })
-    expect((await findByTestId('output')).innerHTML).toEqual('does-not-exist')
+    expect((await screen.findByTestId('output')).innerHTML).toEqual('does-not-exist')
   })
   it('it allows using basic, known HTML tags', async () => {
     const wrapper = await getWrapper([createBundle({title: 'An <code>embedded</code> thing'})])
-    const {findByTestId} = render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
-    expect(await findByTestId('output')).toHaveTextContent('An embedded thing')
+    render(<TestComponent i18nKey="title" components={{}} />, {wrapper})
+    expect(await screen.findByTestId('output')).toHaveTextContent('An embedded thing')
   })
   it('it supports providing a component map to use for customizing message rendering', async () => {
     const wrapper = await getWrapper([
@@ -90,7 +90,7 @@ describe('Translate component', () => {
         message: 'Your search for "<Red>{{keyword}}</Red>" took <Bold>{{duration}}ms</Bold>',
       }),
     ])
-    const {findByTestId} = render(
+    render(
       <TestComponent
         i18nKey="message"
         components={{
@@ -101,7 +101,7 @@ describe('Translate component', () => {
       />,
       {wrapper},
     )
-    expect((await findByTestId('output')).innerHTML).toEqual(
+    expect((await screen.findByTestId('output')).innerHTML).toEqual(
       `Your search for "<span style="color: red;">something</span>" took <b>123ms</b>`,
     )
   })
@@ -110,7 +110,7 @@ describe('Translate component', () => {
     const wrapper = await getWrapper([
       createBundle({title: 'An <code>{{interpolated}}</code> thing'}),
     ])
-    const {findByTestId} = render(
+    render(
       <TestComponent
         i18nKey="title"
         values={{interpolated: 'escaped, interpolated'}}
@@ -118,14 +118,14 @@ describe('Translate component', () => {
       />,
       {wrapper},
     )
-    expect(await findByTestId('output')).toHaveTextContent('An escaped, interpolated thing')
+    expect(await screen.findByTestId('output')).toHaveTextContent('An escaped, interpolated thing')
   })
 
   it('it escapes HTML inside of interpolated values', async () => {
     const wrapper = await getWrapper([
       createBundle({title: 'An <code>{{interpolated}}</code> thing'}),
     ])
-    const {findByTestId} = render(
+    render(
       <TestComponent
         i18nKey="title"
         values={{interpolated: 'escaped, <strong>interpolated</strong> thing'}}
@@ -133,7 +133,7 @@ describe('Translate component', () => {
       />,
       {wrapper},
     )
-    expect(await findByTestId('output')).toHaveTextContent(
+    expect(await screen.findByTestId('output')).toHaveTextContent(
       'An escaped, <strong>interpolated</strong> thing',
     )
   })
@@ -143,11 +143,10 @@ describe('Translate component', () => {
       createBundle({peopleSignedUp: '{{count}} people signed up: {{people, list}}'}),
     ])
     const people = ['Bjørge', 'Rita', 'Espen']
-    const {findByTestId} = render(
-      <TestComponent i18nKey="peopleSignedUp" values={{count: people.length, people}} />,
-      {wrapper},
-    )
-    expect(await findByTestId('output')).toHaveTextContent(
+    render(<TestComponent i18nKey="peopleSignedUp" values={{count: people.length, people}} />, {
+      wrapper,
+    })
+    expect(await screen.findByTestId('output')).toHaveTextContent(
       '3 people signed up: Bjørge, Rita, and Espen',
     )
   })

@@ -35,7 +35,7 @@ const sortRanges = (ranges: string[]) =>
   ranges.sort((a, b) => {
     try {
       return semver.compare(stripRange(a), stripRange(b))
-    } catch (err) {
+    } catch {
       return 1
     }
   })
@@ -101,7 +101,7 @@ Object.keys(versionRanges).forEach((depName) => {
     let isFixable
     try {
       isFixable = semver.satisfies(stripRange(range), `^${greatestMajor}`)
-    } catch (err) {
+    } catch {
       return
     }
 
@@ -148,7 +148,7 @@ fixablePackages.forEach((pkg) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     manifest = require(manifestPath)
-  } catch (err) {
+  } catch {
     return
   }
 

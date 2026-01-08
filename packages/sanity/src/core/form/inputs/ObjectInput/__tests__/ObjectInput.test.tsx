@@ -1,4 +1,5 @@
 import {defineType} from '@sanity/types'
+import {screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
 
 import {renderObjectInput} from '../../../../../../test/form'
@@ -84,8 +85,8 @@ describe('ObjectInput', () => {
       ),
     })
 
-    expect(result.getByTestId('field-first-field')).toBeInTheDocument()
-    expect(result.getByTestId('input-first-field')).toBeInTheDocument()
+    expect(screen.getByTestId('field-first-field')).toBeInTheDocument()
+    expect(screen.getByTestId('input-first-field')).toBeInTheDocument()
     expect(renderField.mock.calls.length).toBe(1)
     expect(renderInput.mock.calls.length).toBe(1)
   })

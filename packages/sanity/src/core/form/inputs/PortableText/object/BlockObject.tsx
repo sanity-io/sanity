@@ -385,7 +385,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
   const handleDoubleClickToOpen = useCallback(
-    (e: MouseEvent<Element, globalThis.MouseEvent>) => {
+    (e: MouseEvent<Element>) => {
       e.preventDefault()
       e.stopPropagation()
       onOpen()

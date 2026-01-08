@@ -33,7 +33,7 @@ function serialize<T>(item: T | Serializable<T>): T {
     return serialize(item.serialize())
   }
 
-  return item as T
+  return item
 }
 
 /** @internal */
@@ -56,9 +56,7 @@ export function getTemplatePermissions({
   templates,
   schema,
   context,
-}: TemplatePermissionsOptions): Observable<
-  Array<TemplatePermissionsResult<Record<string, unknown>>>
-> {
+}: TemplatePermissionsOptions): Observable<Array<TemplatePermissionsResult>> {
   if (!templateItems?.length) return of([])
 
   return defer(() => {

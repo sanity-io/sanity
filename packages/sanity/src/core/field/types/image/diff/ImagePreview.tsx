@@ -100,7 +100,7 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [imageError, setImageError] = useState<SyntheticEvent<HTMLImageElement, Event>>()
+  const [imageError, setImageError] = useState<SyntheticEvent<HTMLImageElement>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
   const dimensions = getImageDimensions(id)
   const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])

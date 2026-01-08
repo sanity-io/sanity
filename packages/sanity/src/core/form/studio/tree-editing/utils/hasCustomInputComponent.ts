@@ -32,15 +32,12 @@ function hasComponentsInput(schemaType: SchemaType): boolean {
  * // Returns true only if 'title' field has components.input defined and is not a PTE field
  * ```
  */
-export function hasCustomInputComponent(
-  fields: ObjectField<SchemaType>[],
-  targetPath: Path,
-): boolean {
+export function hasCustomInputComponent(fields: ObjectField[], targetPath: Path): boolean {
   if (targetPath.length === 0) return false
 
   // Helper function to recursively find field by path and check for components.input
   const checkPathForComponents = (
-    currentFields: ObjectField<SchemaType>[],
+    currentFields: ObjectField[],
     pathSegments: Path,
     visitedTypes: Set<string> = new Set(),
   ): boolean => {

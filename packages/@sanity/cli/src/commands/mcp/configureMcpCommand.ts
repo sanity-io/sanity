@@ -1,4 +1,8 @@
-import {detectAvailableEditors, setupMCP} from '../../actions/init-project/setupMCP'
+import {
+  detectAvailableEditors,
+  NO_EDITORS_DETECTED_MESSAGE,
+  setupMCP,
+} from '../../actions/init-project/setupMCP'
 import {type CliCommandDefinition} from '../../types'
 import {MCPConfigureTrace} from './mcp.telemetry'
 
@@ -21,8 +25,7 @@ const configureMcpCommand: CliCommandDefinition = {
     // Check for editors first so we can give helpful feedback
     const detected = await detectAvailableEditors()
     if (detected.length === 0) {
-      output.print('No supported AI editors detected (Cursor, VS Code, Claude Code).')
-      output.print('Visit https://mcp.sanity.io for manual setup instructions.')
+      output.print(NO_EDITORS_DETECTED_MESSAGE)
       trace.log({
         detectedEditors: [],
         configuredEditors: [],

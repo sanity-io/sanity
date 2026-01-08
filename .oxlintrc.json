@@ -117,7 +117,6 @@
     "jest/valid-describe-callback": "off",
     "vitest/no-disabled-tests": "off",
     "vitest/no-test-prefixes": "off",
-    "jest/no-disabled-tests": "off",
     "jsx_a11y/no-autofocus": "off",
     "jsx_a11y/no-static-element-interactions": "off", // Allow event handlers on static elements
     "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
@@ -171,6 +170,8 @@
     "eslint/no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
     "require-module-specifiers": "warn",
+    // handy type-aware rules
+    "no-unnecessary-boolean-literal-compare": "error",
     // Powerful type-aware rules that should be enabled in the future, but have too many violations to be handled in a single PR
     "no-base-to-string": "warn",
     "no-duplicate-type-constituents": "warn",
@@ -178,7 +179,6 @@
     "no-misused-spread": "warn",
     "no-multiple-resolved": "warn",
     "no-redundant-type-constituents": "warn",
-    "no-unnecessary-boolean-literal-compare": "warn",
     "no-unnecessary-template-expression": "warn",
     "no-unnecessary-type-arguments": "warn",
     "no-unnecessary-type-assertion": "warn",

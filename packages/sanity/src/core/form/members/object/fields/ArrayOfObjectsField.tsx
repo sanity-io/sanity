@@ -265,7 +265,7 @@ export function ArrayOfObjectsField(props: {
         return
       }
 
-      if (!(item as any)?._key || !(refItem as any)?._key) {
+      if (!item?._key || !refItem?._key) {
         console.error(
           'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.',
         )

@@ -432,7 +432,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             {loadableReferenceInfo.error && (
               <ReferenceMetadataLoadErrorAlertStrip
                 errorMessage={loadableReferenceInfo.error.message}
-                onHandleRetry={loadableReferenceInfo.retry!}
+                onHandleRetry={loadableReferenceInfo.retry}
               />
             )}
           </Card>
