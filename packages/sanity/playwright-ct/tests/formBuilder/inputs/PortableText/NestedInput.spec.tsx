@@ -17,14 +17,21 @@ test.describe('Portable Text Input', () => {
 
       await page.getByRole('button', {name: 'Insert Inline Object'}).click()
 
-      // Assertion: Object preview should be visible
+      // Wait for the edit dialog to appear
+      const $dialog = page.getByTestId('popover-edit-dialog')
+      await expect($dialog).toBeVisible()
+
+      // Assertion: Object preview should be visible in the main editor
       await expect($portableTextInput.locator('.pt-inline-object')).toBeVisible()
-      const $popover = page.getByTestId('inlinePopover')
-      await $popover.waitFor()
-      const $overlay = $popover.getByTestId('activate-overlay')
-      await $overlay.focus()
-      await page.keyboard.press('Space')
-      const $nestedPortableTextInput = $popover.getByRole('textbox').last()
+
+      // Find the nested portable text input within the dialog (the caption field)
+      // The custom input wrapper is inside the dialog
+      const $inlinePopover = $dialog.getByTestId('inlinePopover')
+      await expect($inlinePopover).toBeVisible()
+
+      const $nestedPortableTextInput = $inlinePopover.getByRole('textbox').last()
+      await expect($nestedPortableTextInput).toBeVisible()
+      await $nestedPortableTextInput.focus()
       await insertPortableText('1', $nestedPortableTextInput)
       await page.keyboard.press('Enter')
       await insertPortableText('2', $nestedPortableTextInput)
