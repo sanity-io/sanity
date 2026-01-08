@@ -420,7 +420,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 {loadableReferenceInfo.error && (
                   <ReferenceMetadataLoadErrorAlertStrip
                     errorMessage={loadableReferenceInfo.error.message}
-                    onHandleRetry={loadableReferenceInfo.retry!}
+                    onHandleRetry={loadableReferenceInfo.retry}
                   />
                 )}
               </Card>

@@ -140,7 +140,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
       {loadableReferenceInfo.error && (
         <ReferenceMetadataLoadErrorAlertStrip
           errorMessage={loadableReferenceInfo.error.message}
-          onHandleRetry={loadableReferenceInfo.retry!}
+          onHandleRetry={loadableReferenceInfo.retry}
         />
       )}
     </>

@@ -48,7 +48,7 @@ function isSanityV2StudioRoot(basePath: string): boolean {
       debug('Found Sanity v2 studio root at %s', basePath)
     }
     return isRoot
-  } catch (err) {
+  } catch {
     return false
   }
 }

@@ -756,9 +756,7 @@ class HelpfulError extends Error {
   }
 }
 
-function getDeprecation(
-  type?: SchemaType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
-): Partial<Deprecation> {
+function getDeprecation(type?: SchemaType | ObjectFieldType | ObjectField): Partial<Deprecation> {
   return isDeprecationConfiguration(type)
     ? {
         deprecationReason: type.deprecated.reason,

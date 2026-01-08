@@ -27,7 +27,7 @@ const enableColumnFormMode =
   }
 
 export const releasesOverviewColumnDefs: (
-  t: TFunction<'releases', undefined>,
+  t: TFunction<'releases'>,
   releaseGroupMode: Mode,
 ) => Column<TableRelease>[] = (t, releaseGroupMode) => {
   const checkColumnMode = enableColumnFormMode(releaseGroupMode)

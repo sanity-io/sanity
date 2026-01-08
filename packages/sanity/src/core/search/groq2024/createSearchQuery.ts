@@ -57,7 +57,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  */
 export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType | GlobalDocumentReferenceType>,
-  searchParams: string | SearchTerms<SchemaType>,
+  searchParams: string | SearchTerms,
   {
     perspective,
     sort,

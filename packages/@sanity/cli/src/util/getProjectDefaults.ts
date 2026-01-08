@@ -97,7 +97,7 @@ async function getProjectDescription({
     const readme = await fs.readFile(readmePath, {encoding: 'utf8'})
     const match = readme.match(/^# .*?\n+(\w.*?)(?:$|\n)/)
     return ((match && match[1]) || '').replace(/\.$/, '') || ''
-  } catch (err) {
+  } catch {
     return ''
   }
 }

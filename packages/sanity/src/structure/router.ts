@@ -11,7 +11,7 @@ const EMPTY_PARAMS = {}
 export function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
-  } catch (err) {
+  } catch {
     console.warn('Failed to parse JSON parameters')
     return {}
   }
