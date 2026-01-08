@@ -140,7 +140,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <>
           <PaneItem
-            icon={showIcons === false ? false : undefined}
+            icon={showIcons ? undefined : false}
             id={publishedId}
             layout={layout}
             marginBottom={1}

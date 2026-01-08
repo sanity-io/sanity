@@ -45,7 +45,7 @@ export function CreateLinkedDocumentBannerContent(props: CreateLinkedDocumentBan
     ),
   )
 
-  if (metadata?.ejected !== false) {
+  if (metadata?.ejected) {
     return null
   }
 

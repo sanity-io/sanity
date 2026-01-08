@@ -249,7 +249,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     () =>
       menuOptions.filter((optionElement) => {
         const intersection = collapsedIntersections[optionElement.key as string]
-        return intersection?.intersects === false
+        return !intersection?.intersects
       }),
     [menuOptions, collapsedIntersections],
   )
@@ -258,7 +258,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   const visibleMenuOptions = shouldCollapse
     ? collapsedElements.filter((optionElement) => {
         const intersection = collapsedIntersections[optionElement.key as string]
-        return intersection?.intersects === true
+        return intersection?.intersects
       })
     : menuOptions
 

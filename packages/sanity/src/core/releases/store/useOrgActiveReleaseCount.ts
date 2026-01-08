@@ -26,6 +26,7 @@ function createOrgActiveReleaseCountStore(
     switchMap((state) => {
       if (
         state === null ||
+        // oxlint-disable-next-line no-unnecessary-boolean-literal-compare
         staleFlag$.getValue() === true ||
         activeReleaseCountAtFetch.getValue() !== activeReleasesCount
       ) {
