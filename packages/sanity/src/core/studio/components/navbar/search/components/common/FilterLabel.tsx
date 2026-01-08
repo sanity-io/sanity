@@ -86,7 +86,7 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
   )
 }
 
-function getFilterValues(filter: SearchFilter, t: TFunction<'translation'>): SearchFilterValues {
+function getFilterValues(filter: SearchFilter, t: TFunction): SearchFilterValues {
   const values: SearchFilterValues = {}
   if (typeof filter.value === 'number') {
     values.count = filter.value
