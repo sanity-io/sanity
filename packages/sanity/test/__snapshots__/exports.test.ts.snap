@@ -618,6 +618,7 @@ exports[`exports snapshot 1`] = `
     "useReviewChanges": "function",
     "useRovingFocus": "function",
     "useSanityCreateConfig": "function",
+    "useScheduledDraftDocument": "function",
     "useScheduledDraftsEnabled": "function",
     "useSchema": "function",
     "useSearchMaxFieldDepth": "function",
