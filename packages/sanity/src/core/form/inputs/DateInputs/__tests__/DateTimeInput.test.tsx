@@ -1,5 +1,5 @@
-import {defineField, type StringSchemaType} from '@sanity/types'
-import {fireEvent} from '@testing-library/react'
+import {defineField} from '@sanity/types'
+import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, test, vi} from 'vitest'
 
@@ -22,7 +22,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: () => mockUseTimeZoneDefault(),
 }))
 
-const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+const DateTimeInputWithFormValue = (inputProps: StringInputProps) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
     <DateTimeInput {...inputProps} />
   </FormValueProvider>
@@ -178,7 +178,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
 
     expect(input.value).toBe('2021-06-15 21:00')
 
-    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
+    const timeZoneButton = screen.getAllByTestId('timezone-button')[0]
     expect(timeZoneButton).toHaveTextContent('Tokyo')
   } finally {
     spy.mockRestore()
@@ -219,10 +219,10 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   })
 
   // click on the TimeZoneButton
-  const timeZoneButton = result.getByText('Oslo')
+  const timeZoneButton = screen.getByText('Oslo')
   await userEvent.click(timeZoneButton)
   // ensure the dialog shows
-  expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
+  expect(screen.queryByText('Select time zone')).not.toBeInTheDocument()
 
   spy.mockRestore()
 })
