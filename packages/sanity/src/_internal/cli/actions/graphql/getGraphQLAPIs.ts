@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {isMainThread, Worker} from 'node:worker_threads'
 
 import {type CliCommandContext} from '@sanity/cli'
@@ -11,6 +12,8 @@ import {
   type SchemaDefinitionish,
   type TypeResolvedGraphQLAPI,
 } from './types'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
   if (!isMainThread) {
@@ -41,7 +44,14 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
     }
 
     const rootDir = path.dirname(rootPkgPath)
-    const workerPath = path.join(rootDir, 'lib', '_internal', 'cli', 'threads', 'getGraphQLAPIs.js')
+    const workerPath = path.join(
+      rootDir,
+      'lib',
+      '_internal',
+      'cli',
+      'threads',
+      'getGraphQLAPIs.cjs',
+    )
     const worker = new Worker(workerPath, {
       workerData: {cliConfig: serialize(cliConfig || {}), cliConfigPath, workDir},
       env: process.env,

@@ -23,8 +23,8 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @returns The Portable Text Input element
      */
     dragAndDrop: async (sourceSelector: string, targetSelector: string) => {
-      const source = await page.locator(sourceSelector)
-      const target = await page.locator(targetSelector)
+      const source = page.locator(sourceSelector)
+      const target = page.locator(targetSelector)
 
       const box = await source.boundingBox()
       if (box) {
@@ -47,8 +47,8 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * @returns The Portable Text Input element
      */
     dragWithoutDrop: async (sourceSelector: string, targetSelector: string) => {
-      const source = await page.locator(sourceSelector)
-      const target = await page.locator(targetSelector)
+      const source = page.locator(sourceSelector)
+      const target = page.locator(targetSelector)
 
       const box = await source.boundingBox()
       if (box) {
@@ -315,8 +315,8 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       })
     },
     setClipboardText: async (text: string) => {
-      await page.evaluate((checkText) => {
-        navigator.clipboard.writeText(checkText)
+      await page.evaluate(async (checkText) => {
+        await navigator.clipboard.writeText(checkText)
       }, text)
     },
 
@@ -336,7 +336,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
      * Will wait for the documentState evaulate callback to be true before the docmueentState is returned
      * @param evaluteCallback - the callback that will be evaluated
      */
-    waitForDocumentState: async (evaluateCallback: (documentState: any) => boolean) => {
+    waitForDocumentState: async (evaluateCallback: (documentState: any) => Promise<boolean>) => {
       await page.exposeFunction('evaluateCallback', evaluateCallback)
       const documentState = await page.evaluate<Promise<any>>(async () => {
         const waitForCondition = () => {
@@ -358,7 +358,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
               reject(new Error('Timeout waiting for condition'))
             }, 5000)
 
-            checkCondition()
+            void checkCondition()
 
             return () => clearTimeout(timeout)
           })

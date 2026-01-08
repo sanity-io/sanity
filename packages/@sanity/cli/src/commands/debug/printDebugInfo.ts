@@ -3,7 +3,7 @@ import path from 'node:path'
 import util from 'node:util'
 
 import {type SanityProject, type SanityProjectMember} from '@sanity/client'
-import {omit, pick} from 'lodash'
+import {omit, pick} from 'lodash-es'
 import promiseProps from 'promise-props-recursive'
 import xdgBasedir from 'xdg-basedir'
 

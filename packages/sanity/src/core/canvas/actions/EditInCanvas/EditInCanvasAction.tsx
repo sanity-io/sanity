@@ -5,16 +5,15 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {getDraftId, getPublishedId} from '../../../util/draftUtils'
 import {canvasLocaleNamespace} from '../../i18n'
 import {useNavigateToCanvasDoc} from '../../useNavigateToCanvasDoc'
+import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 
-export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+export const useEditInCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {t} = useTranslation(canvasLocaleNamespace)
-  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(
-    props.liveEditSchemaType ? getPublishedId(props.id) : getDraftId(props.id),
-  )
+  const {isLinked, companionDoc, loading} = useCanvasCompanionDoc(getDocumentIdForCanvasLink(props))
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'action')
 
   if (!isLinked || loading) return null
@@ -26,5 +25,5 @@ export const EditInCanvasAction: DocumentActionComponent = (props: DocumentActio
   }
 }
 
-EditInCanvasAction.action = 'editInCanvas'
-EditInCanvasAction.displayName = 'EditInCanvasAction'
+useEditInCanvasAction.action = 'editInCanvas'
+useEditInCanvasAction.displayName = 'EditInCanvasAction'

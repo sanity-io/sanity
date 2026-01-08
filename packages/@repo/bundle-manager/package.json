@@ -1,6 +1,6 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "4.8.0",
+  "version": "5.2.0",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",
@@ -30,12 +30,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/storage": "^7.17.3",
     "@repo/utils": "workspace:*",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "read-package-up": "^11.0.0",
     "semver": "^7.7.2",
-    "yargs": "^18.0.0"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -43,7 +43,9 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "vitest": "^3.2.4"
+    "@types/yargs": "^17.0.35",
+    "eslint": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"

@@ -1,11 +1,14 @@
 import {spawn} from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type CliCommandAction, type CliCommandArguments} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 interface ExecFlags {
   'with-user-token'?: boolean
@@ -44,9 +47,9 @@ const execScript: CliCommandAction<ExecFlags> = async function execScript(args, 
 
   const sanityDir = path.dirname(sanityPkgPath)
   const threadsDir = path.join(sanityDir, 'lib', '_internal', 'cli', 'threads')
-  const esbuildPath = path.join(threadsDir, 'esbuild.js')
-  const browserEnvPath = path.join(threadsDir, 'registerBrowserEnv.js')
-  const configClientPath = path.join(threadsDir, 'configClient.js')
+  const esbuildPath = path.join(threadsDir, 'esbuild.cjs')
+  const browserEnvPath = path.join(threadsDir, 'registerBrowserEnv.cjs')
+  const configClientPath = path.join(threadsDir, 'configClient.cjs')
 
   if (!(await fs.stat(esbuildPath).catch(() => false))) {
     throw new Error('`sanity` module build error: missing threads')

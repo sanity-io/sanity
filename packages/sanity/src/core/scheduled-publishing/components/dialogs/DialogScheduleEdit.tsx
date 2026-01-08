@@ -1,5 +1,3 @@
-import {useCallback} from 'react'
-
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
 import useScheduleForm from '../../hooks/useScheduleForm'
@@ -21,16 +19,17 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
   const {formData, isDirty, onFormChange} = useScheduleForm(schedule)
 
   // Callbacks
-  const handleScheduleUpdate = useCallback(() => {
+  const handleScheduleUpdate = async () => {
     if (!formData?.date) {
       return
     }
     // Update schedule then close self
-    updateSchedule({
+    await updateSchedule({
       date: formData.date,
       scheduleId: schedule.id,
-    }).then(onClose)
-  }, [schedule.id, updateSchedule, onClose, formData?.date])
+    })
+    onClose()
+  }
 
   return (
     <Dialog

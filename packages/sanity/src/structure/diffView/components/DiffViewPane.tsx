@@ -6,7 +6,7 @@ import {
   DialogProvider,
   PortalProvider,
 } from '@sanity/ui'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {
   type ComponentType,
   type CSSProperties,
@@ -128,6 +128,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
                     <Container ref={containerElement} padding={4} width={1}>
+                      {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
                     </Container>
                   </DialogProvider>
@@ -168,13 +169,15 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     schemaType,
     value,
     onProgrammaticFocus,
-    ...documentForm
+    openPath,
+    onPathOpen: onPathOpenFromForm,
   } = useDocumentForm({
     documentId: getPublishedId(documentId),
     documentType,
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
+    displayInlineChanges: true,
   })
 
   const isLoading = formState === null || !ready
@@ -186,16 +189,19 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
 
   const onPathOpen = useCallback(
     (path: Path) => {
-      documentForm.onPathOpen(path)
+      onPathOpenFromForm(path)
       pathSyncChannel.push({source: role, path})
     },
-    [documentForm, pathSyncChannel, role],
+    [onPathOpenFromForm, pathSyncChannel, role],
   )
 
   useEffect(() => {
-    const subscription = pathSyncChannel.path.subscribe(onProgrammaticFocus)
+    const subscription = pathSyncChannel.path.subscribe((path) => {
+      onPathOpenFromForm(path)
+      onProgrammaticFocus(path)
+    })
     return () => subscription.unsubscribe()
-  }, [onProgrammaticFocus, pathSyncChannel.path])
+  }, [onPathOpenFromForm, onProgrammaticFocus, pathSyncChannel.path, role])
 
   return isLoading ? (
     <LoadingBlock showText />
@@ -219,12 +225,14 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         collapsedPaths={collapsedPaths}
         collapsedFieldSets={collapsedFieldSets}
         focusPath={formState.focusPath}
+        openPath={openPath}
         changed={formState.changed}
         focused={formState.focused}
         groups={formState.groups}
         validation={formState.validation}
         members={formState.members}
         perspective={sanitizeBundleName(perspective)}
+        hasUpstreamVersion={formState.hasUpstreamVersion}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}

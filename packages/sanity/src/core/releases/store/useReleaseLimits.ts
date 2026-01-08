@@ -7,7 +7,10 @@ import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {fetchReleaseLimits, type ReleaseLimits} from '../contexts/upsell/fetchReleaseLimits'
 
 interface ReleaseLimitsStore {
-  releaseLimits$: Observable<Omit<ReleaseLimits, 'orgActiveReleaseCount'> | null>
+  releaseLimits$: Observable<Omit<
+    ReleaseLimits,
+    'orgActiveReleaseCount' | 'orgMeteredActiveReleaseCount'
+  > | null>
 }
 
 const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
@@ -15,7 +18,6 @@ const RELEASE_LIMITS_RESOURCE_CACHE_NAMESPACE = 'ReleaseLimits'
 function createReleaseLimitsStore(client: SanityClient): ReleaseLimitsStore {
   const releaseLimits$ = fetchReleaseLimits(client, 'releaseLimits').pipe(
     map((data) => ({
-      defaultOrgActiveReleaseLimit: data.defaultOrgActiveReleaseLimit,
       datasetReleaseLimit: data.datasetReleaseLimit,
       orgActiveReleaseLimit: data.orgActiveReleaseLimit,
     })),

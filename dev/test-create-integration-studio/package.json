@@ -1,23 +1,27 @@
 {
   "name": "test-create-integration-studio",
-  "version": "4.8.0",
+  "version": "5.2.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "../.bin/sanity build",
+    "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "deploy": "npx sanity deploy",
-    "dev": "../.bin/sanity dev",
+    "dev": "sanity dev",
     "lint": "eslint .",
-    "start": "../.bin/sanity start"
+    "start": "sanity preview"
   },
   "dependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@sanity/code-input": "^6.0.1",
+    "@sanity/code-input": "^7.0.4",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   }
 }

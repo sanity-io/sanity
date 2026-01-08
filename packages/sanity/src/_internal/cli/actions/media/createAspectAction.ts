@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import {type CliCommandAction} from '@sanity/cli'
 import {createPublishedId} from '@sanity/id-utils'
-import {camelCase} from 'lodash'
+import {camelCase} from 'lodash-es'
 
 import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
 

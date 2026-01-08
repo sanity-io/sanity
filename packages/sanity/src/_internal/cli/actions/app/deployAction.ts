@@ -5,6 +5,7 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {
   checkDir,
@@ -26,7 +27,7 @@ export default async function deployAppAction(
   args: CliCommandArguments<DeployAppActionFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {apiClient, workDir, chalk, output, prompt, cliConfig} = context
+  const {apiClient, workDir, chalk, output, prompt, cliConfig, cliConfigPath} = context
   const flags = {build: true, ...args.extOptions}
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
@@ -34,7 +35,7 @@ export default async function deployAppAction(
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig})
 
   const installedSanityVersion = await getInstalledSanityVersion()
-  const appId = cliConfig && 'app' in cliConfig && cliConfig.app?.id
+  const appId = getAppId({cliConfig, output})
 
   const client = apiClient({
     requireUser: true,
@@ -78,7 +79,11 @@ export default async function deployAppAction(
 
     // If the user has provided an appId in the config, use that
     if (appId) {
-      userApplication = await getOrCreateUserApplicationFromConfig({...configParams, appId})
+      userApplication = await getOrCreateUserApplicationFromConfig({
+        ...configParams,
+        appId,
+        appHost: undefined,
+      })
     } else {
       userApplication = await getOrCreateApplication(configParams)
     }
@@ -131,7 +136,7 @@ export default async function deployAppAction(
       version: installedSanityVersion,
       isAutoUpdating,
       tarball,
-      isApp: true,
+      isSdkApp: true,
     })
 
     spinner.succeed()
@@ -140,9 +145,18 @@ export default async function deployAppAction(
     output.print(`\nSuccess! Application deployed`)
 
     if (!appId) {
-      output.print(`\nAdd ${chalk.cyan(`id: '${userApplication.id}'`)}`)
-      output.print('to `app` in sanity.cli.js or sanity.cli.ts')
-      output.print(`to avoid prompting on next deploy.`)
+      const example = `Example:
+export default defineCliConfig({
+  //…
+  deployment: {
+    ${chalk.cyan`appId: '${userApplication.id}'`},
+  },
+  //…
+})`
+      output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
+      output.print(`to the \`deployment\` section in sanity.cli.js or sanity.cli.ts`)
+      output.print(`to avoid prompting for appId on next deploy.`)
+      output.print(`\n${example}`)
     }
   } catch (err) {
     spinner.fail()

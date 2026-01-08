@@ -8,12 +8,10 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {template} from 'lodash'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {TEMPLATE_OPTIONS} from '../constants'
+import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
 
 /** @internal */
@@ -91,8 +89,6 @@ const DynamicIconContainer = styled.span<{$inline: boolean}>`
     }
   }
 `
-
-const accentSpanWrapper = (children: ReactNode) => <AccentSpan>{children}</AccentSpan>
 
 const DynamicIcon = (props: {icon: {url: string}; inline?: boolean}) => {
   const [__html, setHtml] = useState('')
@@ -185,8 +181,7 @@ const interpolateChildrenText = (interpolation?: InterpolationProp) => (children
 
   return childrenArray.map((child) => {
     if (typeof child === 'string') {
-      const childTemplate = template(child, TEMPLATE_OPTIONS)
-      return childTemplate(interpolation)
+      return interpolateTemplate(child, interpolation)
     }
 
     return child
@@ -270,19 +265,20 @@ const createComponents = ({
     },
     types: {
       inlineIcon: (props) => {
-        return (
-          <ConditionalWrapper condition={props.value.accent} wrapper={accentSpanWrapper}>
-            {props.value.sanityIcon ? (
-              <InlineIcon
-                symbol={props.value.sanityIcon}
-                $hasTextLeft={props.value.hasTextLeft}
-                $hasTextRight={props.value.hasTextRight}
-              />
-            ) : (
-              <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
-            )}
-          </ConditionalWrapper>
+        const children = props.value.sanityIcon ? (
+          <InlineIcon
+            symbol={props.value.sanityIcon}
+            $hasTextLeft={props.value.hasTextLeft}
+            $hasTextRight={props.value.hasTextRight}
+          />
+        ) : (
+          <>{props.value.icon?.url && <DynamicIcon icon={props.value.icon} inline />}</>
         )
+
+        if (props.value.accent) {
+          return <AccentSpan>{children}</AccentSpan>
+        }
+        return children
       },
       divider: () => (
         <Box marginY={3}>

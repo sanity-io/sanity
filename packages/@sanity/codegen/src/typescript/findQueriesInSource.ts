@@ -5,15 +5,17 @@ import {type Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 
 import {getBabelConfig} from '../getBabelConfig'
-import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
+import {resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
+import {type ExtractedModule, type ExtractedQuery, QueryExtractionError} from './types'
 
-const require = createRequire(__filename)
+const require = createRequire(import.meta.url)
 
 const groqTagName = 'groq'
 const defineQueryFunctionName = 'defineQuery'
 const groqModuleName = 'groq'
 const nextSanityModuleName = 'next-sanity'
+const sveltekitModuleName = '@sanity/sveltekit'
 
 const ignoreValue = '@sanity-typegen-ignore'
 
@@ -32,8 +34,9 @@ export function findQueriesInSource(
   filename: string,
   babelConfig: TransformOptions = getBabelConfig(),
   resolver: NodeJS.RequireResolve = require.resolve,
-): NamedQueryResult[] {
-  const queries: NamedQueryResult[] = []
+): ExtractedModule {
+  const queries: ExtractedQuery[] = []
+  const errors: QueryExtractionError[] = []
   const file = parseSourceFile(source, filename, babelConfig)
 
   traverse(file, {
@@ -54,7 +57,8 @@ export function findQueriesInSource(
       const isDefineQueryCall =
         babelTypes.isCallExpression(init) &&
         (isImportFrom(groqModuleName, defineQueryFunctionName, scope, init.callee) ||
-          isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee))
+          isImportFrom(nextSanityModuleName, defineQueryFunctionName, scope, init.callee) ||
+          isImportFrom(sveltekitModuleName, defineQueryFunctionName, scope, init.callee))
 
       if (babelTypes.isIdentifier(node.id) && (isGroqTemplateTag || isDefineQueryCall)) {
         // If we find a comment leading the decleration which macthes with ignoreValue we don't add
@@ -63,33 +67,27 @@ export function findQueriesInSource(
           return
         }
 
-        const queryName = `${node.id.name}`
-        const queryResult = resolveExpression({
-          node: init,
-          file,
-          scope,
-          babelConfig,
-          filename,
-          resolver,
-        })
+        const {id, start, end} = node
+        const variable = {id, ...(start && {start}), ...(end && {end})}
 
-        const location = node.loc
-          ? {
-              start: {
-                ...node.loc?.start,
-              },
-              end: {
-                ...node.loc?.end,
-              },
-            }
-          : {}
-
-        queries.push({name: queryName, result: queryResult, location})
+        try {
+          const query = resolveExpression({
+            node: init,
+            file,
+            scope,
+            babelConfig,
+            filename,
+            resolver,
+          })
+          queries.push({variable, query, filename})
+        } catch (cause) {
+          errors.push(new QueryExtractionError({filename, variable, cause}))
+        }
       }
     },
   })
 
-  return queries
+  return {filename, queries, errors}
 }
 
 function declarationLeadingCommentContains(path: NodePath, comment: string): boolean {

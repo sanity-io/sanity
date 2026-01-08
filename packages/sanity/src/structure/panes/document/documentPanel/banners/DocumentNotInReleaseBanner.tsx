@@ -31,7 +31,7 @@ export function DocumentNotInReleaseBanner({
   documentId: string
   currentRelease: ReleaseDocument
   isScheduledRelease?: boolean
-}): React.JSX.Element {
+}) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
@@ -69,7 +69,7 @@ export function DocumentNotInReleaseBanner({
     id: 'add-document-to-release',
     enabled: Boolean(
       versionCreateState?.status === 'created' &&
-        now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
+      now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
     ),
     closable: true,
     title: t('banners.release.waiting.title'),

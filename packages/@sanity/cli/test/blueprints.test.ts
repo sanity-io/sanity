@@ -4,6 +4,7 @@ import addBlueprintsCommand from '../src/commands/blueprints/addBlueprintsComman
 import configBlueprintsCommand from '../src/commands/blueprints/configBlueprintsCommand'
 import deployBlueprintsCommand from '../src/commands/blueprints/deployBlueprintsCommand'
 import destroyBlueprintsCommand from '../src/commands/blueprints/destroyBlueprintsCommand'
+import doctorBlueprintsCommand from '../src/commands/blueprints/doctorBlueprintsCommand'
 import infoBlueprintsCommand from '../src/commands/blueprints/infoBlueprintsCommand'
 import initBlueprintsCommand from '../src/commands/blueprints/initBlueprintsCommand'
 import logsBlueprintsCommand from '../src/commands/blueprints/logsBlueprintsCommand'
@@ -13,10 +14,10 @@ import {type CliCommandArguments, type CliCommandContext} from '../src/types'
 
 // Mock all blueprint cores
 const mockCores = {
-  blueprintAddCore: vi.fn().mockResolvedValue({success: true}),
   blueprintConfigCore: vi.fn().mockResolvedValue({success: true}),
   blueprintDeployCore: vi.fn().mockResolvedValue({success: true}),
   blueprintDestroyCore: vi.fn().mockResolvedValue({success: true}),
+  blueprintDoctorCore: vi.fn().mockResolvedValue({success: true}),
   blueprintInfoCore: vi.fn().mockResolvedValue({success: true}),
   blueprintInitCore: vi.fn().mockResolvedValue({success: true}),
   blueprintLogsCore: vi.fn().mockResolvedValue({success: true}),
@@ -24,7 +25,12 @@ const mockCores = {
   blueprintStacksCore: vi.fn().mockResolvedValue({success: true}),
 }
 
+const fnsMockCores = {
+  functionAddCore: vi.fn().mockResolvedValue({success: true}),
+}
+
 vi.mock('@sanity/runtime-cli/cores/blueprints', () => mockCores)
+vi.mock('@sanity/runtime-cli/cores/functions', () => fnsMockCores)
 
 const token = 'test-token'
 const localBlueprint = {
@@ -59,6 +65,7 @@ describe('blueprints commands exports', () => {
     expect(configBlueprintsCommand).toBeDefined()
     expect(deployBlueprintsCommand).toBeDefined()
     expect(destroyBlueprintsCommand).toBeDefined()
+    expect(doctorBlueprintsCommand).toBeDefined()
     expect(infoBlueprintsCommand).toBeDefined()
     expect(initBlueprintsCommand).toBeDefined()
     expect(logsBlueprintsCommand).toBeDefined()
@@ -90,7 +97,7 @@ describe('blueprints commands with mocked cores', () => {
   } as unknown as CliCommandContext
 
   describe('add command', () => {
-    it('should call blueprintAddCore with "function" argument', async () => {
+    it('should call functionAddCore with "function" argument', async () => {
       const args: CliCommandArguments = {
         ...emptyArgs,
         argsWithoutOptions: ['function'],
@@ -105,17 +112,17 @@ describe('blueprints commands with mocked cores', () => {
       // sanity blueprints add function --name test-function --fn-type document-publish --lang ts
       await addBlueprintsCommand.action(args, mockContext)
 
-      expect(mockCores.blueprintAddCore).toHaveBeenCalledWith({
+      expect(fnsMockCores.functionAddCore).toHaveBeenCalledWith({
         ...config,
-        args: {type: 'function'},
         flags: {
-          'name': 'test-function',
-          'fn-type': 'document-publish',
-          'language': 'ts',
-          'javascript': undefined,
-          'fn-helpers': false,
-          'fn-installer': undefined,
-          'install': undefined,
+          name: 'test-function',
+          type: 'document-publish',
+          language: 'ts',
+          example: undefined,
+          javascript: undefined,
+          helpers: false,
+          installer: undefined,
+          install: undefined,
         },
       })
     })
@@ -130,33 +137,27 @@ describe('blueprints commands with mocked cores', () => {
     })
   })
 
-  describe('init command', () => {
-    it('should call blueprintInitCore with directory and flags', async () => {
+  describe('config command', () => {
+    it('should call blueprintConfigCore with flags', async () => {
       const args: CliCommandArguments = {
         ...emptyArgs,
-        argsWithoutOptions: ['my-dir'],
         extOptions: {
-          'blueprint-type': 'studio',
+          'edit': true,
           'project-id': 'proj123',
-          'stack-name': 'test-stack',
+          'stack-id': 'stack123',
         },
       }
 
-      // sanity blueprints init my-dir --blueprint-type studio --project-id proj123 --stack-name test-stack
-      await initBlueprintsCommand.action(args, mockContext)
+      // sanity blueprints config --edit --project-id proj123 --stack-id stack123
+      await configBlueprintsCommand.action(args, mockContext)
 
-      expect(mockCores.blueprintInitCore).toHaveBeenCalledWith({
-        bin: 'sanity',
-        log: expect.any(Function),
-        token,
-        args: {
-          dir: 'my-dir',
-        },
+      expect(mockCores.blueprintConfigCore).toHaveBeenCalledWith({
+        ...config,
         flags: {
-          'blueprint-type': 'studio',
           'project-id': 'proj123',
-          'stack-id': undefined,
-          'stack-name': 'test-stack',
+          'stack-id': 'stack123',
+          'test-config': undefined,
+          'edit': true,
         },
       })
     })
@@ -207,28 +208,21 @@ describe('blueprints commands with mocked cores', () => {
     })
   })
 
-  describe('config command', () => {
-    it('should call blueprintConfigCore with flags', async () => {
+  describe('doctor command', () => {
+    it('should call blueprintDoctorCore with verbose flag', async () => {
       const args: CliCommandArguments = {
         ...emptyArgs,
-        extOptions: {
-          'edit': true,
-          'project-id': 'proj123',
-          'stack-id': 'stack123',
-        },
+        extOptions: {verbose: true},
       }
 
-      // sanity blueprints config --edit --project-id proj123 --stack-id stack123
-      await configBlueprintsCommand.action(args, mockContext)
+      // sanity blueprints doctor --verbose
+      await doctorBlueprintsCommand.action(args, mockContext)
 
-      expect(mockCores.blueprintConfigCore).toHaveBeenCalledWith({
-        ...config,
-        flags: {
-          'project-id': 'proj123',
-          'stack-id': 'stack123',
-          'test-config': undefined,
-          'edit': true,
-        },
+      expect(mockCores.blueprintDoctorCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        token,
+        flags: {verbose: true, fix: false},
       })
     })
   })
@@ -249,6 +243,38 @@ describe('blueprints commands with mocked cores', () => {
         ...config,
         blueprint: localBlueprint,
         flags: {id: 'stack123'},
+      })
+    })
+  })
+
+  describe('init command', () => {
+    it('should call blueprintInitCore with directory and flags', async () => {
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        argsWithoutOptions: ['my-dir'],
+        extOptions: {
+          'blueprint-type': 'studio',
+          'project-id': 'proj123',
+          'stack-name': 'test-stack',
+        },
+      }
+
+      // sanity blueprints init my-dir --blueprint-type studio --project-id proj123 --stack-name test-stack
+      await initBlueprintsCommand.action(args, mockContext)
+
+      expect(mockCores.blueprintInitCore).toHaveBeenCalledWith({
+        bin: 'sanity',
+        log: expect.any(Function),
+        token,
+        args: {
+          dir: 'my-dir',
+        },
+        flags: {
+          'blueprint-type': 'studio',
+          'project-id': 'proj123',
+          'stack-id': undefined,
+          'stack-name': 'test-stack',
+        },
       })
     })
   })
@@ -275,11 +301,17 @@ describe('blueprints commands with mocked cores', () => {
 
   describe('plan command', () => {
     it('should call blueprintPlanCore with blueprint', async () => {
-      // sanity blueprints plan
-      await planBlueprintsCommand.action(emptyArgs, mockContext)
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {verbose: true},
+      }
+
+      // sanity blueprints plan --verbose
+      await planBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintPlanCore).toHaveBeenCalledWith({
         ...config,
+        flags: {verbose: true},
       })
     })
   })

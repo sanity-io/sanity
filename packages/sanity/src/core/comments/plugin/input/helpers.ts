@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 /**
  * A function that creates a DOMRect from an array of elements.
@@ -39,27 +39,28 @@ function useRectFromElements(props: RectFromElementsHookOptions): DOMRect | null
   const {scrollElement, disabled, selector} = props
   const [rect, setRect] = useState<DOMRect | null>(null)
 
-  const handleSetRect = useCallback(() => {
-    if (disabled) return
-    const elements = document?.querySelectorAll(selector)
-    if (!elements) return
-
-    const nextRect = createDomRectFromElements(Array.from(elements))
-
-    setRect(nextRect)
-  }, [disabled, selector])
-
-  useEffect(handleSetRect, [handleSetRect])
-
   useEffect(() => {
-    if (disabled || !scrollElement) return undefined
+    if (disabled) return undefined
+
+    const handleSetRect = () => {
+      const elements = document?.querySelectorAll(selector)
+      if (!elements) return
+
+      const nextRect = createDomRectFromElements(Array.from(elements))
+
+      setRect(nextRect)
+    }
+
+    handleSetRect()
+
+    if (!scrollElement) return undefined
 
     scrollElement.addEventListener('wheel', handleSetRect)
 
     return () => {
       scrollElement.removeEventListener('wheel', handleSetRect)
     }
-  }, [handleSetRect, disabled, scrollElement])
+  }, [scrollElement, disabled, selector])
 
   return rect
 }

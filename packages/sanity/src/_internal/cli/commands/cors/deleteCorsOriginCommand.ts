@@ -23,7 +23,7 @@ const deleteCorsOriginCommand: CliCommandDefinition = {
       await client.request({method: 'DELETE', uri: `/cors/${originId}`})
       output.print('Origin deleted')
     } catch (err) {
-      throw new Error(`Origin deletion failed:\n${err.message}`)
+      throw new Error(`Origin deletion failed:\n${err.message}`, {cause: err})
     }
   },
 }

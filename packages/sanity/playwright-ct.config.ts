@@ -1,7 +1,10 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import aliases from '@repo/dev-aliases'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')

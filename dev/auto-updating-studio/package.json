@@ -1,6 +1,6 @@
 {
   "name": "auto-updating-studio",
-  "version": "4.8.0",
+  "version": "5.2.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -12,7 +12,7 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",
-    "start": "sanity start"
+    "start": "sanity preview"
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",

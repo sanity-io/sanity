@@ -4,18 +4,20 @@ import path from 'node:path'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
 import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityAppCommandFlags {
@@ -33,7 +35,7 @@ export default async function buildSanityApp(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityAppCommandFlags = {
     'minify': true,
     'stats': false,
@@ -49,6 +51,7 @@ export default async function buildSanityApp(
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const appId = getAppId({cliConfig, output})
 
   const installedSdkVersion = await readModuleVersion(context.workDir, '@sanity/sdk-react')
   const installedSanityVersion = await readModuleVersion(context.workDir, 'sanity')
@@ -74,11 +77,23 @@ export default async function buildSanityApp(
       {name: '@sanity/sdk-react', version: cleanSDKVersion},
       ...(cleanSanityVersion ? [{name: 'sanity' as const, version: cleanSanityVersion}] : []),
     ]
-    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages)
-    output.print(`${info} Building with auto-updates enabled`)
+    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages, {appId})
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
+
+    // note: we want to show this warning only if running `sanity build`
+    // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
+    // see deployAction.ts
+    if (args.groupOrCommand !== 'deploy' && !appId) {
+      warnAboutMissingAppId({
+        appType: 'app',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
-    const result = await compareDependencyVersions(autoUpdatedPackages, workDir)
+    const result = await compareDependencyVersions(autoUpdatedPackages, workDir, {appId})
 
     // If it is in unattended mode, we don't want to prompt
     if (result?.length && !unattendedMode) {

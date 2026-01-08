@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "4.8.0",
+  "version": "5.2.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "sanity",
@@ -22,28 +22,25 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/mutator/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
-    "perf": "node ./perf/run.js",
+    "perf": "node ./perf/run.cjs",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "watch": "pkg-utils watch"
@@ -52,16 +49,21 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.2",
-    "debug": "^4.4.1",
-    "lodash": "^4.17.21"
+    "debug": "^4.4.3",
+    "lodash-es": "^4.17.22"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
     "@types/debug": "^4.1.12",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   }
 }

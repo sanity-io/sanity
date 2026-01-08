@@ -3,9 +3,9 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "^7.14.0",
     "@sanity/functions": "^1.0.3",
-    "prettier": "^3.6.2"
+    "prettier": "^3.7.4"
   },
   "blueprintResourceItem": {
     "name": "prettier-format-code",
@@ -13,9 +13,10 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
-      "filter": "_type == 'article' && delta::changedAny(content[_type == 'code'])",
+      "filter": "_type == 'post' && delta::changedAny(content[_type == 'code'])",
       "projection": "{_id, content}"
     }
   },

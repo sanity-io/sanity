@@ -5,6 +5,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
+import {stringDiffContainerStyles} from '../common/diff/string/styles'
 
 export const Root = styled.div((props) => {
   const {color, input, radius} = getTheme_v2(props.theme)
@@ -60,4 +61,9 @@ export const ExpandedLayer = styled(Layer)`
   & > div {
     height: 100%;
   }
+`
+
+export const StringDiffContainer = styled.div`
+  height: 100%;
+  ${stringDiffContainerStyles}
 `

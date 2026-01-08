@@ -8,6 +8,9 @@ import {type LegacyThemeTints} from './types'
 
 const NEUTRAL_TONES = ['default', 'transparent']
 
+/**
+ * @deprecated – Will be removed in upcoming major version
+ */
 export function buildColor(
   legacyPalette: LegacyPalette,
   legacyTones: LegacyTones,

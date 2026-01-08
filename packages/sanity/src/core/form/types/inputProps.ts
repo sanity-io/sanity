@@ -9,6 +9,7 @@ import {
 } from '@portabletext/editor'
 import {
   type ArraySchemaType,
+  type AssetSource,
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
@@ -28,16 +29,14 @@ import {
   type FocusEventHandler,
   type FormEventHandler,
   type MutableRefObject,
-  type ReactNode,
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup, type ProvenanceDiffAnnotation} from '../store'
+import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type BooleanFormNode,
-  type NodeDiffProps,
   type NumberFormNode,
   type ObjectFormNode,
   type StringFormNode,
@@ -69,9 +68,24 @@ export interface OnPathFocusPayload {
 
 /**
  * @hidden
+ * @beta */
+export interface InputOnSelectFileFunctionProps {
+  assetSource: AssetSource
+  schemaType: SchemaType
+  file: File
+}
+
+/**
+ * @hidden
  * @public */
-export interface BaseInputProps extends NodeDiffProps<ProvenanceDiffAnnotation> {
+export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.JSX.Element
+  /**
+   * Whether the input should display inline changes. Inline changes express how a field's value
+   * differs from its upstream version. Unlike custom diff components, inline changes is a mode
+   * that allows the input component itself to display the change in situ.
+   */
+  displayInlineChanges: boolean
 }
 
 /**
@@ -80,8 +94,8 @@ export interface BaseInputProps extends NodeDiffProps<ProvenanceDiffAnnotation> 
 export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType,
-> extends BaseInputProps,
-    Omit<ObjectFormNode<T, S>, '_allMembers'> {
+>
+  extends BaseInputProps, Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -171,17 +185,6 @@ export interface ObjectInputProps<
    * @hidden
    * @beta */
   elementProps: ComplexElementProps
-
-  /**
-   * @deprecated – DO NOT USE
-   *
-   * The node for the array editing modal.
-   * This node renders the array editing modal as a child of the root input.
-   * It is necessary for the array editing dialog to be a child of the root input
-   * because the root input may be wrapped in a React context using the Components API,
-   * which is utilized by inputs in the form.
-   */
-  __internal_arrayEditingModal?: ReactNode
 }
 
 /**
@@ -190,8 +193,8 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    ArrayOfObjectsFormNode<T[], S> {
+>
+  extends BaseInputProps, Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -241,7 +244,12 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onUpload: (event: UploadEvent) => void
+  onUpload?: (event: UploadEvent) => void
+
+  /**
+   * @hidden
+   * @beta */
+  onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
 
   /**
    * @hidden
@@ -326,8 +334,8 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    ArrayOfPrimitivesFormNode<T[], S> {
+>
+  extends BaseInputProps, Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -447,8 +455,7 @@ export interface ComplexElementProps {
  * @hidden
  * @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends BaseInputProps,
-    StringFormNode<S> {
+  extends BaseInputProps, Omit<StringFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -464,8 +471,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
  * @hidden
  * @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends BaseInputProps,
-    NumberFormNode<S> {
+  extends BaseInputProps, Omit<NumberFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -481,8 +487,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
  * @hidden
  * @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BaseInputProps,
-    BooleanFormNode<S> {
+  extends BaseInputProps, Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -513,8 +518,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
  *
  * @public
  * */
-export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
+  PortableTextBlock,
+  ArraySchemaType<PortableTextBlock>
+> {
   /**
    * A React Ref that can reference the underlying editor instance
    */

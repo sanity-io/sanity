@@ -1,6 +1,5 @@
 import {
   BinaryDocumentIcon,
-  CodeIcon,
   CogIcon,
   EarthGlobeIcon,
   ImagesIcon,
@@ -36,7 +35,6 @@ import {
   PLUGIN_INPUT_TYPES,
   STANDARD_INPUT_TYPES,
   STANDARD_PORTABLE_TEXT_INPUT_TYPES,
-  TS_DOC_TYPES,
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
@@ -427,15 +425,6 @@ export const structure: StructureResolver = (
 
       S.divider(),
 
-      _buildTypeGroup(S, schema, {
-        icon: CodeIcon,
-        id: 'tsdoc',
-        title: 'TS doc',
-        types: TS_DOC_TYPES,
-      }),
-
-      S.divider(),
-
       S.listItem()
         .title('Default ordering test')
         .id('default-ordering')
@@ -460,8 +449,7 @@ export const structure: StructureResolver = (
             !PLUGIN_INPUT_TYPES.includes(id) &&
             !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
             !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
-            !typesInOptionGroup(S, schema, 'v3').includes(id) &&
-            !TS_DOC_TYPES.includes(id)
+            !typesInOptionGroup(S, schema, 'v3').includes(id)
           )
         })
         .map((listItem) => {

@@ -1,5 +1,3 @@
-import {createContext} from 'sanity/_createContext'
-
 import {type Schedule, type ScheduleSort, type ScheduleState} from '../types'
 
 /**
@@ -14,12 +12,3 @@ export interface SchedulesContextValue {
   setSortBy: (sortBy: ScheduleSort) => void
   sortBy?: ScheduleSort
 }
-
-/**
- * @deprecated we will be dropping support for scheduled publishing on a future major version
- * @internal
- */
-export const SchedulesContext = createContext<SchedulesContextValue | undefined>(
-  'sanity/_singletons/context/schedules',
-  undefined,
-)

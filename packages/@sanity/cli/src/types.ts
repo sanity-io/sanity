@@ -1,5 +1,7 @@
 import {type SanityClient} from '@sanity/client'
+import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
+import {type PluginOptions as ReactCompilerOptions} from 'babel-plugin-react-compiler'
 import type chalk from 'chalk'
 import {type Answers, type ChoiceCollection, type DistinctQuestion, type Separator} from 'inquirer'
 import {type Options, type Ora} from 'ora'
@@ -274,28 +276,9 @@ export interface GraphQLAPIConfig {
 }
 
 /**
- * Until these types are on npm: https://github.com/facebook/react/blob/0bc30748730063e561d87a24a4617526fdd38349/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L39-L122
  * @beta
  */
-export interface ReactCompilerConfig {
-  /**
-   * @see https://react.dev/learn/react-compiler#existing-projects
-   */
-  sources?: Array<string> | ((filename: string) => boolean) | null
-
-  /**
-   * The minimum major version of React that the compiler should emit code for. If the target is 19
-   * or higher, the compiler emits direct imports of React runtime APIs needed by the compiler. On
-   * versions prior to 19, an extra runtime package react-compiler-runtime is necessary to provide
-   * a userspace approximation of runtime APIs.
-   * @see https://react.dev/learn/react-compiler#using-react-compiler-with-react-17-or-18
-   */
-  target: '18' | '19'
-
-  panicThreshold?: 'ALL_ERRORS' | 'CRITICAL_ERRORS' | 'NONE'
-
-  compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all'
-}
+export type ReactCompilerConfig = Partial<ReactCompilerOptions>
 
 interface AppConfig {
   /**
@@ -306,8 +289,9 @@ interface AppConfig {
    * The entrypoint for your Sanity app. Defaults to './src/App'.
    */
   entry?: string
+
   /**
-   * The ID of your Sanity app. Generated when deploying your app for the first time; check the output of `sanity deploy` for this.
+   * @deprecated - Moved to `deployment.appId`
    */
   id?: string
 }
@@ -343,8 +327,14 @@ export interface CliConfig {
 
   vite?: UserViteConfig
 
+  /**
+   * @deprecated - Moved to deployment.autoUpdates
+   */
   autoUpdates?: boolean
 
+  /**
+   * @deprecated - Replaced by deployment.appId
+   */
   studioHost?: string
 
   /**
@@ -353,6 +343,24 @@ export interface CliConfig {
    */
   app?: AppConfig
 
+  /**
+   * Deployment configuration
+   */
+  deployment?: {
+    /**
+     * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
+     * Get the appId either by
+     * - Checking the output of `sanity deploy`.
+     * - Get it from your project's Studio tab in https://www.sanity.io/manage
+     */
+    appId?: string
+
+    /**
+     * Enable auto-updates for studios.
+     * {@link https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56}
+     */
+    autoUpdates?: boolean
+  }
   /**
    * Configuration for Sanity media libraries.
    */
@@ -363,6 +371,10 @@ export interface CliConfig {
      */
     aspectsPath: string
   }
+  /**
+   * Configuration for Sanity typegen
+   */
+  typegen?: Partial<TypeGenConfig>
 }
 
 export type UserViteConfig =

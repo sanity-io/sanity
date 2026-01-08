@@ -192,12 +192,14 @@ export const ObjectField = function ObjectField(props: {
       level: member.field.level,
       members: member.field.members,
       value: member.field.value,
+      compareValue: member.field.compareValue,
       readOnly: member.field.readOnly,
       validation: member.field.validation,
       presence: member.field.presence,
       schemaType: member.field.schemaType,
       changed: member.field.changed,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
+      hasUpstreamVersion: member.field.hasUpstreamVersion,
       id: member.field.id,
       onFieldGroupSelect: handleSelectFieldGroup,
       onFieldOpen: handleOpenField,
@@ -219,23 +221,27 @@ export const ObjectField = function ObjectField(props: {
       renderInput,
       renderItem,
       renderPreview,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
     elementProps,
     member.field.level,
     member.field.members,
     member.field.value,
+    member.field.compareValue,
     member.field.readOnly,
     member.field.validation,
     member.field.presence,
     member.field.schemaType,
     member.field.changed,
     member.field.__unstable_computeDiff,
+    member.field.hasUpstreamVersion,
     member.field.id,
     member.field.path,
     member.field.focusPath,
     member.field.focused,
     member.field.groups,
+    member.field.displayInlineChanges,
     handleSelectFieldGroup,
     handleOpenField,
     handleCloseField,
@@ -254,60 +260,6 @@ export const ObjectField = function ObjectField(props: {
     renderPreview,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const fieldProps = useMemo((): Omit<ObjectFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      name: member.name,
-      index: member.index,
-      level: member.field.level,
-      value: member.field.value,
-      validation: member.field.validation,
-      presence: member.field.presence,
-      title: member.field.schemaType.title,
-      description: member.field.schemaType.description,
-
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      onCollapse: handleCollapse,
-      onExpand: handleExpand,
-
-      open: member.open,
-      changed: member.field.changed,
-
-      onOpen: handleOpen,
-      onClose: handleClose,
-
-      schemaType: member.field.schemaType,
-      inputId: member.field.id,
-      path: member.field.path,
-      children: renderedInput,
-      inputProps: inputProps as ObjectInputProps,
-    }
-  }, [
-    fieldActions,
-    member.name,
-    member.index,
-    member.field.level,
-    member.field.value,
-    member.field.validation,
-    member.field.presence,
-    member.field.schemaType,
-    member.field.changed,
-    member.field.id,
-    member.field.path,
-    member.collapsible,
-    member.collapsed,
-    member.open,
-    handleCollapse,
-    handleExpand,
-    handleOpen,
-    handleClose,
-    renderedInput,
-    inputProps,
-  ])
-
   return (
     <FormCallbacksProvider
       onFieldGroupSelect={onFieldGroupSelect}
@@ -318,7 +270,50 @@ export const ObjectField = function ObjectField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      <RenderField
+        actions={fieldActions}
+        name={member.name}
+        index={member.index}
+        level={member.field.level}
+        value={member.field.value}
+        validation={member.field.validation}
+        presence={member.field.presence}
+        title={member.field.schemaType.title}
+        description={member.field.schemaType.description}
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        onCollapse={handleCollapse}
+        onExpand={handleExpand}
+        open={member.open}
+        changed={member.field.changed}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        schemaType={member.field.schemaType}
+        inputId={member.field.id}
+        path={member.field.path}
+        inputProps={inputProps as ObjectInputProps}
+        render={renderField}
+      >
+        <RenderInput {...inputProps} render={renderInput} />
+      </RenderField>
     </FormCallbacksProvider>
   )
+}
+
+// The RenderInput and RenderField wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<ObjectInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderField({
+  render,
+  ...props
+}: Omit<ObjectFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback
+}) {
+  return render(props)
 }

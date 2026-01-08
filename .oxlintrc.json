@@ -13,8 +13,7 @@
     "import",
     "jsx-a11y",
     "node",
-    "promise",
-    "vitest"
+    "promise"
   ],
   "ignorePatterns": [
     "**/etc/*",
@@ -49,6 +48,11 @@
             "message": "Please use `import {styled} from 'styled-components'` instead."
           },
           {
+            "name": "styled-components",
+            "importNames": ["ServerStyleSheet"],
+            "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+          },
+          {
             "name": "react",
             "importNames": ["default"],
             "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
@@ -57,6 +61,11 @@
             "name": "react",
             "importNames": ["createElement"],
             "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+          },
+          {
+            "name": "react",
+            "importNames": ["createRef"],
+            "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
           },
           {
             "name": "react/jsx-runtime",
@@ -69,16 +78,16 @@
           {
             "name": "react/compiler-runtime",
             "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
-          },
-          {
-            "name": "react-compiler-runtime",
-            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
           }
         ],
         "patterns": [
           {
             "group": ["**/scheduled-publishing/**"],
             "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+          },
+          {
+            "group": ["lodash.*", "lodash/*", "lodash"],
+            "message": "Please use the default import from 'lodash-es' instead."
           }
         ]
       }
@@ -106,13 +115,22 @@
     "jest/valid-expect": "off",
     "jest/valid-title": "off",
     "jest/valid-describe-callback": "off",
+    "vitest/no-disabled-tests": "off",
+    "vitest/no-test-prefixes": "off",
     "jsx_a11y/no-autofocus": "off",
+    "jsx_a11y/no-static-element-interactions": "off", // Allow event handlers on static elements
     "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
-    // Since we use useEffectEvent, we can't use the oxlint checker for this rule, as it doesn't understand effect event semantics
-    "react/exhaustive-deps": "off",
     // Handy rules that are disabled by default
+    "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
+    "import/no-commonjs ": "error",
+    "no-restricted-globals": [
+      "error",
+      {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
+      {"name": "__filename", "message": "Use fileURLToPath(import.meta.url) instead"}
+    ],
     // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
     "typescript/no-explicit-any": "warn",
     "eslint/no-await-in-loop": "warn",
@@ -151,10 +169,60 @@
     "promise/no-callback-in-promise": "warn",
     "eslint/no-unsafe-optional-chaining": "warn",
     "promise/always-return": ["error", {"ignoreLastCallback": true}],
+    "require-module-specifiers": "warn",
+    // handy type-aware rules
+    "no-unnecessary-boolean-literal-compare": "error",
+    // Powerful type-aware rules that should be enabled in the future, but have too many violations to be handled in a single PR
+    "no-base-to-string": "warn",
+    "no-duplicate-type-constituents": "warn",
+    "no-implied-eval": "warn",
+    "no-misused-spread": "warn",
+    "no-multiple-resolved": "warn",
+    "no-redundant-type-constituents": "warn",
+    "no-unnecessary-template-expression": "warn",
+    "no-unnecessary-type-arguments": "warn",
+    "no-unnecessary-type-assertion": "warn",
+    "no-unsafe-type-assertion": "warn",
+    "restrict-template-expressions": "warn",
+    "unbound-method": "warn",
     // Temporarily disabled, will be re-enabled in the near term
-    "unicorn/prefer-set-has": "off"
+    "unicorn/prefer-set-has": "off",
+    // Requires polyfills for older browsers
+    "no-array-reverse": "off",
+    "no-array-sort": "off",
+    "oxc/no-map-spread": "off",
+    "jsx_a11y/aria-proptypes": "off"
   },
   "overrides": [
-    {"files": ["scripts/**/*", "examples/functions/**/*"], "rules": {"no-console": "off"}}
+    {
+      "files": ["scripts/**/*", "examples/functions/**/*"],
+      "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
+    },
+    {
+      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}", "**/__workshop__/**"],
+      "rules": {
+        "no-base-to-string": "off",
+        "no-unnecessary-boolean-literal-compare": "off",
+        "no-unnecessary-template-expression": "off",
+        "no-unnecessary-type-assertion": "off",
+        "no-unsafe-type-assertion": "off",
+        "unbound-method": "off"
+      }
+    },
+    {
+      // We still allow CJS in some places, for legacy reasons
+      "files": ["packages/@sanity/cli/**/*", "scripts/**/*"],
+      "rules": {
+        "import/no-commonjs ": "off",
+        "no-restricted-globals": "off"
+      }
+    },
+    {
+      // Vitest matchers legitimately use `this` context for matcher API
+      "files": ["**/test/matchers/**/*.ts"],
+      "rules": {
+        "oxc/no-this-in-exported-function": "off"
+      }
+    }
   ]
 }

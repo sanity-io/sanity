@@ -1,12 +1,11 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {startCase, uniq} from 'lodash'
-import {useMemo} from 'react'
+import {startCase, uniq} from 'lodash-es'
 
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
 import {useSchema} from '../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../i18n'
-import {isNonNullable, truncateString} from '../../../../../../../../util'
+import {EMPTY_ARRAY, isNonNullable, truncateString} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {type SearchFieldDefinition} from '../../../../definitions/fields'
 import {type SearchFilterDefinition} from '../../../../definitions/filters'
@@ -35,46 +34,41 @@ export function FilterTooltip({
 
   const schema = useSchema()
 
-  const fieldDefinitionDocumentTypeTitles = useMemo(() => {
-    if (fieldDefinition?.documentTypes) {
-      return fieldDefinition.documentTypes
+  const fieldDefinitionDocumentTypeTitles = fieldDefinition?.documentTypes
+    ? fieldDefinition.documentTypes
         .map((d) => {
           const defType = schema.get(d)
           return defType?.title || startCase(defType?.name)
         })
         .filter(isNonNullable)
         .sort()
-    }
-    return []
-  }, [fieldDefinition?.documentTypes, schema])
+    : EMPTY_ARRAY
 
   /**
    * Obtain the shared field description for the current field definition.
    * Return a description only if this field description is identical (and defined)
    * across all ALL associated fields.
    */
-  const fieldDefinitionDescription = useMemo(() => {
-    if (fieldDefinition?.documentTypes) {
-      const descriptions = fieldDefinition.documentTypes
-        .map((d) => {
-          const defType = schema.get(d)
-          if (defType) {
-            const field = getSchemaField(defType, fieldDefinition.fieldPath)
-            // Sanitize schema descriptions (which may either be a string or React element)
-            return field?.type.description && sanitizeFieldValue(field?.type.description)
-          }
-          return null
-        })
-        .filter(isNonNullable)
-        .sort()
+  let fieldDefinitionDescription: string | undefined
+  if (fieldDefinition?.documentTypes) {
+    const descriptions = fieldDefinition.documentTypes
+      .map((d) => {
+        const defType = schema.get(d)
+        if (defType) {
+          const field = getSchemaField(defType, fieldDefinition.fieldPath)
+          // Sanitize schema descriptions (which may either be a string or React element)
+          return field?.type.description && sanitizeFieldValue(field?.type.description)
+        }
+        return null
+      })
+      .filter(isNonNullable)
+      .sort()
 
-      const uniqueDescriptions = uniq(descriptions)
-      if (uniqueDescriptions.length === 1) {
-        return uniqueDescriptions[0]
-      }
+    const uniqueDescriptions = uniq(descriptions)
+    if (uniqueDescriptions.length === 1) {
+      fieldDefinitionDescription = uniqueDescriptions[0]
     }
-    return undefined
-  }, [fieldDefinition?.documentTypes, fieldDefinition?.fieldPath, schema])
+  }
 
   return (
     <Tooltip

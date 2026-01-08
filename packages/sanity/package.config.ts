@@ -8,42 +8,42 @@ export default defineConfig({
   bundles: [
     {
       source: './src/_internal/cli/threads/esbuild.ts',
-      require: './lib/_internal/cli/threads/esbuild.js',
+      require: './lib/_internal/cli/threads/esbuild.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/registerBrowserEnv.ts',
-      require: './lib/_internal/cli/threads/registerBrowserEnv.js',
+      require: './lib/_internal/cli/threads/registerBrowserEnv.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/configClient.ts',
-      require: './lib/_internal/cli/threads/configClient.js',
+      require: './lib/_internal/cli/threads/configClient.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/getGraphQLAPIs.ts',
-      require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
+      require: './lib/_internal/cli/threads/getGraphQLAPIs.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/validateDocuments.ts',
-      require: './lib/_internal/cli/threads/validateDocuments.js',
+      require: './lib/_internal/cli/threads/validateDocuments.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/validateSchema.ts',
-      require: './lib/_internal/cli/threads/validateSchema.js',
+      require: './lib/_internal/cli/threads/validateSchema.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/extractSchema.ts',
-      require: './lib/_internal/cli/threads/extractSchema.js',
+      require: './lib/_internal/cli/threads/extractSchema.cjs',
       runtime: 'node',
     },
     {
       source: './src/_internal/cli/threads/extractManifest.ts',
-      require: './lib/_internal/cli/threads/extractManifest.js',
+      require: './lib/_internal/cli/threads/extractManifest.cjs',
       runtime: 'node',
     },
   ],
@@ -58,5 +58,5 @@ export default defineConfig({
   },
 
   babel: {reactCompiler: true},
-  reactCompilerOptions: {target: '18'},
+  reactCompilerOptions: {target: '19'},
 })

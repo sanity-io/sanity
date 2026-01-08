@@ -26,6 +26,11 @@ interface StudioErrorBoundaryProps {
   children: ReactNode
   heading?: string
   getErrorScreen?: (error: Error) => ReactNode | null
+  /**
+   * The project ID of the first workspace in the Studio config.
+   * Used to show the "Register Studio" option in the CORS error screen.
+   */
+  primaryProjectId?: string
 }
 
 type ErrorBoundaryState = {
@@ -44,7 +49,7 @@ type ErrorBoundaryState = {
  * @param props - {@link StudioErrorBoundaryProps}
  */
 export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
-  const {children, heading = 'An error occurred', getErrorScreen} = props
+  const {children, heading = 'An error occurred', getErrorScreen, primaryProjectId} = props
   const [caughtError, setCaughtError] = useState<ErrorBoundaryState>()
   const [errorScreen, setErrorScreen] = useState<ReactNode>()
   const handleResetError = useCallback(() => setCaughtError(undefined), [])
@@ -52,11 +57,15 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
   const handleCatchError: ErrorBoundaryProps['onCatch'] = useCallback(
     (params) => {
       let eventId: string | undefined
-      try {
+      // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+      const run = () => {
         eventId = errorReporter.reportError(params.error, {
           reactErrorInfo: params.info,
           errorBoundary: 'StudioErrorBoundary',
         })?.eventId
+      }
+      try {
+        run()
       } catch (e) {
         e.message = `Encountered an additional error when reporting error: ${e.message}`
         console.error(e)
@@ -82,7 +91,13 @@ export function StudioErrorBoundary(props: StudioErrorBoundaryProps) {
   }
 
   if (caughtError.error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={caughtError.error.projectId} />
+    return (
+      <CorsOriginErrorScreen
+        projectId={caughtError.error.projectId}
+        isStaging={caughtError.error.isStaging}
+        primaryProjectId={primaryProjectId}
+      />
+    )
   }
 
   if (caughtError.error instanceof SchemaError) {

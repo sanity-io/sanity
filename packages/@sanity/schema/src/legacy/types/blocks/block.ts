@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
 import {OWN_PROPS_NAME} from '../constants'
@@ -72,13 +72,7 @@ export const BlockType = {
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: extendMember(type),
-        }
-      })
+      return fields.map((fieldDef) => extendMember.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))

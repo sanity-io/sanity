@@ -76,7 +76,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
       ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
         isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
       ),
-    [schemaType.options?.list],
+    [schemaType.options],
   )
 
   const handleChange = useCallback(

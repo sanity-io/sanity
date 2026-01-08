@@ -3,6 +3,10 @@ import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
+/**
+ * Sorts releases by their release type and created date.
+ * @internal
+ */
 export function sortReleases(releases: ReleaseDocument[] = []): ReleaseDocument[] {
   // The order should always be:
   // [undecided (sortByCreatedAt), scheduled(sortBy publishAt || metadata.intendedPublishAt), asap(sortByCreatedAt)]
@@ -69,12 +73,14 @@ export function getReleasesPerspectiveStack({
   if (selectedPerspectiveName === 'published') {
     return PUBLISHED
   }
+
   const sorted: ClientPerspective = sortReleases(releases).map((release) =>
     getReleaseIdFromReleaseDocumentId(release._id),
   )
   const selectedIndex = sorted.indexOf(selectedPerspectiveName)
   if (selectedIndex === -1) {
-    return EMPTY
+    // we're in a non-release stack
+    return [selectedPerspectiveName, ...defaultPerspective]
   }
   return sorted
     .slice(selectedIndex)

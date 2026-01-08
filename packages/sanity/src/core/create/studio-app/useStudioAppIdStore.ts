@@ -63,11 +63,10 @@ export function useStudioAppIdStoreInner(props: {
       try {
         const entry = await cache.get({projectId, appIdFetcher})
         if (mounted) setStudioApp(entry)
-      } catch (err) {
+      } catch {
         if (mounted) setStudioApp(undefined)
-      } finally {
-        if (mounted) setLoading(false)
       }
+      if (mounted) setLoading(false)
     }
 
     if (enabled) {

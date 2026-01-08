@@ -8,8 +8,8 @@ import {
   type ObjectItem,
   type ObjectItemProps,
 } from '../../../../types'
+import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {Item, List} from '../../common/list'
-import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
@@ -26,6 +26,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     onItemPrepend,
     onItemAppend,
     onItemMove,
+    onSelectFile,
     onUpload,
     readOnly,
     renderAnnotation,
@@ -34,7 +35,6 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderInlineBlock,
     renderInput,
     renderPreview,
-    resolveUploader,
     schemaType,
     value = EMPTY,
   } = props
@@ -42,9 +42,9 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const sortable = schemaType.options?.sortable !== false
 
-  const renderItem = useCallback(({key, ...itemProps}: Omit<ObjectItemProps, 'renderDefault'>) => {
+  const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
     // todo: consider using a different item component for references
-    return <GridItem key={key} {...itemProps} />
+    return <GridItem {...itemProps} />
   }, [])
 
   const memberKeys = useMemo(() => members.map((member) => member.key), [members])
@@ -52,11 +52,12 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   return (
     <Stack space={2}>
       <UploadTargetCard
-        types={schemaType.of}
-        resolveUploader={resolveUploader}
-        onUpload={onUpload}
         {...elementProps}
+        isReadOnly={readOnly}
+        onSelectFile={onSelectFile}
+        onUpload={onUpload}
         tabIndex={0}
+        types={schemaType.of}
       >
         <Stack data-ui="ArrayInput__content" space={2}>
           {members?.length === 0 && (
@@ -107,6 +108,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         onItemAppend={onItemAppend}
         onItemPrepend={onItemPrepend}
         onValueCreate={createProtoArrayValue}
+        path={props.path}
         readOnly={readOnly}
         schemaType={schemaType}
         value={value}

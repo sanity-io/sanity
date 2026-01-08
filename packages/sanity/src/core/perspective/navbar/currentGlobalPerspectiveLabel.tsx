@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {
   type ForwardedRef,
   forwardRef,
@@ -128,8 +128,14 @@ export function CurrentGlobalPerspectiveLabel({
               : t('release.chip.global.drafts')}
           </Text>
         </Box>
-      ) : (
+      ) : isReleaseDocument(selectedPerspective) ? (
         <ReleasesLink selectedPerspective={selectedPerspective} />
+      ) : (
+        <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
+          <Text size={1} textOverflow="ellipsis" weight="medium">
+            {selectedPerspective}
+          </Text>
+        </Box>
       )}
     </AnimatedTextWidth>
   )

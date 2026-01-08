@@ -8,7 +8,7 @@ Content teams often need concise summaries of long-form content (like blog posts
 
 ## Solution
 
-This example demonstrates how to use a Sanity Function to automatically generate a summary for a document's body field using Sanity's AI capabilities. When a new post is published and does not already have an `autoSummary`, the function generates a summary (up to 250 words) and writes it to the `autoSummary` field.
+This example demonstrates how to use a Sanity Function to automatically generate a summary for a document's content field using Sanity's Agent Actions. When a post's content is changed the function generates a summary (up to 250 words) and writes it to the `autoSummary` field.
 
 ## Benefits
 
@@ -77,8 +77,8 @@ npx sanity schema deploy
      timeout: 30,
      name: 'auto-summary',
      event: {
-       on: ['publish'],
-       filter: "_type == 'post' && !defined(autoSummary)",
+       on: ['create', 'update'],
+       filter: "_type == 'post' && delta::changedAny(content)",
        projection: '{_id}',
      },
    })
@@ -136,19 +136,18 @@ npx sanity functions dev
 
 - A Sanity project with Functions enabled
 - A schema with a `post` document type containing:
-  - A `body` field (for content analysis)
-  - A `autoSummary` field (strig or text) (for storing generated summary)
+  - A `content` field (for content analysis)
+  - A `autoSummary` field (string or text) (for storing generated summary)
 - Access to Sanity's AI capabilities
 - Node.js v22.x for local testing
 
 ## Usage Example
 
-When a content editor publishes a new blog post without a sumamry, the function automatically:
+When a content editor creates a blog post or modifies the 'content' field, the function automatically:
 
-1. **Triggers** on the publish event for post documents without existing summary
 2. **Analyzes** the post's content field using AI
 3. **Generates** a summary (max 250 words) based on the content field
-4. **Applies** the summary directly to the published document
+4. **Applies** the summary directly to the document
 
 **Result:** Content creators get consistent, relevant summaries without manual effort.
 
@@ -162,8 +161,8 @@ When a content editor publishes a new blog post without a sumamry, the function 
 
 **Error: "Error occurred during summary generation"**
 
-- Cause: The AI action may fail if the document is missing a `body` field or if there are API issues.
-- Solution: Ensure the document has a valid `body` field and check your Sanity project configuration.
+- Cause: The AI action may fail if the document is missing a `content` field or if there are API issues.
+- Solution: Ensure the document has a valid `content` field and check your Sanity project configuration.
 
 ## Related Examples
 

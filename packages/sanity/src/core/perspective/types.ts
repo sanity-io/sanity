@@ -17,7 +17,7 @@ export type ReleaseId = string
  *
  * @public
  */
-export type TargetPerspective = ReleaseDocument | SystemBundle
+export type TargetPerspective = ReleaseDocument | SystemBundle | string
 
 /**
  * @beta
@@ -52,6 +52,14 @@ export interface PerspectiveContextValue {
   /* The excluded perspectives */
   excludedPerspectives: string[]
 }
+
+/**
+ * @internal
+ */
+export type RawPerspectiveContextValue = Pick<
+  PerspectiveContextValue,
+  'selectedPerspective' | 'selectedPerspectiveName' | 'selectedReleaseId'
+>
 
 type ExtractArray<Union> = Union extends unknown[] ? Union : never
 

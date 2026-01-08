@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 function isEmpty(object: any) {
   for (const key in object) {

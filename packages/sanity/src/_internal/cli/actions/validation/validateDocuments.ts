@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type ClientConfig} from '@sanity/client'
@@ -10,6 +11,8 @@ import {
   type ValidationWorkerChannel,
 } from '../../threads/validateDocuments'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export interface ValidateDocumentsOptions<TReturn = unknown> {
   level?: 'error' | 'warning' | 'info'
@@ -87,7 +90,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
     '_internal',
     'cli',
     'threads',
-    'validateDocuments.js',
+    'validateDocuments.cjs',
   )
 
   const worker = new Worker(workerPath, {

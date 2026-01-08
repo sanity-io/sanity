@@ -1,9 +1,9 @@
 import {type ArraySchemaType, isReferenceSchemaType, type Path} from '@sanity/types'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
-import {type TreeEditingBreadcrumb} from '../../types'
+import {type DialogItem} from '../../types'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType
@@ -12,10 +12,10 @@ interface BuildBreadcrumbsStateProps {
   parentPath: Path
 }
 
-export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEditingBreadcrumb {
+export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): DialogItem {
   const {arraySchemaType, arrayValue, itemPath, parentPath} = props
 
-  const items: TreeEditingBreadcrumb[] = arrayValue
+  const items: DialogItem[] = arrayValue
     .map((arrayItem) => {
       const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
 
@@ -32,11 +32,11 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
         path: nestedItemPath,
         schemaType: itemType,
         value: arrayItem,
-      } satisfies TreeEditingBreadcrumb
+      } satisfies DialogItem
     })
-    .filter(Boolean) as TreeEditingBreadcrumb[]
+    .filter(Boolean) as DialogItem[]
 
-  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as TreeEditingBreadcrumb
+  const selectedItem = items.find((item) => isEqual(item.path, itemPath)) as DialogItem
 
   return {
     children: items,

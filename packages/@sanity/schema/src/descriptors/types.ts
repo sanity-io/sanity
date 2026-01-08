@@ -18,7 +18,7 @@ export interface CommonTypeDef extends EncodableObject {
   title?: string
   description?: string | JSXMarker
 
-  fields?: ObjectField[]
+  fields?: Array<ObjectField | HoistedMarker>
   groups?: ObjectGroup[]
   fieldsets?: ObjectFieldset[]
 
@@ -68,6 +68,9 @@ export type UnknownMarker = {__type: 'unknown'}
 /** Denotes a number which we've turned into a string for serialization. */
 export type NumberMarker = {__type: 'number'; value: string}
 
+/** Denotes a value which has been hoisted out into its own descriptor. */
+export type HoistedMarker = {__type: 'hoisted'; key: string}
+
 /**
  * Denotes an object. This is only used when we see an object with "__type" and
  * want to avoid it being interpreted as a marker.
@@ -91,7 +94,7 @@ export interface SubtypeDef extends CommonTypeDef {
 
 export interface ArrayTypeDef extends SubtypeDef {
   extends: 'array'
-  of: ArrayElement[]
+  of: Array<ArrayElement | HoistedMarker>
 }
 
 export type ArrayElement = {

@@ -5,22 +5,28 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isCardinalityOneRelease,
   isDraftId,
   isGoingToUnpublish,
   isPublishedId,
   isPublishedPerspective,
+  isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
   type SanityDocumentLike,
+  type TargetPerspective,
   Translate,
   useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
-  useOnlyHasVersions,
+  useDocumentVersions,
+  useFilteredReleases,
+  useGetDefaultPerspective,
   usePerspective,
   useSchema,
   useSetPerspective,
+  useSingleDocRelease,
   useTranslation,
   useWorkspace,
   VersionChip,
@@ -28,8 +34,8 @@ import {
 
 import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
-import {useFilteredReleases} from '../../../../../hooks/useFilteredReleases'
 import {useDocumentPane} from '../../../useDocumentPane'
+import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
@@ -90,12 +96,42 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const schema = useSchema()
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
-  const filteredReleases = useFilteredReleases({displayed, documentId})
-  const onlyHasVersions = useOnlyHasVersions({documentId})
+  const defaultPerspective = useGetDefaultPerspective()
+  const filteredReleases = useFilteredReleases({
+    historyVersion: params?.historyVersion,
+    displayed,
+    documentId,
+  })
+
+  const {data: documentVersions} = useDocumentVersions({documentId})
+
+  const onlyHasVersions =
+    documentVersions &&
+    documentVersions.length > 0 &&
+    !documentVersions.some((version) => !isVersionId(version))
+
   const workspace = useWorkspace()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
+
+  const handleCopyToDraftsNavigate = useCallback(() => {
+    // after copying to draft, we want to navigate to the draft version
+    if (params?.scheduledDraft) {
+      // if currently viewing a scheduled draft, remove the scheduled draft perspective
+      // the global perspective is already set to drafts
+      onSetScheduledDraftPerspective('')
+    } else {
+      // otherwise, only need to set the global perspective to drafts
+      setPerspective('drafts')
+    }
+  }, [params, setPerspective, onSetScheduledDraftPerspective])
 
   const handlePerspectiveChange = useCallback(
-    (perspective: Parameters<typeof setPerspective>[0]) => () => {
+    (perspective: TargetPerspective) => {
+      if (isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)) {
+        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(perspective._id))
+        return
+      }
+
       if (perspective === 'published' && params?.historyVersion) {
         setParams({
           ...params,
@@ -104,9 +140,26 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           historyVersion: undefined,
         })
       }
-      setPerspective(perspective)
+      const newPerspective = isReleaseDocument(perspective)
+        ? getReleaseIdFromReleaseDocumentId(perspective._id)
+        : perspective === defaultPerspective
+          ? ''
+          : perspective
+
+      if (params?.scheduledDraft) {
+        setParams(
+          {...params, scheduledDraft: undefined},
+          // If we have a scheduled draft perspective, then we need to remove that one and set the new perspective.
+          // We cannot do it in two passes, for example first set the paneParam and the use the `setPerspective`
+          // because we will have a race condition in where the last state wins, but the last state won't have the previous change.
+          // So we change the params and perspective in the same call.
+          {perspective: newPerspective},
+        )
+      } else {
+        setPerspective(newPerspective)
+      }
     },
-    [setPerspective, setParams, params],
+    [setPerspective, setParams, params, defaultPerspective, onSetScheduledDraftPerspective],
   )
 
   const schemaType = schema.get(documentType)
@@ -121,30 +174,28 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
     return !editState?.published
   }, [isLiveEdit, selectedReleaseId, editState?.published])
 
-  const getReleaseChipState = useCallback(
-    (release: ReleaseDocument): {selected: boolean; disabled?: boolean} => {
-      if (!params?.historyVersion) {
-        const isCurrentVersionGoingToUnpublish =
-          editState?.version &&
-          isGoingToUnpublish(editState?.version) &&
+  const getReleaseChipState = (
+    release: ReleaseDocument,
+  ): {selected: boolean; disabled?: boolean} => {
+    if (!params?.historyVersion) {
+      const isCurrentVersionGoingToUnpublish =
+        editState?.version &&
+        isGoingToUnpublish(editState?.version) &&
+        getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(editState?.version?._id)
+
+      return {
+        selected: Boolean(
           getReleaseIdFromReleaseDocumentId(release._id) ===
-            getVersionFromId(editState?.version?._id)
-
-        return {
-          selected: Boolean(
-            getReleaseIdFromReleaseDocumentId(release._id) ===
-              getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
-          ),
-        }
+            getVersionFromId(displayed?._id || '') || isCurrentVersionGoingToUnpublish,
+        ),
       }
+    }
 
-      const isReleaseHistoryMatch =
-        getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
+    const isReleaseHistoryMatch =
+      getReleaseIdFromReleaseDocumentId(release._id) === params.historyVersion
 
-      return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
-    },
-    [displayed?._id, editState?.version, params?.historyVersion],
-  )
+    return {selected: isReleaseHistoryMatch, disabled: isReleaseHistoryMatch}
+  }
 
   const isPublishSelected: boolean = useMemo(() => {
     /**
@@ -216,6 +267,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
+  const nonReleaseVersions = documentVersions.filter((versionDocumentId) => {
+    if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
+      return false
+    }
+    const hasRelease = filteredReleases.currentReleases.some((release) => {
+      return getReleaseIdFromReleaseDocumentId(release._id) === getVersionFromId(versionDocumentId)
+    })
+    return !hasRelease
+  })
+
   return (
     <>
       <VersionChip
@@ -233,17 +294,17 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           </Text>
         }
         disabled={isPublishedChipDisabled}
-        onClick={handlePerspectiveChange('published')}
+        onClick={() => handlePerspectiveChange('published')}
         selected={isPublishSelected}
         text={t('release.chip.published')}
         tone="positive"
+        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
         contextValues={{
           documentId: editState?.published?._id || editState?.id || '',
-          menuReleaseId: editState?.published?._id || editState?.id || '',
           releases: filteredReleases.notCurrentReleases,
           releasesLoading: loading,
           documentType,
-          fromRelease: 'published',
+          bundleId: 'published',
           isVersion: false,
           disabled: !editState?.published,
         }}
@@ -281,15 +342,14 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           disabled={isDraftDisabled}
           text={t('release.chip.draft')}
           tone={editState?.draft ? 'caution' : 'neutral'}
-          onClick={handlePerspectiveChange('drafts')}
+          onClick={() => handlePerspectiveChange('drafts')}
+          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
             documentId: editState?.draft?._id || editState?.published?._id || editState?.id || '',
-            menuReleaseId:
-              editState?.draft?._id || editState?.published?._id || editState?.id || '',
+            documentType: documentType,
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            documentType: documentType,
-            fromRelease: 'draft',
+            bundleId: 'draft',
             isVersion: false,
           }}
         />
@@ -304,16 +364,16 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           text={
             filteredReleases.inCreation.metadata.title || t('release.placeholder-untitled-release')
           }
+          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
-            disabled: true, // disable the chip context menu, this one is in creation
             documentId: displayed?._id || '',
-            menuReleaseId: filteredReleases.inCreation._id,
+            documentType,
+            disabled: true, // disable the chip context menu, this one is in creation
             releases: filteredReleases.notCurrentReleases,
             releasesLoading: loading,
-            documentType,
-            fromRelease: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
-            releaseState: filteredReleases.inCreation.state,
+            bundleId: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
             isVersion: true,
+            release: filteredReleases.inCreation,
           }}
         />
       )}
@@ -324,19 +384,19 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             key={release._id}
             tooltipContent={<TooltipContent release={release} />}
             {...getReleaseChipState(release)}
-            onClick={handlePerspectiveChange(getReleaseIdFromReleaseDocumentId(release._id))}
+            onClick={() => handlePerspectiveChange(release)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
             tone={getReleaseTone(release)}
             locked={isReleaseScheduledOrScheduling(release)}
+            onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
             contextValues={{
               documentId: displayed?._id || '',
-              menuReleaseId: release._id,
+              documentType,
               releases: filteredReleases.notCurrentReleases,
               releasesLoading: loading,
-              documentType: documentType,
-              fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
-              releaseState: release.state,
+              bundleId: getReleaseIdFromReleaseDocumentId(release._id),
               isVersion: true,
+              release,
               // displayed, in this instance is not going to be the version to compare to
               // since it's going to be the published version
               isGoingToUnpublish: editState?.version
@@ -345,6 +405,15 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             }}
           />
         ))}
+      <NonReleaseVersionsSelect
+        nonReleaseVersions={nonReleaseVersions}
+        selectedPerspective={selectedPerspectiveName}
+        onSelectBundle={handlePerspectiveChange}
+        onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+        releases={filteredReleases.notCurrentReleases}
+        releasesLoading={loading}
+        documentType={documentType}
+      />
     </>
   )
 })

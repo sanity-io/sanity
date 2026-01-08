@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "4.8.0",
+  "version": "5.2.0",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
@@ -15,7 +15,6 @@
     "@sanity/cli": "workspace:*",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
-    "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
@@ -28,7 +27,11 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
     "ts-morph": "^26.0.0",
-    "vitest": "^3.2.4"
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zod": "^4.1.12"
   }
 }

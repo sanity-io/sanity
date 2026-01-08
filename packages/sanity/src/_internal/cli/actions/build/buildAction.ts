@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
@@ -20,6 +20,9 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {isInteractive} from '../../util/isInteractive'
 import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getAppId} from '../../util/getAppId'
+import {baseUrl} from '../../util/baseUrl'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -36,7 +39,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityStudioCommandFlags = {
     'minify': true,
     'stats': false,
@@ -74,9 +77,24 @@ export default async function buildSanityStudio(
       {name: 'sanity', version: cleanSanityVersion},
       {name: '@sanity/vision', version: cleanSanityVersion},
     ]
-    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies)
 
-    output.print(`${info} Building with auto-updates enabled`)
+    const appId = getAppId({cliConfig, output})
+
+    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies, {appId})
+
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
+
+    // note: we want to show this warning only if running `sanity build`
+    // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
+    // see deployAction.ts
+    if (args.groupOrCommand !== 'deploy' && !appId) {
+      warnAboutMissingAppId({
+        appType: 'studio',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
     const result = await compareDependencyVersions(sanityDependencies, workDir)
@@ -92,7 +110,7 @@ export default async function buildSanityStudio(
         const choice = await prompt.single({
           type: 'list',
           message: chalk.yellow(
-            `${warning}\n\nDo you want to upgrade local versions before deploying?`,
+            `${logSymbols.warning}\n\nDo you want to upgrade local versions before deploying?`,
           ),
           choices: [
             {

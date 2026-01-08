@@ -5,7 +5,11 @@ import yargs from 'yargs/yargs'
 
 import {startDevServer} from '../../server/devServer'
 import {gracefulServerDeath} from '../../util/servers'
-import {getCoreAppURL, getDevServerConfig, type StartDevServerCommandFlags} from '../dev/devAction'
+import {
+  getDashboardAppURL,
+  getDevServerConfig,
+  type StartDevServerCommandFlags,
+} from '../dev/devAction'
 
 function parseCliFlags(args: {argv?: string[]}) {
   // Using slice(1) to remove the first argument, which is the command `dev` path to the CLI
@@ -53,7 +57,7 @@ export default async function startAppDevServer(
     const {port} = server.config.server
     const httpHost = config.httpHost || 'localhost'
 
-    const coreAppUrl = await getCoreAppURL({
+    const dashboardAppUrl = await getDashboardAppURL({
       organizationId,
       httpHost,
       httpPort: port,
@@ -61,7 +65,7 @@ export default async function startAppDevServer(
 
     output.print(`Dev server started on port ${port}`)
     output.print(`View your app in the Sanity dashboard here:`)
-    output.print(chalk.blue(chalk.underline(coreAppUrl)))
+    output.print(chalk.blue(chalk.underline(dashboardAppUrl)))
   } catch (err) {
     gracefulServerDeath('dev', config.httpHost, config.httpPort, err)
   }

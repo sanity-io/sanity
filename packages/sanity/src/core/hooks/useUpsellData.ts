@@ -1,5 +1,4 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {template} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 
 import {
@@ -9,9 +8,9 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../studio'
-import {TEMPLATE_OPTIONS} from '../studio/upsell/constants'
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {interpolateTemplate} from '../util/interpolateTemplate'
 import {useClient, useProjectId} from './'
 
 interface UpsellDataProps {
@@ -19,9 +18,9 @@ interface UpsellDataProps {
   feature: string
 }
 
-/** @internal */
 export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
+  const [hasError, setHasError] = useState(false)
   const telemetry = useTelemetry()
   const projectId = useProjectId()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -85,20 +84,27 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
 
     const sub = data$.subscribe({
       next: (data) => {
-        if (!data) return
+        if (!data) {
+          setHasError(true)
+          setUpsellData(null)
+          return
+        }
         try {
-          const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-          data.ctaButton.url = ctaUrl({baseUrl, projectId})
-
-          const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-          data.secondaryButton.url = secondaryUrl({baseUrl, projectId})
+          data.ctaButton.url = interpolateTemplate(data.ctaButton.url, {baseUrl, projectId})
+          data.secondaryButton.url = interpolateTemplate(data.secondaryButton.url, {
+            baseUrl,
+            projectId,
+          })
           setUpsellData(data)
-        } catch (e) {
-          // silently fail
+          setHasError(false)
+        } catch {
+          setHasError(true)
+          setUpsellData(null)
         }
       },
-      error: () => {
-        // silently fail
+      error: (err) => {
+        setHasError(true)
+        setUpsellData(null)
       },
     })
 
@@ -107,5 +113,5 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
     }
   }, [client, projectId, baseUrl, dataUri])
 
-  return {upsellData, telemetryLogs}
+  return {upsellData, telemetryLogs, hasError}
 }

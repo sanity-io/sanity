@@ -18,8 +18,7 @@ import {type GrantsStore, type PermissionCheckResult} from './types'
 
 /** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
-  extends PermissionCheckResult,
-    InitialValueTemplateItem {
+  extends PermissionCheckResult, InitialValueTemplateItem {
   granted: boolean
   reason: string
   resolvedInitialValue: TInitialValue
@@ -34,7 +33,7 @@ function serialize<T>(item: T | Serializable<T>): T {
     return serialize(item.serialize())
   }
 
-  return item as T
+  return item
 }
 
 /** @internal */
@@ -57,9 +56,7 @@ export function getTemplatePermissions({
   templates,
   schema,
   context,
-}: TemplatePermissionsOptions): Observable<
-  Array<TemplatePermissionsResult<Record<string, unknown>>>
-> {
+}: TemplatePermissionsOptions): Observable<Array<TemplatePermissionsResult>> {
   if (!templateItems?.length) return of([])
 
   return defer(() => {
@@ -103,6 +100,7 @@ export function getTemplatePermissions({
           permission: 'create',
           document: {
             _id: documentId,
+            _type: schemaType.name,
             ...resolvedInitialValue,
           },
         }).pipe(

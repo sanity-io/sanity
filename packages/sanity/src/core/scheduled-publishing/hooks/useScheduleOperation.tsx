@@ -80,7 +80,8 @@ export default function useScheduleOperation() {
     displayToast?: boolean
     documentId: string
   }) {
-    try {
+    // The run().catch() syntax instead of try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       const data = await api.create({date, documentId})
 
       window.dispatchEvent(
@@ -109,7 +110,8 @@ export default function useScheduleOperation() {
           status: 'success',
         })
       }
-    } catch (err) {
+    }
+    await run().catch((err) => {
       if (displayToast) {
         toast.push({
           closable: true,
@@ -120,7 +122,7 @@ export default function useScheduleOperation() {
           status: 'error',
         })
       }
-    }
+    })
   }
 
   async function deleteSchedule({
@@ -130,7 +132,8 @@ export default function useScheduleOperation() {
     displayToast?: boolean
     schedule: Schedule
   }) {
-    try {
+    // The run().catch() syntax instead of try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       await api.delete({scheduleId: schedule?.id})
 
       window.dispatchEvent(
@@ -148,7 +151,8 @@ export default function useScheduleOperation() {
           status: 'success',
         })
       }
-    } catch (err) {
+    }
+    await run().catch((err) => {
       if (displayToast) {
         toast.push({
           closable: true,
@@ -159,7 +163,7 @@ export default function useScheduleOperation() {
           status: 'error',
         })
       }
-    }
+    })
   }
 
   async function deleteSchedules({
@@ -169,7 +173,8 @@ export default function useScheduleOperation() {
     displayToast?: boolean
     schedules: Schedule[]
   }) {
-    try {
+    // The run().catch() syntax instead of try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       const scheduleIds = schedules.map((schedule) => schedule.id)
       const response = await api.deleteMultiple({scheduleIds})
 
@@ -225,7 +230,8 @@ export default function useScheduleOperation() {
           })
         }
       }
-    } catch (err) {
+    }
+    await run().catch((err) => {
       if (displayToast) {
         toast.push({
           closable: true,
@@ -236,7 +242,7 @@ export default function useScheduleOperation() {
           status: 'error',
         })
       }
-    }
+    })
   }
 
   async function publishSchedule({

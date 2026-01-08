@@ -2,6 +2,7 @@ import {TrashIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -11,17 +12,17 @@ import {
 
 import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',
   NOT_READY: 'action.delete.disabled.not-ready',
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete, release}) => {
-  const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
-  const {delete: deleteOp} = useDocumentOperation(id, type, release)
+export const useDeleteAction: DocumentActionComponent = ({id, type, draft, version}) => {
+  const bundleId = version?._id && getVersionFromId(version._id)
+  const {delete: deleteOp} = useDocumentOperation(id, type, bundleId)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
@@ -29,16 +30,17 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
-  const handleConfirm = useCallback(() => {
-    setIsDeleting(true)
-    setConfirmDialogOpen(false)
-    paneSetIsDeleting(true)
-    deleteOp.execute()
-    onComplete()
-  }, [deleteOp, onComplete, paneSetIsDeleting])
+  const handleConfirm = useCallback(
+    (versions: string[]) => {
+      setConfirmDialogOpen(false)
+      setIsDeleting(true)
+      deleteOp.execute(versions)
+      setIsDeleting(false)
+    },
+    [deleteOp],
+  )
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -47,7 +49,7 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: bundleId,
     permission: 'delete',
   })
 
@@ -104,5 +106,5 @@ export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComple
   ])
 }
 
-DeleteAction.action = 'delete'
-DeleteAction.displayName = 'DeleteAction'
+useDeleteAction.action = 'delete'
+useDeleteAction.displayName = 'DeleteAction'

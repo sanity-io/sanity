@@ -8,6 +8,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
 
 import chalk from 'chalk'
@@ -20,6 +21,9 @@ import {DefaultDocument} from './components/DefaultDocument'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
 import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const debug = serverDebug.extend('renderDocument')
 
@@ -170,7 +174,7 @@ export function _prefixUrlWithBasePath(url: string, basePath: string): string {
 }
 
 if (!isMainThread && parentPort) {
-  renderDocumentFromWorkerData()
+  void renderDocumentFromWorkerData()
 }
 
 async function renderDocumentFromWorkerData() {
@@ -201,19 +205,22 @@ async function renderDocumentFromWorkerData() {
   // Alias monorepo modules
   debug('Registering potential aliases')
   if (monorepo) {
-    require('module-alias').addAliases(getMonorepoAliases(monorepo.path))
+    const {addAliases} = await import('module-alias')
+    addAliases(await getMonorepoAliases(monorepo.path))
   }
 
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
+  const {register} = await import('esbuild-register/dist/node')
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         jsx: 'automatic',
         extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
+        format: 'cjs',
       })
 
   // Require hook #3
@@ -221,12 +228,13 @@ async function renderDocumentFromWorkerData() {
   debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         extensions: ['.js'],
         jsx: 'automatic',
         loader: 'jsx',
+        format: 'cjs',
       })
 
   const html = getDocumentHtml(studioRootPath, props, importMap, isApp)

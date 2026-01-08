@@ -1,5 +1,5 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {compact, intersection, keyBy, partition, toLower, union, uniq, words} from 'lodash'
+import {compact, intersection, keyBy, partition, toLower, union, uniq, words} from 'lodash-es'
 
 import {type SearchSpec, type WeightedHit} from '../common'
 

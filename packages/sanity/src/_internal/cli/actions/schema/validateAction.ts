@@ -1,4 +1,6 @@
+import {writeFileSync} from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -10,11 +12,15 @@ import {
   type ValidateSchemaWorkerResult,
 } from '../../threads/validateSchema'
 import {formatSchemaValidation, getAggregatedSeverity} from './formatSchemaValidation'
+import {generateMetafile} from './metafile'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 interface ValidateFlags {
-  workspace?: string
-  format?: string
-  level?: 'error' | 'warning'
+  'workspace'?: string
+  'format'?: string
+  'level'?: 'error' | 'warning'
+  'debug-metafile-path'?: string
 }
 
 export type SchemaValidationFormatter = (result: ValidateSchemaWorkerResult) => string
@@ -36,7 +42,7 @@ export default async function validateAction(
     '_internal',
     'cli',
     'threads',
-    'validateSchema.js',
+    'validateSchema.cjs',
   )
 
   const level = flags.level || 'warning'
@@ -70,20 +76,30 @@ export default async function validateAction(
       workDir,
       level,
       workspace: flags.workspace,
+      debugSerialize: Boolean(flags['debug-metafile-path']),
     } satisfies ValidateSchemaWorkerData,
     env: process.env,
   })
 
-  const {validation} = await new Promise<ValidateSchemaWorkerResult>((resolve, reject) => {
-    worker.addListener('message', resolve)
-    worker.addListener('error', reject)
-  })
+  const {validation, serializedDebug} = await new Promise<ValidateSchemaWorkerResult>(
+    (resolve, reject) => {
+      worker.addListener('message', resolve)
+      worker.addListener('error', reject)
+    },
+  )
 
   const problems = validation.flatMap((group) => group.problems)
   const errorCount = problems.filter((problem) => problem.severity === 'error').length
   const warningCount = problems.filter((problem) => problem.severity === 'warning').length
 
   const overallSeverity = getAggregatedSeverity(validation)
+  const didFail = overallSeverity === 'error'
+
+  if (flags['debug-metafile-path'] && !didFail) {
+    if (!serializedDebug) throw new Error('serializedDebug should always be produced')
+    const metafile = generateMetafile(serializedDebug)
+    writeFileSync(flags['debug-metafile-path'], JSON.stringify(metafile), 'utf8')
+  }
 
   switch (format) {
     case 'ndjson': {
@@ -114,8 +130,18 @@ export default async function validateAction(
       output.print()
 
       output.print(formatSchemaValidation(validation))
+
+      if (flags['debug-metafile-path']) {
+        output.print()
+        if (didFail) {
+          output.print(`${logSymbols.info} Metafile not written due to validation errors`)
+        } else {
+          output.print(`${logSymbols.info} Metafile written to: ${flags['debug-metafile-path']}`)
+          output.print(`  This can be analyzed at https://esbuild.github.io/analyze/`)
+        }
+      }
     }
   }
 
-  process.exitCode = overallSeverity === 'error' ? 1 : 0
+  process.exitCode = didFail ? 1 : 0
 }

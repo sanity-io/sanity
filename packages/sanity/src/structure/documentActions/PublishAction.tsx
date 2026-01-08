@@ -1,11 +1,12 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
+import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
-  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -44,19 +45,23 @@ function getDisabledReason(
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const timeSincePublished = useRelativeTime(publishedAt, {useTemporalPhrase: true})
-  return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
+  return <Text>{t('action.publish.already-published.tooltip', {timeSincePublished})}</Text>
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published, release} = props
+export const usePublishAction: DocumentActionComponent = (props) => {
+  const {id, type, liveEdit, draft, published, release, version} = props
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
-  const {publish} = useDocumentOperation(id, type)
-  const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
+
+  const bundleId = version?._id && getVersionFromId(version._id)
+
+  const {publish} = useDocumentOperation(id, type, bundleId)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
+  const validationStatus = useValidationStatus(value._id, type, !release)
+  const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -91,7 +96,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
     const validationComplete =
-      validationStatus.isValidating === false && validationStatus.revision !== revision
+      !validationStatus.isValidating && validationStatus.revision !== revision
 
     if (!publishScheduled || isSyncing || !validationComplete) {
       return
@@ -156,12 +161,15 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
-    if (release) {
-      // Version documents are not publishable by this action, they should be published as part of a release
+    if (release && version) {
+      // release versions are not publishable by this action, they should be published as part of a release
       return null
     }
-    if (liveEdit) {
-      // Live edit documents are not publishable by this action, they are published automatically
+
+    if (liveEdit && !version) {
+      // disable publish if liveEdit is true and we're not on a version
+      // e.g. if liveEdit is true and we have a version, we want to allow publish
+      // note that liveEdit is "forced" on version documents as a hack of sorts
       return null
     }
 
@@ -170,7 +178,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
      * then it means the draft is yet to be saved - in this case don't disabled
      * the publish button due to ALREADY_PUBLISHED reason
      */
-    if (isPublishedId(value._id) && draft !== null) {
+    if (published && !draft && !version) {
       return {
         tone: 'default',
         icon: PublishIcon,
@@ -194,11 +202,11 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
     const disabled = Boolean(
       publishScheduled ||
-        editState?.transactionSyncLock?.enabled ||
-        publishState?.status === 'publishing' ||
-        publishState?.status === 'published' ||
-        hasValidationErrors ||
-        publish.disabled,
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled,
     )
 
     return {
@@ -224,8 +232,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [
     release,
     liveEdit,
-    value._id,
+    version,
     draft,
+    published,
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
@@ -236,10 +245,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
     t,
     title,
     handle,
-    published?._updatedAt,
     currentUser,
   ])
 }
 
-PublishAction.action = 'publish'
-PublishAction.displayName = 'PublishAction'
+usePublishAction.action = 'publish'
+usePublishAction.displayName = 'PublishAction'

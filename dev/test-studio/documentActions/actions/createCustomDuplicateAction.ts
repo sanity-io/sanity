@@ -1,15 +1,18 @@
+import {memoize} from 'lodash-es'
 import {type DuplicateDocumentActionComponent} from 'sanity'
 
-export function createCustomDuplicateAction(
-  originalAction: DuplicateDocumentActionComponent,
-): DuplicateDocumentActionComponent {
-  return function CustomDuplicateAction(props) {
-    return originalAction({
-      ...props,
-      mapDocument: (document) => ({
-        ...document,
-        title: [document.title, '(duplicate)'].join(' '),
-      }),
-    })
-  }
-}
+export const createCustomDuplicateAction = memoize(
+  (useOriginalAction: DuplicateDocumentActionComponent): DuplicateDocumentActionComponent => {
+    const useCustomDuplicateAction: DuplicateDocumentActionComponent = (props) => {
+      return useOriginalAction({
+        ...props,
+        mapDocument: (document) => ({
+          ...document,
+          title: [document.title, '(duplicate)'].join(' '),
+        }),
+      })
+    }
+    useCustomDuplicateAction.displayName = 'CustomDuplicateAction'
+    return useCustomDuplicateAction
+  },
+)

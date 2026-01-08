@@ -5,19 +5,43 @@
 import {describe, expectTypeOf, test} from 'vitest'
 import type {
   CodegenConfig,
+  configDefinition,
+  EvaluatedModule,
+  EvaluatedQuery,
+  ExtractedModule,
+  ExtractedQuery,
   findQueriesInPath,
   findQueriesInSource,
+  GenerateTypesOptions,
   getResolver,
+  QueryExtractionError,
   readConfig,
   readSchema,
   registerBabel,
   safeParseQuery,
+  TypeGenConfig,
   TypeGenerator,
+  TypegenWorkerChannel,
 } from '@sanity/codegen'
 
 describe('@sanity/codegen', () => {
   test('CodegenConfig', () => {
     expectTypeOf<CodegenConfig>().not.toBeNever()
+  })
+  test('configDefinition', () => {
+    expectTypeOf<typeof configDefinition>().not.toBeNever()
+  })
+  test('EvaluatedModule', () => {
+    expectTypeOf<EvaluatedModule>().toBeObject()
+  })
+  test('EvaluatedQuery', () => {
+    expectTypeOf<EvaluatedQuery>().toBeObject()
+  })
+  test('ExtractedModule', () => {
+    expectTypeOf<ExtractedModule>().toBeObject()
+  })
+  test('ExtractedQuery', () => {
+    expectTypeOf<ExtractedQuery>().toBeObject()
   })
   test('findQueriesInPath', () => {
     expectTypeOf<typeof findQueriesInPath>().toBeFunction()
@@ -25,8 +49,14 @@ describe('@sanity/codegen', () => {
   test('findQueriesInSource', () => {
     expectTypeOf<typeof findQueriesInSource>().toBeFunction()
   })
+  test('GenerateTypesOptions', () => {
+    expectTypeOf<GenerateTypesOptions>().toBeObject()
+  })
   test('getResolver', () => {
     expectTypeOf<typeof getResolver>().toBeFunction()
+  })
+  test('QueryExtractionError', () => {
+    expectTypeOf<QueryExtractionError>().not.toBeNever()
   })
   test('readConfig', () => {
     expectTypeOf<typeof readConfig>().toBeFunction()
@@ -40,7 +70,13 @@ describe('@sanity/codegen', () => {
   test('safeParseQuery', () => {
     expectTypeOf<typeof safeParseQuery>().toBeFunction()
   })
+  test('TypeGenConfig', () => {
+    expectTypeOf<TypeGenConfig>().not.toBeNever()
+  })
   test('TypeGenerator', () => {
     expectTypeOf<TypeGenerator>().not.toBeNever()
+  })
+  test('TypegenWorkerChannel', () => {
+    expectTypeOf<TypegenWorkerChannel>().not.toBeNever()
   })
 })

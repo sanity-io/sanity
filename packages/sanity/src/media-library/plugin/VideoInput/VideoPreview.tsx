@@ -1,6 +1,6 @@
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-import {get, startCase} from 'lodash'
+import {get, startCase} from 'lodash-es'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
@@ -63,12 +63,11 @@ export function VideoPreview(props: VideoAssetProps) {
 
   const playbackInfoState = useVideoPlaybackInfo(videoPlaybackParams)
 
-  const tokens = useMemo(() => {
-    return playbackInfoState.result ? getPlaybackTokens(playbackInfoState.result) : undefined
-  }, [playbackInfoState.result])
-
   const videoActionsMenuProps = useMemo(() => {
     const customDomain = isStaging ? CUSTOM_DOMAIN_STAGING : CUSTOM_DOMAIN_PRODUCTION
+    const tokens = playbackInfoState?.result
+      ? getPlaybackTokens(playbackInfoState.result)
+      : undefined
     const baseProps = {
       aspectRatio: playbackInfoState.result?.aspectRatio,
       customDomain,
@@ -79,14 +78,7 @@ export function VideoPreview(props: VideoAssetProps) {
     }
 
     return tokens ? {...baseProps, tokens} : baseProps
-  }, [
-    isStaging,
-    playbackInfoState.result?.aspectRatio,
-    playbackInfoState.result?.id,
-    isMenuOpen,
-    setBrowseButtonElement,
-    tokens,
-  ])
+  }, [isStaging, playbackInfoState, isMenuOpen, setBrowseButtonElement])
 
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
@@ -205,7 +197,15 @@ export function VideoPreview(props: VideoAssetProps) {
     return null
   }
 
-  if (playbackInfoState.isLoading || !playbackInfoState.result) {
+  if (playbackInfoState.isLoading) {
+    return <VideoSkeleton />
+  }
+
+  if (playbackInfoState.error) {
+    return <VideoSkeleton error={playbackInfoState.error} />
+  }
+
+  if (!playbackInfoState.result) {
     return <VideoSkeleton />
   }
 

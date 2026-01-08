@@ -33,7 +33,7 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
-import {last} from 'lodash'
+import {last} from 'lodash-es'
 
 import {getValueAtPath} from '../../field/paths/helpers'
 import {type FIXME} from '../../FIXME'
@@ -427,7 +427,7 @@ export async function transferValue({
     | BooleanSchemaType
 
   return collatePrimitiveValue({
-    sourceValue: sourceValueAtPath as unknown,
+    sourceValue: sourceValueAtPath,
     targetSchemaType: primitiveSchemaType,
     errors,
   })
@@ -633,13 +633,13 @@ async function collateObjectValue({
         if (options.client && targetSchemaType.options?.filter) {
           const getClient = (clientOptions: {apiVersion: string}) =>
             (options.client as SanityClient).withConfig(clientOptions)
-          const isMatch = await documentMatchesGroqFilter(
-            (targetRootValue || {}) as SanityDocument,
-            reference,
-            targetSchemaType.options,
+          const isMatch = await documentMatchesGroqFilter({
+            rootDocumentValue: (targetRootValue || {}) as SanityDocument,
+            referencedDocument: reference,
+            schemaTypeOptions: targetSchemaType.options,
             targetRootPath,
             getClient,
-          )
+          })
 
           // eslint-disable-next-line max-depth
           if (!isMatch) {
@@ -714,9 +714,7 @@ async function collateObjectValue({
 
     // Primitive field
     if (memberIsPrimitive) {
-      const genericValue = sourceValue
-        ? ((sourceValue as TypedObject)[member.name] as unknown)
-        : undefined
+      const genericValue = sourceValue ? (sourceValue as TypedObject)[member.name] : undefined
       const collated = collatePrimitiveValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType,
@@ -749,9 +747,7 @@ async function collateObjectValue({
 
       // Array field
     } else if (memberIsArray) {
-      const genericValue = sourceValue
-        ? ((sourceValue as TypedObject)[member.name] as unknown)
-        : undefined
+      const genericValue = sourceValue ? (sourceValue as TypedObject)[member.name] : undefined
       const collated = await collateArrayValue({
         sourceValue: genericValue,
         targetSchemaType: memberSchemaType as ArraySchemaType,
@@ -971,7 +967,7 @@ function collatePrimitiveValue({
 } {
   let targetValue: unknown
 
-  const primitiveValue = sourceValue as unknown
+  const primitiveValue = sourceValue
   if (typeof primitiveValue === 'undefined') {
     return {
       targetValue: undefined,

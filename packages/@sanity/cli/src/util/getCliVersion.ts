@@ -16,7 +16,7 @@ export async function getCliPkg(): Promise<PackageJson> {
   try {
     data = await fs.readFile(path.join(cliPath, 'package.json'), 'utf-8')
   } catch (err) {
-    throw new Error(`Unable to read @sanity/cli/package.json: ${err.message}`)
+    throw new Error(`Unable to read @sanity/cli/package.json: ${err.message}`, {cause: err})
   }
 
   return JSON.parse(data)

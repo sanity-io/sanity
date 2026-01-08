@@ -133,5 +133,3 @@ describe('block types', () => {
     })
   })
 })
-
-export {}

@@ -58,7 +58,7 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
     const indexContent = await assembleJourneyIndexContent(documentTypes)
     await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
   } catch (error) {
-    throw new Error(`Failed to fetch remote schema: ${error.message}`)
+    throw new Error(`Failed to fetch remote schema: ${error.message}`, {cause: error})
   }
 }
 

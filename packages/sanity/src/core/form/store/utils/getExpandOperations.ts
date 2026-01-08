@@ -1,5 +1,5 @@
 import {isKeySegment, type Path} from '@sanity/types'
-import {castArray} from 'lodash'
+import {castArray} from 'lodash-es'
 
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'

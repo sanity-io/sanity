@@ -26,7 +26,7 @@ export function DuplicateKeysAlert(props: Props) {
         ),
       ),
     )
-  }, [error.duplicates, onChange])
+  }, [error, onChange])
 
   const {t} = useTranslation()
 

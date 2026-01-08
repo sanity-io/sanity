@@ -1,5 +1,10 @@
 import {SyncIcon} from '@sanity/icons'
-import {defineField, defineType, type ReferenceFilterResolverContext} from 'sanity'
+import {
+  defineField,
+  defineType,
+  type ReferenceFilterResolverContext,
+  type ReferenceFilterSearchOptions,
+} from 'sanity'
 
 export const referenceAlias = defineType({
   type: 'reference',
@@ -17,6 +22,12 @@ export default defineType({
   icon: SyncIcon,
   fields: [
     {name: 'title', type: 'string'},
+    {
+      name: 'justBook',
+      title: 'Just a book',
+      type: 'reference',
+      to: [{type: 'book'}],
+    },
     {
       name: 'selfRef',
       title: 'Reference to self',
@@ -104,6 +115,73 @@ export default defineType({
           },
         },
       ],
+    }),
+    defineField({
+      title: 'Only published documents',
+      description: 'Reference filter will only search for books that are published',
+      name: 'publishedOnly',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: (ctx) => {
+          return {
+            perspective: ['published'],
+          }
+        },
+      },
+    }),
+    defineField({
+      title: 'Raw perspective ',
+      description: 'Custom filter returning "raw" as perspective (not allowed)',
+      name: 'invalidPerspectives',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: (ctx: ReferenceFilterResolverContext): ReferenceFilterSearchOptions =>
+          Math.random() > 0.5
+            ? {
+                //@ts-expect-error – invalid return value ('raw' is not allowed)
+                perspective: 'raw',
+              }
+            : {
+                //@ts-expect-error – invalid return value ('previewDrafts' is not allowed)
+                perspective: 'previewDrafts',
+              },
+      },
+    }),
+    defineField({
+      title: 'Either published or in the current release',
+      description:
+        'Reference filter will only search for books thats either published or in the current release.',
+      name: 'currentReleaseOnly',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: ({perspective, document}) => {
+          return {
+            perspective: perspective.slice(0, 1),
+          }
+        },
+      },
+    }),
+    defineField({
+      title: 'Strictly only in current release',
+      description:
+        'Reference filter will only search for books that exists as a version in current release.',
+      name: 'strictlyCurrentRelease',
+      type: 'reference',
+      to: {type: 'book'},
+      options: {
+        filter: ({perspective}) => {
+          return {
+            perspective: perspective.slice(0, 1),
+            filter:
+              perspective[0] === 'drafts'
+                ? '_originalId in path("drafts.**")'
+                : `_originalId in path("versions.${perspective[0]}.**")`,
+          }
+        },
+      },
     }),
     {
       name: 'arrayWithDisableCreateNew',

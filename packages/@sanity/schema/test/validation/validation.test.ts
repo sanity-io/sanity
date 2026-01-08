@@ -1,5 +1,5 @@
 import {SquareIcon} from '@sanity/icons'
-import {flatten} from 'lodash'
+import {flatten} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'

@@ -62,7 +62,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       presentationRef.send({type: 'iframe reload'})
       // Funky way to reload an iframe without CORS issues
       // ref.current.src = ref.current.src
-      Object.assign(iframeRef.current, {src: `${targetOrigin}${previewUrl || '/'}`})
+      Object.assign(iframeRef.current, {src: new URL(previewUrl || '/', targetOrigin).toString()})
     })
   }
 

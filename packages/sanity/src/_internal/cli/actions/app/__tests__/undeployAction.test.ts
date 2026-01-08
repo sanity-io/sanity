@@ -47,6 +47,7 @@ describe('undeployAppAction', () => {
       }),
       chalk: {yellow: vi.fn((str) => str), red: vi.fn((str) => str)},
       output: {
+        warn: vi.fn(),
         print: vi.fn(),
         spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
@@ -60,7 +61,7 @@ describe('undeployAppAction', () => {
   })
 
   it('prints an error if there is no appId', async () => {
-    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, {
+    await undeployAppAction({} as CliCommandArguments, {
       ...mockContext,
       cliConfig: {},
     })
@@ -75,7 +76,7 @@ describe('undeployAppAction', () => {
   it('does nothing if there is no user application', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(null)
 
-    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments, mockContext)
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
       'Application with the given ID does not exist.',
@@ -90,7 +91,7 @@ describe('undeployAppAction', () => {
       true,
     ) // User confirms
 
-    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -113,7 +114,7 @@ describe('undeployAppAction', () => {
       false,
     ) // User cancels
 
-    await undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext)
+    await undeployAppAction({} as CliCommandArguments, mockContext)
 
     expect(mockContext.prompt.single).toHaveBeenCalledWith({
       type: 'confirm',
@@ -131,9 +132,9 @@ describe('undeployAppAction', () => {
       true,
     ) // User confirms
 
-    await expect(
-      undeployAppAction({} as CliCommandArguments<Record<string, unknown>>, mockContext),
-    ).rejects.toThrow(errorMessage)
+    await expect(undeployAppAction({} as CliCommandArguments, mockContext)).rejects.toThrow(
+      errorMessage,
+    )
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()
   })

@@ -19,13 +19,18 @@ export function ValidationProgressIndicator({
   const totalCount = documents.length
   const {validatedCount, isValidating, hasError} = getDocumentValidationLoading(documents)
   const [showCheckmark, setShowCheckmark] = useState(false)
+  // in order if the caching has already happened once and the object is already at minimal,
+  // We don't want to show the whole thing again - instead we want to keep the minimal layout
+  const [hasFinishedOnce, setHasFinishedOnce] = useState(false)
   const {t} = useTranslation(releasesLocaleNamespace)
-  const isMinimal = layout === 'minimal'
 
   const isFinished = useMemo(
     () => validatedCount === totalCount && validatedCount !== 0,
     [validatedCount, totalCount],
   )
+
+  // Use minimal layout if explicitly set OR if validation has finished once
+  const isMinimal = layout === 'minimal' || hasFinishedOnce
 
   // Add delay when validation is finished
   // so that we can show that it's finished but then show the checkmark
@@ -34,6 +39,7 @@ export function ValidationProgressIndicator({
     if (isFinished) {
       const timer = setTimeout(() => {
         setShowCheckmark(true)
+        setHasFinishedOnce(true)
       }, 2500)
 
       return () => clearTimeout(timer)

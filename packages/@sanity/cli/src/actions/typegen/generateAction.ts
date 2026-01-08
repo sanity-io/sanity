@@ -1,15 +1,19 @@
-import {constants, mkdir, open, stat} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
+/* eslint-disable max-statements */
+import {mkdir, stat, writeFile} from 'node:fs/promises'
+import {dirname, isAbsolute, join} from 'node:path'
+import {env} from 'node:process'
 import {Worker} from 'node:worker_threads'
 
-import {readConfig} from '@sanity/codegen'
-import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
+import {configDefinition, readConfig, type TypeGenConfig} from '@sanity/codegen'
+import {WorkerChannelReceiver} from '@sanity/worker-channels'
+import chalk from 'chalk'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
+import {getCliConfig} from '../../util/getCliConfig'
 import {
   type TypegenGenerateTypesWorkerData,
-  type TypegenGenerateTypesWorkerMessage,
+  type TypegenWorkerChannel,
 } from '../../workers/typegenGenerate'
 import {TypesGeneratedTrace} from './generate.telemetry'
 
@@ -31,179 +35,227 @@ const generatedFileWarning = `/**
  * ---------------------------------------------------------------------------------
  */\n\n`
 
-export default async function typegenGenerateAction(
-  args: CliCommandArguments<TypegenGenerateTypesCommandFlags>,
-  context: CliCommandContext,
-): Promise<void> {
-  const flags = args.extOptions
-  const {output, workDir, telemetry} = context
+async function getConfig(
+  workDir: string,
+  configPath?: string,
+): Promise<{config: TypeGenConfig; path?: string; type: 'legacy' | 'cli'}> {
+  const config = await getCliConfig(workDir)
 
+  // check if the legacy config exist
+  const legacyConfigPath = configPath || 'sanity-typegen.json'
+  let hasLegacyConfig = false
+  try {
+    const file = await stat(legacyConfigPath)
+    hasLegacyConfig = file.isFile()
+  } catch (err) {
+    if (err.code === 'ENOENT' && configPath) {
+      throw new Error(`Typegen config file not found: ${configPath}`, {cause: err})
+    }
+
+    if (err.code !== 'ENOENT') {
+      throw new Error(`Error when checking if typegen config file exists: ${legacyConfigPath}`, {
+        cause: err,
+      })
+    }
+  }
+
+  // we have both legacy and cli config with typegen
+  if (config?.config?.typegen && hasLegacyConfig) {
+    console.warn(
+      chalk.yellow(
+        `You've specified typegen in your Sanity CLI config, but also have a typegen config.
+
+The config from the Sanity CLI config is used.
+`,
+      ),
+    )
+
+    return {
+      config: configDefinition.parse(config.config.typegen || {}),
+      path: config.path,
+      type: 'cli',
+    }
+  }
+
+  // we only have legacy typegen config
+  if (hasLegacyConfig) {
+    console.warn(
+      chalk.yellow(
+        `The separate typegen config has been deprecated. Use \`typegen\` in the sanity CLI config instead.
+
+See: https://www.sanity.io/docs/help/configuring-typegen-in-sanity-cli-config`,
+      ),
+    )
+    return {
+      config: await readConfig(legacyConfigPath),
+      path: legacyConfigPath,
+      type: 'legacy',
+    }
+  }
+
+  // we only have cli config
+  return {
+    config: configDefinition.parse(config?.config?.typegen || {}),
+    path: config?.path,
+    type: 'cli',
+  }
+}
+
+const formatter = new Intl.NumberFormat('en-US', {
+  style: 'percent',
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+})
+const percent = (value: number): string => formatter.format(Math.min(value, 1))
+const count = (
+  amount: number,
+  plural: string = '',
+  singular: string = plural.slice(0, Math.max(0, plural.length - 1)),
+): string =>
+  [amount.toLocaleString('en-US'), amount === 1 ? singular : plural].filter(Boolean).join(' ')
+const getMessage = (error: unknown) =>
+  typeof error === 'object' && !!error && 'message' in error && typeof error.message === 'string'
+    ? error.message
+    : 'Unknown error'
+
+export default async function typegenGenerateAction(
+  {extOptions: flags}: CliCommandArguments<TypegenGenerateTypesCommandFlags>,
+  {output, workDir, telemetry}: CliCommandContext,
+): Promise<void> {
   const trace = telemetry.trace(TypesGeneratedTrace)
   trace.start()
 
-  const codegenConfig = await readConfig(flags['config-path'] || 'sanity-typegen.json')
+  const spinner = output.spinner({}).start('Loading config…')
 
-  try {
-    const schemaStats = await stat(codegenConfig.schema)
-    if (!schemaStats.isFile()) {
-      throw new Error(`Schema path is not a file: ${codegenConfig.schema}`)
-    }
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      // If the user has not provided a specific schema path (eg we're using the default), give some help
-      const hint =
-        codegenConfig.schema === './schema.json' ? ` - did you run "sanity schema extract"?` : ''
-      throw new Error(`Schema file not found: ${codegenConfig.schema}${hint}`)
-    }
-    throw err
-  }
+  const {
+    config: typegenConfig,
+    type: typegenConfigMethod,
+    path: configPath,
+  } = await getConfig(workDir, flags['config-path'])
 
-  const outputPath = join(process.cwd(), codegenConfig.generates)
+  spinner.succeed(`Config loaded from ${configPath?.replace(workDir, '.')}`)
+
+  const {
+    generates,
+    path: searchPath,
+    schema: schemaPath,
+    formatGeneratedCode,
+    overloadClientMethods,
+  } = typegenConfig
+
+  const outputPath = isAbsolute(typegenConfig.generates)
+    ? typegenConfig.generates
+    : join(workDir, typegenConfig.generates)
+
   const outputDir = dirname(outputPath)
   await mkdir(outputDir, {recursive: true})
+
   const workerPath = await getCliWorkerPath('typegenGenerate')
-
-  const spinner = output.spinner({}).start('Generating types')
-
-  const worker = new Worker(workerPath, {
-    workerData: {
-      workDir,
-      schemaPath: codegenConfig.schema,
-      searchPath: codegenConfig.path,
-      overloadClientMethods: codegenConfig.overloadClientMethods,
-    } satisfies TypegenGenerateTypesWorkerData,
-    env: process.env,
-  })
-
-  const typeFile = await open(
-    outputPath,
-    // eslint-disable-next-line no-bitwise
-    constants.O_TRUNC | constants.O_CREAT | constants.O_WRONLY,
-  )
-
-  typeFile.write(generatedFileWarning)
-
-  const stats = {
-    queryFilesCount: 0,
-    errors: 0,
-    queriesCount: 0,
-    schemaTypesCount: 0,
-    unknownTypeNodesGenerated: 0,
-    typeNodesGenerated: 0,
-    emptyUnionTypeNodesGenerated: 0,
-    size: 0,
+  const workerData: TypegenGenerateTypesWorkerData = {
+    workDir,
+    schemaPath,
+    searchPath,
+    overloadClientMethods,
   }
+  const worker = new Worker(workerPath, {workerData, env})
+  const receiver = WorkerChannelReceiver.from<TypegenWorkerChannel>(worker)
 
-  await new Promise<void>((resolve, reject) => {
-    worker.addListener('message', (msg: TypegenGenerateTypesWorkerMessage) => {
-      if (msg.type === 'error') {
-        if (msg.fatal) {
-          trace.error(msg.error)
-          reject(msg.error)
-          return
-        }
-        const errorMessage = msg.filename
-          ? `${msg.error.message} in "${msg.filename}"`
-          : msg.error.message
-        spinner.fail(errorMessage)
-        stats.errors++
-        return
-      }
-      if (msg.type === 'complete') {
-        resolve()
-        return
-      }
+  try {
+    spinner.start(`Loading schema…`)
+    await receiver.event.loadedSchema()
+    spinner.succeed(`Schema loaded from ${schemaPath}`)
 
-      if (msg.type === 'typemap') {
-        let typeMapStr = `// Query TypeMap\n`
-        typeMapStr += msg.typeMap
-        typeFile.write(typeMapStr)
-        stats.size += Buffer.byteLength(typeMapStr)
-        return
-      }
+    spinner.start('Generating schema types…')
+    const {expectedFileCount} = await receiver.event.typegenStarted()
+    const {schemaTypeDeclarations} = await receiver.event.generatedSchemaTypes()
+    const schemaTypesCount = schemaTypeDeclarations.length
+    spinner.succeed(`Generated ${count(schemaTypesCount, 'schema types')}`)
 
-      let fileTypeString = `// Source: ${msg.filename}\n`
+    spinner.start('Generating query types…')
+    let queriesCount = 0
+    let evaluatedFiles = 0
+    let filesWithErrors = 0
+    let queryFilesCount = 0
+    let typeNodesGenerated = 0
+    let unknownTypeNodesGenerated = 0
+    let emptyUnionTypeNodesGenerated = 0
 
-      if (msg.type === 'schema') {
-        stats.schemaTypesCount += msg.length
-        fileTypeString += msg.schema
-        typeFile.write(fileTypeString)
-        return
+    for await (const {queries, errors} of receiver.stream.evaluatedModules()) {
+      evaluatedFiles++
+      queriesCount += queries.length
+      queryFilesCount += queries.length ? 1 : 0
+      filesWithErrors += errors.length ? 1 : 0
+
+      for (const {stats} of queries) {
+        typeNodesGenerated += stats.allTypes
+        unknownTypeNodesGenerated += stats.unknownTypes
+        emptyUnionTypeNodesGenerated += stats.emptyUnions
       }
 
-      if (msg.type === 'types') {
-        stats.queryFilesCount++
-        for (const {
-          queryName,
-          query,
-          type,
-          typeNodesGenerated,
-          unknownTypeNodesGenerated,
-          emptyUnionTypeNodesGenerated,
-        } of msg.types) {
-          fileTypeString += `// Variable: ${queryName}\n`
-          fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '').trim()}\n`
-          fileTypeString += type
-          stats.queriesCount++
-          stats.typeNodesGenerated += typeNodesGenerated
-          stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
-          stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
-        }
-        typeFile.write(`${fileTypeString}\n`)
-        stats.size += Buffer.byteLength(fileTypeString)
+      for (const error of errors) {
+        spinner.fail(getMessage(error))
       }
-    })
-    worker.addListener('error', reject)
-  })
 
-  await typeFile.close()
-
-  const prettierConfig = codegenConfig.formatGeneratedCode
-    ? await resolvePrettierConfig(outputPath).catch((err) => {
-        output.warn(`Failed to load prettier config: ${err.message}`)
-        return null
-      })
-    : null
-
-  if (prettierConfig) {
-    const formatFile = await open(outputPath, constants.O_RDWR)
-    try {
-      const code = await formatFile.readFile()
-      const formattedCode = await prettierFormat(code.toString(), {
-        ...prettierConfig,
-        parser: 'typescript' as const,
-      })
-      await formatFile.truncate()
-      await formatFile.write(formattedCode, 0)
-
-      spinner.info('Formatted generated types with Prettier')
-    } catch (err) {
-      output.warn(`Failed to format generated types with Prettier: ${err.message}`)
-    } finally {
-      await formatFile.close()
+      spinner.text =
+        `Generating query types… (${percent(evaluatedFiles / expectedFileCount)})\n` +
+        `  └─ Processed ${count(evaluatedFiles)} of ${count(expectedFileCount, 'files')}. ` +
+        `Found ${count(queriesCount, 'queries', 'query')} from ${count(queryFilesCount, 'files')}.`
     }
+
+    const result = await receiver.event.typegenComplete()
+    const code = `${generatedFileWarning}${result.code}`
+    await writeFile(outputPath, code)
+
+    spinner.succeed(
+      `Generated ${count(queriesCount, 'query types')} from ${count(queryFilesCount, 'files')} out of ${count(evaluatedFiles, 'scanned files')}`,
+    )
+
+    if (formatGeneratedCode) {
+      spinner.start(`Formatting generated types with prettier…`)
+
+      try {
+        const prettier = await import('prettier')
+        const prettierConfig = await prettier.resolveConfig(outputPath)
+        const formattedCode = await prettier.format(code, {
+          ...prettierConfig,
+          parser: 'typescript' as const,
+        })
+        await writeFile(outputPath, formattedCode)
+
+        spinner.succeed('Formatted generated types with prettier')
+      } catch (err) {
+        spinner.warn(`Failed to format generated types with prettier: ${getMessage(err)}`)
+      }
+    }
+
+    trace.log({
+      configOverloadClientMethods: overloadClientMethods,
+      outputSize: Buffer.byteLength(result.code),
+      queriesCount,
+      schemaTypesCount,
+      queryFilesCount,
+      filesWithErrors,
+      typeNodesGenerated,
+      unknownTypeNodesGenerated,
+      emptyUnionTypeNodesGenerated,
+      unknownTypeNodesRatio:
+        typeNodesGenerated > 0 ? unknownTypeNodesGenerated / typeNodesGenerated : 0,
+      configMethod: typegenConfigMethod,
+    })
+
+    if (filesWithErrors > 0) {
+      spinner.warn(
+        `Encountered errors in ${count(filesWithErrors, 'files')} while generating types`,
+      )
+    }
+
+    spinner.succeed(`Successfully generated types to ${generates}`)
+  } catch (err) {
+    trace.error(err)
+    throw err
+  } finally {
+    receiver.unsubscribe()
+    trace.complete()
+    await worker.terminate()
   }
-
-  trace.log({
-    outputSize: stats.size,
-    queriesCount: stats.queriesCount,
-    schemaTypesCount: stats.schemaTypesCount,
-    queryFilesCount: stats.queryFilesCount,
-    filesWithErrors: stats.errors,
-    typeNodesGenerated: stats.typeNodesGenerated,
-    unknownTypeNodesGenerated: stats.unknownTypeNodesGenerated,
-    unknownTypeNodesRatio:
-      stats.typeNodesGenerated > 0 ? stats.unknownTypeNodesGenerated / stats.typeNodesGenerated : 0,
-    emptyUnionTypeNodesGenerated: stats.emptyUnionTypeNodesGenerated,
-    configOverloadClientMethods: codegenConfig.overloadClientMethods,
-  })
-
-  trace.complete()
-  if (stats.errors > 0) {
-    spinner.warn(`Encountered errors in ${stats.errors} files while generating types`)
-  }
-
-  spinner.succeed(
-    `Generated TypeScript types for ${stats.schemaTypesCount} schema types and ${stats.queriesCount} GROQ queries in ${stats.queryFilesCount} files into: ${codegenConfig.generates}`,
-  )
 }

@@ -289,18 +289,37 @@ describeCliTest('CLI: `sanity init`', () => {
 
         await cleanOutputDirectory(outpath)
 
-        await runSanityCmdCommand(studioName, [
-          'init',
-          '--y',
-          '--project',
-          cliProjectId,
-          '--dataset',
-          testRunArgs.dataset,
-          '--output-path',
-          `${baseTestPath}/${outpath}`,
-          '--package-manager',
-          'pnpm',
-        ])
+        await runSanityCmdCommand(
+          studioName,
+          [
+            'init',
+            '--y',
+            '--project',
+            cliProjectId,
+            '--dataset',
+            testRunArgs.dataset,
+            '--output-path',
+            `${baseTestPath}/${outpath}`,
+            '--package-manager',
+            'pnpm',
+          ],
+          {
+            env: {
+              // when running tests via `pnpm test`, the 'npm_config_minimum_release_age' is set from
+              // monorepo workspace config. however, minimumReleaseAgeExclude is *not* set,
+              // so CLI tests using pnpm as package manager will fail during install of monorepo packages
+              // if less than the configured minimumReleaseAge value
+              // As a workaround, explicitly set it to `0` here
+              // Note: majority of tests are already running `npm install`, which doesn't (yet) support
+              // minimumReleaseAge, so this should not make a big difference
+              // eslint-disable-next-line camelcase
+              npm_config_minimum_release_age: '0',
+              // the same is true for `trustPolicy`, it doesn't pick up `trustPolicyExclude`
+              // eslint-disable-next-line camelcase
+              npm_config_trust_policy: 'off',
+            },
+          },
+        )
 
         // Verify Next.js config files were created in the Next.js root (confirms the command completed successfully)
         const hasPnpmLock = await fs
@@ -812,6 +831,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('initializes a project from a GitHub repository shorthand', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-shorthand'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -824,6 +844,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -852,6 +874,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('initializes a project from a GitHub URL', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-url'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -864,6 +887,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'https://github.com/sanity-io/sanity/tree/main/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -891,6 +916,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('correctly applies environment variables', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-env'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -903,6 +929,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -947,6 +975,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('fails with non-existent repository', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-nonexistent'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -960,6 +989,8 @@ describeCliTest('CLI: `sanity init`', () => {
             testRunArgs.dataset,
             '--template',
             'sanity-io/non-existent-template',
+            // Use `--template-token` flag in CI to work around rate limiting issues
+            ...(ghToken ? ['--template-token', ghToken] : []),
             '--output-path',
             `${baseTestPath}/${outpath}`,
             '--package-manager',

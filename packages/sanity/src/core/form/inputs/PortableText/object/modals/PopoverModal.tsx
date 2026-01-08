@@ -76,11 +76,22 @@ function Content(props: PopoverEditDialogProps) {
     useCallback(
       (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
           handleClose()
         }
       },
       [handleClose],
     ),
+    {
+      /**
+       * We need to capture the event to prevent it from being propagated to the parent
+       * This is needed when, for example, in order for the fullscreen mode to be closed
+       * Last over existing popovers
+       */
+      capture: true,
+    },
   )
 
   useClickOutsideEvent(
@@ -97,6 +108,17 @@ function Content(props: PopoverEditDialogProps) {
     // This is needed in order for focusLock not to trap focus in the
     // popover when closing the popover and focus is to be returned to the editor
     if (isClosedRef.current) return false
+
+    const target = element as Node
+    const portalElements = document.querySelectorAll('[data-portal]')
+    const isWithinPortal = Array.from(portalElements).some((portal) => portal.contains(target))
+
+    // We want to have an exception to the clicking when the target is outside of the portal
+    // And the popover is not closed.
+    // This is needed in order for focusLock not to trap focus in the modal
+    // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
+    if (!isWithinPortal && !isClosedRef.current) return false
+
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
 
@@ -119,6 +141,7 @@ function Content(props: PopoverEditDialogProps) {
                 mode="bleed"
                 onClick={handleClose}
                 tooltipProps={{content: 'Close'}}
+                data-testid="close-popover-edit-dialog-button"
               />
             </Flex>
           </ContentHeaderBox>

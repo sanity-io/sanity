@@ -16,11 +16,10 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
-import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
-import {ExpandedLayer, Root} from './Compositor.styles'
+import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
+import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
@@ -68,6 +67,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemRemove,
     onPaste,
     onPathFocus,
+    onSelectFile,
     onToggleFullscreen,
     onUpload,
     path,
@@ -82,7 +82,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderInput,
     renderItem,
     renderPreview,
-    resolveUploader,
     value,
   } = props
 
@@ -405,60 +404,65 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorNode = useMemo(
     () => (
       <UploadTargetCard
-        types={editor.schemaTypes.portableText.of}
-        resolveUploader={resolveUploader}
+        isReadOnly={readOnly}
+        onSelectFile={onSelectFile}
         onUpload={onUpload}
+        pasteTarget={wrapperElement || undefined}
         tabIndex={-1}
+        types={editor.schemaTypes.portableText.of}
       >
-        <Editor
-          ariaDescribedBy={ariaDescribedBy}
-          elementRef={elementRef}
-          initialSelection={initialSelection}
-          hideToolbar={hideToolbar}
-          hotkeys={editorHotkeys}
-          isActive={isActive}
-          isFullscreen={isFullscreen}
-          isOneLine={isOneLineEditor}
-          onItemOpen={onItemOpen}
-          onCopy={onCopy}
-          onPaste={onPaste}
-          onToggleFullscreen={handleToggleFullscreen}
-          path={path}
-          rangeDecorations={rangeDecorations}
-          readOnly={readOnly}
-          renderAnnotation={editorRenderAnnotation}
-          renderBlock={editorRenderBlock}
-          renderChild={editorRenderChild}
-          setPortalElement={setPortalElement}
-          scrollElement={scrollElement}
-          setScrollElement={setScrollElement}
-        />
+        <StringDiffContainer>
+          <Editor
+            ariaDescribedBy={ariaDescribedBy}
+            elementRef={elementRef}
+            initialSelection={initialSelection}
+            hideToolbar={hideToolbar}
+            hotkeys={editorHotkeys}
+            isActive={isActive}
+            isFullscreen={isFullscreen}
+            isOneLine={isOneLineEditor}
+            onItemOpen={onItemOpen}
+            onCopy={onCopy}
+            onPaste={onPaste}
+            onToggleFullscreen={handleToggleFullscreen}
+            path={path}
+            rangeDecorations={rangeDecorations}
+            readOnly={readOnly}
+            renderAnnotation={editorRenderAnnotation}
+            renderBlock={editorRenderBlock}
+            renderChild={editorRenderChild}
+            setPortalElement={setPortalElement}
+            scrollElement={scrollElement}
+            setScrollElement={setScrollElement}
+          />
+        </StringDiffContainer>
       </UploadTargetCard>
     ),
 
     // Keep only stable ones here!
     [
-      ariaDescribedBy,
+      readOnly,
+      onSelectFile,
+      onUpload,
+      wrapperElement,
       editor.schemaTypes.portableText.of,
-      editorHotkeys,
-      editorRenderAnnotation,
-      editorRenderBlock,
-      editorRenderChild,
+      ariaDescribedBy,
       elementRef,
-      handleToggleFullscreen,
-      hideToolbar,
       initialSelection,
+      hideToolbar,
+      editorHotkeys,
       isActive,
       isFullscreen,
       isOneLineEditor,
-      onCopy,
       onItemOpen,
+      onCopy,
       onPaste,
+      handleToggleFullscreen,
       path,
-      onUpload,
-      resolveUploader,
       rangeDecorations,
-      readOnly,
+      editorRenderAnnotation,
+      editorRenderBlock,
+      editorRenderChild,
       scrollElement,
     ],
   )
@@ -488,34 +492,32 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <TreeEditingEnabledProvider legacyEditing>
-      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-          <ChangeIndicator
-            disabled={isFullscreen}
-            hasFocus={Boolean(focused)}
-            isChanged={changed}
-            path={path}
+    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+        <ChangeIndicator
+          disabled={isFullscreen}
+          hasFocus={Boolean(focused)}
+          isChanged={changed}
+          path={path}
+        >
+          <Root
+            data-focused={editorFocused ? '' : undefined}
+            data-read-only={readOnly ? '' : undefined}
           >
-            <Root
-              data-focused={editorFocused ? '' : undefined}
-              data-read-only={readOnly ? '' : undefined}
-            >
-              <Box data-wrapper="" ref={setWrapperElement}>
-                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                  <AnnotationObjectEditModal
-                    focused={focused}
-                    onItemClose={onItemClose}
-                    referenceBoundary={scrollElement}
-                  />
-                </Portal>
-              </Box>
-              <div data-border="" />
-            </Root>
-          </ChangeIndicator>
-        </ActivateOnFocus>
-      </PortalProvider>
-    </TreeEditingEnabledProvider>
+            <Box data-wrapper="" ref={setWrapperElement}>
+              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                <AnnotationObjectEditModal
+                  focused={focused}
+                  onItemClose={onItemClose}
+                  referenceBoundary={scrollElement}
+                />
+              </Portal>
+            </Box>
+            <div data-border="" />
+          </Root>
+        </ChangeIndicator>
+      </ActivateOnFocus>
+    </PortalProvider>
   )
 }

@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import debug from 'debug'
@@ -16,6 +17,8 @@ import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export interface ViteOptions {
   /**
@@ -145,6 +148,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
+      '__SANITY_BUILD_TIMESTAMP__': JSON.stringify(Date.now()),
+      'process.env.PKG_BUILD_VERSION': JSON.stringify(process.env.PKG_BUILD_VERSION),
       'process.env.MODE': JSON.stringify(mode),
       /**
        * Yes, double negatives are confusing.

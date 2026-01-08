@@ -5,7 +5,7 @@ import {
   isReferenceSchemaType,
   type PrepareViewOptions,
 } from '@sanity/types'
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash-es'
 import {type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 

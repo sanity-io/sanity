@@ -1,4 +1,4 @@
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {useEffect, useState} from 'react'
 
 import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
@@ -12,7 +12,7 @@ export function useGuardWithReleaseLimitUpsell() {
     setIsPendingGuardResponse(true)
 
     const promise = new Promise<boolean>((resolve) => {
-      guardWithReleaseLimitUpsell(noop, false, (hasPassed: boolean) => {
+      void guardWithReleaseLimitUpsell(noop, false, (hasPassed: boolean) => {
         resolve(hasPassed)
       })
     })

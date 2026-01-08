@@ -14,7 +14,7 @@ type Package = {version: string; name: string}
  */
 export function getAutoUpdatesImportMap<const Pkg extends Package>(
   packages: Pkg[],
-  options: {timestamp?: number; baseUrl?: string} = {},
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
 ) {
   return Object.fromEntries(
     packages.flatMap((pkg) => getAppAutoUpdateImportMapForPackage(pkg, options)),
@@ -23,7 +23,7 @@ export function getAutoUpdatesImportMap<const Pkg extends Package>(
 
 function getAppAutoUpdateImportMapForPackage<const Pkg extends Package>(
   pkg: Pkg,
-  options: {timestamp?: number; baseUrl?: string} = {},
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
 ): [[Pkg['name'], string], [`${Pkg['name']}/`, string]] {
   const moduleUrl = getModuleUrl(pkg, options)
 
@@ -33,10 +33,27 @@ function getAppAutoUpdateImportMapForPackage<const Pkg extends Package>(
   ]
 }
 
-export function getModuleUrl(pkg: Package, options: {timestamp?: number; baseUrl?: string} = {}) {
+export function getModuleUrl(
+  pkg: Package,
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
+) {
   const {timestamp = currentUnixTime()} = options
+  return options.appId
+    ? getByAppModuleUrl(pkg, {appId: options.appId, baseUrl: options.baseUrl, timestamp})
+    : getLegacyModuleUrl(pkg, {timestamp, baseUrl: options.baseUrl})
+}
+
+function getLegacyModuleUrl(pkg: Package, options: {timestamp: number; baseUrl?: string}) {
   const encodedMinVer = encodeURIComponent(`^${pkg.version}`)
-  return `${options.baseUrl || MODULES_HOST}/v1/modules/${rewriteScopedPackage(pkg.name)}/default/${encodedMinVer}/t${timestamp}`
+  return `${options.baseUrl || MODULES_HOST}/v1/modules/${rewriteScopedPackage(pkg.name)}/default/${encodedMinVer}/t${options.timestamp}`
+}
+
+function getByAppModuleUrl(
+  pkg: Package,
+  options: {appId: string; baseUrl?: string; timestamp: number},
+) {
+  const encodedMinVer = encodeURIComponent(`^${pkg.version}`)
+  return `${options.baseUrl || MODULES_HOST}/v1/modules/by-app/${options.appId}/t${options.timestamp}/${encodedMinVer}/${rewriteScopedPackage(pkg.name)}`
 }
 
 /**

@@ -6,8 +6,9 @@ import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
+import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
-import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
@@ -20,19 +21,28 @@ const OversizedButton = styled(Button)`
 `
 
 export function GlobalPerspectiveMenu({
-  selectedReleaseId,
+  selectedPerspectiveName,
   areReleasesEnabled = true,
   menuItemProps,
 }: {
-  selectedReleaseId: ReleaseId | undefined
+  selectedPerspectiveName: string | undefined
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
 }): React.JSX.Element {
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
+  const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
+    useReleasesUpsell()
   const styledMenuRef = useRef<HTMLDivElement>(null)
 
   const {isRangeVisible, onScroll, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
+  const handleOpenBundleDialog = useCallback(() => {
+    if (releasesUpsellMode === 'upsell') {
+      handleOpenReleasesUpsellDialog()
+      return
+    }
+    setCreateBundleDialogOpen(true)
+  }, [releasesUpsellMode, handleOpenReleasesUpsellDialog])
 
   const handleClose = useCallback(() => {
     setCreateBundleDialogOpen(false)
@@ -60,8 +70,8 @@ export function GlobalPerspectiveMenu({
               onScroll={onScroll}
               isRangeVisible={isRangeVisible}
               scrollElementRef={scrollElementRef}
-              selectedReleaseId={selectedReleaseId}
-              setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+              selectedPerspectiveName={selectedPerspectiveName}
+              handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
             />
           </StyledMenu>

@@ -49,6 +49,7 @@ function combine(...visitors: any) {
 
 interface Options {
   transformTypeVisitors?: (visitors: typeof typeVisitors) => Partial<typeof typeVisitors>
+  transformCommonVisitors?: (visitors: any[]) => any[]
 }
 
 /**
@@ -56,7 +57,10 @@ interface Options {
  */
 export function validateSchema(
   schemaTypes: _FIXME_,
-  {transformTypeVisitors = (visitors) => visitors}: Options = {},
+  {
+    transformTypeVisitors = (visitors) => visitors,
+    transformCommonVisitors = (visitors) => visitors,
+  }: Options = {},
 ) {
   return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
@@ -65,10 +69,13 @@ export function validateSchema(
         (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
       getNoopVisitor(visitorContext)
 
+    // Transform common visitors for extensibility
+    const commonVisitors = transformCommonVisitors([common])
+
     if (visitorContext.isRoot) {
-      return combine(rootType, common, typeVisitor)(schemaDef, visitorContext)
+      return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
     }
 
-    return combine(common, typeVisitor)(schemaDef, visitorContext)
+    return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)
   })
 }

@@ -36,50 +36,18 @@ jobs:
         #     experimental: true
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check if only examples files changed
         id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
+        uses: ./.github/actions/check-examples-only
 
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip tests for examples-only changes
-        if: steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping unit tests"
-          exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
+      - uses: ./.github/actions/setup
         if: steps.check_examples_only.outputs.examples_only != 'true'
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: Build packages
         if: steps.check_examples_only.outputs.examples_only != 'true'
@@ -101,7 +69,7 @@ jobs:
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples_only.outputs.examples_only != 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
           path: ".vitest-reports/*"
@@ -117,51 +85,16 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check if only examples files changed
         id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
+        uses: ./.github/actions/check-examples-only
 
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip coverage for examples-only changes
-        if: steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping coverage report"
-          exit 0
-
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: "Download coverage artifacts"
         if: steps.check_examples_only.outputs.examples_only != 'true'
@@ -178,4 +111,4 @@ jobs:
 
       - name: Report coverage
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: davelosert/vitest-coverage-report-action@8ab049ff5a2c6e78f78af446329379b318544a1a # v2
+        uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2

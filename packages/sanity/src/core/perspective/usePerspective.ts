@@ -8,6 +8,9 @@ import {type PerspectiveContextValue} from './types'
  *
  * React hook that returns the current studio perspective and perspective stack.
  *
+ * This will use the closest PerspectiveContext provider, which is either the global
+ * PerspectiveContext or the DocumentPerspectiveProvider.
+ *
  * @returns See {@link PerspectiveContextValue}
  * @example Reading the current perspective stack
  * ```ts

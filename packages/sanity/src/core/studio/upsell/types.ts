@@ -16,7 +16,7 @@ export interface UpsellData {
       url: string
       altText: string | null
     }
-  }
+  } | null
   descriptionText: PortableTextBlock[]
   ctaButton: {
     text: string

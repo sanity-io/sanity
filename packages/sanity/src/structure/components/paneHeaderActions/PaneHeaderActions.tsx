@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {uniqBy} from 'lodash'
+import {uniqBy} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
 import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
 

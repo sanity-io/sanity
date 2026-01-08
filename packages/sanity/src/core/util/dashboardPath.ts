@@ -1,17 +1,14 @@
 /**
  * @internal
  */
-export const DASHBOARD_DOMAIN = 'https://www.sanity.io'
-
-/**
- * @internal
- */
 export const getDashboardPath = ({
   organizationId,
+  dashboardDomain,
   appId,
   workspaceName,
 }: {
+  dashboardDomain: string
   organizationId: string
   appId: string
   workspaceName: string
-}) => `${DASHBOARD_DOMAIN}/@${organizationId}/studio/${appId}/${workspaceName}`
+}) => `${dashboardDomain}/@${organizationId}/studio/${appId}/${workspaceName}`

@@ -6,7 +6,6 @@ export default defineConfig([
   ...baseConfig,
   {
     rules: {
-      'import/no-extraneous-dependencies': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'react/jsx-no-bind': 'off',
       'no-warning-comments': 'off',

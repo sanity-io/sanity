@@ -11,6 +11,7 @@ import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 export const useCanvasCompanionDoc = (documentId: string) => {
   const companionDocsStore = useCanvasCompanionDocsStore()
   const publishedId = getPublishedId(documentId)
+
   const companionDocs$ = useMemo(
     () => companionDocsStore.getCompanionDocs(publishedId),
     [publishedId, companionDocsStore],
@@ -21,5 +22,10 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),
     [companionDocs, documentId],
   )
-  return {isLinked: Boolean(companionDoc), companionDoc, loading: companionDocs?.loading}
+  return {
+    isLinked: Boolean(companionDoc),
+    isLockedByCanvas: companionDoc ? !companionDoc.isStudioDocumentEditable : false,
+    companionDoc,
+    loading: companionDocs?.loading,
+  }
 }

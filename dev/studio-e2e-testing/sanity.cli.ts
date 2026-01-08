@@ -20,5 +20,9 @@ export default defineCliConfig({
         process.env.SANITY_E2E_DATASET_FIREFOX,
       ),
     },
+    // Allows running React Profiler and better debugging
+    resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
+    esbuild: {minifyIdentifiers: false},
+    build: {sourcemap: true},
   },
 })

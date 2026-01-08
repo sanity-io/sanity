@@ -1,5 +1,5 @@
 import execa from 'execa'
-import {partition, uniq} from 'lodash'
+import {partition, uniq} from 'lodash-es'
 
 const placeholders = {
   commit: '%H',

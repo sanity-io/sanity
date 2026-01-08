@@ -11,15 +11,19 @@ import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
 import {LocaleProvider} from '../i18n'
+import {AssetLimitUpsellProvider} from '../limits/context/assets/AssetLimitUpsellProvider'
 import {DocumentLimitUpsellProvider} from '../limits/context/documents/DocumentLimitUpsellProvider'
 import {GlobalPerspectiveProvider} from '../perspective/GlobalPerspectiveProvider'
 import {ResourceCacheProvider} from '../store'
+import {UserApplicationCacheProvider} from '../store/userApplications'
 import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
+import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
+import {LiveManifestRegisterProvider} from './manifest'
 import {MaybeEnableErrorReporting} from './MaybeEnableErrorReporting'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
 import {
@@ -67,27 +71,43 @@ export function StudioProvider({
   // mounted React component that is shared across embedded and standalone studios.
   errorReporter.initialize()
 
+  // Extract the first workspace's projectId for use in error screens
+  const primaryProjectId = useMemo(() => {
+    const workspace = Array.isArray(config) ? config[0] : config
+    return workspace?.projectId
+  }, [config])
+
   const _children = useMemo(
     () => (
-      <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
-        <StudioTelemetryProvider config={config}>
-          <LocaleProvider>
-            <PackageVersionStatusProvider>
-              <MaybeEnableErrorReporting errorReporter={errorReporter} />
-              <ResourceCacheProvider>
-                <AppIdCacheProvider>
-                  <ComlinkRouteHandler />
-                  <StudioAnnouncementsProvider>
-                    <GlobalPerspectiveProvider>
-                      <DocumentLimitUpsellProvider>{children}</DocumentLimitUpsellProvider>
-                    </GlobalPerspectiveProvider>
-                  </StudioAnnouncementsProvider>
-                </AppIdCacheProvider>
-              </ResourceCacheProvider>
-            </PackageVersionStatusProvider>
-          </LocaleProvider>
-        </StudioTelemetryProvider>
-      </WorkspaceLoader>
+      <UserApplicationCacheProvider>
+        <LiveUserApplicationProvider>
+          <LiveManifestRegisterProvider />
+          <WorkspaceLoader
+            LoadingComponent={LoadingBlock}
+            ConfigErrorsComponent={ConfigErrorsScreen}
+          >
+            <StudioTelemetryProvider config={config}>
+              <LocaleProvider>
+                <PackageVersionStatusProvider>
+                  <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                  <ResourceCacheProvider>
+                    <AppIdCacheProvider>
+                      <ComlinkRouteHandler />
+                      <StudioAnnouncementsProvider>
+                        <GlobalPerspectiveProvider>
+                          <DocumentLimitUpsellProvider>
+                            <AssetLimitUpsellProvider>{children}</AssetLimitUpsellProvider>
+                          </DocumentLimitUpsellProvider>
+                        </GlobalPerspectiveProvider>
+                      </StudioAnnouncementsProvider>
+                    </AppIdCacheProvider>
+                  </ResourceCacheProvider>
+                </PackageVersionStatusProvider>
+              </LocaleProvider>
+            </StudioTelemetryProvider>
+          </WorkspaceLoader>
+        </LiveUserApplicationProvider>
+      </UserApplicationCacheProvider>
     ),
     [children, config],
   )
@@ -95,8 +115,8 @@ export function StudioProvider({
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <StudioErrorBoundary>
-          <StudioRootErrorHandler>
+        <StudioErrorBoundary primaryProjectId={primaryProjectId}>
+          <StudioRootErrorHandler primaryProjectId={primaryProjectId}>
             <WorkspacesProvider config={config} basePath={basePath} LoadingComponent={LoadingBlock}>
               <ActiveWorkspaceMatcher
                 unstable_history={history}

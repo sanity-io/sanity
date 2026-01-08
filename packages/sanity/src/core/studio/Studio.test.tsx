@@ -8,19 +8,16 @@
  * 2. The client will then take over, and use the `hydrateRoot` API (https://beta.reactjs.org/apis/react-dom/client/hydrateRoot) which will skip the first render pass and not attempt to produce any HTML or mutate the DOM.
  *    Instead, it will attempt to reuse the existing DOM and only attach event listeners.
  * 3. It's critical that the server and client renders are identical, otherwise the client can in worst case scenarios attach event handlers to the wrong elements.
- *    It may also break `styled-components` hydration, which results elements getting wrong styling, or no styling at all.
  * 4. In development mode React will attempt to detect if there's a mismatch and warn, in production however it opts for speed and skips this check to enable fast hydration.
  *
  * The purpose of this testing suite is to guarantee that `<Studio />` is fully compatible the APIs that are used for hydration:
  * a) https://beta.reactjs.org/apis/react-dom/client/hydrateRoot
  * b) https://beta.reactjs.org/apis/react-dom/server/renderToString
- * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
 import {type SanityClient} from '@sanity/client'
 import {act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
-import {ServerStyleSheet} from 'styled-components'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
@@ -40,12 +37,8 @@ vi.mock('./components/navbar/presence/PresenceMenu')
 describe('Studio', () => {
   it(`SSR to static markup doesn't throw or warn`, () => {
     const spy = vi.spyOn(console, 'error')
-    const sheet = new ServerStyleSheet()
-    try {
-      renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
-    } finally {
-      sheet.seal()
-    }
+
+    renderToStaticMarkup(<Studio config={config} />)
 
     expect(console.error).not.toHaveBeenCalled()
 
@@ -57,17 +50,11 @@ describe('Studio', () => {
     const node = document.createElement('div')
     document.body.appendChild(node)
 
-    const sheet = new ServerStyleSheet()
-    try {
-      const html = renderToString(sheet.collectStyles(<Studio config={config} />))
-      node.innerHTML = html
+    const html = renderToString(<Studio config={config} />)
+    node.innerHTML = html
 
-      document.head.innerHTML += sheet.getStyleTags()
-      const root = await act(() => hydrateRoot(node, <Studio config={config} />))
-      await act(() => root.unmount())
-    } finally {
-      sheet.seal()
-    }
+    const root = await act(() => hydrateRoot(node, <Studio config={config} />))
+    act(() => root.unmount())
 
     expect(console.error).not.toHaveBeenCalled()
 

@@ -81,8 +81,8 @@ npx sanity schema deploy
          memory: 2,
          timeout: 30,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post' && !defined(tags)",
+           on: ['create', 'update'],
+           filter: "_type == 'post' && delta::changedAny(content)",
            projection: '{_id}',
          },
        }),
@@ -151,7 +151,7 @@ npx sanity functions dev
 
 When a content editor publishes a new blog post without tags, the function automatically:
 
-1. **Triggers** on the publish event for post documents without existing tags
+1. **Triggers** on create/update events when the 'content' field changes
 2. **Analyzes** the post's content field using AI
 3. **Retrieves** existing tags from other published posts for vocabulary consistency
 4. **Generates** 3 relevant tags, prioritizing reuse of existing tags when appropriate
@@ -184,5 +184,5 @@ target: {
 Modify the blueprint filter to target different content types:
 
 ```typescript
-filter: "_type == 'article' && !defined(keywords)"
+filter: "_type == 'article' && !defined(keywords) && delta::changedAny(content)"
 ```

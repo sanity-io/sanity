@@ -9,8 +9,9 @@ import {
 } from '@sanity/cli'
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import semver from 'semver'
+import {version} from 'vite'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
@@ -19,6 +20,7 @@ import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
 import {isInteractive} from '../../util/isInteractive'
 import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
 import {upgradePackages} from '../../util/packageManager/upgradePackages'
@@ -36,27 +38,22 @@ export interface StartDevServerCommandFlags {
 
 const debug = debugIt.extend('dev')
 
-const getDefaultCoreURL = ({
+const baseUrl =
+  process.env.SANITY_INTERNAL_ENV === 'staging' ? 'https://sanity.work' : 'https://sanity.io'
+
+const getDefaultDashboardURL = ({
   organizationId,
   url,
 }: {
   organizationId: string
   url: string
 }): string => {
-  const params = new URLSearchParams({
-    url,
-  })
-
-  return process.env.SANITY_INTERNAL_ENV === 'staging'
-    ? `https://sanity.work/@${organizationId}?${params.toString()}`
-    : `https://sanity.io/@${organizationId}?${params.toString()}`
+  return `${baseUrl}/@${organizationId}?${new URLSearchParams({
+    dev: url,
+  }).toString()}`
 }
 
-const getCoreApiURL = (): string => {
-  return process.env.SANITY_INTERNAL_ENV === 'staging' ? 'https://sanity.work' : 'https://sanity.io'
-}
-
-export const getCoreURL = async ({
+export const getDashboardURL = async ({
   fetchFn = globalThis.fetch,
   timeout = 5000,
   organizationId,
@@ -77,31 +74,31 @@ export const getCoreURL = async ({
     })
 
     const res = await fetchFn(
-      `${getCoreApiURL()}/api/dashboard/mode/development/resolve-url?${queryParams.toString()}`,
+      `${baseUrl}/api/dashboard/mode/development/resolve-url?${queryParams.toString()}`,
       {
         signal: abortController.signal,
       },
     )
 
     if (!res.ok) {
-      debug(`Failed to fetch core URL: ${res.statusText}`)
-      return getDefaultCoreURL({organizationId, url})
+      debug(`Failed to fetch dashboard URL: ${res.statusText}`)
+      return getDefaultDashboardURL({organizationId, url})
     }
 
     const body = await res.json()
     return body.url
   } catch (err) {
-    debug(`Failed to fetch core URL: ${err.message}`)
-    return getDefaultCoreURL({organizationId, url})
+    debug(`Failed to fetch dashboard URL: ${err.message}`)
+    return getDefaultDashboardURL({organizationId, url})
   } finally {
     clearTimeout(timer)
   }
 }
 
 /**
- * Gets the core URL from API or uses the default core URL
+ * Gets the dashboard URL from API or uses the default dashboard URL
  */
-export const getCoreAppURL = async ({
+export const getDashboardAppURL = async ({
   organizationId,
   httpHost = 'localhost',
   httpPort = 3333,
@@ -110,12 +107,12 @@ export const getCoreAppURL = async ({
   httpHost?: string
   httpPort?: number
 }): Promise<string> => {
-  const url = await getCoreURL({
+  const url = await getDashboardURL({
     organizationId,
     url: `http://${httpHost}:${httpPort}`,
   })
 
-  // <core-app-url>/<orgniazationId>?dev=<dev-server-url>
+  // <dashboard-app-url>/<orgniazationId>?dev=<dev-server-url>
   return url
 }
 
@@ -134,7 +131,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = await parseCliFlags(args)
-  const {output, apiClient, workDir, cliConfig, prompt, cliPackageManager} = context
+  const {output, apiClient, workDir, cliConfig, prompt, cliConfigPath} = context
 
   const {loadInDashboard} = flags
 
@@ -156,7 +153,7 @@ export default async function startSanityDevServer(
   }
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
-  const autoUpdatesImports = {}
+
   if (autoUpdatesEnabled) {
     // Get the clean version without build metadata: https://semver.org/#spec-item-10
     const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
@@ -168,12 +165,14 @@ export default async function startSanityDevServer(
       {name: 'sanity', version: cleanSanityVersion},
       {name: '@sanity/vision', version: cleanSanityVersion},
     ]
+    const appId = getAppId({cliConfig, output})
 
-    output.print(`${info} Running with auto-updates enabled`)
+    output.print(`${logSymbols.info} Running with auto-updates enabled`)
+
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
-      result = await compareDependencyVersions(sanityDependencies, workDir)
+      result = await compareDependencyVersions(sanityDependencies, workDir, {appId})
     } catch (err) {
       console.warn(
         new Error('Failed to compare local versions against auto-updating versions', {
@@ -259,7 +258,7 @@ export default async function startSanityDevServer(
       output.print(
         chalk.blue(
           chalk.underline(
-            await getCoreAppURL({
+            await getDashboardAppURL({
               organizationId,
               httpHost: config.httpHost,
               httpPort: config.httpPort,
@@ -274,7 +273,7 @@ export default async function startSanityDevServer(
 
       loggerInfo(
         `${appType} ` +
-          `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+          `using ${chalk.cyan(`vite@${version}`)} ` +
           `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
           `and running at ${chalk.cyan(url)}`,
       )

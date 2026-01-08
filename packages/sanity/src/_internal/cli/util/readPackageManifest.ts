@@ -31,7 +31,7 @@ export async function readPackageJson(filePath: string): Promise<PackageJson> {
   try {
     return JSON.parse(await readFile(filePath, 'utf8'))
   } catch (err) {
-    throw new Error(`Failed to read "${filePath}": ${err.message}`)
+    throw new Error(`Failed to read "${filePath}": ${err.message}`, {cause: err})
   }
 }
 /**
@@ -49,7 +49,7 @@ export async function readPackageManifest(
   try {
     manifest = {...defaults, ...(await readPackageJson(packageJsonPath))}
   } catch (err) {
-    throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`)
+    throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`, {cause: err})
   }
 
   if (!isPackageManifest(manifest)) {

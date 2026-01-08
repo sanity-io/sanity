@@ -1,10 +1,7 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
-import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {
   type CSSProperties,
   Fragment,
@@ -15,7 +12,9 @@ import {
 } from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
+import {TableLayout} from './TableLayout'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'
 
@@ -200,32 +199,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs, loading, rowId, rowProps],
   )
 
-  const emptyContent = useMemo(() => {
-    if (typeof emptyState === 'string') {
-      return (
-        <Card
-          borderBottom
-          display="flex"
-          padding={4}
-          as="tr"
-          style={{
-            justifyContent: 'center',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
-          <td colSpan={amalgamatedColumnDefs.length}>
-            <Text muted size={1}>
-              {emptyState}
-            </Text>
-          </td>
-        </Card>
-      )
-    }
-    return emptyState()
-  }, [amalgamatedColumnDefs.length, emptyState])
+  const emptyContent = useMemo(
+    () => <TableEmptyState emptyState={emptyState} colSpan={amalgamatedColumnDefs.length} />,
+    [amalgamatedColumnDefs.length, emptyState],
+  )
 
   const headers = useMemo(
     () =>
@@ -290,32 +267,29 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <div ref={virtualizerContainerRef}>
+    <div ref={virtualizerContainerRef} style={{height: '100%'}}>
       <div
         style={
           {
             'width': '100%',
+            'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
             '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
           } as CSSProperties
         }
       >
-        <Stack as="table">
-          <TableHeader
-            headers={headers}
-            searchDisabled={loading || (!searchTerm && !data.length)}
-          />
-          <Box
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              position: 'relative',
-            }}
-            as="tbody"
-          >
-            {tableContent()}
-          </Box>
-        </Stack>
+        <TableLayout
+          isEmptyState={filteredData.length === 0 && !loading}
+          header={
+            <TableHeader
+              headers={headers}
+              searchDisabled={loading || (!searchTerm && !data.length)}
+            />
+          }
+          content={tableContent()}
+          contentHeight={`${rowVirtualizer.getTotalSize()}px`}
+        />
       </div>
     </div>
   )

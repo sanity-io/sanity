@@ -81,8 +81,8 @@ npx sanity schema deploy
          memory: 2,
          timeout: 60,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post'",
+           on: ['create', 'update'],
+           filter: "_type == 'post' && delta::changedAny(content)",
            projection: '{_id}',
          },
        }),
@@ -171,8 +171,8 @@ export default defineBlueprint({
       memory: 2,
       timeout: 60,
       event: {
-        on: ['publish'],
-        filter: "_type == 'post'",
+        on: ['create', 'update'],
+        filter: "_type == 'post' && delta::changedAny(content)",
         projection: '{_id}',
       },
     }),
@@ -209,7 +209,7 @@ After deployment, you can verify your function is active by:
 - **Test thoroughly first** - Always test your function locally before deploying
 - **Avoid recursion** - When the `suggestedChanges` function runs, it writes changes to the same document's `suggestedChanges` field but **does not** publish the document. Be sure not to add `skipforcePublishedWrite: true,` to your index.ts's agent.action.generate function, as this will create an infinite loop
 - **Monitor AI usage** - Agent Actions have usage limits and costs. Visit Settings in your Manage console to learn more
-- **Use specific filters** - The current filter targets all posts. To avoid unnecessary executions, setup additional logic to trigger this function only when certain criteria is met
+- **Use specific filters** - The current filter targets posts where the content field has changed. This avoids unnecessary executions when only metadata or other fields are updated
 - **Check schema compatibility** - Make sure your `suggestedChanges` field exists in your schema
 - **Monitor performance** - This function uses AI processing and may have longer execution times
 
@@ -246,7 +246,7 @@ For more details, see the [official function deployment documentation](https://w
 
 ## Usage Example
 
-When you publish a post document, the function automatically:
+When you publish a post document and the content field changes, the function automatically:
 
 1. Analyzes the content field against the built-in brand style guide
 2. Generates specific, actionable suggestions for improvement
