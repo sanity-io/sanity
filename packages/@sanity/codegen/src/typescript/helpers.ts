@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import {CodeGenerator} from '@babel/generator'
 import * as t from '@babel/types'
+import {type ArrayTypeNode, type UnionTypeNode} from 'groq-js'
 
 import {RESERVED_IDENTIFIERS} from './constants'
 
@@ -56,4 +57,21 @@ export function weakMapMemo<TParam extends object, TReturn>(fn: (arg: TParam) =>
 
 export function generateCode(node: t.Node) {
   return `${new CodeGenerator(node).generate().code.trim()}\n\n`
+}
+
+export function getFilterArrayUnionType(
+  typeNode: ArrayTypeNode,
+  predicate: (unionTypeNode: UnionTypeNode['of'][number]) => boolean,
+): ArrayTypeNode {
+  if (typeNode.of.type !== 'union') {
+    return typeNode
+  }
+
+  return {
+    ...typeNode,
+    of: {
+      ...typeNode.of,
+      of: typeNode.of.of.filter(predicate),
+    },
+  } satisfies ArrayTypeNode<UnionTypeNode>
 }

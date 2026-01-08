@@ -243,6 +243,10 @@ test(generateAction.name, async () => {
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
+    type ArrayOf<T> = Array<T & {
+      _key: string;
+    }>;
+
     // Source: src/queries.ts
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
@@ -304,6 +308,12 @@ test(generateAction.name, async () => {
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
+    type ArrayOf<T> = Array<
+      T & {
+        _key: string;
+      }
+    >;
+
     // Source: src/queries.ts
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
@@ -342,7 +352,7 @@ test(generateAction.name, async () => {
         "configOverloadClientMethods": true,
         "emptyUnionTypeNodesGenerated": 0,
         "filesWithErrors": 1,
-        "outputSize": 823,
+        "outputSize": 874,
         "queriesCount": 2,
         "queryFilesCount": 1,
         "schemaTypesCount": 2,

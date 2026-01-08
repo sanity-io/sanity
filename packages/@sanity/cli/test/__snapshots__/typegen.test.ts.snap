@@ -36,6 +36,12 @@ export type AllSanitySchemaTypes = Person | Slug;
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
+type ArrayOf<T> = Array<
+  T & {
+    _key: string;
+  }
+>;
+
 // Source: src/queries.ts
 // Variable: PAGE_QUERY
 // Query: *[_type == "page" && slug.current == $slug][0]
@@ -78,6 +84,12 @@ export type Slug = {
 export type AllSanitySchemaTypes = Person | Slug;
 
 export declare const internalGroqTypeReferenceTo: unique symbol;
+
+type ArrayOf<T> = Array<
+  T & {
+    _key: string;
+  }
+>;
 
 // Source: src/queries.ts
 // Variable: PAGE_QUERY
