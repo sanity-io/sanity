@@ -3,7 +3,6 @@ packages:
   - perf/*
   - examples/*
   - examples/studios/*
-  - examples/functions/*
   - scripts
   - e2e
   - packages/@repo/*
