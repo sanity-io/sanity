@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/experimental-ct-react'
-import React from 'react'
-import {Page} from '@playwright/test'
+import {type Page} from '@playwright/test'
+
 import {testHelpers} from '../../../utils/testHelpers'
 import NestedInputStory from './NestedInputStory'
 
