@@ -73,7 +73,7 @@ export function documentTypesTruncated({
 }: {
   availableCharacters?: number
   types: SchemaType[]
-  t: TFunction<'studio', undefined>
+  t: TFunction<'studio'>
 }): string {
   if (types.length === 0) {
     return t('search.document-type-list-all-types')

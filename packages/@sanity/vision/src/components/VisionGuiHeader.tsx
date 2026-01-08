@@ -87,7 +87,7 @@ export function VisionGuiHeader({
     try {
       el.select()
       document.execCommand('copy')
-    } catch (err) {
+    } catch {
       console.error('Unable to copy to clipboard :(')
     }
   }, [])

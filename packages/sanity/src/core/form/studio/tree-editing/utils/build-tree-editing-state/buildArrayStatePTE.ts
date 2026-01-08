@@ -8,7 +8,6 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
 } from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 
@@ -29,7 +28,7 @@ import {
 
 interface BuildArrayStatePTEProps {
   /** The child field that is a portable text editor */
-  childField: ObjectField<SchemaType>
+  childField: ObjectField
   /** The child path to the portable text field */
   childPath: Path
   /** The value of the portable text field */

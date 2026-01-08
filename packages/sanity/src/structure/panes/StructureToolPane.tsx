@@ -90,9 +90,7 @@ export const StructureToolPane = memo(
     if (!isEqual(prevParams, nextParams)) return false
     if (!isEqual(prevPayload, nextPayload)) return false
 
-    const keys = new Set([...Object.keys(prev), ...Object.keys(next)]) as Set<
-      keyof typeof next | keyof typeof prev
-    >
+    const keys = new Set([...Object.keys(prev), ...Object.keys(next)]) as Set<keyof typeof next>
 
     // then shallow equal the rest
     for (const key of keys) {

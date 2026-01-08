@@ -205,7 +205,7 @@ async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
     try {
       const content = await fs.readFile(configPath, 'utf-8')
       existingConfig = JSON.parse(content)
-    } catch (error) {
+    } catch {
       debug(`Warning: Could not parse ${configPath}. Creating new config.`)
       // Use empty config (will overwrite)
     }

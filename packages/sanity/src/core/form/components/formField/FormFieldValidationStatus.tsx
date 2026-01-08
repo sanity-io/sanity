@@ -27,7 +27,7 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number | number
+  fontSize?: number
   placement?: Placement
 }
 

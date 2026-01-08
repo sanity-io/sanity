@@ -112,7 +112,7 @@ function InlineObjectWithDiff({
   }, [focusPath, isEditing, onSetFocus])
 
   const handleOpenPopup = useCallback(
-    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {
