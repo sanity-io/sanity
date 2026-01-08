@@ -30,7 +30,9 @@
     "*.css",
     "*.snap",
     "*.md",
-    "packages/@sanity/cli/templates/**/*"
+    "packages/@sanity/cli/templates/**/*",
+    "dev/test-studio/sanity.theme.mjs",
+    "dev/test-studio/workshop/scopes.js"
   ],
   "categories": {
     "correctness": "error",
@@ -234,7 +236,6 @@
     {
       // From dev/test-studio/.oxlintrc.json
       "files": ["dev/test-studio/**/*"],
-      "ignorePatterns": ["sanity.theme.mjs", "workshop/scopes.js"],
       "rules": {
         "eslint/no-console": "off",
         "no-explicit-any": "off",

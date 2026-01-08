@@ -25,7 +25,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Oxlint files
-        run: pnpm turbo run check:oxlint -- --disable-nested-configs --format github
+        run: pnpm turbo run check:oxlint -- --disable-nested-config --format github
 
       - name: ESLint files
         run: pnpm turbo run lint --affected --output-logs=full --continue -- -f gha
