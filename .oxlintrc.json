@@ -223,6 +223,52 @@
       "rules": {
         "oxc/no-this-in-exported-function": "off"
       }
+    },
+    {
+      // From e2e/.oxlintrc.json
+      "files": ["e2e/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
+      // From dev/test-studio/.oxlintrc.json
+      "files": ["dev/test-studio/**/*"],
+      "ignorePatterns": ["sanity.theme.mjs", "workshop/scopes.js"],
+      "rules": {
+        "eslint/no-console": "off",
+        "no-explicit-any": "off",
+        "jsx_a11y/iframe-has-title": "off",
+        "react/iframe-missing-sandbox": "off",
+        "unicorn/prefer-array-find": "off",
+        "no-restricted-globals": "off",
+        "import/no-commonjs": "off"
+      }
+    },
+    {
+      // From dev/design-studio/.oxlintrc.json
+      "files": ["dev/design-studio/**/*"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      // From packages/@repo/test-dts-exports/.oxlintrc.json
+      "files": ["packages/@repo/test-dts-exports/**/*"],
+      "rules": {
+        "no-console": "off",
+        "no-await-in-loop": "off",
+        "no-explicit-any": "off",
+        "no-unused-vars": "error",
+        "no-unnecessary-type-arguments": "off"
+      }
+    },
+    {
+      // From packages/@repo/bundle-manager/.oxlintrc.json
+      "files": ["packages/@repo/bundle-manager/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
     }
   ]
 }
