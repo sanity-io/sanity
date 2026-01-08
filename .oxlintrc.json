@@ -234,14 +234,12 @@
       }
     },
     {
-      // From e2e/.oxlintrc.json
       "files": ["e2e/**/*"],
       "rules": {
         "eslint/no-console": "off"
       }
     },
     {
-      // From dev/test-studio/.oxlintrc.json
       "files": ["dev/test-studio/**/*"],
       "rules": {
         "eslint/no-console": "off",
@@ -254,14 +252,12 @@
       }
     },
     {
-      // From dev/design-studio/.oxlintrc.json
       "files": ["dev/design-studio/**/*"],
       "rules": {
         "typescript/no-explicit-any": "off"
       }
     },
     {
-      // From packages/@repo/test-dts-exports/.oxlintrc.json
       "files": ["packages/@repo/test-dts-exports/**/*"],
       "rules": {
         "no-console": "off",
@@ -272,7 +268,6 @@
       }
     },
     {
-      // From packages/@repo/bundle-manager/.oxlintrc.json
       "files": ["packages/@repo/bundle-manager/**/*"],
       "rules": {
         "eslint/no-console": "off"
