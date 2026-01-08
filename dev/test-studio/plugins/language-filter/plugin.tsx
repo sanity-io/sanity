@@ -1,6 +1,6 @@
 import {
-  type DocumentLanguageFilterComponent,
   definePlugin,
+  type DocumentLanguageFilterComponent,
   type InputProps,
   type ObjectInputProps,
 } from 'sanity'
