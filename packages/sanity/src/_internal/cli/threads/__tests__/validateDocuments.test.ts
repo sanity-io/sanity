@@ -7,7 +7,6 @@ import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
-import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
@@ -204,10 +203,7 @@ describe('validateDocuments', () => {
 
     const worker = new Worker(
       `
-        const moduleAlias = require('module-alias')
         const { register } = require('esbuild-register/dist/node')
-
-        moduleAlias.addAliases(${JSON.stringify(await getMonorepoAliases(path.resolve(__dirname, '../../../../../../..')))})
 
         const { unregister } = register({
           target: 'node18',
