@@ -89,7 +89,14 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const [isPickerOpen, setPickerOpen] = useState(false)
 
   useClickOutsideEvent(
-    () => setPickerOpen(false),
+    () => {
+      // Don't close calendar if timezone dialog is open
+      const timeZoneDialog = document.querySelector('[id="time-zone"]')
+      if (timeZoneDialog) {
+        return
+      }
+      setPickerOpen(false)
+    },
     () => [popoverRef.current],
   )
 
@@ -142,12 +149,12 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
           // see https://github.com/sanity-io/design/issues/519
           <LayerProvider zOffset={1000}>
             <Popover
-              constrainSize={constrainSize}
+              constrainSize={false}
               data-testid="date-input-dialog"
               referenceElement={referenceElement}
               portal
               content={
-                <Box overflow="auto">
+                <Box overflow="visible">
                   <FocusLock onDeactivation={handleDeactivation}>
                     {isDateInPastWarningShown && (
                       <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
