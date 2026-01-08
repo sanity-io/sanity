@@ -222,10 +222,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
+    const scheduledCardinalityOneRelease = filteredReleases.currentReleases.find(
+      (release) => isCardinalityOneRelease(release) && isReleaseScheduledOrScheduling(release),
+    )
     const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
-    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases && displayedIsDraft) {
-      return <ScheduledDraftOverrideBanner />
+
+    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
+      return (
+        <ScheduledDraftOverrideBanner
+          releaseId={scheduledCardinalityOneRelease._id}
+          draftDocument={displayed}
+        />
+      )
     }
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
