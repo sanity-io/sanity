@@ -1,47 +1,7 @@
 {
   "extends": "./tsconfig.settings.json",
-  "include": [
-    "./package.json",
-    "./playwright-ct",
-    "./scripts",
-    "./src",
-    "./test",
-    "./typings",
-    "./node_modules/@sanity/diff/src",
-    "./node_modules/@sanity/cli/src",
-    "./node_modules/@sanity/cli/typings/deepSortObject.d.ts",
-    "./node_modules/@sanity/codegen/src",
-    "./node_modules/@sanity/mutator/src",
-    "./node_modules/@sanity/schema/src",
-    "./node_modules/@sanity/schema/typings",
-    "./node_modules/@sanity/types/src",
-    "./node_modules/@sanity/util/src",
-    "./node_modules/groq/src"
-  ],
-  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
+  "include": ["./package.json", "./playwright-ct", "./scripts", "./src", "./test", "./typings"],
   "compilerOptions": {
-    "paths": {
-      "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
-      "@sanity/cli": ["./node_modules/@sanity/cli/src/index.ts"],
-      "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],
-      "@sanity/mutator": ["./node_modules/@sanity/mutator/src/index.ts"],
-      "@sanity/schema/*": ["./node_modules/@sanity/schema/src/_exports/*"],
-      "@sanity/schema": ["./node_modules/@sanity/schema/src/_exports/index.ts"],
-      "@sanity/types": ["./node_modules/@sanity/types/src/index.ts"],
-      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
-      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"],
-      "groq": ["./node_modules/groq/src/groq.ts"],
-      "sanity/_internal": ["./src/_exports/_internal.ts"],
-      "sanity/_singletons": ["./src/_exports/_singletons.ts"],
-      "sanity/_createContext": ["./src/_exports/_createContext.ts"],
-      "sanity/cli": ["./src/_exports/cli.ts"],
-      "sanity/desk": ["./src/_exports/desk.ts"],
-      "sanity/media-library": ["./src/_exports/media-library.ts"],
-      "sanity/migrate": ["./src/_exports/migrate.ts"],
-      "sanity/presentation": ["./src/_exports/presentation.ts"],
-      "sanity/router": ["./src/_exports/router.ts"],
-      "sanity/structure": ["./src/_exports/structure.ts"],
-      "sanity": ["./src/_exports/index.ts"]
-    }
+    "customConditions": ["development"]
   }
 }

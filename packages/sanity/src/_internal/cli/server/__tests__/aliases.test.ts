@@ -18,6 +18,7 @@ const sanityPkgPath = path.resolve(__dirname, '../../../../../package.json')
 
 const pkg = await import(sanityPkgPath)
 
+// @TODO why is mocking necessary?
 vi.mock(import('resolve.exports'), async (importOriginal) => {
   const actual = await importOriginal()
   return {
