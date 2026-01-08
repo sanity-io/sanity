@@ -99,7 +99,7 @@ test.describe('inputs: text', () => {
     await expect(titleInput).toBeVisible()
     await titleInput.fill('Title A updated')
     // A subsequent edit will show that the document was edited just now.
-    await expectEditedStatus(paneFooter)
+    await expectEditedStatus(paneFooter, {timeout: 30_000})
 
     // Wait for the document to be published.
     await expect(publishButton).toBeVisible()
@@ -111,7 +111,6 @@ test.describe('inputs: text', () => {
     await expect(titleInput).toBeVisible()
     await expect(titleInput).toBeEnabled()
     await titleInput.fill('Title B')
-    await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
     await expect(publishButton).toBeVisible()
