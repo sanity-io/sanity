@@ -17,7 +17,7 @@ export default {
       type: 'slug',
       readOnly: true,
       options: {
-        source: (document) => document.title,
+        source: (document: {title?: string}) => document.title,
         maxLength: 96,
       },
     },
@@ -275,7 +275,7 @@ export default {
               title: 'title',
               name: 'name',
             },
-            prepare({title, name}) {
+            prepare({title, name}: {title?: string; name?: string}) {
               return {
                 title: title,
                 media: () => (
