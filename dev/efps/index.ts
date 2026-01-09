@@ -17,7 +17,7 @@ import {hideBin} from 'yargs/helpers'
 
 import {exec} from './helpers/exec'
 import {readEnvVar} from './readEnvVar'
-import {runTest} from './runTest'
+import {createBrowser, runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
 import singleString from './tests/singleString/singleString'
@@ -145,77 +145,105 @@ const testResults: Array<{
 }> = []
 
 async function runAbTest(test: EfpsTest) {
-  let referenceResults: EfpsResult[] | undefined
-  let experimentResults: EfpsResult[] | undefined
-
   const referenceStudioClient = createClient({
     ...referenceConfig,
     token: referenceToken,
     useCdn: false,
     apiVersion: 'v2024-08-08',
   })
-  referenceResults = undefined
-  experimentResults = undefined
-  for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
-    const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
 
-    spinner.info(`Using studio URL: ${REFERENCE_STUDIO_URL}`)
-    const referenceMessage = `Running test '${test.name}' on \`main\`${attemptMessage}`
-    spinner.start(referenceMessage)
+  const experimentStudioClient = createClient({
+    ...experimentConfig,
+    token: experimentToken,
+    useCdn: false,
+    apiVersion: 'v2024-08-08',
+  })
 
-    referenceResults = mergeResults(
-      referenceResults,
-      await runTest({
-        key: 'reference',
-        test,
-        resultsDir,
-        client: referenceStudioClient,
-        headless: HEADLESS,
-        recordVideo: RECORD_VIDEO,
-        enableProfiler: ENABLE_PROFILER,
-        studioUrl: REFERENCE_STUDIO_URL,
-        log: (message) => {
-          spinner.text = `${referenceMessage}: ${message}`
-        },
-      }),
+  // Create reusable browsers for each branch
+  spinner.start(`Launching browsers for test '${test.name}'...`)
+  const [referenceBrowser, experimentBrowser] = await Promise.all([
+    createBrowser(HEADLESS),
+    createBrowser(HEADLESS),
+  ])
+  spinner.succeed(`Browsers launched for test '${test.name}'`)
+
+  let referenceResults: EfpsResult[] | undefined
+  let experimentResults: EfpsResult[] | undefined
+
+  try {
+    // Run all attempts in parallel for both reference and experiment
+    const runAllAttempts = async (
+      key: 'reference' | 'experiment',
+      client: typeof referenceStudioClient,
+      studioUrl: string,
+      browser: typeof referenceBrowser,
+      branchLabel: string,
+    ) => {
+      let results: EfpsResult[] | undefined
+
+      // Run attempts sequentially to get stable measurements, but both branches run in parallel
+      for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
+        const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
+        const message = `Running test '${test.name}' on ${branchLabel}${attemptMessage}`
+
+        // Note: We can't use spinner here since both branches run in parallel
+        // but the individual test logs will still work
+        results = mergeResults(
+          results,
+          await runTest({
+            browser,
+            key: `${key}-attempt-${attempt}`,
+            test,
+            resultsDir,
+            client,
+            headless: HEADLESS,
+            recordVideo: RECORD_VIDEO,
+            enableProfiler: ENABLE_PROFILER,
+            studioUrl,
+            log: () => {
+              // Suppress logs during parallel execution to avoid interleaving
+            },
+          }),
+        )
+        spinner.succeed(`${message}`)
+      }
+
+      return results!
+    }
+
+    spinner.info(
+      `Running test '${test.name}' (${TEST_ATTEMPTS} attempts each, reference and experiment in parallel)`,
     )
-    spinner.succeed(
-      `Ran test '${test.name}' on reference studio (${REFERENCE_STUDIO_URL})${attemptMessage}`,
-    )
 
-    const experimentStudioClient = createClient({
-      ...experimentConfig,
-      token: experimentToken,
-      useCdn: false,
-      apiVersion: 'v2024-08-08',
-    })
+    // Run reference and experiment in parallel - this is the main speedup!
+    const [refResults, expResults] = await Promise.all([
+      runAllAttempts(
+        'reference',
+        referenceStudioClient,
+        REFERENCE_STUDIO_URL,
+        referenceBrowser,
+        '`main`',
+      ),
+      runAllAttempts(
+        'experiment',
+        experimentStudioClient,
+        EXPERIMENT_STUDIO_URL,
+        experimentBrowser,
+        'this branch',
+      ),
+    ])
 
-    spinner.info(`Using studio URL: ${EXPERIMENT_STUDIO_URL}`)
-    const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
-    spinner.start(experimentMessage)
-    experimentResults = mergeResults(
-      experimentResults,
-      await runTest({
-        key: 'experiment',
-        test,
-        resultsDir,
-        client: experimentStudioClient,
-        headless: HEADLESS,
-        recordVideo: RECORD_VIDEO,
-        enableProfiler: ENABLE_PROFILER,
-        studioUrl: EXPERIMENT_STUDIO_URL,
-        log: (message) => {
-          spinner.text = `${experimentMessage}: ${message}`
-        },
-      }),
-    )
-    spinner.succeed(`Ran test '${test.name}' on this branch${attemptMessage}`)
+    referenceResults = refResults
+    experimentResults = expResults
+  } finally {
+    // Clean up browsers
+    await Promise.all([referenceBrowser.close(), experimentBrowser.close()])
   }
 
-  return experimentResults!.map(
+  return experimentResults.map(
     (experimentResult, index): EfpsAbResult => ({
       experiment: experimentResult,
-      reference: referenceResults![index],
+      reference: referenceResults[index],
     }),
   )
 }
