@@ -326,6 +326,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",
+    "tsx": "^4.21.0",
     "vitest": "catalog:",
     "vitest-package-exports": "^1.1.2"
   },

@@ -199,24 +199,11 @@ describe('validateDocuments', () => {
       studioHost: localhost,
     }
 
-    const filepath = fileURLToPath(new URL('../validateDocuments.ts', import.meta.url))
-
-    const worker = new Worker(
-      `
-        const { register } = require('esbuild-register/dist/node')
-
-        const { unregister } = register({
-          target: 'node18',
-          format: 'cjs',
-          extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
-          jsx: 'automatic',
-        })
-
-        require(${JSON.stringify(filepath)})
-
-      `,
-      {eval: true, env: {...process.env, API_HOST: localhost}, workerData},
-    )
+    const worker = new Worker(new URL('../validateDocuments.ts', import.meta.url), {
+      execArgv: ['--import', 'tsx'],
+      env: {...process.env, API_HOST: localhost},
+      workerData,
+    })
 
     receiver = createReceiver<ValidationWorkerChannel>(worker)
   })
