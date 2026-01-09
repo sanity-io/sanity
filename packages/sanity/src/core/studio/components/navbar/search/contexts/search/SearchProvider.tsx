@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 

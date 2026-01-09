@@ -8,7 +8,7 @@ import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
-import {unstable_useValuePreview as useValuePreview} from '../../../../../../../preview/useValuePreview'
+import {useValuePreview} from '../../../../../../../preview/useValuePreview'
 import {
   type PermissionCheckResult,
   useDocumentPresence,

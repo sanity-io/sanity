@@ -48,7 +48,7 @@ export interface CommentInputProps {
   onDiscardCancel?: () => void
   onDiscardConfirm: () => void
   onFocus?: (e: FormEvent<HTMLDivElement>) => void
-  onKeyDown?: (e: KeyboardEvent<Element>) => void
+  onKeyDown?: (e: KeyboardEvent) => void
   onMentionMenuOpenChange?: (open: boolean) => void
   onSubmit?: () => void
   placeholder?: ReactNode

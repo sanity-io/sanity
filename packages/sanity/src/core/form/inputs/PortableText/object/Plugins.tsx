@@ -41,7 +41,6 @@ export const PortableTextEditorPlugins = (props: {
           config: markdownConfig,
         },
         typography: {
-          enabled: false,
           guard: createDecoratorGuard({
             decorators: ({context}) =>
               context.schema.decorators.flatMap((decorator) =>

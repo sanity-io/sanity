@@ -46,15 +46,22 @@ test(`deleted document shows the right name from last revision`, async ({
 }) => {
   test.slow()
   const documentName = 'John Doe'
+  const publishButton = page.getByTestId('action-publish')
+  const paneFooter = page.getByTestId('pane-footer-document-status')
 
   await createDraftDocument('/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(documentName)
+  await expectCreatedStatus(paneFooter)
 
   // Save the current URL before deletion
   const documentUrl = page.url()
 
   // Verify the name is displayed correctly before deletion
   await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+
+  // Publish the document, to allow deletion
+  await publishButton.click()
+  await expectPublishedStatus(paneFooter)
 
   // Delete the document
   await page.getByTestId('action-menu-button').click()

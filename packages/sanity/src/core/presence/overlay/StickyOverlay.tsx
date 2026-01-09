@@ -1,4 +1,4 @@
-import {flatten, groupBy, orderBy, sortBy} from 'lodash'
+import {flatten, groupBy, orderBy, sortBy} from 'lodash-es'
 import {
   type CSSProperties,
   Fragment,

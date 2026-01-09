@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -131,7 +131,7 @@ describe('FormBuilder', () => {
       </TestProvider>,
     )
 
-    const titleField = await result.findByTestId('field-title')
+    const titleField = await screen.findByTestId('field-title')
 
     expect(removeClasses(titleField.outerHTML)).toMatchSnapshot()
   })
@@ -228,7 +228,7 @@ describe('FormBuilder', () => {
       </TestProvider>,
     )
 
-    const titleField = await result.findByTestId('field-title')
+    const titleField = await screen.findByTestId('field-title')
 
     expect(removeClasses(titleField.outerHTML)).toMatchSnapshot()
   })

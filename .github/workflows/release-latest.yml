@@ -29,16 +29,11 @@ jobs:
     outputs:
       version: ${{ steps.release-as.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
 
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -66,7 +61,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -100,16 +95,10 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -143,16 +132,10 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -168,7 +151,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
       - name: Build bundles for production
         run: pnpm run build:bundle
@@ -178,7 +163,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
   notify-on-failure:
     needs: [npm-publish, bundle-upload]

@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 import {useCallback} from 'react'
 import {catchError, EMPTY, map, of, type OperatorFunction, tap} from 'rxjs'
 

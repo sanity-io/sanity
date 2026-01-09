@@ -40,6 +40,81 @@ const myStringType = defineField({
   fields: [{type: 'string', name: 'mystring', validation: (Rule) => Rule.required()}],
 })
 
+const bodyMembers = [
+  defineArrayMember({
+    type: 'block',
+    marks: {
+      annotations: [linkType, myStringType],
+    },
+    of: [
+      {type: 'image', name: 'image'},
+      myStringType,
+      {
+        type: 'reference',
+        name: 'strongAuthorRef',
+        title: 'A strong author ref',
+        to: {type: 'author'},
+      },
+    ],
+    validation: (Rule) =>
+      Rule.custom((block) => {
+        const text = extractTextFromBlocks([block])
+        return text.length === 1 ? 'Please write a longer paragraph.' : true
+      }),
+    options: {
+      spellCheck: true,
+    },
+  }),
+  {
+    type: 'image',
+    name: 'image',
+    options: {
+      modal: {
+        // The default `type` of object blocks is 'dialog'
+        // type: 'dialog',
+        // The default `width` of object blocks is 'medium'
+        // width: 'small',
+      },
+    },
+  },
+  {
+    type: 'object',
+    name: 'callout',
+    title: 'Callout',
+    components: {
+      preview: CalloutPreview,
+    },
+    fields: [
+      {
+        type: 'string',
+        name: 'title',
+        title: 'Title',
+      },
+      {
+        type: 'string',
+        name: 'tone',
+        title: 'Tone',
+        options: {
+          list: [
+            {value: 'default', title: 'Default'},
+            {value: 'primary', title: 'Primary'},
+            {value: 'positive', title: 'Positive'},
+            {value: 'caution', title: 'Caution'},
+            {value: 'critical', title: 'Critical'},
+          ],
+        },
+      },
+    ],
+    preview: {
+      select: {
+        title: 'title',
+        tone: 'tone',
+      },
+    },
+  },
+  myStringType,
+]
+
 const createBodyField = (title, name, size = 1) => {
   const fields = []
   for (let i = 1; i <= size; i++) {
@@ -48,80 +123,7 @@ const createBodyField = (title, name, size = 1) => {
         name: `${name}${i}`,
         title: title,
         type: 'array',
-        of: [
-          defineArrayMember({
-            type: 'block',
-            marks: {
-              annotations: [linkType, myStringType],
-            },
-            of: [
-              {type: 'image', name: 'image'},
-              myStringType,
-              {
-                type: 'reference',
-                name: 'strongAuthorRef',
-                title: 'A strong author ref',
-                to: {type: 'author'},
-              },
-            ],
-            validation: (Rule) =>
-              Rule.custom((block) => {
-                const text = extractTextFromBlocks([block])
-                return text.length === 1 ? 'Please write a longer paragraph.' : true
-              }),
-            options: {
-              spellCheck: true,
-            },
-          }),
-          {
-            type: 'image',
-            name: 'image',
-            options: {
-              modal: {
-                // The default `type` of object blocks is 'dialog'
-                // type: 'dialog',
-                // The default `width` of object blocks is 'medium'
-                // width: 'small',
-              },
-            },
-          },
-          {
-            type: 'object',
-            name: 'callout',
-            title: 'Callout',
-            components: {
-              preview: CalloutPreview,
-            },
-            fields: [
-              {
-                type: 'string',
-                name: 'title',
-                title: 'Title',
-              },
-              {
-                type: 'string',
-                name: 'tone',
-                title: 'Tone',
-                options: {
-                  list: [
-                    {value: 'default', title: 'Default'},
-                    {value: 'primary', title: 'Primary'},
-                    {value: 'positive', title: 'Positive'},
-                    {value: 'caution', title: 'Caution'},
-                    {value: 'critical', title: 'Critical'},
-                  ],
-                },
-              },
-            ],
-            preview: {
-              select: {
-                title: 'title',
-                tone: 'tone',
-              },
-            },
-          },
-          myStringType,
-        ],
+        of: bodyMembers,
       }),
     )
   }

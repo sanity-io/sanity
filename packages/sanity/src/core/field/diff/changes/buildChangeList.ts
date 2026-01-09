@@ -69,9 +69,7 @@ export function buildObjectChangeList(
     if (fieldSet.single) {
       changes.push(...buildFieldChange(fieldSet.field, diff, path, titlePath, childContext))
     } else {
-      changes.push(
-        ...buildFieldsetChangeList(fieldSet as MultiFieldSet, diff, path, titlePath, childContext),
-      )
+      changes.push(...buildFieldsetChangeList(fieldSet, diff, path, titlePath, childContext))
     }
   }
 

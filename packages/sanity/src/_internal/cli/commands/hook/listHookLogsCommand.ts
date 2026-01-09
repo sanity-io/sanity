@@ -1,7 +1,7 @@
 import {inspect} from 'node:util'
 
 import {type CliCommandContext, type CliCommandDefinition} from '@sanity/cli'
-import {groupBy} from 'lodash'
+import {groupBy} from 'lodash-es'
 
 import {formatFailure} from './printHookAttemptCommand'
 import {type DeliveryAttempt, type Hook, type HookMessage} from './types'

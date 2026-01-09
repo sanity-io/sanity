@@ -2,6 +2,7 @@ export interface CompanionDoc {
   _id: string
   canvasDocumentId: string
   studioDocumentId: string
+  isStudioDocumentEditable?: boolean
 }
 
 export interface CanvasDiff {

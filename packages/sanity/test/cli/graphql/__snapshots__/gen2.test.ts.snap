@@ -4223,6 +4223,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -4277,6 +4282,11 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -4318,6 +4328,10 @@ exports[`GraphQL - Generation 2 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",

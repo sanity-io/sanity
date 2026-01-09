@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {orderBy} from 'lodash'
+import {orderBy} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsContext} from 'sanity/_singletons'
 

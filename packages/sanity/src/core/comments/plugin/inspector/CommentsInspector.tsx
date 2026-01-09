@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 import {type DocumentInspectorProps} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
+import {useAddonDataset} from '../../../studio/addonDataset'
 import {
   CommentDeleteDialog,
   CommentsList,
@@ -31,6 +32,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
+import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
@@ -90,7 +92,7 @@ function CommentsInspectorInner(
     onPathOpen,
   } = useComments()
   const commentIdParamRef = useRef<string | undefined>(selectedCommentId)
-
+  const {error: addonDatasetError} = useAddonDataset()
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
@@ -337,7 +339,7 @@ function CommentsInspectorInner(
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
     const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
-    if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+    if (!loading && commentToScrollTo && !didScrollToCommentFromParam.current) {
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
@@ -417,7 +419,7 @@ function CommentsInspectorInner(
             mode={mode}
           />
         </CommentsOnboardingPopover>
-
+        {addonDatasetError && <CommentsInspectorError error={addonDatasetError} />}
         {currentUser && (
           <CommentsList
             beforeListNode={beforeListNode}

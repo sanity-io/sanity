@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major ([#11641](https://github.com/sanity-io/sanity/issues/11641)) ([6f25f33](https://github.com/sanity-io/sanity/commit/6f25f33cfe282c00d5212435da58ebb78722fe27)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11673](https://github.com/sanity-io/sanity/issues/11673)) ([54c30a6](https://github.com/sanity-io/sanity/commit/54c30a65e5c9867753dc236e6f95bb7fd46c249c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package test-create-integration-studio
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+**Note:** Version bump only for package test-create-integration-studio
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 **Note:** Version bump only for package test-create-integration-studio

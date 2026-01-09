@@ -278,7 +278,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     documentId,
     initialValue: initialValue,
     comparisonValue: getComparisonValue,
-    releaseId: selectedReleaseId,
+    releaseId: selectedPerspectiveName,
     selectedPerspectiveName,
     initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
     readOnly: getIsReadOnly,
@@ -289,7 +289,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const {data: releases = []} = useActiveReleases()
 
-  const actionsPerspective = useMemo(
+  const actionsVersionType = useMemo(
     () =>
       getDocumentVersionType(
         params,
@@ -302,20 +302,20 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [params, selectedReleaseId, value, selectedPerspectiveName, draftsEnabled, releases],
   )
 
-  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
+  const documentActionsContext: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
       schemaType: documentType,
       documentId,
-      versionType: actionsPerspective,
+      versionType: actionsVersionType,
       releaseId: selectedReleaseId,
     }),
-    [documentType, documentId, actionsPerspective, selectedReleaseId],
+    [documentType, documentId, actionsVersionType, selectedReleaseId],
   )
 
   // Resolve document actions
   const actions = useMemo(
-    () => documentActions(documentActionsProps),
-    [documentActions, documentActionsProps],
+    () => documentActions(documentActionsContext),
+    [documentActions, documentActionsContext],
   )
 
   const handlePathOpen = useCallback(
@@ -508,7 +508,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
-  const revisionNotFound = onOlderRevision && !revisionDocument
+  const revisionNotFound = onOlderRevision && !revisionDocument && ready
 
   const currentDisplayed = useMemo(() => {
     if (editState.version && isGoingToUnpublish(editState.version)) {

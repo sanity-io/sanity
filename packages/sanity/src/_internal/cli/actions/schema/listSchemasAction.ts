@@ -1,6 +1,6 @@
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
-import {sortBy} from 'lodash'
+import {sortBy} from 'lodash-es'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type CreateManifest, type StoredWorkspaceSchema} from '../../../manifest/manifestTypes'

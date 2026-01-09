@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto'
 import {mkdir, writeFile} from 'node:fs/promises'
 import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -16,7 +17,7 @@ import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
 
-const __dirname = dirname(new URL(import.meta.url).pathname)
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'

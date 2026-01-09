@@ -1,9 +1,9 @@
 import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
+import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
-import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {visionTool} from '@sanity/vision'
 import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
@@ -274,6 +274,17 @@ export default defineConfig([
     title: 'Test Studio (US)',
     dataset: 'test-us',
     basePath: '/us',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'no-releases',
+    title: 'No releases',
+    dataset: 'no-releases',
+    basePath: '/no-releases',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
   },
   {
     ...defaultWorkspace,

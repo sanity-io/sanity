@@ -24,8 +24,10 @@ import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT, HotspotImage, ImageTool} from './imagetool'
 import {useLoadImage} from './useLoadImage'
 
-export interface ImageToolInputProps
-  extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers' | 'renderDefault'> {
+export interface ImageToolInputProps extends Omit<
+  ObjectInputProps<Image, ImageSchemaType>,
+  'markers' | 'renderDefault'
+> {
   imageUrl: string
 }
 

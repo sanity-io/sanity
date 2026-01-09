@@ -68,5 +68,10 @@ export function generateMetafile(schema: SeralizedSchemaDebug): Metafile {
     processType(fakePath, entry)
   }
 
+  for (const [name, entry] of Object.entries(schema.hoisted)) {
+    const fakePath = `hoisted/${name}`
+    processType(fakePath, entry)
+  }
+
   return {outputs: {root: output}, inputs}
 }

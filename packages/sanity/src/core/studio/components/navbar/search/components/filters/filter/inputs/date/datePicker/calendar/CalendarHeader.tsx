@@ -1,6 +1,6 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Flex, Inline, Text} from '@sanity/ui'
-import {upperFirst} from 'lodash'
+import {upperFirst} from 'lodash-es'
 import {useCallback} from 'react'
 
 import {Button} from '../../../../../../../../../../../../ui-components'

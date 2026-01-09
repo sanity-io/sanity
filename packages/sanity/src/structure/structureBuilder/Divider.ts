@@ -1,4 +1,4 @@
-import {uniqueId} from 'lodash'
+import {uniqueId} from 'lodash-es'
 import {type I18nTextRecord} from 'sanity'
 
 import {type Divider, type Serializable} from './StructureNodes'

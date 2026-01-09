@@ -3,7 +3,7 @@
  * Copyright (c) Project Nayuki.
  * SPDX-License-Identifier: MIT
  */
-/* eslint-disable no-negated-condition,unicorn/prefer-string-slice,no-param-reassign,no-bitwise,max-params */
+/* eslint-disable unicorn/prefer-string-slice,no-param-reassign,no-bitwise,max-params */
 
 type bit = number
 type byte = number
@@ -610,7 +610,7 @@ export class QrCode {
       z ^= ((y >>> i) & 1) * x
     }
     assert(z >>> 8 == 0)
-    return z as byte
+    return z
   }
 
   // Can only be called immediately after a light run is added, and

@@ -1,5 +1,5 @@
 import humanizeList from 'humanize-list'
-import {flatten, partition} from 'lodash'
+import {flatten, partition} from 'lodash-es'
 
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'

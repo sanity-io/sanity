@@ -10,7 +10,7 @@ import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
 export const scheduledDraftsOverviewColumnDefs: (
-  t: TFunction<'releases', undefined>,
+  t: TFunction<'releases'>,
   releaseGroupMode: Mode,
 ) => Column<TableRelease>[] = (t, releaseGroupMode) => {
   return [

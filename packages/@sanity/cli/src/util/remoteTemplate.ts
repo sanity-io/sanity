@@ -60,7 +60,7 @@ function isGithubRepoShorthand(value: string): boolean {
 }
 
 function isGithubRepoUrl(value: string | URL): value is URL | GithubUrlString {
-  if (URL.canParse(value) === false) {
+  if (!URL.canParse(value)) {
     return false
   }
   const url = new URL(value)

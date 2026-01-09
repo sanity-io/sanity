@@ -24,6 +24,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
+  /** Message prompting the user to confirm discarding changes */
+  'action.discard-changes.confirm-dialog.confirm-discard-changes-draft':
+    'Are you sure you want to discard all changes and delete this draft document?',
+  /**Header for the confirm discard dialog */
+  'action.discard-changes.confirm-dialog.header.text': 'Discard changes?',
   /** Tooltip when action is disabled because the document has no unpublished changes */
   'action.discard-changes.disabled.no-change': 'This document has no unpublished changes',
   /** Tooltip when action is disabled because the document is not published */
@@ -182,6 +187,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document is not part of any release
+   * @deprecated – no longer in use
+   * */
+  'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
@@ -215,14 +224,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.action-menu-button.tooltip': 'Document actions',
 
   /** The aria-label for the collapse pane button on the document panel header */
-  'buttons.focus-pane-button.aria-label.collapse': 'Collapse all panes',
+  'buttons.focus-pane-button.aria-label.collapse': 'Exit focus mode (show navigation)',
   /** The aria-label for the focus pane button on the document panel header */
-  'buttons.focus-pane-button.aria-label.focus': 'Focus pane',
+  'buttons.focus-pane-button.aria-label.focus': 'Enter focus mode (hide navigation)',
 
   /** The tooltip for the collapse pane button on the document panel header */
-  'buttons.focus-pane-button.tooltip.collapse': 'Collapse all panes',
+  'buttons.focus-pane-button.tooltip.collapse': 'Exit focus mode',
   /** The tooltip for the focus pane button on the document panel header */
-  'buttons.focus-pane-button.tooltip.focus': 'Focus pane',
+  'buttons.focus-pane-button.tooltip.focus': 'Enter focus mode',
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
   /** The tool tip for the split pane button on the document panel header */
@@ -231,9 +240,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
-
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner when the document in editable mode*/
+  'canvas.banner.editable.linked-text': 'This document can be edited in Canvas.',
+  /** The description for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-description':
+    'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
+  /** The heading for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-heading': 'Free-form writing',
   /** The text for the canvas linked banner when the document is a draft */
   'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
   /** The text for the canvas linked banner when the document is a live document */
@@ -537,7 +552,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The document was successfully deleted',
   /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
-    'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+    'All changes has now been discarded. The discarded draft can still be recovered from history',
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',

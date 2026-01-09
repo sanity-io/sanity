@@ -99,7 +99,7 @@ const releasesLocaleStrings = {
   'archive-info.title': 'This release is archived',
   /** Description for information card on a published or archived release to description retention effects */
   'archive-info.description':
-    'Your plan supports a {{retentionDays}}-day retention period. After this period this release will be removed.',
+    'It will be available for {{retentionDays}} days, then automatically removed on {{removalDate}}. <Link>Learn about retention</Link>.',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -186,6 +186,8 @@ const releasesLocaleStrings = {
   'failed-publish-title': 'Failed to publish',
   /** Title text displayed for releases that failed to schedule  */
   'failed-schedule-title': 'Failed to schedule',
+  /** Tooltip text for releases that have passed their intended publish date */
+  'passed-intended-publish-date': 'This release has passed its intended publish date',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',
@@ -277,7 +279,7 @@ const releasesLocaleStrings = {
   'publish-dialog.validation.error': 'Some documents have validation errors',
 
   /** Title for information card on a published release */
-  'publish-info.title': 'This release is published',
+  'publish-info.title': 'This release is published successfully.',
 
   /** Placeholder title for a release with no title */
   'release-placeholder.title': 'Untitled',

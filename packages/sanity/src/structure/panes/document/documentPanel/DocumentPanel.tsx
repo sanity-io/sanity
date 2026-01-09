@@ -172,7 +172,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
@@ -191,8 +191,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
-        displayed?._id &&
-        getVersionFromId(displayed?._id) === selectedReleaseId,
+      displayed?._id &&
+      getVersionFromId(displayed?._id) === selectedReleaseId,
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
@@ -222,10 +222,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
+    const scheduledCardinalityOneRelease = filteredReleases.currentReleases.find(
+      (release) => isCardinalityOneRelease(release) && isReleaseScheduledOrScheduling(release),
+    )
     const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
-    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases && displayedIsDraft) {
-      return <ScheduledDraftOverrideBanner />
+
+    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
+      return (
+        <ScheduledDraftOverrideBanner
+          releaseId={scheduledCardinalityOneRelease._id}
+          draftDocument={displayed}
+        />
+      )
     }
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -233,8 +241,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
+      !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -243,7 +252,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return (
         <DocumentNotInReleaseBanner
           documentId={value._id}
-          currentRelease={selectedPerspective as ReleaseDocument}
+          currentRelease={selectedPerspective}
           isScheduledRelease={isScheduledRelease}
         />
       )
@@ -305,6 +314,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    selectedPerspectiveName,
     editState,
     ready,
     activeView.type,

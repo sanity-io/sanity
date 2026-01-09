@@ -45,7 +45,7 @@ export async function getSpec(
 
     const specContent = await response.text()
     return specContent
-  } catch (error) {
+  } catch {
     context.output.error('The OpenAPI service is currently unavailable. Please try again later.')
     process.exit(1)
     return null // satisfy TypeScript, though this line is unreachable

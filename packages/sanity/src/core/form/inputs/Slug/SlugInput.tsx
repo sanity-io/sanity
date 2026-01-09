@@ -43,9 +43,7 @@ async function getNewFromSource(
   document: SanityDocument,
   context: SlugSourceContext,
 ): Promise<string | undefined> {
-  return typeof source === 'function'
-    ? source(document, context)
-    : (PathUtils.get(document, source) as string | undefined)
+  return typeof source === 'function' ? source(document, context) : PathUtils.get(document, source)
 }
 
 /**

@@ -1,5 +1,6 @@
 import {createServer, type Server} from 'node:http'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type SanityDocument} from '@sanity/client'
@@ -10,7 +11,7 @@ import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function toArray<T>(asyncIterator: AsyncIterable<T>) {
   const arr: T[] = []
@@ -199,7 +200,7 @@ describe('validateDocuments', () => {
       studioHost: localhost,
     }
 
-    const filepath = new URL('../validateDocuments.ts', import.meta.url).pathname
+    const filepath = fileURLToPath(new URL('../validateDocuments.ts', import.meta.url))
 
     const worker = new Worker(
       `

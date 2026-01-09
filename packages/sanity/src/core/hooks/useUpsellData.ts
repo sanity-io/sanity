@@ -97,7 +97,7 @@ export const useUpsellData = ({dataUri, feature}: UpsellDataProps) => {
           })
           setUpsellData(data)
           setHasError(false)
-        } catch (e) {
+        } catch {
           setHasError(true)
           setUpsellData(null)
         }

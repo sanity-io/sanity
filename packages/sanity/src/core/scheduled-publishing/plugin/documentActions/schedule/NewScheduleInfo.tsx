@@ -1,9 +1,9 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
+import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
 import {ValidationInfo} from '../../../components/validation/ValidationInfo'
 import {DOCUMENT_HAS_ERRORS_TEXT} from '../../../constants'
-import {usePublishedId} from '../../../hooks/usePublishedId'
 import {useSchemaType} from '../../../hooks/useSchemaType'
 import {useValidationState} from '../../../utils/validationUtils'
 
@@ -27,9 +27,10 @@ export function NewScheduleInfo({id, schemaType}: Props) {
 }
 
 function ValidationWarning({id, type}: {id: string; type: string}) {
-  const publishedId = usePublishedId(id)
   const schema = useSchemaType(type)
-  const validationStatus = useValidationStatus(publishedId, type)
+  const draftId = getDraftId(id)
+  const publishedId = getPublishedId(id)
+  const validationStatus = useValidationStatus(draftId, type, true)
   const {hasError} = useValidationState(validationStatus.validation)
 
   if (!hasError) {

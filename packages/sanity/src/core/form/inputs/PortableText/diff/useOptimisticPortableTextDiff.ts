@@ -4,7 +4,7 @@ import {isPortableTextBlock} from '@portabletext/toolkit'
 import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 import {arrayToJSONMatchPath, extractWithPath} from '@sanity/mutator'
 import {type PortableTextBlock} from '@sanity/types'
-import {set} from 'lodash'
+import {set} from 'lodash-es'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {type TargetPerspective} from '../../../../perspective/types'
@@ -12,8 +12,10 @@ import {type BaseInputProps} from '../../../types/inputProps'
 import {computeRangeDecorationsForPortableText} from './computeRangeDecorationsForPortableText'
 import {diffMatchPatchToPortableText} from './diffMatchPatchToPortableText'
 
-export interface PortableTextOptimisticDiffOptions
-  extends Pick<BaseInputProps, 'displayInlineChanges'> {
+export interface PortableTextOptimisticDiffOptions extends Pick<
+  BaseInputProps,
+  'displayInlineChanges'
+> {
   upstreamValue: PortableTextBlock[] | undefined
   definitiveValue: PortableTextBlock[] | undefined
   perspective?: TargetPerspective

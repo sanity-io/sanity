@@ -4,7 +4,7 @@ import {
   type GlobalDocumentReferenceType,
   type SchemaType,
 } from '@sanity/types'
-import {groupBy} from 'lodash'
+import {groupBy} from 'lodash-es'
 
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
@@ -57,7 +57,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  */
 export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType | GlobalDocumentReferenceType>,
-  searchParams: string | SearchTerms<SchemaType>,
+  searchParams: string | SearchTerms,
   {
     perspective,
     sort,

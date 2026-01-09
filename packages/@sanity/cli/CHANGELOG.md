@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **cli:** update init output docs command text ([#10074](https://github.com/sanity-io/sanity/issues/10074)) ([ad1c6bd](https://github.com/sanity-io/sanity/commit/ad1c6bd7065820824e333395194c7a486a9a06a3)) by Mark Michon (mark.michon@sanity.io)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* **typegen:** return same case when generating types (#11330)
+
+### Features
+
+* **typegen:** memoizations, refactoring add improved progress reporting ([#10294](https://github.com/sanity-io/sanity/issues/10294)) ([5d6ac17](https://github.com/sanity-io/sanity/commit/5d6ac171739442c4db418eed8176d1845cb8181a)), closes [#8950](https://github.com/sanity-io/sanity/issues/8950) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **typegen:** return same case when generating types ([#11330](https://github.com/sanity-io/sanity/issues/11330)) ([0402647](https://github.com/sanity-io/sanity/commit/0402647eb06a4dde3d1c93ebf70192c47ee52e36)) by Sindre Gulseth (sgulseth@gmail.com)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Features
+
+* update mcp configured prompt text ([#11514](https://github.com/sanity-io/sanity/issues/11514)) ([b595fee](https://github.com/sanity-io/sanity/commit/b595fee91a0f780b99ab0adaa593839df30f6cf7)) by Matthew Ritter (matthew.ritter@sanity.io)
+
+### Bug Fixes
+
+* **cli:** telemetry in MCP commands ([#11487](https://github.com/sanity-io/sanity/issues/11487)) ([9e805d6](https://github.com/sanity-io/sanity/commit/9e805d64ae4e7f36c4bdc6632789cfd7aedab6a8)) by James Woods (jwwoods01@gmail.com)
+* **cli:** update runtime commands ([#11513](https://github.com/sanity-io/sanity/issues/11513)) ([6f9ae4f](https://github.com/sanity-io/sanity/commit/6f9ae4f90456f5b592363aba4c188b24f3d38d4c)) by Taylor Beseda (tbeseda@gmail.com)
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+### Bug Fixes
+
+* **cli:** blueprints doctor does not require existing blueprint config ([#11444](https://github.com/sanity-io/sanity/issues/11444)) ([b8d9a94](https://github.com/sanity-io/sanity/commit/b8d9a94e4b142aa2860b7ce0e928f3c7c72a257e)) by Taylor Beseda (tbeseda@gmail.com)
+* mcp cli wording ([#11457](https://github.com/sanity-io/sanity/issues/11457)) ([2aa0766](https://github.com/sanity-io/sanity/commit/2aa0766f7c5ad5f57c39a10525584489283a3a1f)) by James Woods (jwwoods01@gmail.com)
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Features
+
+* setup mcp on sanity init and add mcp add command to cli ([#11409](https://github.com/sanity-io/sanity/issues/11409)) ([4752fb1](https://github.com/sanity-io/sanity/commit/4752fb174ad862817d40e0eeba07074fa62d3801)) by James Woods (jwwoods01@gmail.com)
+* setup mcp on sanity init and add mcp add command to cli ([#11434](https://github.com/sanity-io/sanity/issues/11434)) ([e27bea7](https://github.com/sanity-io/sanity/commit/e27bea79c96cd743931f1d52cf9ceed52dd88f88)) by James Woods (jwwoods01@gmail.com)
+* Update runtime-cli to v12 ([#11410](https://github.com/sanity-io/sanity/issues/11410)) ([3fea96a](https://github.com/sanity-io/sanity/commit/3fea96acee0a8e5ccdd2c63a78eaa7fb273e39e0)) by Dave Sewell (snocorp@gmail.com)
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^8.7.0 ([#11395](https://github.com/sanity-io/sanity/issues/11395)) ([5f4487a](https://github.com/sanity-io/sanity/commit/5f4487aff99167094b2d1ea91058a45771198833)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.23.0 ([#11429](https://github.com/sanity-io/sanity/issues/11429)) ([b100ba4](https://github.com/sanity-io/sanity/commit/b100ba48cf49f31c0230c92095450aa0690e7d4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+### Bug Fixes
+
+* **deps:** Update react monorepo to ^19.2.1 ([#11389](https://github.com/sanity-io/sanity/issues/11389)) ([ad157b1](https://github.com/sanity-io/sanity/commit/ad157b1e393f997d9c0dacdd964781169a95d2de)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.22.0 ([#11366](https://github.com/sanity-io/sanity/issues/11366)) ([6976b77](https://github.com/sanity-io/sanity/commit/6976b77295f0959abc588fe24dbd45e246d4b217)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* ERR_REQUIRE_CYCLE_MODULE on older node, and windows resolve regression ([#11385](https://github.com/sanity-io/sanity/issues/11385)) ([bfaa1c7](https://github.com/sanity-io/sanity/commit/bfaa1c7710e4d0c2f422689ca107a7f84c37c763)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+**Note:** Version bump only for package @sanity/cli
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Features

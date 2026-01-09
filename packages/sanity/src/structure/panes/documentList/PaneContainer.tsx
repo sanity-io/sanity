@@ -1,5 +1,5 @@
 import {Card, Code} from '@sanity/ui'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {memo, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,

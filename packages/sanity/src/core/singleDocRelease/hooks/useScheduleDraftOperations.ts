@@ -7,9 +7,9 @@ import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
 import {createReleaseId} from '../../releases/util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
-import {getDraftId, getPublishedId, getVersionId} from '../../util'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getDraftId, getVersionId} from '../../util'
 
 export interface ScheduleDraftOperationsValue {
   /**
@@ -27,7 +27,12 @@ export interface ScheduleDraftOperationsValue {
   /**
    * Deletes a scheduled draft
    */
-  deleteScheduledDraft: (releaseDocumentId: string, opts?: BaseActionOptions) => Promise<void>
+  deleteScheduledDraft: (
+    releaseDocumentId: string,
+    shouldCopyToDraft: boolean,
+    publishedId?: string,
+    opts?: BaseActionOptions,
+  ) => Promise<void>
   /**
    * Reschedules a draft to a new publish time
    */
@@ -43,9 +48,9 @@ export interface ScheduleDraftOperationsValue {
  */
 export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const {t} = useTranslation()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
-  const releasesClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
 
   const createScheduledDraftRelease = useCallback(
     async (title: string, scheduleAt: Date, opts?: BaseActionOptions): Promise<string> => {
@@ -78,26 +83,15 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       // Create a version of the document in the release (using draft as base)
       const draftId = getDraftId(documentId)
-
-      await releasesClient.action([
-        {
-          actionType: 'sanity.action.document.version.create',
-          baseId: draftId,
-          publishedId: getPublishedId(documentId),
-          versionId: getVersionId(documentId, getReleaseIdFromReleaseDocumentId(releaseDocumentId)),
-        },
-        {
-          actionType: 'sanity.action.document.version.discard',
-          versionId: draftId,
-        },
-      ])
+      const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+      await releaseOperations.createVersion(releaseId, draftId, opts)
 
       // Now schedule the release after adding the document
       await releaseOperations.schedule(releaseDocumentId, publishAt, opts)
 
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledDraftRelease, t, releasesClient],
+    [releaseOperations, createScheduledDraftRelease, t],
   )
 
   // used to immediately publish a scheduled draft
@@ -117,12 +111,34 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   // This handles scheduled draft releases in a few different states.
   // The end state is we want it deleted so go through the state machine to get there
   const handleDeleteScheduledDraft = useCallback(
-    async (releaseDocumentId: string, opts?: BaseActionOptions): Promise<void> => {
+    async (
+      releaseDocumentId: string,
+      shouldCopyToDraft: boolean,
+      publishedId?: string,
+      opts?: BaseActionOptions,
+    ): Promise<void> => {
       // Look up the release to get its current state
       const release = allReleases.find((r) => r._id === releaseDocumentId)
 
       if (!release) {
         throw new Error(`Release with ID ${releaseDocumentId} not found`)
+      }
+
+      if (shouldCopyToDraft && publishedId) {
+        const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+        const scheduledDraftId = getVersionId(publishedId, releaseId)
+
+        const scheduledDraftDoc = await client.getDocument(scheduledDraftId)
+
+        if (scheduledDraftDoc) {
+          const draftId = getDraftId(publishedId)
+
+          const {_rev, ...contentWithoutRev} = scheduledDraftDoc
+          await client.createOrReplace({
+            ...contentWithoutRev,
+            _id: draftId,
+          })
+        }
       }
 
       if (release.state === 'scheduled' || release.state === 'scheduling') {
@@ -135,7 +151,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       await releaseOperations.deleteRelease(releaseDocumentId, opts)
     },
-    [releaseOperations, allReleases],
+    [releaseOperations, allReleases, client],
   )
 
   const handleRescheduleScheduledDraft = useCallback(

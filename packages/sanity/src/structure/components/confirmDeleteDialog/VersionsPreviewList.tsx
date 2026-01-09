@@ -14,7 +14,6 @@ import {
   type SchemaType,
   useActiveReleases,
   useDocumentPreviewStore,
-  useDocumentVersions,
   useSchema,
   useTranslation,
 } from 'sanity'
@@ -123,13 +122,12 @@ const VersionItemPreview = ({
  *
  */
 export const VersionsPreviewList = ({
-  documentId,
   documentType,
+  documentVersions,
 }: {
-  documentId: string
   documentType: string
+  documentVersions: string[]
 }) => {
-  const {data: documentVersions} = useDocumentVersions({documentId: getPublishedId(documentId)})
   const schema = useSchema()
 
   const schemaType = schema.get(documentType)

@@ -10,6 +10,7 @@ import {useTranslation} from '../../../i18n'
 import {type UpsellDialogViewedInfo} from '../../../studio/upsell/__telemetry__/upsell.telemetry'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {ReleaseLimitsMisconfigurationDialog} from '../../components/dialog/ReleaseLimitsMisconfigurationDialog'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useOrgActiveReleaseCount} from '../../store/useOrgActiveReleaseCount'
 import {useReleaseLimits} from '../../store/useReleaseLimits'
@@ -72,6 +73,8 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetryLogs])
 
   const [releaseLimit, setReleaseLimit] = useState<number | null>(null)
+  const [showMisconfigurationDialog, setShowMisconfigurationDialog] = useState(false)
+
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source'] = 'navbar') => {
       if (hasError) {
@@ -146,6 +149,17 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
       }
 
       const {orgActiveReleaseLimit, datasetReleaseLimit} = releaseLimits
+
+      // Misconfiguration is when the content release feature is enabled
+      // but the quota is set to 0
+      if (orgActiveReleaseLimit === 0) {
+        whenResolved?.(false)
+        setShowMisconfigurationDialog(true)
+        if (throwError) {
+          throw new StudioReleaseLimitExceededError()
+        }
+        return false
+      }
 
       // orgMeteredActiveReleaseCount might be missing due to internal server error
       // allow pass through guard in that case
@@ -245,7 +259,11 @@ export function ReleasesUpsellProvider(props: {children: React.ReactNode}) {
   return (
     <ReleasesUpsellContext.Provider value={ctxValue}>
       {props.children}
-      <UpsellDialog {...dialogProps} />
+      {showMisconfigurationDialog ? (
+        <ReleaseLimitsMisconfigurationDialog onClose={() => setShowMisconfigurationDialog(false)} />
+      ) : (
+        <UpsellDialog {...dialogProps} />
+      )}
     </ReleasesUpsellContext.Provider>
   )
 }

@@ -19,19 +19,19 @@ export function decodeJsonParams(pathSegment = ''): any {
   // since it also removes characters we'd rather not put in our URLs (eg '=' and '/')
   try {
     return JSON.parse(decodeBase64Url(segment))
-  } catch (err) {
+  } catch {
     // Fall-through: previously we used plain base64 encoding instead of base64url
   }
 
   try {
     return JSON.parse(atob(segment))
-  } catch (err) {
+  } catch {
     // Fall-through: before _that_, we used plain URI encoding
   }
 
   try {
     return JSON.parse(segment)
-  } catch (err) {
+  } catch {
     console.warn('Failed to parse JSON parameters')
   }
 

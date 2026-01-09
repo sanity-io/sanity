@@ -24,7 +24,7 @@ export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'san
 export const {NODE_ENV, ...envLessEnv} = process.env
 export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
-export const nodeMajorVersion = process.version.split('.')[0]
+export const [nodeMajorVersion, nodeMinorVersion] = process.version.split('.')
 export const npmPath = which.sync('npm')
 // note: we use pnpm for `pack`, because npm doesn't rewrite `workspace:*` protocols
 export const pnpmPath = which.sync('pnpm')
@@ -44,16 +44,19 @@ let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
  * The generated ID contains enough information to:
  *   - Identify the test run the entity belongs to (duh)
  *   - Automatically clean up dangling entities from previous test runs (timestamp)
- *   - Separate runs in different OSes/node versions from eachother (platform/node major)
+ *   - Separate runs in different OSes/node versions from eachother (platform/node major+minor)
  *   - Separate runs in different _executions_ from eachother (process ID/github run ID)
  *
  * We use this test ID as the prefix for entities we create through the tests, and the tests
  * also prefix the studio version in their entities so we can concurrently run tests against
  * multiple studio versions without conflicts.
  *
+ * Note: We need to keep this within the character limit for dataset names, thus
+ * somewhat concise.
+ *
  * Examples:
- *   - Local : test-168262061-dar-v16-wode-11664
- *   - GitHub: test-168262061-lin-v14-gh-1234
+ *   - Local : t-168262061-mac-v16-0-14-wode-11664
+ *   - GitHub: t-168262061-lin-v14-18-15-gh-1234-1
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -62,12 +65,13 @@ const getTestId = () => {
 
   const localId = readFileSync(testIdPath, 'utf8').trim().slice(0, 5)
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
-  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
-  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_JOB_ID || process.env.GITHUB_RUN_ATTEMPT}`
+  const githubIndex = process.env.GITHUB_JOB_INDEX ? `-${process.env.GITHUB_JOB_INDEX}` : ''
+  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}${githubIndex}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
-  const osPlatform = platform().slice(0, 3)
-  cachedTestId = `test-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
+  const osPlatform = platform().slice(0, 3).replace(/^dar$/, 'mac') // darwin => mac
+  cachedTestId = `t-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${nodeMinorVersion}-${runId}`
 
   // We're setting this to the environment because the global setup and the tests run in
   // isolated workers/threads, meaning the local `cachedTestId` variable won't be available

@@ -1,7 +1,7 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {type FormNodePresence} from '../../../../presence'

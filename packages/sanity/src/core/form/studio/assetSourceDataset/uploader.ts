@@ -8,7 +8,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {uuid} from '@sanity/uuid'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {type Subscription} from 'rxjs'
 
 import {resolveUploader} from '../uploads/resolveUploader'

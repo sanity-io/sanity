@@ -115,23 +115,4 @@ describe('OpenReleaseToEditbanner', () => {
 
     expect(screen.queryByTestId('open-release-to-edit-banner')).toBeNull()
   })
-
-  it('shows the banner because it is not a draft or publish and its showing version that is not the pinned one', async () => {
-    const testId2 = `versions.${getReleaseIdFromReleaseDocumentId(release2._id)}.test`
-
-    mockUseActiveReleases.mockReturnValue({
-      data: [release1, release2],
-      loading: false,
-      dispatch: vi.fn(),
-    })
-
-    mockuseUseOnlyHasVersions.mockReturnValue(true)
-
-    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
-    render(<OpenReleaseToEditBanner documentId={testId2} isPinnedDraftOrPublished />, {
-      wrapper,
-    })
-
-    expect(screen.getByTestId('open-release-to-edit-banner')).not.toBeNull()
-  })
 })

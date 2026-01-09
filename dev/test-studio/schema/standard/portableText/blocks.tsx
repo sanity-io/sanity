@@ -1,4 +1,5 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
+import {Box, Text} from '@sanity/ui'
 import {
   BlockEditor,
   defineArrayMember,
@@ -14,6 +15,65 @@ function CustomEditor(props: PortableTextInputProps) {
   ])
   return <BlockEditor {...props} markers={newMarkers} />
 }
+
+// This is to emulate preview updates to the object without the preview store
+function CustomObjectPreview(props: any) {
+  return (
+    <Box padding={1}>
+      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
+    </Box>
+  )
+}
+
+const CustomObjectBlock = defineField({
+  type: 'array',
+  name: 'customObjectBody',
+  of: [
+    defineArrayMember({
+      type: 'block',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          title: 'Inline Object',
+          components: {
+            preview: CustomObjectPreview,
+          },
+          fields: [
+            defineField({
+              type: 'string',
+              name: 'title',
+              title: 'Title',
+            }),
+          ],
+        }),
+      ],
+    }),
+    defineArrayMember({
+      name: 'object',
+      type: 'object',
+      title: 'Object',
+      fields: [{type: 'string', name: 'title', title: 'Title'}],
+      preview: {
+        select: {
+          title: 'title',
+        },
+      },
+      components: {
+        preview: CustomObjectPreview,
+      },
+    }),
+    defineArrayMember({
+      name: 'objectWithoutTitle',
+      type: 'object',
+      fields: [{type: 'string', name: 'title', title: 'Title'}],
+      preview: {
+        select: {
+          title: 'title',
+        },
+      },
+    }),
+  ],
+})
 
 const linkType = defineArrayMember({
   type: 'object',
@@ -532,5 +592,6 @@ export default defineType({
         },
       ],
     },
+    CustomObjectBlock,
   ],
 })

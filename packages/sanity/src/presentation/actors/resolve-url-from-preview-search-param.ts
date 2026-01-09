@@ -23,7 +23,7 @@ export const resolveUrlFromPreviewSearchParamActor = fromPromise<
       return initialUrl
     }
     return previewSearchParamUrl
-  } catch (err) {
+  } catch {
     return initialUrl
   }
 })

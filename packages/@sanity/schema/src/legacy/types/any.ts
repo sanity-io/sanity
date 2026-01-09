@@ -1,4 +1,4 @@
-import {omit, pick} from 'lodash'
+import {omit, pick} from 'lodash-es'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter} from './utils'

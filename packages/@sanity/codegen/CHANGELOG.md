@@ -3,6 +3,75 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Features
+
+* add @sanity/sveltekit support to typegen query detection ([#11659](https://github.com/sanity-io/sanity/issues/11659)) ([7926a94](https://github.com/sanity-io/sanity/commit/7926a94242ae4d99cf51f0b6fbacb941aab34717)) by Copilot (198982749+Copilot@users.noreply.github.com)
+* **codegen:** support `.svelte` files ([#11677](https://github.com/sanity-io/sanity/issues/11677)) ([268ce47](https://github.com/sanity-io/sanity/commit/268ce47759038e1fdbbc8ba6773932999fafb75f)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.24.1 ([#11679](https://github.com/sanity-io/sanity/issues/11679)) ([ce27be7](https://github.com/sanity-io/sanity/commit/ce27be7364e6d42bdff64d2477173f60d8274a62)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.25.0 ([#11697](https://github.com/sanity-io/sanity/issues/11697)) ([a58262b](https://github.com/sanity-io/sanity/commit/a58262bac5a0b7c97dad514910af6c9153a37426)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/codegen
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.24.0 ([#11534](https://github.com/sanity-io/sanity/issues/11534)) ([e1c46d5](https://github.com/sanity-io/sanity/commit/e1c46d572cf703090eb4fd224486ebab1e6b9b4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* **typegen:** return same case when generating types (#11330)
+
+### Features
+
+* **typegen:** memoizations, refactoring add improved progress reporting ([#10294](https://github.com/sanity-io/sanity/issues/10294)) ([5d6ac17](https://github.com/sanity-io/sanity/commit/5d6ac171739442c4db418eed8176d1845cb8181a)), closes [#8950](https://github.com/sanity-io/sanity/issues/8950) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **typegen:** return same case when generating types ([#11330](https://github.com/sanity-io/sanity/issues/11330)) ([0402647](https://github.com/sanity-io/sanity/commit/0402647eb06a4dde3d1c93ebf70192c47ee52e36)) by Sindre Gulseth (sgulseth@gmail.com)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+**Note:** Version bump only for package @sanity/codegen
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+**Note:** Version bump only for package @sanity/codegen
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.23.0 ([#11429](https://github.com/sanity-io/sanity/issues/11429)) ([b100ba4](https://github.com/sanity-io/sanity/commit/b100ba48cf49f31c0230c92095450aa0690e7d4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/codegen
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+### Bug Fixes
+
+* `traverse is not a function` error ([#11391](https://github.com/sanity-io/sanity/issues/11391)) ([e4ea395](https://github.com/sanity-io/sanity/commit/e4ea395c228e4bebcdfe55eb7209c908951ae235)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.22.0 ([#11366](https://github.com/sanity-io/sanity/issues/11366)) ([6976b77](https://github.com/sanity-io/sanity/commit/6976b77295f0959abc588fe24dbd45e246d4b217)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* ERR_REQUIRE_CYCLE_MODULE on older node, and windows resolve regression ([#11385](https://github.com/sanity-io/sanity/issues/11385)) ([bfaa1c7](https://github.com/sanity-io/sanity/commit/bfaa1c7710e4d0c2f422689ca107a7f84c37c763)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* handle asset as array member with enforce required fields ([#11370](https://github.com/sanity-io/sanity/issues/11370)) ([6cb181b](https://github.com/sanity-io/sanity/commit/6cb181b4a9f0bc64ed0c4991a3b2eb9bc6c6054f)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+**Note:** Version bump only for package @sanity/codegen
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Features

@@ -4,6 +4,8 @@ import {useState} from 'react'
 import {
   type DocumentInspectorProps,
   isReleaseDocument,
+  type TargetPerspective,
+  type TFunction,
   Translate,
   usePerspective,
   useSource,
@@ -51,12 +53,6 @@ export function ChangesTabs(props: DocumentInspectorProps) {
       // Reset the since when changing the tab, as it's not relevant for the history tab
       since: tab === 'history' ? undefined : params?.since,
     })
-
-  const perspectiveName = isReleaseDocument(selectedPerspective)
-    ? selectedPerspective.metadata.title
-    : selectedPerspective === 'drafts'
-      ? t('compare-versions.status.draft')
-      : t('compare-versions.status.published')
 
   return (
     <FadeInFlex
@@ -115,7 +111,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             <Translate
               t={t}
               values={{
-                perspective: perspectiveName,
+                perspective: perspectiveLabel(selectedPerspective, {t}),
               }}
               i18nKey="changes.banner.description"
             />
@@ -154,4 +150,20 @@ export function ChangesTabs(props: DocumentInspectorProps) {
       </TabPanel>
     </FadeInFlex>
   )
+}
+
+function perspectiveLabel(perspective: TargetPerspective, {t}: {t: TFunction}): string {
+  if (isReleaseDocument(perspective)) {
+    return perspective.metadata.title ?? perspective._id
+  }
+
+  if (perspective === 'drafts') {
+    return t('compare-versions.status.draft')
+  }
+
+  if (perspective === 'published') {
+    return t('compare-versions.status.published')
+  }
+
+  return perspective
 }

@@ -19,16 +19,10 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Oxlint files
         run: pnpm turbo run check:oxlint -- --format github

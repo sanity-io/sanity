@@ -2,7 +2,7 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --no-wait    Do not wait for deployment to complete
+  --no-wait    Do not wait for Stack deployment to complete
 
 Examples:
   # Deploy the current blueprint
@@ -25,7 +25,7 @@ const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
   group: 'blueprints',
   helpText,
   signature: '[--no-wait]',
-  description: 'Deploy a Blueprint to create or update a Stack',
+  description: 'Deploy a Blueprint',
 
   async action(args, context) {
     const {apiClient, output} = context

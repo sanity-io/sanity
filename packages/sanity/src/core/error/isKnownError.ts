@@ -1,4 +1,4 @@
-import {isObject} from 'lodash'
+import {isObject} from 'lodash-es'
 
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'

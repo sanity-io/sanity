@@ -163,19 +163,6 @@ export const DocumentPanelHeader = memo(
         telemetry.log(FocusDocumentPaneClicked)
       }
     }, [onSetMaximizedPane, isMaximizedPane, telemetry])
-    const renderPaneActions = useCallback<
-      (props: {states: DocumentActionDescription[]}) => React.ReactNode
-    >(
-      ({states}) => (
-        <DocumentPanelHeaderActionDialogDeferred
-          contextMenuNodes={contextMenuNodes}
-          setReferenceElement={setReferenceElement}
-          referenceElement={referenceElement}
-          states={states}
-        />
-      ),
-      [contextMenuNodes, referenceElement],
-    )
 
     const title = useMemo(() => <DocumentHeaderTitle />, [])
     const backButton = useMemo(

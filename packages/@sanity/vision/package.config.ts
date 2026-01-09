@@ -5,5 +5,5 @@ export default defineConfig({
   ...baseConfig,
   external: ['sanity'],
   babel: {reactCompiler: true},
-  reactCompilerOptions: {target: '18'},
+  reactCompilerOptions: {target: '19'},
 })

@@ -38,7 +38,7 @@ export interface HotspotImageProps {
   className?: string
   style?: CSSProperties
   alt?: string
-  onError?: (event: SyntheticEvent<HTMLImageElement, Event>) => void
+  onError?: (event: SyntheticEvent<HTMLImageElement>) => void
   onLoad?: () => void
 }
 

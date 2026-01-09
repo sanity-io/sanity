@@ -1,5 +1,5 @@
 import {isReference} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 
 /**
  * This is almost identical to the existing `strengthenOnPublish` function, but it omits only the

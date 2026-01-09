@@ -9,6 +9,7 @@ import {
 } from '@portabletext/editor'
 import {
   type ArraySchemaType,
+  type AssetSource,
   type BooleanSchemaType,
   type CrossDatasetReferenceValue,
   type FileValue,
@@ -28,7 +29,6 @@ import {
   type FocusEventHandler,
   type FormEventHandler,
   type MutableRefObject,
-  type ReactNode,
 } from 'react'
 
 import {type FormPatch, type PatchEvent} from '../patch'
@@ -68,6 +68,15 @@ export interface OnPathFocusPayload {
 
 /**
  * @hidden
+ * @beta */
+export interface InputOnSelectFileFunctionProps {
+  assetSource: AssetSource
+  schemaType: SchemaType
+  file: File
+}
+
+/**
+ * @hidden
  * @public */
 export interface BaseInputProps {
   renderDefault: (props: InputProps) => React.JSX.Element
@@ -85,8 +94,8 @@ export interface BaseInputProps {
 export interface ObjectInputProps<
   T = Record<string, any>,
   S extends ObjectSchemaType = ObjectSchemaType,
-> extends BaseInputProps,
-    Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ObjectFormNode<T, S>, '_allMembers' | 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -176,17 +185,6 @@ export interface ObjectInputProps<
    * @hidden
    * @beta */
   elementProps: ComplexElementProps
-
-  /**
-   * @deprecated – DO NOT USE
-   *
-   * The node for the array editing modal.
-   * This node renders the array editing modal as a child of the root input.
-   * It is necessary for the array editing dialog to be a child of the root input
-   * because the root input may be wrapped in a React context using the Components API,
-   * which is utilized by inputs in the form.
-   */
-  __internal_enhancedbjectDialog?: ReactNode
 }
 
 /**
@@ -195,8 +193,8 @@ export interface ObjectInputProps<
 export interface ArrayOfObjectsInputProps<
   T extends {_key: string} = {_key: string},
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ArrayOfObjectsFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -246,7 +244,12 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onUpload: (event: UploadEvent) => void
+  onUpload?: (event: UploadEvent) => void
+
+  /**
+   * @hidden
+   * @beta */
+  onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
 
   /**
    * @hidden
@@ -331,8 +334,8 @@ export type ArrayOfPrimitivesElementType<T extends any[]> = T extends (infer K)[
 export interface ArrayOfPrimitivesInputProps<
   T extends string | boolean | number = string | boolean | number,
   S extends ArraySchemaType = ArraySchemaType,
-> extends BaseInputProps,
-    Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
+>
+  extends BaseInputProps, Omit<ArrayOfPrimitivesFormNode<T[], S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -452,8 +455,7 @@ export interface ComplexElementProps {
  * @hidden
  * @public */
 export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
-  extends BaseInputProps,
-    Omit<StringFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<StringFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -469,8 +471,7 @@ export interface StringInputProps<S extends StringSchemaType = StringSchemaType>
  * @hidden
  * @public */
 export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
-  extends BaseInputProps,
-    Omit<NumberFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<NumberFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -486,8 +487,7 @@ export interface NumberInputProps<S extends NumberSchemaType = NumberSchemaType>
  * @hidden
  * @public */
 export interface BooleanInputProps<S extends BooleanSchemaType = BooleanSchemaType>
-  extends BaseInputProps,
-    Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
+  extends BaseInputProps, Omit<BooleanFormNode<S>, 'displayInlineChanges'> {
   /**
    * @hidden
    * @beta */
@@ -518,8 +518,10 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
  *
  * @public
  * */
-export interface PortableTextInputProps
-  extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
+export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
+  PortableTextBlock,
+  ArraySchemaType<PortableTextBlock>
+> {
   /**
    * A React Ref that can reference the underlying editor instance
    */

@@ -1,5 +1,5 @@
 import {isImageSource} from '@sanity/asset-utils'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {useCallback, useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 import {useRouterState} from 'sanity/router'
@@ -39,7 +39,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 

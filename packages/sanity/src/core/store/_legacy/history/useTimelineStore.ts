@@ -34,7 +34,7 @@ interface UseTimelineControllerOpts {
 /** @internal */
 export interface TimelineState {
   chunks: Chunk[]
-  diff: ObjectDiff<Annotation, Record<string, any>> | null
+  diff: ObjectDiff<Annotation> | null
   /** null is used here when the chunks hasn't loaded / is not known */
   hasMoreChunks: boolean | null
   isLoading: boolean
@@ -215,7 +215,7 @@ export function useTimelineStore({
                 chunks,
                 diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
                 isLoading: innerController.isLoading,
-                isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
+                isPristine: timelineReady ? chunks.length === 0 && !hasMoreChunks : null,
                 hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
                 lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,
                 onOlderRevision: innerController.onOlderRevision(),

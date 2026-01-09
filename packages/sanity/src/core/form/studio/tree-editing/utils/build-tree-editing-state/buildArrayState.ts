@@ -8,7 +8,6 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
 } from '@sanity/types'
 import {startsWith, toString} from '@sanity/util/paths'
 
@@ -18,7 +17,6 @@ import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
 import {findArrayTypePaths} from '../findArrayTypePaths'
 import {getSchemaField} from '../getSchemaField'
-import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {isPathTextInPTEField} from '../isPathTextInPTEField'
 import {buildArrayStatePTE} from './buildArrayStatePTE'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
@@ -116,10 +114,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: DialogItem[] = []
 
-    if (
-      shouldBeInBreadcrumb(itemPath, openPath, documentValue) &&
-      !hasCustomInputComponent(rootSchemaType.fields, itemPath)
-    ) {
+    if (shouldBeInBreadcrumb(itemPath, openPath, documentValue)) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -164,7 +159,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
           const nestedArrayField = getSchemaField(
             childField.type,
             toString(arrayPath),
-          ) as ObjectField<SchemaType>
+          ) as ObjectField
 
           // Get the value of the array field.
           const arrayFieldValue_ = getValueAtPath(documentValue, fieldPath)
@@ -249,10 +244,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         }
         childArray.forEach(updateChildArrayIndex)
 
-        if (
-          shouldBeInBreadcrumb(childPath, openPath, documentValue) &&
-          !hasCustomInputComponent(rootSchemaType.fields, childPath)
-        ) {
+        if (shouldBeInBreadcrumb(childPath, openPath, documentValue)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],
@@ -334,8 +326,8 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       menuItems.push({
         children: childrenMenuItems,
         parentSchemaType: arraySchemaType,
-        path: itemPath as Path,
-        schemaType: itemSchemaField as ObjectSchemaType,
+        path: itemPath,
+        schemaType: itemSchemaField,
         value: item,
       })
     }

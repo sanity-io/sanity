@@ -26,10 +26,25 @@ const CANVAS_IMAGE_URL =
   'https://cdn.sanity.io/images/pyrmmpch/production/b47224e2f3a7d1747e43b9da1ac31739250e628b-632x376.png'
 
 const CANVAS_APP_NAME = 'Canvas'
-const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
+
+const CanvasPopoverContent = ({
+  onClose,
+  isLockedByCanvas,
+}: {
+  onClose: () => void
+  isLockedByCanvas: boolean
+}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const ref = useRef<HTMLDivElement | null>(null)
   useClickOutsideEvent(onClose, () => [ref.current])
+
+  const popoverHeading = isLockedByCanvas
+    ? t('canvas.banner.popover-heading')
+    : t('canvas.banner.editable.popover-heading')
+
+  const popoverDescription = isLockedByCanvas
+    ? t('canvas.banner.popover-description')
+    : t('canvas.banner.editable.popover-description')
 
   return (
     <Card radius={3} overflow={'hidden'} width={0} ref={ref}>
@@ -45,10 +60,10 @@ const CanvasPopoverContent = ({onClose}: {onClose: () => void}) => {
             </Text>
           </Flex>
           <Box paddingTop={3}>
-            <Heading size={1}>{t('canvas.banner.popover-heading')}</Heading>
+            <Heading size={1}>{popoverHeading}</Heading>
           </Box>
           <Box paddingTop={4}>
-            <Text size={1}>{t('canvas.banner.popover-description')}</Text>
+            <Text size={1}>{popoverDescription}</Text>
           </Box>
         </Flex>
         <Flex width="full" gap={3} justify="flex-end" paddingX={4} paddingBottom={4}>
@@ -72,11 +87,23 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
   const documentVariantType = getDocumentVariantType(documentId)
+  const {isLockedByCanvas} = useCanvasCompanionDoc(documentId)
+
   const variantText = useMemo(() => {
-    if (documentVariantType === 'published') return t('canvas.banner.linked-text.published')
-    if (documentVariantType === 'draft') return t('canvas.banner.linked-text.draft')
+    if (!isLockedByCanvas) {
+      return t('canvas.banner.editable.linked-text')
+    }
+
+    if (documentVariantType === 'published') {
+      return t('canvas.banner.linked-text.published')
+    }
+
+    if (documentVariantType === 'draft') {
+      return t('canvas.banner.linked-text.draft')
+    }
+
     return t('canvas.banner.linked-text.version')
-  }, [documentVariantType, t])
+  }, [documentVariantType, isLockedByCanvas, t])
 
   const togglePopover = useCallback(() => setOpen((prev) => !prev), [])
   const onClose = useCallback(() => setOpen(false), [])
@@ -91,7 +118,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
         tone="default"
         portal
         placement="bottom-start"
-        content={<CanvasPopoverContent onClose={onClose} />}
+        content={<CanvasPopoverContent onClose={onClose} isLockedByCanvas={isLockedByCanvas} />}
       >
         <Button
           tooltipProps={null}

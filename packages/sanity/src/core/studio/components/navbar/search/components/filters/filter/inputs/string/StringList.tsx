@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {capitalize, uniq} from 'lodash'
+import {capitalize, uniq} from 'lodash-es'
 import {useCallback, useId, useMemo} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'

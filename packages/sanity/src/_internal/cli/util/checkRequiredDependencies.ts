@@ -81,7 +81,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   let minDeclaredStyledComponentsVersion: SemVer | null = null
   try {
     minDeclaredStyledComponentsVersion = semver.minVersion(declaredStyledComponentsVersion)
-  } catch (err) {
+  } catch {
     // Intentional fall-through (variable will be left as null, throwing below)
   }
 

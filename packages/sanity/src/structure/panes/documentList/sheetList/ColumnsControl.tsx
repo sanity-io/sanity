@@ -22,11 +22,11 @@ export function ColumnsControl({table}: ColumnsControlProps) {
     table.resetColumnVisibility()
   }, [table])
 
-  const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
+  const handleColumnOnChange = (column: Column<SanityDocument>) => () => {
     column.toggleVisibility()
   }
 
-  const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
+  const getColumnVisibilityDisabled = (column: Column<SanityDocument>) => {
     const isColumnVisible = column.getIsVisible()
     const isSingleColumnVisible =
       table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length === 1

@@ -1,12 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {extractDocumentsFromNdjsonOrTarball} from '../extractDocumentsFromNdjsonOrTarball'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('extractDocumentsFromNdjsonOrTarball', () => {
   it('extracts the contents of a tarball, finds the ndjson file, parses it, and yields each document', async () => {

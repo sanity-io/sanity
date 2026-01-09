@@ -1,6 +1,6 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
@@ -61,7 +61,7 @@ export function CrossDatasetReferencePreview(props: {
           previewMedia
         ) : (
           <img
-            src={imageUrlBuilder({dataset, projectId})
+            src={createImageUrlBuilder({dataset, projectId})
               .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}

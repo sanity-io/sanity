@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'

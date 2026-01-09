@@ -1,5 +1,11 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
+import {
+  isImage,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type UploadState,
+} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
@@ -19,7 +25,7 @@ import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
-import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -115,11 +121,6 @@ export function BlockObject(props: BlockObjectProps) {
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
-
-  const {enabled: nestedObjectNavigationEnabled, isDialogAvailable} = useEnhancedObjectDialog()
-  // If there's an EnhancedObjectDialog available, it will handle the opening
-  // Otherwise, we render our own modal
-  const shouldUseEnhancedDialog = nestedObjectNavigationEnabled && isDialogAvailable
 
   const selfSelection = useMemo(
     (): EditorSelection => ({
@@ -239,7 +240,6 @@ export function BlockObject(props: BlockObjectProps) {
       renderAnnotation,
       renderBlock,
       renderDefault: DefaultBlockObjectComponent,
-      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -268,7 +268,6 @@ export function BlockObject(props: BlockObjectProps) {
       readOnly,
       renderAnnotation,
       renderBlock,
-      shouldUseEnhancedDialog,
       renderField,
       renderInlineBlock,
       renderInput,
@@ -354,15 +353,12 @@ function RenderBlock(
   return renderBlock(componentProps)
 }
 
-export const DefaultBlockObjectComponent = (
-  props: BlockProps & {shouldUseEnhancedDialog: boolean},
-) => {
+export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
     children,
-    shouldUseEnhancedDialog,
     focused,
     markers,
     onClose,
@@ -384,8 +380,12 @@ export const DefaultBlockObjectComponent = (
   const hasMarkers = Boolean(markers.length > 0)
   const tone = selected || focused ? 'primary' : 'default'
 
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
+
   const handleDoubleClickToOpen = useCallback(
-    (e: MouseEvent<Element, globalThis.MouseEvent>) => {
+    (e: MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
       onOpen()
@@ -421,17 +421,14 @@ export const DefaultBlockObjectComponent = (
               value={value}
             />
           ),
+          progress: uploadProgress,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           skipVisibilityCheck: true,
           value,
         })}
       </Root>
-      {/**
-       * In situations where we are using the new nested method, we do not want to show this object edit modal.
-       * However, in cases where we aren't, the old modal needs to work as expected
-       */}
-      {open && !shouldUseEnhancedDialog && (
+      {open && (
         <ObjectEditModal
           floatingBoundary={__unstable_floatingBoundary}
           defaultType="dialog"

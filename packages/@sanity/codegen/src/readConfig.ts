@@ -11,8 +11,8 @@ export const configDefinition = z.object({
     .string()
     .or(z.array(z.string()))
     .default([
-      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro}',
-      './app/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
+      './app/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
       './sanity/**/*.{ts,tsx,js,jsx,mjs,cjs}',
     ]),
   schema: z.string().default('./schema.json'),
@@ -32,7 +32,7 @@ export type CodegenConfig = TypeGenConfig
  * Read, parse and process a config file
  * @internal
  */
-export async function readConfig(path: string): Promise<CodegenConfig> {
+export async function readConfig(path: string): Promise<TypeGenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
     const json = json5.parse(content)

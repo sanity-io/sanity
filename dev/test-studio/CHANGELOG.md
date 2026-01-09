@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **codegen,cli:** handle CSS imports when require(esm) happens ([#11701](https://github.com/sanity-io/sanity/issues/11701)) ([8be4aa6](https://github.com/sanity-io/sanity/commit/8be4aa6b54f91e8c012782cf969fdb55c9a0c473)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11641](https://github.com/sanity-io/sanity/issues/11641)) ([6f25f33](https://github.com/sanity-io/sanity/commit/6f25f33cfe282c00d5212435da58ebb78722fe27)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11673](https://github.com/sanity-io/sanity/issues/11673)) ([54c30a6](https://github.com/sanity-io/sanity/commit/54c30a65e5c9867753dc236e6f95bb7fd46c249c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11646](https://github.com/sanity-io/sanity/issues/11646)) ([795e94b](https://github.com/sanity-io/sanity/commit/795e94bb6f0e3dd13d6da4c6c71a214aa6b4f441)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11681](https://github.com/sanity-io/sanity/issues/11681)) ([72daebe](https://github.com/sanity-io/sanity/commit/72daebe63517d22764f68504d4cc2ec3830bafbf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* temporary pin `@sanity/migrate` to `5.1.0` ([#11656](https://github.com/sanity-io/sanity/issues/11656)) ([296c398](https://github.com/sanity-io/sanity/commit/296c398a3e135feeab60a4d764674ca95f3e6f52)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/editor to v4 ([#11532](https://github.com/sanity-io/sanity/issues/11532)) ([36ff000](https://github.com/sanity-io/sanity/commit/36ff000eb5532b8b33421328c64fb68748d23c83)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/preview-url-secret to v4 ([#11560](https://github.com/sanity-io/sanity/issues/11560)) ([f86089d](https://github.com/sanity-io/sanity/commit/f86089d40e6761ce3eb7a2e3c72ad537b9e50f8d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11574](https://github.com/sanity-io/sanity/issues/11574)) ([1d0f1cb](https://github.com/sanity-io/sanity/commit/1d0f1cb5e23f5ea7749a2b7ffdb050b636847554)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11531](https://github.com/sanity-io/sanity/issues/11531)) ([9acea25](https://github.com/sanity-io/sanity/commit/9acea25826b80a3886b7ee6abc7541bde7d4cea3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11570](https://github.com/sanity-io/sanity/issues/11570)) ([c798574](https://github.com/sanity-io/sanity/commit/c798574f2bea921f5c562c2c981e99cc4e542a7f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11537](https://github.com/sanity-io/sanity/issues/11537)) ([33f7115](https://github.com/sanity-io/sanity/commit/33f71158a67aa4b42f3163cf4615b379c3206130)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### Features
+
+* **core:** enable typographic behaviors in Portable Text Inputs by default ([eaffcde](https://github.com/sanity-io/sanity/commit/eaffcdec863fa70f1006bef62c2c3cbb86517171)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Features
+
+* **structure:** support linking to documents in focus mode ([#11489](https://github.com/sanity-io/sanity/issues/11489)) ([cb74919](https://github.com/sanity-io/sanity/commit/cb74919e6dc18d828ffd3715791c71f9d08619b7)) by Bjørge Næss (bjoerge@gmail.com)
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major ([#11494](https://github.com/sanity-io/sanity/issues/11494)) ([2973d7d](https://github.com/sanity-io/sanity/commit/2973d7dc4fbab38dba7512e020a6d1d96f3f671a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11450](https://github.com/sanity-io/sanity/issues/11450)) ([735f7b4](https://github.com/sanity-io/sanity/commit/735f7b4d1c92d243abce393464197f058278b25d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11518](https://github.com/sanity-io/sanity/issues/11518)) ([f2adcc3](https://github.com/sanity-io/sanity/commit/f2adcc39c4c0c003ae823e7b6da24cee45d35d48)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* fix when deleting and reverting objects of arrays in the middle of an array ([#11455](https://github.com/sanity-io/sanity/issues/11455)) ([684cc41](https://github.com/sanity-io/sanity/commit/684cc4121507e30bdd2f8b520d1b1905aeaba139)) by RitaDias (rita@sanity.io)
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+### Bug Fixes
+
+* **deps:** update dependency @portabletext/react to v6 ([#11440](https://github.com/sanity-io/sanity/issues/11440)) ([953b513](https://github.com/sanity-io/sanity/commit/953b513b798b1e68d9d3813839a0dbc68ea299e1)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11431](https://github.com/sanity-io/sanity/issues/11431)) ([ebfdc6e](https://github.com/sanity-io/sanity/commit/ebfdc6e1f5eb8e9bca1caa082bab32fb7745b301)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#11438](https://github.com/sanity-io/sanity/issues/11438)) ([dbc98f7](https://github.com/sanity-io/sanity/commit/dbc98f75a617381779975be26e14f07ad02d16cd)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Bug Fixes
+
+* allow for more flexibility for custom components? and using the enhanced object dialog ([#11358](https://github.com/sanity-io/sanity/issues/11358)) ([9ea5074](https://github.com/sanity-io/sanity/commit/9ea507489ffcd925ec5a8d1802629b6f9ad1f4aa)) by RitaDias (rita@sanity.io)
+* **deps:** Update portabletext ([#11388](https://github.com/sanity-io/sanity/issues/11388)) ([5f63f2f](https://github.com/sanity-io/sanity/commit/5f63f2f0964cb1f6d8c2708e12ba6d8106682743)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11407](https://github.com/sanity-io/sanity/issues/11407)) ([a9b92c9](https://github.com/sanity-io/sanity/commit/a9b92c93b0f663040f317bcda78b0c21e5d3fc25)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package sanity-test-studio
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Features
+
+* **schema:** de-dupe re-used fields in the descriptor ([b287558](https://github.com/sanity-io/sanity/commit/b287558417c6f06eaaf7acf1a4f51dc6aab0c3f6)) by Magnus Holm (judofyr@gmail.com)
+
+### Bug Fixes
+
+* **core:** pte inline comments respect __internal_comments disabled ([#11341](https://github.com/sanity-io/sanity/issues/11341)) ([0f566b5](https://github.com/sanity-io/sanity/commit/0f566b5c99891052b661791d0d48f8e4c7118b98)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#11270](https://github.com/sanity-io/sanity/issues/11270)) ([bf4bf3b](https://github.com/sanity-io/sanity/commit/bf4bf3b130a3a2922a23708b7684e94c4b5bd110)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11329](https://github.com/sanity-io/sanity/issues/11329)) ([ab15495](https://github.com/sanity-io/sanity/commit/ab154959c7b632f7fab54b8dfcaa9a08100ec411)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11338](https://github.com/sanity-io/sanity/issues/11338)) ([7ee38ba](https://github.com/sanity-io/sanity/commit/7ee38ba2b5a6c1b1028eb7cd9f80a6821cb95c4a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **media-library:** support groups and fieldset in `defineVideoField` ([#11361](https://github.com/sanity-io/sanity/issues/11361)) ([3c840ce](https://github.com/sanity-io/sanity/commit/3c840ce0c20b83f5b7115b76382083286b570a9e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **sanity:** allow editing documents in non-release bundles ([#11312](https://github.com/sanity-io/sanity/issues/11312)) ([dfa9dc1](https://github.com/sanity-io/sanity/commit/dfa9dc1f70fbe01699f3186eb93e4671d228b329)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Bug Fixes

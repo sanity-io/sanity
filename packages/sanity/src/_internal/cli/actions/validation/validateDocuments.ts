@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type ClientConfig} from '@sanity/client'
@@ -11,7 +12,7 @@ import {
 } from '../../threads/validateDocuments'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export interface ValidateDocumentsOptions<TReturn = unknown> {
   level?: 'error' | 'warning' | 'info'

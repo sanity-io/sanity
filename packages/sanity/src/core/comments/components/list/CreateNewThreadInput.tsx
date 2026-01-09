@@ -17,7 +17,7 @@ interface CreateNewThreadInputProps {
   mode: CommentsUIMode
   onBlur?: CommentInputProps['onBlur']
   onFocus?: CommentInputProps['onFocus']
-  onKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onKeyDown?: (event: React.KeyboardEvent) => void
   onNewThreadCreate: (payload: CommentMessage) => void
   readOnly?: boolean
 }
@@ -54,7 +54,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: React.KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return

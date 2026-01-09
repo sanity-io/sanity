@@ -182,7 +182,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const apiConfig = {
       dataset: dataset ?? projectConfig.dataset!,
       projectId: project ?? projectConfig.projectId!,
-      apiHost: projectConfig.apiHost!,
+      apiHost: projectConfig.apiHost,
       token: projectConfig.token!,
       apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const

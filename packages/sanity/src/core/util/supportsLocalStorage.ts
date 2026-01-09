@@ -15,7 +15,7 @@ export const supportsLocalStorage = (() => {
     localStorage.setItem(key, '---')
     localStorage.removeItem(key)
     return true
-  } catch (err) {
+  } catch {
     return false
   }
 })()

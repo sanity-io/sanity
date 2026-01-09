@@ -38,8 +38,10 @@ import {useReferenceInput} from './useReferenceInput'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
-interface ReferenceItemProps<Item extends ReferenceItemValue>
-  extends Omit<ObjectItemProps<ReferenceItemValue>, 'renderDefault'> {
+interface ReferenceItemProps<Item extends ReferenceItemValue> extends Omit<
+  ObjectItemProps<ReferenceItemValue>,
+  'renderDefault'
+> {
   value: Item
   schemaType: ReferenceSchemaType
 }
@@ -221,7 +223,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       {loadableReferenceInfo.error && (
         <ReferenceMetadataLoadErrorAlertStrip
           errorMessage={loadableReferenceInfo.error.message}
-          onHandleRetry={loadableReferenceInfo.retry!}
+          onHandleRetry={loadableReferenceInfo.retry}
         />
       )}
     </>

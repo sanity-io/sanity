@@ -30,7 +30,7 @@ export async function readDoc(
 
     const markdownContent = await response.text()
     return markdownContent
-  } catch (error) {
+  } catch {
     context.output.error(`The article API is currently unavailable. Please try again later.`)
     process.exit(1)
     return null // satisfy TypeScript, though this line is unreachable

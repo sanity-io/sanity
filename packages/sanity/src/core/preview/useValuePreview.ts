@@ -16,7 +16,14 @@ import {useDocumentPreviewStore} from '../store'
 import {getPublishedId} from '../util'
 import {type Previewable} from './types'
 
-export {useDocumentPreview as unstable_useValuePreview}
+/**
+ * @internal
+ * @deprecated use useValuePreview instead
+ */
+export function unstable_useValuePreview(args: Parameters<typeof useValuePreview>[0]) {
+  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
+  return useValuePreview(args)
+}
 
 interface State {
   isLoading: boolean
@@ -36,9 +43,8 @@ const IDLE_STATE: State = {
 }
 /**
  * @internal
- * @deprecated FOR INTERNAL USE.
  */
-function useDocumentPreview(props: {
+export function useValuePreview(props: {
   enabled?: boolean
   ordering?: SortOrdering
   schemaType?: SchemaType
@@ -63,7 +69,7 @@ function useDocumentPreview(props: {
       : (chosenPerspectiveStack ?? perspectiveStack)
     const updatedDocId = isGoingToUnpublish(previewValue as SanityDocument)
       ? getPublishedId((previewValue as SanityDocument)._id)
-      : ((previewValue as SanityDocument)._id as string)
+      : (previewValue as SanityDocument)._id
 
     // allow for previewing the published document when a version is slated for unpublishing
     // but if it's not for unpublishing, then we want to preview the content as was before

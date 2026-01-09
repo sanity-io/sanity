@@ -24,6 +24,7 @@ export function resolveConditionalProperty(
   }
 
   return (
+    // oxlint-disable-next-line no-unnecessary-boolean-literal-compare - we can't trust the return value here is actually a boolean at runtime
     property({
       document: document as any,
       parent,

@@ -1,4 +1,4 @@
-import {find} from 'lodash'
+import {find} from 'lodash-es'
 import {isRecord} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'

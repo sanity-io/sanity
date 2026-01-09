@@ -1,5 +1,5 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 import {
   forwardRef,
   type Ref,

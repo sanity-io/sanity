@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 
 import {withDefaultClient} from '../../helpers'
-import {expectEditedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
+import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
 
 withDefaultClient((context) => {
@@ -37,41 +37,49 @@ withDefaultClient((context) => {
     const authorListbox = page.locator('#author-listbox')
     const popover = page.getByTestId('autocomplete-popover')
 
+    // Select the first document in the list.
+    await expect(page.getByTestId('autocomplete')).toBeVisible()
+    await page.getByTestId('autocomplete').fill('Author A')
+
     // Open the Author reference input.
-    await referenceInput.getByLabel('Open').click()
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
-    // Select the first document in the list.
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
+    await expect(page.locator('#author-option-authorA')).toBeVisible()
+    await page.locator('#author-option-authorA').click()
 
     // wait for the edit to finish
-    await expectEditedStatus(paneFooter)
+    await expectSavedStatus(paneFooter, {timeout: 30_000})
 
     // Wait for the document to be published.
+    await expect(publishButton).toBeVisible()
+    await expect(publishButton).toBeEnabled()
     await publishButton.click()
-    await expectPublishedStatus(paneFooter)
+    await expectPublishedStatus(paneFooter, {timeout: 30_000})
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
-    // instead of opening with the dropdown button, open with the space key
-    await referenceInput.getByTestId('autocomplete').press('Space')
+    // Select the first document in the list.
+    await expect(page.getByTestId('autocomplete')).toBeVisible()
+    await page.getByTestId('autocomplete').fill('Author B')
+
+    // Open the Author reference input.
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
-    // Select the next document in the list.
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
+    await expect(page.locator('#author-option-authorB')).toBeVisible()
+    await page.locator('#author-option-authorB').click()
     await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
     // wait for the edit to finish
-    await expectEditedStatus(paneFooter)
+    await expectSavedStatus(paneFooter, {timeout: 30_000})
 
     // Wait for the document to be published.
+    await expect(publishButton).toBeVisible()
+    await expect(publishButton).toBeEnabled()
     await publishButton.click()
-    await expectPublishedStatus(paneFooter)
+    await expectPublishedStatus(paneFooter, {timeout: 30_000})
   })
 
   test(`_strengthenOnPublish and _weak properties exist when adding reference to a draft document`, async ({

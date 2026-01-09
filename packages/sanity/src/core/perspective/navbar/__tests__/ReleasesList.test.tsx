@@ -35,6 +35,14 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
+vi.mock('../ViewContentReleasesMenuItem', () => ({
+  ViewContentReleasesMenuItem: () => null,
+}))
+
+vi.mock('../ScheduledDraftsMenuItem', () => ({
+  ScheduledDraftsMenuItem: () => null,
+}))
+
 const handleOpenBundleDialog = vi.fn()
 
 describe('ReleasesList', () => {
@@ -55,7 +63,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
@@ -77,7 +85,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
@@ -128,7 +136,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
@@ -161,7 +169,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled={false}
@@ -187,7 +195,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled={false}
@@ -217,7 +225,7 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
+            selectedPerspectiveName={undefined}
             handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled

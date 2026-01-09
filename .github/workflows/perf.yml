@@ -10,14 +10,8 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     if: github.event_name == 'deployment_status' && github.event.deployment.environment == 'production' && github.event.deployment_status.state == 'success' && startsWith(github.event.deployment_status.target_url, 'https://performance-studio')
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -28,7 +22,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers

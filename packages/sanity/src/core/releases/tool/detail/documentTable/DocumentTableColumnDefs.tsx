@@ -58,9 +58,7 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
-const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<BundleDocumentRow> = (
-  t,
-) => ({
+const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
   width: 100,
   header: (props) => (
@@ -98,7 +96,7 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
 export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
-  t: TFunction<'releases', undefined>,
+  t: TFunction<'releases'>,
 ) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t) => [
   /**
    * Hiding action for archived and published releases of v1.0

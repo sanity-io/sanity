@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3.0.3 ([#11643](https://github.com/sanity-io/sanity/issues/11643)) ([9360af4](https://github.com/sanity-io/sanity/commit/9360af46dbe0c944e4a7ddd916335be99e1f094c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/types
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/insert-menu to v3 ([#11559](https://github.com/sanity-io/sanity/issues/11559)) ([90dfc47](https://github.com/sanity-io/sanity/commit/90dfc4736f9392df473e6c0a3167f97fe619509f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/insert-menu to v3.0.2 ([#11572](https://github.com/sanity-io/sanity/issues/11572)) ([a6264ef](https://github.com/sanity-io/sanity/commit/a6264ef21b72407a9c60e106cc19e9578071fccb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for react < 19.2 (#11383)
+
+### Bug Fixes
+
+* drop support for react < 19.2 ([#11383](https://github.com/sanity-io/sanity/issues/11383)) ([169be63](https://github.com/sanity-io/sanity/commit/169be63ead210763b7cef232e263b93ffd3b80dd)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package @sanity/types
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+**Note:** Version bump only for package @sanity/types
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 ### Bug Fixes

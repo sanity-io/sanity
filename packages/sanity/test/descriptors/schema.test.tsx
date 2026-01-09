@@ -1,5 +1,6 @@
 import {createSchemaFromManifestTypes, ValidationError} from '@sanity/schema/_internal'
 import {
+  defineArrayMember,
   defineField,
   type FieldGroupDefinition,
   type FieldsetDefinition,
@@ -16,15 +17,15 @@ import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/
 import {Rule} from '../../src/core/validation'
 import {expectManifestSchemaConversion} from './utils'
 
-const findTypeInDesc = (
-  name: string,
-  descriptor: ReturnType<(typeof DESCRIPTOR_CONVERTER)['get']>,
-) =>
+type Descriptor =
+  ReturnType<(typeof DESCRIPTOR_CONVERTER)['get']> extends Promise<infer T> ? T : never
+
+const findTypeInDesc = (name: string, descriptor: Descriptor) =>
   Object.values(descriptor.objectValues).find((val) => val.name === name) as
     | EncodedNamedType
     | undefined
 
-const convertType = (...types: SchemaTypeDefinition[]): EncodedNamedType => {
+const convertType = async (...types: SchemaTypeDefinition[]): Promise<EncodedNamedType> => {
   const schema = createSchema({name: 'custom', types})
   if (schema._validation?.length) {
     throw new Error(
@@ -32,13 +33,13 @@ const convertType = (...types: SchemaTypeDefinition[]): EncodedNamedType => {
     )
   }
 
-  const desc = DESCRIPTOR_CONVERTER.get(schema)
-  expectManifestSchemaConversion(schema, desc)
+  const desc = await DESCRIPTOR_CONVERTER.get(schema)
+  await expectManifestSchemaConversion(schema, desc)
   return findTypeInDesc(types[0].name, desc)!
 }
 
 // Separate function to test manifest conversion edge cases
-const justConvertType = (...types: SchemaTypeDefinition[]): EncodedNamedType => {
+const justConvertType = async (...types: SchemaTypeDefinition[]): Promise<EncodedNamedType> => {
   const schema = createSchema({name: 'custom', types})
   if (schema._validation?.length) {
     throw new Error(
@@ -46,16 +47,15 @@ const justConvertType = (...types: SchemaTypeDefinition[]): EncodedNamedType => 
     )
   }
 
-  const desc = DESCRIPTOR_CONVERTER.get(schema)
+  const desc = await DESCRIPTOR_CONVERTER.get(schema)
 
   return findTypeInDesc(types[0].name, desc)!
 }
 
 describe('Built-in schema', () => {
-  const descriptor = DESCRIPTOR_CONVERTER.get(builtinSchema)
-  const findType = (name: string) => findTypeInDesc(name, descriptor)
-
-  test('Object', () => {
+  test('Object', async () => {
+    const descriptor = await DESCRIPTOR_CONVERTER.get(builtinSchema)
+    const findType = (name: string) => findTypeInDesc(name, descriptor)
     const obj = findType('object')
     assert(obj)
     expect(obj.typeDef.jsonType).toBe('object')
@@ -65,8 +65,8 @@ describe('Built-in schema', () => {
 
 describe('Base features', () => {
   // Test that convertType correctly converts types (without manifest validation)
-  test('justConvertType properly converts schema types', () => {
-    const type = justConvertType({
+  test('justConvertType properly converts schema types', async () => {
+    const type = await justConvertType({
       name: 'testType',
       type: 'string',
       title: 'Test Type',
@@ -93,51 +93,54 @@ describe('Base features', () => {
     })
   })
   describe('title', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         title: undefined,
       })
     })
 
-    test('string', () => {
-      expect(convertType({name: 'foo', type: 'string', title: 'Hello'}).typeDef).toMatchObject({
+    test('string', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', title: 'Hello'})).typeDef,
+      ).toMatchObject({
         title: 'Hello',
       })
     })
   })
 
   describe('description', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         description: undefined,
       })
     })
 
-    test('string', () => {
+    test('string', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', description: 'Hello'}).typeDef,
+        (await convertType({name: 'foo', type: 'string', description: 'Hello'})).typeDef,
       ).toMatchObject({
         description: 'Hello',
       })
     })
 
-    test('non-string', () => {
+    test('non-string', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', description: 123 as unknown as string}).typeDef,
+        (await convertType({name: 'foo', type: 'string', description: 123 as unknown as string}))
+          .typeDef,
       ).toMatchObject({
         description: undefined,
       })
     })
 
-    test('JSX', () => {
+    test('JSX', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', description: <div>Hello</div>}).typeDef,
+        (await convertType({name: 'foo', type: 'string', description: <div>Hello</div>})).typeDef,
       ).toMatchObject({
         description: {__type: 'jsx', type: 'div', props: {children: 'Hello'}},
       })
     })
 
-    test('custom JSX', () => {
+    test('custom JSX', async () => {
       function Foo({bar, children}: {bar: number; children: ReactNode}) {
         return (
           <div>
@@ -147,15 +150,17 @@ describe('Base features', () => {
       }
 
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          description: (
-            <Foo bar={1}>
-              Hello <br /> <strong>world</strong>
-            </Foo>
-          ),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            description: (
+              <Foo bar={1}>
+                Hello <br /> <strong>world</strong>
+              </Foo>
+            ),
+          })
+        ).typeDef,
       ).toMatchObject({
         description: {
           __type: 'jsx',
@@ -175,35 +180,40 @@ describe('Base features', () => {
   })
 
   describe('readOnly', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         readOnly: undefined,
       })
     })
 
-    test('true', () => {
-      expect(convertType({name: 'foo', type: 'string', readOnly: true}).typeDef).toMatchObject({
+    test('true', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', readOnly: true})).typeDef,
+      ).toMatchObject({
         readOnly: true,
       })
     })
 
-    test('false', () => {
-      expect(convertType({name: 'foo', type: 'string', readOnly: false}).typeDef).toMatchObject({
-        readOnly: undefined,
-      })
-    })
-
-    test('non-boolean', () => {
+    test('false', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', readOnly: 123 as unknown as boolean}).typeDef,
+        (await convertType({name: 'foo', type: 'string', readOnly: false})).typeDef,
       ).toMatchObject({
         readOnly: undefined,
       })
     })
 
-    test('conditional', () => {
+    test('non-boolean', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', readOnly: () => true}).typeDef,
+        (await convertType({name: 'foo', type: 'string', readOnly: 123 as unknown as boolean}))
+          .typeDef,
+      ).toMatchObject({
+        readOnly: undefined,
+      })
+    })
+
+    test('conditional', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', readOnly: () => true})).typeDef,
       ).toMatchObject({
         readOnly: {__type: 'function'},
       })
@@ -211,125 +221,146 @@ describe('Base features', () => {
   })
 
   describe('hidden', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         hidden: undefined,
       })
     })
 
-    test('true', () => {
-      expect(convertType({name: 'foo', type: 'string', hidden: true}).typeDef).toMatchObject({
+    test('true', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', hidden: true})).typeDef,
+      ).toMatchObject({
         hidden: true,
       })
     })
 
-    test('false', () => {
-      expect(convertType({name: 'foo', type: 'string', hidden: false}).typeDef).toMatchObject({
-        hidden: undefined,
-      })
-    })
-
-    test('non-boolean', () => {
+    test('false', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', hidden: 123 as unknown as boolean}).typeDef,
+        (await convertType({name: 'foo', type: 'string', hidden: false})).typeDef,
       ).toMatchObject({
         hidden: undefined,
       })
     })
 
-    test('conditional', () => {
-      expect(convertType({name: 'foo', type: 'string', hidden: () => true}).typeDef).toMatchObject({
+    test('non-boolean', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', hidden: 123 as unknown as boolean}))
+          .typeDef,
+      ).toMatchObject({
+        hidden: undefined,
+      })
+    })
+
+    test('conditional', async () => {
+      expect(
+        (await convertType({name: 'foo', type: 'string', hidden: () => true})).typeDef,
+      ).toMatchObject({
         hidden: {__type: 'function'},
       })
     })
   })
 
   describe('options', () => {
-    test('undefined', () => {
+    test('undefined', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+          })
+        ).typeDef,
       ).toMatchObject({options: undefined})
     })
 
-    test('primitives', () => {
+    test('primitives', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            a: true,
-            b: false,
-            c: 'hello',
-            d: null,
-            e: [true],
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              a: true,
+              b: false,
+              c: 'hello',
+              d: null,
+              e: [true],
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {a: true, b: false, c: 'hello', d: null, e: [true]}})
     })
 
-    test('numbers', () => {
+    test('numbers', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            a: 123,
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              a: 123,
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {a: {__type: 'number', value: '123'}}})
     })
 
-    test('function', () => {
+    test('function', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            a: () => {},
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              a: () => {},
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {a: {__type: 'function'}}})
     })
 
-    test('cyclic', () => {
+    test('cyclic', async () => {
       const val: Record<string, unknown> = {}
       val.a = {b: val}
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            val,
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              val,
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {val: {a: {b: {__type: 'cyclic'}}}}})
     })
 
-    test('object with __type', () => {
+    test('object with __type', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            foo: {__type: 'yes'},
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              foo: {__type: 'yes'},
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {foo: {__type: 'object', value: {__type: 'yes'}}}})
     })
 
-    test('max depth', () => {
+    test('max depth', async () => {
       const val = {a: {b: {c: {d: {e: {f: {}}}}}}}
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          options: {
-            val,
-          } as object,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            options: {
+              val,
+            } as object,
+          })
+        ).typeDef,
       ).toMatchObject({options: {val: {a: {b: {c: {d: {__type: 'maxDepth'}}}}}}})
     })
   })
@@ -338,15 +369,15 @@ describe('Base features', () => {
     // NOTE: We don't have much coverage here, but this is being handled the exact same way as `options`.
     // We should consider refactoring these tests to be able to cover it here as well.
 
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         initialValue: undefined,
       })
     })
 
-    test('string', () => {
+    test('string', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', initialValue: 'hello'}).typeDef,
+        (await convertType({name: 'foo', type: 'string', initialValue: 'hello'})).typeDef,
       ).toMatchObject({
         initialValue: 'hello',
       })
@@ -354,51 +385,57 @@ describe('Base features', () => {
   })
 
   describe('deprecated', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         deprecated: undefined,
       })
     })
 
-    test('with reason', () => {
+    test('with reason', async () => {
       expect(
-        convertType({name: 'foo', type: 'string', deprecated: {reason: 'Hello'}}).typeDef,
+        (await convertType({name: 'foo', type: 'string', deprecated: {reason: 'Hello'}})).typeDef,
       ).toMatchObject({
         deprecated: {reason: 'Hello'},
       })
     })
 
-    test('without reason', () => {
+    test('without reason', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          deprecated: {REASON: 'Hello'} as unknown as {reason: string},
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            deprecated: {REASON: 'Hello'} as unknown as {reason: string},
+          })
+        ).typeDef,
       ).toMatchObject({
         deprecated: undefined,
       })
     })
 
-    test('with non-object', () => {
+    test('with non-object', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          deprecated: 123 as unknown as {reason: string},
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            deprecated: 123 as unknown as {reason: string},
+          })
+        ).typeDef,
       ).toMatchObject({
         deprecated: undefined,
       })
     })
 
-    test('with non-string reason', () => {
+    test('with non-string reason', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          deprecated: {reason: 123} as unknown as {reason: string},
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            deprecated: {reason: 123} as unknown as {reason: string},
+          })
+        ).typeDef,
       ).toMatchObject({
         deprecated: undefined,
       })
@@ -406,36 +443,42 @@ describe('Base features', () => {
   })
 
   describe('placeholder', () => {
-    test('undefined', () => {
+    test('undefined', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+          })
+        ).typeDef,
       ).toMatchObject({
         placeholder: undefined,
       })
     })
 
-    test('string', () => {
+    test('string', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          placeholder: 'Holder of Place',
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            placeholder: 'Holder of Place',
+          })
+        ).typeDef,
       ).toMatchObject({
         placeholder: 'Holder of Place',
       })
     })
 
-    test('non-string', () => {
+    test('non-string', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          placeholder: 123 as unknown as string,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            placeholder: 123 as unknown as string,
+          })
+        ).typeDef,
       ).toMatchObject({
         placeholder: undefined,
       })
@@ -443,19 +486,21 @@ describe('Base features', () => {
   })
 
   describe('validation', () => {
-    test('undefined', () => {
-      expect(convertType({name: 'foo', type: 'string'}).typeDef).toMatchObject({
+    test('undefined', async () => {
+      expect((await convertType({name: 'foo', type: 'string'})).typeDef).toMatchObject({
         validation: undefined,
       })
     })
 
-    test('simple required validation', () => {
+    test('simple required validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.required(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.required(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -466,13 +511,15 @@ describe('Base features', () => {
       })
     })
 
-    test('required with custom message', () => {
+    test('required with custom message', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.required().error('This field is required'),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.required().error('This field is required'),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -484,13 +531,15 @@ describe('Base features', () => {
       })
     })
 
-    test('required with warning level', () => {
+    test('required with warning level', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.required().warning(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.required().warning(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -501,13 +550,15 @@ describe('Base features', () => {
       })
     })
 
-    test('required with info level', () => {
+    test('required with info level', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.required().info(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.required().info(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -518,13 +569,15 @@ describe('Base features', () => {
       })
     })
 
-    test('multiple rules in chain', () => {
+    test('multiple rules in chain', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.required().min(5).max(10),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.required().min(5).max(10),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -539,16 +592,18 @@ describe('Base features', () => {
       })
     })
 
-    test('array of validations', () => {
+    test('array of validations', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: [
-            (rule: any) => rule.required(),
-            (rule: any) => rule.min(5).warning('Should be at least 5 characters'),
-          ],
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: [
+              (rule: any) => rule.required(),
+              (rule: any) => rule.min(5).warning('Should be at least 5 characters'),
+            ],
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -566,13 +621,15 @@ describe('Base features', () => {
 
     // This succeeds because transformValidation is not applied to the child validations
     // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx (transformValidation) for more details.
-    test('email validation in nested all', () => {
+    test('email validation in nested all', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: new Rule().all([new Rule().email()]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: new Rule().all([new Rule().email()]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -597,13 +654,15 @@ describe('Base features', () => {
       })
     })
 
-    test('email validation in nested all as function', () => {
+    test('email validation in nested all as function', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.all([rule.email()]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.all([rule.email()]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -628,13 +687,15 @@ describe('Base features', () => {
       })
     })
 
-    test('string casing validations', () => {
+    test('string casing validations', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.uppercase(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uppercase(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -645,11 +706,13 @@ describe('Base features', () => {
       })
 
       expect(
-        convertType({
-          name: 'bar',
-          type: 'string',
-          validation: (rule: any) => rule.lowercase(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'bar',
+            type: 'string',
+            validation: (rule: any) => rule.lowercase(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -660,13 +723,15 @@ describe('Base features', () => {
       })
     })
 
-    test('length validation', () => {
+    test('length validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.length(10),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.length(10),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -677,13 +742,15 @@ describe('Base features', () => {
       })
     })
 
-    test('precision validation', () => {
+    test('precision validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'number',
-          validation: (rule: any) => rule.precision(2),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'number',
+            validation: (rule: any) => rule.precision(2),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -694,13 +761,15 @@ describe('Base features', () => {
       })
     })
 
-    test('regex validation', () => {
+    test('regex validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.regex(/^[A-Z]+$/),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.regex(/^[A-Z]+$/),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -711,13 +780,15 @@ describe('Base features', () => {
       })
     })
 
-    test('regex validation with flags', () => {
+    test('regex validation with flags', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.regex(/^[a-z]+$/i),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.regex(/^[a-z]+$/i),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -728,13 +799,15 @@ describe('Base features', () => {
       })
     })
 
-    test('regex with invert', () => {
+    test('regex with invert', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.regex(/^[0-9]+$/, {invert: true}),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.regex(/^[0-9]+$/, {invert: true}),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -745,13 +818,15 @@ describe('Base features', () => {
       })
     })
 
-    test('uri validation', () => {
+    test('uri validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.uri(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -762,13 +837,15 @@ describe('Base features', () => {
       })
     })
 
-    test('uri validation with options', () => {
+    test('uri validation with options', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.uri({allowRelative: true}),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.uri({allowRelative: true}),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -779,13 +856,15 @@ describe('Base features', () => {
       })
     })
 
-    test('enum validation (valid)', () => {
+    test('enum validation (valid)', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.valid(['draft', 'published', 'archived']),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.valid(['draft', 'published', 'archived']),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -796,13 +875,15 @@ describe('Base features', () => {
       })
     })
 
-    test('enum validation with mixed types', () => {
+    test('enum validation with mixed types', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.valid(['active', 42, true]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.valid(['active', 42, true]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -818,13 +899,15 @@ describe('Base features', () => {
       })
     })
 
-    test('assetRequired validation for images', () => {
+    test('assetRequired validation for images', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'image',
-          validation: (rule: any) => rule.assetRequired(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'image',
+            validation: (rule: any) => rule.assetRequired(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -835,16 +918,18 @@ describe('Base features', () => {
       })
     })
 
-    test('custom validation', () => {
+    test('custom validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) =>
-            rule.custom((value: string) => {
-              return value.startsWith('prefix_')
-            }),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule.custom((value: string) => {
+                return value.startsWith('prefix_')
+              }),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -855,18 +940,20 @@ describe('Base features', () => {
       })
     })
 
-    test('custom validation with optional', () => {
+    test('custom validation with optional', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) =>
-            rule
-              .custom((value: string) => {
-                return value.startsWith('prefix_')
-              })
-              .optional(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule
+                .custom((value: string) => {
+                  return value.startsWith('prefix_')
+                })
+                .optional(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -877,14 +964,16 @@ describe('Base features', () => {
       })
     })
 
-    test('all validation', () => {
+    test('all validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) =>
-            rule.all([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule.all([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -904,14 +993,16 @@ describe('Base features', () => {
       })
     })
 
-    test('either validation', () => {
+    test('either validation', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) =>
-            rule.either([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule.either([rule.required(), rule.min(5), rule.max(10).warning('soft limit')]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -931,19 +1022,21 @@ describe('Base features', () => {
       })
     })
 
-    test('nested validation with messages', () => {
+    test('nested validation with messages', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) =>
-            rule
-              .either([
-                rule.email().error('Must be a valid email'),
-                rule.uppercase().error('Must be uppercase'),
-              ])
-              .error('Must be either email or uppercase'),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) =>
+              rule
+                .either([
+                  rule.email().error('Must be a valid email'),
+                  rule.uppercase().error('Must be uppercase'),
+                ])
+                .error('Must be either email or uppercase'),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -966,13 +1059,15 @@ describe('Base features', () => {
       })
     })
 
-    test('exclusive min/max', () => {
+    test('exclusive min/max', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'number',
-          validation: (rule: any) => rule.positive().lessThan(100),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'number',
+            validation: (rule: any) => rule.positive().lessThan(100),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -986,20 +1081,22 @@ describe('Base features', () => {
       })
     })
 
-    test('optional validation (no rules)', () => {
+    test('optional validation (no rules)', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: (rule: any) => rule.optional(),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: (rule: any) => rule.optional(),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: undefined,
       })
     })
 
-    test('complex field validation for objects', () => {
-      const objectType = convertType({
+    test('complex field validation for objects', async () => {
+      const objectType = await convertType({
         name: 'person',
         type: 'object',
         fields: [
@@ -1063,8 +1160,8 @@ describe('Base features', () => {
       })
     })
 
-    test('array item validation', () => {
-      const arrayType = convertType({
+    test('array item validation', async () => {
+      const arrayType = await convertType({
         name: 'tags',
         type: 'array',
         of: [
@@ -1106,8 +1203,8 @@ describe('Base features', () => {
       })
     })
 
-    test('options', () => {
-      const objectType = convertType({
+    test('options', async () => {
+      const objectType = await convertType({
         name: 'person',
         type: 'object',
         fields: [
@@ -1124,6 +1221,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1139,8 +1237,8 @@ describe('Base features', () => {
       ])
     })
 
-    test('options without validation', () => {
-      const objectType = convertType({
+    test('options without validation', async () => {
+      const objectType = await convertType({
         name: 'person',
         type: 'object',
         fields: [
@@ -1156,6 +1254,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1164,8 +1263,8 @@ describe('Base features', () => {
       ])
     })
 
-    test('options with explict valid rule', () => {
-      const objectType = convertType({
+    test('options with explict valid rule', async () => {
+      const objectType = await convertType({
         name: 'person',
         type: 'object',
         fields: [
@@ -1182,6 +1281,7 @@ describe('Base features', () => {
       })
 
       assert(objectType?.typeDef?.fields)
+      assert('name' in objectType.typeDef.fields[0])
       expect(objectType.typeDef.fields[0].typeDef.validation).toMatchObject([
         {
           level: 'error',
@@ -1190,16 +1290,18 @@ describe('Base features', () => {
       ])
     })
 
-    test('references', () => {
+    test('references', async () => {
       expect(
-        convertType(
-          {
-            name: 'foo',
-            type: 'reference',
-            to: [{type: 'bar'}],
-            validation: new Rule().reference(),
-          },
-          {name: 'bar', type: 'string'},
+        (
+          await convertType(
+            {
+              name: 'foo',
+              type: 'reference',
+              to: [{type: 'bar'}],
+              validation: new Rule().reference(),
+            },
+            {name: 'bar', type: 'string'},
+          )
         ).typeDef.validation,
       ).toMatchObject([
         {
@@ -1213,51 +1315,59 @@ describe('Base features', () => {
 
 describe('Document', () => {
   describe('liveEdit', () => {
-    test('undefined', () => {
+    test('undefined', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'document',
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef,
       ).toMatchObject({
         liveEdit: undefined,
       })
     })
-    test('true', () => {
+    test('true', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'document',
-          fields: [{name: 'title', type: 'string'}],
-          liveEdit: true,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+            liveEdit: true,
+          })
+        ).typeDef,
       ).toMatchObject({
         liveEdit: true,
       })
     })
 
-    test('false', () => {
+    test('false', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'document',
-          fields: [{name: 'title', type: 'string'}],
-          liveEdit: false,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+            liveEdit: false,
+          })
+        ).typeDef,
       ).toMatchObject({
         liveEdit: undefined,
       })
     })
 
-    test('non-boolean', () => {
+    test('non-boolean', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'document',
-          fields: [{name: 'title', type: 'string'}],
-          liveEdit: 123 as unknown as boolean,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+            liveEdit: 123 as unknown as boolean,
+          })
+        ).typeDef,
       ).toMatchObject({
         liveEdit: undefined,
       })
@@ -1266,7 +1376,7 @@ describe('Document', () => {
 })
 
 describe('Object', () => {
-  test('fields', () => {
+  test('fields', async () => {
     // We place all the fields + the assertions for each converted field here.
     const fieldTests: Array<{field: any; assert: (field: ObjectField) => void}> = [
       {
@@ -1340,7 +1450,7 @@ describe('Object', () => {
       },
     ]
 
-    const desc = convertType({
+    const desc = await convertType({
       name: 'person',
       type: 'object',
       fieldsets: [{name: 'f', title: 'Fieldset F'}],
@@ -1357,20 +1467,23 @@ describe('Object', () => {
 
     let i = 0
     for (const field of desc.typeDef.fields) {
+      assert('name' in field)
       fieldTests[i].assert(field)
       i++
     }
   })
 
   describe('fieldsets', () => {
-    test('ordering', () => {
+    test('ordering', async () => {
       expect(
-        convertType({
-          name: 'person',
-          type: 'object',
-          fieldsets: [{name: 'b'}, {name: 'a'}],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.fieldsets,
+        (
+          await convertType({
+            name: 'person',
+            type: 'object',
+            fieldsets: [{name: 'b'}, {name: 'a'}],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.fieldsets,
       ).toMatchObject([{name: 'b'}, {name: 'a'}])
     })
 
@@ -1415,14 +1528,16 @@ describe('Object', () => {
         {name: 'f', options: {collapsible: true}},
         {name: 'f', options: {collapsible: true}},
       ],
-    ])('%s', (_, definition, expected) => {
+    ])('%s', async (_, definition, expected) => {
       expect(
-        convertType({
-          name: 'person',
-          type: 'object',
-          fieldsets: [definition],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.fieldsets,
+        (
+          await convertType({
+            name: 'person',
+            type: 'object',
+            fieldsets: [definition],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.fieldsets,
       ).toMatchObject([expected])
     })
   })
@@ -1449,34 +1564,38 @@ describe('Object', () => {
       ['hidden func', {name: 'f', hidden: () => false}, {name: 'f', hidden: {__type: 'function'}}],
       ['default true', {name: 'f', default: true}, {name: 'f', default: true}],
       ['default false', {name: 'f', default: false}, {name: 'f', default: undefined}],
-    ])('%s', (_, definition, expected) => {
+    ])('%s', async (_, definition, expected) => {
       expect(
-        convertType({
-          name: 'person',
-          type: 'object',
-          groups: [definition],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.groups,
+        (
+          await convertType({
+            name: 'person',
+            type: 'object',
+            groups: [definition],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.groups,
       ).toMatchObject([expected])
     })
 
     describe('i18n', () => {
-      test('basic i18n support', () => {
+      test('basic i18n support', async () => {
         expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'settings',
-                title: 'Settings',
-                i18n: {
-                  title: {key: 'groups.settings.title', ns: 'studio'},
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'settings',
+                  title: 'Settings',
+                  i18n: {
+                    title: {key: 'groups.settings.title', ns: 'studio'},
+                  },
                 },
-              },
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
         ).toMatchObject([
           {
             name: 'settings',
@@ -1488,22 +1607,24 @@ describe('Object', () => {
         ])
       })
 
-      test('i18n with multiple fields', () => {
+      test('i18n with multiple fields', async () => {
         expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'advanced',
-                title: 'Advanced Settings',
-                i18n: {
-                  title: {key: 'groups.advanced.title', ns: 'studio'},
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'advanced',
+                  title: 'Advanced Settings',
+                  i18n: {
+                    title: {key: 'groups.advanced.title', ns: 'studio'},
+                  },
                 },
-              },
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
         ).toMatchObject([
           {
             name: 'advanced',
@@ -1515,20 +1636,22 @@ describe('Object', () => {
         ])
       })
 
-      test('invalid i18n format is ignored', () => {
+      test('invalid i18n format is ignored', async () => {
         expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'settings',
-                title: 'Settings',
-                i18n: 'invalid',
-              } as any,
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'settings',
+                  title: 'Settings',
+                  i18n: 'invalid',
+                } as any,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
         ).toMatchObject([
           {
             name: 'settings',
@@ -1538,22 +1661,49 @@ describe('Object', () => {
         ])
       })
 
-      test('i18n with missing properties is ignored', () => {
+      test('i18n with missing properties is ignored', async () => {
         expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'settings',
-                title: 'Settings',
-                i18n: {
-                  title: {key: 'groups.settings.title'},
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'settings',
+                  title: 'Settings',
+                  i18n: {
+                    title: {key: 'groups.settings.title'},
+                  },
+                } as any,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
+        ).toMatchObject([
+          {
+            name: 'settings',
+            title: 'Settings',
+            i18n: undefined,
+          },
+        ])
+      })
+
+      test('empty i18n object is ignored', async () => {
+        expect(
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'settings',
+                  title: 'Settings',
+                  i18n: {},
                 },
-              } as any,
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
         ).toMatchObject([
           {
             name: 'settings',
@@ -1563,47 +1713,26 @@ describe('Object', () => {
         ])
       })
 
-      test('empty i18n object is ignored', () => {
+      test('i18n combined with other properties', async () => {
         expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'settings',
-                title: 'Settings',
-                i18n: {},
-              },
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
-        ).toMatchObject([
-          {
-            name: 'settings',
-            title: 'Settings',
-            i18n: undefined,
-          },
-        ])
-      })
-
-      test('i18n combined with other properties', () => {
-        expect(
-          convertType({
-            name: 'person',
-            type: 'object',
-            groups: [
-              {
-                name: 'settings',
-                title: 'Settings',
-                hidden: true,
-                default: true,
-                i18n: {
-                  title: {key: 'groups.settings.title', ns: 'studio'},
+          (
+            await convertType({
+              name: 'person',
+              type: 'object',
+              groups: [
+                {
+                  name: 'settings',
+                  title: 'Settings',
+                  hidden: true,
+                  default: true,
+                  i18n: {
+                    title: {key: 'groups.settings.title', ns: 'studio'},
+                  },
                 },
-              },
-            ],
-            fields: [{name: 'title', type: 'string'}],
-          }).typeDef.groups,
+              ],
+              fields: [{name: 'title', type: 'string'}],
+            })
+          ).typeDef.groups,
         ).toMatchObject([
           {
             name: 'settings',
@@ -1623,10 +1752,10 @@ describe('Object', () => {
     // Note: These tests use justConvertType because the manifest conversion
     // process currently doesn't preserve custom orderings properly when default
     // orderings are generated. This is a known limitation.
-    test('basic orderings', () => {
+    test('basic orderings', async () => {
       // When orderings are specified on document types, they should be preserved
       // Note: The schema system may add default orderings when none are specified
-      const result = justConvertType({
+      const result = await justConvertType({
         name: 'article',
         type: 'document',
         orderings: [
@@ -1658,25 +1787,27 @@ describe('Object', () => {
       })
     })
 
-    test('multiple orderings', () => {
+    test('multiple orderings', async () => {
       expect(
-        justConvertType({
-          name: 'article',
-          type: 'document',
-          orderings: [
-            {
-              name: 'publishedAt',
-              title: 'Published Date',
-              by: [{field: 'publishedAt', direction: 'desc'}],
-            },
-            {
-              name: 'title',
-              title: 'Title',
-              by: [{field: 'title', direction: 'asc'}],
-            },
-          ],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await justConvertType({
+            name: 'article',
+            type: 'document',
+            orderings: [
+              {
+                name: 'publishedAt',
+                title: 'Published Date',
+                by: [{field: 'publishedAt', direction: 'desc'}],
+              },
+              {
+                name: 'title',
+                title: 'Title',
+                by: [{field: 'title', direction: 'asc'}],
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         {
           name: 'publishedAt',
@@ -1691,23 +1822,25 @@ describe('Object', () => {
       ])
     })
 
-    test('orderings with i18n', () => {
+    test('orderings with i18n', async () => {
       expect(
-        justConvertType({
-          name: 'article',
-          type: 'document',
-          orderings: [
-            {
-              name: 'publishedAt',
-              title: 'Published Date',
-              by: [{field: 'publishedAt', direction: 'desc'}],
-              i18n: {
-                title: {key: 'orderings.publishedAt.title', ns: 'studio'},
+        (
+          await justConvertType({
+            name: 'article',
+            type: 'document',
+            orderings: [
+              {
+                name: 'publishedAt',
+                title: 'Published Date',
+                by: [{field: 'publishedAt', direction: 'desc'}],
+                i18n: {
+                  title: {key: 'orderings.publishedAt.title', ns: 'studio'},
+                },
               },
-            },
-          ],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         {
           name: 'publishedAt',
@@ -1720,42 +1853,44 @@ describe('Object', () => {
       ])
     })
 
-    test('invalid orderings are handled', () => {
+    test('invalid orderings are handled', async () => {
       expect(
-        justConvertType({
-          name: 'article',
-          type: 'document',
-          orderings: [
-            // Missing name
-            {
-              title: 'Published Date',
-              by: [{field: 'publishedAt', direction: 'desc'}],
-            } as any,
-            // Missing by
-            {
-              name: 'empty',
-              title: 'Empty',
-            } as any,
-            // Empty by array
-            {
-              name: 'emptyBy',
-              title: 'Empty By',
-              by: [],
-            },
-            // Missing title
-            {
-              name: 'title',
-              by: [{field: 'title', direction: 'asc'}],
-            } as any,
-            // Valid ordering
-            {
-              name: 'valid',
-              title: 'Valid Ordering',
-              by: [{field: 'title', direction: 'asc'}],
-            },
-          ],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await justConvertType({
+            name: 'article',
+            type: 'document',
+            orderings: [
+              // Missing name
+              {
+                title: 'Published Date',
+                by: [{field: 'publishedAt', direction: 'desc'}],
+              } as any,
+              // Missing by
+              {
+                name: 'empty',
+                title: 'Empty',
+              } as any,
+              // Empty by array
+              {
+                name: 'emptyBy',
+                title: 'Empty By',
+                by: [],
+              },
+              // Missing title
+              {
+                name: 'title',
+                by: [{field: 'title', direction: 'asc'}],
+              } as any,
+              // Valid ordering
+              {
+                name: 'valid',
+                title: 'Valid Ordering',
+                by: [{field: 'title', direction: 'asc'}],
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         // Missing name is omitted
         // Missing by is omitted
@@ -1784,26 +1919,28 @@ describe('Object', () => {
       ])
     })
 
-    test('invalid ordering items are filtered out', () => {
+    test('invalid ordering items are filtered out', async () => {
       expect(
-        justConvertType({
-          name: 'article',
-          type: 'document',
-          orderings: [
-            {
-              name: 'mixed',
-              title: 'Mixed Ordering',
-              by: [
-                {field: 'publishedAt', direction: 'desc'},
-                {field: 'title'} as any, // Missing direction
-                {direction: 'asc'} as any, // Missing field
-                {field: 'author', direction: 'invalid'} as any, // Invalid direction
-                {field: 'category', direction: 'asc'}, // Valid
-              ],
-            },
-          ],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await justConvertType({
+            name: 'article',
+            type: 'document',
+            orderings: [
+              {
+                name: 'mixed',
+                title: 'Mixed Ordering',
+                by: [
+                  {field: 'publishedAt', direction: 'desc'},
+                  {field: 'title'} as any, // Missing direction
+                  {direction: 'asc'} as any, // Missing field
+                  {field: 'author', direction: 'invalid'} as any, // Invalid direction
+                  {field: 'category', direction: 'asc'}, // Valid
+                ],
+              },
+            ],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         {
           name: 'mixed',
@@ -1816,26 +1953,30 @@ describe('Object', () => {
       ])
     })
 
-    test('empty orderings array', () => {
+    test('empty orderings array', async () => {
       // Empty orderings array is preserved as empty
       expect(
-        justConvertType({
-          name: 'article',
-          type: 'document',
-          orderings: [],
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await justConvertType({
+            name: 'article',
+            type: 'document',
+            orderings: [],
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toEqual([])
     })
 
-    test('undefined orderings (gets default)', () => {
+    test('undefined orderings (gets default)', async () => {
       // Document types get default orderings based on their fields
       expect(
-        convertType({
-          name: 'article',
-          type: 'document',
-          fields: [{name: 'title', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await convertType({
+            name: 'article',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         {
           name: 'title',
@@ -1848,14 +1989,16 @@ describe('Object', () => {
       ])
     })
 
-    test('orderings on non-document type', () => {
+    test('orderings on non-document type', async () => {
       // Object types also get default orderings based on their fields when none specified
       expect(
-        convertType({
-          name: 'person',
-          type: 'object',
-          fields: [{name: 'name', type: 'string'}],
-        }).typeDef.orderings,
+        (
+          await convertType({
+            name: 'person',
+            type: 'object',
+            fields: [{name: 'name', type: 'string'}],
+          })
+        ).typeDef.orderings,
       ).toMatchObject([
         {
           name: 'name',
@@ -1872,9 +2015,9 @@ describe('Object', () => {
 
 describe('Array', () => {
   describe('of', () => {
-    test('single string', () => {
+    test('single string', async () => {
       expect(
-        convertType({name: 'foo', type: 'array', of: [{type: 'string'}]}).typeDef.of,
+        (await convertType({name: 'foo', type: 'array', of: [{type: 'string'}]})).typeDef.of,
       ).toMatchObject([
         {
           name: 'string',
@@ -1883,18 +2026,20 @@ describe('Array', () => {
       ])
     })
 
-    test('same type with different name ', () => {
+    test('same type with different name ', async () => {
       expect(
-        convertType(
-          {
-            name: 'foo',
-            type: 'array',
-            of: [
-              {name: 'bar1', type: 'bar'},
-              {name: 'bar2', type: 'bar'},
-            ],
-          },
-          {name: 'bar', type: 'object', fields: [{name: 'title', type: 'string'}]},
+        (
+          await convertType(
+            {
+              name: 'foo',
+              type: 'array',
+              of: [
+                {name: 'bar1', type: 'bar'},
+                {name: 'bar2', type: 'bar'},
+              ],
+            },
+            {name: 'bar', type: 'object', fields: [{name: 'title', type: 'string'}]},
+          )
         ).typeDef.of,
       ).toMatchObject([
         {
@@ -1912,36 +2057,42 @@ describe('Array', () => {
 
 describe('Text', () => {
   describe('rows', () => {
-    test('undefined', () => {
+    test('undefined', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'text',
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'text',
+          })
+        ).typeDef,
       ).toMatchObject({
         rows: undefined,
       })
     })
 
-    test('number', () => {
+    test('number', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'text',
-          rows: 5,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'text',
+            rows: 5,
+          })
+        ).typeDef,
       ).toMatchObject({
         rows: '5',
       })
     })
 
-    test('non-number', () => {
+    test('non-number', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'text',
-          rows: '5' as unknown as number,
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'text',
+            rows: '5' as unknown as number,
+          })
+        ).typeDef,
       ).toMatchObject({
         rows: undefined,
       })
@@ -1950,11 +2101,13 @@ describe('Text', () => {
 })
 
 describe('References', () => {
-  test('reference', () => {
+  test('reference', async () => {
     expect(
-      convertType(
-        {name: 'foo', type: 'reference', to: [{type: 'person'}]},
-        {name: 'person', type: 'document', fields: [{name: 'name', type: 'string'}]},
+      (
+        await convertType(
+          {name: 'foo', type: 'reference', to: [{type: 'person'}]},
+          {name: 'person', type: 'document', fields: [{name: 'name', type: 'string'}]},
+        )
       ).typeDef,
     ).toMatchObject({
       to: [{name: 'person'}],
@@ -1965,14 +2118,16 @@ describe('References', () => {
     })
   })
 
-  test('crossDatasetReference', () => {
+  test('crossDatasetReference', async () => {
     expect(
-      convertType({
-        name: 'foo',
-        type: 'crossDatasetReference',
-        dataset: 'other',
-        to: [{type: 'person', preview: {select: {title: 'title'}}}],
-      }).typeDef,
+      (
+        await convertType({
+          name: 'foo',
+          type: 'crossDatasetReference',
+          dataset: 'other',
+          to: [{type: 'person', preview: {select: {title: 'title'}}}],
+        })
+      ).typeDef,
     ).toMatchObject({
       to: [{name: 'person'}],
       fields: [
@@ -1984,15 +2139,17 @@ describe('References', () => {
     })
   })
 
-  test('globalDocumentReference', () => {
+  test('globalDocumentReference', async () => {
     expect(
-      convertType({
-        name: 'foo',
-        type: 'globalDocumentReference',
-        resourceType: 'media-library',
-        resourceId: 'foo',
-        to: [{title: 'Person', type: 'person', preview: {select: {title: 'title'}}}],
-      }).typeDef,
+      (
+        await convertType({
+          name: 'foo',
+          type: 'globalDocumentReference',
+          resourceType: 'media-library',
+          resourceId: 'foo',
+          to: [{title: 'Person', type: 'person', preview: {select: {title: 'title'}}}],
+        })
+      ).typeDef,
     ).toMatchObject({
       to: [{name: 'person'}],
       fields: [
@@ -2004,14 +2161,16 @@ describe('References', () => {
 })
 
 describe('Block', () => {
-  test('default settings', () => {
-    const type = convertType({
+  test('default settings', async () => {
+    const type = await convertType({
       name: 'paragraph',
       type: 'block',
     })
 
     assert(type.typeDef.fields)
-    const style = type.typeDef.fields.find(({name}) => name === 'style')
+    const style = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'style',
+    )
     assert(style)
     expect(style.typeDef.extends).toBe('string')
     expect(style.typeDef.options).toEqual({
@@ -2059,7 +2218,9 @@ describe('Block', () => {
       ],
     })
 
-    const listItem = type.typeDef.fields.find(({name}) => name === 'listItem')
+    const listItem = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'listItem',
+    )
     assert(listItem)
     expect(listItem.typeDef.extends).toBe('string')
     expect(listItem.typeDef.options).toEqual({
@@ -2077,19 +2238,23 @@ describe('Block', () => {
       ],
     })
 
-    const markDefs = type.typeDef.fields.find(({name}) => name === 'markDefs')
+    const markDefs = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'markDefs',
+    )
     assert(markDefs)
     expect(markDefs.typeDef.extends).toBe('array')
     assert(markDefs.typeDef.of)
     expect((markDefs.typeDef.of as any[]).map(({name}) => name)).toEqual(['link'])
 
-    const level = type.typeDef.fields.find(({name}) => name === 'level')
+    const level = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'level',
+    )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
   })
 
-  test('custom settings', () => {
-    const type = convertType({
+  test('custom settings', async () => {
+    const type = await convertType({
       name: 'paragraph',
       type: 'block',
       styles: [{title: 'Quote', value: 'blockquote'}],
@@ -2103,7 +2268,9 @@ describe('Block', () => {
     })
 
     assert(type.typeDef.fields)
-    const style = type.typeDef.fields.find(({name}) => name === 'style')
+    const style = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'style',
+    )
     assert(style)
     expect(style.typeDef.extends).toBe('string')
     expect(style.typeDef.options).toEqual({
@@ -2120,7 +2287,9 @@ describe('Block', () => {
       ],
     })
 
-    const listItem = type.typeDef.fields.find(({name}) => name === 'listItem')
+    const listItem = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'listItem',
+    )
     assert(listItem)
     expect(listItem.typeDef.extends).toBe('string')
     expect(listItem.typeDef.options).toEqual({
@@ -2132,13 +2301,17 @@ describe('Block', () => {
       ],
     })
 
-    const markDefs = type.typeDef.fields.find(({name}) => name === 'markDefs')
+    const markDefs = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'markDefs',
+    )
     assert(markDefs)
     expect(markDefs.typeDef.extends).toBe('array')
     assert(markDefs.typeDef.of)
     expect((markDefs.typeDef.of as any[]).map(({name}) => name)).toEqual(['internalLink'])
 
-    const level = type.typeDef.fields.find(({name}) => name === 'level')
+    const level = type.typeDef.fields.find(
+      (field): field is ObjectField => 'name' in field && field.name === 'level',
+    )
     assert(level)
     expect(level.typeDef.extends).toBe('number')
   })
@@ -2146,8 +2319,8 @@ describe('Block', () => {
 
 // Tests for full roundtrip conversion (schema → manifest → schema)
 describe('Manifest roundtrip conversion', () => {
-  test('basic types survive roundtrip conversion', () => {
-    const type = convertType({
+  test('basic types survive roundtrip conversion', async () => {
+    const type = await convertType({
       name: 'basicString',
       type: 'string',
       title: 'Basic String Field', // Use a title that won't be stripped
@@ -2174,8 +2347,8 @@ describe('Manifest roundtrip conversion', () => {
     })
   })
 
-  test('complex object types survive roundtrip conversion', () => {
-    const type = convertType({
+  test('complex object types survive roundtrip conversion', async () => {
+    const type = await convertType({
       name: 'person',
       type: 'object',
       title: 'Person',
@@ -2270,14 +2443,14 @@ describe('Manifest conversion limitations', () => {
 
   describe('validation rules without constraint property', () => {
     // Email validation is defined as {flag: 'email'} without a constraint property
-    test('email validation is excluded during manifest conversion', () => {
+    test('email validation is excluded during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'string',
         validation: new Rule().email(),
       }
       // First, verify that convertType includes the email validation
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [{type: 'email'}],
@@ -2286,17 +2459,17 @@ describe('Manifest conversion limitations', () => {
 
       // But when going through manifest conversion, it's excluded
       // The roundtrip validation should fail because email validation is excluded
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
 
-    test('email validation as function is excluded during manifest conversion', () => {
+    test('email validation as function is excluded during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'string',
         validation: (rule: any) => rule.email(),
       }
       // First, verify that convertType includes the email validation
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [{type: 'email'}],
@@ -2304,29 +2477,29 @@ describe('Manifest conversion limitations', () => {
       ])
 
       // But when going through manifest conversion, it's excluded
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
 
     // Integer validation is defined as {flag: 'integer'} without a constraint property
-    test('integer validation is excluded during manifest conversion', () => {
+    test('integer validation is excluded during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'number',
         validation: new Rule().integer(),
       }
 
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [{type: 'integer'}],
         },
       ])
 
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
 
     // Unique validation is defined as {flag: 'unique'} without a constraint property
-    test('unique validation is excluded during manifest conversion', () => {
+    test('unique validation is excluded during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'array',
@@ -2334,25 +2507,27 @@ describe('Manifest conversion limitations', () => {
         validation: new Rule().unique(),
       }
 
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [{type: 'uniqueItems'}],
         },
       ])
 
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
 
     // However, email validation in nested all() is preserved because
     // transformValidation is not applied to child validations
-    test('email validation in nested all is preserved', () => {
+    test('email validation in nested all is preserved', async () => {
       expect(
-        convertType({
-          name: 'foo',
-          type: 'string',
-          validation: new Rule().all([new Rule().email()]),
-        }).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            validation: new Rule().all([new Rule().email()]),
+          })
+        ).typeDef,
       ).toMatchObject({
         validation: [
           {
@@ -2380,7 +2555,7 @@ describe('Manifest conversion limitations', () => {
 
   describe('validation rules with field references', () => {
     // Field references use symbols which cannot be serialized
-    test('min/max with field references are excluded during manifest conversion', () => {
+    test('min/max with field references are excluded during manifest conversion', async () => {
       // First verify that convertType includes the field reference validation
       const type = {
         name: 'endDate',
@@ -2389,7 +2564,7 @@ describe('Manifest conversion limitations', () => {
       }
 
       // The validation should include a field reference
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [
@@ -2405,13 +2580,13 @@ describe('Manifest conversion limitations', () => {
       ])
 
       // But manifest conversion should fail due to field reference
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
   })
 
   describe('validation with non-string messages', () => {
     // Localized messages (objects) are not supported in manifest extraction
-    test('localized validation messages are converted to undefined during manifest conversion', () => {
+    test('localized validation messages are converted to undefined during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'string',
@@ -2423,7 +2598,7 @@ describe('Manifest conversion limitations', () => {
           }),
       }
       // First verify that convertType includes the localized message
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           message: {
@@ -2436,19 +2611,19 @@ describe('Manifest conversion limitations', () => {
       ])
 
       // But manifest conversion should fail because localized messages are not supported
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
   })
 
   describe('validation with null in enum values', () => {
-    test('enum validation with null values loses null during manifest conversion', () => {
+    test('enum validation with null values loses null during manifest conversion', async () => {
       const type = {
         name: 'foo',
         type: 'string',
         validation: (rule: any) => rule.valid([null, 'value']),
       }
       // First verify that convertType includes null in the enum values
-      expect(justConvertType(type).typeDef.validation).toMatchObject([
+      expect((await justConvertType(type)).typeDef.validation).toMatchObject([
         {
           level: 'error',
           rules: [
@@ -2461,7 +2636,37 @@ describe('Manifest conversion limitations', () => {
       ])
 
       // Manifest conversion will lose the null value
-      expect(() => convertType(type)).toThrow()
+      await expect(() => convertType(type)).rejects.toThrow()
     })
+  })
+})
+
+describe('hoisting', () => {
+  test('hoists the same field definition', async () => {
+    const titleField = defineField({
+      name: 'title',
+      type: 'string',
+    })
+    const encoded = await justConvertType(
+      {name: 'foo', type: 'object', fields: [titleField]},
+      {name: 'bar', type: 'object', fields: [titleField]},
+    )
+    assert(encoded.typeDef.fields)
+    expect(encoded.typeDef.fields).toHaveLength(1)
+    expect(encoded.typeDef.fields[0]).toMatchObject({__type: 'hoisted'})
+  })
+
+  test('hoists array members', async () => {
+    const arrayMember = defineArrayMember({
+      type: 'string',
+    })
+    const encoded = await justConvertType(
+      {name: 'foo', type: 'array', of: [arrayMember]},
+      {name: 'bar', type: 'array', of: [arrayMember]},
+    )
+    assert(encoded.typeDef.extends === 'array')
+    assert(Array.isArray(encoded.typeDef.of))
+    expect(encoded.typeDef.of).toHaveLength(1)
+    expect(encoded.typeDef.of[0]).toMatchObject({__type: 'hoisted'})
   })
 })

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import oneline from 'oneline'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'

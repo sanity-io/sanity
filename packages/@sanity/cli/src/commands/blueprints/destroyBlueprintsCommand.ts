@@ -2,6 +2,8 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
+  --project-id   Project associated with the Stack
+  --stack-id     Stack ID to destroy (defaults to current Stack)
   --force, -f    Force destroy without confirmation
   --no-wait      Do not wait for destroy to complete
 
@@ -36,8 +38,9 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
   name: 'destroy',
   group: 'blueprints',
   helpText,
-  signature: '[--force] [-f] [--no-wait]',
-  description: 'Destroy a Blueprint deployment',
+  signature: '[--project-id <value> --stack-id <value> --force] [--no-wait]',
+  description:
+    'Destroy a Blueprint Stack deployment and its resources (will not delete local files)',
 
   async action(args, context) {
     const {apiClient, output} = context

@@ -1,4 +1,4 @@
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 
 import {type DialogItem} from '../../types'
 import {type SearchableTreeEditingMenuItem} from './types'

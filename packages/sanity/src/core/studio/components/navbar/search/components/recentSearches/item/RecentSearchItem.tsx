@@ -1,4 +1,5 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -13,6 +14,7 @@ import {
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
 
+import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
@@ -62,6 +64,7 @@ export function RecentSearchItem({
 }: RecentSearchesProps) {
   const {dispatch} = useSearchState()
   const recentSearchesStore = useRecentSearchesStore()
+  const telemetry = useTelemetry()
 
   // Determine how many characters are left to render type pills
   const availableCharacters = maxVisibleTypePillChars - value.query.length
@@ -73,7 +76,9 @@ export function RecentSearchItem({
     if (recentSearchesStore) {
       recentSearchesStore?.addSearch(value, value?.filters)
     }
-  }, [dispatch, recentSearchesStore, value])
+
+    telemetry.log(RecentSearchClicked)
+  }, [dispatch, recentSearchesStore, telemetry, value])
 
   const handleDelete = useCallback(
     (event: MouseEvent) => {

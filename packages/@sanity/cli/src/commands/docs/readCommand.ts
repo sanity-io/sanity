@@ -45,7 +45,7 @@ const readCommand: CliCommandDefinition<ReadCommandFlags> = {
   description: 'Read an article in terminal',
   async action(args, context) {
     const {output} = context
-    const flags = args.extOptions as ReadCommandFlags
+    const flags = args.extOptions
     const input = args.argsWithoutOptions[0]
 
     if (!input || typeof input !== 'string') {

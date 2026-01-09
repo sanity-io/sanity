@@ -1,6 +1,6 @@
 import {type ListenEvent, type SanityClient, type SanityDocument} from '@sanity/client'
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
-import {keyBy} from 'lodash'
+import {keyBy} from 'lodash-es'
 import {combineLatest, EMPTY, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
@@ -117,10 +117,7 @@ function createObserveFields(context: {
   listener: Observable<ListenEvent<Record<string, any>>>
 }) {
   const {client, listener} = context
-  return function observeFields(
-    id: string,
-    fields: string[],
-  ): Observable<SanityDocument<Record<string, any>> | null> {
+  return function observeFields(id: string, fields: string[]): Observable<SanityDocument | null> {
     return listener.pipe(
       switchMap((event) => {
         if (event.type === 'welcome') {

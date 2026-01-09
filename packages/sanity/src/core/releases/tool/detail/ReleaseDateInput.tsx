@@ -5,7 +5,7 @@ import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 
-const dateInputFormat = 'PP HH:mm'
+export const dateInputFormat = 'PP HH:mm'
 
 export function ReleaseDateInput(props: {
   setIsIntendedScheduleDateInPast: (isIntendedScheduleDateInPast: boolean) => void

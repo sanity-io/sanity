@@ -14,7 +14,7 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type Theme} from '@sanity/ui/theme'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {
   type ForwardedRef,
   forwardRef,

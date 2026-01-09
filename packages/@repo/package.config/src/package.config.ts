@@ -6,6 +6,9 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    // We already check types with `check:types` scripts
+    checkTypes: false,
+
     customTags: [
       {
         name: 'hidden',
@@ -24,9 +27,6 @@ export default defineConfig({
       'ae-internal-missing-underscore': 'off',
       'ae-missing-release-tag': 'off',
     },
-  },
-  rollup: {
-    optimizeLodash: true,
   },
   tsconfig: 'tsconfig.lib.json',
   strictOptions: {

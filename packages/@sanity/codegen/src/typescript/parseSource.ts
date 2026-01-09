@@ -17,6 +17,10 @@ export function parseSourceFile(
     // append .ts to the filename so babel will parse it as typescript
     filename += '.ts'
     source = parseVue(source)
+  } else if (filename.endsWith('.svelte')) {
+    // append .ts to the filename so babel will parse it as typescript
+    filename += '.ts'
+    source = parseSvelte(source)
   }
   const result = parse(source, {
     ...babelOptions,
@@ -47,6 +51,19 @@ function parseAstro(source: string): string {
 function parseVue(source: string): string {
   // find all script tags, the js code is between <script> and </script>
   const scriptRegex = /<script(?:\s+generic=["'][^"']*["'])?[^>]*>([\s\S]*?)<\/script>/g
+  // const matches = [...source.matchAll(scriptRegex)]
+  // TODO: swap once this code runs in `ES2020`
+  const matches = matchAllPolyfill(source, scriptRegex)
+  if (!matches.length) {
+    return ''
+  }
+
+  return matches.map((match) => match[1]).join('\n')
+}
+
+function parseSvelte(source: string): string {
+  // find all script tags, the js code is between <script> and </script>
+  const scriptRegex = /<script[^>]*>([\s\S]*?)<\/script>/g
   // const matches = [...source.matchAll(scriptRegex)]
   // TODO: swap once this code runs in `ES2020`
   const matches = matchAllPolyfill(source, scriptRegex)

@@ -4,6 +4,7 @@ import {
   type PreviewValue,
   type SanityDocument,
   type SchemaType,
+  type SortOrdering,
 } from '@sanity/types'
 import {Box, type CardProps, Text} from '@sanity/ui'
 import {
@@ -38,6 +39,7 @@ interface PaneItemProps {
   icon?: ComponentType<any> | false
   pressed?: boolean
   selected?: boolean
+  sortOrder?: Pick<SortOrdering, 'by'>
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
@@ -70,6 +72,7 @@ export function PaneItem(props: PaneItemProps) {
     pressed,
     schemaType,
     selected,
+    sortOrder,
     title,
     value,
     margin,
@@ -95,6 +98,7 @@ export function PaneItem(props: PaneItemProps) {
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
+          sortOrder={sortOrder}
           value={value}
           presence={documentPresence}
         />
@@ -122,6 +126,7 @@ export function PaneItem(props: PaneItemProps) {
     icon,
     layout,
     schemaType,
+    sortOrder,
     title,
     value,
     documentPresence,

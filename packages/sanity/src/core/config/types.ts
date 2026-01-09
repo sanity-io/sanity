@@ -220,6 +220,13 @@ export interface Tool<Options = any> {
     params: Record<string, unknown>,
     payload: unknown,
   ) => boolean | {[key: string]: boolean}
+
+  /**
+   * Internal application type identifier used to classify system tools.
+   *
+   * @internal
+   */
+  __internalApplicationType?: string
 }
 
 /** @public */
@@ -1071,6 +1078,12 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   auth: AuthStore
   projectId: string
   dataset: string
+  /**
+   * API hostname used for requests. Used to determine if the workspace
+   * points to staging or production environment.
+   * @internal
+   */
+  apiHost?: string
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource

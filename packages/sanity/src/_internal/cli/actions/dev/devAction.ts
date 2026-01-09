@@ -27,7 +27,6 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
-import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface StartDevServerCommandFlags {
   'host'?: string
@@ -169,14 +168,7 @@ export default async function startSanityDevServer(
     const appId = getAppId({cliConfig, output})
 
     output.print(`${logSymbols.info} Running with auto-updates enabled`)
-    if (!appId) {
-      warnAboutMissingAppId({
-        appType: 'studio',
-        cliConfigPath,
-        output,
-        projectId: cliConfig?.api?.projectId,
-      })
-    }
+
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {

@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import chalk from 'chalk'
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 
 import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'

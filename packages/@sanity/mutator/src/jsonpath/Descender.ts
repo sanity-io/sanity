@@ -1,4 +1,4 @@
-import {flatten} from 'lodash'
+import {flatten} from 'lodash-es'
 
 import {Expression} from './Expression'
 import {type Probe} from './Probe'

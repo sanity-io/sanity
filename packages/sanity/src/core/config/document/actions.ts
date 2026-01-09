@@ -68,8 +68,10 @@ export const isSanityDefinedAction = (
 /**
  * @hidden
  * @beta */
-export interface DocumentActionComponent
-  extends ActionComponent<DocumentActionProps, DocumentActionDescription> {
+export interface DocumentActionComponent extends ActionComponent<
+  DocumentActionProps,
+  DocumentActionDescription
+> {
   /**
    * An optional meta property that can used to replace this document action
    * with another. E.g.:
@@ -108,7 +110,8 @@ export interface DuplicateActionProps extends DocumentActionProps {
  * @beta
  */
 export interface DuplicateDocumentActionComponent
-  extends ActionComponent<DuplicateActionProps, DocumentActionDescription>,
+  extends
+    ActionComponent<DuplicateActionProps, DocumentActionDescription>,
     Pick<DocumentActionComponent, 'action' | 'displayName'> {}
 
 /**

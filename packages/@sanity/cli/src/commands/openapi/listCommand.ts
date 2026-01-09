@@ -33,7 +33,7 @@ const listCommand: CliCommandDefinition<ListCommandFlags> = {
   description: 'List all available OpenAPI specifications',
   async action(args, context) {
     const {output} = context
-    const flags = args.extOptions as ListCommandFlags
+    const flags = args.extOptions
 
     // Open in web browser if --web or -w flag is provided
     if (flags.web || flags.w) {

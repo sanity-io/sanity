@@ -1,5 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 // import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
@@ -15,7 +16,7 @@ import {
   UNICODE_TEXT,
 } from './input'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
@@ -118,7 +119,7 @@ test.describe('Portable Text Input', () => {
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await pasteFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
-
+      await page.getByTestId('upload-destination-sanity-default').click()
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })
     test(`Added dropped image as a block`, async ({mount, page}) => {
@@ -140,6 +141,8 @@ test.describe('Portable Text Input', () => {
       await dropFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
 
       await expect(page.getByText('Drop to upload 1 file')).not.toBeVisible()
+
+      await page.getByTestId('upload-destination-sanity-default').click()
 
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })

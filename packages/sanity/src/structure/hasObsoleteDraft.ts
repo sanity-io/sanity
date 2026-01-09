@@ -38,7 +38,7 @@ export function hasObsoleteDraft({editState, workspace, schemaType}: Context):
     },
   } = workspace
 
-  if (draftExists === false) {
+  if (!draftExists) {
     return {
       result: false,
     }

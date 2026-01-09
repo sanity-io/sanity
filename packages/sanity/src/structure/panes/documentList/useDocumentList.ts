@@ -1,4 +1,10 @@
-import {ChannelError, ClientError, type ClientPerspective, ServerError} from '@sanity/client'
+import {
+  ChannelError,
+  ClientError,
+  type ClientPerspective,
+  type SanityClient,
+  ServerError,
+} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -15,14 +21,7 @@ import {
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
-import {
-  catchWithCount,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  useClient,
-  useSchema,
-  useSearchMaxFieldDepth,
-  useWorkspace,
-} from 'sanity'
+import {catchWithCount, useSchema, useSearchMaxFieldDepth, useWorkspace} from 'sanity'
 
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
@@ -30,7 +29,7 @@ import {listenSearchQuery} from './listenSearchQuery'
 import {type DocumentListPaneItem, type SortOrder} from './types'
 
 interface UseDocumentListOpts {
-  apiVersion?: string
+  client: SanityClient
   filter: string
   perspective?: ClientPerspective
   params: Record<string, unknown>
@@ -94,17 +93,13 @@ function isRetriableError(error: unknown) {
  */
 export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookValue {
   const {
+    client,
     filter: searchFilter,
     params: paramsProp,
     sortOrder,
     searchQuery,
     perspective,
-    apiVersion,
   } = opts
-  const client = useClient({
-    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
-    apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
-  })
   const {strategy: searchStrategy} = useWorkspace().search
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()

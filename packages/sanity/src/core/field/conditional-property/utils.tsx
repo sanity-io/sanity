@@ -3,7 +3,7 @@ import {
   type ConditionalPropertyCallbackContext,
   type CurrentUser,
 } from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {isRecord} from '../../util'

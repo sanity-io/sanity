@@ -1,6 +1,6 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
 import {type BackendModule, type ReadCallback} from 'i18next'
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash-es'
 
 import {type LocaleResourceBundle, type LocaleResourceKey, type LocaleResourceRecord} from './types'
 

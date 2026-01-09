@@ -161,7 +161,7 @@ interface CommentsListItemLayoutProps {
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentUpdatePayload) => void
-  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onInputKeyDown?: (event: React.KeyboardEvent) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
@@ -263,7 +263,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   }, [cancelEdit, hasChanges, hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: React.KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return

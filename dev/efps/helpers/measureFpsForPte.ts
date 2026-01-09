@@ -8,24 +8,29 @@ interface MeasureFpsForPteOptions {
   fieldName: string
   label?: string
   page: Page
+  /** Timeout in milliseconds for waiting on elements. Defaults to 60000 (60s) */
+  timeout?: number
 }
+
+const DEFAULT_TIMEOUT = 60_000
 
 export async function measureFpsForPte({
   fieldName,
   page,
   label,
+  timeout = DEFAULT_TIMEOUT,
 }: MeasureFpsForPteOptions): Promise<EfpsResult> {
   const start = Date.now()
   const pteField = page.locator(`[data-testid="field-${fieldName}"]`)
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-  await pteField.waitFor({state: 'visible'})
+  await pteField.waitFor({state: 'visible', timeout})
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   await pteField.click()
 
   const contentEditable = pteField.locator('[contenteditable="true"]')
-  await contentEditable.waitFor({state: 'visible'})
+  await contentEditable.waitFor({state: 'visible', timeout})
 
   const rendersPromise = contentEditable.evaluate(
     // Had to add this so we can run the tests

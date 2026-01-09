@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {isFinite} from 'lodash'
+import {isFinite} from 'lodash-es'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'

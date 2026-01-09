@@ -13,7 +13,7 @@ import {uuid} from '@sanity/uuid'
 import chokidar from 'chokidar'
 import execa from 'execa'
 import json5 from 'json5'
-import {isEqual, isPlainObject, noop} from 'lodash'
+import {isEqual, isPlainObject, noop} from 'lodash-es'
 
 type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
 

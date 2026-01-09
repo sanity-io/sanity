@@ -35,7 +35,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   }, [onDocumentClick])
 
   const getItemDisabled = useCallback(
-    (index: number) => options[index]?.hasPermission === false,
+    (index: number) => options[index]?.hasPermission ?? true,
     [options],
   )
 

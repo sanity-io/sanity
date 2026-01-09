@@ -1,30 +1,34 @@
+import {isPublishedId} from '@sanity/client/csm'
+
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
-import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
-export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
-  disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
-  execute: ({client, schema, idPair, typeName, snapshots}) => {
-    if (isLiveEditEnabled(schema, typeName)) {
-      const tx = client.observable.transaction().delete(idPair.publishedId)
-      return tx.commit({tag: 'document.delete'})
-    }
-
-    //the delete action requires a published doc -- discard if not present
+export const del: OperationImpl<[versions: string[]], 'NOTHING_TO_DELETE'> = {
+  disabled: ({snapshots}) =>
+    snapshots.draft || snapshots.published || snapshots.version ? false : 'NOTHING_TO_DELETE',
+  execute: ({client, idPair, snapshots}, versions) => {
+    //the delete action requires a published doc -- discard versions if not present
     if (!snapshots.published) {
       return actionsApiClient(client, idPair).observable.action(
+        versions.map((versionId) => ({
+          actionType: 'sanity.action.document.version.discard',
+          versionId,
+        })),
         {
-          actionType: 'sanity.action.document.discard',
-          draftId: idPair.draftId,
+          skipCrossDatasetReferenceValidation: true,
         },
-        {tag: 'document.delete'},
       )
     }
 
     return actionsApiClient(client, idPair).observable.action(
       {
         actionType: 'sanity.action.document.delete',
-        includeDrafts: snapshots.draft ? [idPair.draftId] : [],
+        includeDrafts: versions
+          ? // if versions are provided, remove the published id from the list, all versions need to be included in order for the delete to work.
+            versions.filter((v) => !isPublishedId(v))
+          : snapshots.draft
+            ? [idPair.draftId]
+            : [],
         publishedId: idPair.publishedId,
       },
       {

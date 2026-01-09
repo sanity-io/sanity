@@ -2,7 +2,7 @@ import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  type DocumentActionDialogProps,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -11,6 +11,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 
@@ -27,14 +28,16 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
   type,
   published,
   liveEdit,
-  release,
+  version,
+  draft,
 }) => {
-  const {discardChanges} = useDocumentOperation(id, type, release)
+  const bundleId = version?._id && getVersionFromId(version._id)
+  const {discardChanges} = useDocumentOperation(id, type, bundleId)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
-    version: release,
+    version: bundleId,
     permission: 'discardDraft',
   })
   const currentUser = useCurrentUser()
@@ -56,20 +59,13 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
     setConfirmDialogOpen(true)
   }, [])
 
-  const dialog: DocumentActionDialogProps | false = useMemo(
-    () =>
-      isConfirmDialogOpen && {
-        type: 'confirm',
-        tone: 'critical',
-        onCancel: handleCancel,
-        onConfirm: handleConfirm,
-        message: t('action.discard-changes.confirm-dialog.confirm-discard-changes'),
-      },
-    [handleConfirm, isConfirmDialogOpen, handleCancel, t],
-  )
-
   return useMemo(() => {
-    if (!published || liveEdit || isPublished) {
+    // This document has neither a draft nor a version so there isn't anything to discard
+    if (!version && !draft) {
+      return null
+    }
+    // isPublished = we are currently editing the published version and never want to show "Discard drafts" in this case
+    if (isPublished) {
       return null
     }
 
@@ -92,18 +88,30 @@ export const useDiscardChangesAction: DocumentActionComponent = ({
       title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
       label: t('action.discard-changes.label'),
       onHandle: handle,
-      dialog,
+      dialog: isConfirmDialogOpen && {
+        type: 'custom',
+        component: (
+          <ConfirmDiscardDialog
+            onCancel={handleCancel}
+            onConfirm={handleConfirm}
+            publishedExists={Boolean(published)}
+          />
+        ),
+      },
     }
   }, [
     currentUser,
-    dialog,
+    handleConfirm,
+    handleCancel,
+    isConfirmDialogOpen,
     discardChanges.disabled,
+    published,
+    version,
+    draft,
     handle,
     isPermissionsLoading,
     isPublished,
-    liveEdit,
     permissions?.granted,
-    published,
     t,
   ])
 }

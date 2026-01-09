@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import {padEnd, padStart} from 'lodash'
+import {padEnd, padStart} from 'lodash-es'
 
 import {
   findSanityModuleVersions,

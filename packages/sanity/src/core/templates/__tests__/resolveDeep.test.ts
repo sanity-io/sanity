@@ -101,7 +101,7 @@ describe('resolveDeepInitialValues', () => {
       {
         ...personTemplate,
         value: {
-          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          ...(await resolveValue(personTemplate.value, undefined, mockConfigContext)),
           address: {
             _type: 'address',
             street: 'one new street',
@@ -134,7 +134,7 @@ describe('resolveDeepInitialValues', () => {
       {
         ...personTemplate,
         value: {
-          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          ...(await resolveValue(personTemplate.value, undefined, mockConfigContext)),
           address: undefined,
         },
       },
@@ -160,7 +160,7 @@ describe('resolveDeepInitialValues', () => {
       {
         ...personTemplate,
         value: {
-          ...resolveValue(personTemplate.value, undefined, mockConfigContext),
+          ...(await resolveValue(personTemplate.value, undefined, mockConfigContext)),
           contact: {
             _type: 'contact',
           },

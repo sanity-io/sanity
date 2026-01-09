@@ -15,7 +15,7 @@ export const defaultConfig: UserConfig = {
   },
   plugins: [
     react({
-      babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
+      babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
     }),
     tsconfigPaths(),
   ],

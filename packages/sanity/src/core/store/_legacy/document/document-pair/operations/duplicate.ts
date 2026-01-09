@@ -1,5 +1,5 @@
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 
 import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'

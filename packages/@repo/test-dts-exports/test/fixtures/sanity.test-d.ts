@@ -69,6 +69,7 @@ import type {
   AssetSourceComponentProps,
   AssetSourceResolver,
   AssetSourceSpec,
+  AssetSourcesResolver,
   AssetSourceUploader,
   AssetSourceUploaderClass,
   AssetSourceUploadEvent,
@@ -750,6 +751,7 @@ import type {
   InlineFieldDefinition,
   InlinePreview,
   InlinePreviewProps,
+  InputOnSelectFileFunctionProps,
   InputProps,
   insert,
   InsertMenuOptions,
@@ -1859,6 +1861,9 @@ describe('sanity', () => {
   })
   test('AssetSourceSpec', () => {
     expectTypeOf<AssetSourceSpec>().toBeObject()
+  })
+  test('AssetSourcesResolver', () => {
+    expectTypeOf<AssetSourcesResolver<any>>().not.toBeNever()
   })
   test('AssetSourceUploader', () => {
     expectTypeOf<AssetSourceUploader>().toBeObject()
@@ -3847,7 +3852,7 @@ describe('sanity', () => {
     expectTypeOf<ImageUrlAutoMode>().not.toBeNever()
   })
   test('ImageUrlBuilder', () => {
-    expectTypeOf<ImageUrlBuilder>().not.toBeNever()
+    expectTypeOf<ImageUrlBuilder>().toBeObject()
   })
   test('ImageUrlCropMode', () => {
     expectTypeOf<ImageUrlCropMode>().not.toBeNever()
@@ -3926,6 +3931,9 @@ describe('sanity', () => {
   })
   test('InlinePreviewProps', () => {
     expectTypeOf<InlinePreviewProps>().not.toBeNever()
+  })
+  test('InputOnSelectFileFunctionProps', () => {
+    expectTypeOf<InputOnSelectFileFunctionProps>().toBeObject()
   })
   test('InputProps', () => {
     expectTypeOf<InputProps>().not.toBeNever()

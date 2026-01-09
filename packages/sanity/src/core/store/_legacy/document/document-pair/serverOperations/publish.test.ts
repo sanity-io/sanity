@@ -189,7 +189,7 @@ describe('publish', () => {
             },
           },
         } as unknown as OperationArgs)
-      }).toThrow('cannot execute "publish" when draft is missing')
+      }).toThrow('cannot execute "publish" when draft or version is missing')
 
       expect(client.$log).toMatchSnapshot()
     })

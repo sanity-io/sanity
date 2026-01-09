@@ -3,7 +3,7 @@ import {type TFunction} from 'sanity'
 
 export function tryParseParams(
   val: string,
-  t: TFunction<'vision', undefined>,
+  t: TFunction<'vision'>,
 ): Record<string, unknown> | Error {
   try {
     const parsed = val ? JSON5.parse(val) : {}

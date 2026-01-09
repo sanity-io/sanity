@@ -831,6 +831,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('initializes a project from a GitHub repository shorthand', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-shorthand'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -843,6 +844,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -871,6 +874,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('initializes a project from a GitHub URL', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-url'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -883,6 +887,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'https://github.com/sanity-io/sanity/tree/main/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -910,6 +916,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('correctly applies environment variables', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-env'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -922,6 +929,8 @@ describeCliTest('CLI: `sanity init`', () => {
           testRunArgs.dataset,
           '--template',
           'sanity-io/sanity/packages/@sanity/cli/test/__fixtures__/remote-template',
+          // Use `--template-token` flag in CI to work around rate limiting issues
+          ...(ghToken ? ['--template-token', ghToken] : []),
           '--output-path',
           `${baseTestPath}/${outpath}`,
           '--package-manager',
@@ -966,6 +975,7 @@ describeCliTest('CLI: `sanity init`', () => {
       testConcurrent('fails with non-existent repository', async () => {
         const testRunArgs = getTestRunArgs()
         const outpath = 'test-remote-template-nonexistent'
+        const ghToken = process.env.CI && process.env.GITHUB_TOKEN
 
         await cleanOutputDirectory(outpath)
 
@@ -979,6 +989,8 @@ describeCliTest('CLI: `sanity init`', () => {
             testRunArgs.dataset,
             '--template',
             'sanity-io/non-existent-template',
+            // Use `--template-token` flag in CI to work around rate limiting issues
+            ...(ghToken ? ['--template-token', ghToken] : []),
             '--output-path',
             `${baseTestPath}/${outpath}`,
             '--package-manager',

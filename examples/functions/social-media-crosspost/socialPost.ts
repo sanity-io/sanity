@@ -45,7 +45,7 @@ export const socialPost = defineType({
       description: 'The global body of the post. It can be overridden by platform below.',
       validation: (Rule) =>
         Rule.required().custom((body, context) => {
-          const document = context.document as any
+          const document = context.document
           const selectedPlatforms = document?.platforms as Platform[] | undefined
           const overriddenSettings = document?.platformOverrides
 
@@ -115,7 +115,7 @@ export const socialPost = defineType({
               },
               validation: (Rule) =>
                 Rule.required().custom((value, context) => {
-                  const document = context.document as any
+                  const document = context.document
                   const selected = Array.isArray(document?.platforms) ? document.platforms : []
                   if (!value) return true
                   return selected.includes(value)

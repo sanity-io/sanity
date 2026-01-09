@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {has} from 'lodash-es'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config'
@@ -109,7 +110,7 @@ describe('schema validation inference', () => {
               // Validate that the image is a summer image when the document topic is summer
               if (media.asset.assetType === 'sanity.imageAsset') {
                 const aspects = media.asset.aspects
-                if (aspects?.season === 'summer') {
+                if (has(aspects, 'season') && aspects.season === 'summer') {
                   return true
                 }
                 return 'Image must be a summer image'
@@ -187,6 +188,10 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toEqual([
         {
+          // eslint-disable-next-line camelcase
+          __internal_metadata: {
+            name: 'media',
+          },
           item: {
             message: 'Image must be a summer image',
           },

@@ -22,7 +22,7 @@ export async function uninstallPackages(
   }
 
   const npmArgs = ['uninstall', ...packages]
-  let result: ExecaReturnValue<string> | undefined
+  let result: ExecaReturnValue | undefined
   if (packageManager === 'npm') {
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)
     result = await execa('npm', npmArgs, execOptions)

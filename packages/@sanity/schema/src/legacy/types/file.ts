@@ -1,4 +1,4 @@
-import {pick, startCase} from 'lodash'
+import {pick, startCase} from 'lodash-es'
 
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'

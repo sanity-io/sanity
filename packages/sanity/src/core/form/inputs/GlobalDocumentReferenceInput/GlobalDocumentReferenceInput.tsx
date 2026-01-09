@@ -44,8 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 /** @internal */
-export interface GlobalDocumentReferenceInputProps
-  extends ObjectInputProps<GlobalDocumentReferenceValue, GlobalDocumentReferenceSchemaType> {
+export interface GlobalDocumentReferenceInputProps extends ObjectInputProps<
+  GlobalDocumentReferenceValue,
+  GlobalDocumentReferenceSchemaType
+> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: GlobalDocumentReferenceSchemaType,
@@ -430,7 +432,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             {loadableReferenceInfo.error && (
               <ReferenceMetadataLoadErrorAlertStrip
                 errorMessage={loadableReferenceInfo.error.message}
-                onHandleRetry={loadableReferenceInfo.retry!}
+                onHandleRetry={loadableReferenceInfo.retry}
               />
             )}
           </Card>

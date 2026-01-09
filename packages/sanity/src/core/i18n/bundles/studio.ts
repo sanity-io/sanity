@@ -603,13 +603,29 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Information for what the latest sanity version is */
   'help-resources.latest-sanity-version': 'Latest version is v{{latestVersion}}',
 
+  /** Text for link to register a studio */
+  'help-resources.register-studio': 'Register studio',
+
+  /** Name of the sanity studio */
+  'help-resources.studio': 'Sanity Studio',
+
+  /** Menu item for registered studios (i.e. copies app id) */
+  'help-resources.studio-app-id': 'App id',
+
   /** Menu item for reloading Studio to update */
   'help-resources.studio-auto-update-now': 'Reload to update to v{{newVersion}}',
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
+
+  /** Label for studio's which are up to date */
+  'help-resources.up-to-date': 'Up to date',
+
+  /** Version text */
+  'help-resources.version': 'v{{version}}',
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
@@ -1359,6 +1375,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.view-scheduled-drafts': 'View scheduled drafts',
   /** Label for banner when release is scheduled */
   'release.banner.scheduled-for-publishing-on': 'Scheduled to be published on {{date}}',
+  'release.chip.button.other-versions_one': '+{{count}} version',
+  'release.chip.button.other-versions_other': '+{{count}} versions',
   /** Label for Draft chip in document header */
   'release.chip.draft': 'Draft',
   /** Label for Draft chip in global header */
@@ -1380,6 +1398,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.chip.tooltip.no-edits': 'No edits',
   /** Label for tooltip in chip when document isn't published */
   'release.chip.tooltip.not-published': 'Not published',
+  'release.chip.tooltip.other-versions_one': 'One additional version outside of releases',
+  'release.chip.tooltip.other-versions_other': '{{count}} additional versions outside of releases',
   /** Label for tooltip in chip with the published date */
   'release.chip.tooltip.published-date': 'Published {{date}}',
   /** Label for tooltip in chip when document is in a release that has been scheduled */
@@ -1394,11 +1414,22 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.create.confirm': 'Create release',
   /** Title for creating releases dialog */
   'release.dialog.create.title': 'New release',
-  /** Body text for the dialog confirming deletion of a scheduled draft */
-  'release.dialog.delete-schedule-draft.body':
-    'Are you sure you want to delete this scheduled draft? This action cannot be undone.',
+  /** Body text when deleting scheduled draft and draft is already up to date */
+  'release.dialog.delete-schedule-draft.body-already-current':
+    'Delete this scheduled draft? Your draft is already up to date.',
+  /** Body text when deleting scheduled draft and changes will be saved to draft */
+  'release.dialog.delete-schedule-draft.body-will-save-to-draft':
+    'Delete this scheduled draft? Your changes will be saved to draft.',
+  /** Body text when deleting scheduled draft with checkbox shown for user choice */
+  'release.dialog.delete-schedule-draft.body-with-choice': 'Delete this scheduled draft?',
   /** Confirm button text for deleting a scheduled draft */
   'release.dialog.delete-schedule-draft.confirm': 'Yes, delete schedule',
+  /** Checkbox label for copying scheduled draft to draft before deletion */
+  'release.dialog.delete-schedule-draft.copy-checkbox':
+    'Keep my scheduled changes by copying them to draft (recommended)',
+  /** Explanation text shown when scheduled draft has different changes than current draft */
+  'release.dialog.delete-schedule-draft.different-changes-explanation':
+    'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
   /** Body text for change schedule dialog */
@@ -1427,8 +1458,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.layer.hide': 'Hide release',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /** Menu item label for scheduled drafts */
+  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
+  /** Menu item label for viewing content releases */
+  'release.menu.view-releases': 'View Content Releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */
@@ -1441,9 +1476,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
-  /** The toast description that will be shown when the user has a release perspective which is now archived */
+  /** The toast description that will be shown when the user has a release perspective which is now archived
+   * @deprecated – no longer needed
+   * */
   'release.toast.archived-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now archived */
+  /** The toast title that will be shown when the user has a release perspective which is now archived
+   * @deprecated – no longer needed
+   * */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
@@ -1453,7 +1492,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for deleting a scheduled draft */
   'release.toast.delete-schedule-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been deleted.',
-  /** The toast title that will be shown when the user has a release perspective which is now deleted */
+  /** The toast title that will be shown when the user has a release perspective which is now deleted
+   * @deprecated – no longer needed
+   * */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
   /** Error toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.error':
@@ -1461,9 +1502,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been published.',
-  /** The toast description that will be shown when the user has a release perspective which is now published */
+  /** The toast description that will be shown when the user has a release perspective which is now published
+   * @deprecated – no longer needed
+   **/
   'release.toast.published-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now deleted */
+  /** The toast title that will be shown when the user has a release perspective which is now deleted
+   * @deprecated – no longer needed
+   **/
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
@@ -1471,7 +1516,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
-  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
+   * @deprecated – no longer needed
+   * */
   'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',
@@ -1485,6 +1532,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.type.undecided': 'Undecided',
   /** Tooltip for the dropdown to show all versions of document */
   'release.version-list.tooltip': 'See all document versions',
+
+  /** Button text for contacting support in the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.contact-support': 'Contact Support',
+  /** Header for the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.header': 'Content releases configuration issue',
+  /** Message shown in the releases misconfiguration dialog */
+  'releases.upsell.misconfiguration.message':
+    'Content releases are enabled for your project, but there appears to be a configuration issue with your release limits. Please contact support to have your content releases properly configured.',
 
   /** Confirm button text for the schedule publish dialog */
   'schedule-publish-dialog.confirm': 'Schedule',

@@ -10,6 +10,6 @@ export function useSpellCheck(): boolean {
     const spellCheckOption = editor.schemaTypes.block.options?.spellCheck
     const isChrome96 =
       typeof navigator === 'undefined' ? false : /Chrome\/96/.test(navigator.userAgent)
-    return spellCheckOption === undefined && isChrome96 === true ? false : spellCheckOption
+    return spellCheckOption === undefined && isChrome96 ? false : spellCheckOption
   }, [editor])
 }

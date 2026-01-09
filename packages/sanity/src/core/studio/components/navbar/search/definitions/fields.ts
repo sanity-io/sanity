@@ -5,7 +5,7 @@ import {
   type SchemaTypeDefinition,
   type StringDefinition,
 } from '@sanity/types'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 
 import {sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
@@ -68,7 +68,7 @@ export function createFieldDefinitions(
           acc.documentTypes[schemaType.name] = schemaType
         }
         if (isObjectDefinition(schemaType)) {
-          acc.objectTypes[schemaType.name] = schemaType as ObjectDefinition
+          acc.objectTypes[schemaType.name] = schemaType
         }
         return acc
       },
@@ -91,7 +91,7 @@ export function createFieldDefinitionDictionary(
 }
 
 export function generateFieldId(field: SearchFieldDefinition): string {
-  return [field.type, field.fieldPath, field.filterName, field.documentTypes.join(',')].join('-')
+  return [field.type, field.fieldPath, field.title].join('-')
 }
 
 function getDocumentFieldDefinitions(

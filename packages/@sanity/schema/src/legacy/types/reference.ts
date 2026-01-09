@@ -1,5 +1,5 @@
 import arrify from 'arrify'
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'

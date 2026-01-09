@@ -5,15 +5,16 @@ import {createRoot} from 'react-dom/client'
 
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'
+import {InternationalizedArrayTest} from './InternationalizedArrayTest'
 import {useLiveMode} from './loader'
 import {LongList} from './LongList'
 import {Markdown} from './Markdown'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
-  const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues'>(
-    'simple',
-  )
+  const [id, setId] = useState<
+    'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues' | 'intl-array'
+  >('simple')
   return (
     <>
       <ThemeProvider theme={studioTheme}>
@@ -55,6 +56,13 @@ function Main() {
                 onClick={() => setId('initialvalues')}
                 selected={id === 'initialvalues'}
               />
+              <Tab
+                aria-controls="intl-array-panel"
+                id="intl-array-tab"
+                label="InternationalizedArrayTest"
+                onClick={() => setId('intl-array')}
+                selected={id === 'intl-array'}
+              />
             </TabList>
           </Box>
 
@@ -83,6 +91,11 @@ function Main() {
           {id === 'initialvalues' && (
             <TabPanel aria-labelledby="initialvalues-tab" id="initialvalues-panel">
               <InitialValues />
+            </TabPanel>
+          )}
+          {id === 'intl-array' && (
+            <TabPanel aria-labelledby="intl-array-tab" id="intl-array-panel">
+              <InternationalizedArrayTest />
             </TabPanel>
           )}
         </Flex>

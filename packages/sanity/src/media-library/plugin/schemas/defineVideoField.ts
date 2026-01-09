@@ -1,4 +1,4 @@
-import {defineField} from '@sanity/types'
+import {defineField, type FieldDefinitionBase} from '@sanity/types'
 
 import {type VideoDefinition} from './types'
 
@@ -24,7 +24,7 @@ import {type VideoDefinition} from './types'
  *
  * @beta
  */
-export function defineVideoField(definition: Omit<VideoDefinition, 'type'>) {
+export function defineVideoField(definition: Omit<VideoDefinition, 'type'> & FieldDefinitionBase) {
   // @ts-expect-error FIXME
   return defineField({
     ...definition,

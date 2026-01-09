@@ -1,4 +1,4 @@
-import {max, min} from 'lodash'
+import {max, min} from 'lodash-es'
 
 import {type Expression} from '../jsonpath'
 import {type ImmutableAccessor} from './ImmutableAccessor'

@@ -50,7 +50,7 @@ export const stringValidators: Validators = {
       // WARNING: Safari checks for a given `base` param by looking at the length of arguments passed
       // to new URL(str, base), and will fail if invoked with new URL(strValue, undefined)
       url = allowRelative ? new URL(strValue, DUMMY_ORIGIN) : new URL(strValue)
-    } catch (err) {
+    } catch {
       return message || i18n.t('validation:string.url.invalid')
     }
 

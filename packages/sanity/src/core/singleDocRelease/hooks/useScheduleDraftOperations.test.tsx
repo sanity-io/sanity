@@ -11,7 +11,6 @@ import {
 import {useAllReleasesMockReturn} from '../../releases/store/__tests__/__mocks/useAllReleases.mock'
 import {useReleaseOperationsMockReturn} from '../../releases/store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getVersionId} from '../../util'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
 
 vi.mock('../../releases/store/useReleaseOperations', () => ({
@@ -27,20 +26,11 @@ vi.mock('../../releases/util/createReleaseId', () => ({
   createReleaseId: vi.fn(() => mockReleaseId),
 }))
 
-const mockReleasesClient = {
-  action: vi.fn().mockResolvedValue(undefined),
-}
-
-vi.mock('../../hooks/useClient', () => ({
-  useClient: vi.fn(() => mockReleasesClient),
-}))
-
 describe('useScheduleDraftOperations', () => {
   const mockPublishAt = new Date('2024-12-31T10:00:00Z')
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockReleasesClient.action.mockClear()
     useAllReleasesMockReturn.data = [
       scheduledRelease,
       activeScheduledRelease,
@@ -69,18 +59,11 @@ describe('useScheduleDraftOperations', () => {
       },
       undefined,
     )
-    expect(mockReleasesClient.action).toHaveBeenCalledWith([
-      {
-        actionType: 'sanity.action.document.version.create',
-        baseId: 'drafts.documentId',
-        publishedId: 'documentId',
-        versionId: getVersionId('documentId', getReleaseIdFromReleaseDocumentId(mockReleaseId)),
-      },
-      {
-        actionType: 'sanity.action.document.version.discard',
-        versionId: 'drafts.documentId',
-      },
-    ])
+    expect(useReleaseOperationsMockReturn.createVersion).toHaveBeenCalledWith(
+      getReleaseIdFromReleaseDocumentId(mockReleaseId),
+      'drafts.documentId',
+      undefined,
+    )
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(
       mockReleaseId,
       mockPublishAt,
@@ -145,7 +128,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(scheduledRelease._id)
+      await result.current.deleteScheduledDraft(scheduledRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).toHaveBeenCalledWith(
@@ -167,7 +150,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(archivedScheduledRelease._id)
+      await result.current.deleteScheduledDraft(archivedScheduledRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).not.toHaveBeenCalled()
@@ -185,7 +168,7 @@ describe('useScheduleDraftOperations', () => {
     const {result} = renderHook(() => useScheduleDraftOperations(), {wrapper})
 
     await act(async () => {
-      await result.current.deleteScheduledDraft(publishedASAPRelease._id)
+      await result.current.deleteScheduledDraft(publishedASAPRelease._id, false, '')
     })
 
     expect(useReleaseOperationsMockReturn.unschedule).not.toHaveBeenCalled()
@@ -204,7 +187,7 @@ describe('useScheduleDraftOperations', () => {
 
     await expect(
       act(async () => {
-        await result.current.deleteScheduledDraft('non-existent-id')
+        await result.current.deleteScheduledDraft('non-existent-id', false, '')
       }),
     ).rejects.toThrow('Release with ID non-existent-id not found')
   })
@@ -253,7 +236,7 @@ describe('useScheduleDraftOperations', () => {
       }),
     ).rejects.toThrow('Create release failed')
 
-    expect(mockReleasesClient.action).not.toHaveBeenCalled()
+    expect(useReleaseOperationsMockReturn.createVersion).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.schedule).not.toHaveBeenCalled()
   })
 })

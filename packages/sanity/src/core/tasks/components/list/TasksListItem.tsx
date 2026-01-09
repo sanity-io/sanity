@@ -18,8 +18,10 @@ import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'
 import {TasksStatus} from './TasksStatus'
 
-interface TasksListItemProps
-  extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target' | 'status'> {
+interface TasksListItemProps extends Pick<
+  TaskDocument,
+  'title' | 'assignedTo' | 'dueBy' | 'target' | 'status'
+> {
   documentId: string
   onSelect: () => void
 }

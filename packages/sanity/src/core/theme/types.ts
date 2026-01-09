@@ -3,23 +3,22 @@ import {type RootTheme, type ThemeColorSchemeKey} from '@sanity/ui/theme'
 /** @public
  * @deprecated – Will be removed in upcoming major version
  * */
-export interface StudioTheme
-  extends Omit<
-    RootTheme,
-    | 'avatar'
-    | 'button'
-    | 'container'
-    | 'focusRing'
-    | 'input'
-    | 'layer'
-    | 'media'
-    | 'radius'
-    | 'shadows'
-    | 'space'
-    | 'styles'
-    | 'color'
-    | 'fonts'
-  > {
+export interface StudioTheme extends Omit<
+  RootTheme,
+  | 'avatar'
+  | 'button'
+  | 'container'
+  | 'focusRing'
+  | 'input'
+  | 'layer'
+  | 'media'
+  | 'radius'
+  | 'shadows'
+  | 'space'
+  | 'styles'
+  | 'color'
+  | 'fonts'
+> {
   /** @internal */
   __dark?: boolean
   /** @internal */

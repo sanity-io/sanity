@@ -4,6 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DuplicateDocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -27,9 +28,12 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({
   type,
   release,
   mapDocument,
+  version,
 }) => {
   const documentStore = useDocumentStore()
-  const {duplicate} = useDocumentOperation(id, type, release)
+  const bundleId = version?._id && getVersionFromId(version._id)
+
+  const {duplicate} = useDocumentOperation(id, type, bundleId)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
 

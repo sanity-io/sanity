@@ -35,8 +35,10 @@ function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): R
   return null
 }
 
-interface PostMessageRefreshMutationsInnerProps
-  extends Pick<PostMessageRefreshMutationsProps, 'comlink'> {
+interface PostMessageRefreshMutationsInnerProps extends Pick<
+  PostMessageRefreshMutationsProps,
+  'comlink'
+> {
   livePreviewEnabled: boolean
   draft: SanityDocument | null
   published: SanityDocument | null

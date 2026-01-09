@@ -45,7 +45,7 @@ export interface VideoPlaybackInfo<T extends VideoPlaybackInfoItem = VideoPlayba
 }
 
 export type VideoPlaybackInfoSigned = VideoPlaybackInfo<VideoPlaybackInfoItemSigned>
-export type VideoPlaybackInfoPublic = VideoPlaybackInfo<VideoPlaybackInfoItemPublic>
+export type VideoPlaybackInfoPublic = VideoPlaybackInfo
 
 export interface VideoPlaybackTokens {
   animated?: string

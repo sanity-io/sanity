@@ -10,7 +10,15 @@ import {
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
@@ -23,7 +31,6 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -335,7 +342,7 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
-      setPerspectiveState(newPerspective as SupportedPerspective | undefined)
+      setPerspectiveState(newPerspective)
       localStorage.set('perspective', newPerspective)
 
       handleQueryExecution({perspective: newPerspective})

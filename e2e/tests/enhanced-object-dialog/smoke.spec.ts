@@ -27,8 +27,12 @@ test.describe('Enhanced Object Dialog - open and close', () => {
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+      .fill('Blue, the whale')
 
+    await page.getByRole('button', {name: 'Close dialog'}).click()
     await expect(modal).not.toBeVisible()
   })
 })
@@ -57,5 +61,82 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
     await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
     // The enhanced dialog should not be visible
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+})
+
+test.describe('Enhanced Object Dialog - when tab focusing on an array item', () => {
+  test.beforeEach(async ({createDraftDocument, page, browserName}) => {
+    // Skip Firefox due to flakiness with click/fill interactions
+    test.skip(browserName === 'firefox')
+    test.slow()
+
+    // wait for form to be attached
+    await createDraftDocument('/content/input-debug;objectsDebug')
+
+    const addItemButton = page.getByTestId('field-animals').getByRole('button', {name: 'Add item'})
+    await expect(addItemButton).toBeVisible()
+    await addItemButton.click()
+    const modal = page.getByTestId('nested-object-dialog')
+
+    await expect(modal).toBeVisible()
+    const input = page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+    await expect(input).toBeVisible()
+    await expect(input).toBeEnabled()
+    await input.fill('Blue, the whale')
+
+    await page.keyboard.press('Escape')
+    await expect(modal).not.toBeVisible()
+
+    await page.getByTestId('field-animals').focus()
+  })
+
+  test(`when tab focusing on an array item, the tree editing modal should not open`, async ({
+    page,
+  }) => {
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
+
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+
+  test(`When pressing enter on an array item, the tree editing modal should open`, async ({
+    page,
+  }) => {
+    test.slow()
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
+
+    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+  })
+})
+
+test.describe('Enhanced Object Dialog - popover dialog', () => {
+  test.beforeEach(async ({createDraftDocument, page}) => {
+    // wait for form to be attached
+    await createDraftDocument('/content/input-debug;objectsDebug')
+
+    await page
+      .getByTestId('field-animalsWithPopover')
+      .getByRole('button', {name: 'Add item'})
+      .click()
+  })
+
+  test(`the popover dialog should open on arrays that open with a popover and open the enhanced object dialog when opening nested objects`, async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('popover-dialog')).toBeVisible()
+  })
+
+  test(`the popover should open on arrays that open with a popover and open the enhanced object dialog when opening nested objects`, async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('popover-dialog')).toBeVisible()
+    const childrenField = page.getByTestId(/^field-animalsWithPopover\[_key=="[^"]+"\]\.children$/)
+    await expect(childrenField).toBeVisible()
+    await childrenField.getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
   })
 })

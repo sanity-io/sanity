@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.24.1 ([#11679](https://github.com/sanity-io/sanity/issues/11679)) ([ce27be7](https://github.com/sanity-io/sanity/commit/ce27be7364e6d42bdff64d2477173f60d8274a62)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.25.0 ([#11697](https://github.com/sanity-io/sanity/issues/11697)) ([a58262b](https://github.com/sanity-io/sanity/commit/a58262bac5a0b7c97dad514910af6c9153a37426)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.24.0 ([#11534](https://github.com/sanity-io/sanity/issues/11534)) ([e1c46d5](https://github.com/sanity-io/sanity/commit/e1c46d572cf703090eb4fd224486ebab1e6b9b4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **schema:** sort out conflict between hoisted ref types and other types ([#11579](https://github.com/sanity-io/sanity/issues/11579)) ([85d65b1](https://github.com/sanity-io/sanity/commit/85d65b166b4597ce15a7b73b9e86821ab39563f4)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* **schema:** add schema inline hoisting (#11521)
+
+### Features
+
+* **schema:** add schema inline hoisting ([#11521](https://github.com/sanity-io/sanity/issues/11521)) ([f81e3cc](https://github.com/sanity-io/sanity/commit/f81e3cc03f9a8dfaeac7ffd2ac890346225be447)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **schema:** hoist reference types and use inline objects to reference them ([#11471](https://github.com/sanity-io/sanity/issues/11471)) ([16ce107](https://github.com/sanity-io/sanity/commit/16ce1075f8b3d3a6b0c0edec8fe1fa9500baef45)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.23.0 ([#11429](https://github.com/sanity-io/sanity/issues/11429)) ([b100ba4](https://github.com/sanity-io/sanity/commit/b100ba48cf49f31c0230c92095450aa0690e7d4b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **schema:** regression when inline type reference another inline type ([#11411](https://github.com/sanity-io/sanity/issues/11411)) ([de7888a](https://github.com/sanity-io/sanity/commit/de7888a46275dae77a19eb1bd8e1f47f7986efcb)) by Sindre Gulseth (sgulseth@gmail.com)
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.22.0 ([#11366](https://github.com/sanity-io/sanity/issues/11366)) ([6976b77](https://github.com/sanity-io/sanity/commit/6976b77295f0959abc588fe24dbd45e246d4b217)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* handle asset as array member with enforce required fields ([#11370](https://github.com/sanity-io/sanity/issues/11370)) ([6cb181b](https://github.com/sanity-io/sanity/commit/6cb181b4a9f0bc64ed0c4991a3b2eb9bc6c6054f)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Features
+
+* **descriptors:** minimize blocking the UI ([2826615](https://github.com/sanity-io/sanity/commit/2826615efb55aee9a99077daf6cf831e5e051f9c)) by Magnus Holm (judofyr@gmail.com)
+* **schema:** cache generated field objects ([8efdc2b](https://github.com/sanity-io/sanity/commit/8efdc2b31f4156a30710562852fb5bb41409ee7d)) by Magnus Holm (judofyr@gmail.com)
+* **schema:** de-dupe re-used fields in the descriptor ([b287558](https://github.com/sanity-io/sanity/commit/b287558417c6f06eaaf7acf1a4f51dc6aab0c3f6)) by Magnus Holm (judofyr@gmail.com)
+* support private assets ([#11316](https://github.com/sanity-io/sanity/issues/11316)) ([9a661ca](https://github.com/sanity-io/sanity/commit/9a661ca445b108db5a2dca1b471aab7a8ebe29bc)) by Rupert Dunk (rupert@rupertdunk.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 **Note:** Version bump only for package @sanity/schema

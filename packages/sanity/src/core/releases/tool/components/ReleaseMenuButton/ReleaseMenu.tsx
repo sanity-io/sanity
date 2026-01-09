@@ -12,7 +12,6 @@ import {
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {useIsReleasesPlus} from '../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
@@ -47,8 +46,6 @@ export const ReleaseMenu = ({
   const [hasPublishPermission, setHasPublishPermission] = useState<boolean | null>(null)
   const [hasSchedulePermission, setHasSchedulePermission] = useState<boolean | null>(null)
   const [hasDuplicatePermission, setHasDuplicatePermission] = useState<boolean | null>(null)
-
-  const isReleasesPlus = useIsReleasesPlus()
 
   const isMounted = useRef(false)
   useEffect(() => {
@@ -233,7 +230,7 @@ export const ReleaseMenu = ({
   }, [documents, hasPublishPermission, ignoreCTA, release, releaseMenuDisabled, setSelectedAction])
 
   const duplicateMenuItem = useMemo(() => {
-    if (!isReleasesPlus || release.state === 'published' || release.state === 'archived') {
+    if (release.state === 'published' || release.state === 'archived') {
       return null
     }
 
@@ -251,14 +248,7 @@ export const ReleaseMenu = ({
         }}
       />
     )
-  }, [
-    handleOnInitiateAction,
-    hasDuplicatePermission,
-    isReleasesPlus,
-    release.state,
-    releaseMenuDisabled,
-    t,
-  ])
+  }, [handleOnInitiateAction, hasDuplicatePermission, release.state, releaseMenuDisabled, t])
 
   const ActionsOrder = useMemo(() => {
     if (release.metadata.releaseType === 'scheduled') {

@@ -64,7 +64,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
         output.print('No results found. Try a different search term.')
         return
       }
-    } catch (error) {
+    } catch {
       // Graceful error handling
       output.error('The documentation search API is currently unavailable. Please try again later.')
       process.exit(1)
@@ -116,7 +116,7 @@ const searchCommand: CliCommandDefinition<SearchCommandFlags> = {
             output.print(content)
           }
         }
-      } catch (error) {
+      } catch {
         // User cancelled or other error, just continue
       }
     }

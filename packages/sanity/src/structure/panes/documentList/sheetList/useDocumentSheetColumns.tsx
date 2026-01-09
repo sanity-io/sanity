@@ -69,10 +69,7 @@ const PreviewCell = (props: {
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 
-type Columns = (
-  | AccessorKeyColumnDef<SanityDocument, unknown>
-  | GroupColumnDef<SanityDocument, unknown>
-)[]
+type Columns = (AccessorKeyColumnDef<SanityDocument> | GroupColumnDef<SanityDocument>)[]
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
@@ -107,16 +104,16 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
 // Type guard function to check if a column is of type GroupColumnDef
 function isAccessorKeyColumnDef(
   column: Columns[number],
-): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+): column is AccessorKeyColumnDef<SanityDocument> {
   return 'accessorKey' in column
 }
 function isGroupColumnDef(
-  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
-): column is GroupColumnDef<SanityDocument, unknown> {
+  column: AccessorKeyColumnDef<SanityDocument> | GroupColumnDef<SanityDocument>,
+): column is GroupColumnDef<SanityDocument> {
   return 'columns' in column
 }
 
-const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument>[] => {
   return cols.flatMap((col) => {
     if (isAccessorKeyColumnDef(col)) {
       return col

@@ -2,7 +2,7 @@ import {type ReleaseType} from '@sanity/client'
 import {LockIcon, PublishIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {isBefore, startOfMinute} from 'date-fns'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, Tab} from '../../../../ui-components'

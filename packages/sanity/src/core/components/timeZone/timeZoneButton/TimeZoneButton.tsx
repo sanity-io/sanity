@@ -1,6 +1,6 @@
 import {EarthAmericasIcon} from '@sanity/icons'
 import {Box, Inline, Text} from '@sanity/ui'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {type ReactNode} from 'react'
 
 import {Button, Tooltip} from '../../../../ui-components'

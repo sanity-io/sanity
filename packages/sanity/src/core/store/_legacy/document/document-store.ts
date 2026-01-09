@@ -8,7 +8,14 @@ import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
-import {getIdPair, isDraftId, isVersionId} from '../../../util'
+import {
+  getDocumentVariantType,
+  getIdPair,
+  getPublishedId,
+  getVersionFromId,
+  isDraftId,
+  isVersionId,
+} from '../../../util'
 import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../history'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
@@ -91,9 +98,13 @@ export interface DocumentStore {
       type: string,
     ) => Observable<OperationSuccess | OperationError>
     validation: (
-      publishedId: string,
+      validationTargetId: string,
       type: string,
-      version?: string,
+      // Whether to require referenced documents to be published
+      // if `true`, any reference to a document that's not published will yield a validation error
+      // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
+      // as the document we're validating
+      validatePublishedReferences: boolean,
     ) => Observable<ValidationStatus>
   }
 }
@@ -212,9 +223,11 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version) {
-        const idPair = getIdPairFromPublished(publishedId, version)
-        return validation(ctx, idPair, type)
+      validation(validationTargetId, type, requirePublishedReferences) {
+        const publishedId = getPublishedId(validationTargetId)
+        const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
+        const validationTarget = getDocumentVariantType(validationTargetId)
+        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
       },
     },
   }

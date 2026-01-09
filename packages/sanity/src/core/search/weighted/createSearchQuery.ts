@@ -1,6 +1,6 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
-import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
+import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash-es'
 
 import {
   deriveSearchWeightsFromType,
@@ -147,11 +147,16 @@ export function createSearchQuery(
     searchTerms.filter ? `(${searchTerms.filter})` : '',
   ].filter(Boolean)
 
-  const selections = specs.map((spec) => {
-    const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
-    return `${constraint}${selection}`
-  })
+  const selections = searchOpts.skipSortByScore
+    ? []
+    : specs.map((spec) => {
+        const constraint = `_type == "${spec.typeName}" => `
+        if (searchOpts.skipSortByScore) {
+          return undefined
+        }
+        const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+        return `${constraint}${selection}`
+      })
 
   // Default to `_id asc` (GROQ default) if no search sort is provided
   const sortOrder = toOrderClause(sort || [{field: '_id', direction: 'asc'}])

@@ -1,6 +1,6 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
@@ -65,7 +65,7 @@ export function GlobalDocumentReferencePreview(props: {
           previewMedia
         ) : (
           <img
-            src={imageUrlBuilder(projectDataset)
+            src={createImageUrlBuilder(projectDataset)
               .image(previewMedia as FIXME)
               .withOptions(dimensions)
               .url()}

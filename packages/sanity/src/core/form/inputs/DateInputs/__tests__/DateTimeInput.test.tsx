@@ -1,13 +1,13 @@
-import {defineField, type StringSchemaType} from '@sanity/types'
-import {fireEvent} from '@testing-library/react'
+import {defineField} from '@sanity/types'
+import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {expect, test, vi} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
 import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
-import {DateTimeInput} from '../DateTimeInput'
+import {DateTimeInput, sanitizeTimeZoneKeyId} from '../DateTimeInput'
 import {
   mockUseTimeZoneDefault,
   mockUseTimeZoneWithOslo,
@@ -22,7 +22,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: () => mockUseTimeZoneDefault(),
 }))
 
-const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+const DateTimeInputWithFormValue = (inputProps: StringInputProps) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
     <DateTimeInput {...inputProps} />
   </FormValueProvider>
@@ -178,7 +178,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
 
     expect(input.value).toBe('2021-06-15 21:00')
 
-    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
+    const timeZoneButton = screen.getAllByTestId('timezone-button')[0]
     expect(timeZoneButton).toHaveTextContent('Tokyo')
   } finally {
     spy.mockRestore()
@@ -219,10 +219,10 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   })
 
   // click on the TimeZoneButton
-  const timeZoneButton = result.getByText('Oslo')
+  const timeZoneButton = screen.getByText('Oslo')
   await userEvent.click(timeZoneButton)
   // ensure the dialog shows
-  expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
+  expect(screen.queryByText('Select time zone')).not.toBeInTheDocument()
 
   spy.mockRestore()
 })
@@ -321,5 +321,42 @@ Object.entries(expected).forEach(([format, expectedValue]) => {
     } else {
       expect(input.value).toContain(expectedValue)
     }
+  })
+})
+
+// Tests for sanitizeTimeZoneKeyId - fixes SAPP-2883
+// The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`
+describe('sanitizeTimeZoneKeyId', () => {
+  test('returns simple paths unchanged', () => {
+    expect(sanitizeTimeZoneKeyId('myField')).toBe('myField')
+    expect(sanitizeTimeZoneKeyId('nested.field.path')).toBe('nested.field.path')
+  })
+
+  test('sanitizes single array key segment', () => {
+    // e.g., dates[_key=="abc123"] becomes dates.key-abc123
+    expect(sanitizeTimeZoneKeyId('dates[_key=="abc123"]')).toBe('dates.key-abc123')
+  })
+
+  test('sanitizes array key segment followed by field name', () => {
+    // e.g., dates[_key=="abc123"].date becomes dates.key-abc123.date
+    expect(sanitizeTimeZoneKeyId('dates[_key=="abc123"].date')).toBe('dates.key-abc123.date')
+  })
+
+  test('sanitizes multiple array key segments', () => {
+    // e.g., items[_key=="a"].dates[_key=="b"].value becomes items.key-a.dates.key-b.value
+    expect(sanitizeTimeZoneKeyId('items[_key=="a"].dates[_key=="b"].value')).toBe(
+      'items.key-a.dates.key-b.value',
+    )
+  })
+
+  test('sanitizes keys with complex characters', () => {
+    // Real-world example from the bug report
+    expect(sanitizeTimeZoneKeyId('dates[_key=="8442376835fd"].date')).toBe(
+      'dates.key-8442376835fd.date',
+    )
+  })
+
+  test('handles empty string', () => {
+    expect(sanitizeTimeZoneKeyId('')).toBe('')
   })
 })

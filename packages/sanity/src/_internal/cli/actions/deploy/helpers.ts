@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {PassThrough} from 'node:stream'
+import {fileURLToPath} from 'node:url'
 import {type Gzip} from 'node:zlib'
 
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
@@ -12,7 +13,7 @@ import readPkgUp from 'read-pkg-up'
 import {debug as debugIt} from '../../debug'
 import {determineIsApp} from '../../util/determineIsApp'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const debug = debugIt.extend('deploy')
 

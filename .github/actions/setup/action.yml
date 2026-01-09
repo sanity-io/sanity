@@ -1,0 +1,22 @@
+name: "Setup Environment"
+description: "Sets up Node.js, pnpm, and installs dependencies"
+
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: true
+    default: lts/*
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+
+    - uses: actions/setup-node@v6
+      with:
+        cache: pnpm
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install project dependencies
+      run: pnpm install --ignore-scripts
+      shell: bash

@@ -7,7 +7,7 @@ import {Dialog} from '../../../../ui-components'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {unstable_useValuePreview as useValuePreview} from '../../../preview/useValuePreview'
+import {useValuePreview} from '../../../preview/useValuePreview'
 import {canvasLocaleNamespace} from '../../i18n'
 
 const useDocumentTitle = ({document}: {document: SanityDocument}) => {

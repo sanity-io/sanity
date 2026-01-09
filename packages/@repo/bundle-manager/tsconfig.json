@@ -1,6 +1,6 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./src"],
+  "include": ["./src", "./bin"],
   "compilerOptions": {
     "rootDir": ".",
     "lib": ["dom", "es2024"]

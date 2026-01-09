@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {type Schema as SchemaSchema} from '@sanity/types'
-import {keyBy, mapValues} from 'lodash'
+import {keyBy, mapValues} from 'lodash-es'
 
 import getSimpleDummySchema from './schema/simpleDummySchema'
 import getSimpleFieldGroupSchema from './schema/simpleFieldGroupSchema'

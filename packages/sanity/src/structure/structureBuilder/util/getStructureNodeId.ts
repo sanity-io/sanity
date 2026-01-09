@@ -1,4 +1,4 @@
-import {camelCase} from 'lodash'
+import {camelCase} from 'lodash-es'
 import getSlug from 'speakingurl'
 
 import {disallowedPattern} from './validateId'

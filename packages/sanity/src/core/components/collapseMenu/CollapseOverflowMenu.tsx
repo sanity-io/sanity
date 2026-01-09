@@ -53,7 +53,13 @@ export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
             return (
               <Fragment key={c.key}>
                 {dividerBefore && index !== 0 && <MenuDivider />}
-                <MenuItem text={text} icon={icon} pressed={selected} {...rest} />
+                <MenuItem
+                  text={text}
+                  icon={icon}
+                  pressed={selected}
+                  aria-pressed={selected}
+                  {...rest}
+                />
               </Fragment>
             )
           })}

@@ -5,8 +5,11 @@ Arguments
   [dir]  Path to initialize the Blueprint in
 
 Options
-  --blueprint-type, --type <json>    Type of Blueprint to create
-  --project-id <id>                  Project ID to use
+  --blueprint-type, --type <json>    Blueprint manifest type to use for the Blueprint (json|js|ts)
+  --project-id <id>                  Sanity Project ID to use for the Blueprint
+  --stack-id <id>                    Existing Stack ID to use for the Blueprint
+  --stack-name <id>                  Name to use for a NEW Stack
+  --verbose                          Verbose output
 
 Examples:
   # Create a new Blueprint project in the current directory
@@ -32,6 +35,7 @@ export interface BlueprintsInitFlags {
   'stack'?: string
   'stack-name'?: string
   'name'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsInitFlags = {
@@ -43,7 +47,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   group: 'blueprints',
   helpText,
   signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
-  description: 'Initialize a new Blueprint manifest file',
+  description: 'Initialize a new Blueprint',
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -89,6 +93,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
         'stack-name': flags['stack-name'] ?? flags.name,
+        'verbose': flags.verbose,
       },
     })
 

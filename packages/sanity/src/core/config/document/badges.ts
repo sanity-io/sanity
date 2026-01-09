@@ -22,7 +22,9 @@ export interface DocumentBadgeProps extends EditStateFor {}
 /**
  * @hidden
  * @beta */
-export interface DocumentBadgeComponent
-  extends HookCollectionActionHook<DocumentBadgeProps, DocumentBadgeDescription> {
+export interface DocumentBadgeComponent extends HookCollectionActionHook<
+  DocumentBadgeProps,
+  DocumentBadgeDescription
+> {
   (props: DocumentBadgeProps): DocumentBadgeDescription | null
 }

@@ -1,5 +1,5 @@
 import {createClient} from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder, type ImageUrlBuilder} from '@sanity/image-url'
 import {createQueryStore} from '@sanity/react-loader'
 
 const client = createClient({
@@ -11,4 +11,4 @@ const client = createClient({
 })
 
 export const {useQuery, useLiveMode} = createQueryStore({client})
-export const imageBuilder: ReturnType<typeof imageUrlBuilder> = imageUrlBuilder(client)
+export const imageBuilder: ImageUrlBuilder = createImageUrlBuilder(client)

@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {createMemoryHistory} from 'history'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {type ReactNode} from 'react'
 import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
 import {vi} from 'vitest'

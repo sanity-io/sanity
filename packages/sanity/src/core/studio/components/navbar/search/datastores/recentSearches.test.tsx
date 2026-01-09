@@ -491,7 +491,7 @@ describe('search-store', () => {
                 },
               },
             ],
-            version: 2,
+            version: 3,
           }),
         )
         expect(recentSearches.length).toBe(1)

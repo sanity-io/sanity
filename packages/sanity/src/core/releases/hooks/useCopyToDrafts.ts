@@ -18,7 +18,7 @@ export interface UseCopyToDraftsReturn {
   hasDraftVersion: boolean
 }
 
-export function useCopyToDrafts(options: UseCopyToDraftsOptions) {
+export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraftsReturn {
   const {documentId, fromRelease, onNavigate} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()

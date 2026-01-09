@@ -7,6 +7,8 @@ export default defineType({
   type: 'document',
   title: 'Videos test',
   icon: VideoIcon,
+  groups: [{name: 'content', title: 'Content'}],
+  fieldsets: [{name: 'coolVideos', title: 'Cool Videos'}],
   fields: [
     {
       name: 'title',
@@ -16,6 +18,16 @@ export default defineType({
     defineVideoField({
       title: 'A simple video',
       name: 'someVideo',
+    }),
+    defineVideoField({
+      title: 'A simple video in content group',
+      name: 'someVideoInContentGroup',
+      group: 'content',
+    }),
+    defineVideoField({
+      title: 'A simple video in a fieldset',
+      name: 'someVideoInFieldset',
+      fieldset: 'coolVideos',
     }),
     defineField({
       name: 'arrayOfVideos',

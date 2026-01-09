@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
+
+### Bug Fixes
+
+* **deps:** Update CodeMirror ([#11640](https://github.com/sanity-io/sanity/issues/11640)) ([33ffc37](https://github.com/sanity-io/sanity/commit/33ffc37db7ba079320e1f55d25765bb78932701e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.1.0](https://github.com/sanity-io/sanity/compare/v5.0.1...v5.1.0) (2025-12-22)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [5.0.1](https://github.com/sanity-io/sanity/compare/v5.0.0...v5.0.1) (2025-12-17)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [5.0.0](https://github.com/sanity-io/sanity/compare/v4.22.0...v5.0.0) (2025-12-16)
+
+### ⚠ BREAKING CHANGES
+
+* drop support for react < 19.2 (#11383)
+
+### Bug Fixes
+
+* drop support for react < 19.2 ([#11383](https://github.com/sanity-io/sanity/issues/11383)) ([169be63](https://github.com/sanity-io/sanity/commit/169be63ead210763b7cef232e263b93ffd3b80dd)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [4.22.0](https://github.com/sanity-io/sanity/compare/v4.21.1...v4.22.0) (2025-12-16)
+
+### Bug Fixes
+
+* **deps:** add `sanity` to peerDependencies in @sanity/vision ([#11480](https://github.com/sanity-io/sanity/issues/11480)) ([69cd79b](https://github.com/sanity-io/sanity/commit/69cd79b38fe15f0cbb3c099b3ea64de55f5cf1f2)) by Robbie Wadley (robbiethewadley@gmail.com)
+* use the same peer dependency range for vision as regular plugins ([#11499](https://github.com/sanity-io/sanity/issues/11499)) ([e4e65b4](https://github.com/sanity-io/sanity/commit/e4e65b4817684d0b86e99c08278e7a7d5e3d5920)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
+## [4.21.1](https://github.com/sanity-io/sanity/compare/v4.21.0...v4.21.1) (2025-12-11)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [4.21.0](https://github.com/sanity-io/sanity/compare/v4.20.3...v4.21.0) (2025-12-09)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [4.20.3](https://github.com/sanity-io/sanity/compare/v4.20.2...v4.20.3) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [4.20.2](https://github.com/sanity-io/sanity/compare/v4.20.1...v4.20.2) (2025-12-04)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [4.20.1](https://github.com/sanity-io/sanity/compare/v4.20.0...v4.20.1) (2025-12-03)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [4.20.0](https://github.com/sanity-io/sanity/compare/v4.19.0...v4.20.0) (2025-12-02)
+
+### Bug Fixes
+
+* **deps:** Update CodeMirror ([#11256](https://github.com/sanity-io/sanity/issues/11256)) ([6d0897f](https://github.com/sanity-io/sanity/commit/6d0897f2bde0bbde04c46133f50835d8336108f9)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [4.19.0](https://github.com/sanity-io/sanity/compare/v4.18.0...v4.19.0) (2025-11-25)
 
 **Note:** Version bump only for package @sanity/vision

@@ -5,15 +5,15 @@ import {describe, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'
 
-const DESCRIPTOR_CONVERTER = new DescriptorConverter({})
+const DESCRIPTOR_CONVERTER = new DescriptorConverter()
 
-function validate(schema: Schema) {
-  expectManifestSchemaConversion(schema, DESCRIPTOR_CONVERTER.get(schema))
+async function validate(schema: Schema) {
+  await expectManifestSchemaConversion(schema, await DESCRIPTOR_CONVERTER.get(schema))
 }
 
 // The schemas are taken from packages/@sanity/schema/test/extractSchema/extractSchema.test.ts
 describe('ManifestSchemaTypes[] converts to Schema', () => {
-  test('field with type', () => {
+  test('field with type', async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -47,10 +47,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('can convert a simple schema', () => {
+  test('can convert a simple schema', async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -236,10 +236,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('all fields are marked as optional without "enforceRequiredFields"', () => {
+  test('all fields are marked as optional without "enforceRequiredFields"', async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -270,11 +270,11 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
   // Skipping as extractManifestSchemaTypes does not allow `enforceRequiredFields`
-  test('optional is set when "enforceRequiredFields"', {skip: true}, () => {
+  test('optional is set when "enforceRequiredFields"', {skip: true}, async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -311,10 +311,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema /*, {enforceRequiredFields: true} */)
+    await validate(schema /*, {enforceRequiredFields: true} */)
   })
 
-  test('can extract inline documents', () => {
+  test('can extract inline documents', async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -363,10 +363,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('will ignore global document reference types at the moment', () => {
+  test('will ignore global document reference types at the moment', async () => {
     const schema = createSchema({
       name: 'test',
       types: [
@@ -423,10 +423,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('extracted schema should only include user defined types (and no built-in types)', () => {
+  test('extracted schema should only include user defined types (and no built-in types)', async () => {
     const documentType = 'basic'
     const schema = createSchema({
       name: 'test',
@@ -439,10 +439,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('indicate conditional for function values on hidden and readOnly fields', () => {
+  test('indicate conditional for function values on hidden and readOnly fields', async () => {
     const documentType = 'basic'
 
     const schema = createSchema({
@@ -465,10 +465,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('should omit known non-serializable schema props ', () => {
+  test('should omit known non-serializable schema props ', async () => {
     const documentType = 'remove-props'
 
     const schema = createSchema({
@@ -525,10 +525,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('schema should include most userland properties', () => {
+  test('schema should include most userland properties', async () => {
     const documentType = 'basic'
 
     const recursiveObject: any = {
@@ -577,10 +577,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('should serialize fieldset config', () => {
+  test('should serialize fieldset config', async () => {
     const documentType = 'fieldsets'
 
     const schema = createSchema({
@@ -605,10 +605,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize fieldless types', () => {
+  test('serialize fieldless types', async () => {
     const documentType = 'fieldless-types'
     const schema = createSchema({
       name: 'test',
@@ -641,10 +641,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize types with fields', () => {
+  test('serialize types with fields', async () => {
     const documentType = 'field-types'
     const schema = createSchema({
       name: 'test',
@@ -708,10 +708,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize array-like fields (portable text tested separately)', () => {
+  test('serialize array-like fields (portable text tested separately)', async () => {
     const documentType = 'all-types'
     const schema = createSchema({
       name: 'test',
@@ -775,10 +775,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize array with type reference and overridden typename', () => {
+  test('serialize array with type reference and overridden typename', async () => {
     const arrayType = 'someArray'
     const objectBaseType = 'someObject'
     const schema = createSchema({
@@ -802,10 +802,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize schema with indirectly recursive structure', () => {
+  test('serialize schema with indirectly recursive structure', async () => {
     const arrayType = 'someArray'
     const objectBaseType = 'someObject'
     const otherObjectType = 'other'
@@ -840,10 +840,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize portable text field', () => {
+  test('serialize portable text field', async () => {
     const documentType = 'pt'
     const schema = createSchema({
       name: 'test',
@@ -902,10 +902,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('serialize fields with references', () => {
+  test('serialize fields with references', async () => {
     const documentType = 'ref-types'
     const schema = createSchema({
       name: 'test',
@@ -971,10 +971,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('fieldsets and fieldset on fields is serialized', () => {
+  test('fieldsets and fieldset on fields is serialized', async () => {
     const documentType = 'basic'
     const schema = createSchema({
       name: 'test',
@@ -1007,10 +1007,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('do not serialize default titles (default titles added by Schema.compile based on type/field name)', () => {
+  test('do not serialize default titles (default titles added by Schema.compile based on type/field name)', async () => {
     const documentType = 'basic-document'
     const schema = createSchema({
       name: 'test',
@@ -1035,10 +1035,10 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
-  test('should use the inline type, not the global type for the array.of name-conflicting inline array object items', () => {
+  test('should use the inline type, not the global type for the array.of name-conflicting inline array object items', async () => {
     const documentType = 'basic-document'
     const schema = createSchema({
       name: 'test',
@@ -1069,13 +1069,13 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 
   // FIXME: This test will fail because the block type title is set to the default title.
   // When this is serialized, the title will not be set in the _internal_ownProps and thus
   // not be serialized into the descriptor.
-  test.fails('Defining array type title same as default title should fail', () => {
+  test.fails('Defining array type title same as default title should fail', async () => {
     const documentType = 'pt'
     const schema = createSchema({
       name: 'test',
@@ -1101,6 +1101,6 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
       ],
     })
 
-    validate(schema)
+    await validate(schema)
   })
 })

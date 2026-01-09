@@ -1,5 +1,5 @@
 import humanizeList from 'humanize-list'
-import {isPlainObject, omit} from 'lodash'
+import {isPlainObject, omit} from 'lodash-es'
 
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'

@@ -14,5 +14,5 @@ export function getReleaseIdFromReleaseDocumentId(releaseDocumentId: string): Re
     )
   }
   const releaseId = releaseDocumentId.slice(PATH_ID_PREFIX.length)
-  return releaseId as ReleaseId
+  return releaseId
 }

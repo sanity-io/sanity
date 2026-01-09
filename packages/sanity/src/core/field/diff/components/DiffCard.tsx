@@ -30,6 +30,7 @@ const StyledCard = styled(Card)<StyledCardProps>`
   border-radius: var(--diff-card-radius);
   background-color: ${({$annotationColor}) => $annotationColor.backgroundColor};
   color: ${({$annotationColor}) => $annotationColor.color};
+  z-index: 1;
 
   &:not(del) {
     text-decoration: none;

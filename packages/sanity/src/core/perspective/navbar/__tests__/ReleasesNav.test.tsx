@@ -45,6 +45,14 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
+vi.mock('../ViewContentReleasesMenuItem', () => ({
+  ViewContentReleasesMenuItem: () => null,
+}))
+
+vi.mock('../ScheduledDraftsMenuItem', () => ({
+  ScheduledDraftsMenuItem: () => null,
+}))
+
 const mockedUseWorkspace = vi.fn()
 vi.mock('../../../studio/useWorkspace', () => ({
   useWorkspace: vi.fn(() => mockedUseWorkspace),
@@ -96,7 +104,7 @@ describe('ReleasesNav', () => {
 
   it('should list the title of the chosen perspective', async () => {
     usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
-    usePerspectiveMockReturn.selectedReleaseId = 'rActive'
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
 
     await renderTest()
 
@@ -199,7 +207,7 @@ describe('ReleasesNav', () => {
         // since usePerspective is mocked, and the layering exclude toggle is
         // controlled by currentGlobalBundleId, we need to manually set it
         // to the release that will be selected in below tests
-        usePerspectiveMockReturn.selectedReleaseId = 'rScheduled2'
+        usePerspectiveMockReturn.selectedPerspectiveName = 'rScheduled2'
         // add an undecided release to expand testing
         useActiveReleasesMockReturn.data = [
           ...useActiveReleasesMockReturn.data,

@@ -46,7 +46,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
   )
 
   const isVersionGoingToUnpublish =
-    editState && editState.version && isGoingToUnpublish(editState.version as SanityDocument)
+    editState && editState.version && isGoingToUnpublish(editState.version)
 
   return (
     <Flex direction="column" height="fill" overflow="hidden">

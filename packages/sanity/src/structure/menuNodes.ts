@@ -1,4 +1,4 @@
-import {negate} from 'lodash'
+import {negate} from 'lodash-es'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'

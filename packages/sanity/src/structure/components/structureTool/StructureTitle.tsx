@@ -1,12 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {
-  unstable_useValuePreview as useValuePreview,
-  useEditState,
-  usePerspective,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview} from 'sanity'
 
 import {LOADING_PANE} from '../../constants'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'

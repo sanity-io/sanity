@@ -21,14 +21,16 @@ interface SearchFilterBaseDefinition<TOperators> {
   operators: Operator<TOperators>[]
 }
 
-export interface SearchFilterFieldDefinition<TOperators = string>
-  extends SearchFilterBaseDefinition<TOperators> {
+export interface SearchFilterFieldDefinition<
+  TOperators = string,
+> extends SearchFilterBaseDefinition<TOperators> {
   fieldType: IntrinsicTypeName
   type: 'field'
 }
 
-export interface SearchFilterPinnedDefinition<TOperators = string>
-  extends SearchFilterBaseDefinition<TOperators> {
+export interface SearchFilterPinnedDefinition<
+  TOperators = string,
+> extends SearchFilterBaseDefinition<TOperators> {
   fieldPath?: string
   group?: string
   title: string

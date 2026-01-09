@@ -1,4 +1,4 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {mergeMap, range} from 'rxjs'
 
 import {type DocGenTemplate} from './types'
@@ -9,13 +9,13 @@ export type ProgramArgs = {
   published?: boolean
   size?: number
   draft?: boolean
-  bundle?: string
+  bundles?: string[]
   template: DocGenTemplate
   concurrency?: number
 }
 
 export function run(_args: ProgramArgs) {
-  const {client, bundle, draft, concurrency, published, template, number, size} = _args
+  const {client, bundles, draft, concurrency, published, template, number, size} = _args
   const runId = Date.now()
 
   return range(0, number || 1).pipe(
@@ -24,35 +24,31 @@ export function run(_args: ProgramArgs) {
 
       const templateOptions = {
         size: size ?? 256,
+        id,
       }
 
       const title = `Generated #${runId.toString(32).slice(2)}/${i}`
 
-      const publishedDocument = published
-        ? {...template({...templateOptions, title: `${title} - Published`}), _id: id}
-        : undefined
+      const baseDocument = {...template({...templateOptions, title}), _id: id}
 
-      const draftDocument = draft
-        ? {
-            ...template({...templateOptions, title: `${title} - Published`}),
-            _id: `drafts.${id}`,
-            title: `${title} - Draft`,
-          }
-        : undefined
+      const publishedDocument = {...baseDocument, title: `${title} - Published`}
+      const draftDocument = {...baseDocument, _id: `drafts.${id}`, title: `${title} - Draft`}
 
-      const bundleDocument = bundle
-        ? {
-            ...template({...templateOptions, title: `${title} - Published`}),
+      const bundleDocuments = bundles
+        ? bundles.map((bundle) => ({
+            ...baseDocument,
             _id: `versions.${bundle}.${id}`,
             title: `${title} - Bundle: ${bundle}`,
-          }
-        : undefined
+          }))
+        : []
 
-      return [publishedDocument, draftDocument, bundleDocument].flatMap((d) => (d ? [d] : []))
+      return [published && publishedDocument, draft && draftDocument, bundleDocuments].flatMap(
+        (d) => (d ? d : []),
+      )
     }),
     mergeMap((doc) => {
       console.log('Creating', doc._id)
-      return client.observable.create(doc as SanityDocument, {autoGenerateArrayKeys: true})
+      return client.observable.create(doc, {autoGenerateArrayKeys: true})
     }, concurrency ?? 2),
   )
 }

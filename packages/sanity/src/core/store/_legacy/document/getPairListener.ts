@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {groupBy} from 'lodash'
+import {groupBy} from 'lodash-es'
 import {defer, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 

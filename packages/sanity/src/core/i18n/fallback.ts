@@ -1,6 +1,6 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
 import {createInstance, type Resource} from 'i18next'
-import {memoize} from 'lodash'
+import {memoize} from 'lodash-es'
 
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'

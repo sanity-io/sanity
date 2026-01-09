@@ -1,7 +1,7 @@
 export const corePkgs = ['sanity', '@sanity/vision'] as const
 export const appVersion = 'v1'
 
-export const VALID_TAGS = ['latest', 'stable', 'next'] as const
+export const VALID_TAGS = ['latest', 'stable', 'next', 'next-major'] as const
 
 /**
  * How long to keep previous tags around (in seconds) to account for potential delays in manifest propagation.

@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 /**
  * TODO: This need to refactored once we have a better e2e framework/setup in place.
  * Makeshift code to reproduce a specific bug.
@@ -82,6 +81,7 @@ test.describe('inputs: text', () => {
     page,
     createDraftDocument,
   }) => {
+    test.slow()
     await createDraftDocument('/content/book')
 
     const titleInput = page.getByTestId('field-title').getByTestId('string-input')
@@ -91,22 +91,30 @@ test.describe('inputs: text', () => {
     // wait for form to be attached
     await expect(page.getByTestId('document-panel-scroller')).toBeAttached()
 
+    await expect(titleInput).toBeVisible()
+    await expect(titleInput).toBeEnabled()
     await titleInput.fill('Title A')
     // The creation is happening in the same transaction as the first edit, so this will show that the document was created just now.
     await expectCreatedStatus(paneFooter)
+    await expect(titleInput).toBeVisible()
     await titleInput.fill('Title A updated')
     // A subsequent edit will show that the document was edited just now.
-    await expectEditedStatus(paneFooter)
+    await expectEditedStatus(paneFooter, {timeout: 30_000})
 
     // Wait for the document to be published.
+    await expect(publishButton).toBeVisible()
+    await expect(publishButton).toBeEnabled()
     await publishButton.click()
     await expectPublishedStatus(paneFooter)
 
     // Change the title.
+    await expect(titleInput).toBeVisible()
+    await expect(titleInput).toBeEnabled()
     await titleInput.fill('Title B')
-    await expectCreatedStatus(paneFooter)
 
     // Wait for the document to be published.
+    await expect(publishButton).toBeVisible()
+    await expect(publishButton).toBeEnabled()
     await publishButton.click()
     await expectPublishedStatus(paneFooter)
   })

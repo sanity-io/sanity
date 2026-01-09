@@ -8,11 +8,10 @@
     "examples/*",
     "packages/@repo/*",
     "packages/@sanity/*",
-    "packages/create-sanity",
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "4.19.0",
+  "version": "5.2.0",
   "command": {
     "version": {
       "changelogPreset": "conventionalcommits",

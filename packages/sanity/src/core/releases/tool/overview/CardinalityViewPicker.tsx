@@ -1,13 +1,18 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon, ChevronDownIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Menu, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton'
 import {MenuItem} from '../../../../ui-components/menuItem'
 import {useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {
+  NavigatedToReleasesOverview,
+  NavigatedToScheduledDrafts,
+} from '../../__telemetry__/navigation.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type CardinalityView} from './queryParamUtils'
 
@@ -52,6 +57,7 @@ export const CardinalityViewPicker = ({
   onCardinalityViewChange,
 }: CardinalityViewPickerProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const telemetry = useTelemetry()
 
   const hasSingleDocRelease = useMemo(
     () => allReleases.some(isCardinalityOneRelease),
@@ -65,6 +71,18 @@ export const CardinalityViewPicker = ({
     cardinalityView,
     isDraftModelEnabled,
   })
+
+  const handleViewChange = useCallback(
+    (view: CardinalityView) => () => {
+      const telemetryEvent =
+        view === 'releases' ? NavigatedToReleasesOverview : NavigatedToScheduledDrafts
+      telemetry.log(telemetryEvent, {source: 'view-picker'})
+
+      onCardinalityViewChange(view)()
+    },
+    [telemetry, onCardinalityViewChange],
+  )
+
   //  If only one is enabled, show the label
   if (pickerView === 'contentReleases' || pickerView === 'singleDocReleases') {
     return (
@@ -97,12 +115,12 @@ export const CardinalityViewPicker = ({
           <MenuItem
             text={t('action.releases')}
             selected={cardinalityView === 'releases'}
-            onClick={onCardinalityViewChange('releases')}
+            onClick={handleViewChange('releases')}
           />
           <MenuItem
             text={t('action.drafts')}
             selected={cardinalityView === 'drafts'}
-            onClick={onCardinalityViewChange('drafts')}
+            onClick={handleViewChange('drafts')}
           />
         </Menu>
       }

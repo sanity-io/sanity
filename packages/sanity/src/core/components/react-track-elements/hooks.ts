@@ -1,4 +1,4 @@
-import {debounce} from 'lodash'
+import {debounce} from 'lodash-es'
 import {useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type IsEqualFunction} from './types'

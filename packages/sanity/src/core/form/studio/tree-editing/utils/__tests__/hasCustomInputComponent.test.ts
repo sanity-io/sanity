@@ -1,12 +1,12 @@
 import {Schema} from '@sanity/schema'
-import {type ObjectField, type Path, type SchemaType} from '@sanity/types'
+import {type ObjectField, type Path} from '@sanity/types'
 import {beforeEach, describe, expect, test} from 'vitest'
 
 import {hasCustomInputComponent} from '../hasCustomInputComponent'
 
 describe('hasCustomInputComponent', () => {
   let testSchema: ReturnType<typeof Schema.compile>
-  let documentFields: ObjectField<SchemaType>[]
+  let documentFields: ObjectField[]
 
   beforeEach(() => {
     testSchema = Schema.compile({

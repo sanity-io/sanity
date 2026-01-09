@@ -13,10 +13,6 @@ jobs:
     concurrency:
       group: release_canary
 
-    # this runs in main, and we want to skip running it when release PRs are merged
-    # format of the commit message is specified in lerna.json
-    if: >
-      !startsWith(github.event.head_commit.message, 'chore(release): publish')
     permissions:
       id-token: write # to enable use of OIDC for npm provenance
     runs-on: ubuntu-latest
@@ -31,18 +27,12 @@ jobs:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
-      # Publish packages to npm under the `canary` tag on new commits to main.
-      - uses: actions/checkout@v5
+      # Publish packages to npm under the `canary` tag on new commits to the canary branch.
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Bump canary versions
         # Note: ubuntu-latest ships with lerna installed on the system
@@ -89,7 +79,7 @@ jobs:
           done
 
       - name: Re-install after version bump
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --fix-lockfile
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped

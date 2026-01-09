@@ -8,10 +8,10 @@ import {type FileLike} from '../../../studio/uploads/types'
 
 interface Props {
   readOnly?: boolean
-  hoveringFiles: FileLike[]
+  hoveringFiles?: FileLike[]
   type: string
-  acceptedFiles: FileLike[]
-  rejectedFilesCount: number
+  acceptedFiles?: FileLike[]
+  rejectedFilesCount?: number
   directUploads?: boolean
 }
 
@@ -30,7 +30,10 @@ export function PlaceholderText(props: Props) {
       return <ReadOnlyIcon />
     }
 
-    if ((hoveringFiles && rejectedFilesCount > 0) || directUploads === false) {
+    if (
+      (hoveringFiles && typeof rejectedFilesCount !== 'undefined' && rejectedFilesCount > 0) ||
+      directUploads === false
+    ) {
       return <AccessDeniedIcon />
     }
 
@@ -47,10 +50,10 @@ export function PlaceholderText(props: Props) {
     }
 
     if (hoveringFiles && directUploads && !readOnly) {
-      if (acceptedFiles.length > 0) {
+      if (acceptedFiles && acceptedFiles.length > 0) {
         return t('inputs.files.common.placeholder.drop-to-upload', {context: type})
       }
-      if (rejectedFilesCount > 0) {
+      if (typeof rejectedFilesCount !== 'undefined' && rejectedFilesCount > 0) {
         return t('inputs.files.common.placeholder.cannot-upload-some-files', {
           count: rejectedFilesCount,
         })
@@ -58,7 +61,7 @@ export function PlaceholderText(props: Props) {
     }
 
     return t('inputs.files.common.placeholder.drag-or-paste-to-upload', {context: type})
-  }, [acceptedFiles.length, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
+  }, [acceptedFiles, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (
     <RootFlex align="center" gap={3} justify="center" paddingLeft={1}>

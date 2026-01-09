@@ -110,7 +110,7 @@ async function parseJsonFile<T>(filePath: string): Promise<JsonFileParseSuccess<
   let stats: Stats
   try {
     stats = await stat(filePath)
-  } catch (err) {
+  } catch {
     // file does not exist
     return undefined
   }

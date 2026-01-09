@@ -1,6 +1,6 @@
 import {type Schema, type SchemaType} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
-import {partition} from 'lodash'
+import {partition} from 'lodash-es'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

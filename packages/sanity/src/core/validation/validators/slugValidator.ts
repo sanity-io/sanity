@@ -8,7 +8,7 @@ import {
   type SlugSchemaType,
   type SlugValidationContext,
 } from '@sanity/types'
-import {memoize} from 'lodash'
+import {memoize} from 'lodash-es'
 
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId} from '../../util/draftUtils'

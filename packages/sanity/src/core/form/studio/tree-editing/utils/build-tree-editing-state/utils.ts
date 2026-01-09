@@ -71,11 +71,9 @@ export function shouldBeInBreadcrumb(itemPath: Path, path: Path, documentValue?:
   if (currentValue && typeof currentValue === 'object' && '_type' in currentValue) {
     if (hasSpanChildren(currentValue)) return false
   }
-  return (
-    itemPath.every((segment, index) => {
-      return isArrayItemSelected(path[index], segment)
-    }) && isArrayItemPath(itemPath)
-  )
+  return itemPath.every((segment, index) => {
+    return isArrayItemSelected(path[index], segment)
+  })
 }
 
 /**

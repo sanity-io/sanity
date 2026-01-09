@@ -5,5 +5,5 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
   },
-  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]}})],
+  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]}})],
 })

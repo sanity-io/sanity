@@ -1,4 +1,4 @@
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {decodeJsonParams, encodeJsonParams, route} from 'sanity/router'
 
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from './types'
@@ -11,7 +11,7 @@ const EMPTY_PARAMS = {}
 export function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
-  } catch (err) {
+  } catch {
     console.warn('Failed to parse JSON parameters')
     return {}
   }

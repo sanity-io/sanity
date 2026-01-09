@@ -88,7 +88,7 @@ export default defineType({
 
       return {
         title: typeof title === 'string' ? title : undefined,
-        media: media as any,
+        media: media,
         subtitle: [role?.title, awardsText].filter(Boolean).join(' · '),
       }
     },

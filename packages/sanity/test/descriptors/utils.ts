@@ -1,15 +1,20 @@
-import {type EncodableObject, type EncodableValue} from '@sanity/descriptors'
+import {
+  type EncodableObject,
+  type EncodableValue,
+  type SetSynchronization,
+} from '@sanity/descriptors'
 import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-import {capitalize, cloneDeep, startCase} from 'lodash'
+import {capitalize, cloneDeep, startCase} from 'lodash-es'
 import {expect} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
 
-type Descriptor = ReturnType<(typeof DESCRIPTOR_CONVERTER)['get']>
-
-export function expectManifestSchemaConversion(schema: Schema, schemaDescriptor: Descriptor) {
+export async function expectManifestSchemaConversion(
+  schema: Schema,
+  schemaDescriptor: SetSynchronization<string>,
+) {
   // Extract the manifest schema types
   const manifestSchemaTypes = extractManifestSchemaTypes(schema)
 
@@ -19,7 +24,7 @@ export function expectManifestSchemaConversion(schema: Schema, schemaDescriptor:
   // Convert the raw json back into a Schema
   const converted = createSchemaFromManifestTypes({name: schema.name, types: data})
 
-  const convertedDescriptor = DESCRIPTOR_CONVERTER.get(converted)
+  const convertedDescriptor = await DESCRIPTOR_CONVERTER.get(converted)
 
   // Compare the underlying typedefs since there are known inconsistencies between the serialized schemaschema
   // and the serialized manifest schema

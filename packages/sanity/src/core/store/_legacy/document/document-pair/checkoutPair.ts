@@ -6,7 +6,7 @@ import {
 } from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
@@ -255,7 +255,7 @@ export function checkoutPair(
 
   const connectionChangeEvents$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome'),
-  ) as Observable<ReconnectEvent | WelcomeEvent>
+  )
 
   const draft = createBufferedDocument(
     draftId,

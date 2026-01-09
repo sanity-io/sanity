@@ -3,7 +3,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
-import {capitalize} from 'lodash'
+import {capitalize} from 'lodash-es'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

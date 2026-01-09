@@ -219,9 +219,10 @@ describe('blueprints commands with mocked cores', () => {
       await doctorBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintDoctorCore).toHaveBeenCalledWith({
-        ...config,
-        blueprint: localBlueprint,
-        flags: {verbose: true},
+        bin: 'sanity',
+        log: expect.any(Function),
+        token,
+        flags: {verbose: true, fix: false},
       })
     })
   })
@@ -300,11 +301,17 @@ describe('blueprints commands with mocked cores', () => {
 
   describe('plan command', () => {
     it('should call blueprintPlanCore with blueprint', async () => {
-      // sanity blueprints plan
-      await planBlueprintsCommand.action(emptyArgs, mockContext)
+      const args: CliCommandArguments = {
+        ...emptyArgs,
+        extOptions: {verbose: true},
+      }
+
+      // sanity blueprints plan --verbose
+      await planBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintPlanCore).toHaveBeenCalledWith({
         ...config,
+        flags: {verbose: true},
       })
     })
   })
