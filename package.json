@@ -128,7 +128,7 @@
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
     "oxlint": "1.38.0",
-    "oxlint-tsgolint": "0.10.1",
+    "oxlint-tsgolint": "0.11.0",
     "playwright": "catalog:",
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "^2.5.20",
