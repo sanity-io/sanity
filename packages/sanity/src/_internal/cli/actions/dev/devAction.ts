@@ -34,6 +34,9 @@ export interface StartDevServerCommandFlags {
   'load-in-dashboard'?: boolean
   'auto-updates'?: boolean
   'force'?: boolean
+  'extract-schema'?: boolean
+  'schema-path'?: string
+  'schema-workspace'?: string
 }
 
 const debug = debugIt.extend('dev')
@@ -122,7 +125,10 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('host', {type: 'string'})
     .options('port', {type: 'number'})
     .options('auto-updates', {type: 'boolean'})
-    .option('load-in-dashboard', {type: 'boolean', default: false}).argv
+    .option('load-in-dashboard', {type: 'boolean', default: false})
+    .option('extract-schema', {type: 'boolean', default: false})
+    .option('schema-path', {type: 'string'})
+    .option('schema-workspace', {type: 'string'}).argv
 }
 
 export default async function startSanityDevServer(
@@ -209,6 +215,10 @@ export default async function startSanityDevServer(
     }
   }
 
+  if (flags.extractSchema) {
+    output.print(`${logSymbols.info} Running dev server with schema extraction enabled`)
+  }
+
   // Try to load CLI configuration from sanity.cli.(js|ts)
   const config = getDevServerConfig({flags, workDir, cliConfig, output})
 
@@ -239,7 +249,17 @@ export default async function startSanityDevServer(
   try {
     const startTime = Date.now()
     const spinner = output.spinner('Starting dev server').start()
-    const {server} = await startDevServer({...config, telemetryLogger: telemetry})
+    const {server} = await startDevServer({
+      ...config,
+      telemetryLogger: telemetry,
+      schemaExtraction: flags.extractSchema
+        ? {
+            enabled: true,
+            outputPath: flags.schemaPath,
+            workspaceName: flags.schemaWorkspace,
+          }
+        : undefined,
+    })
 
     const {info: loggerInfo} = server.config.logger
     const {port} = server.config.server
