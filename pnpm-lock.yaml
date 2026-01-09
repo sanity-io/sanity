@@ -96,14 +96,14 @@ importers:
   .:
     devDependencies:
       '@lerna-lite/cli':
-        specifier: ^4.10.3
-        version: 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        specifier: ^4.10.4
+        version: 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/list':
-        specifier: ^4.10.3
-        version: 4.10.3(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        specifier: ^4.10.4
+        version: 4.10.4(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/publish':
-        specifier: ^4.10.3
-        version: 4.10.3(@lerna-lite/list@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+        specifier: ^4.10.4
+        version: 4.10.4(@lerna-lite/list@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
@@ -169,10 +169,10 @@ importers:
         version: 6.2.6
       oxlint:
         specifier: 1.38.0
-        version: 1.38.0(oxlint-tsgolint@0.10.1)
+        version: 1.38.0(oxlint-tsgolint@0.11.0)
       oxlint-tsgolint:
-        specifier: 0.10.1
-        version: 0.10.1
+        specifier: 0.11.0
+        version: 0.11.0
       playwright:
         specifier: 'catalog:'
         version: 1.56.1
@@ -189,8 +189,8 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
       turbo:
-        specifier: ^2.7.2
-        version: 2.7.2
+        specifier: ^2.7.3
+        version: 2.7.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -829,7 +829,7 @@ importers:
         version: 7.1.4(@typescript-eslint/eslint-plugin@8.51.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint-plugin-import@2.32.0)(eslint-plugin-react-hooks@7.0.1(eslint@9.39.2(jiti@2.6.1)))(eslint-plugin-react@7.37.5(eslint@9.39.2(jiti@2.6.1)))(eslint@9.39.2(jiti@2.6.1))
       eslint-config-turbo:
         specifier: ^2.7.2
-        version: 2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.2)
+        version: 2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.3)
       eslint-import-resolver-typescript:
         specifier: ^4.4.4
         version: 4.4.4(eslint-plugin-import@2.32.0)(eslint@9.39.2(jiti@2.6.1))
@@ -2366,8 +2366,8 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       vitest-package-exports:
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
 
   packages/sanity/fixtures/examples/prj-with-react-19:
     dependencies:
@@ -4256,8 +4256,8 @@ packages:
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
-  '@lerna-lite/cli@4.10.3':
-    resolution: {integrity: sha512-cRiBwXYuQNjHk0KnbMnfcj9T6ncpkr3iUP1EWwbaXQvDlGO6KzuGqm17LUng1tbR5KzqAex8ih3sZvz9paHFZQ==}
+  '@lerna-lite/cli@4.10.4':
+    resolution: {integrity: sha512-+rDMdzOZ1BgPJbuMel2Ab3nCTM96YKiCxhc7P9qqrYEhx2DWZrTOnmdQapYlm0jLI8BfVew4ZVN/oMb4GkDuDA==}
     engines: {node: ^20.17.0 || >=22.9.0}
     hasBin: true
     peerDependencies:
@@ -4281,32 +4281,32 @@ packages:
       '@lerna-lite/watch':
         optional: true
 
-  '@lerna-lite/core@4.10.3':
-    resolution: {integrity: sha512-uQ2g+4F4rjAb7tgn6DnAoinR3GDFkdCxzUr8UAYWUexcqTZ6/NYT343Ru1hEf9EEAGPHK4OWxFtJRBaZuizWDg==}
+  '@lerna-lite/core@4.10.4':
+    resolution: {integrity: sha512-b7jr/feIuIWKhYFmbWG/kTdJU7FfPtheEPkT9kbW3WyKmMRTcax4pguSoir4HI/WjClNmwm1Pq1snoDK20rrLw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/init@4.10.3':
-    resolution: {integrity: sha512-XG8JPN8tyYEJlf8xOoqOcDrI5DUx1XD1JLmAGtyvihW6PU8HtkZFxJZ5nA6U+iIv0Arj7ZwemQGgHmZXzyTZ8A==}
+  '@lerna-lite/init@4.10.4':
+    resolution: {integrity: sha512-mvo4kFUvd2e9cyE+Rf9+HKDXQI0XxPNyZ/J07J7/AoXVCNMx7NKhPyKxE+S6zrn9OlCEWZziBvAEcUIdJlByvQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/list@4.10.3':
-    resolution: {integrity: sha512-pROpF8fwI8pb+VRV8vM+CLde2yvYixs9KN5OlNnjKhkdX1iAFfnd1y9W4PhqXg2cBki/wRMkrg/DW2jlwx1wtA==}
+  '@lerna-lite/list@4.10.4':
+    resolution: {integrity: sha512-PeETnrXUPGnoYuq/QKfHilSMx/Np+OQWb57jaFnJ3FMvi4JglHuKtdkanC3zoTYyjWuMjtH2YBUP3zGJUwbFHw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/listable@4.10.3':
-    resolution: {integrity: sha512-b/GZi4YdFYBkn+iyCDTRScl338LFn5UHy0UtWVj0GojviGAvZ1PfNIILUbIVsTiVFR5g7ZeJkUWCbFtctGeZBQ==}
+  '@lerna-lite/listable@4.10.4':
+    resolution: {integrity: sha512-oC8FHDkTrcWmgsUSIW/zJrUqRxnxW9FgFsi7CycLRl9TXHEpD62f+oLngMEOyNl15uycJHzVp8ps6/b/JetXsA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/npmlog@4.10.3':
-    resolution: {integrity: sha512-OHwxI7iB6Tjacg4taDC2+lfHh6b/9Y+p6ao0/Psr0h5LHTUxYa2mqgE+/jGA+fKzqDCRGSSWD52vTGLF44UYJg==}
+  '@lerna-lite/npmlog@4.10.4':
+    resolution: {integrity: sha512-KjBmvn+ZN2GIGzJNzrdWp9Jx4smgeRgIxWqc3Zj0NXXmqAVCJB/DKKM/oDa0BusGjMhNOC19dnQgeQWBibxU9Q==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/publish@4.10.3':
-    resolution: {integrity: sha512-bFIJBdF1+OVVCAWfXyhhGdUjJ1yjfO/RDD0NwytGqBBofklJT8Fb8Ky3FgyGCKDkEdYwqo6fAY979IjP/cR+5Q==}
+  '@lerna-lite/publish@4.10.4':
+    resolution: {integrity: sha512-mgTOeH5OTeVYJX7F20tlwaF9fNyWGPwoRF6ZGqUYX/+/rZQDHzt/A0PAGQGbMrsHLT3ZWCRuqKxmE0QuhrGtbg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/version@4.10.3':
-    resolution: {integrity: sha512-hx/L82bhFgfcZQC6dqilry5GbV7QJ9EykOQATv/8L+Pj8M1ldpzeYudBSEtRPu9CcfsvCi/RF9kDtX8EuTgbDg==}
+  '@lerna-lite/version@4.10.4':
+    resolution: {integrity: sha512-f2o9Av5I6QQ/ze4hDn/fHJxKT2rd3dwfKClkJkCsoe8caNRlqZvcKRTr9EdUwamuqA/NgRCeGbLGDrtUhy61uA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@lezer/common@1.5.0':
@@ -4615,33 +4615,33 @@ packages:
   '@oxc-project/types@0.82.3':
     resolution: {integrity: sha512-6nCUxBnGX0c6qfZW5MaF6/fmu5dHJDMiMPaioKHKs5mi5+8/FHQ7WGjgQIz1zxpmceMYfdIXkOaLYE+ejbuOtA==}
 
-  '@oxlint-tsgolint/darwin-arm64@0.10.1':
-    resolution: {integrity: sha512-KGC4++BeEqrIcmDHiJt/e6/860PWJmUJjjp0mE+smpBmRXMjmOFFjrPmN+ZyCyVgf1WdmhPkQXsRSPeTR+2omw==}
+  '@oxlint-tsgolint/darwin-arm64@0.11.0':
+    resolution: {integrity: sha512-F67T8dXgYIrgv6wpd52fKQFdmieSOHaxBkscgso64YdtEHrV3s52ASiZGNzw62TKihn9Ox9ek3PYx9XsxIJDUw==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint-tsgolint/darwin-x64@0.10.1':
-    resolution: {integrity: sha512-tvmrDgj3Q0tdc+zMWfCVLVq8EQDEUqasm1zaWgSMYIszpID6qdgqbT+OpWWXV9fLZgtvrkoXGwxkHAUJzdVZXQ==}
+  '@oxlint-tsgolint/darwin-x64@0.11.0':
+    resolution: {integrity: sha512-z44LO7+3z2mtcBxA9T66yEy/otp/2r5ypbkx7EYlPwbEqBAIDRt/8hqQ9/BUC//1qE549P1cBU6NjhgeyuXjYQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint-tsgolint/linux-arm64@0.10.1':
-    resolution: {integrity: sha512-7kD28z6/ykGx8WetKTPRZt30pd+ziassxg/8cM24lhjUI+hNXyRHVtHes73dh9D6glJKno+1ut+3amUdZBZcpQ==}
+  '@oxlint-tsgolint/linux-arm64@0.11.0':
+    resolution: {integrity: sha512-IeIjmpPi2j2Dn1CRizGikysyLp9B0q3jqiAalv9ewRyb8hqQW5YeMlsswo8pHd0Hz3KyFfone0NkvBt77Ex2pg==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint-tsgolint/linux-x64@0.10.1':
-    resolution: {integrity: sha512-NmJmiqdzYUTHIxteSTyX6IFFgnIsOAjRWXfrS6Jbo5xlB3g39WHniSF3asB/khLJNtwSg4InUS34NprYM7zrEw==}
+  '@oxlint-tsgolint/linux-x64@0.11.0':
+    resolution: {integrity: sha512-fpYGYU2pXjaXYnKgWrihFXE8zJiTRjYKSHAaBaVI056oqKjKGEoU2BfFbddpBrKgz9TmSOX/NGftrJnyMn1wXQ==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint-tsgolint/win32-arm64@0.10.1':
-    resolution: {integrity: sha512-3KrT80vl3nXUkjuJI/z8dF6xWsKx0t9Tz4ZQHgQw3fYw+CoihBRWGklrdlmCz+EGfMyVaQLqBV9PZckhSqLe2A==}
+  '@oxlint-tsgolint/win32-arm64@0.11.0':
+    resolution: {integrity: sha512-37nzks9eqBt7NYE6okquu51vaqMruF5voX475L16Y8asJVCGpO/2VSy3ulYAXhZ+5Kdc8ZgrljVViJOjfPEPaA==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint-tsgolint/win32-x64@0.10.1':
-    resolution: {integrity: sha512-hW1fSJZVxG51sLdGq1sQjOzb1tsQ23z/BquJfUwL7CqBobxr7TJvGmoINL+9KryOJt0jCoaiMfWe4yoYw5XfIA==}
+  '@oxlint-tsgolint/win32-x64@0.11.0':
+    resolution: {integrity: sha512-TsK4C61+mjmbkUJ3Q3E9Ev3VFbeI6prPEAm9FAOq8VsfUGEiIUBBjrZ8ysGoQXNiU3dCKpmu012ptVUZTk5/eg==}
     cpu: [x64]
     os: [win32]
 
@@ -10558,8 +10558,8 @@ packages:
     resolution: {integrity: sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==}
     engines: {node: '>= 0.4'}
 
-  oxlint-tsgolint@0.10.1:
-    resolution: {integrity: sha512-EEHNdo5cW2w1xwYdBQ7d3IXDqWAtMkfVFrh+9gQ4kYbYJwygY4QXSh1eH80/xVipZdVKujAwBgg/nNNHk56kxQ==}
+  oxlint-tsgolint@0.11.0:
+    resolution: {integrity: sha512-fGYb7z/cljC0Rjtbxh7mIe8vtF/M9TShLvniwc2rdcqNG3Z9g3nM01cr2kWRb1DZdbY4/kItvIsrV4uhaMifyQ==}
     hasBin: true
 
   oxlint@1.38.0:
@@ -12381,38 +12381,38 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
-  turbo-darwin-64@2.7.2:
-    resolution: {integrity: sha512-dxY3X6ezcT5vm3coK6VGixbrhplbQMwgNsCsvZamS/+/6JiebqW9DKt4NwpgYXhDY2HdH00I7FWs3wkVuan4rA==}
+  turbo-darwin-64@2.7.3:
+    resolution: {integrity: sha512-aZHhvRiRHXbJw1EcEAq4aws1hsVVUZ9DPuSFaq9VVFAKCup7niIEwc22glxb7240yYEr1vLafdQ2U294Vcwz+w==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.7.2:
-    resolution: {integrity: sha512-1bXmuwPLqNFt3mzrtYcVx1sdJ8UYb124Bf48nIgcpMCGZy3kDhgxNv1503kmuK/37OGOZbsWSQFU4I08feIuSg==}
+  turbo-darwin-arm64@2.7.3:
+    resolution: {integrity: sha512-CkVrHSq+Bnhl9sX2LQgqQYVfLTWC2gvI74C4758OmU0djfrssDKU9d4YQF0AYXXhIIRZipSXfxClQziIMD+EAg==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.7.2:
-    resolution: {integrity: sha512-kP+TiiMaiPugbRlv57VGLfcjFNsFbo8H64wMBCPV2270Or2TpDCBULMzZrvEsvWFjT3pBFvToYbdp8/Kw0jAQg==}
+  turbo-linux-64@2.7.3:
+    resolution: {integrity: sha512-GqDsCNnzzr89kMaLGpRALyigUklzgxIrSy2pHZVXyifgczvYPnLglex78Aj3T2gu+T3trPPH2iJ+pWucVOCC2Q==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.7.2:
-    resolution: {integrity: sha512-VDJwQ0+8zjAfbyY6boNaWfP6RIez4ypKHxwkuB6SrWbOSk+vxTyW5/hEjytTwK8w/TsbKVcMDyvpora8tEsRFw==}
+  turbo-linux-arm64@2.7.3:
+    resolution: {integrity: sha512-NdCDTfIcIo3dWjsiaAHlxu5gW61Ed/8maah1IAF/9E3EtX0aAHNiBMbuYLZaR4vRJ7BeVkYB6xKWRtdFLZ0y3g==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.7.2:
-    resolution: {integrity: sha512-rPjqQXVnI6A6oxgzNEE8DNb6Vdj2Wwyhfv3oDc+YM3U9P7CAcBIlKv/868mKl4vsBtz4ouWpTQNXG8vljgJO+w==}
+  turbo-windows-64@2.7.3:
+    resolution: {integrity: sha512-7bVvO987daXGSJVYBoG8R4Q+csT1pKIgLJYZevXRQ0Hqw0Vv4mKme/TOjYXs9Qb1xMKh51Tb3bXKDbd8/4G08g==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.7.2:
-    resolution: {integrity: sha512-tcnHvBhO515OheIFWdxA+qUvZzNqqcHbLVFc1+n+TJ1rrp8prYicQtbtmsiKgMvr/54jb9jOabU62URAobnB7g==}
+  turbo-windows-arm64@2.7.3:
+    resolution: {integrity: sha512-nTodweTbPmkvwMu/a55XvjMsPtuyUSC+sV7f/SR57K36rB2I0YG21qNETN+00LOTUW9B3omd8XkiXJkt4kx/cw==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.7.2:
-    resolution: {integrity: sha512-5JIA5aYBAJSAhrhbyag1ZuMSgUZnHtI+Sq3H8D3an4fL8PeF+L1yYvbEJg47akP1PFfATMf5ehkqFnxfkmuwZQ==}
+  turbo@2.7.3:
+    resolution: {integrity: sha512-+HjKlP4OfYk+qzvWNETA3cUO5UuK6b5MSc2UJOKyvBceKucQoQGb2g7HlC2H1GHdkfKrk4YF1VPvROkhVZDDLQ==}
     hasBin: true
 
   type-check@0.4.0:
@@ -12834,8 +12834,8 @@ packages:
       yaml:
         optional: true
 
-  vitest-package-exports@1.1.1:
-    resolution: {integrity: sha512-62/lvkUK4PDHgAAOjstWQpQQjIVTQKPnd3Pak6hCPjlfIAV8o0a7xhzPNMF1tT7TWdQmcVFs1b9pr41ZiH75Xw==}
+  vitest-package-exports@1.1.2:
+    resolution: {integrity: sha512-895iRrbcsZIDMhJSftGcQkuOPZcbCbHEQHXG0MnPKsSkpJhMRYuVtjA8dcjokyygJd/IQDDO8gyKo01AIkudHQ==}
 
   vitest@3.2.4:
     resolution: {integrity: sha512-LUCP5ev3GURDysTWiP47wRRUpLKMOfPh+yKTx3kVIEiu5KOMeqzpnYNsKyOoVrULivR8tLcks4+lga33Whn90A==}
@@ -14980,31 +14980,31 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna-lite/cli@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/cli@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/init': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.3
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/init': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.10.4
       dedent: 1.7.1(babel-plugin-macros@3.1.0)
       dotenv: 17.2.3
       import-local: 3.2.0
       load-json-file: 7.0.1
       yargs: 18.0.0
     optionalDependencies:
-      '@lerna-lite/list': 4.10.3(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/publish': 4.10.3(@lerna-lite/list@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
-      '@lerna-lite/version': 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/list': 4.10.4(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/publish': 4.10.4(@lerna-lite/list@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/version': 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/core@4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/core@4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
       '@inquirer/expand': 4.0.23(@types/node@24.10.4)
       '@inquirer/input': 4.3.1(@types/node@24.10.4)
       '@inquirer/select': 4.4.2(@types/node@24.10.4)
-      '@lerna-lite/npmlog': 4.10.3
+      '@lerna-lite/npmlog': 4.10.4
       '@npmcli/run-script': 10.0.3
       ci-info: 4.3.1
       dedent: 1.7.1(babel-plugin-macros@3.1.0)
@@ -15031,9 +15031,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/init@4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/init@4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       fs-extra: 11.3.3
       p-map: 7.0.4
       write-json-file: 7.0.0
@@ -15042,11 +15042,11 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/list@4.10.3(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/list@4.10.4(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/listable': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/listable': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - '@lerna-lite/exec'
       - '@lerna-lite/publish'
@@ -15057,9 +15057,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/listable@4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/listable@4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       columnify: 1.6.0
       tinyrainbow: 3.0.3
     transitivePeerDependencies:
@@ -15067,7 +15067,7 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/npmlog@4.10.3':
+  '@lerna-lite/npmlog@4.10.4':
     dependencies:
       aproba: 2.1.0
       fast-string-width: 3.0.2
@@ -15077,12 +15077,12 @@ snapshots:
       tinyrainbow: 3.0.3
       wide-align: 1.1.5
 
-  '@lerna-lite/publish@4.10.3(@lerna-lite/list@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/publish@4.10.4(@lerna-lite/list@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
-      '@lerna-lite/cli': 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.3
-      '@lerna-lite/version': 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/cli': 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.10.4
+      '@lerna-lite/version': 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@npmcli/arborist': 9.1.9
       '@npmcli/package-json': 7.0.4
       byte-size: 9.0.1
@@ -15115,12 +15115,12 @@ snapshots:
       - conventional-commits-filter
       - supports-color
 
-  '@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
       '@conventional-changelog/git-client': 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
-      '@lerna-lite/cli': 4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@lerna-lite/version@4.10.3(@lerna-lite/list@4.10.3)(@lerna-lite/publish@4.10.3)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.3(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.3
+      '@lerna-lite/cli': 4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@lerna-lite/version@4.10.4(@lerna-lite/list@4.10.4)(@lerna-lite/publish@4.10.4)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.10.4(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.10.4
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 22.0.1
       conventional-changelog: 7.1.1(conventional-commits-filter@5.0.0)
@@ -15633,22 +15633,22 @@ snapshots:
 
   '@oxc-project/types@0.82.3': {}
 
-  '@oxlint-tsgolint/darwin-arm64@0.10.1':
+  '@oxlint-tsgolint/darwin-arm64@0.11.0':
     optional: true
 
-  '@oxlint-tsgolint/darwin-x64@0.10.1':
+  '@oxlint-tsgolint/darwin-x64@0.11.0':
     optional: true
 
-  '@oxlint-tsgolint/linux-arm64@0.10.1':
+  '@oxlint-tsgolint/linux-arm64@0.11.0':
     optional: true
 
-  '@oxlint-tsgolint/linux-x64@0.10.1':
+  '@oxlint-tsgolint/linux-x64@0.11.0':
     optional: true
 
-  '@oxlint-tsgolint/win32-arm64@0.10.1':
+  '@oxlint-tsgolint/win32-arm64@0.11.0':
     optional: true
 
-  '@oxlint-tsgolint/win32-x64@0.10.1':
+  '@oxlint-tsgolint/win32-x64@0.11.0':
     optional: true
 
   '@oxlint/darwin-arm64@1.38.0':
@@ -19862,11 +19862,11 @@ snapshots:
       eslint-plugin-react: 7.37.5(eslint@9.39.2(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.0.1(eslint@9.39.2(jiti@2.6.1))
 
-  eslint-config-turbo@2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.2):
+  eslint-config-turbo@2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.3):
     dependencies:
       eslint: 9.39.2(jiti@2.6.1)
-      eslint-plugin-turbo: 2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.2)
-      turbo: 2.7.2
+      eslint-plugin-turbo: 2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.3)
+      turbo: 2.7.3
 
   eslint-formatter-gha@1.6.0:
     dependencies:
@@ -20030,11 +20030,11 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-turbo@2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.2):
+  eslint-plugin-turbo@2.7.2(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.3):
     dependencies:
       dotenv: 16.0.3
       eslint: 9.39.2(jiti@2.6.1)
-      turbo: 2.7.2
+      turbo: 2.7.3
 
   eslint-plugin-unicorn@62.0.0(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
@@ -22559,16 +22559,16 @@ snapshots:
       object-keys: 1.1.1
       safe-push-apply: 1.0.0
 
-  oxlint-tsgolint@0.10.1:
+  oxlint-tsgolint@0.11.0:
     optionalDependencies:
-      '@oxlint-tsgolint/darwin-arm64': 0.10.1
-      '@oxlint-tsgolint/darwin-x64': 0.10.1
-      '@oxlint-tsgolint/linux-arm64': 0.10.1
-      '@oxlint-tsgolint/linux-x64': 0.10.1
-      '@oxlint-tsgolint/win32-arm64': 0.10.1
-      '@oxlint-tsgolint/win32-x64': 0.10.1
+      '@oxlint-tsgolint/darwin-arm64': 0.11.0
+      '@oxlint-tsgolint/darwin-x64': 0.11.0
+      '@oxlint-tsgolint/linux-arm64': 0.11.0
+      '@oxlint-tsgolint/linux-x64': 0.11.0
+      '@oxlint-tsgolint/win32-arm64': 0.11.0
+      '@oxlint-tsgolint/win32-x64': 0.11.0
 
-  oxlint@1.38.0(oxlint-tsgolint@0.10.1):
+  oxlint@1.38.0(oxlint-tsgolint@0.11.0):
     optionalDependencies:
       '@oxlint/darwin-arm64': 1.38.0
       '@oxlint/darwin-x64': 1.38.0
@@ -22578,7 +22578,7 @@ snapshots:
       '@oxlint/linux-x64-musl': 1.38.0
       '@oxlint/win32-arm64': 1.38.0
       '@oxlint/win32-x64': 1.38.0
-      oxlint-tsgolint: 0.10.1
+      oxlint-tsgolint: 0.11.0
 
   p-finally@2.0.1: {}
 
@@ -24622,32 +24622,32 @@ snapshots:
 
   tunnel@0.0.6: {}
 
-  turbo-darwin-64@2.7.2:
+  turbo-darwin-64@2.7.3:
     optional: true
 
-  turbo-darwin-arm64@2.7.2:
+  turbo-darwin-arm64@2.7.3:
     optional: true
 
-  turbo-linux-64@2.7.2:
+  turbo-linux-64@2.7.3:
     optional: true
 
-  turbo-linux-arm64@2.7.2:
+  turbo-linux-arm64@2.7.3:
     optional: true
 
-  turbo-windows-64@2.7.2:
+  turbo-windows-64@2.7.3:
     optional: true
 
-  turbo-windows-arm64@2.7.2:
+  turbo-windows-arm64@2.7.3:
     optional: true
 
-  turbo@2.7.2:
+  turbo@2.7.3:
     optionalDependencies:
-      turbo-darwin-64: 2.7.2
-      turbo-darwin-arm64: 2.7.2
-      turbo-linux-64: 2.7.2
-      turbo-linux-arm64: 2.7.2
-      turbo-windows-64: 2.7.2
-      turbo-windows-arm64: 2.7.2
+      turbo-darwin-64: 2.7.3
+      turbo-darwin-arm64: 2.7.3
+      turbo-linux-64: 2.7.3
+      turbo-linux-arm64: 2.7.3
+      turbo-windows-64: 2.7.3
+      turbo-windows-arm64: 2.7.3
 
   type-check@0.4.0:
     dependencies:
@@ -25050,7 +25050,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
-  vitest-package-exports@1.1.1:
+  vitest-package-exports@1.1.2:
     dependencies:
       find-up-simple: 1.0.1
       pathe: 2.0.3
