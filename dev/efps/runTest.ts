@@ -79,7 +79,7 @@ export async function runTest({
       `${studioUrl}/${test.name}/intent/edit/id=${encodeURIComponent(
         document._id,
       )};type=${encodeURIComponent(documentToCreate._type)}`,
-      {waitUntil: 'domcontentloaded'},
+      {waitUntil: 'domcontentloaded', timeout: 60_000},
     )
 
     // Wait for the document pane to be visible, indicating the studio has loaded
