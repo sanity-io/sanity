@@ -7,9 +7,7 @@ import {debounce} from 'lodash-es'
 /** Default glob patterns to watch for schema changes */
 export const DEFAULT_WATCH_PATTERNS = [
   'sanity.config.{js,jsx,ts,tsx,mjs}',
-  'schemaTypes/**/*.{js,jsx,ts,tsx,mjs}',
-  'schema/**/*.{js,jsx,ts,tsx,mjs}',
-  'schemas/**/*.{js,jsx,ts,tsx,mjs}',
+  'schema*/**/*.{js,jsx,ts,tsx,mjs}',
 ]
 
 /** Default patterns to ignore when watching */
