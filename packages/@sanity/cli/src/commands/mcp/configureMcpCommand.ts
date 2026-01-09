@@ -1,4 +1,6 @@
-import {detectAvailableEditors, NO_EDITORS_DETECTED_MESSAGE, setupMCP} from '../../actions/mcp/mcp'
+import {NO_EDITORS_DETECTED_MESSAGE} from '../../actions/mcp/constants'
+import {detectAvailableEditors} from '../../actions/mcp/editors'
+import {setupMCP} from '../../actions/mcp/mcp'
 import {type CliCommandDefinition} from '../../types'
 import {MCPConfigureTrace} from './mcp.telemetry'
 

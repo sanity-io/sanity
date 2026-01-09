@@ -6,12 +6,9 @@ import {applyEdits, modify} from 'jsonc-parser'
 
 import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../../types'
 import {getCliToken} from '../../util/clientWrapper'
-import {EDITOR_CONFIGS, type EditorName, NO_EDITORS_DETECTED_MESSAGE} from './constants'
+import {NO_EDITORS_DETECTED_MESSAGE} from './constants'
+import {EDITOR_CONFIGS, type EditorName} from './editorConfigs'
 import {detectAvailableEditors, type Editor} from './editors'
-
-// Re-export for external consumers
-export {detectAvailableEditors, NO_EDITORS_DETECTED_MESSAGE}
-export type {Editor, EditorName}
 
 export interface MCPSetupResult {
   detectedEditors: EditorName[]
