@@ -37,15 +37,9 @@ const error = console.error
 // IntersectionObserver isn't available in the test browser environment
 const mockIntersectionObserver = vi.fn().mockImplementation(
   class {
-    observe() {
-      return null
-    }
-    unobserve() {
-      return null
-    }
-    disconnect() {
-      return null
-    }
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   },
 )
 
@@ -54,15 +48,9 @@ const mockIntersectionObserver = vi.fn().mockImplementation(
 // ResizeObserver isn't available in the test browser environment
 const mockResizeObserver = vi.fn().mockImplementation(
   class {
-    observe() {
-      return null
-    }
-    unobserve() {
-      return null
-    }
-    disconnect() {
-      return null
-    }
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
   },
 )
 ;(globalThis as any).ResizeObserver = mockResizeObserver
