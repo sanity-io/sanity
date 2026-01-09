@@ -218,7 +218,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: efps-report-*
           merge-multiple: true
