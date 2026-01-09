@@ -21,36 +21,8 @@ const DEBUG_TELEMETRY = !!(
   typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
 )
 
-/**
- * Get initial context values, handling SSR where window is not available
- */
-function getInitialContext(): TelemetryContext {
-  const isSSR = typeof window === 'undefined'
-
-  return {
-    // Static
-    userAgent: isSSR ? '' : navigator.userAgent,
-    screen: isSSR
-      ? {density: 1, height: 0, width: 0, innerHeight: 0, innerWidth: 0}
-      : {
-          density: window.devicePixelRatio,
-          height: window.screen.height,
-          width: window.screen.width,
-          innerHeight: window.innerHeight,
-          innerWidth: window.innerWidth,
-        },
-    studioVersion: SANITY_VERSION,
-    reactVersion,
-    environment: isProd ? 'production' : 'development',
-
-    // Dynamic (will be updated)
-    orgId: null,
-    activeTool: undefined,
-    activeWorkspace: '',
-    activeProjectId: '',
-    activeDataset: '',
-  }
-}
+/** Telemetry only runs on client */
+const isClient = typeof window !== 'undefined'
 
 // oxlint-disable no-console
 const debugLoggingStore: CreateBatchedStoreOptions = {
@@ -84,33 +56,32 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // Ref to hold current context - allows sendEvents to always access latest values
   // without causing re-memoization of the store
-  const contextRef = useRef<TelemetryContext>(getInitialContext())
+  const contextRef = useRef<TelemetryContext | null>(null)
 
   // Update context ref when any dynamic values change
-  // Using direct assignment (not useEffect) ensures context is always current
-  contextRef.current = {
-    // Static values
-    userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
-    screen:
-      typeof window !== 'undefined'
-        ? {
-            density: window.devicePixelRatio,
-            height: window.screen.height,
-            width: window.screen.width,
-            innerHeight: window.innerHeight,
-            innerWidth: window.innerWidth,
-          }
-        : {density: 1, height: 0, width: 0, innerHeight: 0, innerWidth: 0},
-    studioVersion: SANITY_VERSION,
-    reactVersion,
-    environment: isProd ? 'production' : 'development',
+  // Telemetry only runs on client - no SSR fallbacks needed
+  if (isClient) {
+    contextRef.current = {
+      // Static values
+      userAgent: navigator.userAgent,
+      screen: {
+        density: window.devicePixelRatio,
+        height: window.screen.height,
+        width: window.screen.width,
+        innerHeight: window.innerHeight,
+        innerWidth: window.innerWidth,
+      },
+      studioVersion: SANITY_VERSION,
+      reactVersion,
+      environment: isProd ? 'production' : 'development',
 
-    // Dynamic values
-    orgId: orgId || null,
-    activeTool,
-    activeWorkspace: workspace.name,
-    activeProjectId: workspace.projectId,
-    activeDataset: workspace.dataset,
+      // Dynamic values
+      orgId: orgId || null,
+      activeTool,
+      activeWorkspace: workspace.name,
+      activeProjectId: workspace.projectId,
+      activeDataset: workspace.dataset,
+    }
   }
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
@@ -124,6 +95,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
+        if (!isClient || !contextRef.current) return Promise.resolve()
         const context = contextRef.current
         const enrichedBatch = batch.map((event) => ({
           ...event,
@@ -137,6 +109,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
         })
       },
       sendBeacon: (batch) => {
+        if (!isClient || !contextRef.current) return false
         const context = contextRef.current
         const enrichedBatch = batch.map((event) => ({
           ...event,
@@ -154,6 +127,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // Also update user properties on the store (for backwards compatibility)
   useEffect(() => {
+    if (!isClient || !contextRef.current) return
     store.logger.updateUserProperties({
       userAgent: contextRef.current.userAgent,
       screen: contextRef.current.screen,
