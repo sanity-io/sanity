@@ -47,7 +47,7 @@ jobs:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -76,7 +76,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -139,7 +139,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -201,7 +201,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
