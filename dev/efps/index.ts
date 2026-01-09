@@ -216,7 +216,9 @@ async function runAbTest(test: EfpsTest) {
     )
 
     // Run reference and experiment in parallel - this is the main speedup!
-    const [refResults, expResults] = await Promise.all([
+    // Use Promise.allSettled to ensure both branches complete before cleanup,
+    // preventing one branch's failure from closing the other's browser mid-execution
+    const [refResult, expResult] = await Promise.allSettled([
       runAllAttempts(
         'reference',
         referenceStudioClient,
@@ -233,8 +235,16 @@ async function runAbTest(test: EfpsTest) {
       ),
     ])
 
-    referenceResults = refResults
-    experimentResults = expResults
+    // Check for errors after both have settled
+    if (refResult.status === 'rejected') {
+      throw refResult.reason
+    }
+    if (expResult.status === 'rejected') {
+      throw expResult.reason
+    }
+
+    referenceResults = refResult.value
+    experimentResults = expResult.value
   } finally {
     // Clean up browsers
     await Promise.all([referenceBrowser.close(), experimentBrowser.close()])
