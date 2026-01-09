@@ -67,20 +67,6 @@ describe('StudioTelemetryProvider', () => {
     dataset: 'test-dataset',
   }
 
-  const mockConfig = [
-    {
-      name: 'workspace-1',
-      projectId: 'project-1',
-      dataset: 'dataset-1',
-      plugins: [{name: 'plugin-a'}, {name: 'plugin-b'}],
-    },
-    {
-      name: 'workspace-2',
-      projectId: 'project-2',
-      dataset: 'dataset-2',
-    },
-  ]
-
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -105,7 +91,7 @@ describe('StudioTelemetryProvider', () => {
 
   it('enriches events with context in sendEvents callback', async () => {
     render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -148,10 +134,6 @@ describe('StudioTelemetryProvider', () => {
                 activeProjectId: 'test-project',
                 activeDataset: 'test-dataset',
                 activeTool: 'desk',
-                // Config-derived context
-                workspaceNames: ['workspace-1', 'workspace-2'],
-                datasetNames: ['dataset-1', 'dataset-2'],
-                projectIds: ['project-1', 'project-2'],
               }),
             }),
           ]),
@@ -170,7 +152,7 @@ describe('StudioTelemetryProvider', () => {
     })
 
     render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -204,7 +186,7 @@ describe('StudioTelemetryProvider', () => {
 
   it('updates context when workspace changes', async () => {
     const {rerender} = render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -218,7 +200,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Re-render to trigger context update
     rerender(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -246,7 +228,7 @@ describe('StudioTelemetryProvider', () => {
 
   it('updates context when activeTool changes', async () => {
     const {rerender} = render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -257,7 +239,7 @@ describe('StudioTelemetryProvider', () => {
     )
 
     rerender(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -284,7 +266,7 @@ describe('StudioTelemetryProvider', () => {
     vi.mocked(useProjectOrganizationId).mockReturnValue({value: null} as never)
 
     render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )
@@ -321,7 +303,7 @@ describe('StudioTelemetryProvider', () => {
     })
 
     render(
-      <StudioTelemetryProvider config={mockConfig as never}>
+      <StudioTelemetryProvider>
         <div>Test Child</div>
       </StudioTelemetryProvider>,
     )

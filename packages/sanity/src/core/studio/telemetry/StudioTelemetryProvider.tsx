@@ -4,67 +4,61 @@ import {
   createSessionId,
 } from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
-import arrify from 'arrify'
-import {type ReactNode, useCallback, useEffect, useMemo, useRef, version as reactVersion} from 'react'
+import {type ReactNode, useEffect, useMemo, useRef, version as reactVersion} from 'react'
 import {useRouterState} from 'sanity/router'
 
-import {type Config} from '../../config'
 import {isProd} from '../../environment'
 import {useClient} from '../../hooks'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {useWorkspace} from '../workspace'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
+import {type TelemetryContext} from './types'
 
 const sessionId = createSessionId()
-
-/**
- * Context that enriches telemetry events with Studio-specific information
- */
-interface TelemetryContext {
-  // Static context (doesn't change during session)
-  userAgent: string
-  screen: {
-    density: number
-    height: number
-    width: number
-    innerHeight: number
-    innerWidth: number
-  }
-  environment: 'production' | 'development'
-  studioVersion: string
-  reactVersion: string
-
-  // Dynamic context (changes during session)
-  orgId: string | null
-  activeWorkspace: string | null
-  activeProjectId: string | null
-  activeDataset: string | null
-  activeTool: string | null
-
-  // Config-derived context
-  workspaceNames: string[]
-  datasetNames: string[]
-  projectIds: string[]
-}
 
 const DEBUG_TELEMETRY = !!(
   typeof process !== 'undefined' && process.env?.SANITY_STUDIO_DEBUG_TELEMETRY
 )
 
+/**
+ * Get initial context values, handling SSR where window is not available
+ */
+function getInitialContext(): TelemetryContext {
+  const isSSR = typeof window === 'undefined'
+
+  return {
+    // Static
+    userAgent: isSSR ? '' : navigator.userAgent,
+    screen: isSSR
+      ? {density: 1, height: 0, width: 0, innerHeight: 0, innerWidth: 0}
+      : {
+          density: window.devicePixelRatio,
+          height: window.screen.height,
+          width: window.screen.width,
+          innerHeight: window.innerHeight,
+          innerWidth: window.innerWidth,
+        },
+    studioVersion: SANITY_VERSION,
+    reactVersion,
+    environment: isProd ? 'production' : 'development',
+
+    // Dynamic (will be updated)
+    orgId: null,
+    activeTool: undefined,
+    activeWorkspace: '',
+    activeProjectId: '',
+    activeDataset: '',
+  }
+}
+
 // oxlint-disable no-console
 const debugLoggingStore: CreateBatchedStoreOptions = {
-  // submit any pending events every <n> ms
   flushInterval: 1000,
-
-  // implements user consent resolving
   resolveConsent: () => Promise.resolve({status: 'granted'}),
-
-  // implements sending events to backend
   sendEvents: async (batch) => {
     console.log('[telemetry] submit events (noop): %O', batch)
   },
-  // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
   sendBeacon: (batch) => {
     console.log('[telemetry] submit events (noop): %O', batch)
     return true
@@ -72,106 +66,64 @@ const debugLoggingStore: CreateBatchedStoreOptions = {
 }
 // oxlint-enable no-console
 
-// Wrap the app in a TelemetryProvider
-// This will enable usage of the `useTelemetry()` hook
-export function StudioTelemetryProvider(props: {children: ReactNode; config: Config}) {
+export function StudioTelemetryProvider(props: {children: ReactNode}) {
   const client = useClient({apiVersion: 'v2023-12-18'})
   const projectId = client.config().projectId
 
   // Get workspace context
   const workspace = useWorkspace()
 
-  // Get organization ID (async)
+  // Get organization ID (async, may be null initially)
   const {value: orgId} = useProjectOrganizationId()
 
   // Get active tool from router state
   const activeTool = useRouterState(
-    useCallback(
-      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : null),
-      [],
-    ),
+    (routerState) => routerState?.tool,
+    (a, b) => a === b,
   )
 
-  // Extract config-derived values
-  const configContext = useMemo(() => {
-    const workspaces = arrify(props.config)
-    const projectIds: string[] = []
-    const datasetNames: string[] = []
-    const workspaceNames: string[] = []
-    workspaces.forEach((ws) => {
-      projectIds.push(ws.projectId)
-      datasetNames.push(ws.dataset)
-      workspaceNames.push(ws.name || '<unnamed>')
-    })
-    return {projectIds, datasetNames, workspaceNames}
-  }, [props.config])
+  // Ref to hold current context - allows sendEvents to always access latest values
+  // without causing re-memoization of the store
+  const contextRef = useRef<TelemetryContext>(getInitialContext())
 
-  // Ref to hold current telemetry context (used by sendEvents callback)
-  const contextRef = useRef<TelemetryContext>({
-    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-    screen: {
-      density: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
-      height: typeof window !== 'undefined' ? window.screen.height : 0,
-      width: typeof window !== 'undefined' ? window.screen.width : 0,
-      innerHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
-      innerWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
-    },
-    environment: isProd ? 'production' : 'development',
+  // Update context ref when any dynamic values change
+  // Using direct assignment (not useEffect) ensures context is always current
+  contextRef.current = {
+    // Static values
+    userAgent: typeof window !== 'undefined' ? navigator.userAgent : '',
+    screen:
+      typeof window !== 'undefined'
+        ? {
+            density: window.devicePixelRatio,
+            height: window.screen.height,
+            width: window.screen.width,
+            innerHeight: window.innerHeight,
+            innerWidth: window.innerWidth,
+          }
+        : {density: 1, height: 0, width: 0, innerHeight: 0, innerWidth: 0},
     studioVersion: SANITY_VERSION,
     reactVersion,
-    orgId: null,
-    activeWorkspace: null,
-    activeProjectId: null,
-    activeDataset: null,
-    activeTool: null,
-    workspaceNames: [],
-    datasetNames: [],
-    projectIds: [],
-  })
+    environment: isProd ? 'production' : 'development',
 
-  // Update context ref when dynamic values change
-  useEffect(() => {
-    contextRef.current = {
-      // Static context
-      userAgent: navigator.userAgent,
-      screen: {
-        density: window.devicePixelRatio,
-        height: window.screen.height,
-        width: window.screen.width,
-        innerHeight: window.innerHeight,
-        innerWidth: window.innerWidth,
-      },
-      environment: isProd ? 'production' : 'development',
-      studioVersion: SANITY_VERSION,
-      reactVersion,
-
-      // Dynamic context
-      orgId,
-      activeWorkspace: workspace?.name ?? null,
-      activeProjectId: workspace?.projectId ?? null,
-      activeDataset: workspace?.dataset ?? null,
-      activeTool,
-
-      // Config-derived context
-      ...configContext,
-    }
-  }, [orgId, workspace, activeTool, configContext])
+    // Dynamic values
+    orgId: orgId || null,
+    activeTool,
+    activeWorkspace: workspace.name,
+    activeProjectId: workspace.projectId,
+    activeDataset: workspace.dataset,
+  }
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
     if (DEBUG_TELEMETRY) {
       return debugLoggingStore
     }
     return {
-      // submit any pending events every <n> ms
       flushInterval: 30000,
-
-      // implements user consent resolving
       resolveConsent: () =>
         client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
 
-      // implements sending events to backend
+      // Each event is enriched with the current context
       sendEvents: (batch) => {
-        // Enrich each event with current context
         const context = contextRef.current
         const enrichedBatch = batch.map((event) => ({
           ...event,
@@ -184,9 +136,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
           body: {projectId, batch: enrichedBatch},
         })
       },
-      // opts into a different strategy for sending events when the browser close, reload or navigate away from the current page
       sendBeacon: (batch) => {
-        // Enrich each event with current context
         const context = contextRef.current
         const enrichedBatch = batch.map((event) => ({
           ...event,
@@ -202,32 +152,16 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
 
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
-  // Update user properties (these are session-level, not per-event)
+  // Also update user properties on the store (for backwards compatibility)
   useEffect(() => {
-    const workspaces = arrify(props.config)
     store.logger.updateUserProperties({
-      userAgent: navigator.userAgent,
-      screen: {
-        density: window.devicePixelRatio,
-        height: window.screen.height,
-        width: window.screen.width,
-        innerHeight: window.innerHeight,
-        innerWidth: window.innerWidth,
-      },
+      userAgent: contextRef.current.userAgent,
+      screen: contextRef.current.screen,
       reactVersion,
       studioVersion: SANITY_VERSION,
-      plugins: workspaces.flatMap(
-        (workspace) =>
-          workspace.plugins?.flatMap((plugin) => ({
-            name: plugin.name || '<unnamed>',
-          })) || [],
-      ),
-      uniqueWorkspaceNames: new Set(configContext.workspaceNames).size,
-      uniqueDatasetNames: new Set(configContext.datasetNames).size,
-      workspaceNames: configContext.workspaceNames,
-      datasetNames: configContext.datasetNames,
+      environment: contextRef.current.environment,
     })
-  }, [props.config, store.logger, configContext])
+  }, [store.logger])
 
   return (
     <TelemetryProvider store={store}>
