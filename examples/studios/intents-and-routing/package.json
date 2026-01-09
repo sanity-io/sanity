@@ -1,0 +1,21 @@
+{
+  "name": "intents-and-routing-example-studio",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "dev": "sanity dev",
+    "start": "sanity start"
+  },
+  "dependencies": {
+    "@sanity/ui": "^3.0.7",
+    "@sanity/vision": "workspace:*",
+    "react": "^19",
+    "react-dom": "^19",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  }
+}
