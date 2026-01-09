@@ -1,3 +1,4 @@
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {type Path} from '@sanity/types'
 
 import {isString} from '../../util/isString'
@@ -14,6 +15,7 @@ import {type SanityClipboardItem} from './types'
 const MIMETYPE_SANITY_CLIPBOARD = 'web application/vnd.sanity-clipboard-item+json'
 const MIMETYPE_HTML = 'text/html'
 const MIMETYPE_PLAINTEXT = 'text/plain'
+const MIMETYPE_PORTABLE_TEXT = 'web application/x-portable-text'
 
 /**
  * Reports whether or not the current browser supports custom mimetype types
@@ -27,6 +29,11 @@ const SUPPORTS_SANITY_CLIPBOARD_MIMETYPE =
   typeof ClipboardItem !== 'undefined' &&
   'supports' in ClipboardItem &&
   ClipboardItem.supports(MIMETYPE_SANITY_CLIPBOARD)
+
+const SUPPORTS_PORTABLE_TEXT_MIMETYPE =
+  typeof ClipboardItem !== 'undefined' &&
+  'supports' in ClipboardItem &&
+  ClipboardItem.supports(MIMETYPE_PORTABLE_TEXT)
 
 /**
  * The name of the attributed used to store the base64 data. Note that we store
@@ -48,6 +55,21 @@ export async function getClipboardItem(): Promise<SanityClipboardItem | null> {
   return null
 }
 
+/**
+ * Type guard to check if a value looks like a TypedObject (has _type property)
+ */
+function isTypedObject(value: unknown): value is {_type: string} {
+  return typeof value === 'object' && value !== null && '_type' in value
+}
+
+/**
+ * Check if a value is a Portable Text array
+ */
+function isPortableTextValue(value: unknown): boolean {
+  if (!Array.isArray(value)) return false
+  return value.some((item) => isTypedObject(item) && isPortableTextBlock(item))
+}
+
 export async function writeClipboardItem(copyActionResult: SanityClipboardItem): Promise<boolean> {
   const textValue = transformValueToText(copyActionResult.value)
   const escapedTextValue = escapeHtml(textValue)
@@ -55,12 +77,22 @@ export async function writeClipboardItem(copyActionResult: SanityClipboardItem):
   // possible when serializing into HTML
   const base64SanityClipboardItem = utf8ToBase64(JSON.stringify(copyActionResult))
 
+  // Check if the value is Portable Text for x-portable-text format
+  const isPTE = isPortableTextValue(copyActionResult.value)
+
   const clipboardItem = new ClipboardItem({
     ...(SUPPORTS_SANITY_CLIPBOARD_MIMETYPE && {
       [MIMETYPE_SANITY_CLIPBOARD]: new Blob([JSON.stringify(copyActionResult)], {
         type: MIMETYPE_SANITY_CLIPBOARD,
       }),
     }),
+    // Include x-portable-text format for PTE-to-PTE paste operations
+    ...(isPTE &&
+      SUPPORTS_PORTABLE_TEXT_MIMETYPE && {
+        [MIMETYPE_PORTABLE_TEXT]: new Blob([JSON.stringify(copyActionResult.value)], {
+          type: MIMETYPE_PORTABLE_TEXT,
+        }),
+      }),
     [MIMETYPE_HTML]: new Blob(
       // we store the data within a data attribute because safari will sanitize
       // and mangle the HTML written to the clipboard
@@ -146,10 +178,18 @@ export function transformValueToText(value: unknown): string {
   if (Number.isFinite(value)) return value.toString()
 
   if (Array.isArray(value)) {
+    // Check if this is a Portable Text array (has at least one PTE block)
+    if (value.some((item) => isTypedObject(item) && isPortableTextBlock(item))) {
+      return toPlainText(value)
+    }
     return value.map(transformValueToText).filter(Boolean).join(', ')
   }
 
   if (typeof value === 'object') {
+    // Check if this is a single Portable Text block
+    if (isTypedObject(value) && isPortableTextBlock(value)) {
+      return toPlainText(value)
+    }
     return Object.entries(value)
       .map(([key, subValue]) => (key.startsWith('_') ? '' : transformValueToText(subValue)))
       .filter(Boolean)
