@@ -7,6 +7,8 @@ import react from '@vitejs/plugin-react'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
+  // resolve: {conditions: ['development']},
+  // ssr: {resolve: {conditions: ['development']},},
   test: {
     environment: 'jsdom',
     globalSetup: ['./test/setup/global.ts'],
@@ -14,6 +16,7 @@ export default defineConfig({
     exclude: ['./playwright-ct', './src/_internal/cli'],
     server: {
       deps: {inline: ['vitest-package-exports']},
+      // deps: {inline: ['@sanity/schema', 'vitest-package-exports']},
     },
     typecheck: {
       enabled: true,

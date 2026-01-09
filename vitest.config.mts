@@ -4,6 +4,8 @@ import '@vitest/coverage-v8'
 import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
+  // resolve: {conditions: ['development']},
+  // ssr: {resolve: {conditions: ['development']},},
   test: {
     projects: [
       'packages/@sanity/cli',

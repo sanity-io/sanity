@@ -10,6 +10,8 @@ import {configDefaults} from 'vitest/config'
 export function defineConfig(config) {
   return vitest.defineConfig({
     ...config,
+    // resolve: {conditions: ['development']},
+    // ssr: {resolve: {conditions: ['development']},},
     test: {
       ...config?.test,
       // oxlint-disable-next-line no-misused-spread
