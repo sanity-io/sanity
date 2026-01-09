@@ -956,5 +956,8 @@ exports[`exports snapshot 1`] = `
     "usePaneRouter": "function",
     "useStructureTool": "function",
   },
+  "./vite": {
+    "sanitySchemaExtractionPlugin": "function",
+  },
 }
 `;

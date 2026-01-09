@@ -1,0 +1,239 @@
+/**
+ * Vite plugin for automatic Sanity schema extraction during development.
+ *
+ * This plugin watches for changes to schema files and automatically extracts
+ * the schema to a JSON file. It integrates with Vite's built-in file watcher
+ * for efficient change detection.
+ *
+ * @example Basic usage in vite.config.ts
+ * ```ts
+ * import {defineConfig} from 'vite'
+ * import {sanitySchemaExtractionPlugin} from 'sanity/vite'
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     // Uses Vite's project root by default
+ *     sanitySchemaExtractionPlugin(),
+ *   ],
+ * })
+ * ```
+ *
+ * @example With custom options
+ * ```ts
+ * sanitySchemaExtractionPlugin({
+ *   // Override the working directory if sanity.config.ts is not in Vite's root
+ *   workDir: path.join(process.cwd(), 'studio'),
+ *   outputPath: './generated/schema.json',
+ *   workspaceName: 'default',
+ *   additionalPatterns: ['lib/schemas/**\/*.ts'],
+ *   debounceMs: 500,
+ * })
+ * ```
+ *
+ * @remarks
+ * Default watch patterns:
+ * - `sanity.config.{js,jsx,ts,tsx,mjs}` - Sanity configuration file
+ * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}` - Schema directories (schemas/, schemaTypes/, etc.)
+ */
+import path from 'node:path'
+
+import chalk from 'chalk'
+import {debounce} from 'lodash-es'
+import logSymbols from 'log-symbols'
+import picomatch from 'picomatch'
+import {type Plugin} from 'vite'
+
+import {formatSchemaValidation} from '../../actions/schema/formatSchemaValidation'
+import {extractSchemaToFile, SchemaExtractionError} from '../../actions/schema/schemaExtractorApi'
+
+/**
+ * Default glob patterns to watch for schema changes.
+ * Covers the sanity config file and common schema directory naming conventions.
+ */
+const DEFAULT_SCHEMA_PATTERNS = [
+  'sanity.config.{js,jsx,ts,tsx,mjs}',
+  'schema*/**/*.{js,jsx,ts,tsx,mjs}',
+]
+
+/** Default debounce delay in milliseconds */
+const DEFAULT_DEBOUNCE_MS = 1000
+
+/**
+ * Options for the Sanity schema extraction Vite plugin.
+ *
+ * @public
+ */
+export interface SchemaExtractionPluginOptions {
+  /**
+   * Working directory containing the Sanity configuration.
+   * This should be the root of your Sanity Studio project where
+   * `sanity.config.ts` is located.
+   * @defaultValue Vite's project root (`config.root`)
+   */
+  workDir?: string
+
+  /**
+   * Path where the extracted schema JSON will be written.
+   * Can be absolute or relative to the working directory.
+   * @defaultValue `path.join(workDir, 'schema.json')`
+   */
+  outputPath?: string
+
+  /**
+   * Logger for output messages. Must implement `log`, `info`, and `error` methods.
+   * @defaultValue `console`
+   */
+  output?: Pick<Console, 'log' | 'info' | 'error'>
+
+  /**
+   * Workspace name for multi-workspace Sanity configurations.
+   * Required when your `sanity.config.ts` exports multiple workspaces
+   * and you want to extract schema from a specific one.
+   */
+  workspaceName?: string
+
+  /**
+   * Additional glob patterns to watch for schema changes.
+   * These are merged with the default patterns.
+   * @example `['lib/custom-types/**\/*.ts', 'shared/schemas/**\/*.ts']`
+   */
+  additionalPatterns?: string[]
+
+  /**
+   * Debounce delay in milliseconds before triggering extraction
+   * after a file change. Helps prevent excessive extractions
+   * during rapid file saves.
+   * @defaultValue 1000
+   */
+  debounceMs?: number
+}
+
+const prefix = chalk.cyan('[schema]')
+
+/**
+ * Creates a Vite plugin that automatically extracts Sanity schema during development.
+ *
+ * The plugin performs an initial extraction when the dev server starts, then watches
+ * for file changes and re-extracts the schema when relevant files are modified.
+ *
+ * **How it works:**
+ * 1. Registers watch patterns with Vite's built-in file watcher
+ * 2. Performs initial schema extraction when the server starts
+ * 3. On file changes matching the patterns, triggers a debounced extraction
+ * 4. Uses concurrency control to prevent overlapping extractions
+ *
+ * @param options - Configuration options for the plugin
+ * @returns A Vite plugin configured for schema extraction
+ *
+ * @public
+ */
+export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}): Plugin {
+  const {
+    workDir: workDirOption,
+    outputPath: outputPathOption,
+    output = console,
+    workspaceName,
+    additionalPatterns = [],
+    debounceMs = DEFAULT_DEBOUNCE_MS,
+  } = options
+
+  const watchPatterns = [...DEFAULT_SCHEMA_PATTERNS, ...additionalPatterns]
+
+  // Resolved after Vite config is available
+  let resolvedWorkDir: string
+  let resolvedOutputPath: string
+
+  // State for concurrency control
+  let isExtracting = false
+  let pendingExtraction = false
+
+  /**
+   * Runs extraction with concurrency control.
+   * If extraction is already running, queues one more extraction to run after completion.
+   */
+  async function runExtraction(): Promise<void> {
+    if (isExtracting) {
+      pendingExtraction = true
+      return
+    }
+
+    isExtracting = true
+    pendingExtraction = false
+
+    output.log(prefix, 'Extracting schema...')
+
+    try {
+      await extractSchemaToFile({
+        workDir: resolvedWorkDir,
+        outputPath: resolvedOutputPath,
+        workspaceName,
+      })
+      output.log(prefix, logSymbols.success, `extracted to ${resolvedOutputPath}`)
+    } catch (err) {
+      output.log(prefix, `Extraction failed: ${err instanceof Error ? err.message : String(err)}`)
+      if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
+        output.log(prefix, logSymbols.error, formatSchemaValidation(err.validation))
+      }
+    } finally {
+      isExtracting = false
+
+      // If a change came in during extraction, run again
+      if (pendingExtraction) {
+        pendingExtraction = false
+        await runExtraction()
+      }
+    }
+  }
+
+  const debouncedExtract = debounce(() => {
+    void runExtraction()
+  }, debounceMs)
+
+  // Create a matcher function from all watch patterns
+  const isMatch = picomatch(watchPatterns)
+
+  return {
+    name: 'sanity/schema-extraction',
+    apply: 'serve',
+
+    configResolved(config) {
+      // Resolve workDir from option or Vite's project root
+      resolvedWorkDir = workDirOption ?? config.root
+      resolvedOutputPath = outputPathOption ?? path.join(resolvedWorkDir, 'schema.json')
+    },
+
+    configureServer(server) {
+      // Add schema patterns to Vite's watcher
+      const absolutePatterns = watchPatterns.map((pattern) => path.join(resolvedWorkDir, pattern))
+      server.watcher.add(absolutePatterns)
+
+      // Listen for file changes
+      const handleChange = (filePath: string) => {
+        const relativePath = path.isAbsolute(filePath)
+          ? path.relative(resolvedWorkDir, filePath)
+          : filePath
+        if (isMatch(relativePath)) {
+          debouncedExtract()
+        }
+      }
+
+      server.watcher.on('change', handleChange)
+      server.watcher.on('add', handleChange)
+      server.watcher.on('unlink', handleChange)
+
+      // Run initial extraction after server is ready
+      server.httpServer?.once('listening', () => {
+        setTimeout(() => {
+          // Notify about schema extraction enabled
+          output.info(prefix, logSymbols.info, 'Schema extraction enabled. Watching:')
+          for (const pattern of watchPatterns) {
+            output.info(`  - ${pattern}`)
+          }
+
+          // Perform first extraction
+          void runExtraction()
+        }, 1000)
+      })
+    },
+  }
+}
