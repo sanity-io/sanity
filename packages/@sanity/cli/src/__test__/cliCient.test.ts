@@ -1,19 +1,19 @@
-import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {getCliClient} from '../cliClient'
 import {type CliConfig} from '../types'
 import {resolveRootDir} from '../util/resolveRootDir'
 
-jest.mock('@sanity/client', () => ({
+vi.mock('@sanity/client', () => ({
   // create a mock that only implements the `config()` method
-  createClient: jest.fn((config) => ({config: () => config})),
+  createClient: vi.fn((config) => ({config: () => config})),
 }))
 
-jest.mock('../util/resolveRootDir', () => ({
-  resolveRootDir: jest.fn((dir) => dir || 'MOCK_ROOT_DIR'),
+vi.mock('../util/resolveRootDir', () => ({
+  resolveRootDir: vi.fn((dir) => dir || 'MOCK_ROOT_DIR'),
 }))
 
-jest.mock('../util/getCliConfig', () => {
+vi.mock('../util/getCliConfig', () => {
   const mockCliConfig: CliConfig = {
     api: {
       dataset: 'dataset-from-mock-config',
@@ -22,7 +22,7 @@ jest.mock('../util/getCliConfig', () => {
   }
 
   return {
-    getCliConfigSync: jest.fn((rootDir: string) => ({
+    getSanityCliConfig: vi.fn((rootDir: string) => ({
       config: mockCliConfig,
       path: `${rootDir}/sanity.cli.ts`,
       version: 3,
@@ -36,7 +36,7 @@ beforeAll(() => {
 })
 
 afterAll(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
 })
 
 describe('getCliClient', () => {
