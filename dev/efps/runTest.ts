@@ -2,11 +2,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import {type SanityClient} from '@sanity/client'
-import {chromium} from 'playwright'
+import {type Browser, chromium} from 'playwright'
 
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 interface RunTestOptions {
+  /** Optional browser instance to reuse. If not provided, a new browser will be launched. */
+  browser?: Browser
   client: SanityClient
   enableProfiler: boolean
   headless: boolean
@@ -19,6 +21,7 @@ interface RunTestOptions {
 }
 
 export async function runTest({
+  browser: existingBrowser,
   client,
   enableProfiler,
   headless,
@@ -31,16 +34,21 @@ export async function runTest({
 }: RunTestOptions): Promise<EfpsResult[]> {
   const testResultsDir = path.join(resultsDir, test.name, key)
 
-  let browser
+  let browser: Browser | undefined
   let document
   let context
+  const shouldCloseBrowser = !existingBrowser
 
   try {
-    log('Launching browser…')
-    browser = await chromium.launch({
-      headless,
-      args: ['--disable-gpu', '--disable-software-rasterizer'],
-    })
+    if (existingBrowser) {
+      browser = existingBrowser
+    } else {
+      log('Launching browser…')
+      browser = await chromium.launch({
+        headless,
+        args: ['--disable-gpu', '--disable-software-rasterizer'],
+      })
+    }
     context = await browser.newContext({
       recordVideo: recordVideo ? {dir: testResultsDir} : undefined,
       reducedMotion: 'reduce',
@@ -121,7 +129,10 @@ export async function runTest({
     return results
   } finally {
     await context?.close()
-    await browser?.close()
+    // Only close the browser if we created it (not if it was passed in for reuse)
+    if (shouldCloseBrowser) {
+      await browser?.close()
+    }
 
     if (document) {
       await Promise.allSettled([
@@ -130,4 +141,15 @@ export async function runTest({
       ])
     }
   }
+}
+
+/**
+ * Creates a reusable browser instance for running multiple tests.
+ * The caller is responsible for closing the browser when done.
+ */
+export async function createBrowser(headless: boolean): Promise<Browser> {
+  return chromium.launch({
+    headless,
+    args: ['--disable-gpu', '--disable-software-rasterizer'],
+  })
 }

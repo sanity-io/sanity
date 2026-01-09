@@ -49,14 +49,18 @@ export async function measureFpsForInput({
     return (async function() {
       const updates = []
 
-      const mutationObserver = new MutationObserver(() => {
-        updates.push({value: el.value, timestamp: Date.now()})
-      })
-
+      // For textarea, use MutationObserver on text content
+      // For input, use 'input' event because MutationObserver on 'value' attribute
+      // doesn't work - React/Sanity updates the value property, not the attribute
       if (el instanceof HTMLTextAreaElement) {
+        const mutationObserver = new MutationObserver(() => {
+          updates.push({value: el.value, timestamp: Date.now()})
+        })
         mutationObserver.observe(el, {childList: true, characterData: true, subtree: true})
       } else {
-        mutationObserver.observe(el, {attributes: true, attributeFilter: ['value']})
+        el.addEventListener('input', () => {
+          updates.push({value: el.value, timestamp: Date.now()})
+        })
       }
 
       await new Promise((resolve) => {
