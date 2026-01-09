@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./lib",
+    "allowImportingTsExtensions": true,
     "types": [
       // vite/client: For import.meta.env/import.meta.hot definition and similar
       "vite/client",
