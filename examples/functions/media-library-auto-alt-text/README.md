@@ -144,7 +144,7 @@ When an asset is created or updated in your Media Library, the function follows 
 1. **Trigger**: Function activates on asset creation or update
 2. **Check for existing data**: If the asset already has `altText` in its aspects, the function exits to prevent loops
 3. **Wait for Media Library keywords**: The function waits for Sanity's auto-generated keywords to be available. It is configured to do some re-try's.
-4. **Generate alt text**: Using those keywords, it prompts an Agent Action to create alt text in each supported language (Dutch, English, French, German)
+4. **Generate alt text**: Using those keywords, it makes a separate Agent Action call for each language (Dutch, English, French, German), generating concise alt text one language at a time for reliability
 5. **Save aspects**: The alt text array is written to the asset's aspects
 
 ### Customizing Languages
