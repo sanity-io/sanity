@@ -202,7 +202,7 @@ jobs:
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: efps-report-${{ matrix.shardIndex }}
@@ -218,7 +218,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: efps-report-*
           merge-multiple: true
