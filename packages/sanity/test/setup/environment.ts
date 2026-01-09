@@ -35,21 +35,38 @@ const error = console.error
 }
 
 // IntersectionObserver isn't available in the test browser environment
-const mockIntersectionObserver = vi.fn().mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null,
-})
+// Vitest 4.0 requires mocks called with `new` to use `function` or `class` syntax
+const mockIntersectionObserver = vi.fn().mockImplementation(
+  class {
+    observe() {
+      return null
+    }
+    unobserve() {
+      return null
+    }
+    disconnect() {
+      return null
+    }
+  },
+)
 
 ;(globalThis as any).IntersectionObserver = mockIntersectionObserver as any
 
 // ResizeObserver isn't available in the test browser environment
-const mockResizeObserver = vi.fn()
-mockResizeObserver.mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null,
-})
+// Vitest 4.0 requires mocks called with `new` to use `function` or `class` syntax
+const mockResizeObserver = vi.fn().mockImplementation(
+  class {
+    observe() {
+      return null
+    }
+    unobserve() {
+      return null
+    }
+    disconnect() {
+      return null
+    }
+  },
+)
 ;(globalThis as any).ResizeObserver = mockResizeObserver as any
 ;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
   matches: false,

@@ -4,10 +4,10 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useDocumentPreviewStore: vi.fn().mockReturnValue({}),
-}))
+// vi.mock('sanity', async (importOriginal) => ({
+//   ...(await importOriginal()),
+//   useDocumentPreviewStore: vi.fn().mockReturnValue({}),
+// }))
 
 describe('useDocumentSheetColumns', () => {
   it('returns initial column visibilities', () => {
