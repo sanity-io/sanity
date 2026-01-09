@@ -26,10 +26,10 @@ export function ScheduledDraftOverrideBanner({
   const draftRev = draftDocument?._rev
   const scheduledBaseRev = scheduledDraftDocument?._system?.base?.rev
 
-  const documentsMatch = draftPublishedId === scheduledPublishedId
-  const revisionsDiffer = !draftRev || !scheduledBaseRev || draftRev !== scheduledBaseRev
+  const publishedDocumentsMatch = draftPublishedId === scheduledPublishedId
+  const baseRevisionsDiffer = !draftRev || !scheduledBaseRev || draftRev !== scheduledBaseRev
 
-  if (!documentsMatch || !revisionsDiffer) {
+  if (!publishedDocumentsMatch || !baseRevisionsDiffer) {
     return null
   }
 
