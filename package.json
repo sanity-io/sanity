@@ -35,6 +35,7 @@
     "dev": "pnpm dev:test-studio",
     "dev:cli": "pnpm watch",
     "dev:design-studio": "pnpm --filter design-studio dev",
+    "predev:embedded-studio": "turbo run build --filter=embedded-studio^...",
     "dev:embedded-studio": "pnpm --filter embedded-studio dev",
     "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=triangles pnpm start",
     "dev:i18n:reverse": "SANITY_STUDIO_DEBUG_I18N=reverse pnpm start",
