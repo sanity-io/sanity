@@ -1,17 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect, useRef} from 'react'
-import {
-  onCLS,
-  onFCP,
-  onINP,
-  onLCP,
-  onTTFB,
-  type CLSMetricWithAttribution,
-  type FCPMetricWithAttribution,
-  type INPMetricWithAttribution,
-  type LCPMetricWithAttribution,
-  type TTFBMetricWithAttribution,
-} from 'web-vitals/attribution'
+import {onCLS, onFCP, onINP, onLCP, onTTFB} from 'web-vitals/attribution'
 
 import {
   PerformanceCLSMeasured,
@@ -59,19 +48,19 @@ export function useWebVitalsTelemetry(): void {
 
     // LCP - Largest Contentful Paint
     // Measures loading performance - when the largest content element is visible
-    onLCP((metric: LCPMetricWithAttribution) => {
+    onLCP((metric) => {
       telemetry.log(PerformanceLCPMeasured, {
         value: metric.value,
         rating: metric.rating,
-        element: metric.attribution?.element?.tagName,
-        url: metric.attribution?.url,
+        element: metric.attribution.target,
+        url: metric.attribution.url,
         navigationType: metric.navigationType,
       })
     })
 
     // FCP - First Contentful Paint
     // Measures when the first content is painted to the screen
-    onFCP((metric: FCPMetricWithAttribution) => {
+    onFCP((metric) => {
       telemetry.log(PerformanceFCPMeasured, {
         value: metric.value,
         rating: metric.rating,
@@ -82,17 +71,17 @@ export function useWebVitalsTelemetry(): void {
     // CLS - Cumulative Layout Shift
     // Measures visual stability - reported on page hide
     // Note: CLS is Chromium-only, Firefox/Safari won't fire this callback
-    onCLS((metric: CLSMetricWithAttribution) => {
+    onCLS((metric) => {
       telemetry.log(PerformanceCLSMeasured, {
         value: metric.value,
         rating: metric.rating,
-        largestShiftTarget: metric.attribution?.largestShiftTarget?.tagName,
+        largestShiftTarget: metric.attribution.largestShiftTarget,
       })
     })
 
     // TTFB - Time to First Byte
     // Measures server response time and network latency
-    onTTFB((metric: TTFBMetricWithAttribution) => {
+    onTTFB((metric) => {
       telemetry.log(PerformanceTTFBMeasured, {
         value: metric.value,
         rating: metric.rating,
@@ -103,16 +92,16 @@ export function useWebVitalsTelemetry(): void {
     // INP - Interaction to Next Paint (v2 with attribution)
     // Measures responsiveness - the worst interaction latency
     // This runs alongside the existing INP hook during migration
-    onINP((metric: INPMetricWithAttribution) => {
-      const attribution = metric.attribution
+    onINP((metric) => {
+      const {attribution} = metric
       telemetry.log(PerformanceINPMeasuredV2, {
         value: metric.value,
         rating: metric.rating,
-        target: attribution?.interactionTarget || null,
-        interactionType: attribution?.interactionType,
-        inputDelay: attribution?.inputDelay,
-        processingDuration: attribution?.processingDuration,
-        presentationDelay: attribution?.presentationDelay,
+        target: attribution.interactionTarget ?? null,
+        interactionType: attribution.interactionType,
+        inputDelay: attribution.inputDelay,
+        processingDuration: attribution.processingDuration,
+        presentationDelay: attribution.presentationDelay,
       })
     })
 

@@ -1,5 +1,5 @@
 import {defineEvent} from '@sanity/telemetry'
-import type {NavigationType, Rating} from 'web-vitals'
+import {type Metric} from 'web-vitals'
 
 // =============================================================================
 // EXISTING INP (v1) - Keep for backwards compatibility during migration
@@ -25,19 +25,20 @@ export const PerformanceINPMeasured = defineEvent<PerformanceINPMeasuredData>({
 
 // =============================================================================
 // CORE WEB VITALS (via web-vitals library)
-// Uses types from web-vitals package
+// Uses types from web-vitals package Metric interface
 // =============================================================================
 
 /**
  * Base fields common to all web-vitals metrics
+ * Derived from web-vitals Metric interface
  */
 interface WebVitalsBaseData {
   /** Metric value (ms for time-based, unitless for CLS) */
-  value: number
+  value: Metric['value']
   /** Rating based on thresholds: 'good', 'needs-improvement', 'poor' */
-  rating: Rating
-  /** Navigation type: navigate, reload, back_forward, prerender */
-  navigationType?: NavigationType
+  rating: Metric['rating']
+  /** Navigation type: navigate, reload, back-forward, etc. */
+  navigationType?: Metric['navigationType']
 }
 
 /**
@@ -73,10 +74,10 @@ export const PerformanceFCPMeasured = defineEvent<PerformanceFCPMeasuredData>({
  */
 export interface PerformanceCLSMeasuredData {
   /** CLS score (unitless, typically 0-1) */
-  value: number
+  value: Metric['value']
   /** Rating based on thresholds */
-  rating: Rating
-  /** Element tag name that caused the largest shift */
+  rating: Metric['rating']
+  /** Element selector that caused the largest shift */
   largestShiftTarget?: string
 }
 
@@ -103,9 +104,9 @@ export const PerformanceTTFBMeasured = defineEvent<PerformanceTTFBMeasuredData>(
  */
 export interface PerformanceINPMeasuredV2Data {
   /** INP value in milliseconds */
-  value: number
+  value: Metric['value']
   /** Rating based on thresholds */
-  rating: Rating
+  rating: Metric['rating']
   /** Element that received the interaction */
   target?: string | null
   /** Interaction type: pointer, keyboard */
