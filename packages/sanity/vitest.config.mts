@@ -20,9 +20,6 @@ export default defineConfig({
       // @TODO we have a lot of TS errors to fix in test files before we can remove this line
       ignoreSourceErrors: true,
     },
-    env: {
-      TZ: 'America/Los_Angeles',
-    },
   },
   plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]}})],
 })
