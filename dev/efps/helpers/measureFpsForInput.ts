@@ -9,14 +9,24 @@ interface MeasureFpsForInputOptions {
   label?: string
   page: Page
   fieldName: string
+  /** Timeout in milliseconds for waiting on elements. Defaults to 60000 (60s) */
+  timeout?: number
 }
+
+const DEFAULT_TIMEOUT = 60_000
 
 export async function measureFpsForInput({
   label,
   fieldName,
   page,
+  timeout = DEFAULT_TIMEOUT,
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
+
+  // First, wait for the document form to be visible, indicating the page has loaded
+  // This helps avoid flakiness when the page is still loading/hydrating
+  const formView = page.locator('[data-testid="form-view"]')
+  await formView.waitFor({state: 'visible', timeout})
 
   const input = page
     .locator(
@@ -24,7 +34,7 @@ export async function measureFpsForInput({
         `[data-testid="field-${fieldName}"] textarea`,
     )
     .first()
-  await input.waitFor({state: 'visible'})
+  await input.waitFor({state: 'visible', timeout})
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()

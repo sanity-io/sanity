@@ -79,7 +79,11 @@ export async function runTest({
       `${studioUrl}/${test.name}/intent/edit/id=${encodeURIComponent(
         document._id,
       )};type=${encodeURIComponent(documentToCreate._type)}`,
+      {waitUntil: 'domcontentloaded'},
     )
+
+    // Wait for the document pane to be visible, indicating the studio has loaded
+    await page.locator('[data-testid="document-pane"]').waitFor({state: 'visible', timeout: 60_000})
 
     if (cdp) {
       await cdp.send('Profiler.enable')
