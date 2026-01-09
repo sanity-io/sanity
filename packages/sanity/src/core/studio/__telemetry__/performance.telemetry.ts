@@ -1,5 +1,5 @@
 import {defineEvent} from '@sanity/telemetry'
-import type {MetricRatingThresholds, NavigationType, Rating} from 'web-vitals'
+import type {NavigationType, Rating} from 'web-vitals'
 
 // =============================================================================
 // EXISTING INP (v1) - Keep for backwards compatibility during migration
