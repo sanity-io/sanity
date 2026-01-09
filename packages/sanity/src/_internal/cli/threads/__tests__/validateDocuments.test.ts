@@ -81,7 +81,8 @@ const documents: SanityDocument[] = [
   },
 ]
 
-describe('validateDocuments', () => {
+// Skip: the Worker requires Node.js native TypeScript support to run
+describe.skipIf(parseInt(process.versions.node.split('.')[0], 10) < 24)('validateDocuments', () => {
   vi.setConfig({testTimeout: 30000})
 
   let server!: Server
