@@ -9,6 +9,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../../singleDocRelease/plugin'
 import {useWorkspace} from '../../../../studio'
+import {isPausedCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
@@ -45,6 +46,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     scheduledDraftMenuActions,
     documentId,
     documentType,
+    release,
   } = props
   const {t} = useTranslation()
   const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
@@ -59,7 +61,7 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   return (
     <Menu>
       <MenuItem {...actions.publishNow} />
-      <MenuItem {...actions.editSchedule} />
+      {!isPausedCardinalityOneRelease(release) && <MenuItem {...actions.editSchedule} />}
       <IntentLink
         intent={RELEASES_SCHEDULED_DRAFTS_INTENT}
         params={{view: 'drafts'}}

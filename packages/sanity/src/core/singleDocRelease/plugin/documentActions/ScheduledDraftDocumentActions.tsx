@@ -1,3 +1,5 @@
+import {type ReleaseDocument} from '@sanity/client'
+
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -5,6 +7,7 @@ import {
 } from '../../../config/document/actions'
 import {useAllReleases} from '../../../releases/store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
@@ -16,13 +19,14 @@ import {
  */
 const createScheduledDraftAction = (
   actionKey: keyof UseScheduledDraftMenuActionsReturn['actions'],
+  visibilityCheck?: (release: ReleaseDocument | undefined) => boolean,
 ): DocumentActionComponent => {
   // Using hook naming conventions is required for React Compiler to detect this function and memoize it
   const useScheduledDraftAction: DocumentActionComponent = (
     props: DocumentActionProps,
   ): DocumentActionDescription | null => {
     const {type, release, id} = props
-    const {data: releases = []} = useAllReleases()
+    const {data: releases = [], loading} = useAllReleases()
 
     const releaseDocument = releases.find(
       (r) => getReleaseIdFromReleaseDocumentId(r._id) === release,
@@ -34,15 +38,23 @@ const createScheduledDraftAction = (
       documentId: id,
     })
 
+    if (visibilityCheck && !visibilityCheck(releaseDocument)) {
+      return null
+    }
+
     // This action is only shown for scheduled-draft version type
     if (!releaseDocument) {
+      return null
+    }
+
+    if (!actions || !actions[actionKey]) {
       return null
     }
 
     const actionProps = actions[actionKey]
 
     return {
-      disabled: actionProps.disabled,
+      disabled: actionProps.disabled || loading,
       icon: actionProps.icon,
       label: actionProps.text,
       title: actionProps.text,
@@ -67,9 +79,13 @@ export const PublishScheduledDraftAction = createScheduledDraftAction('publishNo
 
 /**
  * Document action for editing schedule of a scheduled draft
+ * Only visible when the draft is NOT paused
  * @internal
  */
-export const EditScheduledDraftAction = createScheduledDraftAction('editSchedule')
+export const EditScheduledDraftAction = createScheduledDraftAction(
+  'editSchedule',
+  (release) => !isPausedCardinalityOneRelease(release), // Hide when paused
+)
 
 /**
  * Document action for deleting a scheduled draft

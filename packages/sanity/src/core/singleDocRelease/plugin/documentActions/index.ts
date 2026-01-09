@@ -12,8 +12,14 @@ export default function resolveDocumentActions(
   context: DocumentActionsContext,
 ): DocumentActionComponent[] {
   if (context.versionType === 'scheduled-draft') {
-    // For scheduled draft documents, show only the scheduled draft actions
-    return [PublishScheduledDraftAction, EditScheduledDraftAction, DeleteScheduledDraftAction]
+    // For paused scheduled drafts: Schedule (primary), Publish Now, Delete Schedule
+    // For active scheduled drafts: Publish Now (primary), Edit Schedule, Delete Schedule
+    return [
+      useSchedulePublishAction, // Shows only when paused
+      PublishScheduledDraftAction, // Always shows
+      EditScheduledDraftAction, // Shows only when NOT paused
+      DeleteScheduledDraftAction, // Always shows
+    ]
   }
 
   // Add SchedulePublishAction only for draft documents

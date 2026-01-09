@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
+import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
@@ -19,7 +19,7 @@ import {useTranslation} from '../../../i18n'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Chip} from '../Chip'
@@ -186,6 +186,15 @@ export const VersionChip = memo(function VersionChip(props: {
     disabled: contextMenuDisabled,
   })
 
+  const isPaused = isPausedCardinalityOneRelease(release)
+
+  const rightIcon = useMemo(() => {
+    if (isLinked) return <ComposeSparklesIcon />
+    if (isPaused) return <UnlockIcon />
+    if (locked) return <LockIcon />
+    return undefined
+  }, [isLinked, isPaused, locked])
+
   return (
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
@@ -201,7 +210,7 @@ export const VersionChip = memo(function VersionChip(props: {
             tone={tone}
             onContextMenu={contextMenuHandler}
             icon={<ReleaseAvatarIcon tone={tone} />}
-            iconRight={isLinked ? <ComposeSparklesIcon /> : locked && <LockIcon />}
+            iconRight={rightIcon}
             text={text}
           />
         </span>

@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -9,9 +9,12 @@ import {
   type DocumentActionProps,
 } from '../../../config/document/actions'
 import {useValidationStatus} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getDraftId} from '../../../util/draftUtils'
+import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
 import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
@@ -27,7 +30,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 ): DocumentActionDescription | null => {
   const {id, type, draft} = props
   const {t} = useTranslation(singleDocReleaseNamespace)
-  const {createScheduledDraft} = useScheduleDraftOperations()
+  const {createScheduledDraft, rescheduleScheduledDraft} = useScheduleDraftOperations()
   const toast = useToast()
   const {enabled: singleDocReleaseEnabled, mode} = useSingleDocReleaseEnabled()
   const {handleOpenDialog: handleOpenUpsellDialog} = useSingleDocReleaseUpsell()
@@ -41,6 +44,24 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const [dialogOpen, setDialogOpen] = useState(false)
   const [isScheduling, setIsScheduling] = useState(false)
   const {onSetScheduledDraftPerspective} = useSingleDocRelease()
+
+  // Check if current release is a paused scheduled draft
+  const {data: releases = []} = useActiveReleases()
+  const perspective = usePerspective()
+
+  const currentRelease = useMemo(
+    () =>
+      releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === perspective.selectedReleaseId,
+      ),
+    [releases, perspective.selectedReleaseId],
+  )
+
+  const isPaused = isPausedCardinalityOneRelease(currentRelease)
+  const initialDate =
+    isPaused && currentRelease?.metadata.intendedPublishAt
+      ? new Date(currentRelease.metadata.intendedPublishAt)
+      : undefined
   const handleOpenDialog = useCallback(() => {
     if (mode === 'upsell') {
       handleOpenUpsellDialog('document_action')
@@ -56,25 +77,21 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const handleSchedule = useCallback(
     async (publishAt: Date) => {
       setIsScheduling(true)
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
+        if (isPaused && currentRelease) {
+          // Resume paused draft: reschedule with new date
+          await rescheduleScheduledDraft(currentRelease, publishAt)
+        } else {
+          // Normal flow: create new scheduled draft
+          const releaseDocumentId = await createScheduledDraft(id, publishAt)
+          onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
+        }
 
-      try {
-        // Pass the document title from preview values
-        const releaseDocumentId = await createScheduledDraft(id, publishAt)
-
-        toast.push({
-          closable: true,
-          status: 'success',
-          title: t('action.schedule-publish-success'),
-          description: (
-            <Translate
-              t={t}
-              i18nKey="action.schedule-publish-success-description"
-              values={{publishAt: publishAt.toLocaleString()}}
-            />
-          ),
-        })
-        onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(releaseDocumentId))
         setDialogOpen(false)
+      }
+      try {
+        await run()
       } catch (error) {
         console.error('Failed to schedule document publish:', error)
 
@@ -87,25 +104,53 @@ export const useSchedulePublishAction: DocumentActionComponent = (
       }
       setIsScheduling(false)
     },
-    [id, createScheduledDraft, toast, t, onSetScheduledDraftPerspective],
+    [
+      id,
+      createScheduledDraft,
+      toast,
+      t,
+      onSetScheduledDraftPerspective,
+      isPaused,
+      currentRelease,
+      rescheduleScheduledDraft,
+    ],
   )
 
-  if (!draft || !singleDocReleaseEnabled) {
+  const disabled = isPaused
+    ? hasValidationErrors // Only check validation errors for paused drafts
+    : hasCardinalityOneReleaseVersions || hasValidationErrors // Full check for regular drafts
+
+  const title = useMemo(() => {
+    if (isPaused && hasValidationErrors) {
+      return t('action.schedule-publish.disabled.validation-issues')
+    }
+
+    if (hasCardinalityOneReleaseVersions) {
+      return t('action.schedule-publish.disabled.cardinality-one')
+    }
+
+    if (hasValidationErrors) {
+      return t('action.schedule-publish.disabled.validation-issues')
+    }
+
+    return t('action.schedule-publish')
+  }, [isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
+
+  if (!singleDocReleaseEnabled) {
     return null
   }
 
-  const disabled = hasCardinalityOneReleaseVersions || hasValidationErrors
-  const title = hasCardinalityOneReleaseVersions
-    ? t('action.schedule-publish.disabled.cardinality-one')
-    : hasValidationErrors
-      ? t('action.schedule-publish.disabled.validation-issues')
-      : t('action.schedule-publish')
+  // Show for drafts OR paused scheduled drafts
+  if (!draft && !isPaused) {
+    return null
+  }
 
   return {
     icon: CalendarIcon,
     disabled,
     label: t('action.schedule-publish'),
     title,
+    tone: isPaused ? 'primary' : undefined, // Add primary tone when paused
     onHandle: handleOpenDialog,
     dialog: dialogOpen && {
       type: 'custom',
@@ -115,6 +160,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
           onSchedule={handleSchedule}
           variant="schedule"
           loading={isScheduling}
+          initialDate={initialDate}
         />
       ),
     },

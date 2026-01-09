@@ -1,7 +1,7 @@
 import {format} from 'date-fns'
 import {type RouterContextValue, type SearchParam} from 'sanity/router'
 
-export type Mode = 'active' | 'archived'
+export type Mode = 'active' | 'paused' | 'archived'
 export type CardinalityView = 'releases' | 'drafts'
 
 export const DATE_SEARCH_PARAM_KEY = 'date'
@@ -23,7 +23,9 @@ export const getInitialReleaseGroupMode = (router: RouterContextValue) => (): Mo
     GROUP_SEARCH_PARAM_KEY,
   )
 
-  return activeGroupMode === 'archived' ? 'archived' : 'active'
+  if (activeGroupMode === 'archived') return 'archived'
+  if (activeGroupMode === 'paused') return 'paused'
+  return 'active'
 }
 
 export const getInitialCardinalityView =
@@ -64,8 +66,8 @@ export const buildReleasesSearchParams = (
 
   if (releaseFilterDate) {
     params.push([DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)])
-  } else if (releaseGroupMode === 'archived') {
-    // Only add group param when there's no date filter and it's archived
+  } else if (releaseGroupMode !== 'active') {
+    // Add group param when there's no date filter and it's not 'active' (default)
     params.push([GROUP_SEARCH_PARAM_KEY, releaseGroupMode])
   }
 

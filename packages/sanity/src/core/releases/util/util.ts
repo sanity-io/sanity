@@ -2,8 +2,8 @@ import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} f
 
 import {type TargetPerspective} from '../../perspective/types'
 import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
-import {isCardinalityOneRelease} from '../../util/releaseUtils'
-import {type CardinalityView} from '../tool/overview/queryParamUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../util/releaseUtils'
+import {type CardinalityView, type Mode} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
 import {createReleaseId} from './createReleaseId'
 
@@ -111,4 +111,56 @@ export function shouldShowReleaseInView(
     // Show cardinality 'one' releases in 'drafts' view, and cardinality 'many'/undefined in 'releases' view
     return cardinalityView === 'drafts' ? isCardinalityOne : !isCardinalityOne
   }
+}
+
+/** @internal */
+export interface FilterReleasesOptions<T extends ReleaseDocument> {
+  releases: T[]
+  archivedReleases: T[]
+  cardinalityView: CardinalityView
+  releaseGroupMode: Mode
+  dateFilter?: {
+    filterDate: Date
+    getTimezoneAdjustedDateTimeRange: (date: Date) => [Date, Date]
+  }
+}
+
+/** @internal */
+export function filterReleasesForOverview<T extends ReleaseDocument>(
+  options: FilterReleasesOptions<T>,
+): T[] {
+  const {releases, archivedReleases, cardinalityView, releaseGroupMode, dateFilter} = options
+
+  const sourceReleases = releaseGroupMode === 'archived' ? archivedReleases : releases
+
+  const applyDateFilter = (items: T[]): T[] => {
+    if (!dateFilter) return items
+
+    const [startOfDayForTimeZone, endOfDayForTimeZone] =
+      dateFilter.getTimezoneAdjustedDateTimeRange(dateFilter.filterDate)
+
+    return items.filter((release) => {
+      const publishAt = release.publishAt || release.metadata.intendedPublishAt
+      if (!publishAt || release.metadata.releaseType !== 'scheduled') return false
+
+      const publishDateUTC = new Date(publishAt)
+      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
+    })
+  }
+
+  const dateFiltered = applyDateFilter(sourceReleases)
+
+  if (cardinalityView !== 'drafts') return dateFiltered
+
+  if (releaseGroupMode === 'active') {
+    return dateFiltered.filter(
+      (release) => release.state === 'scheduled' || release.state === 'scheduling',
+    )
+  }
+
+  if (releaseGroupMode === 'paused') {
+    return dateFiltered.filter((release) => isPausedCardinalityOneRelease(release))
+  }
+
+  return dateFiltered
 }
