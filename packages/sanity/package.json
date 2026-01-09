@@ -281,7 +281,6 @@
   "devDependencies": {
     "@playwright/experimental-ct-react": "catalog:",
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
