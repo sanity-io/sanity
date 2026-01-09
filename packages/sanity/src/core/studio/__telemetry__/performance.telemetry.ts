@@ -1,4 +1,5 @@
 import {defineEvent} from '@sanity/telemetry'
+import type {MetricRatingThresholds, NavigationType, Rating} from 'web-vitals'
 
 // =============================================================================
 // EXISTING INP (v1) - Keep for backwards compatibility during migration
@@ -24,23 +25,30 @@ export const PerformanceINPMeasured = defineEvent<PerformanceINPMeasuredData>({
 
 // =============================================================================
 // CORE WEB VITALS (via web-vitals library)
+// Uses types from web-vitals package
 // =============================================================================
+
+/**
+ * Base fields common to all web-vitals metrics
+ */
+interface WebVitalsBaseData {
+  /** Metric value (ms for time-based, unitless for CLS) */
+  value: number
+  /** Rating based on thresholds: 'good', 'needs-improvement', 'poor' */
+  rating: Rating
+  /** Navigation type: navigate, reload, back_forward, prerender */
+  navigationType?: NavigationType
+}
 
 /**
  * Largest Contentful Paint - measures loading performance
  * Reports when the largest content element becomes visible
  */
-export interface PerformanceLCPMeasuredData {
-  /** LCP value in milliseconds */
-  value: number
-  /** Rating: 'good' (<2500ms), 'needs-improvement' (2500-4000ms), 'poor' (>4000ms) */
-  rating: 'good' | 'needs-improvement' | 'poor'
+export interface PerformanceLCPMeasuredData extends WebVitalsBaseData {
   /** Element tag name that triggered LCP */
   element?: string
   /** URL of the resource (for images) */
   url?: string
-  /** Navigation type: navigate, reload, back_forward, prerender */
-  navigationType?: string
 }
 
 export const PerformanceLCPMeasured = defineEvent<PerformanceLCPMeasuredData>({
@@ -52,14 +60,7 @@ export const PerformanceLCPMeasured = defineEvent<PerformanceLCPMeasuredData>({
 /**
  * First Contentful Paint - measures initial render
  */
-export interface PerformanceFCPMeasuredData {
-  /** FCP value in milliseconds */
-  value: number
-  /** Rating: 'good' (<1800ms), 'needs-improvement' (1800-3000ms), 'poor' (>3000ms) */
-  rating: 'good' | 'needs-improvement' | 'poor'
-  /** Navigation type */
-  navigationType?: string
-}
+export type PerformanceFCPMeasuredData = WebVitalsBaseData
 
 export const PerformanceFCPMeasured = defineEvent<PerformanceFCPMeasuredData>({
   name: 'Performance FCP Measured',
@@ -73,8 +74,8 @@ export const PerformanceFCPMeasured = defineEvent<PerformanceFCPMeasuredData>({
 export interface PerformanceCLSMeasuredData {
   /** CLS score (unitless, typically 0-1) */
   value: number
-  /** Rating: 'good' (<0.1), 'needs-improvement' (0.1-0.25), 'poor' (>0.25) */
-  rating: 'good' | 'needs-improvement' | 'poor'
+  /** Rating based on thresholds */
+  rating: Rating
   /** Element tag name that caused the largest shift */
   largestShiftTarget?: string
 }
@@ -88,14 +89,7 @@ export const PerformanceCLSMeasured = defineEvent<PerformanceCLSMeasuredData>({
 /**
  * Time to First Byte - measures server response time
  */
-export interface PerformanceTTFBMeasuredData {
-  /** TTFB value in milliseconds */
-  value: number
-  /** Rating: 'good' (<800ms), 'needs-improvement' (800-1800ms), 'poor' (>1800ms) */
-  rating: 'good' | 'needs-improvement' | 'poor'
-  /** Navigation type */
-  navigationType?: string
-}
+export type PerformanceTTFBMeasuredData = WebVitalsBaseData
 
 export const PerformanceTTFBMeasured = defineEvent<PerformanceTTFBMeasuredData>({
   name: 'Performance TTFB Measured',
@@ -110,8 +104,8 @@ export const PerformanceTTFBMeasured = defineEvent<PerformanceTTFBMeasuredData>(
 export interface PerformanceINPMeasuredV2Data {
   /** INP value in milliseconds */
   value: number
-  /** Rating: 'good' (<200ms), 'needs-improvement' (200-500ms), 'poor' (>500ms) */
-  rating: 'good' | 'needs-improvement' | 'poor'
+  /** Rating based on thresholds */
+  rating: Rating
   /** Element that received the interaction */
   target?: string | null
   /** Interaction type: pointer, keyboard */
