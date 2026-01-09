@@ -1,11 +1,21 @@
-import {CropIcon} from '@sanity/icons'
-import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {CropIcon, LockIcon} from '@sanity/icons'
+import {
+  Card,
+  Flex,
+  Inline,
+  Menu,
+  Skeleton,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
+import {type AssetAccessPolicy} from './types'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;
@@ -20,6 +30,7 @@ export const ImageActionsMenuWaitPlaceholder = () => (
 )
 
 interface ImageActionsMenuProps {
+  accessPolicy?: AssetAccessPolicy
   children: ReactNode
   onEdit: MouseEventHandler<HTMLButtonElement>
   setHotspotButtonElement: (element: HTMLButtonElement | null) => void
@@ -31,6 +42,7 @@ interface ImageActionsMenuProps {
 
 export function ImageActionsMenu(props: ImageActionsMenuProps) {
   const {
+    accessPolicy = 'public',
     onEdit,
     children,
     showEdit,
@@ -90,6 +102,19 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
   return (
     <TooltipDelayGroupProvider>
       <MenuActionsWrapper data-buttons space={1} padding={2}>
+        {accessPolicy === 'private' && (
+          <Card tone="neutral" radius="full" padding={2} border marginRight={1}>
+            <Flex align="center" justify="center" gap={2} paddingLeft={1}>
+              <Text size={1}>
+                <LockIcon />
+              </Text>
+              <Text size={1} weight="medium" muted>
+                {t('inputs.image.actions-menu.access-policy.private')}
+              </Text>
+            </Flex>
+          </Card>
+        )}
+
         {showEdit && (
           <Button
             aria-label={t('inputs.image.actions-menu.edit-details.aria-label')}

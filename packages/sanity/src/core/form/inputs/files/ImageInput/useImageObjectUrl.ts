@@ -83,7 +83,10 @@ function createFetchCacheEntry(url: string, token: string): RequestCacheEntry {
     headers: {Authorization: `Bearer ${token}`},
     signal: abortController.signal,
   })
-    .then((res) => res.blob())
+    .then((res) => {
+      if (res.ok) return res.blob()
+      throw new Error(`Failed to fetch image (HTTP ${res.status})`)
+    })
     .then((blob) => {
       entry.blob = blob
       entry.error = null

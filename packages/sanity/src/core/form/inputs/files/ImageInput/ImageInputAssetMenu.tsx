@@ -12,7 +12,7 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
-import {type BaseImageInputProps} from './types'
+import {type AssetAccessPolicy, type BaseImageInputProps} from './types'
 
 function ImageInputAssetMenuComponent(
   props: Pick<
@@ -25,6 +25,7 @@ function ImageInputAssetMenuComponent(
     | 'schemaType'
     | 'value'
   > & {
+    accessPolicy: AssetAccessPolicy
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
@@ -37,6 +38,7 @@ function ImageInputAssetMenuComponent(
   },
 ) {
   const {
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
@@ -101,6 +103,7 @@ function ImageInputAssetMenuComponent(
 
   return (
     <ImageInputAssetMenuWithReferenceAsset
+      accessPolicy={accessPolicy}
       accept={accept}
       assetSources={assetSources}
       browseMenuItem={browseMenuItem}
@@ -129,6 +132,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     BaseImageInputProps,
     'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
   > & {
+    accessPolicy: AssetAccessPolicy
     accept: string
     assetSources: AssetSource[]
     browseMenuItem: ReactNode
@@ -145,6 +149,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   },
 ) {
   const {
+    accessPolicy,
     accept,
     assetSources,
     browseMenuItem,
@@ -233,6 +238,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 
   return (
     <ImageActionsMenu
+      accessPolicy={accessPolicy}
       isMenuOpen={isMenuOpen}
       onEdit={handleOpenDialog}
       onMenuOpen={setMenuOpen}
