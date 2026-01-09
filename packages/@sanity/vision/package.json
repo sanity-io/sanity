@@ -29,7 +29,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "development": "./src/index.ts",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"

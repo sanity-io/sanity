@@ -4,6 +4,6 @@
   "compilerOptions": {
     "rootDir": ".",
     "lib": ["dom", "es2022"],
-    "customConditions": ["development"]
+    "customConditions": ["monorepo"]
   }
 }

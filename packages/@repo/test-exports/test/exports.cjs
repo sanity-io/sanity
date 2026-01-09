@@ -6,9 +6,9 @@ const {dependencies} = _pkg
 function validateSourceCondition(workspace, key, value, publishConfigExports) {
   if (!('source' in value)) return
 
-  if (!('development' in value)) {
+  if (!('monorepo' in value)) {
     throw new Error(
-      `${workspace}: exports["${key}"] has "source" condition but no "development" condition`,
+      `${workspace}: exports["${key}"] has "source" condition but no "monorepo" condition`,
     )
   }
   if (!publishConfigExports?.[key]) {

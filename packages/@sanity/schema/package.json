@@ -26,12 +26,12 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "development": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
-      "development": "./src/_exports/_internal.ts",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./package.json": "./package.json"
