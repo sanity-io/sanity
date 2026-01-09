@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 import {MenuButton} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
@@ -19,6 +20,7 @@ const StyledMenu = styled(Menu)`
 
 export function ResourcesButton() {
   const {t} = useTranslation()
+  const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()
 
@@ -35,6 +37,12 @@ export function ResourcesButton() {
   const newAutoUpdateVersionAvailable =
     currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
 
+  const getButtonTone = () => {
+    if (newAutoUpdateVersionAvailable) return 'primary'
+    if (!isLoadingUserApplication && !userApplication) return 'caution'
+    return undefined
+  }
+
   const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
   const handleStudioInfoDialogClose = useCallback(() => {
     setStudioInfoDialogOpen(false)
@@ -50,7 +58,7 @@ export function ResourcesButton() {
       <MenuButton
         button={
           <StatusButton
-            tone={newAutoUpdateVersionAvailable ? 'primary' : undefined}
+            tone={getButtonTone()}
             aria-label={t('help-resources.title')}
             icon={HelpCircleIcon}
             data-testid="button-resources-menu"

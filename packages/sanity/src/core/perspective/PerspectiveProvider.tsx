@@ -1,13 +1,14 @@
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
+import {getReleaseIdFromReleaseDocumentId} from '../releases'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'
 import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getSelectedPerspective} from './getSelectedPerspective'
-import {type PerspectiveContextValue, type ReleaseId, type SelectedPerspective} from './types'
+import {type PerspectiveContextValue, type ReleaseId} from './types'
 
 /**
  * @internal
@@ -29,7 +30,7 @@ export function PerspectiveProvider({
     },
   } = useWorkspace()
 
-  const selectedPerspective: SelectedPerspective = useMemo(
+  const selectedPerspective = useMemo(
     () => getSelectedPerspective(selectedPerspectiveName, releases),
     [selectedPerspectiveName, releases],
   )
@@ -45,17 +46,26 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const value: PerspectiveContextValue = useMemo(
-    () => ({
+  const value: PerspectiveContextValue = useMemo(() => {
+    // For regular releases and published, use as-is
+    return {
       selectedPerspective,
       selectedPerspectiveName,
       selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
         ? undefined
-        : selectedPerspectiveName,
+        : releases
+            .map((release) => getReleaseIdFromReleaseDocumentId(release._id))
+            .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
-    }),
-    [selectedPerspective, selectedPerspectiveName, perspectiveStack, excludedPerspectives],
-  )
+    }
+  }, [
+    selectedPerspectiveName,
+    releases,
+    selectedPerspective,
+    perspectiveStack,
+    excludedPerspectives,
+  ])
+
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }

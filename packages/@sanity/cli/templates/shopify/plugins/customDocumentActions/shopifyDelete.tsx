@@ -13,14 +13,12 @@ import {SANITY_API_VERSION} from '../../constants'
 export default (props: ShopifyDocumentActionProps): DocumentActionDescription | undefined => {
   const {
     draft,
-    onComplete,
     type,
     published,
   }: {
     draft: ShopifyDocument
     published: ShopifyDocument
     type: string
-    onComplete: () => void
   } = props
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -39,7 +37,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
           <Text weight="medium">No content on Shopify will be deleted.</Text>
         </Stack>
       ),
-      onCancel: onComplete,
+      onCancel: () => setDialogOpen(false),
       onConfirm: async () => {
         const productId = published?.store?.id
 
@@ -85,8 +83,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
             title: message,
           })
         } finally {
-          // Signal that the action is complete
-          onComplete()
+          setDialogOpen(false)
         }
       },
       type: 'confirm',
@@ -101,7 +98,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
           <Text weight="medium">No content on Shopify will be deleted.</Text>
         </Stack>
       ),
-      onCancel: onComplete,
+      onCancel: () => setDialogOpen(false),
       onConfirm: async () => {
         // Delete current document (including draft)
         const transaction = client.transaction()
@@ -125,8 +122,7 @@ export default (props: ShopifyDocumentActionProps): DocumentActionDescription | 
             title: message,
           })
         } finally {
-          // Signal that the action is complete
-          onComplete()
+          setDialogOpen(false)
         }
       },
       type: 'confirm',

@@ -3,7 +3,7 @@ import {type ComponentType} from 'react'
 import {type FIXME} from '../FIXME'
 import {UniversalArrayInput} from './inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from './inputs/BooleanInput'
-import {NumberInput} from './inputs/NumberInput'
+import {NumberInput} from './inputs/NumberInput/NumberInput'
 import {ObjectInput} from './inputs/ObjectInput'
 import {TextInput} from './inputs/TextInput'
 

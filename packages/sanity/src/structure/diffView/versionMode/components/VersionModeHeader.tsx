@@ -13,7 +13,7 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
   formatRelativeLocalePublishDate,
@@ -23,8 +23,6 @@ import {
   getReleaseTone,
   getVersionFromId,
   getVersionId,
-  isDraftId,
-  isPublishedId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   ReleaseAvatar,
@@ -41,6 +39,7 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
+import {findRelease} from '../../utils/findRelease'
 
 const VersionModeHeaderLayout = styled.header`
   display: grid;
@@ -78,33 +77,27 @@ export const VersionModeHeader: ComponentType<
     })
   }, [activeReleases.data, releasesIds])
 
-  const onSelectPreviousRelease = useCallback(
-    (selectedDocumentId: string): void => {
-      if (typeof documents?.previous !== 'undefined') {
-        navigateDiffView({
-          previousDocument: {
-            ...documents.previous,
-            id: selectedDocumentId,
-          },
-        })
-      }
-    },
-    [documents?.previous, navigateDiffView],
-  )
+  const onSelectPreviousRelease = (selectedDocumentId: string): void => {
+    if (typeof documents?.previous !== 'undefined') {
+      navigateDiffView({
+        previousDocument: {
+          ...documents.previous,
+          id: selectedDocumentId,
+        },
+      })
+    }
+  }
 
-  const onSelectNextRelease = useCallback(
-    (selectedDocumentId: string): void => {
-      if (typeof documents?.next !== 'undefined') {
-        navigateDiffView({
-          nextDocument: {
-            ...documents.next,
-            id: selectedDocumentId,
-          },
-        })
-      }
-    },
-    [documents?.next, navigateDiffView],
-  )
+  const onSelectNextRelease = (selectedDocumentId: string): void => {
+    if (typeof documents?.next !== 'undefined') {
+      navigateDiffView({
+        nextDocument: {
+          ...documents.next,
+          id: selectedDocumentId,
+        },
+      })
+    }
+  }
 
   return (
     <VersionModeHeaderLayout>
@@ -256,7 +249,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
 
-  const onClick = useCallback(() => {
+  const onClick = () => {
     if (type === 'draft') {
       onSelect(getDraftId(documentId))
       return
@@ -270,7 +263,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     if (typeof release?._id !== 'undefined') {
       onSelect(getVersionId(documentId, getReleaseIdFromReleaseDocumentId(release._id)))
     }
-  }, [type, onSelect, documentId, release?._id])
+  }
 
   if (type) {
     const tone: ButtonTone = type === 'published' ? 'positive' : 'caution'
@@ -359,26 +352,4 @@ function getMenuButtonProps({
     icon: <ReleaseAvatar padding={1} tone={tone} />,
     tone,
   }
-}
-
-/**
- * If the provided document id represents a version, find and return the corresponding release
- * document. Otherwise, return a string literal signifying whether the document id represents a
- * published or draft document.
- */
-function findRelease(
-  documentId: string,
-  releases: ReleaseDocument[],
-): ReleaseDocument | 'published' | 'draft' | undefined {
-  if (isPublishedId(documentId)) {
-    return 'published'
-  }
-
-  if (isDraftId(documentId)) {
-    return 'draft'
-  }
-
-  return releases.find(
-    ({_id}) => getReleaseIdFromReleaseDocumentId(_id) === getVersionFromId(documentId),
-  )
 }

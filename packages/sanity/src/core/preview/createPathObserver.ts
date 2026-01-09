@@ -1,6 +1,6 @@
 import {type StackablePerspective} from '@sanity/client'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
-import {uniq} from 'lodash'
+import {uniq} from 'lodash-es'
 import {type Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
 

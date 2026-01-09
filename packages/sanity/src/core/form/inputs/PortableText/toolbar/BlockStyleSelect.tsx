@@ -171,7 +171,6 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
             <StyledMenuItem
               key={item.key}
               pressed={activeItems.includes(item)}
-              // eslint-disable-next-line react/jsx-no-bind
               onClick={_disabled ? undefined : () => handleChange(item)}
             >
               {renderOption(item)}

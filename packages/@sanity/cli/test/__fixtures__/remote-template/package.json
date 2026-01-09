@@ -6,8 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "next": "^15",
-    "next-sanity": "^10.0.6",
-    "sanity": "^4"
+    "next": "^15.5.4",
+    "next-sanity": "^11.0.1",
+    "sanity": "^4.6.1"
   }
 }

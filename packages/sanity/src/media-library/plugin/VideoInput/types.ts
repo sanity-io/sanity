@@ -23,3 +23,58 @@ export interface VideoAssetProps extends Omit<BaseVideoInputProps, 'renderDefaul
   setSelectedAssetSource: (assetSource: AssetSource | null) => void
   uploader?: AssetSourceUploader
 }
+
+export interface VideoPlaybackInfoItemPublic {
+  url: string
+}
+
+export interface VideoPlaybackInfoItemSigned extends VideoPlaybackInfoItemPublic {
+  token: string
+}
+
+export type VideoPlaybackInfoItem = VideoPlaybackInfoItemPublic | VideoPlaybackInfoItemSigned
+
+export interface VideoPlaybackInfo<T extends VideoPlaybackInfoItem = VideoPlaybackInfoItem> {
+  id: string
+  thumbnail: T
+  animated: T
+  storyboard: T
+  stream: T
+  duration: number
+  aspectRatio: number
+}
+
+export type VideoPlaybackInfoSigned = VideoPlaybackInfo<VideoPlaybackInfoItemSigned>
+export type VideoPlaybackInfoPublic = VideoPlaybackInfo
+
+export interface VideoPlaybackTokens {
+  animated?: string
+  playback?: string
+  thumbnail?: string
+  storyboard?: string
+}
+
+export function isSignedPlayback(item: VideoPlaybackInfoItem): item is VideoPlaybackInfoItemSigned {
+  return 'token' in item
+}
+
+export function isSignedPlaybackInfo(
+  playbackInfo: VideoPlaybackInfo,
+): playbackInfo is VideoPlaybackInfoSigned {
+  return isSignedPlayback(playbackInfo.stream)
+}
+
+export function getPlaybackTokens(
+  playbackInfo: VideoPlaybackInfo,
+): VideoPlaybackTokens | undefined {
+  if (isSignedPlaybackInfo(playbackInfo)) {
+    return {
+      animated: playbackInfo.animated.token,
+      playback: playbackInfo.stream.token,
+      thumbnail: playbackInfo.thumbnail.token,
+      storyboard: playbackInfo.storyboard.token,
+    }
+  }
+
+  return undefined
+}

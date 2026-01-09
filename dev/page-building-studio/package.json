@@ -1,6 +1,6 @@
 {
   "name": "sanity-page-building-studio",
-  "version": "4.3.0",
+  "version": "5.2.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -9,17 +9,21 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --source-maps",
     "lint": "eslint .",
-    "start": "sanity start"
+    "preview": "sanity preview"
   },
   "dependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.2",
-    "react": "catalog:react18",
-    "react-compiler-runtime": "19.1.0-rc.2",
-    "react-dom": "catalog:react18",
+    "babel-plugin-react-compiler": "1.0.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "react-icons": "^5.5.0",
     "sanity": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10",
+    "vite": "catalog:"
   }
 }

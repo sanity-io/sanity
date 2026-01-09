@@ -1,7 +1,7 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
-import {DiscardVersionAction} from './DiscardVersionAction'
-import {UnpublishVersionAction} from './UnpublishVersionAction'
+import {useDiscardVersionAction} from './DiscardVersionAction'
+import {useUnpublishVersionAction} from './UnpublishVersionAction'
 
 type Action = DocumentActionComponent
 
@@ -12,7 +12,8 @@ export default function resolveDocumentActions(
   const duplicateAction = existingActions.filter(({action}) => action === 'duplicate')
 
   if (context.versionType === 'version') {
-    return duplicateAction.concat(DiscardVersionAction, UnpublishVersionAction)
+    // For regular version documents, show traditional version actions
+    return duplicateAction.concat(useDiscardVersionAction, useUnpublishVersionAction)
   }
 
   return existingActions

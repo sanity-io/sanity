@@ -5,6 +5,7 @@ import {type LegacyThemeTints} from './types'
 
 /**
  * @internal
+ * @deprecated – Will be removed in upcoming major version
  */
 export function _buildTints(bg: string, mid: string, fg: string): LegacyThemeTints {
   return {

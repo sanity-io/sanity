@@ -1,13 +1,15 @@
-import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon} from '@sanity/icons'
+import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon, WarningOutlineIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Flex, Grid, Spinner, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
 
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
+import {TextWithTone} from '../../../../components'
 import {isProd} from '../../../../environment'
-import {useTranslation} from '../../../../i18n'
+import {Translate, useTranslation} from '../../../../i18n'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
 
@@ -27,15 +29,32 @@ function reload() {
   window.location.reload()
 }
 
-function isPrerelease(ver: SemVer) {
-  return ver.prerelease.length > 0
+function getVersionType(ver: SemVer): 'development' | 'prerelease' | 'default' {
+  if (ver.prerelease.length === 0) {
+    return 'default'
+  }
+  if (ver.prerelease.length === 1 && ver.prerelease[0] === 'dev') {
+    return 'development'
+  }
+  return 'prerelease'
 }
+
+const TruncateBadge = styled(Badge)`
+  display: block;
+
+  span {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: clip;
+  }
+`
 
 const HEX_ONLY = /^[0-9a-fA-F]+$/i
 function resolveGithubURLFromVersion(ver: SemVer) {
   const preids = ver.prerelease
   if (preids.length === 0) {
-    return `https://github.com/sanity-io/sanity/releases/tag/${ver.version}`
+    return `https://github.com/sanity-io/sanity/releases/tag/v${ver.version}`
   }
   const isPR = preids[0] === 'pr' && typeof preids[1] === 'number'
   if (isPR) {
@@ -45,6 +64,14 @@ function resolveGithubURLFromVersion(ver: SemVer) {
     preids[0] === 'next' && ver.build.length === 1 && HEX_ONLY.test(ver.build[0])
   if (isNextWithCommitHash) {
     return `https://github.com/sanity-io/sanity/tree/${ver.build[0]}`
+  }
+  const isGitBranch = ver.prerelease[0] === 'git'
+  const hasBuildInfo = ver.build.length > 0 && HEX_ONLY.test(ver.build[0])
+
+  // note: slugified branch names in semver preids cannot be mapped back to their original branch name on github
+  // due to the limited set of chars that's valid for preids
+  if (isGitBranch && hasBuildInfo) {
+    return `https://github.com/sanity-io/sanity/commit/${ver.build[0]}`
   }
   return undefined
 }
@@ -58,6 +85,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     isAutoUpdating,
     autoUpdatingVersion,
     currentVersion,
+    importMapInfo,
     latestTaggedVersion,
     versionCheckStatus,
     checkForUpdates,
@@ -69,7 +97,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     // let prereleases that's higher than latest count as up-to-date
     currentVersion.compareMain(latestTaggedVersion) >= 0
 
-  const currentVersionIsPrerelease = currentVersion && isPrerelease(currentVersion)
+  const currentVersionType = getVersionType(currentVersion)
 
   const newAutoUpdateVersionAvailable =
     currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
@@ -82,7 +110,45 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   }, [checkForUpdates])
 
   const githubUrl = resolveGithubURLFromVersion(currentVersion)
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
+  const importMapWarning =
+    importMapInfo?.valid && !importMapInfo.appId ? (
+      <Card padding={4} tone="caution">
+        <Flex align="flex-start" gap={3}>
+          <TextWithTone tone="caution">
+            <WarningOutlineIcon />
+          </TextWithTone>
+          <Stack space={4}>
+            <TextWithTone size={1} tone="caution" weight="medium">
+              {t('about-dialog.configuration-issue.header')}
+            </TextWithTone>
+            <TextWithTone size={1} tone="caution">
+              <Translate t={t} i18nKey="about-dialog.configuration-issue.missing-appid" />
+            </TextWithTone>
+            <TextWithTone size={1} tone="caution">
+              <Text muted size={1}>
+                <a
+                  href="https://www.sanity.io/docs/studio/latest-version-of-sanity"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('about-dialog.configuration-issue.missing-appid.view-documentation')} &rarr;
+                </a>
+              </Text>
+            </TextWithTone>
+          </Stack>
+        </Flex>
+        <Stack space={2} />
+      </Card>
+    ) : null
+
+  const versionBadgeTone =
+    currentVersionType === 'development'
+      ? 'caution'
+      : currentVersionType === 'prerelease'
+        ? 'suggest'
+        : 'neutral'
   return (
     <Dialog width={0} onClickOutside={onClose} id={dialogId} padding={false}>
       {versionCheckStatus?.checking ? (
@@ -104,33 +170,42 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               Sanity Studio
             </Text>
           </Flex>
-          <Flex justify="flex-start" align="center" gap={2}>
-            <Tooltip
-              content={
-                currentVersionIsPrerelease
-                  ? t('about-dialog.version-info.tooltip.prerelease')
-                  : t('about-dialog.version-info.tooltip.up-to-date')
-              }
-            >
-              <Badge tone={currentVersionIsPrerelease ? 'suggest' : 'neutral'} overflow="hidden">
+          <Tooltip
+            placement="bottom"
+            content={
+              <Card>
+                <Inline space={1}>
+                  <Badge tone={versionBadgeTone}>
+                    {ensureVersionPrefix(currentVersion.version)}
+                  </Badge>
+                  <Badge size={1}>
+                    {currentVersionType === 'development'
+                      ? t('about-dialog.version-info.tooltip.development')
+                      : currentVersionType === 'prerelease'
+                        ? t('about-dialog.version-info.tooltip.prerelease')
+                        : t('about-dialog.version-info.tooltip.up-to-date')}
+                  </Badge>
+                </Inline>
+              </Card>
+            }
+          >
+            <Flex gap={2} align="center" paddingRight={2}>
+              <TruncateBadge tone={versionBadgeTone}>
                 {currentVersion ? ensureVersionPrefix(currentVersion.version) : 'unknown'}
-              </Badge>
-            </Tooltip>
-
-            {githubUrl && (
-              <Button
-                as="a"
-                target="_blank"
-                rel="noopener noreferrer"
-                icon={GithubIcon}
-                mode="bleed"
-                tooltipProps={{
-                  content: t('about-dialog.version-info.view-on-github'),
-                }}
-                href={githubUrl}
-              />
-            )}
-          </Flex>
+              </TruncateBadge>
+              {githubUrl && (
+                <Button
+                  as="a"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  icon={GithubIcon}
+                  mode="bleed"
+                  tooltipProps={{content: t('about-dialog.version-info.view-on-github')}}
+                  href={githubUrl}
+                />
+              )}
+            </Flex>
+          </Tooltip>
 
           {isAutoUpdating && newAutoUpdateVersionAvailable ? (
             <>
@@ -151,7 +226,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                   tone="primary"
                   text={
                     // save some space by not showing text on button if prerelease
-                    autoUpdatingVersion && isPrerelease(autoUpdatingVersion)
+                    autoUpdatingVersion && getVersionType(autoUpdatingVersion) === 'prerelease'
                       ? undefined
                       : t('about-dialog.version-info.update-button.text')
                   }
@@ -164,7 +239,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 />
               </Flex>
             </>
-          ) : !isUpToDate || currentVersionIsPrerelease ? (
+          ) : !isUpToDate || currentVersionType ? (
             <>
               <Flex justify="flex-end" align="center">
                 <Text size={1} weight="semibold">
@@ -180,7 +255,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
                 {
                   // save some space by not showing "how to update"-button
-                  currentVersionIsPrerelease ? null : (
+                  currentVersionType ? null : (
                     <Button
                       as="a"
                       href="https://www.sanity.io/docs/upgrade"
@@ -206,7 +281,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
                 <Button
                   as="a"
-                  href={`https://sanity.io/manage/project/${projectId}/studios?host=${document.location.hostname}`}
+                  href={`${sanityWebsiteUrl}/manage/project/${projectId}/studios?host=${document.location.hostname}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   mode="ghost"
@@ -235,8 +310,8 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
+          {importMapWarning}
         </Stack>
-
         <Stack paddingX={3}>
           <Button tone="primary" text="OK" paddingY={3} onClick={onClose} />
         </Stack>

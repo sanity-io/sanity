@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import {cloneDeep, sortBy} from 'lodash'
+import {cloneDeep, sortBy} from 'lodash-es'
 
 import {baseCommands} from './commands'
 import {debug} from './debug'
@@ -11,19 +11,16 @@ import {
   type CliCommandContext,
   type CliCommandDefinition,
   type CliCommandGroupDefinition,
-  type CliConfig,
   type CliOutputter,
   type CliPrompter,
   type CommandRunnerOptions,
   type ResolvedCliCommand,
-  type SanityJson,
 } from './types'
 import {getClientWrapper} from './util/clientWrapper'
 import {
   generateCommandDocumentation,
   generateCommandsDocumentation,
 } from './util/generateCommandsDocumentation'
-import {type CliConfigResult} from './util/getCliConfig'
 import {isCommandGroup} from './util/isCommandGroup'
 import {getNoSuchCommandText} from './util/noSuchCommandText'
 
@@ -86,7 +83,7 @@ export class CommandRunner {
     const {cliConfig, ...commandOptions} = options
     const apiClient = getClientWrapper(
       cliConfig?.config?.api || null,
-      cliConfig?.path || (cliConfig?.version === 2 ? 'sanity.json' : 'sanity.cli.js'),
+      cliConfig?.path || 'sanity.cli.js',
     )
 
     const context: CliCommandContext = {
@@ -96,8 +93,11 @@ export class CommandRunner {
       chalk,
       cliPackageManager,
       ...commandOptions,
+      // @ts-expect-error - keep for legacy purposes
+      sanityMajorVersion: 3,
       commandRunner: this,
-      ...getVersionedContextParams(cliConfig),
+      cliConfig: cliConfig?.config || undefined,
+      cliConfigPath: cliConfig?.path || undefined,
     }
 
     if (isCommandGroup(command)) {
@@ -200,22 +200,4 @@ export function getCliRunner(commands: CommandOrGroup[]): CommandRunner {
     },
     commands,
   )
-}
-
-function getVersionedContextParams(
-  cliConfig: CliConfigResult | null,
-):
-  | {sanityMajorVersion: 2; cliConfig?: SanityJson; cliConfigPath?: string}
-  | {sanityMajorVersion: 3; cliConfig?: CliConfig; cliConfigPath?: string} {
-  return cliConfig?.version === 2
-    ? {
-        sanityMajorVersion: 2,
-        cliConfig: cliConfig?.config || undefined,
-        cliConfigPath: cliConfig?.path || undefined,
-      }
-    : {
-        sanityMajorVersion: 3,
-        cliConfig: cliConfig?.config || undefined,
-        cliConfigPath: cliConfig?.path || undefined,
-      }
 }

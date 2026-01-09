@@ -1,5 +1,4 @@
-import {useCallback, useEffect, useState} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useCallback, useEffect, useEffectEvent, useState} from 'react'
 
 import {useClient} from '../../hooks'
 import {getTransactionsLogs} from '../../store/translog/getTransactionsLogs'
@@ -36,7 +35,7 @@ export function useActivityLog(task: TaskDocument): {
           'target',
         ]
 
-        const parsedChanges = await trackFieldChanges(
+        const parsedChanges = trackFieldChanges(
           newestTaskDocument,
           [...transactions],
           fieldsToTrack,
@@ -53,7 +52,7 @@ export function useActivityLog(task: TaskDocument): {
   const handleFetchAndParse = useEffectEvent((_rev: string) => fetchAndParse(task))
   useEffect(() => {
     // Task is updated on every change, wait until the revision changes to update the activity log.
-    handleFetchAndParse(task._rev)
+    void handleFetchAndParse(task._rev)
   }, [task._rev])
   return {changes}
 }

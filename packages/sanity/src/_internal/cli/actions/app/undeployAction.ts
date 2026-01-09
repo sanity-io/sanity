@@ -1,6 +1,7 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 import {debug as debugIt} from '../../debug'
+import {getAppId} from '../../util/getAppId'
 import {deleteUserApplication, getUserApplication} from '../deploy/helpers'
 import {type UndeployStudioActionFlags} from '../deploy/undeployAction'
 
@@ -20,7 +21,7 @@ export default async function undeployAppAction(
   // Check that the project has an application ID
   let spinner = output.spinner('Checking application info').start()
 
-  const appId = cliConfig && 'app' in cliConfig ? cliConfig.app?.id : undefined
+  const appId = getAppId({cliConfig, output})
 
   if (!appId) {
     spinner.fail()
@@ -33,6 +34,7 @@ export default async function undeployAppAction(
   const userApplication = await getUserApplication({
     client,
     appId,
+    isSdkApp: true,
   })
 
   spinner.succeed()
@@ -50,9 +52,13 @@ export default async function undeployAppAction(
   const shouldUndeploy = await prompt.single({
     type: 'confirm',
     default: false,
-    message:
-      `This will undeploy ${chalk.yellow(userApplication.id)} and make it unavailable for your users.
-  The hostname will be available for anyone to claim.
+    message: `This will undeploy the following application:
+
+    Title: ${chalk.yellow(userApplication.title)}
+    ID:    ${chalk.yellow(userApplication.id)}
+
+  The application will no longer be available for any of your users if you proceed.
+
   Are you ${chalk.red('sure')} you want to undeploy?`.trim(),
   })
 
@@ -75,6 +81,6 @@ export default async function undeployAppAction(
   }
 
   output.print(
-    `Application undeploy scheduled. It might take a few minutes before ${chalk.yellow(userApplication.id)} is unavailable.`,
+    `Application undeploy scheduled. It might take a few minutes before ${chalk.yellow(userApplication.title)} is unavailable.`,
   )
 }

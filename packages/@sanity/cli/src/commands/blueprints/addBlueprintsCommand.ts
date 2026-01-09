@@ -1,4 +1,5 @@
 import {type CliCommandDefinition} from '../../types'
+import {BlueprintsAddExampleUsed} from './blueprints.telemetry'
 
 const helpText = `
 Arguments
@@ -6,7 +7,7 @@ Arguments
 
 Options
   --name, -n <name>              Name of the Resource
-  --fn-type <type>               Type of Function to add (e.g. document-publish)
+  --fn-type <type>               Type of Function to add. Available options: "document-create", "document-delete", "document-update", "document-publish". Default: "document-publish"
   --fn-language, --lang <ts|js>  Language of the Function. Default: "ts"
   --js, --javascript             Shortcut for --fn-language=js
   --fn-helpers, --helpers        Add helpers to the Function
@@ -23,7 +24,7 @@ Examples:
   sanity blueprints add function --name my-function -i --helpers
 
   # Add a Function with a specific type
-  sanity blueprints add function --fn-type document-publish
+  sanity blueprints add function --fn-type document-create
 
   # Add a Function using an example
   sanity blueprints add function --example example-name
@@ -73,12 +74,13 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
   group: 'blueprints',
   helpText,
   signature:
-    '<type> [--name <name>] [--fn-type <document-publish>] [--fn-lang <ts|js>] [--javascript]',
+    '<type> [--name <name>] [--fn-type <document-create|document-delete|document-update|document-publish>] [--fn-lang <ts|js>] [--javascript]',
   description: 'Add a Resource to a Blueprint',
 
   async action(args, context) {
-    const {output, apiClient} = context
+    const {output, apiClient, telemetry} = context
     const {extOptions} = args
+    const [resourceType] = args.argsWithoutOptions
 
     if (extOptions.example) {
       // example is exclusive to 'name', 'fn-type', 'fn-language', 'javascript', 'fn-helpers', 'fn-installer'
@@ -100,6 +102,12 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
       if (foundConflict) {
         throw new Error(`--example can't be used with --${foundConflict}`)
       }
+
+      // send telemetry event
+      telemetry.log(BlueprintsAddExampleUsed, {
+        resourceType,
+        example: extOptions.example,
+      })
     }
 
     const flags = {...defaultFlags, ...extOptions}
@@ -112,15 +120,13 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
 
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
 
-    const [resourceType] = args.argsWithoutOptions
-
     if (!resourceType) {
       output.error('Resource type is required. Available types: function')
       return
     }
 
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
-    const {blueprintAddCore} = await import('@sanity/runtime-cli/cores/blueprints')
+    const {functionAddCore} = await import('@sanity/runtime-cli/cores/functions')
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
@@ -133,18 +139,17 @@ const addBlueprintsCommand: CliCommandDefinition<BlueprintsAddFlags> = {
     let userWantsFnHelpers = flags.helpers || flags['fn-helpers']
     if (flags['no-fn-helpers'] === true) userWantsFnHelpers = false // override
 
-    const {success, error} = await blueprintAddCore({
+    const {success, error} = await functionAddCore({
       ...cmdConfig.value,
-      args: {type: resourceType},
       flags: {
-        'example': flags.example,
-        'name': flags.n ?? flags.name,
-        'fn-type': flags['fn-type'],
-        'language': flags.lang ?? flags['fn-language'],
-        'javascript': flags.js || flags.javascript,
-        'fn-helpers': userWantsFnHelpers,
-        'fn-installer': flags.installer ?? flags['fn-installer'],
-        'install': flags.i || flags.install,
+        example: flags.example,
+        name: flags.n ?? flags.name,
+        type: flags['fn-type'],
+        language: flags.lang ?? flags['fn-language'],
+        javascript: flags.js || flags.javascript,
+        helpers: userWantsFnHelpers,
+        installer: flags.installer ?? flags['fn-installer'],
+        install: flags.i || flags.install,
       },
     })
 

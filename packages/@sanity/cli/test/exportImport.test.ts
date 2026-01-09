@@ -5,19 +5,14 @@ import tar from 'tar'
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {
-  getTestRunArgs,
-  runSanityCmdCommand,
-  studiosPath,
-  studioVersions,
-} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity dataset export` / `import`', () => {
-  describe.each(studioVersions)('%s', (version) => {
-    const testRunArgs = getTestRunArgs(version)
+  describe.each(studioNames)('%s', (studioName) => {
+    const testRunArgs = getTestRunArgs()
 
     testConcurrent('export', async () => {
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'dataset',
         'export',
         'production',
@@ -27,7 +22,7 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
       expect(result.stdout).toMatch(/export finished/i)
       expect(result.code).toBe(0)
 
-      const tarballPath = path.join(studiosPath, version, testRunArgs.exportTarball)
+      const tarballPath = path.join(studiosPath, studioName, testRunArgs.exportTarball)
 
       const stats = await stat(tarballPath)
       expect(stats.isFile()).toBe(true)
@@ -46,7 +41,7 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
 
     testConcurrent('export, with mode', async () => {
       const filename = `cursor-${testRunArgs.exportTarball}.tar.gz`
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'dataset',
         'export',
         'production',
@@ -57,7 +52,7 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
       expect(result.stdout).toMatch(/export finished/i)
       expect(result.code).toBe(0)
 
-      const tarballPath = path.join(studiosPath, version, filename)
+      const tarballPath = path.join(studiosPath, studioName, filename)
 
       const stats = await stat(tarballPath)
       expect(stats.isFile()).toBe(true)
@@ -75,7 +70,7 @@ describeCliTest('CLI: `sanity dataset export` / `import`', () => {
     })
 
     testConcurrent('import', async () => {
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'dataset',
         'import',
         testRunArgs.importTarballPath,

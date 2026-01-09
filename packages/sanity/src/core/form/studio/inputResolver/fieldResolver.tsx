@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import {
   isBooleanSchemaType,
   isCrossDatasetReferenceSchemaType,
@@ -267,6 +266,10 @@ export function defaultResolveFieldComponent(
   }
 
   const typeChain = getTypeChain(schemaType, new Set())
+
+  if (typeChain.some((t) => isDateTimeSchemaType(t))) {
+    return DateTimeField as ComponentType<Omit<FieldProps, 'renderDefault'>>
+  }
 
   if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
     return ImageOrFileField as ComponentType<Omit<FieldProps, 'renderDefault'>>

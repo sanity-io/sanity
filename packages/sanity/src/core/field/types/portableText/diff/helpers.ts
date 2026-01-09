@@ -18,7 +18,7 @@ import {
   type SchemaType,
   type SpanSchemaType,
 } from '@sanity/types'
-import {flatten, isEqual, orderBy} from 'lodash'
+import {flatten, isEqual, orderBy} from 'lodash-es'
 
 import {
   type ArrayDiff,
@@ -80,7 +80,7 @@ export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): Objec
 }
 
 export function getChildSchemaType(
-  fields: ObjectField<SchemaType>[],
+  fields: ObjectField[],
   child: PortableTextChild,
 ): ObjectSchemaType | undefined {
   const childrenField = fields.find((f) => f.name === 'children')

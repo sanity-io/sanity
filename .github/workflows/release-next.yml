@@ -10,6 +10,9 @@ permissions:
 
 jobs:
   release-next:
+    concurrency:
+      group: release_next
+
     # this runs in main, and we want to skip running it when release PRs are merged
     # format of the commit message is specified in lerna.json
     if: >
@@ -20,7 +23,7 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
+      EXPECTED_NPM_USER: sanity-svc.npm
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
@@ -29,18 +32,11 @@ jobs:
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
 
       # Publish packages to npm under the `next` tag on new commits to main.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Bump canary versions
         # Note: ubuntu-latest ships with lerna installed on the system
@@ -87,7 +83,7 @@ jobs:
           done
 
       - name: Re-install after version bump
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --fix-lockfile
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -142,11 +138,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
         with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": ":alert-dot: The workflow \"${{github.workflow}}\" on <${{ github.server_url }}/${{ github.repository }}|${{github.repository}}> failed in branch <${{ github.server_url }}/${{ github.repository }}/tree/${{github.ref_name}}|${{github.ref_name}}> (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run >)"
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}

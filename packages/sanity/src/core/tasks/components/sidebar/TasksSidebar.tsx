@@ -1,5 +1,5 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -39,23 +39,19 @@ export function TasksStudioSidebarInner() {
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
 
-  const filteredList = useMemo(() => {
-    return data.filter((item) => {
-      if (!item.createdByUser) return false
-      if (activeTabId === 'assigned') {
-        return item.assignedTo === currentUser?.id
-      }
-      if (activeTabId === 'subscribed') {
-        return currentUser?.id && item.subscribers?.includes(currentUser.id)
-      }
-      if (activeTabId === 'document') {
-        return (
-          activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
-        )
-      }
-      return false
-    })
-  }, [activeDocument?.documentId, activeTabId, data, currentUser])
+  const filteredList = data.filter((item) => {
+    if (!item.createdByUser) return false
+    if (activeTabId === 'assigned') {
+      return item.assignedTo === currentUser?.id
+    }
+    if (activeTabId === 'subscribed') {
+      return currentUser?.id && item.subscribers?.includes(currentUser.id)
+    }
+    if (activeTabId === 'document') {
+      return activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
+    }
+    return false
+  })
 
   const content = useMemo(() => {
     if (viewMode !== 'list') {

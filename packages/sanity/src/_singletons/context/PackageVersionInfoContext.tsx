@@ -22,9 +22,10 @@ export type PackageVersionInfoContextValue = {
   isAutoUpdating: boolean
 
   /**
-   * What is the base version (i.e. the version in package.json at the time the Studio was deployed)
+   * If an importmap for the sanity module exists in the DOM, includes details
+   * will be undefined if no importmap is found
    */
-  baseVersion: SemVer
+  importMapInfo?: {valid: false; error: Error} | {valid: true; minVersion: SemVer; appId?: string}
 
   /**
    * What is the version tagged as latest (periodically checked)
@@ -51,9 +52,6 @@ export const PackageVersionInfoContext = createContext<PackageVersionInfoContext
   {
     isAutoUpdating: false,
     checkForUpdates: () => {},
-    get baseVersion(): never {
-      throw new Error('PackageVersionInfoContext not provided')
-    },
     get currentVersion(): never {
       throw new Error('PackageVersionInfoContext not provided')
     },

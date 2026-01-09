@@ -183,13 +183,6 @@ describe('createHookFromObservableFactory', () => {
   })
 
   it('bubbles errors throws in the observable factory', async () => {
-    // Error is hoisted. To prevent it from being printed as uncaught in terminal,
-    // we explicitly catch it and suppress it, recording that it has been called.
-    const preventer = vi.fn((evt: ErrorEvent) => evt.preventDefault())
-    if (typeof window !== 'undefined') {
-      window.addEventListener('error', preventer, false)
-    }
-
     const observableFactory = () =>
       Rx.from(
         tick().then(() => {
@@ -200,7 +193,10 @@ describe('createHookFromObservableFactory', () => {
     let error: Error | undefined
     const useHook = createHookFromObservableFactory(observableFactory, 'factory initial')
     renderHook(useHook, {
-      wrapper: class Wrapper extends Component<PropsWithChildren<unknown>> {
+      // Error is hoisted. To prevent it from being printed as uncaught in terminal,
+      // we explicitly catch it and suppress it
+      onCaughtError: () => {},
+      wrapper: class Wrapper extends Component<PropsWithChildren> {
         static getDerivedStateFromError(err: Error) {
           error = err
           return {hasError: true}
@@ -210,11 +206,7 @@ describe('createHookFromObservableFactory', () => {
         }
       },
     })
-    await waitFor(() => expect(error?.message).toBe('test error'))
 
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('error', preventer, false)
-      expect(preventer).toHaveBeenCalled()
-    }
+    await waitFor(() => expect(error?.message).toBe('test error'))
   })
 })

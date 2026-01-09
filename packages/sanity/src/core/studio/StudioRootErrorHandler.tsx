@@ -6,6 +6,7 @@ import {SchemaError} from '../config'
 import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
 import {isKnownError} from '../error/isKnownError'
+import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
@@ -28,8 +29,17 @@ const errorChannel = globalScope.__sanityErrorChannel
  * per Studio application.
  * To wrap React subtrees, use the {@link StudioErrorBoundary} component instead.
  */
-export function StudioRootErrorHandler(props: {children: ReactNode}) {
-  const {children} = props
+interface StudioRootErrorHandlerProps {
+  children: ReactNode
+  /**
+   * The project ID of the first workspace in the Studio config.
+   * Used to show the "Register Studio" option in the CORS error screen.
+   */
+  primaryProjectId?: string
+}
+
+export function StudioRootErrorHandler(props: StudioRootErrorHandlerProps) {
+  const {children, primaryProjectId} = props
   const [errorState, setErrorState] = useState<ErrorState>()
 
   const handleResetError = useCallback(() => setErrorState(undefined), [])
@@ -43,6 +53,10 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
     // errorChannel.subscribe() returns a unsubscriber function.
     // By returning it from this `useEffect`, it'll unsubscribe on unmount.
     return errorChannel.subscribe((event) => {
+      if (isDocumentLimitError(event.error)) {
+        return
+      }
+
       // NOTE: Certain errors (such as the `ResizeObserver loop limit exceeded` error) is thrown
       // by the browser, and does not include an `error` property. We ignore these errors.
       if (!event.error) {
@@ -61,8 +75,12 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
       }
 
       let eventId: string | undefined
+      // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+      const run = () => {
+        eventId = errorReporter.reportError(event.error as Error)?.eventId
+      }
       try {
-        eventId = errorReporter.reportError(event.error)?.eventId
+        run()
       } catch (e) {
         e.message = `Encountered an additional error when reporting error: ${e.message}`
         console.error(e)
@@ -92,7 +110,13 @@ export function StudioRootErrorHandler(props: {children: ReactNode}) {
   }
 
   if (errorState.error instanceof CorsOriginError) {
-    return <CorsOriginErrorScreen projectId={errorState.error.projectId} />
+    return (
+      <CorsOriginErrorScreen
+        projectId={errorState.error.projectId}
+        isStaging={errorState.error.isStaging}
+        primaryProjectId={primaryProjectId}
+      />
+    )
   }
 
   if (errorState.error instanceof SchemaError) {

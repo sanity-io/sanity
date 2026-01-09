@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import {studioPath} from '@sanity/client/csm'
 import {
   type Controller,
   createConnectionMachine,
@@ -18,11 +17,19 @@ import {
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
-  type Path,
   type SanityDocument,
   type Tool,
   useDataset,
@@ -32,7 +39,6 @@ import {
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
@@ -106,7 +112,6 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
-  const perspective = usePresentationPerspective()
 
   const canSharePreviewAccess = useSelector(
     previewUrlRef,
@@ -134,22 +139,15 @@ export default function PresentationTool(props: {
     url: undefined,
   })
 
-  const {
-    navigate: _navigate,
-    navigationHistory,
-    params,
-    searchParams,
-    structureParams,
-  } = useParams({
-    initialPreviewUrl,
-    routerNavigate,
-    routerState,
-    routerSearchParams,
-    frameStateRef,
-  })
-
-  // Most navigation events should be debounced, so use this unless explicitly needed
-  const navigate = useMemo(() => debounce<PresentationNavigate>(_navigate, 50), [_navigate])
+  const {isSameDocument, navigate, navigationHistory, params, searchParams, structureParams} =
+    useParams({
+      initialPreviewUrl,
+      routerNavigate,
+      routerState,
+      routerSearchParams,
+      frameStateRef,
+    })
+  const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
 
   const presentationRef = useActorRef(presentationMachine)
 
@@ -161,12 +159,12 @@ export default function PresentationTool(props: {
   const dataset = useDataset()
 
   const mainDocumentState = useMainDocument({
-    // Prevent flash of content by using immediate navigation
-    navigate: _navigate,
+    navigate,
     navigationHistory,
     path: params.preview,
     targetOrigin,
     resolvers: tool.options?.resolve?.mainDocuments,
+    perspective,
   })
 
   const [overlaysConnection, setOverlaysConnection] = useStatus()
@@ -192,10 +190,12 @@ export default function PresentationTool(props: {
     }
   }, [targetOrigin, isLoading])
 
-  const handleNavigate = useEffectEvent<typeof navigate>(
-    (nextState, nextSearchState, forceReplace) =>
-      navigate(nextState, nextSearchState, forceReplace),
-  )
+  const handleNavigate = useEffectEvent<PresentationNavigate>((options) => {
+    navigate(options)
+  })
+
+  const refreshRef = useRef<number>(undefined)
+
   useEffect(() => {
     if (!controller) return undefined
 
@@ -213,9 +213,11 @@ export default function PresentationTool(props: {
     comlink.on('visual-editing/focus', (data) => {
       if (!('id' in data)) return
       handleNavigate({
-        type: data.type,
-        id: data.id,
-        path: data.path,
+        state: {
+          type: data.type,
+          id: data.id,
+          path: data.path,
+        },
       })
     })
 
@@ -234,18 +236,23 @@ export default function PresentationTool(props: {
       }
 
       if (frameStateRef.current.url !== url) {
-        try {
+        // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+        const run = () => {
           // Handle bypass params being forwarded to the final URL
           const [urlWithoutSearch, search] = url.split('?')
           const searchParams = new URLSearchParams(search)
           searchParams.delete(urlSearchParamVercelProtectionBypass)
           searchParams.delete(urlSearchParamVercelSetBypassCookie)
-          handleNavigate(
-            {},
-            {preview: `${urlWithoutSearch}${searchParams.size > 0 ? '?' : ''}${searchParams}`},
-          )
+          handleNavigate({
+            params: {
+              preview: `${urlWithoutSearch}${searchParams.size > 0 ? '?' : ''}${searchParams}`,
+            },
+          })
+        }
+        try {
+          run()
         } catch {
-          handleNavigate({}, {preview: url})
+          handleNavigate({params: {preview: url}})
         }
       }
       frameStateRef.current = {title, url}
@@ -320,12 +327,22 @@ export default function PresentationTool(props: {
     return comlink.start()
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
-  const handleFocusPath = useCallback(
-    (nextPath: Path) => {
-      // Don't need to explicitly set the id here because it was either already set via postMessage or is the same if navigating in the document pane
-      navigate({path: studioPath.toString(nextPath)}, {}, true)
-    },
-    [navigate],
+  const handleFocusPath = useMemo(
+    () =>
+      // When moving from one field to another, blur and focus events will trigger
+      // this handler. We debounce to avoid unwanted intermediate navigations this
+      // would cause.
+      debounce<(state: Required<PresentationStateParams>) => void>((state) => {
+        // We only ever want to update the path if we are still viewing the
+        // document that was active when the focus event was triggered
+        if (isSameDocument(state)) {
+          navigate({
+            state,
+            replace: true,
+          })
+        }
+      }, 0),
+    [isSameDocument, navigate],
   )
 
   const handlePreviewPath = useCallback(
@@ -337,18 +354,25 @@ export default function PresentationTool(props: {
       }
       if (Array.isArray(allowOrigins)) {
         if (allowOrigins.some((pattern) => pattern.test(preview))) {
-          navigate({}, {preview})
+          navigate({params: {preview}})
         }
       } else if (url.origin === targetOrigin) {
-        navigate({}, {preview})
+        navigate({params: {preview}})
       }
     },
     [targetOrigin, params.preview, allowOrigins, navigate],
   )
 
   const handleStructureParams = useCallback(
-    (structureParams: StructureDocumentPaneParams) => {
-      navigate({}, structureParams)
+    (params: StructureDocumentPaneParams) => {
+      navigate({params})
+    },
+    [navigate],
+  )
+
+  const handleEditReference = useCallback<PresentationNavigate>(
+    (options) => {
+      navigate(options)
     },
     [navigate],
   )
@@ -439,7 +463,6 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  const refreshRef = useRef<number>(undefined)
   const handleRefresh = useCallback(
     (fallback: () => void) => {
       presentationRef.send({type: 'iframe refresh'})
@@ -487,7 +510,10 @@ export default function PresentationTool(props: {
       // Omit the viewport URL search param if the next viewport state is the
       // default: 'desktop'
       const viewport = next === 'desktop' ? undefined : 'mobile'
-      navigate({}, {viewport}, true)
+      navigate({
+        params: {viewport},
+        replace: true,
+      })
     },
     [navigate],
   )
@@ -552,6 +578,7 @@ export default function PresentationTool(props: {
                     documentType={params.type}
                     getCommentIntent={getCommentIntent}
                     mainDocumentState={mainDocumentState}
+                    onEditReference={handleEditReference}
                     onFocusPath={handleFocusPath}
                     onStructureParams={handleStructureParams}
                     searchParams={searchParams}

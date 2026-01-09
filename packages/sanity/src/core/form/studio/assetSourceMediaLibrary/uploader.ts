@@ -13,7 +13,9 @@ export class MediaLibraryUploader implements AssetSourceUploader {
   private checkAllComplete(): void {
     const isDone =
       this.files.length > 0 &&
-      this.files.every((file) => ['complete', 'error', 'aborted'].includes(file.status))
+      this.files.every((file) =>
+        ['complete', 'error', 'aborted', 'alreadyExists'].includes(file.status),
+      )
     if (isDone) {
       const hasError = this.files.some((file) => file.status === 'error')
       if (hasError) {

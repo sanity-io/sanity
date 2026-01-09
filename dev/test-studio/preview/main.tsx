@@ -4,13 +4,17 @@ import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {FieldGroups} from './FieldGroups'
+import {InitialValues} from './InitialValues'
+import {InternationalizedArrayTest} from './InternationalizedArrayTest'
 import {useLiveMode} from './loader'
 import {LongList} from './LongList'
 import {Markdown} from './Markdown'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
 
 function Main() {
-  const [id, setId] = useState<'simple' | 'nested' | 'markdown' | 'longlist'>('simple')
+  const [id, setId] = useState<
+    'simple' | 'nested' | 'markdown' | 'longlist' | 'initialvalues' | 'intl-array'
+  >('simple')
   return (
     <>
       <ThemeProvider theme={studioTheme}>
@@ -45,6 +49,20 @@ function Main() {
                 onClick={() => setId('longlist')}
                 selected={id === 'longlist'}
               />
+              <Tab
+                aria-controls="initialvalues-panel"
+                id="initialvalues-tab"
+                label="Initial Values"
+                onClick={() => setId('initialvalues')}
+                selected={id === 'initialvalues'}
+              />
+              <Tab
+                aria-controls="intl-array-panel"
+                id="intl-array-tab"
+                label="InternationalizedArrayTest"
+                onClick={() => setId('intl-array')}
+                selected={id === 'intl-array'}
+              />
             </TabList>
           </Box>
 
@@ -68,6 +86,16 @@ function Main() {
           {id === 'longlist' && (
             <TabPanel aria-labelledby="longlist-tab" id="longlist-panel">
               <LongList />
+            </TabPanel>
+          )}
+          {id === 'initialvalues' && (
+            <TabPanel aria-labelledby="initialvalues-tab" id="initialvalues-panel">
+              <InitialValues />
+            </TabPanel>
+          )}
+          {id === 'intl-array' && (
+            <TabPanel aria-labelledby="intl-array-tab" id="intl-array-panel">
+              <InternationalizedArrayTest />
             </TabPanel>
           )}
         </Flex>

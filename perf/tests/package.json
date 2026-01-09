@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "4.3.0",
+  "version": "5.2.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -16,23 +16,24 @@
   },
   "dependencies": {
     "@playwright/test": "catalog:",
-    "@sanity/client": "^7.8.2",
+    "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.2",
-    "dotenv": "^16.0.3",
-    "execa": "^2.0.0",
+    "dotenv": "^16.6.1",
+    "execa": "^2.1.0",
     "globby": "^11.1.0",
-    "lodash": "^4.17.21",
-    "rxjs": "^7.8.2",
-    "sanity": "workspace:*"
+    "lodash-es": "^4.17.22",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@types/lodash": "^4.17.20",
-    "@types/node": "^18.15.3",
+    "@repo/tsconfig": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "catalog:",
     "esbuild": "catalog:",
+    "eslint": "catalog:",
     "ts-node": "^10.9.2",
     "typescript": "catalog:",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   }
 }

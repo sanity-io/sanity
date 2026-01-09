@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {forwardRef, type Ref, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components'

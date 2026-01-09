@@ -24,7 +24,6 @@ export default function CommentReactionsMenuButtonStory() {
   return (
     <Flex align="center" justify="center" height="fill">
       <CommentReactionsMenuButton
-        // eslint-disable-next-line react/jsx-no-bind
         renderMenuButton={({open}) => <Button text="Reactions" selected={open} />}
         onSelect={handleOnSelect}
         options={COMMENT_REACTION_OPTIONS}

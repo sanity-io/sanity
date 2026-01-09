@@ -6,8 +6,10 @@ import {
   type ReleaseDocument,
   type ReleaseId,
   useActiveReleases,
-  useOnlyHasVersions,
+  useDocumentVersions,
+  useFilteredReleases,
   usePerspective,
+  useSingleDocRelease,
 } from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -22,17 +24,23 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {useFilteredReleases} from '../../../../../../hooks/useFilteredReleases'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
+  useFilteredReleases: vi.fn(),
   useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
+  useDocumentVersions: vi.fn().mockReturnValue({
+    data: [],
+    error: null,
+    loading: true,
+  }),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
   SANITY_VERSION: '0.0.0',
 }))
 
@@ -59,18 +67,21 @@ vi.mock('sanity/router', () => {
 })
 
 vi.mock('../../../../useDocumentPane')
-vi.mock('../../../../../../hooks/useFilteredReleases')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>
+const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
+
 const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
+
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
   _id: '_.releases.rSpringDrop',
+  name: 'rSpringDrop',
   _type: 'system.release',
   _rev: 'r123',
   metadata: {
@@ -97,6 +108,7 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
       },
     },
   })
+
   return wrapper
 }
 
@@ -113,11 +125,15 @@ const getPaneMock = ({
   displayedVersion = 'draft',
   editStateDocuments,
   displayed,
+  selectedReleaseId,
+  selectedPerspectiveName,
 }: {
   isCreatingDocument?: boolean
   displayedVersion?: ReleaseId | 'published' | 'draft'
   editStateDocuments?: Array<'draft' | 'published' | 'version'>
   displayed?: Record<string, unknown>
+  selectedReleaseId?: ReleaseId
+  selectedPerspectiveName?: 'published' | ReleaseId
 } = {}) => {
   const publishedId = 'foo'
   const editStateDocument = {
@@ -131,6 +147,8 @@ const getPaneMock = ({
   return {
     documentType: 'testAuthor',
     documentId: publishedId,
+    selectedReleaseId,
+    selectedPerspectiveName,
     editState: {
       id: publishedId,
       type: 'testAuthor',
@@ -169,8 +187,14 @@ describe('DocumentPerspectiveList', () => {
       data: [mockCurrent],
       dispatch: vi.fn(),
     })
+    mockUseSingleDocRelease.mockReturnValue({
+      onSetScheduledDraftPerspective: vi.fn(),
+    })
 
-    mockUseOnlyHasVersions.mockReturnValue(false)
+    mockUseDocumentVersions.mockReturnValue({
+      loading: false,
+      data: [],
+    })
 
     mockUseFilteredReleases.mockReturnValue({
       currentReleases: [mockCurrent],
@@ -203,7 +227,11 @@ describe('DocumentPerspectiveList', () => {
         getPaneMock({isCreatingDocument: true, displayedVersion: 'rSpringDrop'}),
       )
       // no document versions are available, but the user is creating this document, so we want to show the chip anyways.
-      mockUseOnlyHasVersions.mockReturnValue(false)
+
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: [],
+      })
 
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [mockCurrent],
@@ -228,8 +256,6 @@ describe('DocumentPerspectiveList', () => {
 
   describe('disabled chips', () => {
     beforeEach(() => {
-      mockUseOnlyHasVersions.mockReturnValue(false)
-
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [],
         notCurrentReleases: [],
@@ -287,8 +313,10 @@ describe('DocumentPerspectiveList', () => {
         ...usePerspectiveMockValue,
         selectedPerspectiveName: undefined,
       })
-      mockUseOnlyHasVersions.mockReturnValue(true)
-
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: ['versions.foo.xyz'],
+      })
       mockUseFilteredReleases.mockReturnValue({
         currentReleases: [mockCurrent],
         notCurrentReleases: [],
@@ -384,6 +412,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -471,6 +501,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -478,7 +510,10 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: ['versions.rSpringDrop.foo'],
+        })
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],
@@ -504,7 +539,11 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
+
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: [],
+        })
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],
@@ -522,6 +561,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: ['published'],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -529,7 +570,6 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseOnlyHasVersions.mockReturnValue(false)
 
         mockUseFilteredReleases.mockReturnValue({
           currentReleases: [mockCurrent],

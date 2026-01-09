@@ -74,54 +74,52 @@ export default function NavbarStory() {
 }
 
 function useTools(): Tool[] {
-  const toggledTools = {
-    dashboard: useBoolean('Dashboard'),
-    content: useBoolean('Content'),
-    settings: useBoolean('Settings'),
-    vision: useBoolean('Vision'),
-    schema: useBoolean('Schema'),
-    arcade: useBoolean('Arcade'),
-  }
+  const dashboard = useBoolean('Dashboard')
+  const content = useBoolean('Content')
+  const settings = useBoolean('Settings')
+  const vision = useBoolean('Vision')
+  const schema = useBoolean('Schema')
+  const arcade = useBoolean('Arcade')
 
   return useMemo(
     () =>
       [
-        toggledTools.dashboard && {
+        dashboard && {
           name: 'dashboard',
           title: 'Dashboard',
           icon: DashboardIcon,
           component: ExampleTool,
           options: {},
         },
-        toggledTools.content && {
+        content && {
           name: 'content',
           title: 'Content',
           icon: MasterDetailIcon,
           component: ExampleTool,
           options: {},
         },
-        toggledTools.settings && {
+        settings && {
           name: 'settings',
           title: 'Settings',
           icon: CogIcon,
           component: ExampleTool,
           options: {},
         },
-        toggledTools.vision && {
+        vision && {
           name: 'vision',
           title: 'Vision',
           icon: EyeOpenIcon,
           component: ExampleTool,
           options: {},
         },
-        toggledTools.schema && {
+        schema && {
           name: 'schema',
           title: 'Schema',
           icon: DocumentsIcon,
           component: ExampleTool,
           options: {},
         },
-        toggledTools.arcade && {
+        arcade && {
           name: 'arcade',
           title: 'Arcade',
           icon: IceCreamIcon,
@@ -131,13 +129,6 @@ function useTools(): Tool[] {
       ]
         .filter(isTruthy)
         .filter(isNonNullable),
-    [
-      toggledTools.arcade,
-      toggledTools.content,
-      toggledTools.dashboard,
-      toggledTools.schema,
-      toggledTools.settings,
-      toggledTools.vision,
-    ],
+    [dashboard, content, settings, vision, schema, arcade],
   )
 }

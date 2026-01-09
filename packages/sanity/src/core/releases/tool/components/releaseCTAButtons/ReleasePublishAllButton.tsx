@@ -9,6 +9,7 @@ import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../../studio/workspace'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
@@ -41,6 +42,10 @@ export const ReleasePublishAllButton = ({
   const perspective = usePerspective()
   const setPerspective = useSetPerspective()
   const telemetry = useTelemetry()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const [publishBundleStatus, setPublishBundleStatus] = useState<'idle' | 'confirm' | 'publishing'>(
     'idle',
@@ -58,7 +63,7 @@ export const ReleasePublishAllButton = ({
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+    void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
       if (isMounted.current) setPublishPermission(hasPermission)
     })
 
@@ -70,7 +75,8 @@ export const ReleasePublishAllButton = ({
   const handleConfirmPublishAll = useCallback(async () => {
     if (!release) return
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       setPublishBundleStatus('publishing')
       await publishRelease(release._id)
       telemetry.log(PublishedRelease)
@@ -78,8 +84,11 @@ export const ReleasePublishAllButton = ({
         isReleaseDocument(perspective.selectedPerspective) &&
         perspective.selectedPerspective?._id === release._id
       ) {
-        setPerspective('drafts')
+        setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
       }
+    }
+    try {
+      await run()
     } catch (publishingError) {
       toast.push({
         status: 'error',
@@ -97,19 +106,19 @@ export const ReleasePublishAllButton = ({
         ),
       })
       console.error(publishingError)
-    } finally {
-      onConfirmDialogClose?.()
-      setPublishBundleStatus('idle')
     }
+    onConfirmDialogClose?.()
+    setPublishBundleStatus('idle')
   }, [
     release,
     publishRelease,
     telemetry,
+    perspective.selectedPerspective,
+    setPerspective,
+    isDraftModelEnabled,
     toast,
     t,
     tCore,
-    perspective.selectedPerspective,
-    setPerspective,
     onConfirmDialogClose,
   ])
 

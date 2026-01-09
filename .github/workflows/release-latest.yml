@@ -18,7 +18,7 @@ permissions:
 jobs:
   build-and-validate:
     if: >
-      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'workflow_dispatch' ||
       startsWith(github.event.head_commit.message, 'chore(release): publish ')
     runs-on: ubuntu-latest
     permissions:
@@ -29,17 +29,11 @@ jobs:
     outputs:
       version: ${{ steps.release-as.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
 
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -67,7 +61,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -99,19 +93,12 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
+      EXPECTED_NPM_USER: sanity-svc.npm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -145,17 +132,10 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -171,7 +151,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
       - name: Build bundles for production
         run: pnpm run build:bundle
@@ -181,7 +163,9 @@ jobs:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
-        run: pnpm bundle-manager publish --tag=latest
+        # tag both latest and next when doing an official release
+        # otherwise next tag will keep pointing to the old next release
+        run: pnpm bundle-manager publish --tag=latest --tag=next
 
   notify-on-failure:
     needs: [npm-publish, bundle-upload]
@@ -189,11 +173,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
         with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "text": ":alert-dot: The workflow \"${{github.workflow}}\" on <${{ github.server_url }}/${{ github.repository }}|${{github.repository}}> failed in branch <${{ github.server_url }}/${{ github.repository }}/tree/${{github.ref_name}}|${{github.ref_name}}> (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run >)"
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}

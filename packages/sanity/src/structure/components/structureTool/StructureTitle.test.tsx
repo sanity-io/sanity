@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, waitFor} from '@testing-library/react'
 // eslint-disable-next-line no-restricted-imports
 import * as SANITY from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
@@ -12,16 +12,16 @@ import {type Panes} from '../../structureResolvers'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
 
+vi.mock('../../hooks/useDocumentLastRev', () => ({
+  useDocumentLastRev: vi.fn(() => ({lastRevisionDocument: null, loading: false})),
+}))
+
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useEditState: vi.fn(),
   useSchema: vi.fn(),
-  unstable_useValuePreview: vi.fn(),
+  useValuePreview: vi.fn(),
   usePerspective: vi.fn(() => ({perspective: undefined})),
-}))
-
-vi.mock('../../hooks/useDocumentLastRev', () => ({
-  useDocumentLastRev: vi.fn(() => ({lastRevisionDocument: null, loading: false})),
 }))
 
 function createWrapperComponent(client: SANITY.SanityClient) {
@@ -72,34 +72,43 @@ describe('StructureTitle', () => {
     ]
     beforeEach(() => {
       document.title = 'Sanity Studio'
+      vi.clearAllMocks()
     })
     it('renders the correct title when the content pane is open', async () => {
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       render(<StructureTitle resolvedPanes={mockPanes.slice(0, 1)} />, {wrapper})
-      expect(document.title).toBe('Content | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('Content | My Structure Tool')
+      })
     })
     it('renders the correct title when an inner pane is open', async () => {
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       render(<StructureTitle resolvedPanes={mockPanes.slice(0, 2)} />, {wrapper})
-      expect(document.title).toBe('Author | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('Author | My Structure Tool')
+      })
     })
     it('renders the correct title when the document pane has a title', async () => {
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('Authors created | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('Authors created | My Structure Tool')
+      })
     })
     it('should not update the title if no panes are available', async () => {
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       render(<StructureTitle resolvedPanes={[]} />, {wrapper})
-      expect(document.title).toBe('Sanity Studio')
+      await waitFor(() => {
+        expect(document.title).toBe('Sanity Studio')
+      })
     })
   })
   describe('With document panes', () => {
@@ -173,14 +182,16 @@ describe('StructureTitle', () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('Sanity Studio')
+      await waitFor(() => {
+        expect(document.title).toBe('Sanity Studio')
+      })
     })
 
     it('renders the correct title when the document pane has a title', async () => {
@@ -193,14 +204,16 @@ describe('StructureTitle', () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('Foo | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('Foo | My Structure Tool')
+      })
     })
     it('renders the correct title when the document is new', async () => {
       const useEditStateMock = () => ({
@@ -213,14 +226,16 @@ describe('StructureTitle', () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('New Author | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('New Author | My Structure Tool')
+      })
     })
     it('renders the correct title when the document is untitled', async () => {
       const useEditStateMock = () => ({
@@ -235,14 +250,16 @@ describe('StructureTitle', () => {
       })
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('Untitled | My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('Untitled | My Structure Tool')
+      })
     })
     it('renders the correct title when the document is deleted', async () => {
       const useEditStateMock = () => ({
@@ -270,14 +287,16 @@ describe('StructureTitle', () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      vi.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />, {wrapper})
-      expect(document.title).toBe('My Structure Tool')
+      await waitFor(() => {
+        expect(document.title).toBe('My Structure Tool')
+      })
     })
   })
 })

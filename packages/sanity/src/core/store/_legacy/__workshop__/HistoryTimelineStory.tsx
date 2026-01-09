@@ -2,7 +2,7 @@ import {RestoreIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {useCallback, useMemo, useState} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 

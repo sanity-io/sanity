@@ -32,7 +32,7 @@ export function OpenPreviewButton(
   const {t} = useTranslation(presentationLocaleNamespace)
 
   const handleOpenPopup = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault()
       openPopup(event.currentTarget.href)
     },

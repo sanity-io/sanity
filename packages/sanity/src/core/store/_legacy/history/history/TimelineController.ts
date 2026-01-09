@@ -75,6 +75,10 @@ export class TimelineController {
 
   private _reconstruction?: Reconstruction
 
+  setHandler(handler: TimelineControllerOptions['handler']): void {
+    this.handler = handler
+  }
+
   clearRange(): void {
     this.setRange(null, null)
   }
@@ -238,7 +242,7 @@ export class TimelineController {
     if (!this._isRunning) {
       this._isRunning = true
 
-      this.tick().then(() => {
+      void this.tick().then(() => {
         this._isRunning = false
       })
     }

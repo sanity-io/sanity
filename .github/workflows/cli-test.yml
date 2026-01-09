@@ -19,13 +19,16 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      GITHUB_JOB_INDEX: ${{ strategy.job-index }} # For uniqueness in integration tests
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For rate limiting with GitHub API
+      SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        node: [20, 22, 24]
+        node: [20.19.0, 20, 22.14.0, 22, 24.0.0, 24]
         experimental: [false]
         # include:
         #   - os: windows-latest
@@ -46,7 +49,7 @@ jobs:
         env:
           MESSAGE: ${{ (github.event_name == 'pull_request' && github.event.pull_request.title) ||  (github.event_name == 'push' && github.event.head_commit.message)  }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: steps.check_release.outputs.skip != 'true'
         with:
           fetch-depth: 0
@@ -54,45 +57,12 @@ jobs:
       - name: Check if only examples files changed
         if: steps.check_release.outputs.skip != 'true'
         id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
+        uses: ./.github/actions/check-examples-only
 
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip CLI tests for examples-only changes
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping CLI tests"
-          exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup
         if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
         with:
-          cache: pnpm
           node-version: ${{ matrix.node }}
-
-      - name: Install project dependencies
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
 
       - name: Build CLI
         if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'

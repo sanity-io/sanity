@@ -2,7 +2,7 @@ import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options
-  --watch, -w    Watch for new logs (streaming mode)
+  --watch, -w    Watch for new Stack logs (streaming mode)
 
 Examples:
   # Show logs for the current Stack
@@ -26,7 +26,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   group: 'blueprints',
   helpText,
   signature: '[--watch] [-w]',
-  description: 'Display logs for the current Blueprint Stack',
+  description: 'Display logs for a Blueprint Stack deployment',
 
   async action(args, context) {
     const {apiClient, output} = context

@@ -1,4 +1,4 @@
-import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
   type FIXME,
@@ -16,7 +16,7 @@ const EMPTY_ARRAY: [] = []
 interface ReferencePreviewLinkProps {
   onClick?: () => void
   type: SchemaType & {icon?: any}
-  value: SanityDocument
+  value: {_id: string; _type: string}
 }
 
 export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
@@ -45,7 +45,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type?.icon}
-        layout="compact"
+        layout={'default'}
         presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
         schemaType={type}
         value={value}

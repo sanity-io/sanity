@@ -22,7 +22,6 @@ import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
-import {ManageMenu} from './ManageMenu'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -93,7 +92,6 @@ export function UserMenu() {
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
           <LocaleMenu />
-          <ManageMenu />
 
           {auth.logout && (
             <>

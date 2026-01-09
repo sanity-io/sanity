@@ -3,7 +3,7 @@ import {type ObjectDefinition} from '@sanity/types'
 import {type VideoOptions} from './types'
 import {video} from './video'
 import {videoAsset} from './videoAsset'
-import {videoAssetMetadata} from './videoAssetMetadata'
+import {videoAssetMetadata, videoAssetMetadataPlayback} from './videoAssetMetadata'
 
 /**
  * @public
@@ -27,4 +27,9 @@ declare module '@sanity/types' {
   }
 }
 
-export const mediaLibrarySchemas = [video, videoAsset, videoAssetMetadata]
+export const mediaLibrarySchemas = [
+  video,
+  videoAsset,
+  videoAssetMetadata,
+  videoAssetMetadataPlayback,
+]

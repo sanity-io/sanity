@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 
 import {useFeatureEnabled} from '../../hooks'
+import {FEATURES} from '../../hooks/useFeatureEnabled'
 import {useSource} from '../../studio'
 import {getPublishedId} from '../../util'
 import {type CommentsUIMode} from '../types'
@@ -25,7 +26,7 @@ export function useResolveCommentsEnabled(
   documentType: string,
 ): ResolveCommentsEnabled {
   // Check if the projects plan has the feature enabled
-  const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled('studioComments')
+  const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.studioComments)
 
   const {enabled} = useSource().document.comments
   // Check if the feature is enabled for the current document in the config

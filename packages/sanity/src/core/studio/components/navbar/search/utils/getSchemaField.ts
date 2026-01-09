@@ -1,9 +1,6 @@
 import {isObjectSchemaType, type ObjectField, type SchemaType} from '@sanity/types'
 
-export function getSchemaField(
-  schemaType: SchemaType,
-  fieldPath: string,
-): ObjectField<SchemaType> | undefined {
+export function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
   const paths = fieldPath.split('.')
   const firstPath = paths[0]
   if (firstPath && isObjectSchemaType(schemaType)) {

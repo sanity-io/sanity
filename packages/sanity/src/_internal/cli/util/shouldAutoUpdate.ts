@@ -27,9 +27,28 @@ export function shouldAutoUpdate({flags, cliConfig, output}: AutoUpdateSources):
     return Boolean(flags['auto-updates'])
   }
 
-  if (cliConfig && 'autoUpdates' in cliConfig) {
-    return Boolean(cliConfig.autoUpdates)
-  }
+  const hasOldCliConfigFlag = cliConfig && 'autoUpdates' in cliConfig
+  const hasNewCliConfigFlag =
+    cliConfig &&
+    'deployment' in cliConfig &&
+    cliConfig.deployment &&
+    'autoUpdates' in cliConfig.deployment
 
-  return false
+  if (hasOldCliConfigFlag && hasNewCliConfigFlag) {
+    throw new Error(
+      'Found both `autoUpdates` (deprecated) and `deployment.autoUpdates` in sanity.cli.js. Please remove the deprecated top level `autoUpdates` config.',
+    )
+  }
+  if (hasOldCliConfigFlag) {
+    output?.warn(
+      chalk.yellow(
+        `The \`autoUpdates\` config has moved to \`deployment.autoUpdates\`.
+Please update \`sanity.cli.ts\` or \`sanity.cli.js\` and make the following change:
+${chalk.red(`-  autoUpdates: ${cliConfig.autoUpdates},`)}
+${chalk.green(`+  deployment: {autoUpdates: ${cliConfig.autoUpdates}},`)}
+`,
+      ),
+    )
+  }
+  return Boolean(hasOldCliConfigFlag ? cliConfig.autoUpdates : cliConfig?.deployment?.autoUpdates)
 }

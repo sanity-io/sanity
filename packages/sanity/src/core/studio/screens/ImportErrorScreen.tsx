@@ -1,7 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons'
 import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
-import {useEffect, useReducer, useState} from 'react'
+import {useEffect, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {of, take, timer} from 'rxjs'
+import {map} from 'rxjs/operators'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
@@ -14,25 +17,26 @@ const View = styled(Box)`
 function reloadPage() {
   window.location.reload()
 }
+const COUNTDOWN_SECONDS = 5
 export function ImportErrorScreen(props: {error: Error; eventId?: string; autoReload?: boolean}) {
   const {error, eventId, autoReload} = props
 
-  const [reloadAt] = useState<number>(() => Date.now() + 5_000)
-
-  const [, tick] = useReducer((state) => state + 1, 0)
-
-  const countdownSeconds = Math.floor((reloadAt - Date.now()) / 1000)
+  const countdownSeconds = useObservable(
+    useMemo(
+      () =>
+        autoReload
+          ? timer(0, 1_000).pipe(
+              take(COUNTDOWN_SECONDS + 1),
+              map((seconds) => COUNTDOWN_SECONDS - seconds),
+            )
+          : of(0),
+      [autoReload],
+    ),
+    COUNTDOWN_SECONDS,
+  )
 
   useEffect(() => {
-    if (!autoReload) {
-      return () => {}
-    }
-    const interval = setInterval(() => tick(), 500)
-    return () => clearInterval(interval)
-  }, [autoReload])
-
-  useEffect(() => {
-    if (countdownSeconds <= 0) reloadPage()
+    if (autoReload && countdownSeconds < 1) reloadPage()
   }, [autoReload, countdownSeconds])
 
   return (
@@ -58,7 +62,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
               )}
               {autoReload ? (
                 <Text muted>
-                  Reloading {countdownSeconds <= 0 ? 'now' : `in ${countdownSeconds.toFixed()}s`}…
+                  Reloading {countdownSeconds <= 0 ? 'now' : `in ${countdownSeconds}s`}…
                 </Text>
               ) : null}
               <Inline space={3}>

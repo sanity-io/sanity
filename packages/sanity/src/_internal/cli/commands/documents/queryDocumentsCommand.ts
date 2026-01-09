@@ -101,7 +101,7 @@ export default {
 
       output.print(pretty ? colorizeJson(docs, chalk) : JSON.stringify(docs, null, 2))
     } catch (err) {
-      throw new Error(`Failed to run query:\n${err.message}`)
+      throw new Error(`Failed to run query:\n${err.message}`, {cause: err})
     }
   },
 }

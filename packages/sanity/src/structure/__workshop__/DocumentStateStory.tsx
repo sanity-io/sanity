@@ -57,10 +57,9 @@ function Debug(props: {documentId: string; documentType: string}) {
   })
 
   const editState = useEditState(documentId, documentType)
-  const {validation} = useValidationStatus(documentId, documentType)
-  const connectionState = useConnectionState(documentId, documentType)
-
   const value = editState?.draft || editState?.published || initialValue.value
+  const {validation} = useValidationStatus(documentId, documentType, value._id)
+  const connectionState = useConnectionState(documentId, documentType)
 
   const documentActions = useDocumentActions(documentId, documentType, editState)
 
@@ -96,7 +95,6 @@ function Debug(props: {documentId: string; documentType: string}) {
                     key={idx}
                     disabled={actionItem.disabled}
                     icon={actionItem.icon}
-                    // eslint-disable-next-line react/jsx-handler-names
                     onClick={actionItem.onHandle}
                     tone={actionItem.tone}
                     text={actionItem.label}
@@ -114,7 +112,6 @@ function Debug(props: {documentId: string; documentType: string}) {
                   footer={actionItem.dialog.footer}
                   header={actionItem.dialog.header}
                   id={`document-action-modal-${idx}`}
-                  // eslint-disable-next-line react/jsx-handler-names
                   onClose={actionItem.dialog.onClose}
                 >
                   {actionItem.dialog.content}
@@ -196,7 +193,7 @@ function DocumentActionHook(props: {
   index: number
   onUpdate: (desc: DocumentActionDescription | null, idx: number) => void
 }) {
-  const {actionHook: useActionDescription, editState, index, onUpdate} = props
+  const {actionHook, editState, index, onUpdate} = props
 
   const onComplete = useCallback(() => {
     // @todo
@@ -206,13 +203,13 @@ function DocumentActionHook(props: {
     () => ({
       ...editState,
       onComplete,
-      // @todo
       revision: undefined,
+      initialValueResolved: true,
     }),
     [editState, onComplete],
   )
 
-  const actionDescription = useUnique(useActionDescription(actionProps))
+  const actionDescription = useUnique(actionHook(actionProps))
 
   useEffect(() => {
     onUpdate(actionDescription, index)

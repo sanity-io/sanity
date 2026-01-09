@@ -3,6 +3,8 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getSanityCreateLinkMetadata,
   getVersionFromId,
+  isCardinalityOneRelease,
+  isDraftId,
   isGoingToUnpublish,
   isNewDocument,
   isPerspectiveWriteable,
@@ -13,6 +15,7 @@ import {
   LegacyLayerProvider,
   type ReleaseDocument,
   ScrollContainer,
+  useFilteredReleases,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -31,6 +34,7 @@ import {
   DeprecatedDocumentTypeBanner,
   InsufficientPermissionBanner,
   ReferenceChangedBanner,
+  ScheduledDraftOverrideBanner,
 } from './banners'
 import {ArchivedReleaseDocumentBanner} from './banners/ArchivedReleaseDocumentBanner'
 import {CanvasLinkedBanner} from './banners/CanvasLinkedBanner'
@@ -168,7 +172,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
+
+  const filteredReleases = useFilteredReleases({
+    historyVersion: params?.historyVersion,
+    displayed,
+    documentId,
+  })
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
@@ -181,8 +191,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
-        displayed?._id &&
-        getVersionFromId(displayed?._id) === selectedReleaseId,
+      displayed?._id &&
+      getVersionFromId(displayed?._id) === selectedReleaseId,
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
@@ -211,13 +221,29 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
+
+    const scheduledCardinalityOneRelease = filteredReleases.currentReleases.find(
+      (release) => isCardinalityOneRelease(release) && isReleaseScheduledOrScheduling(release),
+    )
+    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
+
+    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
+      return (
+        <ScheduledDraftOverrideBanner
+          releaseId={scheduledCardinalityOneRelease._id}
+          draftDocument={displayed}
+        />
+      )
+    }
+
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
     const isCurrentVersionGoingToUnpublish =
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
+      !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -226,7 +252,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return (
         <DocumentNotInReleaseBanner
           documentId={value._id}
-          currentRelease={selectedPerspective as ReleaseDocument}
+          currentRelease={selectedPerspective}
           isScheduledRelease={isScheduledRelease}
         />
       )
@@ -288,6 +314,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    selectedPerspectiveName,
     editState,
     ready,
     activeView.type,
@@ -298,8 +325,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
     value._id,
     schemaType,
+    filteredReleases,
     workspace,
   ])
+  const portalElements = useMemo(
+    () => ({documentScrollElement: documentScrollElement}),
+    [documentScrollElement],
+  )
   const showFormView = features.resizablePanes || !showInspector
   return (
     <PaneContent>
@@ -310,11 +342,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2} overflow="hidden">
-              <PortalProvider
-                element={portalElement}
-                __unstable_elements={{documentScrollElement: documentScrollElement}}
-              >
+            <DocumentBox flex={2}>
+              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider
                     scrollElement={documentScrollElement}

@@ -21,12 +21,15 @@ interface PaneData {
   payload: unknown
   selected: boolean
   siblingIndex: number
+  maximized: boolean
 }
 
 export interface Panes {
   paneDataItems: PaneData[]
   routerPanes: RouterPanes
   resolvedPanes: (PaneNode | typeof LOADING_PANE)[]
+  maximizedPane: PaneData | null
+  setMaximizedPane: (pane: PaneData | null) => void
 }
 
 function useRouterPanesStream() {
@@ -51,11 +54,12 @@ export function useResolvedPanes(): Panes {
   // will bubble the error to react where it can be picked up by standard error
   // boundaries
   const [error, setError] = useState<unknown>()
+  const [maximizedPane, setMaximizedPane] = useState<PaneData | null>(null)
   if (error) throw error
 
   const {structureContext, rootPaneNode} = useStructureTool()
 
-  const [data, setData] = useState<Panes>({
+  const [data, setData] = useState<Omit<Panes, 'maximizedPane' | 'setMaximizedPane'>>({
     paneDataItems: [],
     resolvedPanes: [],
     routerPanes: [],
@@ -99,6 +103,7 @@ export function useResolvedPanes(): Panes {
             payload: routerPaneSibling.payload,
             selected: flatIndex === resolvedPanes.length - 1,
             siblingIndex,
+            maximized: false,
           }
 
           return paneDataItem
@@ -120,5 +125,17 @@ export function useResolvedPanes(): Panes {
     return () => subscription.unsubscribe()
   }, [rootPaneNode, routerPanesStream, structureContext])
 
-  return data
+  const paneDataItemsWithMaximized = useMemo(() => {
+    return data.paneDataItems.map((item) => ({
+      ...item,
+      maximized: maximizedPane ? item.key === maximizedPane.key : false,
+    }))
+  }, [data.paneDataItems, maximizedPane])
+
+  return {
+    ...data,
+    paneDataItems: paneDataItemsWithMaximized,
+    maximizedPane,
+    setMaximizedPane,
+  }
 }

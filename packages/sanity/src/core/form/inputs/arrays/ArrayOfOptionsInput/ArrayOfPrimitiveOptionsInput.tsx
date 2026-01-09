@@ -1,7 +1,7 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'

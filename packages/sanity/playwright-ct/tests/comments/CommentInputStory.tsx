@@ -1,5 +1,5 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {useState} from 'react'
 import {CommentInput} from 'sanity'
 

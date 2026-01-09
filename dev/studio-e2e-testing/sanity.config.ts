@@ -1,10 +1,11 @@
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, PlayIcon} from '@sanity/icons'
 import {visionTool} from '@sanity/vision'
-import {defineConfig} from 'sanity'
+import {defineConfig, type ReleaseActionComponent} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -19,6 +20,22 @@ import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-st
 import {customComponents} from './components-api'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
+
+const TestReleaseAction: ReleaseActionComponent = (props) => {
+  const {release, documents} = props
+
+  return {
+    label: `E2E Test Action: ${release.metadata.title}`,
+    icon: PlayIcon,
+    disabled: false,
+    title: `Test action for release "${release.metadata.title}" with ${documents.length} documents`,
+    onHandle: () => {
+      console.warn(
+        `E2E Test Release Action executed! releaseTitle: ${release.metadata.title}, releaseId: ${release._id}, documentCount: ${documents.length}, releaseState: ${release.state}`,
+      )
+    },
+  }
+}
 
 const defaultConfig = defineConfig({
   name: 'default',
@@ -104,10 +121,20 @@ const defaultConfig = defineConfig({
     muxInput({mp4_support: 'standard'}),
     media(),
     markdownSchema(),
+    internationalizedArray({
+      languages: [
+        {id: 'en', title: 'English'},
+        {id: 'fr', title: 'French'},
+      ],
+      defaultLanguages: ['en'],
+      fieldTypes: ['string'],
+    }),
   ],
   beta: {
-    treeArrayEditing: {
-      enabled: true,
+    form: {
+      enhancedObjectDialog: {
+        enabled: true,
+      },
     },
   },
   announcements: {
@@ -115,6 +142,7 @@ const defaultConfig = defineConfig({
   },
   releases: {
     enabled: true,
+    actions: [TestReleaseAction],
   },
   create: {
     startInCreateEnabled: false,
@@ -140,5 +168,35 @@ export default defineConfig([
     title: 'studio-e2e-testing-firefox',
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
     apiHost: 'https://api.sanity.work',
+  },
+  {
+    ...defaultConfig,
+    basePath: '/chromium-no-enhanced-dialog',
+    name: 'chromium-no-enhanced-dialog',
+    title: 'studio-e2e-testing-chromium-no-enhanced-dialog',
+    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: false,
+        },
+      },
+    },
+  },
+  {
+    ...defaultConfig,
+    basePath: '/firefox-no-enhanced-dialog',
+    name: 'firefox-no-enhanced-dialog',
+    title: 'studio-e2e-testing-firefox-no-enhanced-dialog',
+    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
+    apiHost: 'https://api.sanity.work',
+    beta: {
+      form: {
+        enhancedObjectDialog: {
+          enabled: false,
+        },
+      },
+    },
   },
 ])

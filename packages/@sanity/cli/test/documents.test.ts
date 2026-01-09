@@ -1,17 +1,17 @@
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioNames, testClient} from './shared/environment'
 
 describeCliTest('CLI: `sanity documents`', () => {
-  describe.each(studioVersions)('%s', (version) => {
-    const testRunArgs = getTestRunArgs(version)
+  describe.each(studioNames)('%s', (studioName) => {
+    const testRunArgs = getTestRunArgs()
     const client = testClient.withConfig({
       dataset: testRunArgs.documentsDataset,
     })
 
     testConcurrent('documents create', async () => {
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'documents',
         'create',
         'document.json',
@@ -36,7 +36,7 @@ describeCliTest('CLI: `sanity documents`', () => {
         {visibility: 'async'},
       )
 
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'documents',
         'get',
         'person_erling',
@@ -54,13 +54,13 @@ describeCliTest('CLI: `sanity documents`', () => {
         name: 'Martin Ødegaard',
       })
 
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'documents',
         'query',
         '*[_type == "person" && name == "Martin Ødegaard"][0]',
         '--dataset',
         testRunArgs.documentsDataset,
-        '--api-version',
+        '--api-studioName',
         '2022-09-09',
       ])
       expect(result.stdout).toContain('"Martin Ødegaard"')
@@ -77,7 +77,7 @@ describeCliTest('CLI: `sanity documents`', () => {
         {visibility: 'async'},
       )
 
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'documents',
         'delete',
         'person_king',

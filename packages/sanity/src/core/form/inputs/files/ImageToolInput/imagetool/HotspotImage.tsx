@@ -38,7 +38,7 @@ export interface HotspotImageProps {
   className?: string
   style?: CSSProperties
   alt?: string
-  onError?: (event: SyntheticEvent<HTMLImageElement, Event>) => void
+  onError?: (event: SyntheticEvent<HTMLImageElement>) => void
   onLoad?: () => void
 }
 
@@ -90,7 +90,7 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
       imageElement.src = imageElement.src
     }
 
-    updateContainerAspect()
+    startTransition(() => updateContainerAspect())
 
     window.addEventListener('resize', updateContainerAspect)
 

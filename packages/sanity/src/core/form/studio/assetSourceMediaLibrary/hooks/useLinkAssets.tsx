@@ -7,7 +7,7 @@ import {
   isImageSchemaType,
   type SanityDocument,
 } from '@sanity/types'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {useCallback} from 'react'
 import {
   delay,
@@ -21,12 +21,20 @@ import {
   toArray,
 } from 'rxjs'
 
+import {
+  isVideoSchemaType,
+  type VideoSchemaType,
+} from '../../../../../media-library/plugin/schemas/types'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_API_VERSION} from '../constants'
 import {type AssetSelectionItem} from '../types'
 import {useMediaLibraryIds} from './useMediaLibraryIds'
 
-export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | FileSchemaType}) {
+export function useLinkAssets({
+  schemaType,
+}: {
+  schemaType?: ImageSchemaType | FileSchemaType | VideoSchemaType
+}) {
   const mediaLibraryIds = useMediaLibraryIds()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
 
@@ -42,6 +50,29 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
       const metadataPropsFromSchema: ImageMetadataType[] | undefined =
         schemaType && isImageSchemaType(schemaType) ? schemaType.options?.metadata : undefined
 
+      if (isVideoSchemaType(schemaType)) {
+        return firstValueFrom(
+          from(assetSelection).pipe(
+            map(
+              (asset) =>
+                ({
+                  kind: 'assetDocumentId',
+                  value: asset.asset._id,
+                  mediaLibraryProps: {
+                    mediaLibraryId: mediaLibraryIds.libraryId,
+                    assetId: asset.asset._id,
+                    assetInstanceId: asset.assetInstanceId,
+                  },
+                }) satisfies AssetFromSource,
+            ),
+            toArray(),
+          ),
+          {
+            defaultValue: [],
+          },
+        )
+      }
+
       const assetsFromSource = from(assetSelection).pipe(
         linkAsset({
           client,
@@ -55,7 +86,7 @@ export function useLinkAssets({schemaType}: {schemaType?: ImageSchemaType | File
         defaultValue: [],
       })
     },
-    [client, mediaLibraryIds?.libraryId, schemaType],
+    [client, mediaLibraryIds, schemaType],
   )
   return {onLinkAssets: handleLinkAssets}
 }

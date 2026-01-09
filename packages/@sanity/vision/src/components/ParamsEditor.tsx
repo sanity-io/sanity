@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
-import {debounce} from 'lodash'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {debounce} from 'lodash-es'
+import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -14,7 +14,7 @@ const defaultValue = `{\n  \n}`
 
 export interface ParamsEditorProps {
   value: string
-  onChange: (changeEvt: Params) => void
+  onChange: (changeEvt: string) => void
   paramsError: string | undefined
   hasValidParams: boolean
   editorRef: RefObject<VisionCodeMirrorHandle | null>
@@ -27,25 +27,12 @@ export interface ParamsEditorChange {
 export function ParamsEditor(props: ParamsEditorProps) {
   const {onChange, paramsError, hasValidParams, editorRef} = props
   const {t} = useTranslation(visionLocaleNamespace)
-  const {raw: value, error, parsed, valid} = parseParams(props.value, t)
-  const [isValid, setValid] = useState(valid)
-  const [init, setInit] = useState(false)
-
-  // Emit onChange on very first render
-  useEffect(() => {
-    if (!init) {
-      onChange({parsed, raw: value, valid: isValid, error})
-      setInit(true)
-    }
-  }, [error, init, isValid, onChange, parsed, value])
 
   const handleChangeRaw = useCallback(
     (newValue: string) => {
-      const event = parseParams(newValue, t)
-      setValid(event.valid)
-      onChange(event)
+      onChange(newValue)
     },
-    [onChange, t],
+    [onChange],
   )
 
   const handleChange = useMemo(() => debounce(handleChangeRaw, 333), [handleChangeRaw])
@@ -74,10 +61,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
   )
 }
 
-export function parseParams(
-  value: string,
-  t: TFunction<typeof visionLocaleNamespace, undefined>,
-): Params {
+export function parseParams(value: string, t: TFunction<typeof visionLocaleNamespace>): Params {
   const parsedParams = tryParseParams(value, t)
   const params = parsedParams instanceof Error ? {} : parsedParams
   const validationError = parsedParams instanceof Error ? parsedParams.message : undefined

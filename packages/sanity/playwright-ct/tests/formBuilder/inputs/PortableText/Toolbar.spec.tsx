@@ -160,31 +160,22 @@ test.describe('Portable Text Input', () => {
         // prepare the nested PTE
         await page.getByRole('button', {name: 'Insert Nested (block)'}).click()
 
-        await expect(
-          page
-            .locator('div')
-            .filter({hasText: /^Edit Nested$/})
-            .first(),
-        ).toBeVisible()
+        await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+
         await page.getByTestId('add-single-object-button').click()
 
         // nested PTE object item
-        await expect(
-          page
-            .locator('div')
-            .filter({hasText: /^Edit Item$/})
-            .first(),
-        ).toBeVisible()
+        await expect(page.getByRole('button', {name: 'Untitled'}).nth(1)).toBeVisible()
 
         // get the nested PTE
-        const $overlay = await page.getByTestId('activate-overlay')
+        const $overlay = page.getByTestId('activate-overlay')
 
-        $overlay.focus()
-        $overlay.click()
+        await $overlay.focus()
+        await $overlay.click()
 
         // click the block
 
-        await expect(await page.getByTestId('pt-editor__toolbar-card')).toBeVisible()
+        await expect(page.getByTestId('pt-editor__toolbar-card').nth(1)).toBeVisible()
 
         // click the nested PTE expand
         await page.getByLabel('Expand editor').nth(1).click()

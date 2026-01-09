@@ -7,16 +7,19 @@ import {memo} from 'react'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
-import {UserAvatar} from '../../../../components'
+import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
-import {type Column} from '../../components/Table/types'
+import {type Column, type InjectedTableProps} from '../../components/Table/types'
+import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
+import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
   function MemoReleaseDocumentPreview({
@@ -30,6 +33,8 @@ const MemoReleaseDocumentPreview = memo(
     releaseState?: ReleaseState
     documentRevision?: string
   }) {
+    const isGoingToBePublished = isGoingToUnpublish(item.document)
+
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
@@ -37,8 +42,7 @@ const MemoReleaseDocumentPreview = memo(
         releaseId={releaseId}
         releaseState={releaseState}
         documentRevision={documentRevision}
-        previewValues={item.previewValues.values}
-        isLoading={item.previewValues.isLoading}
+        isGoingToBePublished={isGoingToBePublished}
       />
     )
   },
@@ -54,9 +58,7 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
-const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<BundleDocumentRow> = (
-  t,
-) => ({
+const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
   width: 100,
   header: (props) => (
@@ -66,27 +68,19 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
   ),
   cell: ({cellProps, datum}) => {
     const actionBadge = () => {
-      if (datum.isPending || datum.isLoading) return null
+      const actionType = getDocumentActionType(datum)
+      if (!actionType) return null
 
-      const willBeUnpublished = isGoingToUnpublish(datum.document)
-      if (willBeUnpublished) {
-        return (
-          <Badge radius={2} tone={'critical'} data-testid={`unpublish-badge-${datum.document._id}`}>
-            {t('table-body.action.unpublish')}
-          </Badge>
-        )
-      }
-      if (datum.document.publishedDocumentExists) {
-        return (
-          <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
-            {t('table-body.action.change')}
-          </Badge>
-        )
-      }
+      const documentActionConfig = getReleaseDocumentActionConfig(actionType)
+      if (!documentActionConfig) return null
 
       return (
-        <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
-          {t('table-body.action.add')}
+        <Badge
+          radius={2}
+          tone={documentActionConfig.tone}
+          data-testid={`${actionType}-badge-${datum.document._id}`}
+        >
+          {t(documentActionConfig.translationKey)}
         </Badge>
       )
     }
@@ -102,7 +96,7 @@ const documentActionColumn: (t: TFunction<'releases', undefined>) => Column<Bund
 export const getDocumentTableColumnDefs: (
   releaseId: string,
   releaseState: ReleaseState,
-  t: TFunction<'releases', undefined>,
+  t: TFunction<'releases'>,
 ) => Column<BundleDocumentRow>[] = (releaseId, releaseState, t) => [
   /**
    * Hiding action for archived and published releases of v1.0
@@ -131,9 +125,11 @@ export const getDocumentTableColumnDefs: (
     width: null,
     style: {minWidth: '50%', maxWidth: '50%'},
     sortTransform(value) {
-      if (!value.previewValues) return 0
-
-      return value.previewValues.values?.title?.toLowerCase() || 0
+      return (
+        String(
+          value.document?.title || value.document?.name || value.document?._id,
+        ).toLowerCase() || 0
+      )
     },
     header: (props) => (
       <Headers.TableHeaderSearch {...props} placeholder={t('search-documents-placeholder')} />
@@ -162,26 +158,9 @@ export const getDocumentTableColumnDefs: (
         <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
       </Flex>
     ),
-    cell: ({cellProps, datum: {document, history, isLoading}}) => (
-      <Flex
-        {...cellProps}
-        align="center"
-        paddingX={2}
-        paddingY={3}
-        style={{minWidth: 130}}
-        sizing="border"
-      >
-        {!isLoading && document._updatedAt && (
-          <Flex align="center" gap={2}>
-            {history?.lastEditedBy && <UserAvatar size={0} user={history.lastEditedBy} />}
-            <Text muted size={1}>
-              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
-            </Text>
-          </Flex>
-        )}
-      </Flex>
-    ),
+    cell: (props) => <UpdatedAtCell {...props} releaseDocumentId={releaseId} />,
   },
+
   {
     id: 'validation',
     sorting: false,
@@ -228,3 +207,44 @@ export const getDocumentTableColumnDefs: (
     },
   },
 ]
+
+function UpdatedAtCell({
+  cellProps,
+  datum,
+  releaseDocumentId,
+}: {
+  cellProps: InjectedTableProps
+  datum: BundleDocumentRow & {isLoading?: boolean}
+  releaseDocumentId: string
+}) {
+  const {document, isLoading} = datum
+  const bundleId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+  const historyDocumentId =
+    datum.isPending || document?._id?.endsWith('-pending') ? undefined : document?._id
+  const {documentHistory} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
+
+  return (
+    <Flex
+      {...cellProps}
+      align="center"
+      paddingX={2}
+      paddingY={3}
+      style={{minWidth: 130}}
+      sizing="border"
+    >
+      <Flex align="center" gap={2}>
+        {(isLoading || !documentHistory?.lastEditedBy) && <AvatarSkeleton $size={0} animated />}
+        {!isLoading && document._updatedAt && (
+          <>
+            {documentHistory?.lastEditedBy && (
+              <UserAvatar size={0} user={documentHistory.lastEditedBy} />
+            )}
+            <Text muted size={1}>
+              <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
+            </Text>
+          </>
+        )}
+      </Flex>
+    </Flex>
+  )
+}

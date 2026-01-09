@@ -56,6 +56,7 @@ const errorHandlerScript = `
     'line-height: 21px',
     'margin: 0 auto',
     'max-width: 960px',
+    'max-height: 90dvh',
     'overflow: auto',
     'padding: 20px',
     'width: 100%',

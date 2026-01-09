@@ -6,6 +6,7 @@ import {describe, expectTypeOf, test} from 'vitest'
 import type {
   ALL_FIELDS_GROUP_NAME,
   builtinTypes,
+  createSchemaFromManifestTypes,
   DEFAULT_MAX_FIELD_DEPTH,
   DescriptorConverter,
   extractSchema,
@@ -25,6 +26,7 @@ import type {
   TypeWithProblems,
   validateMediaLibraryAssetAspect,
   validateSchema,
+  ValidationError,
   ValidationResult,
 } from '@sanity/schema/_internal'
 
@@ -34,6 +36,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('builtinTypes', () => {
     expectTypeOf<typeof builtinTypes>().not.toBeNever()
+  })
+  test('createSchemaFromManifestTypes', () => {
+    expectTypeOf<typeof createSchemaFromManifestTypes>().toBeFunction()
   })
   test('DEFAULT_MAX_FIELD_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_FIELD_DEPTH>().not.toBeNever()
@@ -91,6 +96,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('validateSchema', () => {
     expectTypeOf<typeof validateSchema>().toBeFunction()
+  })
+  test('ValidationError', () => {
+    expectTypeOf<ValidationError>().not.toBeNever()
   })
   test('ValidationResult', () => {
     expectTypeOf<ValidationResult>().toBeObject()

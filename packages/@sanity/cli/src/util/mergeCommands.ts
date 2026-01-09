@@ -1,4 +1,4 @@
-import {find} from 'lodash'
+import {find} from 'lodash-es'
 import semver from 'semver'
 
 import {

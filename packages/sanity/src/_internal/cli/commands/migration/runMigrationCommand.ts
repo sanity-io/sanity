@@ -114,6 +114,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
+        format: 'cjs',
       })
     }
 
@@ -181,12 +182,12 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const apiConfig = {
       dataset: dataset ?? projectConfig.dataset!,
       projectId: project ?? projectConfig.projectId!,
-      apiHost: projectConfig.apiHost!,
+      apiHost: projectConfig.apiHost,
       token: projectConfig.token!,
       apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const
     if (dry) {
-      dryRunHandler()
+      void dryRunHandler()
       return
     }
 

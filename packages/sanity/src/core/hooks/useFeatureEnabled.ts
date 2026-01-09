@@ -24,6 +24,14 @@ const INITIAL_LOADING_STATE: Features = {
   isLoading: true,
 }
 
+export const FEATURES: Record<string, string> = {
+  contentReleases: 'contentReleases',
+  studioComments: 'studioComments',
+  crossDatasetReferences: 'crossDatasetReferences',
+  scheduledPublishing: 'scheduledPublishing',
+  sanityTasks: 'sanityTasks',
+  singleDocRelease: 'singleDocRelease',
+}
 /**
  * fetches all the enabled features for this project
  */
@@ -56,7 +64,7 @@ export function getFeatures({
 }
 
 /** @internal */
-export function useFeatureEnabled(featureKey: string): Features {
+export function useFeatureEnabled(featureKey: keyof typeof FEATURES): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {projectId} = useSource()
 

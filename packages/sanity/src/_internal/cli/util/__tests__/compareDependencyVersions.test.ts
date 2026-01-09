@@ -11,19 +11,15 @@ const mockedFetch = vi.fn()
 const mockedResolveFrom = vi.mocked(resolveFrom)
 const mockedReadPackageManifest = vi.mocked(readPackageManifest)
 
-const autoUpdatesImports = {
-  'sanity': 'v1/modules/sanity',
-  'sanity/': 'v1/modules/sanity/',
-  '@sanity/vision': 'v1/modules/@sanity__vision',
-  '@sanity/vision/': 'v1/modules/@sanity__vision/',
-}
+const autoUpdatePackages = [
+  {name: 'sanity', version: '1.0.0'},
+  {name: '@sanity/vision', version: '1.0.0'},
+]
 
-const appAutoUpdatesImports = {
-  '@sanity/sdk-react': 'v1/modules/@sanity__sdk-react',
-  '@sanity/sdk-react/': 'v1/modules/@sanity__sdk-react/',
-  '@sanity/sdk': 'v1/modules/@sanity__sdk',
-  '@sanity/sdk/': 'v1/modules/@sanity__sdk/',
-}
+const appAutoUpdatePackages = [
+  {name: '@sanity/sdk-react', version: '1.0.0'},
+  {name: '@sanity/sdk', version: '1.0.0'},
+]
 
 describe('compareDependencyVersions', () => {
   beforeEach(() => {
@@ -32,6 +28,8 @@ describe('compareDependencyVersions', () => {
   describe('for studio', () => {
     it('should return empty array if versions match', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -62,17 +60,17 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([])
     })
 
     it('should return one item in array if versions mismatches for one pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -103,11 +101,9 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -119,6 +115,8 @@ describe('compareDependencyVersions', () => {
     })
     it('should return multiple items in array if versions mismatches for more pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -149,11 +147,9 @@ describe('compareDependencyVersions', () => {
           version: '3.30.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -171,6 +167,8 @@ describe('compareDependencyVersions', () => {
 
     it("should warn if the user's package.json version is greater then remote", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -201,11 +199,9 @@ describe('compareDependencyVersions', () => {
           version: '3.40.0',
         })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -218,6 +214,9 @@ describe('compareDependencyVersions', () => {
 
     it("should read from user's package.json if resolveFrom fails to find package.json in node_modules", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
+
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('3.40.0'),
         },
@@ -232,11 +231,9 @@ describe('compareDependencyVersions', () => {
         version: '0.0.0',
       })
 
-      const result = await compareDependencyVersions(
-        autoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(autoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(mockedReadPackageManifest).toHaveBeenCalledTimes(1)
 
@@ -262,6 +259,8 @@ describe('compareDependencyVersions', () => {
 
     it('should return empty array if versions match', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -292,17 +291,17 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([])
     })
 
     it('should return one item in array if versions mismatches for one pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -333,11 +332,9 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -349,6 +346,8 @@ describe('compareDependencyVersions', () => {
     })
     it('should return multiple items in array if versions mismatches for more pkg', async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.2.0'),
         },
@@ -379,11 +378,9 @@ describe('compareDependencyVersions', () => {
           version: '0.1.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -401,6 +398,8 @@ describe('compareDependencyVersions', () => {
 
     it("should warn if the user's package.json version is greater then remote", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -431,11 +430,9 @@ describe('compareDependencyVersions', () => {
           version: '0.2.0',
         })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(result).toEqual([
         {
@@ -453,6 +450,8 @@ describe('compareDependencyVersions', () => {
 
     it("should read from user's package.json if resolveFrom fails to find package.json in node_modules", async () => {
       mockedFetch.mockResolvedValue({
+        status: 302,
+        ok: false,
         headers: {
           get: vi.fn<(name: string) => string | null>().mockReturnValue('0.1.0'),
         },
@@ -467,11 +466,9 @@ describe('compareDependencyVersions', () => {
         version: '0.0.0',
       })
 
-      const result = await compareDependencyVersions(
-        appAutoUpdatesImports,
-        '/test/workdir',
-        mockedFetch,
-      )
+      const result = await compareDependencyVersions(appAutoUpdatePackages, '/test/workdir', {
+        fetchFn: mockedFetch,
+      })
 
       expect(mockedReadPackageManifest).toHaveBeenCalledTimes(1)
 

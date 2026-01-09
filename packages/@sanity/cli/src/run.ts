@@ -1,8 +1,8 @@
 import path from 'node:path'
 
 import {runCli} from './cli'
-import {getCliVersion} from './util/getCliVersion'
+import {getCliPkg} from './util/getCliVersion'
 
-getCliVersion().then((cliVersion) => {
-  runCli(path.join(__dirname, '..'), {cliVersion})
+void getCliPkg().then((cliPkg) => {
+  return runCli(path.join(__dirname, '..'), {cliPkg})
 })

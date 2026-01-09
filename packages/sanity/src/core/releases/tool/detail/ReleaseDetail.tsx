@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
-import {useMemo, useRef, useState} from 'react'
+import {motion} from 'motion/react'
+import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {LoadingBlock} from '../../../components'
@@ -11,7 +11,6 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesRouterState} from '../../types/router'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {useReleaseHistory} from './documentTable/useReleaseHistory'
 import {useReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseDashboardActivityPanel} from './ReleaseDashboardActivityPanel'
 import {ReleaseDashboardDetails} from './ReleaseDashboardDetails'
@@ -39,14 +38,9 @@ export const ReleaseDetail = () => {
   } = useBundleDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
-  const documentIds = results.map((result) => result.document?._id)
-  const history = useReleaseHistory(documentIds, releaseId)
-
   const releaseInDetail = data
     .concat(archivedReleases)
     .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
-
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const detailContent = useMemo(() => {
     if (bundleDocumentsError) {
@@ -77,22 +71,9 @@ export const ReleaseDetail = () => {
     if (!releaseInDetail) return null
 
     return (
-      <ReleaseSummary
-        isLoading={documentsLoading}
-        documents={results}
-        release={releaseInDetail}
-        documentsHistory={history.documentsHistory}
-        scrollContainerRef={scrollContainerRef}
-      />
+      <ReleaseSummary isLoading={documentsLoading} documents={results} release={releaseInDetail} />
     )
-  }, [
-    bundleDocumentsError,
-    documentsLoading,
-    releaseInDetail,
-    results,
-    history.documentsHistory,
-    t,
-  ])
+  }, [bundleDocumentsError, documentsLoading, releaseInDetail, results, t])
 
   if (loading) {
     return (
@@ -118,7 +99,7 @@ export const ReleaseDetail = () => {
         <Flex flex={1}>
           <Flex direction="column" flex={1} height="fill">
             <Card flex={1} overflow="auto">
-              <ReleaseDashboardDetails release={releaseInDetail} />
+              <ReleaseDashboardDetails release={releaseInDetail} documents={results} />
               {detailContent}
             </Card>
 

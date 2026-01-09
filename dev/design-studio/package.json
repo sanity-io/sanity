@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "4.3.0",
+  "version": "5.2.0",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -24,19 +24,24 @@
   "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
-    "build": "../.bin/sanity build",
+    "build": "sanity build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity dev --port 4000",
+    "dev": "sanity dev --port 4000",
     "lint": "eslint .",
-    "start": "../.bin/sanity start --port 4000"
+    "start": "sanity preview --port 4000"
   },
   "dependencies": {
     "@repo/eslint-config": "workspace:*",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^3.0.5",
-    "react": "catalog:react18",
-    "react-dom": "catalog:react18",
+    "@sanity/ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.19"
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   }
 }

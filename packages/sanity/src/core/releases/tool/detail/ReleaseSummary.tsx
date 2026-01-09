@@ -1,8 +1,8 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, useToast} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useState} from 'react'
+import {Card, Container, Stack, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -14,22 +14,20 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
+import {ReleaseActionBadges} from './components/ReleaseActionBadges'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
-import {type DocumentHistory} from './documentTable/useReleaseHistory'
+import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentInRelease} from './useBundleDocuments'
 
-export type DocumentWithHistory = DocumentInRelease & {
-  history: DocumentHistory | undefined
+export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached
   isAdded?: boolean
 }
-export type BundleDocumentRow = DocumentWithHistory
+export type BundleDocumentRow = DocumentInReleaseDetail
 
 export interface ReleaseSummaryProps {
   documents: DocumentInRelease[]
-  documentsHistory: Record<string, DocumentHistory>
-  scrollContainerRef: RefObject<HTMLDivElement | null>
   release: ReleaseDocument
   isLoading?: boolean
 }
@@ -41,12 +39,11 @@ const isBundleDocumentRow = (
   typeof maybeBundleDocumentRow === 'object' &&
   'memoKey' in maybeBundleDocumentRow &&
   'document' in maybeBundleDocumentRow &&
-  'validation' in maybeBundleDocumentRow &&
-  'previewValues' in maybeBundleDocumentRow &&
-  'history' in maybeBundleDocumentRow
+  'validation' in maybeBundleDocumentRow
 
 export function ReleaseSummary(props: ReleaseSummaryProps) {
-  const {documents, documentsHistory, isLoading = false, release, scrollContainerRef} = props
+  const {documents, isLoading = false, release} = props
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
   const toast = useToast()
   const {createVersion} = useReleaseOperations()
   const telemetry = useTelemetry()
@@ -57,15 +54,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-
-  const aggregatedData = useMemo(
-    () =>
-      documents.map((document) => ({
-        ...document,
-        history: documentsHistory[document.document._id],
-      })),
-    [documents, documentsHistory],
-  )
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {
@@ -83,18 +71,16 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [release._id, release.state, t],
   )
 
-  const filterRows = useCallback(
-    (data: DocumentWithHistory[], searchTerm: string) =>
-      data.filter(({previewValues, isPending}) => {
-        const title =
-          typeof previewValues.values?.title === 'string'
-            ? previewValues.values?.title
-            : t('release-placeholder.title')
+  const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
 
-        // always show the pending rows to visualise that documents are being added
-        return isPending || title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterRows = useCallback(
+    (data: DocumentInRelease[], searchTerm: string) =>
+      data.filter(({document}) => {
+        // this is a temporary way of doing the search without the previews
+        // until we have it moved to the server side
+        return searchDocumentRelease(document, searchTerm)
       }),
-    [t],
+    [],
   )
 
   const closeAddDialog = useCallback(
@@ -105,15 +91,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
       const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
-      const pendingDocumentRow: DocumentWithHistory = {
+      const pendingDocumentRow: DocumentInReleaseDetail = {
         memoKey: versionDocumentId,
-        previewValues: {isLoading: true, values: {}},
         validation: {
           isValidating: false,
           validation: [],
           hasError: false,
         },
-        history: undefined,
         document: {
           ...(documentToAdd as SanityDocument),
           _id: pendingAddedDocumentId,
@@ -168,16 +152,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   }, [documents, pendingAddedDocument, t, toast])
 
   const tableData = useMemo(
-    () =>
-      pendingAddedDocument.length ? [...aggregatedData, ...pendingAddedDocument] : aggregatedData,
-    [pendingAddedDocument, aggregatedData],
+    () => (pendingAddedDocument.length ? [...documents, ...pendingAddedDocument] : documents),
+    [documents, pendingAddedDocument],
   )
 
   return (
     <Card
-      borderTop
+      ref={setScrollContainerRef}
       data-testid="document-table-card"
-      ref={scrollContainerRef}
       style={{
         height: '100%',
         overflow: 'auto',
@@ -186,18 +168,27 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       }}
       className="hide-scrollbar"
     >
-      <Table<DocumentWithHistory>
-        loading={isLoading}
-        data={tableData}
-        emptyState={t('summary.no-documents')}
-        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        rowId="document._id"
-        columnDefs={documentTableColumnDefs}
-        rowActions={renderRowActions}
-        searchFilter={filterRows}
-        scrollContainerRef={scrollContainerRef}
-        defaultSort={{column: 'search', direction: 'asc'}}
-      />
+      <Stack>
+        <ReleaseActionBadges
+          documents={tableData}
+          releaseState={release.state}
+          isLoading={isLoading}
+        />
+        <Card borderTop>
+          <Table<DocumentInReleaseDetail>
+            loading={isLoading}
+            data={tableData}
+            emptyState={t('summary.no-documents')}
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            rowId="document._id"
+            columnDefs={documentTableColumnDefs}
+            rowActions={renderRowActions}
+            searchFilter={filterRows}
+            scrollContainerRef={scrollContainerRef}
+            defaultSort={{column: 'search', direction: 'asc'}}
+          />
+        </Card>
+      </Stack>
       {release.state === 'active' && (
         <Container width={3}>
           <Card padding={3}>
@@ -205,7 +196,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
               icon={AddIcon}
               disabled={isLoading}
               mode="bleed"
-              onClick={() => setAddDocumentDialog(true)}
+              onClick={handleAddDocumentClick}
               text={t('action.add-document')}
             />
           </Card>
@@ -215,7 +206,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         open={openAddDocumentDialog}
         onClose={closeAddDialog}
         releaseId={releaseId}
-        idsInRelease={aggregatedData.map(({document}) => document._id)}
+        idsInRelease={documents.map(({document}) => document._id)}
       />
     </Card>
   )

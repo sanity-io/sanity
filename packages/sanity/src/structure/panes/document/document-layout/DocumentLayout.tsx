@@ -9,14 +9,16 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
+  useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
   useZIndex,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
-import {useDocumentIdStack} from '../../../hooks/useDocumentIdStack'
+import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
 import {
@@ -75,6 +77,7 @@ export function DocumentLayout() {
     ready,
     previewUrl,
   } = useDocumentPane()
+  const {stickyParams} = useRouter()
   const {params: paneParams} = usePaneRouter()
   const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -128,6 +131,7 @@ export function DocumentLayout() {
         previewUrl,
         documentIdStack,
         t,
+        displayInlineChanges: stickyParams.displayInlineChanges === 'true',
       }),
     [
       currentInspector,
@@ -138,6 +142,7 @@ export function DocumentLayout() {
       inspectors,
       previewUrl,
       t,
+      stickyParams.displayInlineChanges,
     ],
   )
 
@@ -199,47 +204,49 @@ export function DocumentLayout() {
         />
       )}
 
-      <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
-        <DocumentActionShortcuts
-          actionsBoxElement={actionsBoxElement}
-          as={Pane}
-          currentMinWidth={currentMinWidth}
-          data-testid="document-pane"
-          flex={2.5}
-          id={paneKey}
-          minWidth={minWidth}
-          onKeyUp={handleKeyUp}
-          rootRef={setRootElement}
-        >
-          <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
-          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-            <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-              <StyledChangeConnectorRoot
-                data-testid="change-connector-root"
-                isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
-                onOpenReviewChanges={onHistoryOpen}
-                onSetFocus={onConnectorSetFocus}
-              >
-                <DocumentPanel
-                  footerHeight={footerHeight || null}
-                  headerHeight={headerHeight || null}
-                  isInspectOpen={inspectOpen}
-                  rootElement={rootElement}
-                  setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-                  footer={
-                    <DocumentLayoutFooter
-                      documentPanelPortalElement={documentPanelPortalElement}
-                      setFooterElement={setFooterElement}
-                      setActionsBoxElement={setActionsBoxElement}
-                    />
-                  }
-                />
-              </StyledChangeConnectorRoot>
-            </Flex>
-          </DialogProvider>
-          <DocumentOperationResults />
-        </DocumentActionShortcuts>
-      </FieldActionsProvider>
+      <DocumentActionsProvider>
+        <FieldActionsProvider actions={rootFieldActionNodes} path={EMPTY_ARRAY}>
+          <DocumentActionShortcuts
+            actionsBoxElement={actionsBoxElement}
+            as={Pane}
+            currentMinWidth={currentMinWidth}
+            data-testid="document-pane"
+            flex={2.5}
+            id={paneKey}
+            minWidth={minWidth}
+            onKeyUp={handleKeyUp}
+            rootRef={setRootElement}
+          >
+            <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
+              <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+                <StyledChangeConnectorRoot
+                  data-testid="change-connector-root"
+                  isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
+                  onOpenReviewChanges={onHistoryOpen}
+                  onSetFocus={onConnectorSetFocus}
+                >
+                  <DocumentPanel
+                    footerHeight={footerHeight || null}
+                    headerHeight={headerHeight || null}
+                    isInspectOpen={inspectOpen}
+                    rootElement={rootElement}
+                    setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                    footer={
+                      <DocumentLayoutFooter
+                        documentPanelPortalElement={documentPanelPortalElement}
+                        setFooterElement={setFooterElement}
+                        setActionsBoxElement={setActionsBoxElement}
+                      />
+                    }
+                  />
+                </StyledChangeConnectorRoot>
+              </Flex>
+            </DialogProvider>
+            <DocumentOperationResults />
+          </DocumentActionShortcuts>
+        </FieldActionsProvider>
+      </DocumentActionsProvider>
     </GetFormValueProvider>
   )
 }

@@ -12,8 +12,9 @@ export const cliApiHost = 'https://api.sanity.work'
 
 export const hasBuiltCli = existsSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'))
 export const fixturesPath = path.join(__dirname, '..', '__fixtures__')
-export const studioVersions = ['v3'] as const
-export const doCleanup = false
+
+// note: this requires a matching folder in test/__fixtures__
+export const studioNames = ['cli-test-studio'] as const
 export const baseTestPath = path.join(tmpdir(), 'sanity-cli-test')
 export const testIdPath = path.join(baseTestPath, 'test-id.txt')
 export const studiosPath = path.join(baseTestPath, 'studios')
@@ -23,7 +24,7 @@ export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'san
 export const {NODE_ENV, ...envLessEnv} = process.env
 export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
-export const nodeMajorVersion = process.version.split('.')[0]
+export const [nodeMajorVersion, nodeMinorVersion] = process.version.split('.')
 export const npmPath = which.sync('npm')
 // note: we use pnpm for `pack`, because npm doesn't rewrite `workspace:*` protocols
 export const pnpmPath = which.sync('pnpm')
@@ -43,16 +44,19 @@ let cachedTestId: string | undefined = process.env.SANITY_CLI_TEST_ID
  * The generated ID contains enough information to:
  *   - Identify the test run the entity belongs to (duh)
  *   - Automatically clean up dangling entities from previous test runs (timestamp)
- *   - Separate runs in different OSes/node versions from eachother (platform/node major)
+ *   - Separate runs in different OSes/node versions from eachother (platform/node major+minor)
  *   - Separate runs in different _executions_ from eachother (process ID/github run ID)
  *
  * We use this test ID as the prefix for entities we create through the tests, and the tests
  * also prefix the studio version in their entities so we can concurrently run tests against
  * multiple studio versions without conflicts.
  *
+ * Note: We need to keep this within the character limit for dataset names, thus
+ * somewhat concise.
+ *
  * Examples:
- *   - Local : test-168262061-dar-v16-wode-11664
- *   - GitHub: test-168262061-lin-v14-gh-1234
+ *   - Local : t-168262061-mac-v16-0-14-wode-11664
+ *   - GitHub: t-168262061-lin-v14-18-15-gh-1234-1
  */
 const getTestId = () => {
   if (cachedTestId) {
@@ -61,12 +65,13 @@ const getTestId = () => {
 
   const localId = readFileSync(testIdPath, 'utf8').trim().slice(0, 5)
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
-  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
-  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_JOB_ID || process.env.GITHUB_RUN_ATTEMPT}`
+  const githubIndex = process.env.GITHUB_JOB_INDEX ? `-${process.env.GITHUB_JOB_INDEX}` : ''
+  const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}${githubIndex}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
-  const osPlatform = platform().slice(0, 3)
-  cachedTestId = `test-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${runId}`
+  const osPlatform = platform().slice(0, 3).replace(/^dar$/, 'mac') // darwin => mac
+  cachedTestId = `t-${testIdTimestamp}-${osPlatform}-${nodeMajorVersion}-${nodeMinorVersion}-${runId}`
 
   // We're setting this to the environment because the global setup and the tests run in
   // isolated workers/threads, meaning the local `cachedTestId` variable won't be available
@@ -82,7 +87,7 @@ const getTestId = () => {
  * The port is selected based on the assumption that the tests will be run once for node LTS and
  * once for node current.
  */
-function getPort(version: string): number {
+function getPort(): number {
   if (process.release.lts) {
     return 4333
   }
@@ -102,26 +107,26 @@ export const testClient = createClient({
 export const getCliUserEmail = (): Promise<string> =>
   testClient.users.getById('me').then((user) => user.email)
 
-export const getTestRunArgs = (version: string) => {
+export const getTestRunArgs = () => {
   const testId = getTestId()
   return {
-    corsOrigin: `https://${testId}-${version}.sanity.build`,
+    corsOrigin: `https://${testId}.sanity.build`,
     sourceDataset: 'production',
-    dataset: `${testId}-${version}`,
-    aclDataset: `${testId}-${version}-acl`,
-    datasetCopy: `${testId}-copy-${version}`,
-    documentsDataset: `${testId}-docs-${version}`,
-    graphqlDataset: `${testId}-graphql-${version}`.replace(/-/g, '_'),
-    alias: `${testId}-${version}-a`,
+    dataset: `${testId}`,
+    aclDataset: `${testId}-acl`,
+    datasetCopy: `${testId}-copy`,
+    documentsDataset: `${testId}-docs`,
+    graphqlDataset: `${testId}-graphql`.replace(/-/g, '_'),
+    alias: `${testId}-a`,
     graphqlTag: testId,
     exportTarball: 'production.tar.gz',
     importTarballPath: path.join(__dirname, '..', '__fixtures__', 'production.tar.gz'),
-    port: getPort(version),
+    port: getPort(),
   }
 }
 
 export function runSanityCmdCommand(
-  version: string,
+  name: (typeof studioNames)[number] | 'cli-test-studio-custom-document',
   args: string[],
   options: {env?: Record<string, string | undefined>; cwd?: (cwd: string) => string} = {},
 ): Promise<{
@@ -132,7 +137,7 @@ export function runSanityCmdCommand(
   const cwd = options.cwd ?? ((currentCwd) => currentCwd)
 
   return exec(process.argv[0], [cliBinPath, ...args], {
-    cwd: cwd(path.join(studiosPath, version)),
+    cwd: cwd(path.join(studiosPath, name)),
     env: {...sanityEnv, ...options.env},
   })
 }

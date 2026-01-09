@@ -56,14 +56,15 @@ export function useWorkspaceLoader(activeWorkspace: WorkspaceSummary) {
 
           return results as Source[]
         }),
-        map(
-          ([rootSource, ...restOfSources]): Workspace => ({
-            ...activeWorkspace,
+        map(([rootSource, ...restOfSources]): Workspace => {
+          const {releases: _releases, ...workspaceMetadata} = activeWorkspace
+          return {
+            ...workspaceMetadata,
             ...rootSource,
             unstable_sources: [rootSource, ...restOfSources],
             type: 'workspace',
-          }),
-        ),
+          }
+        }),
       )
       .subscribe({
         next: setWorkspace,

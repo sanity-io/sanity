@@ -6,29 +6,6 @@ on:
     types: [closed]
 
 jobs:
-  docs-cleanup:
-    runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Remove docs report datasets for closed PRs
-        env:
-          DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
-          DOCS_REPORT_DATASET: pr-${{ github.event.number }}
-        run: pnpm docs:report:cleanup
-
   e2e-cleanup:
     runs-on: ubuntu-latest
     env:
@@ -36,19 +13,13 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Remove E2E datasets for closed PRs
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
           PR_NUMBER: ${{ github.event.number }}
         run: pnpm e2e:cleanup:pr

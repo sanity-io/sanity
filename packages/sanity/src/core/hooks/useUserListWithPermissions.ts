@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityDocument} from '@sanity/client'
 import {type User} from '@sanity/types'
-import {sortBy} from 'lodash'
+import {sortBy} from 'lodash-es'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
@@ -141,6 +141,7 @@ export function useUserListWithPermissions(
     return $alphabetical
   }, [documentValue, permission, users$, systemGroup$])
 
+  // @TODO refactor to useObservable
   useEffect(() => {
     const initial$ = of(INITIAL_STATE)
     const state$ = concat(initial$, list$)

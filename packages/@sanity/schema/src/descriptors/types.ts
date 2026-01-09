@@ -18,7 +18,7 @@ export interface CommonTypeDef extends EncodableObject {
   title?: string
   description?: string | JSXMarker
 
-  fields?: ObjectField[]
+  fields?: Array<ObjectField | HoistedMarker>
   groups?: ObjectGroup[]
   fieldsets?: ObjectFieldset[]
 
@@ -34,6 +34,8 @@ export interface CommonTypeDef extends EncodableObject {
 
   /** Number of rows which should be used by the `text` type. */
   rows?: string
+
+  orderings?: ObjectOrdering[]
 }
 
 /** In some scenarios we need to encode special information. */
@@ -66,6 +68,9 @@ export type UnknownMarker = {__type: 'unknown'}
 /** Denotes a number which we've turned into a string for serialization. */
 export type NumberMarker = {__type: 'number'; value: string}
 
+/** Denotes a value which has been hoisted out into its own descriptor. */
+export type HoistedMarker = {__type: 'hoisted'; key: string}
+
 /**
  * Denotes an object. This is only used when we see an object with "__type" and
  * want to avoid it being interpreted as a marker.
@@ -89,7 +94,7 @@ export interface SubtypeDef extends CommonTypeDef {
 
 export interface ArrayTypeDef extends SubtypeDef {
   extends: 'array'
-  of: ArrayElement[]
+  of: Array<ArrayElement | HoistedMarker>
 }
 
 export type ArrayElement = {
@@ -116,7 +121,19 @@ export type ObjectGroup = {
   title?: string
   hidden?: true | FunctionMarker
   default?: true
-  i18n?: LocalizedMessage
+  i18n?: ObjectI18n
+}
+
+export type ObjectOrdering = {
+  title: string
+  i18n?: ObjectI18n
+  name: string
+  by: ObjectOrderingBy[]
+}
+
+export type ObjectOrderingBy = {
+  field: string
+  direction: 'asc' | 'desc'
 }
 
 export interface ReferenceTypeDef extends SubtypeDef {
@@ -140,9 +157,16 @@ export type Validation = {
   message?: ValidationMessage
 }
 
-export type ValidationMessage = string | LocalizedMessage
+export type ValidationMessage = string | ObjectMessage
 
-export type LocalizedMessage = Record<string, string>
+export type ObjectMessage = Record<string, string>
+
+export type ObjectI18nValue = {
+  key: string
+  ns: string
+}
+
+export type ObjectI18n = Record<string, ObjectI18nValue>
 
 /** Field reference makes it possible for a rule to refer to another field in the same object. */
 export type FieldReference = {

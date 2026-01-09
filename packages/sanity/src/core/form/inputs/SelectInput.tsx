@@ -1,6 +1,6 @@
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
-import {capitalize} from 'lodash'
+import {capitalize} from 'lodash-es'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -42,7 +42,7 @@ export function SelectInput(props: StringInputProps) {
   } = props
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
-    [schemaType.options?.list],
+    [schemaType.options],
   )
   const currentItem = items.find((item) => item.value === value)
   const isRadio = schemaType.options && schemaType.options.layout === 'radio'

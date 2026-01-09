@@ -1,4 +1,4 @@
-import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type EditableReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
   type BadgeTone,
@@ -12,7 +12,7 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
-import {addHours, isValid, startOfHour} from 'date-fns'
+import {addHours, startOfHour} from 'date-fns'
 import {
   type ComponentType,
   type MouseEventHandler,
@@ -23,12 +23,11 @@ import {
 } from 'react'
 
 import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseType} from '../../store/types'
-import {RELEASE_TYPES_TONES} from '../../util/const'
+import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
@@ -39,15 +38,11 @@ export function ReleaseForm(props: {
   value: EditableReleaseDocument
 }): React.JSX.Element {
   const {onChange, value} = props
-  const {releaseType} = value.metadata || {}
+  const {releaseType, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
-  const [currentTimezone, setCurrentTimezone] = useState<string | null>(timeZone.name)
-  const [buttonReleaseType, setButtonReleaseType] = useState<ReleaseType>(releaseType ?? 'asap')
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
   const id = value._id
-  const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>()
 
   useEffect(() => {
     const storedData = getStoredReleaseData()
@@ -56,18 +51,11 @@ export function ReleaseForm(props: {
         metadata: {
           title: storedData.title,
           description: storedData.description,
-          releaseType: storedData.releaseType,
+          releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
           intendedPublishAt: storedData.intendedPublishAt,
         },
       }
       onChange({_id: id, ...updatedValue})
-
-      if (storedData.releaseType) {
-        setButtonReleaseType(storedData.releaseType)
-      }
-      if (storedData.intendedPublishAt) {
-        setIntendedPublishAt(new Date(storedData.intendedPublishAt))
-      }
     }
   }, [getStoredReleaseData, id, onChange])
 
@@ -83,8 +71,6 @@ export function ReleaseForm(props: {
 
   const handleBundlePublishAtCalendarChange = useCallback(
     (date: Date) => {
-      setIntendedPublishAt(date)
-
       handleOnChangeAndStorage({
         ...value,
         metadata: {...value.metadata, intendedPublishAt: date.toISOString()},
@@ -93,7 +79,7 @@ export function ReleaseForm(props: {
     [handleOnChangeAndStorage, value],
   )
 
-  const handleButtonReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleReleaseTypeChange = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
       const pickedReleaseType = event.currentTarget.dataset.value
 
@@ -101,14 +87,8 @@ export function ReleaseForm(props: {
         return
       }
 
-      setButtonReleaseType(pickedReleaseType)
-
       // select the start of the next hour
       const nextInputValue = startOfHour(addHours(new Date(), 1))
-
-      if (pickedReleaseType === 'scheduled') {
-        setIntendedPublishAt(nextInputValue)
-      }
 
       handleOnChangeAndStorage({
         ...value,
@@ -136,19 +116,6 @@ export function ReleaseForm(props: {
     },
     [handleOnChangeAndStorage, value],
   )
-
-  useEffect(() => {
-    /** makes sure to wait for the useTimezone has enough time to update
-     * and based on that it will update the input value to the current timezone
-     */
-    if (timeZone.name !== currentTimezone) {
-      setCurrentTimezone(timeZone.name)
-      if (intendedPublishAt && isValid(intendedPublishAt)) {
-        const currentZoneDate = utcToCurrentZoneDate(intendedPublishAt)
-        setIntendedPublishAt(currentZoneDate)
-      }
-    }
-  }, [currentTimezone, intendedPublishAt, timeZone, utcToCurrentZoneDate])
 
   const menuButtonId = useId()
   const [menuButton, setMenuButton] = useState<HTMLElement | null>(null)
@@ -186,8 +153,8 @@ export function ReleaseForm(props: {
               <Button mode="ghost">
                 <Flex justify="space-between" align="center">
                   <ReleaseTypeOption
-                    text={t(`release.type.${buttonReleaseType}`)}
-                    tone={RELEASE_TYPES_TONES[buttonReleaseType].tone}
+                    text={t(`release.type.${releaseType}`)}
+                    tone={releaseType ? RELEASE_TYPES_TONES[releaseType].tone : 'critical'}
                   />
                   <Text size={1}>
                     <ChevronDownIcon />
@@ -203,7 +170,7 @@ export function ReleaseForm(props: {
             menu={
               <Menu>
                 {Object.entries(RELEASE_TYPES_TONES).map(([type, {tone}]) => (
-                  <MenuItem key={type} data-value={type} onClick={handleButtonReleaseTypeChange}>
+                  <MenuItem key={type} data-value={type} onClick={handleReleaseTypeChange}>
                     <ReleaseTypeOption text={t(`release.type.${type}`)} tone={tone} />
                   </MenuItem>
                 ))}
@@ -211,7 +178,7 @@ export function ReleaseForm(props: {
             }
           />
           <Flex gap={1}>
-            {buttonReleaseType === 'scheduled' && (
+            {releaseType === 'scheduled' && (
               <TabPanel
                 aria-labelledby="release-timing-at-time-tab"
                 flex={1}
@@ -220,7 +187,7 @@ export function ReleaseForm(props: {
                 tabIndex={-1}
               >
                 <ScheduleDatePicker
-                  initialValue={intendedPublishAt || new Date()}
+                  value={intendedPublishAt ? new Date(intendedPublishAt) : undefined}
                   onChange={handleBundlePublishAtCalendarChange}
                   timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
                 />

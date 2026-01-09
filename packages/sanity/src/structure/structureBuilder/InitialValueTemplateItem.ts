@@ -114,10 +114,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
    * @returns initial value template item object based on the path, index and hint provided in options. See {@link InitialValueTemplateItem}
    */
   serialize({path = [], index, hint}: SerializeOptions = {path: []}): InitialValueTemplateItem {
-    const {spec, _context} = this
-    const {templates} = _context
-
-    if (typeof spec.id !== 'string' || !spec.id) {
+    if (typeof this.spec.id !== 'string' || !this.spec.id) {
       throw new SerializeError(
         '`id` is required for initial value template item nodes',
         path,
@@ -126,37 +123,37 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    if (!spec.templateId) {
+    if (!this.spec.templateId) {
       throw new SerializeError(
         'template id (`templateId`) is required for initial value template item nodes',
         path,
-        spec.id,
+        this.spec.id,
         hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
-    const template = templates.find((t) => t.id === spec.templateId)
+    const template = this._context.templates.find((t) => t.id === this.spec.templateId)
 
     if (!template) {
       throw new SerializeError(
         'template id (`templateId`) is required for initial value template item nodes',
         path,
-        spec.id,
+        this.spec.id,
         hint,
       ).withHelpUrl(HELP_URL.ID_REQUIRED)
     }
 
     return {
-      id: spec.id,
-      templateId: spec.id,
+      id: this.spec.id,
+      templateId: this.spec.id,
       schemaType: template.schemaType,
       type: 'initialValueTemplateItem',
-      description: spec.description || template.description,
-      title: spec.title || template.title,
-      subtitle: spec.subtitle,
-      icon: spec.icon || template.icon,
-      initialDocumentId: spec.initialDocumentId,
-      parameters: spec.parameters,
+      description: this.spec.description || template.description,
+      title: this.spec.title || template.title,
+      subtitle: this.spec.subtitle,
+      icon: this.spec.icon || template.icon,
+      initialDocumentId: this.spec.initialDocumentId,
+      parameters: this.spec.parameters,
     }
   }
 

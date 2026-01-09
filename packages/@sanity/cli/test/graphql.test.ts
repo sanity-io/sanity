@@ -1,12 +1,12 @@
-import {expect} from 'vitest'
+import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioNames, testClient} from './shared/environment'
 import {request} from './shared/request'
 
 describeCliTest('CLI: `sanity graphql`', () => {
-  describeCliTest.each(studioVersions)('%s', (version) => {
-    const testRunArgs = getTestRunArgs(version)
+  describe.each(studioNames)('%s', (studioName) => {
+    const testRunArgs = getTestRunArgs()
     const graphqlDataset = testRunArgs.graphqlDataset
     const deployFlags = ['--force', '--dataset', graphqlDataset]
     const client = testClient.withConfig({dataset: graphqlDataset})
@@ -21,7 +21,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
         {visibility: 'async'},
       )
 
-      const result = await runSanityCmdCommand(version, ['graphql', 'deploy', ...deployFlags])
+      const result = await runSanityCmdCommand(studioName, ['graphql', 'deploy', ...deployFlags])
       expect(result.stdout).toContain('https://')
       expect(result.code).toBe(0)
 
@@ -53,7 +53,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
 
     testConcurrent('graphql list', async () => {
       // Need something to list first
-      let result = await runSanityCmdCommand(version, [
+      let result = await runSanityCmdCommand(studioName, [
         'graphql',
         'deploy',
         '--tag',
@@ -62,7 +62,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
       ])
       expect(result.code).toBe(0)
 
-      result = await runSanityCmdCommand(version, ['graphql', 'list'])
+      result = await runSanityCmdCommand(studioName, ['graphql', 'list'])
       expect(result.code).toBe(0)
       expect(result.stdout).toContain(graphqlDataset)
       expect(result.stdout).toContain('for_list')
@@ -70,7 +70,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
 
     testConcurrent('graphql undeploy', async () => {
       // Need something to undeploy first
-      let result = await runSanityCmdCommand(version, [
+      let result = await runSanityCmdCommand(studioName, [
         'graphql',
         'deploy',
         '--tag',
@@ -79,7 +79,7 @@ describeCliTest('CLI: `sanity graphql`', () => {
       ])
       expect(result.code).toBe(0)
 
-      result = await runSanityCmdCommand(version, [
+      result = await runSanityCmdCommand(studioName, [
         'graphql',
         'undeploy',
         '--tag',

@@ -16,6 +16,7 @@ import {
   getOrCreateApplication,
   getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
+  getUserApplication,
 } from '../helpers'
 
 vi.mock('node:fs/promises')
@@ -116,7 +117,7 @@ describe('getOrCreateStudio', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // Simulate no list of deployments
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate user input
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
     const result = await getOrCreateStudio({
@@ -151,11 +152,37 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       spinner: mockSpinner,
       context,
       appHost: 'example',
+      appId: undefined,
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {appHost: 'example'},
+    })
+    expect(result).toEqual({
+      id: 'existing-app',
+      urlType: 'internal',
+      appHost: 'example.sanity.studio',
+    })
+  })
+
+  it('gets an existing user application if `deployment.appId` is provided in the config', async () => {
+    mockClientRequest.mockResolvedValueOnce({
+      id: 'existing-app',
+      appHost: 'example.sanity.studio',
+      urlType: 'internal',
+    })
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appHost: undefined,
+      appId: 'existing-app',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications/existing-app',
     })
     expect(result).toEqual({
       id: 'existing-app',
@@ -177,6 +204,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       client: mockClient,
       spinner: mockSpinner,
       context,
+      appId: undefined,
       appHost: 'newhost',
     })
 
@@ -432,7 +460,7 @@ describe('getOrCreateApplication', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // getUserApplications response
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate selecting the existing app
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
     const result = await getOrCreateApplication({
@@ -615,5 +643,57 @@ describe('getOrCreateApplication', () => {
     })
 
     expect(mockValidate).toHaveBeenCalled()
+  })
+})
+
+describe('getUserApplication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+  it('requests an app by org id and appType=coreApp', async () => {
+    const existingApp = {
+      id: 'app-1',
+      appHost: 'test-org-abc123',
+      title: 'Existing App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockImplementationOnce((options) => Promise.resolve(existingApp))
+
+    const result = await getUserApplication({
+      client: mockClient,
+      appHost: 'test-org-xyz789',
+      appId: 'app-1',
+      isSdkApp: true,
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledExactlyOnceWith({
+      uri: '/user-applications/app-1',
+      query: {appType: 'coreApp'},
+    })
+
+    expect(result).toEqual(existingApp)
+  })
+  it('requests a studio by app id', async () => {
+    const existingStudio = {
+      id: 'studio-1',
+      appHost: 'some-studio',
+      title: 'Existing Studio',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce(existingStudio)
+
+    const result = await getUserApplication({
+      client: mockClient,
+      appId: 'studio-1',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledExactlyOnceWith({
+      uri: '/user-applications/studio-1',
+    })
+
+    expect(result).toEqual(existingStudio)
   })
 })

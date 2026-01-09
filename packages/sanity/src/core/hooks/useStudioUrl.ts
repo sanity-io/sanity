@@ -4,6 +4,7 @@ import {useStudioAppIdStore} from '../create/studio-app/useStudioAppIdStore'
 import {useProjectOrganizationId} from '../store/_legacy/project/useProjectOrganizationId'
 import {useRenderingContext} from '../store/renderingContext/useRenderingContext'
 import {useActiveWorkspace} from '../studio'
+import {useEnvAwareSanityWebsiteUrl} from '../studio/hooks/useEnvAwareSanityWebsiteUrl'
 import {getDashboardPath} from '../util/dashboardPath'
 
 type StudioUrlBuilder = (url: string) => string
@@ -27,21 +28,31 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
   })
   const {activeWorkspace} = useActiveWorkspace()
   const {value: organizationId, loading: organizationIdLoading} = useProjectOrganizationId()
-
   const isLoading = appIdLoading || organizationIdLoading
   const isCoreUi = renderingContext?.name === 'coreUi'
+  const sanityWebsiteUrl = useEnvAwareSanityWebsiteUrl()
 
+  const appId = studioApp?.appId || ''
   const studioUrl = useMemo(() => {
-    if (!isCoreUi || isLoading || !studioApp?.appId || !organizationId) {
+    if (!isCoreUi || isLoading || !appId || !organizationId) {
       return defaultUrl || window.location.toString()
     }
 
     return getDashboardPath({
+      dashboardDomain: sanityWebsiteUrl,
       organizationId,
-      appId: studioApp.appId,
+      appId: appId,
       workspaceName: activeWorkspace.name,
     })
-  }, [activeWorkspace.name, defaultUrl, isCoreUi, isLoading, organizationId, studioApp?.appId])
+  }, [
+    activeWorkspace.name,
+    defaultUrl,
+    isCoreUi,
+    isLoading,
+    organizationId,
+    appId,
+    sanityWebsiteUrl,
+  ])
 
   const buildStudioUrl = useCallback(
     ({coreUi, studio}: StudioUrlModifier) => {

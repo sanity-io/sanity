@@ -16,16 +16,11 @@ import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {debug} from '../debug'
-import {type CliConfig, type SanityJson} from '../types'
+import {type CliConfig} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 import {dynamicRequire} from './dynamicRequire'
 
-export type CliMajorVersion = 2 | 3
-
-export type CliConfigResult =
-  | {config: SanityJson; path: string; version: 2}
-  | {config: CliConfig; path: string; version: 3}
-  | {config: null; path: string; version: CliMajorVersion}
+export type CliConfigResult = {config: CliConfig; path: string} | {config: null; path: string}
 
 export async function getCliConfig(
   cwd: string,
@@ -45,26 +40,19 @@ export async function getCliConfig(
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
     : // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require('esbuild-register/dist/node').register({supported: {'dynamic-import': true}})
+      require('esbuild-register/dist/node').register({
+        target: `node${process.version.slice(1)}`,
+        supported: {'dynamic-import': true},
+        // Force CJS output since we use require() to load the config
+        format: 'cjs',
+      })
 
   try {
     // If forked execution failed, we need to clear the cache to reload the env vars
-    const v3Config = getSanityCliConfig(cwd, clearCache)
-    if (v3Config) {
-      return v3Config
-    }
-
-    return getSanityJsonConfig(cwd)
-  } catch (err) {
-    throw err
+    return getSanityCliConfig(cwd, clearCache)
   } finally {
     unregister()
   }
-}
-
-export function getCliConfigSync(cwd: string): CliConfigResult | null {
-  const v3Config = getSanityCliConfig(cwd)
-  return v3Config ? v3Config : getSanityJsonConfig(cwd)
 }
 
 async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> {
@@ -92,23 +80,15 @@ async function getCliConfigForked(cwd: string): Promise<CliConfigResult | null> 
   })
 }
 
-function getSanityJsonConfig(cwd: string): CliConfigResult | null {
-  const configPath = path.join(cwd, 'sanity.json')
+export function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
+  let configName = 'sanity.cli'
 
-  if (!fs.existsSync(configPath)) {
-    return null
+  if (process.env.SANITY_CLI_TEST_CONFIG_NAME && process.env.TEST === 'true') {
+    configName = process.env.SANITY_CLI_TEST_CONFIG_NAME
   }
 
-  return {
-    config: loadJsonConfig(configPath),
-    path: configPath,
-    version: 2,
-  }
-}
-
-function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | null {
-  const jsConfigPath = path.join(cwd, 'sanity.cli.js')
-  const tsConfigPath = path.join(cwd, 'sanity.cli.ts')
+  const jsConfigPath = path.join(cwd, `${configName}.js`)
+  const tsConfigPath = path.join(cwd, `${configName}.ts`)
 
   const [js, ts] = [fs.existsSync(jsConfigPath), fs.existsSync(tsConfigPath)]
 
@@ -120,28 +100,16 @@ function getSanityCliConfig(cwd: string, clearCache = false): CliConfigResult | 
     return {
       config: importConfig(tsConfigPath, clearCache),
       path: tsConfigPath,
-      version: 3,
     }
   }
 
   if (js && ts) {
-    warn('Found both `sanity.cli.js` and `sanity.cli.ts` - using sanity.cli.js')
+    warn(`Found both \`${configName}.js\` and \`${configName}.ts\` - using ${configName}.js`)
   }
 
   return {
     config: importConfig(jsConfigPath, clearCache),
     path: jsConfigPath,
-    version: 3,
-  }
-}
-
-function loadJsonConfig(filePath: string): SanityJson | null {
-  try {
-    const content = fs.readFileSync(filePath, 'utf8')
-    return JSON.parse(content)
-  } catch (err) {
-    console.error(`Error reading "${filePath}": ${err.message}`)
-    return null
   }
 }
 

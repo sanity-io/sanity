@@ -79,7 +79,7 @@ class PaginatedGetBackupStream extends Readable {
       if (msg === undefined) {
         msg = String(error)
       }
-      throw new Error(`Downloading dataset backup failed: ${msg}`)
+      throw new Error(`Downloading dataset backup failed: ${msg}`, {cause: error})
     }
   }
 }

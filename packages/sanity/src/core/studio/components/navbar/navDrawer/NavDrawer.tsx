@@ -1,6 +1,6 @@
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
 import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
@@ -122,7 +122,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
             icon={action?.icon}
             justify="flex-start"
             mode="bleed"
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={() => handleActionClick(action.onAction)}
             selected={action.selected}
             size="large"
@@ -199,6 +198,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
                 <Card flex="none" padding={2}>
+                  {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}
@@ -228,7 +228,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       iconRight={LeaveIcon}
                       justify="flex-start"
                       mode="bleed"
-                      // eslint-disable-next-line react/jsx-handler-names
                       onClick={auth.logout}
                       size="large"
                       text={t('user-menu.action.sign-out')}

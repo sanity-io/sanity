@@ -6,7 +6,7 @@ import {
   type ObjectDefinition,
   type ObjectField,
 } from '@sanity/types'
-import {castArray, flatMap, pick, startCase} from 'lodash'
+import {castArray, flatMap, pick, startCase} from 'lodash-es'
 
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
@@ -42,22 +42,9 @@ export const ObjectType = {
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
-      fields: subTypeDef.fields.map((fieldDef: any) => {
-        const {name, fieldset, group, ...rest} = fieldDef
-
-        const compiledField = {
-          name,
-          group,
-          fieldset,
-        }
-
-        return lazyGetter(compiledField, 'type', () => {
-          return createMemberType({
-            ...rest,
-            title: fieldDef.title || startCase(name),
-          })
-        })
-      }),
+      fields: subTypeDef.fields.map((fieldDef: any) =>
+        createMemberType.cachedObjectField(fieldDef),
+      ),
     }
 
     const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), ownProps, {

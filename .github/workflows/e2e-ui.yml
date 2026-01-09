@@ -16,14 +16,8 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
       - name: Patch increment version in package.json
         id: npm-version
         shell: bash
@@ -32,7 +26,7 @@ jobs:
       - name: Namespace version with build run id
         run: npm version --no-git-commit-hooks --no-git-tag-version "${{ steps.npm-version.outputs.NPM_VERSION }}-gh.${{ github.run_id }}"
       - run: pnpm pack --pack-destination ./artifacts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -48,21 +42,17 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
+      - uses: ./.github/actions/setup
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
-      - name: Install project dependencies
-        run: pnpm install
+
+      # For this trick to work there needs to be a `"@sanity/ui@3": "$@sanity/ui"` override in the root package.json, with a `@sanity/ui` entry in `devDependencies`
       - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
 
       - name: Build CLI
@@ -82,21 +72,15 @@ jobs:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
         project: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
 
-      - name: Install project dependencies
-        run: pnpm install
       - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
 
       - name: Store Playwright's Version
@@ -108,7 +92,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -151,15 +135,11 @@ jobs:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-      - uses: actions/download-artifact@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -176,7 +156,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -203,7 +183,7 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -215,20 +195,13 @@ jobs:
     needs: [playwright-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           repository: sanity-io/sanity
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
@@ -238,7 +211,7 @@ jobs:
         run: npx playwright merge-reports --reporter html ./playwright-report
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report

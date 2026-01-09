@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "4.3.0",
+  "version": "5.2.0",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
@@ -42,7 +42,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../.. && tsc --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -52,9 +52,15 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/package.config": "workspace:*"
+    "@repo/package.config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   },
   "engines": {
-    "node": ">=20.19"
+    "node": ">=20.19 <22 || >=22.12"
   }
 }

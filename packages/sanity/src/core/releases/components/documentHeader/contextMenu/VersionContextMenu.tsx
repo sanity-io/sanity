@@ -1,28 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {Menu, MenuDivider, Spinner, Stack} from '@sanity/ui'
 import {memo, useEffect, useRef, useState} from 'react'
-import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 
-import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
-import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseDefaults, isReleaseScheduledOrScheduling} from '../../../util/util'
-import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
-import {VersionContextMenuItem} from './VersionContextMenuItem'
+import {getReleaseDefaults} from '../../../util/util'
+import {CanonicalReleaseContextMenu} from './CanonicalReleaseContextMenu'
+import {ScheduledDraftContextMenu} from './ScheduledDraftContextMenu'
 
-const ReleasesList = styled(Stack)`
-  max-width: 300px;
-  max-height: 200px;
-  overflow-y: auto;
-`
-
-export const VersionContextMenu = memo(function VersionContextMenu(props: {
+interface VersionContextMenuProps {
   documentId: string
   releases: ReleaseDocument[]
   releasesLoading: boolean
@@ -30,12 +18,19 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   isVersion: boolean
   onDiscard: () => void
   onCreateRelease: () => void
+  onCopyToDrafts: () => void
+  onCopyToDraftsNavigate: () => void
   onCreateVersion: (targetId: string) => void
   disabled?: boolean
   locked?: boolean
   type: string
   isGoingToUnpublish?: boolean
-}) {
+  release?: ReleaseDocument
+  isScheduledDraft?: boolean
+  scheduledDraftMenuActions?: UseScheduledDraftMenuActionsReturn
+}
+
+export const VersionContextMenu = memo(function VersionContextMenu(props: VersionContextMenuProps) {
   const {
     documentId,
     releases,
@@ -44,15 +39,18 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     isVersion,
     onDiscard,
     onCreateRelease,
+    onCopyToDrafts,
+    onCopyToDraftsNavigate,
     onCreateVersion,
     disabled,
     locked,
     type,
     isGoingToUnpublish = false,
+    release,
+    isScheduledDraft,
+    scheduledDraftMenuActions,
   } = props
-  const {t} = useTranslation()
   const isPublished = isPublishedId(documentId) && !isVersion
-  const optionsReleaseList = releases.filter((release) => !isReleaseScheduledOrScheduling(release))
 
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {createRelease} = useReleaseOperations()
@@ -73,7 +71,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
   useEffect(() => {
     isMounted.current = true
 
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermission) => {
       if (isMounted.current) setHasCreatePermission(hasPermission)
     })
 
@@ -82,67 +80,47 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: {
     }
   }, [checkWithPermissionGuard, createRelease])
 
+  // Scheduled drafts use different menu with publish-now, reschedule, and delete actions
+  if (isScheduledDraft && isVersion && release && scheduledDraftMenuActions) {
+    return (
+      <ScheduledDraftContextMenu
+        releases={releases}
+        bundleId={fromRelease}
+        release={release}
+        onCreateRelease={onCreateRelease}
+        onCopyToDrafts={onCopyToDrafts}
+        onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+        onCreateVersion={onCreateVersion}
+        disabled={disabled}
+        isGoingToUnpublish={isGoingToUnpublish}
+        hasCreatePermission={hasCreatePermission}
+        scheduledDraftMenuActions={scheduledDraftMenuActions}
+        documentId={documentId}
+        documentType={type}
+      />
+    )
+  }
+
   return (
-    <>
-      <Menu>
-        {isVersion && (
-          <IntentLink
-            intent="release"
-            params={{id: fromRelease}}
-            rel="noopener noreferrer"
-            style={{textDecoration: 'none'}}
-            disabled={disabled}
-          >
-            <MenuItem icon={CalendarIcon} text={t('release.action.view-release')} />
-          </IntentLink>
-        )}
-        {releasesLoading && <Spinner />}
-        <MenuGroup
-          icon={CopyIcon}
-          popover={{placement: 'right-start'}}
-          text={t('release.action.copy-to')}
-          disabled={disabled || !hasCreatePermission || isGoingToUnpublish}
-          tooltipProps={{
-            disabled: hasCreatePermission === true,
-            content: t('release.action.permission.error'),
-          }}
-          data-testid="copy-version-to-release-button-group"
-        >
-          <ReleasesList key={fromRelease} space={1}>
-            {optionsReleaseList.map((release) => {
-              return (
-                <MenuItem
-                  key={release._id}
-                  as="a"
-                  onClick={() => onCreateVersion(release._id)}
-                  renderMenuItem={() => <VersionContextMenuItem release={release} />}
-                  disabled={disabled}
-                  tooltipProps={{
-                    content: t('release.tooltip.locked'),
-                  }}
-                />
-              )
-            })}
-          </ReleasesList>{' '}
-          {optionsReleaseList.length > 1 && <MenuDivider />}
-          <CreateReleaseMenuItem onCreateRelease={onCreateRelease} />
-        </MenuGroup>
-        {!isPublished && (
-          <>
-            <MenuDivider />
-            <MenuItem
-              icon={TrashIcon}
-              onClick={onDiscard}
-              text={t('release.action.discard-version')}
-              disabled={disabled || locked || !hasDiscardPermission}
-              tooltipProps={{
-                disabled: hasDiscardPermission === true,
-                content: t('release.action.permission.error'),
-              }}
-            />
-          </>
-        )}
-      </Menu>
-    </>
+    <CanonicalReleaseContextMenu
+      releases={releases}
+      releasesLoading={releasesLoading}
+      bundleId={fromRelease}
+      release={release}
+      isVersion={isVersion}
+      onDiscard={onDiscard}
+      onCreateRelease={onCreateRelease}
+      onCopyToDrafts={onCopyToDrafts}
+      onCopyToDraftsNavigate={onCopyToDraftsNavigate}
+      onCreateVersion={onCreateVersion}
+      disabled={disabled}
+      locked={locked}
+      isGoingToUnpublish={isGoingToUnpublish}
+      hasCreatePermission={hasCreatePermission}
+      hasDiscardPermission={hasDiscardPermission || false}
+      isPublished={isPublished}
+      documentId={documentId}
+      documentType={type}
+    />
   )
 })

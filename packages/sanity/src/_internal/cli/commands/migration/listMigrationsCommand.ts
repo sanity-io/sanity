@@ -51,7 +51,9 @@ const listMigrationCommand: CliCommandDefinition = {
         )
         return
       }
-      throw new Error(`An error occurred while listing migrations: ${error.message}`)
+      throw new Error(`An error occurred while listing migrations: ${error.message}`, {
+        cause: error,
+      })
     }
   },
 }
@@ -79,6 +81,7 @@ export async function resolveMigrations(workDir: string): Promise<ResolvedMigrat
     unregister = register({
       target: `node${process.version.slice(1)}`,
       supported: {'dynamic-import': true},
+      format: 'cjs',
     }).unregister
   }
 

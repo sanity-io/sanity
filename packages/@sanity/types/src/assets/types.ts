@@ -62,6 +62,7 @@ export interface ImageMetadata {
   palette?: ImagePalette
   lqip?: string
   blurHash?: string
+  thumbHash?: string
   hasAlpha: boolean
   isOpaque: boolean
 }
@@ -166,6 +167,7 @@ export type AssetMetadataType =
   | 'palette'
   | 'lqip'
   | 'blurhash'
+  | 'thumbhash'
   | 'none'
 
 /** @beta */
@@ -179,7 +181,7 @@ export interface AssetSource {
 
   i18nKey?: string
   component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<EmptyProps>
+  icon?: ComponentType
   /** @beta */
   Uploader?: AssetSourceUploaderClass
 }
@@ -189,7 +191,7 @@ export interface AssetSourceUploadFile {
   id: string
   file: globalThis.File
   progress: number // 0 to 100
-  status: 'pending' | 'uploading' | 'complete' | 'error' | 'aborted'
+  status: 'pending' | 'uploading' | 'complete' | 'error' | 'aborted' | 'alreadyExists'
   error?: Error
   result?: unknown // The upload result in the source
 }

@@ -5,6 +5,7 @@ import zlib from 'node:zlib'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
+import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 import {deploySchemasAction} from '../schema/deploySchemasAction'
@@ -37,7 +38,6 @@ export default async function deployStudioAction(
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig, output})
 
   const installedSanityVersion = await getInstalledSanityVersion()
-  const configStudioHost = cliConfig && 'studioHost' in cliConfig && cliConfig.studioHost
 
   const client = apiClient({
     requireUser: true,
@@ -74,16 +74,18 @@ export default async function deployStudioAction(
   // Check that the project has a studio hostname
   let spinner = output.spinner('Checking project info').start()
 
-  let userApplication: UserApplication
+  const appId = getAppId({cliConfig, output})
+  const configStudioHost = cliConfig && 'studioHost' in cliConfig ? cliConfig.studioHost : undefined
 
+  let userApplication: UserApplication
   try {
-    // If the user has provided a studioHost in the config, use that
-    if (configStudioHost) {
+    // If the user has provided an appId in the config, use that
+    if (appId || configStudioHost) {
       userApplication = await getOrCreateUserApplicationFromConfig({
         client,
         context,
         spinner,
-        appHost: configStudioHost,
+        ...(appId ? {appId, appHost: undefined} : {appId: undefined, appHost: configStudioHost}),
       })
     } else {
       userApplication = await getOrCreateStudio({client, context, spinner})
@@ -154,10 +156,19 @@ export default async function deployStudioAction(
     // And let the user know we're done
     output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
 
-    if (!configStudioHost) {
-      output.print(`\nAdd ${chalk.cyan(`studioHost: '${userApplication.appHost}'`)}`)
-      output.print(`to defineCliConfig root properties in sanity.cli.js or sanity.cli.ts`)
-      output.print(`to avoid prompting for hostname on next deploy.`)
+    if (!appId) {
+      const example = `Example:
+export default defineCliConfig({
+  //…
+  deployment: {
+    ${chalk.cyan`appId: '${userApplication.id}'`},
+  },
+  //…
+})`
+      output.print(`\nAdd ${chalk.cyan(`appId: '${userApplication.id}'`)}`)
+      output.print(`to the \`deployment\` section in sanity.cli.js or sanity.cli.ts`)
+      output.print(`to avoid prompting for application id on next deploy.`)
+      output.print(`\n${example}`)
     }
   } catch (err) {
     spinner.fail()

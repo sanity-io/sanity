@@ -5,8 +5,18 @@
     "github>sanity-io/renovate-config:studio-v3",
     ":dependencyDashboardApproval"
   ],
-  "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
+  "ignorePresets": [
+    "github>sanity-io/renovate-config:group-non-major",
+    "github>sanity-io/renovate-config:workarounds-esm",
+    "github>sanity-io/renovate-config:dedupe"
+  ],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
+    {
+      "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
+      "matchPackageNames": ["/^@sanity\\//", "/^@portabletext\\//", "/^react-rx$/", "/^groq-js$/"],
+      "minimumReleaseAge": "0 days"
+    },
     {
       "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
       "matchUpdateTypes": ["minor", "patch"],
@@ -31,19 +41,12 @@
         "replacement",
         "rollback"
       ],
-      "matchPackageNames": [
-        "!@portabletext/block-tools",
-        "!@portabletext/editor",
-        "!@sanity/client",
-        "!@sanity/tsdoc",
-        "!@sanity/ui"
-      ]
+      "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
     },
     {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
-        "@portabletext/block-tools",
-        "@portabletext/editor",
+        "@portabletext/*",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/import",
@@ -58,9 +61,9 @@
         "@sanity/template-validator",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
-        "framer-motion",
         "get-it",
         "groq-js",
+        "motion",
         "react-rx",
         "scrollmirror",
         "xstate",
@@ -88,7 +91,6 @@
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
         "@sanity/template-validator",
-        "@sanity/tsdoc",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
         "esbuild",
@@ -106,20 +108,25 @@
       "schedule": ["every weekday"]
     },
     {
-      "description": "Group TypeScript related deps in a single PR, as they often have to update together",
-      "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "@sanity/tsdoc", "typescript"]
+      "description": "Upgrade @portabletext/* packages together",
+      "matchPackageNames": ["@portabletext/*"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "portabletext"
     },
     {
-      "description": "Due to our usage of useEffectEvent we need to use the experimental version of the plugin. Otherwise the exhaustive-deps rule will have false negatives",
-      "matchPackageNames": ["eslint-plugin-react-hooks"],
-      "followTag": "experimental"
+      "description": "Group TypeScript related deps in a single PR, as they often have to update together",
+      "groupName": "typescript-tooling",
+      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+    },
+    {
+      "description": "Always upgrade oxlint together",
+      "groupName": "oxlint",
+      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
     }
   ],
   "ignorePaths": [
     "packages/@sanity/cli/test/__fixtures__/v2/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-18/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-19/package.json",
-    "packages/sanity/fixtures/examples/prj-with-styled-components-5/package.json"
+    "packages/sanity/fixtures/examples/prj-with-react-19/package.json"
   ]
 }

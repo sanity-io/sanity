@@ -3,7 +3,9 @@ import path from 'node:path'
 
 import pkgDir from 'pkg-dir'
 
-export async function getCliVersion(): Promise<string> {
+import {type PackageJson} from '../types'
+
+export async function getCliPkg(): Promise<PackageJson> {
   const cliPath = pkgDir.sync(__dirname)
 
   if (!cliPath) {
@@ -14,9 +16,12 @@ export async function getCliVersion(): Promise<string> {
   try {
     data = await fs.readFile(path.join(cliPath, 'package.json'), 'utf-8')
   } catch (err) {
-    throw new Error(`Unable to read @sanity/cli/package.json: ${err.message}`)
+    throw new Error(`Unable to read @sanity/cli/package.json: ${err.message}`, {cause: err})
   }
 
-  const pkg = JSON.parse(data)
-  return pkg.version
+  return JSON.parse(data)
+}
+
+export async function getCliVersion(): Promise<string> {
+  return (await getCliPkg()).version
 }

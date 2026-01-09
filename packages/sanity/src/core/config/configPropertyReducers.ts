@@ -16,10 +16,13 @@ import {
   type DocumentInspector,
 } from './document'
 import {flattenConfig} from './flattenConfig'
+import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {
   type AsyncConfigPropertyReducer,
   type ConfigContext,
   type ConfigPropertyReducer,
+  DECISION_PARAMETERS_SCHEMA,
+  type DecisionParametersConfig,
   type DocumentActionsContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
@@ -187,6 +190,23 @@ export const documentActionsReducer: ConfigPropertyReducer<
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${getPrintableType(
       documentActions,
+    )}`,
+  )
+}
+
+export const releaseActionsReducer: ConfigPropertyReducer<
+  ReleaseActionComponent[],
+  ReleaseActionsContext
+> = (prev, {releases}, context) => {
+  const releaseActions = releases?.actions
+  if (!releaseActions) return prev
+
+  if (typeof releaseActions === 'function') return releaseActions(prev, context)
+  if (Array.isArray(releaseActions)) return [...prev, ...releaseActions]
+
+  throw new Error(
+    `Expected \`releases.actions\` to be an array or a function, but received ${getPrintableType(
+      releaseActions,
     )}`,
   )
 }
@@ -417,6 +437,29 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
+export const enhancedObjectDialogEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const enabled = innerConfig.beta?.form?.enhancedObjectDialog?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(
+      `Expected \`beta.form.enhancedObjectDialog.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
@@ -482,6 +525,47 @@ export const serverDocumentActionsReducer = (opts: {
       )}`,
     )
   }, initialValue)
+
+  return result
+}
+
+export const scheduledDraftsEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const enabled = innerConfig.scheduledDrafts?.enabled
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
+  }, initialValue)
+
+  return result
+}
+
+export const decisionParametersSchemaReducer = (opts: {
+  config: PluginOptions
+  initialValue: DecisionParametersConfig | undefined
+}): DecisionParametersConfig | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce(
+    (acc: DecisionParametersConfig | undefined, {config: innerConfig}) => {
+      const schema = innerConfig[DECISION_PARAMETERS_SCHEMA]
+
+      if (typeof schema === 'undefined') return acc
+      if (typeof schema === 'object' && schema !== null) return schema
+
+      throw new Error(`Expected an object, but received ${getPrintableType(schema)}`)
+    },
+    initialValue,
+  )
 
   return result
 }
@@ -611,4 +695,26 @@ export const announcementsEnabledReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const advancedVersionControlEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
+  prev,
+  {advancedVersionControl},
+  context,
+): boolean => {
+  const resolver = advancedVersionControl?.enabled
+
+  if (typeof resolver === 'boolean') {
+    return resolver
+  }
+
+  if (typeof resolver === 'function') {
+    return resolver(prev, context)
+  }
+
+  if (typeof resolver !== 'undefined') {
+    throw new Error(`Expected boolean, but received ${getPrintableType(resolver)}`)
+  }
+
+  return prev
 }

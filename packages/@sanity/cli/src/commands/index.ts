@@ -4,11 +4,12 @@ import blueprintsGroup from './blueprints/blueprintsGroup'
 import configBlueprintsCommand from './blueprints/configBlueprintsCommand'
 import deployBlueprintsCommand from './blueprints/deployBlueprintsCommand'
 import destroyBlueprintsCommand from './blueprints/destroyBlueprintsCommand'
+import doctorBlueprintsCommand from './blueprints/doctorBlueprintsCommand'
 import infoBlueprintsCommand from './blueprints/infoBlueprintsCommand'
 import initBlueprintsCommand from './blueprints/initBlueprintsCommand'
 import logsBlueprintsCommand from './blueprints/logsBlueprintsCommand'
 import planBlueprintsCommand from './blueprints/planBlueprintsCommand'
-import listBlueprintsCommand from './blueprints/stacksBlueprintsCommand'
+import stacksBlueprintsCommand from './blueprints/stacksBlueprintsCommand'
 import codemodCommand from './codemod/codemodCommand'
 import debugCommand from './debug/debugCommand'
 import browseCommand from './docs/browseCommand'
@@ -27,6 +28,8 @@ import learnCommand from './learn/learnCommand'
 import loginCommand from './login/loginCommand'
 import logoutCommand from './logout/logoutCommand'
 import manageCommand from './manage/manageCommand'
+import configureMcpCommand from './mcp/configureMcpCommand'
+import mcpGroup from './mcp/mcpGroup'
 import getCommand from './openapi/getCommand'
 import listCommand from './openapi/listCommand'
 import openapiGroup from './openapi/openapiGroup'
@@ -66,6 +69,8 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   disableTelemetryCommand,
   enableTelemetryCommand,
   telemetryStatusCommand,
+  mcpGroup,
+  configureMcpCommand,
   generateTypegenCommand,
   typegenGroup,
   functionsGroup,
@@ -78,9 +83,10 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   configBlueprintsCommand,
   deployBlueprintsCommand,
   destroyBlueprintsCommand,
+  doctorBlueprintsCommand,
   infoBlueprintsCommand,
   initBlueprintsCommand,
-  listBlueprintsCommand,
   logsBlueprintsCommand,
   planBlueprintsCommand,
+  stacksBlueprintsCommand,
 ]

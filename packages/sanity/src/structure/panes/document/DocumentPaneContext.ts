@@ -13,6 +13,7 @@ import {
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
   type EditStateFor,
+  type NodeChronologyProps,
   type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
@@ -24,7 +25,7 @@ import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
 /** @internal */
-export interface DocumentPaneContextValue {
+export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   actions: DocumentActionComponent[] | null
   activeViewId: string | null
   badges: DocumentBadgeComponent[] | null
@@ -32,9 +33,10 @@ export interface DocumentPaneContextValue {
   closeInspector: (inspectorName?: string) => void
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
-  compareValue: Partial<SanityDocument> | null
+  compareValue: SanityDocument | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: Partial<SanityDocument> | null
+  displayInlineChanges?: boolean
   documentId: string
   documentIdRaw: string
   documentType: string
@@ -59,6 +61,8 @@ export interface DocumentPaneContextValue {
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void
+  onSetMaximizedPane?: () => void
+  maximized: boolean
   openInspector: (inspectorName: string, paneParams?: Record<string, string>) => void
   openPath: Path
   paneKey: string

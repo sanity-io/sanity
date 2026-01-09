@@ -1,8 +1,10 @@
 import {useMemo} from 'react'
 import {
+  isPublishedPerspective,
   prepareForPreview,
-  unstable_useValuePreview as useValuePreview,
+  usePerspective,
   useTranslation,
+  useValuePreview,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
@@ -30,13 +32,19 @@ export interface UseDocumentTitle {
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, editState, isDeleted, lastRevisionDocument} =
     useDocumentPane()
+  const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
   // follows the same logic as the StructureTitle component
   const documentValue = useMemo(() => {
-    return isDeleted
-      ? lastRevisionDocument
-      : editState?.version || editState?.draft || editState?.published
-  }, [isDeleted, lastRevisionDocument, editState])
+    if (isDeleted) {
+      return lastRevisionDocument
+    }
+    // When viewing published perspective, prioritize published document
+    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
+      return editState?.published
+    }
+    return editState?.version || editState?.draft || editState?.published
+  }, [isDeleted, lastRevisionDocument, editState, selectedPerspectiveName])
   const subscribed = Boolean(documentValue)
 
   // For deleted documents, we need to handle the preview differently since useValuePreview

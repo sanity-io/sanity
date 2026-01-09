@@ -35,7 +35,6 @@ export default function InlinePreviewStory() {
                 Hello{' '}
                 <PreviewWrapper>
                   <InlinePreview
-                    // eslint-disable-next-line react/jsx-no-bind
                     media={() =>
                       withImage ? (
                         <img src="https://source.unsplash.com/60x60/?face" />
@@ -55,7 +54,6 @@ export default function InlinePreviewStory() {
                 Hello{' '}
                 <PreviewWrapper>
                   <InlinePreview
-                    // eslint-disable-next-line react/jsx-no-bind
                     media={() =>
                       withImage ? (
                         <img src="https://source.unsplash.com/60x60/?face" />
@@ -75,7 +73,6 @@ export default function InlinePreviewStory() {
                 Hello{' '}
                 <PreviewWrapper>
                   <InlinePreview
-                    // eslint-disable-next-line react/jsx-no-bind
                     media={() =>
                       withImage ? (
                         <img src="https://source.unsplash.com/60x60/?face" />

@@ -1,3 +1,4 @@
+import {studioPath} from '@sanity/client/csm'
 import {Card, Code, Label, Stack} from '@sanity/ui'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
@@ -12,10 +13,15 @@ import {styled} from 'styled-components'
 import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
+import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
 import {PresentationSpinner} from '../PresentationSpinner'
-import {type PresentationSearchParams, type StructureDocumentPaneParams} from '../types'
+import {
+  type PresentationNavigate,
+  type PresentationSearchParams,
+  type PresentationStateParams,
+  type StructureDocumentPaneParams,
+} from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-import {PresentationPaneRouterProvider} from './PresentationPaneRouterProvider'
 
 const WrappedCode = styled(Code)`
   white-space: pre-wrap;
@@ -24,13 +30,21 @@ const WrappedCode = styled(Code)`
 export function DocumentPane(props: {
   documentId: string
   documentType: string
-  onFocusPath: (path: Path) => void
+  onFocusPath: (state: Required<PresentationStateParams>) => void
+  onEditReference: PresentationNavigate
   onStructureParams: (params: StructureDocumentPaneParams) => void
   structureParams: StructureDocumentPaneParams
   searchParams: PresentationSearchParams
 }): React.JSX.Element {
-  const {documentId, documentType, onFocusPath, onStructureParams, searchParams, structureParams} =
-    props
+  const {
+    documentId,
+    documentType,
+    onFocusPath,
+    onEditReference,
+    onStructureParams,
+    searchParams,
+    structureParams,
+  } = props
   const {template, templateParams} = structureParams
 
   const {t} = useTranslation(presentationLocaleNamespace)
@@ -49,6 +63,17 @@ export function DocumentPane(props: {
       type: 'document',
     }),
     [documentId, documentType, template, templateParams],
+  )
+
+  const handleFocusPath = useCallback(
+    (path: Path) => {
+      return onFocusPath({
+        id: documentId,
+        type: documentType,
+        path: studioPath.toString(path),
+      })
+    },
+    [documentId, documentType, onFocusPath],
   )
 
   const [errorParams, setErrorParams] = useState<{
@@ -86,6 +111,7 @@ export function DocumentPane(props: {
       <PaneLayout style={{height: '100%'}}>
         <PresentationPaneRouterProvider
           searchParams={searchParams}
+          onEditReference={onEditReference}
           onStructureParams={onStructureParams}
           structureParams={structureParams}
         >
@@ -96,7 +122,7 @@ export function DocumentPane(props: {
               index={1}
               itemId="document"
               pane={paneDocumentNode}
-              onFocusPath={onFocusPath}
+              onFocusPath={handleFocusPath}
             />
           </Suspense>
         </PresentationPaneRouterProvider>

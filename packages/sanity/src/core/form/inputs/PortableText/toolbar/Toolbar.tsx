@@ -142,6 +142,7 @@ const InnerToolbar = memo(function InnerToolbar({
         <Button
           aria-label={t('inputs.portable-text.action.expand-editor')}
           icon={isFullscreen ? CollapseIcon : ExpandIcon}
+          data-testid={isFullscreen ? 'fullscreen-button-collapse' : 'fullscreen-button-expand'}
           mode="bleed"
           onClick={onToggleFullscreen}
           tooltipProps={{

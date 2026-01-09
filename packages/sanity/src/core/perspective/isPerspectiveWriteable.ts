@@ -2,7 +2,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 
 import {isReleaseDocument} from '../releases/store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../releases/util/util'
-import {type SelectedPerspective} from './types'
+import {type TargetPerspective} from './types'
 
 /**
  * @internal
@@ -26,7 +26,7 @@ export function isPerspectiveWriteable({
   isDraftModelEnabled,
   schemaType,
 }: {
-  selectedPerspective: SelectedPerspective
+  selectedPerspective: TargetPerspective
   isDraftModelEnabled: boolean
   schemaType?: ObjectSchemaType
 }): {result: true} | {result: false; reason: PerspectiveNotWriteableReason} {

@@ -6,6 +6,9 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    // We already check types with `check:types` scripts
+    checkTypes: false,
+
     customTags: [
       {
         name: 'hidden',
@@ -20,15 +23,10 @@ export default defineConfig({
     ],
     rules: {
       // Disable rules for now
-      'ae-forgotten-export': 'off',
       'ae-incompatible-release-tags': 'off',
       'ae-internal-missing-underscore': 'off',
       'ae-missing-release-tag': 'off',
     },
-  },
-  legacyExports: false,
-  rollup: {
-    optimizeLodash: true,
   },
   tsconfig: 'tsconfig.lib.json',
   strictOptions: {

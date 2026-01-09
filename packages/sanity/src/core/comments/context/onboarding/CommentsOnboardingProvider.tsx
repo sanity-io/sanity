@@ -9,7 +9,7 @@ const LOCAL_STORAGE_KEY = `sanityStudio:comments:inspector:onboarding:dismissed:
 const setLocalStorage = (value: boolean) => {
   try {
     window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value))
-  } catch (_) {
+  } catch {
     // Fail silently
   }
 }
@@ -18,7 +18,7 @@ const getLocalStorage = (): boolean => {
   try {
     const value = window.localStorage.getItem(LOCAL_STORAGE_KEY)
     return value ? JSON.parse(value) : false
-  } catch (_) {
+  } catch {
     return false
   }
 }

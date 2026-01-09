@@ -1,15 +1,18 @@
 import {readFile} from 'node:fs/promises'
 
-import * as json5 from 'json5'
+import json5 from 'json5'
 import * as z from 'zod'
 
-export const configDefintion = z.object({
+/**
+ * @internal
+ */
+export const configDefinition = z.object({
   path: z
     .string()
     .or(z.array(z.string()))
     .default([
-      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro}',
-      './app/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './src/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
+      './app/**/*.{ts,tsx,js,jsx,mjs,cjs,astro,vue,svelte}',
       './sanity/**/*.{ts,tsx,js,jsx,mjs,cjs}',
     ]),
   schema: z.string().default('./schema.json'),
@@ -18,19 +21,31 @@ export const configDefintion = z.object({
   overloadClientMethods: z.boolean().default(true),
 })
 
-export type CodegenConfig = z.infer<typeof configDefintion>
+export type TypeGenConfig = z.infer<typeof configDefinition>
 
-export async function readConfig(path: string): Promise<CodegenConfig> {
+/**
+ * @deprecated use TypeGenConfig
+ */
+export type CodegenConfig = TypeGenConfig
+
+/**
+ * Read, parse and process a config file
+ * @internal
+ */
+export async function readConfig(path: string): Promise<TypeGenConfig> {
   try {
     const content = await readFile(path, 'utf-8')
     const json = json5.parse(content)
-    return configDefintion.parseAsync(json)
+    return configDefinition.parseAsync(json)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Error in config file\n ${error.errors.map((err) => err.message).join('\n')}`)
+      throw new Error(
+        `Error in config file\n ${error.errors.map((err) => err.message).join('\n')}`,
+        {cause: error},
+      )
     }
     if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') {
-      return configDefintion.parse({})
+      return configDefinition.parse({})
     }
 
     throw error

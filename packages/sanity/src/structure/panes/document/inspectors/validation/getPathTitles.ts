@@ -3,6 +3,7 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {isArray, isRecord} from 'sanity'
 
+// eslint-disable-next-line max-statements
 export function getPathTitles(options: {
   path: Path
   schemaType: SchemaType
@@ -90,6 +91,11 @@ export function getPathTitles(options: {
 
     // array item key
     if (isRecord(segment) && segment._key) {
+      // if the value is undefined, it likely means that is has been deleted, so return the result
+      if (typeof v === 'undefined') {
+        return result
+      }
+
       if (!isArray(v)) {
         throw new Error(
           `Parent value is not an array, cannot get path segment: [_key == ${segment}]`,
@@ -105,6 +111,13 @@ export function getPathTitles(options: {
       const values = v ?? []
 
       v = values.find((i) => isRecord(i) && i._key === segment._key)
+
+      // in situations where the segment key exists but it could not be found in the values array
+      // means that the specific item has been deleted from the array
+      // and therefore we not need to continue running the validation for it
+      if (typeof v === 'undefined') {
+        return result
+      }
 
       if (!isRecord(v)) {
         throw new Error(`Array item not found: [_key == ${segment._key}]`)

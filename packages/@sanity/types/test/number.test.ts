@@ -65,5 +65,3 @@ describe('number types', () => {
     })
   })
 })
-
-export {}

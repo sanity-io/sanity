@@ -30,7 +30,7 @@ const DEFAULT_DECORATORS = [
     icon: 'code',
   },
   {
-    name: 'strike',
+    name: 'strike-through',
     title: 'Strike',
     hotkey: undefined, // Currently not defined
     icon: 'strikethrough',

@@ -10,6 +10,9 @@ export async function testServerCommand({
   cwd,
   env,
   basePath,
+  expectedOutput,
+  serverTimeout = 40_000,
+  outputTimeout = 50_000,
   expectedTitle,
   expectedFiles = [],
   args,
@@ -20,6 +23,9 @@ export async function testServerCommand({
   basePath: string
   expectedTitle: string
   expectedFiles?: string[]
+  serverTimeout?: number
+  outputTimeout?: number
+  expectedOutput?: ({stdout, stderr}: {stdout: string; stderr: string}) => void
   env?: Record<string, string>
   args?: string[]
 }): Promise<{
@@ -33,101 +39,117 @@ export async function testServerCommand({
     throw new Error(`Something is already listening on :${port}`)
   }
 
-  return new Promise((resolve, reject) => {
-    const maxWaitForServer = 50_000
-    const startedAt = Date.now()
-    let hasSucceeded = false
-    let timer: ReturnType<typeof setTimeout>
+  const startedAt = Date.now()
 
-    const proc = spawn(process.argv[0], [cliBinPath, command, ...(args || [])], {
-      cwd,
-      env: {...sanityEnv, ...env},
-      stdio: 'pipe',
-    })
+  const proc = spawn(process.argv[0], [cliBinPath, command, ...(args || [])], {
+    cwd,
+    env: {...sanityEnv, ...env},
+    stdio: 'pipe',
+  })
 
-    const stderr: Buffer[] = []
-    const stdout: Buffer[] = []
-    proc.stderr.on('data', (chunk) => stderr.push(chunk))
-    proc.stdout.on('data', (chunk) => stdout.push(chunk))
+  const stderr: Buffer[] = []
+  const stdout: Buffer[] = []
 
-    proc.on('close', (code) => {
-      if (!hasSucceeded && code && code > 0) {
+  const cmdResult = new Promise<{code: number | null; stdout: string; stderr: string}>(
+    (resolve, reject) => {
+      proc.stderr.on('data', (chunk) => {
+        stderr.push(chunk)
+        check(null)
+      })
+
+      proc.stdout.on('data', (chunk) => {
+        stdout.push(chunk)
+        check(null)
+      })
+
+      proc.once('close', (code) => check(code))
+
+      function check(code: number | null) {
         const stderrStr = buffersToString(stderr)
         const stdoutStr = buffersToString(stdout)
-        reject(
-          new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`),
-        )
+        if (code && code > 0) {
+          reject(
+            new Error(`'sanity ${command}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`),
+          )
+          return
+        }
+
+        try {
+          expectedOutput?.({stderr: buffersToString(stderr), stdout: buffersToString(stdout)})
+          resolve({code, stderr: stderrStr, stdout: stdoutStr})
+        } catch (error) {
+          if (error.name !== 'AssertionError') {
+            throw error
+          }
+          if (Date.now() - startedAt > serverTimeout) {
+            // assertion keeps failing for too long
+            reject(error)
+          } else {
+            setTimeout(check, 1000)
+          }
+        }
       }
-    })
+    },
+  )
 
-    scheduleConnect()
+  const serverResult = new Promise<{html: string; fileHashes: Map<string, string | null>}>(
+    (resolve, reject) => {
+      setTimeout(tryConnect, 1000)
 
-    function scheduleConnect() {
-      if (timer) {
-        clearTimeout(timer)
+      async function tryConnect() {
+        let res: ResponseData
+        try {
+          res = await Promise.race([
+            request(`http://localhost:${port}${basePath.replace(/\/$/, '')}/`),
+            new Promise<never>((_, rejectTimeout) =>
+              setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect')),
+            ),
+          ])
+        } catch {
+          if (Date.now() - startedAt > outputTimeout) {
+            reject(new Error('Timed out waiting for server to get online'))
+            return
+          }
+          setTimeout(tryConnect, 1000)
+          return
+        }
+
+        if (res.statusCode !== 200) {
+          reject(new Error(`HTTP server responded with HTTP ${res.statusCode}`))
+          return
+        }
+
+        const fileHashes = new Map<string, string | null>()
+        for (const file of expectedFiles) {
+          fileHashes.set(
+            file,
+            await request(`http://localhost:${port}${file}`)
+              .then(({body, statusCode}) =>
+                statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null,
+              )
+              .catch(() => null),
+          )
+        }
+        resolve({fileHashes, html: res.body.toString('utf8')})
       }
-
-      if (Date.now() - startedAt > maxWaitForServer) {
-        reject(new Error('Timed out waiting for server to get online'))
-        return
-      }
-
-      timer = setTimeout(tryConnect, 1000)
+    },
+  ).then((serverRes) => {
+    if (!serverRes.html.includes(`<title>${expectedTitle}`)) {
+      throw new Error(`Did not find expected <title> in HTML:\n\n${serverRes.html}`)
     }
-
-    async function tryConnect() {
-      let res: ResponseData
-      try {
-        res = await Promise.race([
-          request(`http://localhost:${port}${basePath.replace(/\/$/, '')}/`),
-          new Promise<ResponseData>((_, rejectTimeout) =>
-            setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect')),
-          ),
-        ])
-      } catch (err) {
-        scheduleConnect()
-        return
-      }
-
-      if (res.statusCode !== 200) {
-        proc.kill()
-        reject(new Error(`HTTP server responded with HTTP ${res.statusCode}`))
-        return
-      }
-
-      const fileHashes = new Map<string, string | null>()
-      for (const file of expectedFiles) {
-        fileHashes.set(
-          file,
-          await request(`http://localhost:${port}${file}`)
-            .then(({body, statusCode}) =>
-              statusCode === 200 ? createHash('sha256').update(body).digest('hex') : null,
-            )
-            .catch(() => null),
-        )
-      }
-
-      const html = res.body.toString('utf8')
-      if (html.includes(`<title>${expectedTitle}`)) {
-        onSuccess(html, fileHashes)
-        return
-      }
-
+    if (!expectedOutput) {
       proc.kill()
-      reject(new Error(`Did not find expected <title> in HTML:\n\n${html}`))
     }
+    return serverRes
+  })
 
-    function onSuccess(html: string, fileHashes: Map<string, string | null>) {
-      hasSucceeded = true
-      clearTimeout(timer)
-      proc.kill()
-      resolve({
-        html,
-        fileHashes,
-        stdout: buffersToString(stdout),
-        stderr: buffersToString(stderr),
-      })
-    }
+  return serverResult.then((serverRes) => {
+    return cmdResult
+      .then((cmdRes) => ({
+        ...serverRes,
+        ...cmdRes,
+      }))
+      .finally(() => proc.kill())
   })
 }
 

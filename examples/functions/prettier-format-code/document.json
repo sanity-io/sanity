@@ -1,0 +1,12 @@
+{
+  "_id": "505d8c4e-93b0-436d-8c34-ca0acf96a0b4",
+  "_type": "post",
+  "content": [
+    {
+      "_key": "7343c346d8cd",
+      "_type": "code",
+      "code": "const pets ={\n  schnauzers: ['heidi', \n               'kokos'],\n}\n",
+      "language": "typescript"
+    }
+  ]
+}

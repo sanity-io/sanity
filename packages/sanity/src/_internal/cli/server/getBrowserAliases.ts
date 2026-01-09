@@ -1,8 +1,11 @@
+import {createRequire} from 'node:module'
 import path from 'node:path'
 
-import {escapeRegExp} from 'lodash'
-import resolve from 'resolve.exports'
+import {escapeRegExp} from 'lodash-es'
+import * as resolve from 'resolve.exports'
 import {type Alias} from 'vite'
+
+const require = createRequire(import.meta.url)
 
 /**
  * The following are the specifiers that are expected/allowed to be used within

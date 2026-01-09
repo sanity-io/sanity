@@ -24,8 +24,8 @@ import {
   npmPath,
   packPath,
   pnpmPath,
+  studioNames,
   studiosPath,
-  studioVersions,
   testClient,
   testIdPath,
 } from './environment'
@@ -81,34 +81,36 @@ async function prepareStaticFixtures() {
 function prepareStudios() {
   // Copy the studios and install dependencies
   return Promise.all(
-    studioVersions.map(async (version) => {
-      const sourceStudioPath = path.join(fixturesPath, version)
-      const destinationPath = path.join(studiosPath, version)
-      const customDocStudioPath = path.join(studiosPath, `${version}-custom-document`)
+    studioNames.map(async (studioName) => {
+      const sourceStudioPath = path.join(fixturesPath, studioName)
+      const destinationPath = path.join(studiosPath, studioName)
+      const customDocStudioPath = path.join(studiosPath, `${studioName}-custom-document`)
 
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
-      if (version === 'v3') {
-        // We'll want to test the actual integration with the monorepo packages,
-        // instead of the versions that is available on npm, so we'll symlink them before running npm install
-        await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
-        await exec(pnpmPath, ['install', '--ignore-workspace'], {cwd: destinationPath})
+      // We'll want to test the actual integration with the monorepo packages,
+      // instead of the versions that is available on npm, so we'll symlink them before running npm install
+      await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
+      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: destinationPath,
+      })
 
-        // Make a copy of the studio and include a custom document component, in order to see
-        // that it resolves. We "cannot" use the same studio as it would _always_ use the
-        // custom document component, thus not testing the path of the _default_ component
-        await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
-        await copyFile(
-          `${customDocStudioPath}/components/EnvDocument.tsx`,
-          `${customDocStudioPath}/_document.tsx`,
-        )
-        // We'll want to test the actual integration with the monorepo packages,
-        // instead of the versions that is available on npm, so we'll symlink them before running npm install
-        await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
-        await exec(pnpmPath, ['install', '--ignore-workspace'], {
-          cwd: customDocStudioPath,
-        })
-      }
+      // Make a copy of the studio and include a custom document component, in order to see
+      // that it resolves. We "cannot" use the same studio as it would _always_ use the
+      // custom document component, thus not testing the path of the _default_ component
+      await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
+      await copyFile(
+        `${customDocStudioPath}/components/EnvDocument.tsx`,
+        `${customDocStudioPath}/_document.tsx`,
+      )
+      // We'll want to test the actual integration with the monorepo packages,
+      // instead of the versions that is available on npm, so we'll symlink them before running npm install
+      await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
+      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: customDocStudioPath,
+      })
     }),
   )
 }
@@ -146,8 +148,8 @@ async function prepareDatasets() {
     apiHost: cliApiHost,
   })
 
-  for (const version of studioVersions) {
-    const args = getTestRunArgs(version)
+  for (const version of studioNames) {
+    const args = getTestRunArgs()
     const datasets = [args.documentsDataset, args.graphqlDataset, args.aclDataset]
 
     await Promise.all(
@@ -235,13 +237,11 @@ export async function teardown(): Promise<void> {
     return
   }
 
-  for (const version of studioVersions) {
-    const args = getTestRunArgs(version)
-    await deleteCorsOrigins(args.corsOrigin)
-    await deleteAliases(args.alias)
-    await deleteGraphQLAPIs(args.graphqlDataset)
-    await deleteDatasets(args)
-  }
+  const args = getTestRunArgs()
+  await deleteCorsOrigins(args.corsOrigin)
+  await deleteAliases(args.alias)
+  await deleteGraphQLAPIs(args.graphqlDataset)
+  await deleteDatasets(args)
 
   await rm(baseTestPath, {recursive: true, force: true})
 

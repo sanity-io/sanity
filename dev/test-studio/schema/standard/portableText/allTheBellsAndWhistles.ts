@@ -76,6 +76,21 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     description: 'Will open the link in a new tab when checked.',
                     initialValue: false,
                   },
+                  defineField({
+                    type: 'string',
+                    name: 'iconName',
+                    title: 'Icon',
+                  }),
+                  defineField({
+                    type: 'string',
+                    name: 'iconColor',
+                    title: 'Icon Color',
+                  }),
+                  defineField({
+                    type: 'string',
+                    name: 'iconSize',
+                    title: 'Icon Size',
+                  }),
                 ],
               }),
               defineField({
@@ -406,6 +421,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
     defineField({
       name: 'content',
       type: 'array',
+      title: 'Content, comments disabled',
+      components: {
+        field: (props) => {
+          // eslint-disable-next-line camelcase
+          return props.renderDefault({...props, __internal_comments: undefined})
+        },
+      },
       of: [
         defineArrayMember({
           name: 'something',

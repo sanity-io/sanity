@@ -177,5 +177,3 @@ function setupTest() {
     onlyIndentationObject,
   }
 }
-
-export {}

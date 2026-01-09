@@ -12,6 +12,7 @@ import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLim
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
@@ -34,6 +35,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
 
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const invalid = getIsReleaseInvalid(release)
 
   const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
@@ -53,6 +55,8 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         const releaseValue = createReleaseMetadata(release)
 
         await createRelease(releaseValue)
+        // Close the dialog after creating the release.
+        onCancel()
         telemetry.log(CreatedRelease, {origin})
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
@@ -74,10 +78,9 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
             title: t('release.toast.create-release-error.title'),
           })
         }
-      } finally {
-        setIsSubmitting(false)
-        clearReleaseDataFromStorage()
       }
+      setIsSubmitting(false)
+      clearReleaseDataFromStorage()
     },
     [
       releasePromise,
@@ -124,7 +127,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
           <Flex justify="flex-end" paddingTop={5}>
             <Button
               size="large"
-              disabled={isSubmitting}
+              disabled={isSubmitting || invalid}
               type="submit"
               text={dialogConfirm}
               loading={isSubmitting}

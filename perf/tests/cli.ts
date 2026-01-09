@@ -1,3 +1,5 @@
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {parseArgs} from 'node:util'
 
 import {createClient} from '@sanity/client'
@@ -12,6 +14,8 @@ import {type Deployment} from './runner/types'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
 import {KNOWN_TEST_IDS} from './runner/utils/testIds'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 config({path: `${__dirname}/.env`})
 

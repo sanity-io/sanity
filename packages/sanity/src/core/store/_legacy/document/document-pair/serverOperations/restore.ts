@@ -8,7 +8,12 @@ export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
     {snapshots, historyStore, schema, idPair, typeName},
     fromRevision: DocumentRevision,
   ) => {
-    const targetId = isLiveEditEnabled(schema, typeName) ? idPair.publishedId : idPair.draftId
+    const targetId = idPair.versionId
+      ? idPair.versionId
+      : isLiveEditEnabled(schema, typeName)
+        ? idPair.publishedId
+        : idPair.draftId
+
     return historyStore.restore(idPair.publishedId, targetId, fromRevision, {
       fromDeleted: !snapshots.draft && !snapshots.published,
       useServerDocumentActions: true,

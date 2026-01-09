@@ -60,11 +60,14 @@ export function getIntentState(
 
 function getPaneParams(
   intent: string,
-  {template, version}: Record<string, string>,
-): {template?: string; version?: string} {
-  if (intent !== 'create') return EMPTY_PARAMS
-  if (template && version) return {template, version}
-  if (template) return {template}
-  if (version) return {version}
-  return EMPTY_PARAMS
+  {template, version, inspect, comment, task}: Record<string, string>,
+): {template?: string; version?: string; inspect?: string; comment?: string; task?: string} {
+  switch (intent) {
+    case 'create':
+      return {template, version}
+    case 'edit':
+      return {inspect, comment, task}
+    default:
+      return EMPTY_PARAMS
+  }
 }

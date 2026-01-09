@@ -5,15 +5,15 @@ import yargs from 'yargs'
 import {tagVersion, uploadBundles} from '../src'
 import {verify} from '../src/commands/verify'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-yargs(process.argv.slice(2))
+// oxlint-disable-next-line no-unused-expressions
+const task = yargs(process.argv.slice(2))
   .usage('$0 <command>')
   .command({
     command: 'publish',
     describe: 'Publish package bundles from dist folders',
     builder: (cmd) =>
       cmd.options({
-        'tag': {type: 'string', demandOption: false},
+        'tag': {type: 'string', array: true, demandOption: false},
         // !!WARNING!! JS files are cached for 1y, so only use this only for development/testing purposes
         'as-version': {
           hidden: true,
@@ -23,10 +23,12 @@ yargs(process.argv.slice(2))
         },
       }),
     handler: (args) => {
-      uploadBundles({tag: args.tag, asVersion: args.asVersion}).catch((err) => {
-        console.error(err)
-        process.exit(1)
-      })
+      uploadBundles({tags: args.tag, asVersion: args.asVersion})
+        .catch((err) => {
+          console.error(err)
+          process.exit(1)
+        })
+        .catch(console.error)
     },
   })
   .command({
@@ -38,10 +40,12 @@ yargs(process.argv.slice(2))
         'target-version': {type: 'string', demandOption: true},
       }),
     handler: (args) => {
-      tagVersion({tag: args.tag, version: args.targetVersion}).catch((err) => {
-        console.error(err)
-        process.exit(1)
-      })
+      tagVersion({tag: args.tag, version: args.targetVersion})
+        .catch((err) => {
+          console.error(err)
+          process.exit(1)
+        })
+        .catch(console.error)
     },
   })
   .command({
@@ -52,3 +56,5 @@ yargs(process.argv.slice(2))
   .demandCommand(1, 'must provide a valid command')
   .help('h')
   .alias('h', 'help').argv
+
+Promise.resolve(task).catch(console.error)

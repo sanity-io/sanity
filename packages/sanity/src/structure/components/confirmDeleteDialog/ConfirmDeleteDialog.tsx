@@ -1,6 +1,6 @@
 import {Box, Flex} from '@sanity/ui'
-import {useId, useMemo} from 'react'
-import {LoadingBlock, useTranslation} from 'sanity'
+import {useCallback, useId, useMemo} from 'react'
+import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components'
@@ -41,7 +41,7 @@ export interface ConfirmDeleteDialogProps {
    */
   action?: 'delete' | 'unpublish'
   onCancel: () => void
-  onConfirm: () => void
+  onConfirm: (versions: string[]) => void
 }
 
 /**
@@ -71,6 +71,13 @@ export function ConfirmDeleteDialog({
   } = useReferringDocuments(id)
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
   const showConfirmButton = !isLoading
+  const {data: documentVersions, loading: versionsLoading} = useDocumentVersions({
+    documentId: getPublishedId(id),
+  })
+
+  const handleConfirm = useCallback(() => {
+    onConfirm(documentVersions)
+  }, [onConfirm, documentVersions])
 
   return (
     <Dialog
@@ -88,7 +95,7 @@ export function ConfirmDeleteDialog({
                 totalCount > 0
                   ? t('confirm-delete-dialog.confirm-anyway-button.text', {context: action})
                   : t('confirm-delete-dialog.confirm-button.text', {context: action}),
-              onClick: onConfirm,
+              onClick: handleConfirm,
             }
           : undefined,
       }}
@@ -96,7 +103,7 @@ export function ConfirmDeleteDialog({
       onClickOutside={onCancel}
     >
       <DialogBody>
-        {crossDatasetReferences && internalReferences && !isLoading ? (
+        {crossDatasetReferences && internalReferences && !isLoading && !versionsLoading ? (
           <ConfirmDeleteDialogBody
             crossDatasetReferences={crossDatasetReferences}
             internalReferences={internalReferences}
@@ -108,6 +115,9 @@ export function ConfirmDeleteDialog({
             datasetNames={datasetNames}
             hasUnknownDatasetNames={hasUnknownDatasetNames}
             onReferenceLinkClick={onCancel}
+            documentId={id}
+            documentType={type}
+            documentVersions={documentVersions}
           />
         ) : (
           <LoadingContainer data-testid="loading-container">

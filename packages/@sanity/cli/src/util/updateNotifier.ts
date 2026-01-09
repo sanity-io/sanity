@@ -6,7 +6,6 @@ import semverCompare from 'semver-compare'
 
 import {debug} from '../debug'
 import {getCliUpgradeCommand} from '../packageManager'
-import {type PackageJson} from '../types'
 import {getUserConfig} from './getUserConfig'
 import {isCi} from './isCi'
 
@@ -17,7 +16,7 @@ const isDisabled =
   process.env.NO_UPDATE_NOTIFIER // Explicitly disabled
 
 interface UpdateCheckOptions {
-  pkg: PackageJson
+  pkg: {name: string; version: string}
   cwd: string
   workDir: string
 }
@@ -44,7 +43,7 @@ export function runUpdateCheck(options: UpdateCheckOptions): {notify: () => Prom
       return
     }
 
-    printResult(result)
+    await printResult(result)
   }
 
   async function printCachedResult(): Promise<false> {

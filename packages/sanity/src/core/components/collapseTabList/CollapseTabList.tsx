@@ -146,7 +146,6 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
           <OptionObserveElement
             key={`${child.key}_observer`}
             options={intersectionOptions}
-            // eslint-disable-next-line react/jsx-no-bind
             onIntersectionChange={(e) => handleIntersection(e[0], child)}
           >
             {cloneElement(child, {

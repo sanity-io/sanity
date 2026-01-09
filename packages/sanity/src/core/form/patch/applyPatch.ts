@@ -1,4 +1,4 @@
-import {isObject, isString} from 'lodash'
+import {isObject, isString} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
 import {_arrayApply} from './array'

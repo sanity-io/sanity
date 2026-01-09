@@ -24,24 +24,18 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: main
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
+
+      - uses: ./.github/actions/setup
 
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-
-      - name: Install deps & build
-        run: pnpm install --ignore-scripts
 
       - name: Build
         run: pnpm build --output-logs=full --log-order=grouped
@@ -92,7 +86,7 @@ jobs:
             echo "EOF"
           } >> $GITHUB_OUTPUT
       - name: Create or update PR
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
         id: create-pull-request
         with:
           token: ${{ steps.app-token.outputs.token }}
@@ -107,8 +101,8 @@ jobs:
             ${{steps.release-notes.outputs.notes}}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-main
-          labels: "next-release"
+          labels: "release:latest"
           sign-commits: true
           base: main
           team-reviewers: "@sanity-io/studio"
-          draft: false
+          draft: true

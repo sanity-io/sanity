@@ -116,9 +116,10 @@ export interface GenericListInput extends StructureNode {
  *
  * @public
  */
-export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
-  implements Serializable<GenericList>
-{
+export abstract class GenericListBuilder<
+  TList extends BuildableGenericList,
+  ConcreteImpl,
+> implements Serializable<GenericList> {
   /** Check if initial value templates are set */
   protected initialValueTemplatesSpecified = false
   /** Generic list option object */

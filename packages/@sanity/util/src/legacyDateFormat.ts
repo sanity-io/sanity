@@ -41,9 +41,34 @@ export function parse(dateString: string, dateFormat?: string, timeZone?: string
 
   // parse string to date using the format string from date-fns
   const parsed = dnsFormat ? dateFnsParse(dateString, dnsFormat, new Date()) : parseISO(dateString)
+
   if (parsed && !isNaN(parsed.getTime())) {
-    const parsedDate =
-      timeZone && isValidTimeZoneString(timeZone) ? new TZDateMini(parsed, timeZone) : parsed
+    let parsedDate = parsed
+
+    // Only apply timezone conversion if:
+    // 1. A timezone is specified, AND
+    // 2. A dateFormat was provided (meaning this is user input, not an ISO string being deserialized)
+    if (timeZone && isValidTimeZoneString(timeZone) && dateFormat) {
+      // Create TZDateMini using the component constructor to interpret the parsed
+      // components as being in the target timezone. We can't use new TZDateMini(parsed, timeZone)
+      // because dateFnsParse already created the Date in the browser's local timezone, which
+      // would cause an incorrect conversion. By extracting components, we tell TZDateMini:
+      // "these values represent the time in the target timezone directly"
+      parsedDate = new TZDateMini(
+        parsed.getFullYear(),
+        parsed.getMonth(),
+        parsed.getDate(),
+        parsed.getHours(),
+        parsed.getMinutes(),
+        parsed.getSeconds(),
+        parsed.getMilliseconds(),
+        timeZone,
+      )
+    } else if (timeZone && isValidTimeZoneString(timeZone)) {
+      // For ISO strings, just wrap in TZDateMini for display without conversion
+      parsedDate = new TZDateMini(parsed, timeZone)
+    }
+
     return {isValid: true, date: parsedDate}
   }
   return {isValid: false, error: `Invalid date. Must be on the format "${dateFormat}"`}

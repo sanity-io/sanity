@@ -1,42 +1,37 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {
-  isValidationErrorMarker,
-  type PreviewValue,
-  type SanityDocument,
-  type Schema,
-} from '@sanity/types'
+import {isValidationErrorMarker, type SanityDocument, type Schema} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {combineLatest, type Observable, of} from 'rxjs'
+import {combineLatest, from, type Observable, of} from 'rxjs'
 import {
   catchError,
+  delay,
   distinctUntilChanged,
   expand,
   filter,
+  finalize,
   map,
-  mergeMap,
   reduce,
+  shareReplay,
   startWith,
-  switchAll,
   switchMap,
-  take,
 } from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'
-import {type PerspectiveStack} from '../../../perspective/types'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {type DocumentPreviewStore, prepareForPreview} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {useSource} from '../../../studio'
-import {getPublishedId} from '../../../util/draftUtils'
+import {schedulerYield} from '../../../util/schedulerYield'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../util/releasesClient'
+
+const bundleDocumentsCache: Record<string, ReleaseDocumentsObservableResult> = Object.create(null)
 
 export interface DocumentValidationStatus extends ValidationStatus {
   hasError: boolean
@@ -47,10 +42,6 @@ export interface DocumentInRelease {
   isPending?: boolean
   document: SanityDocument & {publishedDocumentExists: boolean}
   validation: DocumentValidationStatus
-  previewValues: {
-    isLoading: boolean
-    values: PreviewValue | undefined | null
-  }
 }
 
 type ReleaseDocumentsObservableResult = Observable<{
@@ -65,16 +56,90 @@ const getActiveReleaseDocumentsObservable = ({
   i18n,
   getClient,
   releaseId,
-  perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
   i18n: LocaleSource
   getClient: ReturnType<typeof useSource>['getClient']
   releaseId: string
-  perspectiveStack: PerspectiveStack
 }): ReleaseDocumentsObservableResult => {
   const groqFilter = `sanity::partOfRelease($releaseId)`
+
+  // Helper function to create validation observable
+  const createValidationObservable = (ctx: any, document: SanityDocument) => {
+    if (isGoingToUnpublish(document)) {
+      return of({
+        isValidating: false,
+        validation: [],
+        revision: document._rev,
+        hasError: false,
+      } satisfies DocumentValidationStatus)
+    }
+
+    // scheduledYield is used to provide some control over the main thread
+    return from(schedulerYield(() => Promise.resolve())).pipe(
+      switchMap(() =>
+        validateDocumentWithReferences(ctx, of(document), false).pipe(
+          map((validationStatus) => ({
+            ...validationStatus,
+            hasError: validationStatus.validation.some((marker) => isValidationErrorMarker(marker)),
+          })),
+        ),
+      ),
+    )
+  }
+
+  // Helper function to process a single document and set up the associated validation observable
+  const processDocument = (id: string) => {
+    const ctx = {
+      observeDocument: documentPreviewStore.unstable_observeDocument,
+      observeDocumentPairAvailability:
+        documentPreviewStore.unstable_observeDocumentPairAvailability,
+      i18n,
+      getClient,
+      schema,
+    }
+
+    const document$ = documentPreviewStore
+      .unstable_observeDocument(id, {
+        apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+      })
+      .pipe(
+        filter(Boolean),
+        switchMap((doc) => {
+          return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
+            map((availability) => ({
+              ...doc,
+              publishedDocumentExists: availability.published.available,
+            })),
+          )
+        }),
+      )
+
+    const validation$ = document$.pipe(
+      switchMap((document) => createValidationObservable(ctx, document)),
+    )
+
+    return combineLatest([document$, validation$]).pipe(
+      map(([document, validation]) => ({
+        document,
+        validation,
+        memoKey: uuid(),
+      })),
+    )
+  }
+
+  // Helper function to process a group of document Ids
+  // Used to process documents as to not overwhelm the main thread
+  const processDocumentIdsGroup = (documentIdsGroup: string[], groupIndex: number) => {
+    // On the first batch there is no delay
+    const batchDelay = groupIndex === 0 ? 0 : 100
+
+    return of(documentIdsGroup).pipe(
+      delay(batchDelay),
+      mergeMapArray((id: string) => processDocument(id)),
+    )
+  }
 
   return documentPreviewStore
     .unstable_observeDocumentIdSet(
@@ -85,111 +150,36 @@ const getActiveReleaseDocumentsObservable = ({
       },
     )
     .pipe(
-      map((state) => (state.documentIds || []) as string[]),
-      mergeMapArray((id: string) => {
-        const ctx = {
-          observeDocument: documentPreviewStore.unstable_observeDocument,
-          observeDocumentPairAvailability:
-            documentPreviewStore.unstable_observeDocumentPairAvailability,
-          i18n,
-          getClient,
-          schema,
+      map((state) => state.documentIds || []),
+      switchMap((documentIds) => {
+        // If no documents, return empty results immediately
+        if (documentIds.length === 0) {
+          return of([])
         }
 
-        const document$ = documentPreviewStore
-          .unstable_observeDocument(id, {
-            apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-          })
-          .pipe(
-            filter(Boolean),
-            switchMap((doc) => {
-              return documentPreviewStore.unstable_observeDocumentPairAvailability(id).pipe(
-                map((availability) => ({
-                  ...doc,
-                  publishedDocumentExists: availability.published.available,
-                })),
-              )
-            }),
-          )
-        const validation$ = document$.pipe(
-          switchMap((document) => {
-            if (isGoingToUnpublish(document)) {
-              return of({
-                isValidating: false,
-                validation: [],
-                revision: document._rev,
-                hasError: false,
-              } satisfies DocumentValidationStatus)
-            }
-            return validateDocumentWithReferences(ctx, of(document)).pipe(
-              map((validationStatus) => ({
-                ...validationStatus,
-                // eslint-disable-next-line max-nested-callbacks
-                hasError: validationStatus.validation.some((marker) =>
-                  isValidationErrorMarker(marker),
-                ),
-              })),
-            )
-          }),
-        )
+        // Process in smaller groups as to not overwhelm the main thread
+        // depending on the browser it can handle a different number of calls at once, this felt like a good balance
+        // given the tests done
+        const batchSize = 5
+        const documentIdsGroups = []
+        for (let i = 0; i < documentIds.length; i += batchSize) {
+          documentIdsGroups.push(documentIds.slice(i, i + batchSize))
+        }
 
-        const previewValues$ = document$.pipe(
-          map((document) => {
-            const schemaType = schema.get(document._type)
-            if (!schemaType) {
-              console.error(
-                `Schema type not found for document type ${document._type} (document ID: ${document._id})`,
-              )
-              return of({
-                isLoading: false,
-                values: {
-                  _id: document._id,
-                  title: `Document type "${document._type}" not found`,
-                  _createdAt: document._createdAt,
-                  _updatedAt: document._updatedAt,
-                } satisfies PreviewValue,
-              })
-            }
-            return documentPreviewStore
-              .observeForPreview(document, schemaType, {perspective: [releaseId]})
-              .pipe(
-                switchMap((value) => {
-                  if (value.snapshot) {
-                    return of(value)
-                  }
-
-                  // if we are on this section, it means that the document is not available in the perspective
-                  // which, in turn, means that the document is going to be unpublished
-                  // so we need to show the published document instead
-                  const publishedId = getPublishedId(document._id)
-                  return documentPreviewStore.observeForPreview(
-                    {
-                      _id: publishedId,
-                    },
-                    schemaType,
-                    {
-                      // we need to show the published document instead
-                      perspective: [],
-                    },
-                  )
-                }),
-                map(({snapshot}) => ({
-                  isLoading: false,
-                  values: snapshot,
-                })),
-                startWith({isLoading: true, values: {}}),
-              )
-          }),
-          switchAll(),
-        )
-
-        return combineLatest([document$, validation$, previewValues$]).pipe(
-          map(([document, validation, previewValues]) => ({
-            document,
-            validation,
-            previewValues,
-            memoKey: uuid(),
-          })),
+        // Process all batches and collect all results
+        return combineLatest(
+          documentIdsGroups.map((batch, batchIndex) =>
+            // The delay is used to control the rate of the requests
+            // It increases as it goes on as to allow for some space (in the miliseconds scale)
+            // This means that technically one might expect it to take longer to get all the results, but
+            // It makes the user experience better as it is not overwhelming the main thread
+            // And it allows for the browser to more easily handle the requests
+            processDocumentIdsGroup(batch, batchIndex).pipe(delay(batchIndex * 100)),
+          ),
+        ).pipe(
+          // Flatten all batch results into a single array
+          // This is done to avoid having to nest the results and keep the strutcture as it was before
+          map((groupResults) => groupResults.flat()),
         )
       }),
       map((results) => ({loading: false, results, error: null})),
@@ -201,13 +191,9 @@ const getActiveReleaseDocumentsObservable = ({
 
 const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient,
-  schema,
-  documentPreviewStore,
   release,
 }: {
   getClient: ReturnType<typeof useSource>['getClient']
-  schema: Schema
-  documentPreviewStore: DocumentPreviewStore
   release: ReleaseDocument
 }): ReleaseDocumentsObservableResult => {
   const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
@@ -244,40 +230,15 @@ const getPublishedArchivedReleaseDocumentsObservable = ({
   )
 
   return documents$.pipe(
-    mergeMap((documents) => {
-      return combineLatest(
-        documents.map((document) => {
-          const schemaType = schema.get(document._type)
-          if (!schemaType) {
-            throw new Error(`Schema type not found for document type ${document._type}`)
-          }
-          const previewValues$ = documentPreviewStore.observeForPreview(document, schemaType).pipe(
-            take(1),
-            map(({snapshot}) => ({
-              isLoading: false,
-              values: prepareForPreview(snapshot || document, schemaType),
-            })),
-            startWith({isLoading: true, values: {}}),
-            filter(({isLoading}) => !isLoading),
-          )
-
-          return previewValues$.pipe(
-            map((previewValues) => ({
-              document,
-              previewValues,
-              memoKey: uuid(),
-              validation: {validation: [], hasError: false, isValidating: false},
-            })),
-          )
-        }),
-      ).pipe(
-        map((results) => ({
-          loading: false,
-          results,
-          error: null,
-        })),
-      )
-    }),
+    map((documents) => ({
+      loading: false,
+      results: documents.map((document) => ({
+        document,
+        memoKey: uuid(),
+        validation: {validation: [], hasError: false, isValidating: false},
+      })),
+      error: null,
+    })),
     catchError((error) => {
       return of({loading: false, results: [], error})
     }),
@@ -291,7 +252,6 @@ const getReleaseDocumentsObservable = ({
   releaseId,
   i18n,
   releasesState$,
-  perspectiveStack,
 }: {
   schema: Schema
   documentPreviewStore: DocumentPreviewStore
@@ -299,35 +259,63 @@ const getReleaseDocumentsObservable = ({
   releaseId: string
   i18n: LocaleSource
   releasesState$: ReturnType<typeof useReleasesStore>['state$']
-  perspectiveStack: PerspectiveStack
-}): ReleaseDocumentsObservableResult =>
-  releasesState$.pipe(
-    map((releasesState) =>
-      releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
-    ),
-    filter(Boolean),
-    distinctUntilChanged((prev, next) => prev._rev === next._rev),
-    switchMap((release) => {
-      if (release.state === 'published' || release.state === 'archived') {
-        return getPublishedArchivedReleaseDocumentsObservable({
-          schema,
-          documentPreviewStore,
-          getClient,
-          release,
-        })
-      }
+}): ReleaseDocumentsObservableResult => {
+  if (!bundleDocumentsCache[releaseId]) {
+    bundleDocumentsCache[releaseId] = releasesState$.pipe(
+      map((releasesState) =>
+        releasesState.releases.get(getReleaseDocumentIdFromReleaseId(releaseId)),
+      ),
+      filter(Boolean), // Removes falsey values
+      distinctUntilChanged((prev, next) => {
+        // Only skip re-validation if the core fields that affect document validation haven't changed
+        // Return true to skip, false to trigger re-validation
+        // _rev wasn't enough since it changed on every edit of the release document itself
+        return prev.state === next.state && prev.finalDocumentStates === next.finalDocumentStates
+      }),
+      switchMap((release) => {
+        // Create cache key based on fields that affect document validation + _rev
+        const cacheKey = [
+          releaseId,
+          release.state,
+          release.finalDocumentStates?.flatMap((doc) => doc.id),
+          release._rev,
+        ].join('-')
 
-      return getActiveReleaseDocumentsObservable({
-        schema,
-        documentPreviewStore,
-        i18n,
-        getClient,
-        releaseId,
-        perspectiveStack,
-      })
-    }),
-    startWith({loading: true, results: [], error: null}),
-  )
+        if (!bundleDocumentsCache[cacheKey]) {
+          let observable: ReleaseDocumentsObservableResult
+
+          if (release.state === 'published' || release.state === 'archived') {
+            observable = getPublishedArchivedReleaseDocumentsObservable({
+              getClient,
+              release,
+            })
+          } else {
+            observable = getActiveReleaseDocumentsObservable({
+              schema,
+              documentPreviewStore,
+              i18n,
+              getClient,
+              releaseId,
+            })
+          }
+
+          bundleDocumentsCache[cacheKey] = observable.pipe(
+            finalize(() => {
+              delete bundleDocumentsCache[cacheKey]
+            }),
+            shareReplay(1),
+          )
+        }
+
+        return bundleDocumentsCache[cacheKey]
+      }),
+      startWith({loading: true, results: [], error: null}),
+      shareReplay(1),
+    )
+  }
+
+  return bundleDocumentsCache[releaseId]
+}
 
 export function useBundleDocuments(releaseId: string): {
   loading: boolean
@@ -338,7 +326,6 @@ export function useBundleDocuments(releaseId: string): {
   const {getClient, i18n} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
-  const {perspectiveStack} = usePerspective()
 
   const releaseDocumentsObservable = useMemo(
     () =>
@@ -349,10 +336,13 @@ export function useBundleDocuments(releaseId: string): {
         releaseId,
         i18n,
         releasesState$,
-        perspectiveStack,
       }),
-    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$, perspectiveStack],
+    [schema, documentPreviewStore, getClient, releaseId, i18n, releasesState$],
   )
 
-  return useObservable(releaseDocumentsObservable, {loading: true, results: [], error: null})
+  return useObservable(releaseDocumentsObservable, {
+    loading: true,
+    results: [],
+    error: null,
+  })
 }

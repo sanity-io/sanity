@@ -3,7 +3,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
@@ -233,7 +233,7 @@ function CommentFieldInner(
       }
 
       // Execute the create mutation
-      operation.create(nextComment)
+      void operation.create(nextComment)
 
       // If a comment is added to a field when viewing resolved comments, we switch
       // to open comments and scroll to the comment that was just added

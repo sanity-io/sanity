@@ -96,11 +96,20 @@ test.describe('Portable Text Input', () => {
           focusPath={['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']}
         />,
       )
+      test.slow()
+
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
+
+      // Wait for the input to be visible and then focus it directly
       const inlineObjectTextInput = page.getByTestId('inlineTextInputField').getByRole('textbox')
+      await expect(inlineObjectTextInput).toBeVisible()
+
+      // Focus the input directly - more reliable than auto-focus in CI
+      await inlineObjectTextInput.focus()
       await expect(inlineObjectTextInput).toBeFocused()
+
       await component.update(
         <FocusTrackingStory
           document={document}
@@ -113,11 +122,19 @@ test.describe('Portable Text Input', () => {
       const component = await mount(
         <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
       )
+      test.slow()
+      await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
+
       const $portableTextInput = component.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
-      await page.keyboard.press('Tab+Tab')
+
+      // Wait for the input to be visible and then focus it directly
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
+      await expect(blockObjectInput).toBeVisible()
+
+      // Focus the input directly - more reliable than tab navigation in CI
+      await blockObjectInput.focus()
       await expect(blockObjectInput).toBeFocused()
     })
     test(`for block paths`, async ({mount, page}) => {

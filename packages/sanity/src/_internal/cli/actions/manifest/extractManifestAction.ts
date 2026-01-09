@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto'
 import {mkdir, writeFile} from 'node:fs/promises'
 import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
@@ -13,7 +14,10 @@ import {
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
+import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
@@ -95,10 +99,12 @@ async function extractManifest(
        * Version history:
        * 1: Initial release.
        * 2: Added tools file.
+       * 3. Added studioVersion field.
        */
-      version: 2,
+      version: 3,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
+      studioVersion: await readModuleVersion(workDir, 'sanity'),
     }
 
     await writeFile(path, JSON.stringify(manifest, null, 2))
@@ -124,7 +130,7 @@ async function getWorkspaceManifests({
     '_internal',
     'cli',
     'threads',
-    'extractManifest.js',
+    'extractManifest.cjs',
   )
 
   const worker = new Worker(workerPath, {
@@ -135,7 +141,7 @@ async function getWorkspaceManifests({
   let timeout = false
   const timeoutId = setTimeout(() => {
     timeout = true
-    worker.terminate()
+    void worker.terminate()
   }, EXTRACT_TASK_TIMEOUT_MS)
 
   try {

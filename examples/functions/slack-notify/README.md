@@ -4,7 +4,7 @@
 
 ## Problem
 
-Content teams need to stay informed when new content is published, but manually notifying team members about updates is time-consuming and often forgotten. Teams want automatic notifications that include relevant details and quick access links to both the published content and the studio for further editing.
+Content teams need to stay informed when new content is created, but manually notifying team members about new posts is time-consuming and often forgotten. Teams want automatic notifications that include relevant details and quick access links to both the published content and the studio for further editing.
 
 ## Solution
 
@@ -12,10 +12,10 @@ This function automatically sends Slack notifications when content is published 
 
 ## Benefits
 
-- Keeps teams instantly informed about published content
+- Keeps teams instantly informed about newly created content
 - Provides quick access links to both published content and studio
 - Reduces manual notification overhead
-- Helps maintain team awareness of content publishing activity
+- Helps maintain team awareness of new content.
 - Enables faster response times for content review and promotion
 
 ## Compatible Templates
@@ -94,9 +94,9 @@ Most official templates already include these fields.
          memory: 1,
          timeout: 10,
          event: {
-           on: ['publish'],
+           on: ['create'],
            filter: "_type == 'post'",
-           projection: '{_id, title, slug, _updatedAt}',
+           projection: '{_id, title, slug, _createdAt}',
          },
          env: {
            SLACK_OAUTH_TOKEN: process.env.SLACK_OAUTH_TOKEN,
@@ -240,9 +240,9 @@ export default defineBlueprint({
       memory: 1,
       timeout: 10,
       event: {
-        on: ['publish'],
+        on: ['create'],
         filter: "_type == 'post'",
-        projection: '{_id, title, slug, _updatedAt}',
+        projection: '{_id, title, slug, _createdAt}',
       },
     }),
   ],
@@ -261,7 +261,7 @@ This command will:
 
 - Package your function code
 - Upload it to Sanity's infrastructure
-- Configure the event triggers for post publications
+- Configure the event triggers for post creation
 - Make your slack-notify function live in production
 
 3. **Add environment variables**
@@ -286,9 +286,12 @@ Learn more about working with environment variables in Functions here: [https://
 
 After deployment, you can verify your function is active by:
 
-- Checking the Sanity Studio under "Compute"
-- Publishing a new post and confirming Slack notifications are sent
+- Creating a new post and confirming Slack notifications are sent
 - Monitoring function logs in the CLI
+
+```bash
+npx sanity functions logs slack-notify
+```
 
 ### Deployment best practices
 
@@ -330,9 +333,9 @@ For more details, see the [official function deployment documentation](https://w
 
 ## Usage Example
 
-When you publish a post document, the function automatically:
+When you create a new post document, the function automatically:
 
-1. Extracts the post title, slug, and publication time
+1. Extracts the post title, slug, and creation time
 2. Formats a Slack message with this information
 3. Sends the message to the configured Slack channel
 4. Includes links to both the published webpage and studio editor
@@ -340,11 +343,11 @@ When you publish a post document, the function automatically:
 Example Slack message:
 
 ```text
-*New Document Published!*
+*New Document Created!*
 Title: Getting Started with Sanity
 Webpage: <http://localhost:3000/posts/getting-started-with-sanity|Click Here>
 Studio: <http://localhost:3333/structure/post;post-id|Click Here>
-DateTime Published: 1/15/2024, 10:30:00 AM
+DateTime Created: 1/15/2024, 10:30:00 AM
 ```
 
 ## Customization
@@ -398,6 +401,6 @@ Modify the `filter` in the blueprint configuration to target different document 
 - Cause: Bot doesn't have permissions or isn't in the channel
 - Solution: Invite the bot to your target channel and ensure it has `chat:write` permissions
 
-## Related Examples
+## Related Examples:
 
 - [Telegram Notify](../telegram-notify/README.md) - Send a Telegram notification when a document is published

@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
-import {_responsive, Box, Card, Flex, type FlexDirection, Stack} from '@sanity/ui'
+import {_responsive, Box, Card, Flex, type FlexDirection} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
@@ -34,6 +34,8 @@ interface CommentsUpsellPanelProps {
   onPrimaryClick: () => void
   onSecondaryClick: () => void
   layout?: Layout
+  border?: boolean
+  align?: 'center' | 'flex-start'
 }
 
 /**
@@ -42,7 +44,14 @@ interface CommentsUpsellPanelProps {
 const HORIZONTAL_PADDING_Y = [3, 3, 5]
 
 export function UpsellPanel(props: CommentsUpsellPanelProps) {
-  const {data, onPrimaryClick, onSecondaryClick, layout = 'vertical'} = props
+  const {
+    data,
+    onPrimaryClick,
+    onSecondaryClick,
+    layout = 'vertical',
+    border = true,
+    align = 'flex-start',
+  } = props
   const direction: FlexDirection[] = [
     'column',
     'column',
@@ -50,7 +59,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
   ]
 
   return (
-    <Card radius={3} overflow={'hidden'} border>
+    <Card radius={3} overflow={'hidden'} border={border}>
       <Flex direction={direction} gap={2}>
         {data.image && (
           <Image
@@ -60,15 +69,15 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
           />
         )}
         <DescriptionRoot paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
-          <Stack space={4}>
+          <Flex gap={4} direction={'column'} align={align}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
-          </Stack>
-          <Flex gap={2} justify={'flex-end'} marginTop={5}>
+          </Flex>
+          <Flex gap={2} justify={align === 'center' ? 'center' : 'flex-end'} marginTop={5}>
             {data.secondaryButton.text && (
               <Button
                 mode="bleed"
                 text={data.secondaryButton.text}
-                tone="primary"
+                tone="default"
                 iconRight={LaunchIcon}
                 {...(data.secondaryButton.url && {
                   target: '_blank',
@@ -81,7 +90,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
             )}
             <Button
               text={data.ctaButton.text}
-              tone="primary"
+              tone="default"
               {...(data.ctaButton.url && {
                 target: '_blank',
                 rel: 'noopener noreferrer',

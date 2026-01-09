@@ -11,7 +11,7 @@ const appSanityUiTemplate: ProjectTemplate = {
   },
   devDependencies: {
     '@types/react': '^19',
-    'sanity': '^3',
+    'sanity': '^4',
     'typescript': '^5.1.6',
   },
   entry: './src/App.tsx',

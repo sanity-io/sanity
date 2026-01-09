@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {useCallback} from 'react'
 
 import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
@@ -66,7 +66,6 @@ export function Browser(props: VideoAssetProps) {
                     (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
                     startCase(assetSource.name)
                   }
-                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => handleSelectAssetFromSource(assetSource)}
                   icon={assetSource.icon || ImageIcon}
                   data-testid={`video-input-browse-button-${assetSource.name}`}
@@ -84,7 +83,6 @@ export function Browser(props: VideoAssetProps) {
       text={t('inputs.file.browse-button.text')}
       icon={SearchIcon}
       mode="bleed"
-      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => handleSelectAssetFromSource(assetSources[0])}
       data-testid={`video-input-browse-button-${assetSources[0].name}`}
       disabled={readOnly}

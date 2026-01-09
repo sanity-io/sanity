@@ -4,24 +4,29 @@ import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
-import {TreeEditingBreadcrumbs} from '../breadcrumbs'
+import {type DialogItem} from '../../types'
+import {DialogBreadcrumbs} from '../breadcrumbs/DialogBreadcrumbs'
 import {FixedHeightFlex} from './styles'
 import {TreeEditingLayoutSidebar} from './TreeEditingLayoutSidebar'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
 interface TreeEditingLayoutProps {
-  breadcrumbs: TreeEditingBreadcrumb[]
+  breadcrumbs: DialogItem[]
   children: ReactNode
   footer?: ReactNode
-  items: TreeEditingMenuItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
   setScrollElement?: (ref: HTMLDivElement | null) => void
   title: string
+  siblings: Map<string, {count: number; index: number}>
 }
 
+/**
+ * This component is not currently used, but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
+ * For now I think it's best to keep it
+ */
 export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
 ): React.JSX.Element {
@@ -34,6 +39,7 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
     selectedPath,
     setScrollElement: setParentScrollElement,
     title,
+    siblings,
   } = props
   const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElementRef = useRef<HTMLDivElement | null>(null)
@@ -64,10 +70,11 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
       <Flex direction="column" flex={1} overflow="hidden">
         <FixedHeightFlex align="center" sizing="border" gap={2} paddingX={4}>
           <Flex flex={1}>
-            <TreeEditingBreadcrumbs
+            <DialogBreadcrumbs
               items={breadcrumbs}
               onPathSelect={onPathSelect}
               selectedPath={selectedPath}
+              siblings={siblings}
             />
           </Flex>
         </FixedHeightFlex>

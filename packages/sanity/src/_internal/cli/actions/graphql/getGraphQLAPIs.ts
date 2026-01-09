@@ -1,7 +1,8 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {isMainThread, Worker} from 'node:worker_threads'
 
-import {type CliCommandContext, type CliV3CommandContext} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 import {createSchema} from 'sanity'
 
@@ -12,11 +13,9 @@ import {
   type TypeResolvedGraphQLAPI,
 } from './types'
 
-export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
-  if (!isModernCliConfig(cliContext)) {
-    throw new Error('Expected Sanity studio of version 3 or above')
-  }
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+export async function getGraphQLAPIs(cliContext: CliCommandContext): Promise<ResolvedGraphQLAPI[]> {
   if (!isMainThread) {
     throw new Error('getGraphQLAPIs() must be called from the main thread')
   }
@@ -45,7 +44,14 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
     }
 
     const rootDir = path.dirname(rootPkgPath)
-    const workerPath = path.join(rootDir, 'lib', '_internal', 'cli', 'threads', 'getGraphQLAPIs.js')
+    const workerPath = path.join(
+      rootDir,
+      'lib',
+      '_internal',
+      'cli',
+      'threads',
+      'getGraphQLAPIs.cjs',
+    )
     const worker = new Worker(workerPath, {
       workerData: {cliConfig: serialize(cliConfig || {}), cliConfigPath, workDir},
       env: process.env,
@@ -56,10 +62,6 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
       if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
     })
   })
-}
-
-function isModernCliConfig(config: CliCommandContext): config is CliV3CommandContext {
-  return config.sanityMajorVersion >= 3
 }
 
 function serialize<T>(obj: T): T {

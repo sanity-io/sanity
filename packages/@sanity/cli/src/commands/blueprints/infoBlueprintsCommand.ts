@@ -19,7 +19,7 @@ const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
   group: 'blueprints',
   helpText,
   signature: '',
-  description: 'Retrieve information about a Blueprint Stack',
+  description: 'Show information about a Blueprint Stack deployment',
 
   async action(args, context) {
     const {apiClient, output} = context

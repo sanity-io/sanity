@@ -12,7 +12,7 @@ import {
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
@@ -21,11 +21,11 @@ import {useTranslation} from '../../../../../i18n'
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
+import {type DialogItem} from '../../types'
 import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
 import {getSiblingHasChildren} from './utils'
 
-function hasOpenChild(item: TreeEditingMenuItemType, selectedPath: Path | null): boolean {
+function hasOpenChild(item: DialogItem, selectedPath: Path | null): boolean {
   return (
     item.children?.some(
       (child) => isEqual(child.path, selectedPath) || hasOpenChild(child, selectedPath),
@@ -110,7 +110,7 @@ const ItemFlex = styled(Flex)(({theme}) => {
 })
 
 interface TreeEditingMenuItemProps {
-  item: TreeEditingMenuItemType
+  item: DialogItem
   onPathSelect: (path: Path) => void
   selectedPath: Path | null
   siblingHasChildren?: boolean

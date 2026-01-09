@@ -1,5 +1,65 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {defineField, defineType, type Rule} from 'sanity'
+import {type StringRule} from '@sanity/types'
+import {defineField, defineType} from 'sanity'
+
+import {AudienceSelectInput} from '../components/AudienceSelectInput'
+
+// Generic decide field implementation that works for all types
+const defineLocalDecideField = (config: any) => {
+  const {name, title, description, type, ...otherConfig} = config
+
+  const valueFieldConfig = {
+    type,
+    // ...(to && {to}),
+    // ...(validation && {validation}),
+    // ...(description && {description}),
+    // ...(readOnly && {readOnly}),
+    // ...(hidden && {hidden}),
+    ...otherConfig,
+  }
+
+  return defineField({
+    name,
+    title,
+    description,
+    type: 'object',
+    fields: [
+      defineField({
+        name: 'default',
+        title: 'Default Value',
+        ...valueFieldConfig,
+      }),
+      defineField({
+        name: 'conditions',
+        title: 'Conditions',
+        type: 'array',
+        of: [
+          defineField({
+            type: 'object',
+            name: 'condition',
+            title: 'Condition',
+            fields: [
+              defineField({
+                name: 'audience',
+                title: 'Audience Equality',
+                validation: (Rule) => Rule.required(),
+                type: 'string',
+                components: {
+                  input: AudienceSelectInput,
+                },
+              }),
+              defineField({
+                name: 'value',
+                title: 'Value',
+                ...valueFieldConfig,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
+}
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -28,7 +88,7 @@ export default defineType({
 
       return {
         title: typeof title === 'string' ? title : undefined,
-        media: media as any,
+        media: media,
         subtitle: [role?.title, awardsText].filter(Boolean).join(' · '),
       }
     },
@@ -41,7 +101,7 @@ export default defineType({
       options: {
         search: {weight: 100},
       },
-      validation: (rule: Rule) => rule.required(),
+      validation: (rule: StringRule) => rule.required(),
     }),
     {
       name: 'bestFriend',
@@ -49,6 +109,24 @@ export default defineType({
       type: 'reference',
       to: [{type: 'author'}],
     },
+    defineLocalDecideField(
+      defineField({
+        name: 'decideName',
+        title: '[Decide] Name',
+        type: 'string',
+        options: {
+          search: {weight: 100},
+        },
+        validation: (rule: StringRule) => rule.required(),
+      }),
+    ),
+    defineLocalDecideField({
+      name: 'decideBestFriend',
+      title: '[Decide] Best Friend',
+      type: 'reference',
+      to: [{type: 'author'}],
+    }),
+
     {
       name: 'role',
       title: 'Role',

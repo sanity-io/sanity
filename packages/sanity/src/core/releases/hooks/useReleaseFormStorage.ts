@@ -20,9 +20,9 @@ interface ReleaseFormDraft {
  * - clearReleaseDataFromStorage: a function that clears the release form data from localStorage
  */
 export function useReleaseFormStorage() {
-  const getStoredReleaseData = useCallback((): ReleaseFormDraft => {
+  const getStoredReleaseData = useCallback((): ReleaseFormDraft | undefined => {
     const stored = localStorage.getItem(RELEASE_FORM_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : {}
+    return stored ? JSON.parse(stored) : undefined
   }, [])
 
   const saveReleaseDataToStorage = useCallback((data: ReleaseFormDraft) => {

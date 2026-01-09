@@ -4,6 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isCardinalityOneRelease,
   isVersionId,
   Translate,
   useActiveReleases,
@@ -14,7 +15,6 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -44,11 +44,7 @@ export function OpenReleaseToEditBanner({
   return <OpenReleaseToEditBannerInner documentId={documentId} />
 }
 
-export function OpenReleaseToEditBannerInner({
-  documentId,
-}: {
-  documentId: string
-}): React.JSX.Element {
+export function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
   const {data: activeReleases} = useActiveReleases()
   const setPerspective = useSetPerspective()
   const releaseId = getVersionFromId(documentId) ?? ''
@@ -64,10 +60,11 @@ export function OpenReleaseToEditBannerInner({
     () =>
       activeReleases
         .filter((version) => {
-          return documentVersions.find((release) => {
+          const hasDocumentVersion = documentVersions.find((release) => {
             const r = getVersionFromId(release) ?? ''
             return getReleaseIdFromReleaseDocumentId(version._id) === r
           })
+          return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
         .map((version) => version.metadata.title || tCore('release.placeholder-untitled-release')),
     [activeReleases, documentVersions, tCore],
@@ -79,46 +76,51 @@ export function OpenReleaseToEditBannerInner({
     setPerspective(releaseId)
   }, [releaseId, setPerspective])
 
+  if (documentVersionsTitleList.length === 0) {
+    return null
+  }
+
   return (
     <Banner
       tone={tone}
-      paddingY={0}
       data-testid="open-release-to-edit-banner"
       content={
-        <Flex direction={'row'} align="center" justify="space-between" flex={1}>
-          <Text size={1}>
-            <Flex direction={'row'} gap={1}>
-              {documentVersionsTitleList.length > 1 ? (
-                <Translate
-                  t={t}
-                  i18nKey="banners.release.navigate-to-edit-description-multiple"
-                  components={{
-                    VersionBadge: () => (
-                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                    ),
-                  }}
-                  values={{count: documentVersionsTitleList.length - 1}}
-                />
-              ) : (
-                <Translate
-                  t={t}
-                  i18nKey="banners.release.navigate-to-edit-description-single"
-                  components={{
-                    VersionBadge: () => (
-                      <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                    ),
-                  }}
-                />
-              )}
-            </Flex>
-          </Text>
-
-          <Button
-            text={t('banners.release.action.open-to-edit')}
-            tone={tone}
-            onClick={handleGoToEdit}
-          />
-        </Flex>
+        <Text size={1}>
+          <Flex direction={'row'} gap={1} wrap="wrap">
+            {documentVersionsTitleList.length > 1 ? (
+              <Translate
+                t={t}
+                i18nKey="banners.release.navigate-to-edit-description-multiple"
+                components={{
+                  VersionBadge: () => (
+                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                  ),
+                }}
+                values={{count: documentVersionsTitleList.length - 1}}
+              />
+            ) : (
+              <Translate
+                t={t}
+                i18nKey="banners.release.navigate-to-edit-description-single"
+                components={{
+                  VersionBadge: () => (
+                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                  ),
+                }}
+              />
+            )}
+          </Flex>
+        </Text>
+      }
+      action={
+        documentVersionsTitleList.length > 0
+          ? {
+              text: t('banners.release.action.open-to-edit'),
+              tone: tone,
+              onClick: handleGoToEdit,
+              mode: 'default',
+            }
+          : undefined
       }
     />
   )

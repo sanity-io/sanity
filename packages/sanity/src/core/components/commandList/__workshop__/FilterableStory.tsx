@@ -69,7 +69,6 @@ export default function FilterableStory() {
       return (
         <StyledLink
           $index={item}
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleChildClick(`Button ${item.toString()} clicked`)}
         >
           <Text>{item}</Text>

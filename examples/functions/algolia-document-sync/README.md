@@ -8,7 +8,7 @@ Content teams need to keep their search functionality up-to-date with their late
 
 ## Solution
 
-This Sanity Function automatically syncs published documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one.
+This Sanity Function automatically syncs documents to Algolia's search index, ensuring your search functionality always reflects your latest content. When a post is published, the function sends the document data to Algolia, either creating a new search record or updating an existing one. We also track when documents are updated and deleted, using the delta operation our function can remove an item from Algolia under the delete operation. We could selectively update for create vs update but for now we pass the same addOrUpdate to Algolia.
 
 ## Benefits
 
@@ -61,9 +61,9 @@ This function is built to be compatible with any of [the official "clean" templa
      timeout: 10,
      src: './functions/algolia-document-sync',
      event: {
-       on: ['publish'],
+       on: ['create', 'update', 'delete'],
        filter: "_type == 'post'",
-       projection: '{_id, title, hideFromSearch}',
+       projection: '{_id, title, hideFromSearch, "operation": delta::operation()}',
      },
      env: {
        ALGOLIA_APP_ID: ALGOLIA_APP_ID,
@@ -215,7 +215,7 @@ await algolia.addOrUpdateObject({
 
 ### Change Target Index
 
-Modify the index name to sync to a different Algolia index:
+Modify the index name to sync to a different Algolia index, alternatively pass \_type into the projection so you can sync to indexes based on the post type, allowing one function to update many indexes:
 
 ```typescript
 await algolia.addOrUpdateObject({

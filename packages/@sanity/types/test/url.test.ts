@@ -41,5 +41,3 @@ describe('url types', () => {
     })
   })
 })
-
-export {}

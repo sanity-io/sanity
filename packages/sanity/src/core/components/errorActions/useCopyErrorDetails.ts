@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 import {useCallback} from 'react'
 import {catchError, EMPTY, map, of, type OperatorFunction, tap} from 'rxjs'
 
@@ -52,6 +52,46 @@ export function serializeError(): OperatorFunction<ErrorWithId, string> {
     // useful if the provided `error` value is an instance of `Error`, whose properties are
     // non-enumerable.
     const errorInfo = isRecord(error) ? pick(error, Object.getOwnPropertyNames(error)) : undefined
-    return JSON.stringify({error: errorInfo, eventId}, null, 2)
+
+    // Sanitize sensitive information from the error object
+    const sanitizedErrorInfo = sanitizeErrorInfo(errorInfo)
+
+    return JSON.stringify({error: sanitizedErrorInfo, eventId}, null, 2)
   })
+}
+
+const SENSITIVE_HEADERS = ['authorization']
+
+function sanitizeErrorInfo(obj: unknown): unknown {
+  if (!isRecord(obj)) {
+    return obj
+  }
+
+  const sanitized: Record<string, unknown> = {}
+
+  for (const [key, value] of Object.entries(obj)) {
+    if (key.toLowerCase() === 'headers' && isRecord(value)) {
+      // Sanitize headers object
+      const sanitizedHeaders: Record<string, unknown> = {}
+      for (const [headerName, headerValue] of Object.entries(value)) {
+        if (
+          SENSITIVE_HEADERS.some((sensitiveHeader) =>
+            headerName.toLowerCase().includes(sensitiveHeader),
+          )
+        ) {
+          sanitizedHeaders[headerName] = '[hidden]'
+        } else {
+          sanitizedHeaders[headerName] = headerValue
+        }
+      }
+      sanitized[key] = sanitizedHeaders
+    } else if (isRecord(value) || Array.isArray(value)) {
+      // Recursively sanitize nested objects and arrays
+      sanitized[key] = sanitizeErrorInfo(value)
+    } else {
+      sanitized[key] = value
+    }
+  }
+
+  return sanitized
 }

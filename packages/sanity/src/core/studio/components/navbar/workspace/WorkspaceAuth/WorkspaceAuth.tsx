@@ -116,7 +116,6 @@ export function WorkspaceAuth() {
               as="button"
               radius={2}
               padding={2}
-              // eslint-disable-next-line react/jsx-no-bind
               onClick={handleSelectWorkspace}
             >
               <WorkspacePreview

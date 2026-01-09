@@ -6,7 +6,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback} from 'react'
 
 import {CommandList} from '../../../../../components/commandList/CommandList'
@@ -15,11 +15,11 @@ import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefa
 import {getSchemaTypeTitle} from '../../../../../schema/helpers'
 import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 
 interface ResultItemProps {
-  item: TreeEditingMenuItem
+  item: DialogItem
   onPathSelect: (path: Path) => void
   isFirst: boolean
 }
@@ -36,11 +36,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
 
   return (
     <Stack marginTop={isFirst ? undefined : 1}>
-      <Button
-        mode="bleed"
-        // eslint-disable-next-line react/jsx-no-bind
-        onClick={() => onPathSelect(item.path)}
-      >
+      <Button mode="bleed" onClick={() => onPathSelect(item.path)}>
         <Stack space={2} flex={1}>
           <SanityDefaultPreview title={title} media={value.media} layout="inline" />
 
@@ -56,7 +52,7 @@ function ResultItem(props: ResultItemProps): React.JSX.Element {
 }
 
 interface TreeEditingSearchMenuProps {
-  items: TreeEditingMenuItem[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   textInputElement: HTMLInputElement | null
 }
@@ -66,7 +62,7 @@ export function TreeEditingSearchMenu(props: TreeEditingSearchMenuProps): React.
   const {t} = useTranslation()
 
   const renderItem = useCallback(
-    (item: TreeEditingMenuItem) => {
+    (item: DialogItem) => {
       const isFirst = isEqual(item.path, items[0].path)
 
       return <ResultItem isFirst={isFirst} item={item} onPathSelect={onPathSelect} />

@@ -14,25 +14,30 @@ jobs:
   install:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    outputs:
+      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
         with:
-          cache: pnpm
-          node-version: lts/*
+          fetch-depth: 0
 
-      - name: Install project dependencies
-        run: pnpm install
+      - name: Check if only examples files changed
+        id: check_examples_only
+        uses: ./.github/actions/check-examples-only
+
+      - uses: ./.github/actions/setup
+        if: steps.check_examples_only.outputs.examples_only != 'true'
 
       - name: Build packages
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         # This warms up the turborepo remote cache
         run: pnpm build --output-logs=full --log-order=grouped
 
   playwright-ct-test:
+    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     needs: [install]
     runs-on: ubuntu-latest
@@ -47,15 +52,8 @@ jobs:
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -65,7 +63,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -85,7 +83,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -93,22 +91,15 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always()
-    needs: [playwright-ct-test]
+    if: always() && needs.install.outputs.examples_only != 'true'
+    needs: [install, playwright-ct-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-ct-report-*
           merge-multiple: true
@@ -117,7 +108,7 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: full-playwright-ct-report

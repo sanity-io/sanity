@@ -83,8 +83,10 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
+import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
@@ -103,6 +105,7 @@ import globalDocumentReference, {
   createGlobalDocumentReferenceSubtype,
 } from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
+import {initialFullScreenPTEType} from './standard/initialFullScreenPTE'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
@@ -174,6 +177,7 @@ export function createSchemaTypes(projectId: string) {
     numbers,
     objects,
     ptAllTheBellsAndWhistlesType,
+    initialFullScreenPTEType,
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,
@@ -287,11 +291,12 @@ export function createSchemaTypes(projectId: string) {
     // Test documents with 3rd party plugin inputs
     markdown,
     mux,
-
+    internationalizedArray,
     // Other documents
     author,
     book,
     species,
+    house,
     playlist,
     playlistTrack,
 

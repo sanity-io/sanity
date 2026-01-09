@@ -107,13 +107,12 @@ export function defineSearchOperator<
     | {type: TType; inputComponent?: never}
     | {type: TType; inputComponent: SearchOperatorInput<TValue>},
 >(
-  definition: (TOperatorSnippet extends {
+  definition: TOperatorSnippet extends {
     type: TType
     inputComponent: SearchOperatorInput<TValue>
   }
     ? SearchOperatorBuilder<TType, TValue>
-    : ValuelessSearchOperatorBuilder<TType>) &
-    TOperatorSnippet,
+    : ValuelessSearchOperatorBuilder<TType>,
 ): typeof definition {
   return definition
 }

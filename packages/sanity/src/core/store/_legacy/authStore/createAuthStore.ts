@@ -3,7 +3,7 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {isEqual, memoize} from 'lodash'
+import {isEqual, memoize} from 'lodash-es'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
@@ -130,13 +130,16 @@ const getCurrentUser = async (
 
     if (invalidCorsConfig) {
       // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-      throw new CorsOriginError({projectId: client.config()?.projectId})
+      throw new CorsOriginError({
+        isStaging: client.config().apiHost.endsWith('.work'),
+        projectId: client.config()?.projectId,
+      })
     }
 
     // Some non-CORS error - is it one of those undefinable network errors?
     if (err.isNetworkError && !err.message && err.request && err.request.url) {
       const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`)
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
     // Some other error, just throw it
@@ -319,4 +322,4 @@ function hash(value: unknown): string {
 /**
  * @internal
  */
-export const createAuthStore = memoize(_createAuthStore, hash)
+export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)

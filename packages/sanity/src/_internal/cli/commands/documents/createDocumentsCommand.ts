@@ -13,7 +13,7 @@ import {uuid} from '@sanity/uuid'
 import chokidar from 'chokidar'
 import execa from 'execa'
 import json5 from 'json5'
-import {isEqual, isPlainObject, noop} from 'lodash'
+import {isEqual, isPlainObject, noop} from 'lodash-es'
 
 type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
 
@@ -106,7 +106,7 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
         output.print('')
         return readAndPerformCreatesFromFile(tmpFile)
       })
-      execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
+      await execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
     } else {
       // While in normal mode, we just want to wait for the editor to close and run the thing once
       execa.sync(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})

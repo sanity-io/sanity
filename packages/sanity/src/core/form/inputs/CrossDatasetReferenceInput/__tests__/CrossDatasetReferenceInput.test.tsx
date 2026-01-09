@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
+import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
@@ -70,7 +70,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.queryByTestId('autocomplete')).toBeInTheDocument()
+    expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
   })
 
   test('it renders the autocomplete when it has a value but focus is on the _ref', async () => {
@@ -121,7 +121,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.getByTestId('autocomplete')).toBeInTheDocument()
+    expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
   })
 
   test.skip('a warning is displayed if the reference value is strong while the schema says it should be weak', async () => {
@@ -173,7 +173,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
+    expect(screen.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 
   // @todo Need to update useFeatureEnabled so we can skip caching for the feature check
@@ -226,7 +226,7 @@ describe('render states', () => {
       },
     })
 
-    expect(result.getByTestId('alert-cross-dataset-reference-feature-disabled')).toBeInTheDocument()
+    expect(screen.getByTestId('alert-cross-dataset-reference-feature-disabled')).toBeInTheDocument()
   })
 })
 
@@ -277,11 +277,11 @@ describe('user interaction happy paths', () => {
       ),
     })
 
-    const autocomplete = await result.findByTestId('autocomplete')
+    const autocomplete = await screen.findByTestId('autocomplete')
 
-    act(() => userEvent.type(autocomplete, 'foo'))
+    await userEvent.type(autocomplete, 'foo')
 
-    const popover = await result.findByTestId('autocomplete-popover')
+    const popover = await screen.findByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
 
     expect(previews.length).toBe(2)
@@ -289,14 +289,14 @@ describe('user interaction happy paths', () => {
     expect(previews[1]).toHaveTextContent('Product two')
 
     // Click "Product two"
-    userEvent.click(within(popover).getAllByRole('button')[1])
+    await userEvent.click(within(popover).getAllByRole('button')[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is
     // emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
     // if this tests suddenly fails this expectation, it can be removed along with the waiting
     expect(onChange).toHaveBeenCalledTimes(0)
-    await waitForElementToBeRemoved(() => result.getByTestId('autocomplete-popover'))
+    await waitForElementToBeRemoved(() => screen.getByTestId('autocomplete-popover'))
     //----
 
     expect(onChange).toHaveBeenCalledTimes(1)
@@ -374,11 +374,11 @@ describe('user interaction happy paths', () => {
       ),
     })
 
-    const preview = result.getByTestId('preview')
+    const preview = screen.getByTestId('preview')
     expect(preview).toHaveTextContent('Product some-product')
-    const menuButton = result.getByTestId('menu-button')
+    const menuButton = screen.getByTestId('menu-button')
     menuButton.click()
-    const replaceMenuItem = result.getByTestId('menu-item-replace')
+    const replaceMenuItem = screen.getByTestId('menu-item-replace')
     replaceMenuItem.click()
     expect(onPathFocus).toHaveBeenCalledTimes(1)
     expect(onPathFocus).toHaveBeenCalledWith(['_ref'])
@@ -393,23 +393,23 @@ describe('user interaction happy paths', () => {
     //   focusPath: ['_ref'],
     // })
 
-    const autocomplete = result.getByTestId('autocomplete')
-    userEvent.type(autocomplete, 'foo')
-    const popover = result.getByTestId('autocomplete-popover')
+    const autocomplete = screen.getByTestId('autocomplete')
+    await userEvent.type(autocomplete, 'foo')
+    const popover = screen.getByTestId('autocomplete-popover')
     const previews = within(popover).getAllByTestId('preview')
 
     expect(previews.length).toBe(2)
     expect(previews[0]).toHaveTextContent('Product one')
     expect(previews[1]).toHaveTextContent('Product two')
 
-    userEvent.click(within(popover).getAllByRole('button')[1])
+    await userEvent.click(within(popover).getAllByRole('button')[1])
 
     // Note: this asserts the necessity of awaiting after click. Currently, the onChange event is emitted asynchronously after an item is selected due to behavior in Sanity UI's autocomplete
     // (https://github.com/sanity-io/design/blob/b956686c2c663c4f21910f7d3d0be0a27663f5f4/packages/%40sanity/ui/src/components/autocomplete/autocompleteOption.tsx#L16-L20)
     // if this tests suddenly fails this expectation, it can be removed along with the waiting
     expect(onChange).toHaveBeenCalledTimes(0)
     // await wait(1)
-    await waitForElementToBeRemoved(() => result.getByTestId('autocomplete-popover'))
+    await waitForElementToBeRemoved(() => screen.getByTestId('autocomplete-popover'))
     //----
 
     expect(onChange).toHaveBeenCalledTimes(1)
@@ -478,12 +478,12 @@ describe('user interaction happy paths', () => {
       ),
     })
 
-    const preview = result.getByTestId('preview')
+    const preview = screen.getByTestId('preview')
     expect(preview).toHaveTextContent('Product some-product')
-    const menuButton = result.getByTestId('menu-button')
-    await act(() => menuButton.click())
-    const replaceMenuItem = result.getByTestId('menu-item-clear')
-    await act(() => replaceMenuItem.click())
+    const menuButton = screen.getByTestId('menu-button')
+    act(() => menuButton.click())
+    const replaceMenuItem = screen.getByTestId('menu-item-clear')
+    act(() => replaceMenuItem.click())
 
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange.mock.calls[0]).toEqual([

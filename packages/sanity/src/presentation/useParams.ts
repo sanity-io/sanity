@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import {type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'
 
@@ -22,6 +22,37 @@ function pruneObject<T extends RouterState | PresentationParamsContextValue>(obj
   ) as T
 }
 
+/**
+ * Ensures the array contains all members of the union T.
+ */
+const exhaustiveTupleOf =
+  <T>() =>
+  <U extends T[]>(array: U & ([T] extends [U[number]] ? unknown : 'Invalid') & {0: T}) =>
+    array
+
+const maintainOnDocumentChange = exhaustiveTupleOf<keyof PresentationSearchParams>()([
+  'perspective',
+  'preview',
+  'viewport',
+])
+
+const maintainOnSameDocument = exhaustiveTupleOf<keyof StructureDocumentPaneParams>()([
+  'changesInspectorTab',
+  'comment',
+  'inspect',
+  'instruction',
+  'scheduledDraft',
+  'parentRefPath',
+  'path',
+  'pathKey',
+  'rev',
+  'since',
+  'template',
+  'templateParams',
+  'version',
+  'view',
+])
+
 export function useParams({
   initialPreviewUrl,
   routerNavigate,
@@ -37,6 +68,7 @@ export function useParams({
   }
   frameStateRef: MutableRefObject<FrameState>
 }): {
+  isSameDocument: (state: PresentationStateParams) => boolean
   navigate: PresentationNavigate
   navigationHistory: RouterState[]
   params: PresentationParamsContextValue
@@ -54,6 +86,9 @@ export function useParams({
       perspective: routerSearchParams.perspective,
       viewport: routerSearchParams.viewport,
       inspect: routerSearchParams.inspect,
+      scheduledDraft: routerSearchParams.scheduledDraft,
+
+      parentRefPath: routerSearchParams.parentRefPath,
       rev: routerSearchParams.rev,
       since: routerSearchParams.since,
       template: routerSearchParams.template,
@@ -71,7 +106,9 @@ export function useParams({
   const structureParams = useMemo<StructureDocumentPaneParams>(() => {
     const pruned = pruneObject({
       inspect: params.inspect,
+      scheduledDraft: params.scheduledDraft,
       path: params.path,
+      parentRefPath: params.parentRefPath,
       rev: params.rev,
       since: params.since,
       template: params.template,
@@ -92,11 +129,13 @@ export function useParams({
     params.instruction,
     params.path,
     params.pathKey,
+    params.parentRefPath,
     params.rev,
     params.since,
     params.template,
     params.templateParams,
     params.view,
+    params.scheduledDraft,
   ])
 
   const searchParams = useMemo<PresentationSearchParams>(() => {
@@ -110,58 +149,71 @@ export function useParams({
 
   const routerStateRef = useRef(routerState)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     routerStateRef.current = routerState
   }, [routerState])
 
   const [navigationHistory, setNavigationHistory] = useState<RouterState[]>([routerState])
 
+  // Helper function to check if a given document is the same as the one in the
+  // current router state
+  const isSameDocument = useCallback(({id, type}: PresentationStateParams) => {
+    const {current} = routerStateRef
+    return id === current.id && type === current.type
+  }, [])
+
   const navigate = useCallback<PresentationNavigate>(
-    (nextState, nextSearchState = {}, forceReplace) => {
+    (options) => {
+      const {state, params, replace = false} = options
+
       // Force navigation to use published IDs only
-      if (nextState.id) nextState.id = getPublishedId(nextState.id)
+      if (state?.id) state.id = getPublishedId(state.id)
 
-      // Extract type, id and path as 'routerState'
-      const {_searchParams: routerSearchParams, ...routerState} = routerStateRef.current
+      // Get the current state and params
+      const {current} = routerStateRef
+      const currentState = {
+        id: current.id,
+        type: current.type,
+        path: current.path,
+      } satisfies PresentationStateParams
+      const currentParams = Object.fromEntries(current._searchParams || []) as CombinedSearchParams
 
-      // Convert array of search params to an object
-      const routerSearchState = (routerSearchParams || []).reduce((acc, [key, value]) => {
-        acc[key as keyof CombinedSearchParams] = value as undefined | 'history' | 'review'
+      // If state is provided, replace the current state with the provided
+      // state, otherwise maintain the current state
+      const nextState = state || currentState
+
+      // Different params need to be maintained under different conditions
+      const maintainedParamKeys = [
+        ...maintainOnDocumentChange,
+        ...(isSameDocument(nextState) ? maintainOnSameDocument : []),
+      ] satisfies (keyof CombinedSearchParams)[]
+
+      const maintainedParams = maintainedParamKeys.reduce((acc, key) => {
+        // @ts-expect-error changesInspectorTab union type doesn't play nicely
+        // here, if it were just a string it would be fine
+        acc[key] = currentParams[key]
         return acc
-      }, {} as CombinedSearchParams)
+      }, {} as Partial<CombinedSearchParams>)
 
-      // Merge routerState and incoming state
-      const state: RouterState = pruneObject({
-        ...routerState,
+      // If params are provided, merge them with the maintained params
+      const nextParams = {...maintainedParams, ...params}
+
+      const nextRouterState = {
         ...nextState,
-      })
+        _searchParams: Object.entries(nextParams).reduce(
+          (acc, [key, value]) => [...acc, [key, value] as SearchParam],
+          [] as SearchParam[],
+        ),
+      } satisfies RouterState
 
-      // Merge routerSearchState and incoming searchState
-      const searchState = pruneObject({
-        ...routerSearchState,
-        ...nextSearchState,
-      })
-
-      // If the document has changed, clear the template and templateParams
-      if (routerState.id !== state.id) {
-        delete searchState.template
-        delete searchState.templateParams
-      }
-
-      state._searchParams = Object.entries(searchState).reduce(
-        (acc, [key, value]) => [...acc, [key, value] as SearchParam],
-        [] as SearchParam[],
-      )
-
-      const replace = forceReplace ?? searchState.preview === frameStateRef.current.url
-
-      setNavigationHistory((prev) => [...prev, state])
-      routerNavigate(state, {replace})
+      setNavigationHistory((prev) => [...prev, nextRouterState])
+      routerNavigate(nextRouterState, {replace})
     },
-    [routerNavigate, frameStateRef],
+    [isSameDocument, routerNavigate],
   )
 
   return {
+    isSameDocument,
     navigate,
     navigationHistory,
     params,

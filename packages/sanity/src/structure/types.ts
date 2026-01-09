@@ -392,3 +392,26 @@ export type UnresolvedPaneNode =
 export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
   intent?: Intent
 }
+
+/**
+ * @internal
+ */
+export interface StrictVersionLayeringOptions {
+  /**
+   * By default, version layering includes all document versions, regardless of their expected
+   * publication time—or lack thereof. For example, it includes all ASAP and undecided versions,
+   * despite ASAP and undecided versions having no fixed chronology. There is no way to determine
+   * which ASAP or undecided version is expected to be published before another.
+   *
+   * It also includes any existing draft, which has no fixed chronology, either.
+   *
+   * This functionality is useful for listing all document versions in a deterministic order, but
+   * doesn't accurately portray the upstream and downstream versions based on expected publication
+   * time.
+   *
+   * In strict mode, version layering instead only includes versions that have a fixed chronology.
+   * **Cross-version layering is only effective for scheduled versions, with all other
+   * versions being layered directly onto the published version (if it exists).**
+   */
+  strict?: boolean
+}

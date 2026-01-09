@@ -5,8 +5,8 @@ import {
   CommentsProvider,
   useCommentsEnabled,
   usePerspective,
-  useStudioUrl,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -40,8 +40,8 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
-  const {params, setParams, createPathWithParams} = usePaneRouter()
-  const {studioUrl} = useStudioUrl(window.location.origin)
+  const {params, setParams} = usePaneRouter()
+  const {resolveIntentLink} = useRouter()
 
   const selectedCommentId = params?.comment
   const paramsRef = useRef(params)
@@ -52,18 +52,15 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const getCommentLink = useCallback(
     (commentId: string) => {
-      // Generate a path based on the current pane params.
-      // We force a value for `inspect` to ensure that this is included in URLs when comments
-      // are created outside of the inspector context (i.e. directly on the field)
-      // @todo: consider filtering pane router params and culling all non-active RHS panes prior to generating this link
-      const path = createPathWithParams({
-        ...paramsRef.current,
-        comment: commentId,
+      const intentLink = resolveIntentLink('edit', {
+        id: documentId,
+        type: documentType,
         inspect: COMMENTS_INSPECTOR_NAME,
+        comment: commentId,
       })
-      return `${studioUrl}${path}`
+      return `${window.location.origin}${intentLink}`
     },
-    [createPathWithParams, studioUrl],
+    [documentId, documentType, resolveIntentLink],
   )
 
   const handleClearSelectedComment = useCallback(() => {

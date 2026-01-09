@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.8.2",
+    "@sanity/client": "^7.14.0",
     "@sanity/functions": "^1.0.3",
     "algoliasearch": "^5.27.0"
   },
@@ -15,10 +15,12 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update",
+        "delete"
       ],
       "filter": "_type == 'post'",
-      "projection": "{_id, title, hideFromSearch}"
+      "projection": "{_id, title, hideFromSearch, 'operation': delta::operation()}"
     },
     "env": {
       "COMMENT": "ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY env variables are required to sync documents to Algolia",

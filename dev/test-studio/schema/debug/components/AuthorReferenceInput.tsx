@@ -1,4 +1,4 @@
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
 import {
@@ -6,7 +6,6 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -31,7 +30,7 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
   const {readOnly} = inputProps
   const client = useClient({apiVersion: '2022-09-09'})
   const current = value && value._ref
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = createImageUrlBuilder(client)
 
   const inputRef = useRef<HTMLButtonElement | null>(null)
 
@@ -48,15 +47,12 @@ export const AuthorReferenceInput = forwardRef(function AuthorReferenceInput(
         // Select authors, with a defined image, which are published
         '*[_type == "author" && defined(image) && _id in path("*")][0...10] {_id, image, name}',
       )
-      .subscribe(handleAuthorsReceived)
+      .subscribe((_authors: AuthorReference[]) => setState({authors: _authors, loading: false}))
 
     return () => {
       sub.unsubscribe()
     }
   }, [client])
-
-  const handleAuthorsReceived = (_authors: AuthorReference[]) =>
-    setState({authors: _authors, loading: false})
 
   const handleChange = (item: AuthorReference) => {
     // Are we selecting the same value as previously selected?
