@@ -36,7 +36,7 @@ const error = console.error
 }
 
 // IntersectionObserver isn't available in the test browser environment
-const mockIntersectionObserver = vi.fn(
+const mockIntersectionObserver = vi.fn().mockImplementation(
   class {
     observe() {
       return null
@@ -56,7 +56,7 @@ const mockIntersectionObserver = vi.fn(
 ;(globalThis as any).IntersectionObserver = mockIntersectionObserver
 
 // ResizeObserver isn't available in the test browser environment
-const mockResizeObserver = vi.fn(
+const mockResizeObserver = vi.fn().mockImplementation(
   class {
     observe() {
       return null
