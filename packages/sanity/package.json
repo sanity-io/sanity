@@ -319,7 +319,7 @@
     "styled-components": "catalog:",
     "swr": "2.2.5",
     "vitest": "catalog:",
-    "vitest-package-exports": "^1.1.1"
+    "vitest-package-exports": "^1.1.2"
   },
   "peerDependencies": {
     "react": "^19.2.2",
