@@ -67,27 +67,21 @@ export const handler = documentEventHandler(async ({context, event}) => {
     apiVersion: 'vX',
   })
 
-  const altTextResponse = await agentClient.agent.action.prompt({
-    instruction: `Given the following keywords: [${keywords.join(', ')}], generate a JSON array of short (max 100 chars) alt text objects for each of these languages: [${languages.join(', ')}]. Each object should have this format: {"lang": "<language code>", "value": "<alt text in that language>"}. The response must be a single valid JSON array containing one object per language. Output ONLY the JSON array, nothing else.`,
-  })
-  console.log('Alt text generated:', JSON.stringify(altTextResponse, null, 2))
-
-  // Strip markdown code fences if present
-  const cleanedResponse = altTextResponse.replace(/^```json\s*|\s*```$/g, '').trim()
-
-  const altTextItems = JSON.parse(cleanedResponse)
-
-  // Convert the alt text items to an array of objects with the correct format
+  // Generate alt text for each language separately for reliability
   const altTextItemsArray: {_key: string; _type: string; language: string; value: string}[] = []
-  for (const altTextItem of altTextItems) {
+
+  for (const lang of languages) {
+    const altText = await agentClient.agent.action.prompt({
+      instruction: `Given the following keywords: [${keywords.join(', ')}], generate a short (max 100 chars) alt text in language: ${lang}. Respond with just the alt text string, no quotes or formatting.`,
+    })
+
     altTextItemsArray.push({
       _key: crypto.randomUUID(),
       _type: 'altTextItem',
-      language: altTextItem.lang,
-      value: altTextItem.value,
+      language: lang,
+      value: String(altText).trim(),
     })
   }
-  console.log('Alt text items array:', JSON.stringify(altTextItemsArray, null, 2))
 
   // Patch the asset to set the alt text in the 'altText' aspect
   const url = `https://api.sanity.io/v2025-05-08/media-libraries/${mlId}/mutate`
