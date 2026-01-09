@@ -2366,8 +2366,8 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@edge-runtime/vm@3.2.0)(@types/debug@4.1.12)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       vitest-package-exports:
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^1.1.2
+        version: 1.1.2
 
   packages/sanity/fixtures/examples/prj-with-react-19:
     dependencies:
@@ -12834,8 +12834,8 @@ packages:
       yaml:
         optional: true
 
-  vitest-package-exports@1.1.1:
-    resolution: {integrity: sha512-62/lvkUK4PDHgAAOjstWQpQQjIVTQKPnd3Pak6hCPjlfIAV8o0a7xhzPNMF1tT7TWdQmcVFs1b9pr41ZiH75Xw==}
+  vitest-package-exports@1.1.2:
+    resolution: {integrity: sha512-895iRrbcsZIDMhJSftGcQkuOPZcbCbHEQHXG0MnPKsSkpJhMRYuVtjA8dcjokyygJd/IQDDO8gyKo01AIkudHQ==}
 
   vitest@3.2.4:
     resolution: {integrity: sha512-LUCP5ev3GURDysTWiP47wRRUpLKMOfPh+yKTx3kVIEiu5KOMeqzpnYNsKyOoVrULivR8tLcks4+lga33Whn90A==}
@@ -25050,7 +25050,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
-  vitest-package-exports@1.1.1:
+  vitest-package-exports@1.1.2:
     dependencies:
       find-up-simple: 1.0.1
       pathe: 2.0.3
