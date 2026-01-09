@@ -798,6 +798,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+  /** Private access policy badge label */
+  'inputs.image.access-policy.private.label': 'Private',
+  /** Private access policy badge tooltip */
+  'inputs.image.access-policy.private.tooltip': 'Visible to logged-in users or by signed URL',
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Crop image',
   /** Accessibility label for button to open image edit dialog */
@@ -812,6 +816,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
   /** This field is read only */
   'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  /** Image could not be loaded due to possible access restrictions */
+  'inputs.image.error.possible-access-restriction':
+    'Could not load image. This may be due to access restrictions.',
   /** Unknown member kind: `{{kind}}` */
   'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** Edit hotspot and crop */
