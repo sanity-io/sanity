@@ -1,6 +1,6 @@
 import {type EventEmitter} from 'node:events'
 import {mkdir, writeFile} from 'node:fs/promises'
-import {Worker} from 'node:worker_threads'
+import {type Worker} from 'node:worker_threads'
 
 import type * as SanityCodegen from '@sanity/codegen'
 import {

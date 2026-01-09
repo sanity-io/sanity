@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 // oxlint-disable-next-line no-unassigned-import
 import 'blob-polyfill'
 // oxlint-disable-next-line no-unassigned-import
@@ -35,22 +36,34 @@ const error = console.error
 }
 
 // IntersectionObserver isn't available in the test browser environment
-const mockIntersectionObserver = vi.fn().mockImplementation(
+const mockIntersectionObserver = vi.fn(
   class {
-    observe(): void {}
-    unobserve(): void {}
-    disconnect(): void {}
+    observe() {
+      return null
+    }
+    unobserve() {
+      return null
+    }
+    disconnect() {
+      return null
+    }
   },
 )
 
 ;(globalThis as any).IntersectionObserver = mockIntersectionObserver
 
 // ResizeObserver isn't available in the test browser environment
-const mockResizeObserver = vi.fn().mockImplementation(
+const mockResizeObserver = vi.fn(
   class {
-    observe(): void {}
-    unobserve(): void {}
-    disconnect(): void {}
+    observe() {
+      return null
+    }
+    unobserve() {
+      return null
+    }
+    disconnect() {
+      return null
+    }
   },
 )
 ;(globalThis as any).ResizeObserver = mockResizeObserver
