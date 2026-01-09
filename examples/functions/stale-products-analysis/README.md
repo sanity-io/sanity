@@ -147,7 +147,8 @@ defineField({
          src: './functions/stale-products-analysis',
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'page' && delta::changedAny(modules)",
+           filter:
+             "_type == 'page' && (delta::changedAny(modules) || (delta::operation() == 'create' && defined(modules)))",
            projection: '{_id, _type, modules}',
          },
        }),
