@@ -82,8 +82,11 @@ export async function runTest({
       {waitUntil: 'domcontentloaded', timeout: 60_000},
     )
 
-    // Wait for the document pane to be visible, indicating the studio has loaded
-    await page.locator('[data-testid="document-pane"]').waitFor({state: 'visible', timeout: 60_000})
+    // Wait for the form view to be visible and editable, indicating the studio has fully loaded
+    await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 60_000})
+    await page
+      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
+      .waitFor({state: 'visible', timeout: 60_000})
 
     if (cdp) {
       await cdp.send('Profiler.enable')
