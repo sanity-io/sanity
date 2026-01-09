@@ -7,6 +7,7 @@ import {
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
+  isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
@@ -230,8 +231,17 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const scheduledCardinalityOneRelease = filteredReleases.currentReleases.find(
-      (release) => isCardinalityOneRelease(release) && isReleaseScheduledOrScheduling(release),
+    const allFilteredReleases = [
+      ...filteredReleases.currentReleases,
+      ...filteredReleases.notCurrentReleases,
+    ]
+    // if the scheduled draft is paused then it will be available in notCurrentReleases
+    // otherwise a locked-in scheduled draft will be available in currentReleases
+    // so must look across both to find the scheduled draft release
+    const scheduledCardinalityOneRelease = allFilteredReleases.find(
+      (release) =>
+        isCardinalityOneRelease(release) &&
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
     )
     const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
 
