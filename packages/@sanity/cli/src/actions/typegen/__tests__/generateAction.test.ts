@@ -24,15 +24,18 @@ vi.mock('@sanity/codegen', async (importOriginal) => {
   return {...original, readConfig: vi.fn()}
 })
 
+const workerInstances: EventEmitter[] = []
+
 vi.mock('node:worker_threads', async () => {
   const {EventEmitter} = await import('node:events')
-  function MockWorker(this: EventEmitter) {
-    EventEmitter.call(this)
+  class MockWorker extends EventEmitter {
+    terminate = vi.fn()
+    constructor() {
+      super()
+      workerInstances.push(this)
+    }
   }
-  MockWorker.prototype = Object.create(EventEmitter.prototype)
-  MockWorker.prototype.constructor = MockWorker
-  MockWorker.prototype.terminate = vi.fn()
-  return {Worker: vi.fn(MockWorker)}
+  return {Worker: MockWorker}
 })
 
 vi.mock('../../../util/cliWorker', () => ({
@@ -100,7 +103,7 @@ test(generateAction.name, async () => {
 
   const worker = await new Promise<Worker>((resolve) => {
     const id = setInterval(() => {
-      const [instance] = vi.mocked(Worker).mock.instances
+      const instance = workerInstances[0]
       if (!instance) return
       clearInterval(id)
       resolve(instance)
