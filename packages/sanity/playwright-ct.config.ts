@@ -2,6 +2,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import {defaultClientConditions} from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -50,7 +51,7 @@ export default defineConfig({
     /* Configure Playwright vite config */
     ctViteConfig: {
       resolve: {
-        conditions: ['development', 'module', 'browser'],
+        conditions: ['monorepo', ...defaultClientConditions],
         dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
       },
     },

@@ -4,6 +4,6 @@
   "exclude": ["./test/**/__fixtures__"],
   "compilerOptions": {
     "rootDir": ".",
-    "customConditions": ["development"]
+    "customConditions": ["monorepo"]
   }
 }

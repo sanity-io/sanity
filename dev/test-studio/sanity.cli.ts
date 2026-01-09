@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import {defineCliConfig} from 'sanity/cli'
-import {mergeConfig, type UserConfig} from 'vite'
+import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
@@ -38,10 +38,10 @@ export default defineCliConfig({
       return reactCompilerAllowList.test(filename)
     },
   },
-  vite(viteConfig: UserConfig): UserConfig {
+  vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
-    return mergeConfig(viteConfig, {
+    const nextConfig = mergeConfig(viteConfig, {
       server: {
         warmup: {
           clientFiles: [
@@ -71,15 +71,7 @@ export default defineCliConfig({
       },
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
-      ...(reactProductionProfiling
-        ? {
-            resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
-            esbuild: {minifyIdentifiers: false},
-          }
-        : {}),
       build: {
-        // Enable production source maps to easier debug deployed test studios
-        sourcemap: reactProductionProfiling || viteConfig.build?.sourcemap,
         rollupOptions: {
           input: {
             // NOTE: this is required to build static files for the workshop frame
@@ -90,5 +82,26 @@ export default defineCliConfig({
         },
       },
     } satisfies UserConfig)
+
+    // Support React Production Profiling on deployed studios
+    if (reactProductionProfiling && command === 'build') {
+      return mergeConfig(nextConfig, {
+        // Aliasing to react-dom/profiling is necessary in the production build, otherwise React can't run the profiler on the deployed studio
+        resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
+        // Not minifying identifiers ensures that the React DevTools components inspector has readable component names
+        esbuild: {minifyIdentifiers: false},
+        // Enable production source maps to easier debug deployed test studios
+        build: {sourcemap: true},
+      } satisfies UserConfig)
+    }
+
+    // Support hot reloading of files from monorepo workspaces during development
+    if (mode !== 'production' && command === 'serve') {
+      return mergeConfig(nextConfig, {
+        resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+      } satisfies UserConfig)
+    }
+
+    return nextConfig
   },
 })

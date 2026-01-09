@@ -3,6 +3,6 @@
   "include": ["./src", "./test"],
   "compilerOptions": {
     "rootDir": ".",
-    "customConditions": ["development"]
+    "customConditions": ["monorepo"]
   }
 }

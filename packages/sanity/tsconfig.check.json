@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
-    "customConditions": ["development"]
+    "customConditions": ["monorepo"]
   }
 }

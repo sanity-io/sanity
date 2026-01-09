@@ -25,57 +25,57 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "development": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
-      "development": "./src/_exports/_internal.ts",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
-      "development": "./src/_exports/_singletons.ts",
+      "monorepo": "./src/_exports/_singletons.ts",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
-      "development": "./src/_exports/_createContext.ts",
+      "monorepo": "./src/_exports/_createContext.ts",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
-      "development": "./src/_exports/cli.ts",
+      "monorepo": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
-      "development": "./src/_exports/desk.ts",
+      "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
-      "development": "./src/_exports/presentation.ts",
+      "monorepo": "./src/_exports/presentation.ts",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
-      "development": "./src/_exports/router.ts",
+      "monorepo": "./src/_exports/router.ts",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
-      "development": "./src/_exports/structure.ts",
+      "monorepo": "./src/_exports/structure.ts",
       "default": "./lib/structure.js"
     },
     "./media-library": {
       "source": "./src/_exports/media-library.ts",
-      "development": "./src/_exports/media-library.ts",
+      "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
-      "development": "./src/_exports/migrate.ts",
+      "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
