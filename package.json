@@ -107,7 +107,6 @@
     "@lerna-lite/list": "^4.10.5",
     "@lerna-lite/publish": "^4.10.5",
     "@repo/bundle-manager": "workspace:*",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",

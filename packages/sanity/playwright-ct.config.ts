@@ -2,7 +2,6 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
-import aliases from '@repo/dev-aliases'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -51,13 +50,8 @@ export default defineConfig({
     /* Configure Playwright vite config */
     ctViteConfig: {
       resolve: {
-        // @TODO alias same way as core
-        alias: Object.fromEntries(
-          Object.entries(aliases).map(([pkgName, pkgPath]) => {
-            return [pkgName, path.resolve(monorepoPath, path.join('packages', pkgPath))]
-          }),
-        ),
-        dedupe: ['@sanity/ui', 'styled-components'],
+        conditions: ['development', 'module', 'browser'],
+        dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
       },
     },
     /* Where to find playwright-ct template files */
