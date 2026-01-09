@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
@@ -35,17 +35,24 @@ export function ConfirmActiveScheduledDraftsBanner({
     [releases],
   )
 
+  const shouldOpenDialog = releaseGroupMode === 'paused' && !hasDateFilter
+
+  const handleCloseDialog = useCallback(() => {
+    setIsDialogOpen(false)
+  }, [])
+
+  const handleClick = useCallback(
+    () => (shouldOpenDialog ? setIsDialogOpen(true) : onNavigateToPaused),
+    [shouldOpenDialog, onNavigateToPaused],
+  )
+
   if (activeScheduledDrafts.length === 0) {
     return null
   }
 
-  const shouldOpenDialog = releaseGroupMode === 'paused' && !hasDateFilter
-
   const buttonText = shouldOpenDialog
     ? t('banner.confirm-active-scheduled-drafts.button-paused')
     : t('banner.confirm-active-scheduled-drafts.button')
-
-  const handleClick = shouldOpenDialog ? () => setIsDialogOpen(true) : onNavigateToPaused
 
   return (
     <>
@@ -74,7 +81,7 @@ export function ConfirmActiveScheduledDraftsBanner({
       {isDialogOpen && (
         <ConfirmScheduledDraftsDialog
           activeScheduledDrafts={activeScheduledDrafts}
-          onClose={() => setIsDialogOpen(false)}
+          onClose={handleCloseDialog}
         />
       )}
     </>
