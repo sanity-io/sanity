@@ -1,5 +1,6 @@
-import {isPortableTextBlock, isPortableTextSpan, toPlainText} from '@portabletext/toolkit'
-import {type Path, type PortableTextBlock, type PortableTextSpan} from '@sanity/types'
+import {toHTML} from '@portabletext/to-html'
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 
 import {isString} from '../../util/isString'
 import {type SanityClipboardItem} from './types'
@@ -174,77 +175,7 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * Map of PTE block styles to HTML tags
- */
-const BLOCK_STYLE_TO_TAG: Record<string, string> = {
-  normal: 'p',
-  h1: 'h1',
-  h2: 'h2',
-  h3: 'h3',
-  h4: 'h4',
-  h5: 'h5',
-  h6: 'h6',
-  blockquote: 'blockquote',
-}
-
-/**
- * Map of PTE decorators to HTML tags
- */
-const DECORATOR_TO_TAG: Record<string, string> = {
-  'strong': 'strong',
-  'em': 'em',
-  'underline': 'u',
-  'strike-through': 's',
-  'code': 'code',
-}
-
-/**
- * Convert a Portable Text span to HTML, applying decorators
- */
-function spanToHtml(span: PortableTextSpan): string {
-  let html = escapeHtml(span.text || '')
-  const marks = span.marks || []
-
-  // Wrap text with decorator tags (innermost first, so we reverse for wrapping)
-  for (const mark of marks) {
-    const tag = DECORATOR_TO_TAG[mark]
-    if (tag) {
-      html = `<${tag}>${html}</${tag}>`
-    }
-    // Note: We skip annotation marks (links, etc.) as they require markDefs lookup
-    // and add complexity. For clipboard HTML, basic formatting is sufficient.
-  }
-
-  return html
-}
-
-/**
- * Convert a Portable Text block to HTML
- */
-function blockToHtml(block: PortableTextBlock): string {
-  if (!isPortableTextBlock(block)) {
-    return ''
-  }
-
-  const style = block.style || 'normal'
-  const tag = BLOCK_STYLE_TO_TAG[style] || 'p'
-  const children = block.children || []
-
-  const innerHtml = children
-    .map((child) => {
-      if (isPortableTextSpan(child)) {
-        return spanToHtml(child)
-      }
-      // Skip inline objects for HTML output
-      return ''
-    })
-    .join('')
-
-  return `<${tag}>${innerHtml}</${tag}>`
-}
-
-/**
- * Convert Portable Text value to semantic HTML for clipboard
+ * Convert Portable Text value to semantic HTML for clipboard using @portabletext/to-html
  */
 function transformValueToHtml(value: unknown): string {
   if (!value) return ''
@@ -254,51 +185,7 @@ function transformValueToHtml(value: unknown): string {
   if (Array.isArray(value)) {
     // Check if this is a Portable Text array
     if (value.some((item) => isTypedObject(item) && isPortableTextBlock(item))) {
-      // Group consecutive list items by listItem type
-      const htmlParts: string[] = []
-      let currentList: {type: string; items: string[]} | null = null
-
-      for (const block of value) {
-        if (!isTypedObject(block) || !isPortableTextBlock(block)) {
-          continue
-        }
-
-        const listItem = (block as PortableTextBlock).listItem
-
-        if (listItem) {
-          // This is a list item
-          const listType = listItem === 'number' ? 'ol' : 'ul'
-          const itemHtml = blockToHtml(block as PortableTextBlock).replace(/^<p>|<\/p>$/g, '')
-
-          if (currentList && currentList.type === listType) {
-            currentList.items.push(`<li>${itemHtml}</li>`)
-          } else {
-            // Close previous list if any
-            if (currentList) {
-              htmlParts.push(
-                `<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`,
-              )
-            }
-            currentList = {type: listType, items: [`<li>${itemHtml}</li>`]}
-          }
-        } else {
-          // Not a list item, close any open list
-          if (currentList) {
-            htmlParts.push(
-              `<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`,
-            )
-            currentList = null
-          }
-          htmlParts.push(blockToHtml(block as PortableTextBlock))
-        }
-      }
-
-      // Close any remaining open list
-      if (currentList) {
-        htmlParts.push(`<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`)
-      }
-
-      return htmlParts.join('')
+      return toHTML(value as PortableTextBlock[])
     }
 
     // Regular array - join as comma-separated text in a paragraph
@@ -309,7 +196,7 @@ function transformValueToHtml(value: unknown): string {
   if (typeof value === 'object') {
     // Check if this is a single Portable Text block
     if (isTypedObject(value) && isPortableTextBlock(value)) {
-      return blockToHtml(value as PortableTextBlock)
+      return toHTML([value as PortableTextBlock])
     }
 
     // Regular object - extract non-underscore values
