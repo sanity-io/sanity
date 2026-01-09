@@ -1,5 +1,5 @@
-import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
-import {type Path} from '@sanity/types'
+import {isPortableTextBlock, isPortableTextSpan, toPlainText} from '@portabletext/toolkit'
+import {type Path, type PortableTextBlock, type PortableTextSpan} from '@sanity/types'
 
 import {isString} from '../../util/isString'
 import {type SanityClipboardItem} from './types'
@@ -72,13 +72,17 @@ function isPortableTextValue(value: unknown): boolean {
 
 export async function writeClipboardItem(copyActionResult: SanityClipboardItem): Promise<boolean> {
   const textValue = transformValueToText(copyActionResult.value)
-  const escapedTextValue = escapeHtml(textValue)
   // we use a utf8-safe base64 encoded string to preserve the data as safely as
   // possible when serializing into HTML
   const base64SanityClipboardItem = utf8ToBase64(JSON.stringify(copyActionResult))
 
   // Check if the value is Portable Text for x-portable-text format
   const isPTE = isPortableTextValue(copyActionResult.value)
+
+  // Generate semantic HTML for external applications, with embedded base64 data for Safari fallback
+  const htmlValue = transformValueToHtml(copyActionResult.value)
+  // Wrap in a container with the base64 data attribute for round-trip support
+  const htmlWithData = `<div data-${BASE64_ATTR}="${base64SanityClipboardItem}">${htmlValue}</div>`
 
   const clipboardItem = new ClipboardItem({
     ...(SUPPORTS_SANITY_CLIPBOARD_MIMETYPE && {
@@ -93,13 +97,7 @@ export async function writeClipboardItem(copyActionResult: SanityClipboardItem):
           type: MIMETYPE_PORTABLE_TEXT,
         }),
       }),
-    [MIMETYPE_HTML]: new Blob(
-      // we store the data within a data attribute because safari will sanitize
-      // and mangle the HTML written to the clipboard
-      // https://stackoverflow.com/a/68958287/5776910
-      [`<p data-${BASE64_ATTR}="${base64SanityClipboardItem}">${escapedTextValue}</p>`],
-      {type: MIMETYPE_HTML},
-    ),
+    [MIMETYPE_HTML]: new Blob([htmlWithData], {type: MIMETYPE_HTML}),
     [MIMETYPE_PLAINTEXT]: new Blob([textValue], {type: MIMETYPE_PLAINTEXT}),
   })
 
@@ -127,7 +125,7 @@ export async function parseClipboardItem(item: ClipboardItem): Promise<SanityCli
   const doc = parser.parseFromString(html, 'text/html')
 
   try {
-    const el = doc.querySelector(`[data-${BASE64_ATTR}]`) as HTMLParagraphElement
+    const el = doc.querySelector(`[data-${BASE64_ATTR}]`) as HTMLElement
     if (!el) return null
 
     type CamelCase<S extends string> = S extends `${infer P1}-${infer P2}${infer P3}`
@@ -166,10 +164,163 @@ function base64ToUtf8(base64String: string) {
   return decoder.decode(uint8Array)
 }
 
-function escapeHtml(text: string) {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(text, 'text/html')
-  return doc.documentElement.textContent
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+/**
+ * Map of PTE block styles to HTML tags
+ */
+const BLOCK_STYLE_TO_TAG: Record<string, string> = {
+  normal: 'p',
+  h1: 'h1',
+  h2: 'h2',
+  h3: 'h3',
+  h4: 'h4',
+  h5: 'h5',
+  h6: 'h6',
+  blockquote: 'blockquote',
+}
+
+/**
+ * Map of PTE decorators to HTML tags
+ */
+const DECORATOR_TO_TAG: Record<string, string> = {
+  'strong': 'strong',
+  'em': 'em',
+  'underline': 'u',
+  'strike-through': 's',
+  'code': 'code',
+}
+
+/**
+ * Convert a Portable Text span to HTML, applying decorators
+ */
+function spanToHtml(span: PortableTextSpan): string {
+  let html = escapeHtml(span.text || '')
+  const marks = span.marks || []
+
+  // Wrap text with decorator tags (innermost first, so we reverse for wrapping)
+  for (const mark of marks) {
+    const tag = DECORATOR_TO_TAG[mark]
+    if (tag) {
+      html = `<${tag}>${html}</${tag}>`
+    }
+    // Note: We skip annotation marks (links, etc.) as they require markDefs lookup
+    // and add complexity. For clipboard HTML, basic formatting is sufficient.
+  }
+
+  return html
+}
+
+/**
+ * Convert a Portable Text block to HTML
+ */
+function blockToHtml(block: PortableTextBlock): string {
+  if (!isPortableTextBlock(block)) {
+    return ''
+  }
+
+  const style = block.style || 'normal'
+  const tag = BLOCK_STYLE_TO_TAG[style] || 'p'
+  const children = block.children || []
+
+  const innerHtml = children
+    .map((child) => {
+      if (isPortableTextSpan(child)) {
+        return spanToHtml(child)
+      }
+      // Skip inline objects for HTML output
+      return ''
+    })
+    .join('')
+
+  return `<${tag}>${innerHtml}</${tag}>`
+}
+
+/**
+ * Convert Portable Text value to semantic HTML for clipboard
+ */
+function transformValueToHtml(value: unknown): string {
+  if (!value) return ''
+  if (isString(value)) return `<p>${escapeHtml(value)}</p>`
+  if (Number.isFinite(value)) return `<p>${value}</p>`
+
+  if (Array.isArray(value)) {
+    // Check if this is a Portable Text array
+    if (value.some((item) => isTypedObject(item) && isPortableTextBlock(item))) {
+      // Group consecutive list items by listItem type
+      const htmlParts: string[] = []
+      let currentList: {type: string; items: string[]} | null = null
+
+      for (const block of value) {
+        if (!isTypedObject(block) || !isPortableTextBlock(block)) {
+          continue
+        }
+
+        const listItem = (block as PortableTextBlock).listItem
+
+        if (listItem) {
+          // This is a list item
+          const listType = listItem === 'number' ? 'ol' : 'ul'
+          const itemHtml = blockToHtml(block as PortableTextBlock).replace(/^<p>|<\/p>$/g, '')
+
+          if (currentList && currentList.type === listType) {
+            currentList.items.push(`<li>${itemHtml}</li>`)
+          } else {
+            // Close previous list if any
+            if (currentList) {
+              htmlParts.push(
+                `<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`,
+              )
+            }
+            currentList = {type: listType, items: [`<li>${itemHtml}</li>`]}
+          }
+        } else {
+          // Not a list item, close any open list
+          if (currentList) {
+            htmlParts.push(
+              `<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`,
+            )
+            currentList = null
+          }
+          htmlParts.push(blockToHtml(block as PortableTextBlock))
+        }
+      }
+
+      // Close any remaining open list
+      if (currentList) {
+        htmlParts.push(`<${currentList.type}>${currentList.items.join('')}</${currentList.type}>`)
+      }
+
+      return htmlParts.join('')
+    }
+
+    // Regular array - join as comma-separated text in a paragraph
+    const text = value.map(transformValueToText).filter(Boolean).join(', ')
+    return text ? `<p>${escapeHtml(text)}</p>` : ''
+  }
+
+  if (typeof value === 'object') {
+    // Check if this is a single Portable Text block
+    if (isTypedObject(value) && isPortableTextBlock(value)) {
+      return blockToHtml(value as PortableTextBlock)
+    }
+
+    // Regular object - extract non-underscore values
+    const text = Object.entries(value)
+      .map(([key, subValue]) => (key.startsWith('_') ? '' : transformValueToText(subValue)))
+      .filter(Boolean)
+      .join(', ')
+    return text ? `<p>${escapeHtml(text)}</p>` : ''
+  }
+
+  return ''
 }
 
 export function transformValueToText(value: unknown): string {

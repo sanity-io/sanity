@@ -108,5 +108,7 @@ function walk(entry: Entry): Promise<File[]> {
 }
 
 export function isPortableTextItem(item: {type: string; kind: string}) {
-  return item.type === 'application/portable-text' || item.type === 'application/x-portable-text'
+  // Handle 'web ' prefix that browsers may add for custom MIME types
+  const type = item.type.replace(/^web /, '')
+  return type === 'application/portable-text' || type === 'application/x-portable-text'
 }
