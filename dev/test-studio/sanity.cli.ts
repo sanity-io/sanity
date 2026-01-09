@@ -33,7 +33,7 @@ export default defineCliConfig({
       if (filename.indexOf('dev/test-studio') !== -1) {
         return true
       }
-      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `development` condition during `sanity dev`)
+      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `monorepo` condition during `sanity dev`)
       // otherwise it's likely resolving a built file that had react compiler already applied during its build process
       return reactCompilerAllowList.test(filename)
     },
