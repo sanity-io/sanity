@@ -1,7 +1,8 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {extractSchema} from '@sanity/schema/_internal'
-import {type Workspace} from 'sanity'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
+import {SchemaError, type Workspace} from 'sanity'
 
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
@@ -16,8 +17,19 @@ export interface ExtractSchemaWorkerData {
 
 /** @internal */
 export interface ExtractSchemaWorkerResult {
+  type: 'success'
   schema: ReturnType<typeof extractSchema>
 }
+
+/** @internal */
+export interface ExtractSchemaWorkerError {
+  type: 'error'
+  error: string
+  validation?: SchemaValidationProblemGroup[]
+}
+
+/** @internal */
+export type ExtractSchemaWorkerMessage = ExtractSchemaWorkerResult | ExtractSchemaWorkerError
 
 async function main() {
   if (isMainThread || !parentPort) {
@@ -41,11 +53,53 @@ async function main() {
     })
 
     parentPort?.postMessage({
+      type: 'success',
       schema,
     } satisfies ExtractSchemaWorkerResult)
+  } catch (err) {
+    const validation = extractValidationFromSchemaError(err)
+    parentPort?.postMessage({
+      type: 'error',
+      error: err instanceof Error ? err.message : String(err),
+      validation,
+    } satisfies ExtractSchemaWorkerError)
   } finally {
     cleanup()
   }
+}
+
+/**
+ * Extracts validation problem groups from a SchemaError.
+ */
+function extractValidationFromSchemaError(
+  error: unknown,
+): SchemaValidationProblemGroup[] | undefined {
+  if (!(error instanceof SchemaError)) {
+    return undefined
+  }
+
+  const schema = error.schema as unknown as Record<string, unknown> | null | undefined
+  if (!schema || typeof schema !== 'object') {
+    return undefined
+  }
+
+  const validation = schema._validation
+  if (!Array.isArray(validation)) {
+    return undefined
+  }
+
+  // Validate the shape of each item
+  const isValid = validation.every((item: unknown) => {
+    if (typeof item !== 'object' || item === null) return false
+    const group = item as Record<string, unknown>
+    return Array.isArray(group.path) && Array.isArray(group.problems)
+  })
+
+  if (!isValid) {
+    return undefined
+  }
+
+  return validation as SchemaValidationProblemGroup[]
 }
 
 void main().then(() => process.exit())
