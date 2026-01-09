@@ -1,5 +1,6 @@
 import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
 import {
+  Badge,
   Box,
   // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
@@ -25,8 +26,10 @@ import {
   getVersionId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
+  isSystemBundleName,
   ReleaseAvatar,
   type ReleaseDocument,
+  type TargetPerspective,
   useActiveReleases,
   useDocumentVersions,
   useEditState,
@@ -61,7 +64,9 @@ const VersionModeHeaderLayoutSection = styled.div`
  * @internal
  */
 export const VersionModeHeader: ComponentType<
-  {state: 'pending' | 'ready' | 'error'} & Pick<DocumentLayoutProps, 'documentId'>
+  {
+    state: 'pending' | 'ready' | 'error'
+  } & Pick<DocumentLayoutProps, 'documentId'>
 > = ({documentId, state}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {data: documentVersions} = useDocumentVersions({documentId})
@@ -76,6 +81,8 @@ export const VersionModeHeader: ComponentType<
       return typeof releaseId !== 'undefined' && releasesIds.includes(releaseId)
     })
   }, [activeReleases.data, releasesIds])
+
+  const releasesState = fetchingState(activeReleases)
 
   const onSelectPreviousRelease = (selectedDocumentId: string): void => {
     if (typeof documents?.previous !== 'undefined') {
@@ -110,6 +117,7 @@ export const VersionModeHeader: ComponentType<
         {typeof documents?.previous !== 'undefined' && (
           <VersionMenu
             releases={releases}
+            releasesState={releasesState}
             onSelectRelease={onSelectPreviousRelease}
             role="previous"
             documentId={documentId}
@@ -127,6 +135,7 @@ export const VersionModeHeader: ComponentType<
         {typeof documents?.next !== 'undefined' && (
           <VersionMenu
             releases={releases}
+            releasesState={releasesState}
             onSelectRelease={onSelectNextRelease}
             role="next"
             documentId={documentId}
@@ -150,6 +159,7 @@ export const VersionModeHeader: ComponentType<
 interface VersionMenuProps {
   state: 'pending' | 'ready' | 'error'
   releases: ReleaseDocument[]
+  releasesState: 'pending' | 'ready' | 'error'
   role: 'previous' | 'next'
   onSelectRelease: (releaseId: string) => void
   documentId: string
@@ -161,6 +171,7 @@ interface VersionMenuProps {
 
 const VersionMenu: ComponentType<VersionMenuProps> = ({
   releases = [],
+  releasesState,
   onSelectRelease,
   role,
   documentId,
@@ -177,6 +188,14 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
     },
   } = useWorkspace()
 
+  if (releasesState === 'error') {
+    return (
+      <Badge tone="critical" radius={3}>
+        {tStructure('compare-version.error.loadReleases.title')}
+      </Badge>
+    )
+  }
+
   return (
     <MenuButton
       id={role}
@@ -188,7 +207,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
           paddingRight={3}
           radius="full"
           selected
-          {...getMenuButtonProps({selected, tCore, tStructure})}
+          {...getMenuButtonProps({selected, tCore, tStructure, releasesState})}
         />
       }
       menu={
@@ -321,12 +340,14 @@ function getMenuButtonProps({
   selected,
   tCore,
   tStructure,
+  releasesState,
 }: {
-  selected?: ReleaseDocument | 'published' | 'draft'
+  releasesState: 'pending' | 'ready'
+  selected?: TargetPerspective
   tCore: TFunction
   tStructure: TFunction
 }): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
-  if (typeof selected === 'undefined') {
+  if (releasesState === 'pending') {
     return {
       text: tCore('common.loading'),
       tone: 'neutral',
@@ -345,11 +366,37 @@ function getMenuButtonProps({
     }
   }
 
-  const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+  if (isSystemBundleName(selected)) {
+    const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+
+    return {
+      text: tStructure(['compare-versions.status', selected].join('.')),
+      icon: <ReleaseAvatar padding={1} tone={tone} />,
+      tone,
+    }
+  }
 
   return {
-    text: tStructure(['compare-versions.status', selected].join('.')),
-    icon: <ReleaseAvatar padding={1} tone={tone} />,
-    tone,
+    text: selected,
+    icon: <ReleaseAvatar padding={1} tone="neutral" />,
+    tone: 'neutral',
   }
+}
+
+function fetchingState({
+  loading,
+  error,
+}: {
+  loading: boolean
+  error?: Error
+}): 'pending' | 'ready' | 'error' {
+  if (loading) {
+    return 'pending'
+  }
+
+  if (typeof error !== 'undefined') {
+    return 'error'
+  }
+
+  return 'ready'
 }
