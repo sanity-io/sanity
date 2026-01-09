@@ -4,7 +4,14 @@ import {
   createSessionId,
 } from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
-import {type ReactNode, useEffect, useMemo, useRef, version as reactVersion} from 'react'
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  version as reactVersion,
+} from 'react'
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
@@ -50,17 +57,20 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
 
   // Get active tool from router state
   const activeTool = useRouterState(
-    (routerState) => routerState?.tool,
-    (a, b) => a === b,
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      [],
+    ),
   )
 
   // Ref to hold current context - allows sendEvents to always access latest values
   // without causing re-memoization of the store
   const contextRef = useRef<TelemetryContext | null>(null)
 
-  // Update context ref when any dynamic values change
+  // Update context ref when dynamic values change
   // Telemetry only runs on client - no SSR fallbacks needed
-  if (isClient) {
+  useEffect(() => {
+    if (!isClient) return
     contextRef.current = {
       // Static values
       userAgent: navigator.userAgent,
@@ -82,7 +92,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       activeProjectId: workspace.projectId,
       activeDataset: workspace.dataset,
     }
-  }
+  }, [orgId, activeTool, workspace.name, workspace.projectId, workspace.dataset])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
     if (DEBUG_TELEMETRY) {
@@ -123,6 +133,9 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     }
   }, [client, projectId])
 
+  // The storeOptions callbacks access contextRef.current, but only when called
+  // asynchronously (on flush), not during render. Suppress the lint warning.
+  // eslint-disable-next-line react-hooks/refs
   const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
 
   // Also update user properties on the store (for backwards compatibility)

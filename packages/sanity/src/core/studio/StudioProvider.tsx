@@ -86,7 +86,7 @@ export function StudioProvider({
             LoadingComponent={LoadingBlock}
             ConfigErrorsComponent={ConfigErrorsScreen}
           >
-            <StudioTelemetryProvider config={config}>
+            <StudioTelemetryProvider>
               <LocaleProvider>
                 <PackageVersionStatusProvider>
                   <MaybeEnableErrorReporting errorReporter={errorReporter} />
@@ -109,7 +109,7 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children, config],
+    [children],
   )
 
   return (

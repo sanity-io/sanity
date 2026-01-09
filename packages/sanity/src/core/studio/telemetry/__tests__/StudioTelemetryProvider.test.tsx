@@ -1,53 +1,37 @@
+/* eslint-disable import/first */
+// Regular imports first
 import {render} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-// Mock dependencies before importing the component
-vi.mock('@sanity/telemetry', () => ({
-  createBatchedStore: vi.fn(),
-  createSessionId: vi.fn(() => 'test-session-id'),
-}))
-
+// Mocks (these get hoisted automatically by vitest)
+vi.mock('@sanity/telemetry')
 vi.mock('@sanity/telemetry/react', () => ({
   TelemetryProvider: ({children}: {children: ReactNode}) => children,
 }))
-
-vi.mock('../../../hooks', () => ({
-  useClient: vi.fn(),
-}))
-
-vi.mock('../../workspace', () => ({
-  useWorkspace: vi.fn(),
-}))
-
-vi.mock('../../../store/_legacy/project/useProjectOrganizationId', () => ({
-  useProjectOrganizationId: vi.fn(),
-}))
-
-vi.mock('sanity/router', () => ({
-  useRouterState: vi.fn(),
-}))
-
+vi.mock('../../../hooks')
+vi.mock('../../workspace')
+vi.mock('../../../store/_legacy/project/useProjectOrganizationId')
+vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
   isProd: false,
 }))
-
 vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.0.0-test',
 }))
-
 vi.mock('../PerformanceTelemetry', () => ({
   PerformanceTelemetryTracker: ({children}: {children: ReactNode}) => children,
 }))
 
-// Import mocked modules to access mock functions
-import {createBatchedStore} from '@sanity/telemetry'
+// Import mocked modules AFTER vi.mock declarations
+import {createBatchedStore, createSessionId} from '@sanity/telemetry'
 import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
+/* eslint-enable import/first */
 
 describe('StudioTelemetryProvider', () => {
   let capturedStoreOptions: {
@@ -71,11 +55,12 @@ describe('StudioTelemetryProvider', () => {
     vi.clearAllMocks()
 
     // Setup default mocks
+    vi.mocked(createSessionId).mockReturnValue('test-session-id')
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
     vi.mocked(useProjectOrganizationId).mockReturnValue({value: 'org-123'} as never)
-    vi.mocked(useRouterState).mockImplementation((selector: (state: unknown) => unknown) =>
-      selector({tool: 'desk'}),
+    vi.mocked(useRouterState).mockImplementation(
+      <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'desk'}),
     )
 
     // Capture store options when createBatchedStore is called
@@ -234,8 +219,8 @@ describe('StudioTelemetryProvider', () => {
     )
 
     // Change active tool
-    vi.mocked(useRouterState).mockImplementation((selector: (state: unknown) => unknown) =>
-      selector({tool: 'vision'}),
+    vi.mocked(useRouterState).mockImplementation(
+      <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'vision'}),
     )
 
     rerender(
