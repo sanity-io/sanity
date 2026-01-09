@@ -180,35 +180,46 @@ async function runAbTest(test: EfpsTest) {
       branchLabel: string,
     ) => {
       let results: EfpsResult[] | undefined
+      let lastError: unknown
 
       // Run attempts sequentially to get stable measurements, but both branches run in parallel
       for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
         const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
         const message = `Running test '${test.name}' on ${branchLabel}${attemptMessage}`
 
-        // Note: We can't use spinner here since both branches run in parallel
-        // but the individual test logs will still work
-        results = mergeResults(
-          results,
-          await runTest({
-            browser,
-            key: `${key}-attempt-${attempt}`,
-            test,
-            resultsDir,
-            client,
-            headless: HEADLESS,
-            recordVideo: RECORD_VIDEO,
-            enableProfiler: ENABLE_PROFILER,
-            studioUrl,
-            log: () => {
-              // Suppress logs during parallel execution to avoid interleaving
-            },
-          }),
-        )
-        spinner.succeed(`${message}`)
+        try {
+          // Note: We can't use spinner here since both branches run in parallel
+          // but the individual test logs will still work
+          results = mergeResults(
+            results,
+            await runTest({
+              browser,
+              key: `${key}-attempt-${attempt}`,
+              test,
+              resultsDir,
+              client,
+              headless: HEADLESS,
+              recordVideo: RECORD_VIDEO,
+              enableProfiler: ENABLE_PROFILER,
+              studioUrl,
+              log: () => {
+                // Suppress logs during parallel execution to avoid interleaving
+              },
+            }),
+          )
+          spinner.succeed(`${message}`)
+        } catch (error) {
+          lastError = error
+          spinner.fail(`${message} - failed, ${TEST_ATTEMPTS - attempt - 1} attempts remaining`)
+        }
       }
 
-      return results!
+      // Only fail if all attempts failed
+      if (!results) {
+        throw lastError
+      }
+
+      return results
     }
 
     spinner.info(
