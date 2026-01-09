@@ -57,12 +57,15 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     )
   }, [firstActionState])
 
+  const shouldShowScheduleAsFirstActionButton = firstActionState?.action === 'schedule' && isPaused
+
   const showFirstActionButton = showingRevision
     ? Boolean(firstActionState)
     : selectedReleaseId
-      ? // For paused drafts, allow any action as primary
+      ? // For paused drafts, only allow 'schedule' action as primary
         // Otherwise, only show custom (non-Sanity-defined) actions as primary
-        firstActionState && (isPaused || !isSanityDefinedAction(firstActionState))
+        firstActionState &&
+        (shouldShowScheduleAsFirstActionButton || !isSanityDefinedAction(firstActionState))
       : firstActionState && (!editState?.liveEdit || editState?.version)
 
   const sideMenuItems = useMemo(() => {
