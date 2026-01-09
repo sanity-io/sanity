@@ -306,7 +306,7 @@
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@types/yargs": "^17.0.33",
     "@typescript/native-preview": "catalog:",
-    "@vitest/expect": "^3.2.4",
+    "@vitest/expect": "^4.0.16",
     "babel-plugin-react-compiler": "1.0.0",
     "blob-polyfill": "^9.0.20240710",
     "eslint": "catalog:",
