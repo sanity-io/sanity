@@ -15,11 +15,13 @@ const preview: SchemaType['preview'] = {
 }
 
 describe('getPreviewPaths', () => {
-  it('Should return undefined if no selection is provided', () => {
+  it('Should return default paths if no selection is provided', () => {
     const paths = getPreviewPaths({
       select: undefined,
     })
-    expect(paths).toBeUndefined()
+    // Even without a select, we need to return default paths to ensure
+    // proper document observation for draft status detection
+    expect(paths).toEqual([['_createdAt'], ['_updatedAt']])
   })
   it('should return the default preview paths', () => {
     const paths = getPreviewPaths(preview)
