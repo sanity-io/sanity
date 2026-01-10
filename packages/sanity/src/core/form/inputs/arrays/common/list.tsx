@@ -56,6 +56,16 @@ const SENSOR_OPTIONS: SensorOptions = {
   coordinateGetter: sortableKeyboardCoordinates,
 }
 
+// Activation constraint for PointerSensor to prevent accidental drags
+// and ensure drag intent is clear before starting the operation.
+// A small distance threshold (5px) prevents clicks from being interpreted as drags
+// while still allowing quick drag initiation.
+const POINTER_SENSOR_OPTIONS = {
+  activationConstraint: {
+    distance: 5,
+  },
+}
+
 const TRANSITION = {
   duration: 200,
   easing: 'ease',
@@ -73,7 +83,10 @@ function sortingStrategy(axis: Axis) {
 const SortableList = memo(function SortableList(props: ListProps) {
   const {items, axis, onItemMove, onItemMoveStart, onItemMoveEnd, children, ...rest} = props
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, SENSOR_OPTIONS))
+  const sensors = useSensors(
+    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, SENSOR_OPTIONS),
+  )
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
