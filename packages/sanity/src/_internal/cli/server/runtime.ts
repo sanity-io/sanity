@@ -55,7 +55,8 @@ export async function writeSanityRuntime({
           studioRootPath: cwd,
           monorepo,
           props: {
-            entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
+            // Convert to forward slashes for URL paths (path.relative returns backslashes on Windows)
+            entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js')).split(path.sep).join('/')}`,
             basePath: basePath || '/',
           },
           isApp,
@@ -79,7 +80,10 @@ export async function writeSanityRuntime({
   let relativeConfigLocation: string | null = null
   if (!isApp) {
     const studioConfigPath = await getSanityStudioConfigPath(cwd)
-    relativeConfigLocation = studioConfigPath ? path.relative(runtimeDir, studioConfigPath) : null
+    // Convert to forward slashes for ES module imports (path.relative returns backslashes on Windows)
+    relativeConfigLocation = studioConfigPath
+      ? path.relative(runtimeDir, studioConfigPath).split(path.sep).join('/')
+      : null
   }
 
   const relativeEntry = cwd ? path.resolve(cwd, entry || './src/App') : entry
