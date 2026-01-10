@@ -8,8 +8,6 @@ import {useListFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 
 const StatusIconWrapper = styled.div`
-  left: 8px;
-  position: relative;
   width: 25px;
 `
 
