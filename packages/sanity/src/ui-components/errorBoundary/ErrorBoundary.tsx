@@ -4,8 +4,7 @@ import {
   type ErrorBoundaryProps as UIErrorBoundaryProps,
 } from '@sanity/ui'
 import {useCallback, useContext} from 'react'
-
-import {SourceContext} from '../../_singletons'
+import {SourceContext} from 'sanity/_singletons'
 
 export type ErrorBoundaryProps = UIErrorBoundaryProps
 

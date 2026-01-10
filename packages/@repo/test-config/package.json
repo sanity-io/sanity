@@ -8,7 +8,6 @@
     "./vitest": "./vitest/index.mjs"
   },
   "devDependencies": {
-    "@repo/dev-aliases": "workspace:*",
     "vitest": "catalog:"
   }
 }

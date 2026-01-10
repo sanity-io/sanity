@@ -26,6 +26,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -65,5 +66,11 @@
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }
