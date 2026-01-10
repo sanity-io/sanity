@@ -24,7 +24,9 @@ import {
  * - **INP** (Interaction to Next Paint) - interactivity
  *
  * Uses the attribution build for diagnostic data to help identify
- * the causes of performance issues.
+ * the causes of performance issues. Each metric includes:
+ * - Base data: name, value, rating, delta, id, entries, navigationType
+ * - Attribution data: metric-specific diagnostic information
  *
  * @remarks
  * - The web-vitals library manages its own PerformanceObservers
@@ -48,61 +50,39 @@ export function useWebVitalsTelemetry(): void {
 
     // LCP - Largest Contentful Paint
     // Measures loading performance - when the largest content element is visible
+    // Attribution: target, url, timeToFirstByte, resourceLoadDelay, etc.
     onLCP((metric) => {
-      telemetry.log(PerformanceLCPMeasured, {
-        value: metric.value,
-        rating: metric.rating,
-        element: metric.attribution.target,
-        url: metric.attribution.url,
-        navigationType: metric.navigationType,
-      })
+      telemetry.log(PerformanceLCPMeasured, metric)
     })
 
     // FCP - First Contentful Paint
     // Measures when the first content is painted to the screen
+    // Attribution: timeToFirstByte, firstByteToFCP, loadState, etc.
     onFCP((metric) => {
-      telemetry.log(PerformanceFCPMeasured, {
-        value: metric.value,
-        rating: metric.rating,
-        navigationType: metric.navigationType,
-      })
+      telemetry.log(PerformanceFCPMeasured, metric)
     })
 
     // CLS - Cumulative Layout Shift
     // Measures visual stability - reported on page hide
     // Note: CLS is Chromium-only, Firefox/Safari won't fire this callback
+    // Attribution: largestShiftTarget, largestShiftTime, largestShiftValue, etc.
     onCLS((metric) => {
-      telemetry.log(PerformanceCLSMeasured, {
-        value: metric.value,
-        rating: metric.rating,
-        largestShiftTarget: metric.attribution.largestShiftTarget,
-      })
+      telemetry.log(PerformanceCLSMeasured, metric)
     })
 
     // TTFB - Time to First Byte
     // Measures server response time and network latency
+    // Attribution: waitingDuration, cacheDuration, dnsDuration, etc.
     onTTFB((metric) => {
-      telemetry.log(PerformanceTTFBMeasured, {
-        value: metric.value,
-        rating: metric.rating,
-        navigationType: metric.navigationType,
-      })
+      telemetry.log(PerformanceTTFBMeasured, metric)
     })
 
     // INP - Interaction to Next Paint (v2 with attribution)
     // Measures responsiveness - the worst interaction latency
     // This runs alongside the existing INP hook during migration
+    // Attribution: interactionTarget, inputDelay, processingDuration, etc.
     onINP((metric) => {
-      const {attribution} = metric
-      telemetry.log(PerformanceINPMeasuredV2, {
-        value: metric.value,
-        rating: metric.rating,
-        target: attribution.interactionTarget ?? null,
-        interactionType: attribution.interactionType,
-        inputDelay: attribution.inputDelay,
-        processingDuration: attribution.processingDuration,
-        presentationDelay: attribution.presentationDelay,
-      })
+      telemetry.log(PerformanceINPMeasuredV2, metric)
     })
 
     // No cleanup function needed:

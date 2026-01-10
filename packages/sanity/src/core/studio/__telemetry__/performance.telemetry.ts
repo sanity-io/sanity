@@ -1,5 +1,11 @@
 import {defineEvent} from '@sanity/telemetry'
-import {type Metric} from 'web-vitals'
+import {
+  type CLSMetricWithAttribution,
+  type FCPMetricWithAttribution,
+  type INPMetricWithAttribution,
+  type LCPMetricWithAttribution,
+  type TTFBMetricWithAttribution,
+} from 'web-vitals/attribution'
 
 // =============================================================================
 // EXISTING INP (v1) - Keep for backwards compatibility during migration
@@ -25,101 +31,71 @@ export const PerformanceINPMeasured = defineEvent<PerformanceINPMeasuredData>({
 
 // =============================================================================
 // CORE WEB VITALS (via web-vitals library)
-// Uses types from web-vitals package Metric interface
+// Pass through full metric objects from web-vitals/attribution build
+// Each metric type includes:
+// - Base: name, value, rating, delta, id, entries, navigationType
+// - Attribution: diagnostic info specific to each metric type
 // =============================================================================
-
-/**
- * Base fields common to all web-vitals metrics
- * Derived from web-vitals Metric interface
- */
-interface WebVitalsBaseData {
-  /** Metric value (ms for time-based, unitless for CLS) */
-  value: Metric['value']
-  /** Rating based on thresholds: 'good', 'needs-improvement', 'poor' */
-  rating: Metric['rating']
-  /** Navigation type: navigate, reload, back-forward, etc. */
-  navigationType?: Metric['navigationType']
-}
 
 /**
  * Largest Contentful Paint - measures loading performance
  * Reports when the largest content element becomes visible
+ *
+ * Attribution includes: target, url, timeToFirstByte, resourceLoadDelay,
+ * resourceLoadDuration, elementRenderDelay, navigationEntry, lcpResourceEntry, lcpEntry
  */
-export interface PerformanceLCPMeasuredData extends WebVitalsBaseData {
-  /** Element tag name that triggered LCP */
-  element?: string
-  /** URL of the resource (for images) */
-  url?: string
-}
-
-export const PerformanceLCPMeasured = defineEvent<PerformanceLCPMeasuredData>({
+export const PerformanceLCPMeasured = defineEvent<LCPMetricWithAttribution>({
   name: 'Performance LCP Measured',
-  version: 1,
-  description: 'Largest Contentful Paint measurement',
+  version: 2,
+  description: 'Largest Contentful Paint measurement with attribution',
 })
 
 /**
  * First Contentful Paint - measures initial render
+ *
+ * Attribution includes: timeToFirstByte, firstByteToFCP, loadState,
+ * fcpEntry, navigationEntry
  */
-export type PerformanceFCPMeasuredData = WebVitalsBaseData
-
-export const PerformanceFCPMeasured = defineEvent<PerformanceFCPMeasuredData>({
+export const PerformanceFCPMeasured = defineEvent<FCPMetricWithAttribution>({
   name: 'Performance FCP Measured',
-  version: 1,
-  description: 'First Contentful Paint measurement',
+  version: 2,
+  description: 'First Contentful Paint measurement with attribution',
 })
 
 /**
  * Cumulative Layout Shift - measures visual stability
+ * Reported on page hide (visibilitychange)
+ *
+ * Attribution includes: largestShiftTarget, largestShiftTime, largestShiftValue,
+ * largestShiftEntry, largestShiftSource, loadState
  */
-export interface PerformanceCLSMeasuredData {
-  /** CLS score (unitless, typically 0-1) */
-  value: Metric['value']
-  /** Rating based on thresholds */
-  rating: Metric['rating']
-  /** Element selector that caused the largest shift */
-  largestShiftTarget?: string
-}
-
-export const PerformanceCLSMeasured = defineEvent<PerformanceCLSMeasuredData>({
+export const PerformanceCLSMeasured = defineEvent<CLSMetricWithAttribution>({
   name: 'Performance CLS Measured',
-  version: 1,
-  description: 'Cumulative Layout Shift measurement (reported on page hide)',
+  version: 2,
+  description: 'Cumulative Layout Shift measurement with attribution',
 })
 
 /**
  * Time to First Byte - measures server response time
+ *
+ * Attribution includes: waitingDuration, cacheDuration, dnsDuration,
+ * connectionDuration, requestDuration, navigationEntry
  */
-export type PerformanceTTFBMeasuredData = WebVitalsBaseData
-
-export const PerformanceTTFBMeasured = defineEvent<PerformanceTTFBMeasuredData>({
+export const PerformanceTTFBMeasured = defineEvent<TTFBMetricWithAttribution>({
   name: 'Performance TTFB Measured',
-  version: 1,
-  description: 'Time to First Byte measurement',
+  version: 2,
+  description: 'Time to First Byte measurement with attribution',
 })
 
 /**
- * Enhanced INP with attribution from web-vitals library
- * Provides more detailed breakdown than v1
+ * Interaction to Next Paint - measures responsiveness
+ * Reports the worst interaction latency during the page session
+ *
+ * Attribution includes: interactionTarget, interactionTime, interactionType,
+ * nextPaintTime, processedEventEntries, inputDelay, processingDuration,
+ * presentationDelay, loadState, longAnimationFrameEntries, and more
  */
-export interface PerformanceINPMeasuredV2Data {
-  /** INP value in milliseconds */
-  value: Metric['value']
-  /** Rating based on thresholds */
-  rating: Metric['rating']
-  /** Element that received the interaction */
-  target?: string | null
-  /** Interaction type: pointer, keyboard */
-  interactionType?: string
-  /** Time from input to event processing start */
-  inputDelay?: number
-  /** Time spent in event handlers */
-  processingDuration?: number
-  /** Time from processing end to next paint */
-  presentationDelay?: number
-}
-
-export const PerformanceINPMeasuredV2 = defineEvent<PerformanceINPMeasuredV2Data>({
+export const PerformanceINPMeasuredV2 = defineEvent<INPMetricWithAttribution>({
   name: 'Performance INP Measured',
   version: 2,
   description: 'Interaction to Next Paint with attribution (web-vitals)',
