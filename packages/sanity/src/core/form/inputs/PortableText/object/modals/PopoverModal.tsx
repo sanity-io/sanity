@@ -119,7 +119,13 @@ function Content(props: PopoverEditDialogProps) {
     // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
     if (!isWithinPortal && !isClosedRef.current) return false
 
-    return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
+    // Allow focus on elements within portals (e.g., reference autocomplete dropdowns),
+    // contentEditable elements, or elements inside the popover container
+    return (
+      isWithinPortal ||
+      Boolean(element.contentEditable) ||
+      Boolean(containerElement.current?.contains(element))
+    )
   }, [])
 
   return (
