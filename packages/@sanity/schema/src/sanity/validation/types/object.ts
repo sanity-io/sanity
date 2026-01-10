@@ -6,6 +6,58 @@ import {validateComponent} from '../utils/validateComponent'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
+
+/**
+ * DOM Node/Element property names that can cause issues when used as field names.
+ * Using these as field names may cause Studio crashes due to name collisions
+ * with DOM APIs when document values are accidentally treated as DOM elements.
+ *
+ * See: https://github.com/sanity-io/sanity/issues/4435
+ */
+const RESERVED_DOM_PROPERTY_NAMES = new Set([
+  // Node properties
+  'parentNode',
+  'childNodes',
+  'firstChild',
+  'lastChild',
+  'nextSibling',
+  'previousSibling',
+  'parentElement',
+  'textContent',
+  'nodeType',
+  'nodeName',
+  'nodeValue',
+  'ownerDocument',
+  'baseURI',
+  'isConnected',
+  // Element properties
+  'children',
+  'firstElementChild',
+  'lastElementChild',
+  'nextElementSibling',
+  'previousElementSibling',
+  'childElementCount',
+  'innerHTML',
+  'outerHTML',
+  'className',
+  'classList',
+  'tagName',
+  'attributes',
+  'scrollTop',
+  'scrollLeft',
+  'scrollWidth',
+  'scrollHeight',
+  'clientTop',
+  'clientLeft',
+  'clientWidth',
+  'clientHeight',
+  'offsetParent',
+  'offsetTop',
+  'offsetLeft',
+  'offsetWidth',
+  'offsetHeight',
+])
+
 interface Field {
   name: string
 }
@@ -53,6 +105,16 @@ function validateFieldName(name: any): Array<any> {
           ' It may be wise to keep special characters out of field names for easier access later on.',
       ),
       HELP_IDS.OBJECT_FIELD_NAME_INVALID,
+    ]
+  }
+  if (RESERVED_DOM_PROPERTY_NAMES.has(name)) {
+    return [
+      warning(
+        `Field name "${name}" may cause issues. This name collides with a DOM API property, ` +
+          `which can cause the Studio to crash in certain scenarios. ` +
+          `Consider renaming this field to avoid potential issues.`,
+        HELP_IDS.OBJECT_FIELD_NAME_RESERVED_DOM_PROPERTY,
+      ),
     ]
   }
   return []

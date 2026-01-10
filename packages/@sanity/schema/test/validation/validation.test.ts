@@ -440,4 +440,105 @@ describe('Validation test', () => {
       expect(blockType.marks.annotations[1]._problems).toHaveLength(0)
     })
   })
+
+  describe('DOM property name validation', () => {
+    test('warns when field name is a reserved DOM property (parentNode)', () => {
+      const schemaDef = [
+        {
+          type: 'document',
+          name: 'myDocument',
+          fields: [
+            {type: 'string', name: 'title'},
+            {type: 'reference', name: 'parentNode', to: [{type: 'myDocument'}]},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myDocument = validation.get('myDocument')
+      const parentNodeField = myDocument.fields.find((f: any) => f.name === 'parentNode')
+
+      expect(parentNodeField._problems).toHaveLength(1)
+      expect(parentNodeField._problems[0]).toMatchObject({
+        severity: 'warning',
+        helpId: 'schema-field-name-reserved-dom-property',
+      })
+      expect(parentNodeField._problems[0].message).toContain('parentNode')
+      expect(parentNodeField._problems[0].message).toContain('DOM API property')
+    })
+
+    test('warns when field name is a reserved DOM property (children)', () => {
+      const schemaDef = [
+        {
+          type: 'object',
+          name: 'myObject',
+          fields: [{type: 'array', name: 'children', of: [{type: 'string'}]}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myObject = validation.get('myObject')
+      const childrenField = myObject.fields.find((f: any) => f.name === 'children')
+
+      expect(childrenField._problems).toHaveLength(1)
+      expect(childrenField._problems[0]).toMatchObject({
+        severity: 'warning',
+        helpId: 'schema-field-name-reserved-dom-property',
+      })
+    })
+
+    test('warns for various reserved DOM property names', () => {
+      const schemaDef = [
+        {
+          type: 'object',
+          name: 'testObject',
+          fields: [
+            {type: 'string', name: 'parentNode'},
+            {type: 'string', name: 'childNodes'},
+            {type: 'string', name: 'firstChild'},
+            {type: 'string', name: 'lastChild'},
+            {type: 'string', name: 'nextSibling'},
+            {type: 'string', name: 'textContent'},
+            {type: 'string', name: 'innerHTML'},
+            {type: 'string', name: 'className'},
+            {type: 'string', name: 'tagName'},
+            {type: 'string', name: 'attributes'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testObject = validation.get('testObject')
+
+      for (const field of testObject.fields) {
+        expect(field._problems).toHaveLength(1)
+        expect(field._problems[0]).toMatchObject({
+          severity: 'warning',
+          helpId: 'schema-field-name-reserved-dom-property',
+        })
+      }
+    })
+
+    test('does not warn for non-reserved field names', () => {
+      const schemaDef = [
+        {
+          type: 'object',
+          name: 'myObject',
+          fields: [
+            {type: 'string', name: 'title'},
+            {type: 'string', name: 'description'},
+            {type: 'reference', name: 'parent', to: [{type: 'myObject'}]},
+            {type: 'array', name: 'items', of: [{type: 'string'}]},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myObject = validation.get('myObject')
+
+      for (const field of myObject.fields) {
+        expect(field._problems).toHaveLength(0)
+      }
+    })
+  })
 })
