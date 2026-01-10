@@ -17,6 +17,12 @@ const StyledPopover = styled(Popover)`
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+  /* Ensure the popover has a minimum width even when rendered inside narrow containers
+   * such as block editor annotation popovers. Fixes squeezed/unreadable search results. */
+  [data-ui='Popover__wrapper'] {
+    min-width: 250px;
+  }
 `
 
 const StyledText = styled(Text)`
