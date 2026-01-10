@@ -106,16 +106,30 @@ export default async function extractAction(
     )
 
     if (isSchemaError(err)) {
-      try {
-        // Re-resolve config in-process to surface validation details
-        await getStudioWorkspaces({basePath: workDir})
-      } catch (innerErr) {
-        const validation = extractValidationFromCoreSchemaError(innerErr)
-        if (validation && validation.length > 0) {
-          output.print('')
-          output.print(formatSchemaValidation(validation))
+      let validation: SchemaValidationProblemGroup[] | null = null
+
+      // First, try to extract validation details from the original error
+      // (works when the error is a CoreSchemaError with embedded validation)
+      validation = extractValidationFromCoreSchemaError(err)
+
+      // If that didn't work, try re-resolving the config in-process
+      // to trigger the same error and capture validation details
+      if (!validation || validation.length === 0) {
+        try {
+          await getStudioWorkspaces({basePath: workDir})
+        } catch (innerErr) {
+          validation = extractValidationFromCoreSchemaError(innerErr)
         }
-        throw err
+      }
+
+      // Print validation details if we found any
+      if (validation && validation.length > 0) {
+        output.print('')
+        output.print(formatSchemaValidation(validation))
+      } else {
+        // Fallback: tell the user how to get more details
+        output.print('')
+        output.print('Run `sanity schema validate` for detailed information about schema errors.')
       }
     }
     throw err
