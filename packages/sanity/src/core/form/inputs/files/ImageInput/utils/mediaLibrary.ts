@@ -2,13 +2,13 @@ import {type SanityClient} from '@sanity/client'
 
 import {type MediaLibraryRef} from '../../../../../store/accessPolicy/refs'
 
-export function resolveMediaLibraryClient(params: {client: SanityClient; ref: MediaLibraryRef}) {
+export function resolveMediaLibraryClient(params: {
+  client: SanityClient
+  ref: MediaLibraryRef
+}): SanityClient {
   const {client, ref} = params
 
   const [, libraryId] = ref.split(':', 2)
-  if (!libraryId) {
-    return undefined
-  }
 
   return client.withConfig({
     '~experimental_resource': {

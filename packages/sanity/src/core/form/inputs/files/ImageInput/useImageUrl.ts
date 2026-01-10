@@ -31,13 +31,15 @@ export function useImageUrl<T extends SanityImageSource = SanityImageSource>(
   const {client, imageSource, imageUrlBuilder, transform} = params
 
   const {
+    accessPolicy,
     isChecking: isCheckingForPrivateAsset,
-    isPrivate,
     ref,
   } = useMediaLibraryAsset({
     client,
     imageSource,
   })
+
+  const isPrivate = accessPolicy === 'private'
 
   // The `http:` or `https:` URL. While a Private asset check is in progress,
   // this stays undefined as it may change after the check completes.
@@ -46,7 +48,7 @@ export function useImageUrl<T extends SanityImageSource = SanityImageSource>(
 
     // Use the Media Library specific URL builder when the asset is Private.
     let builder = imageUrlBuilder
-    if (isPrivate && client && ref) {
+    if (isPrivate && ref) {
       const mediaLibraryClient = resolveMediaLibraryClient({client, ref})
       if (mediaLibraryClient) {
         builder = imageUrlBuilder.withClient(mediaLibraryClient)
