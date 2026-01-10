@@ -67,6 +67,10 @@
       "source": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
+    "./vite": {
+      "source": "./src/_exports/vite.ts",
+      "default": "./lib/vite.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
@@ -99,6 +103,9 @@
       ],
       "structure": [
         "./lib/structure.d.ts"
+      ],
+      "vite": [
+        "./lib/vite.d.ts"
       ]
     }
   },
