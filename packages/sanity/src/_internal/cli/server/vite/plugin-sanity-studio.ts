@@ -11,7 +11,10 @@ import {getSanityPkgExportAliases} from '../getBrowserAliases'
 import {getStudioEnvironmentVariables} from '../getStudioEnvironmentVariables'
 import {getMonorepoAliases, loadSanityMonorepo} from '../sanityMonorepo'
 import {DefaultDocument} from '../components/DefaultDocument'
-import {decorateIndexWithBridgeScript} from '../renderDocument'
+import {
+  decorateIndexWithBridgeScript,
+  getPossibleDocumentComponentLocations,
+} from '../renderDocument'
 import {sanityFaviconsPlugin} from './plugin-sanity-favicons'
 import {
   sanitySchemaExtractionPlugin,
@@ -75,6 +78,23 @@ async function findSanityConfig(root: string): Promise<string | null> {
 }
 
 /**
+ * Checks if the project has a custom _document.tsx file.
+ * @internal
+ */
+async function hasCustomDocument(root: string): Promise<boolean> {
+  const locations = getPossibleDocumentComponentLocations(root)
+  for (const location of locations) {
+    try {
+      await fs.access(location)
+      return true
+    } catch {
+      continue
+    }
+  }
+  return false
+}
+
+/**
  * Normalizes a base path to ensure it starts and ends with a slash.
  */
 function normalizeBasePath(basePath: string): string {
@@ -123,6 +143,10 @@ interface HtmlModuleOptions {
  */
 function getVirtualHtmlModule(options: HtmlModuleOptions): string {
   const {basePath, entryPath, css} = options
+  // TODO: Support custom _document.tsx files
+  // Currently uses DefaultDocument; custom document support would require
+  // dynamic import/SSR compilation which is complex in Vite plugin context.
+  // The hasCustomDocument() helper is available to detect if a custom document exists.
   const normalizedEntryPath = entryPath.startsWith('/') ? entryPath : `/${entryPath}`
   const element = DefaultDocument({basePath, entryPath: normalizedEntryPath, css})
   const html = renderToStaticMarkup(element as ReactElement)
