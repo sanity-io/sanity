@@ -1,3 +1,4 @@
+// TODO: Refactor to use sanityStudioPlugin for build
 import path from 'node:path'
 
 import chalk from 'chalk'
