@@ -13,7 +13,10 @@ import {getMonorepoAliases, loadSanityMonorepo} from '../sanityMonorepo'
 import {DefaultDocument} from '../components/DefaultDocument'
 import {decorateIndexWithBridgeScript} from '../renderDocument'
 import {sanityFaviconsPlugin} from './plugin-sanity-favicons'
-import {type SchemaExtractionPluginOptions} from './plugin-schema-extraction'
+import {
+  sanitySchemaExtractionPlugin,
+  type SchemaExtractionPluginOptions,
+} from './plugin-schema-extraction'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -323,6 +326,13 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       }
     },
   })
+
+  // Conditionally add schema extraction plugin
+  // TODO: Enable once schema extraction plugin is fully implemented
+  // if (schemaExtraction) {
+  //   const extractionOptions = typeof schemaExtraction === 'object' ? schemaExtraction : {}
+  //   plugins.push(sanitySchemaExtractionPlugin(extractionOptions))
+  // }
 
   return plugins
 }
