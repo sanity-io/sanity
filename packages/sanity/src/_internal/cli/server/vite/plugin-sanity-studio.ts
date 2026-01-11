@@ -135,6 +135,26 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
 
   const plugins: Plugin[] = []
 
+  // React plugin loader (added first, conditionally)
+  plugins.push({
+    name: 'sanity/studio-react-loader',
+    async config(config) {
+      const existingPlugins = config.plugins?.flat() || []
+      const hasReact = existingPlugins.some(
+        (p: any) => p?.name === 'vite:react-babel' || p?.name === 'vite:react-swc',
+      )
+
+      if (!hasReact) {
+        const {default: viteReact} = await import('@vitejs/plugin-react')
+        return {
+          plugins: [viteReact()],
+        }
+      }
+
+      return {}
+    },
+  })
+
   // Main plugin
   plugins.push({
     name: 'sanity/studio',
