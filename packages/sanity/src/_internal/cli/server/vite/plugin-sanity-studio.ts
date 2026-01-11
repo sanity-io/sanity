@@ -1,8 +1,12 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import {type ReactElement} from 'react'
+import {renderToStaticMarkup} from 'react-dom/server'
 import {type Plugin} from 'vite'
 
+import {DefaultDocument} from '../components/DefaultDocument'
+import {decorateIndexWithBridgeScript} from '../renderDocument'
 import {type SchemaExtractionPluginOptions} from './plugin-schema-extraction'
 
 /**
@@ -97,6 +101,21 @@ renderStudio(
 `
 }
 
+interface HtmlModuleOptions {
+  basePath: string
+  entryPath: string
+}
+
+/**
+ * Generates the virtual HTML module that serves as the Studio's index.html.
+ */
+function getVirtualHtmlModule(options: HtmlModuleOptions): string {
+  const {basePath, entryPath} = options
+  const element = DefaultDocument({basePath, entryPath: `/${entryPath}`})
+  const html = renderToStaticMarkup(element as ReactElement)
+  return `<!DOCTYPE html>${decorateIndexWithBridgeScript(html)}`
+}
+
 /**
  * Vite plugin that serves Sanity Studio.
  * @public
@@ -144,6 +163,9 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       if (id === VIRTUAL_ENTRY_ID) {
         return RESOLVED_VIRTUAL_ENTRY_ID
       }
+      if (id === VIRTUAL_HTML_ID) {
+        return RESOLVED_VIRTUAL_HTML_ID
+      }
       return null
     },
 
@@ -153,6 +175,12 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
           configPath: resolvedConfigPath!,
           basePath: resolvedBasePath,
           reactStrictMode,
+        })
+      }
+      if (id === RESOLVED_VIRTUAL_HTML_ID) {
+        return getVirtualHtmlModule({
+          basePath: resolvedBasePath,
+          entryPath: VIRTUAL_ENTRY_ID,
         })
       }
       return null
