@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type Plugin} from 'vite'
 
 import {type SchemaExtractionPluginOptions} from './plugin-schema-extraction'
@@ -39,6 +42,38 @@ const RESOLVED_VIRTUAL_ENTRY_ID = '\0' + VIRTUAL_ENTRY_ID
 const RESOLVED_VIRTUAL_HTML_ID = '\0' + VIRTUAL_HTML_ID
 
 /**
+ * Finds the sanity.config file in the given root directory.
+ * Searches for sanity.config.{mjs,js,ts,jsx,tsx} in order of preference.
+ */
+async function findSanityConfig(root: string): Promise<string | null> {
+  const extensions = ['mjs', 'js', 'ts', 'jsx', 'tsx']
+  for (const ext of extensions) {
+    const configPath = path.join(root, `sanity.config.${ext}`)
+    try {
+      await fs.access(configPath)
+      return configPath
+    } catch {
+      // Continue to next extension
+    }
+  }
+  return null
+}
+
+/**
+ * Normalizes a base path to ensure it starts and ends with a slash.
+ */
+function normalizeBasePath(basePath: string): string {
+  let normalized = basePath
+  if (!normalized.startsWith('/')) {
+    normalized = '/' + normalized
+  }
+  if (!normalized.endsWith('/')) {
+    normalized = normalized + '/'
+  }
+  return normalized
+}
+
+/**
  * Vite plugin that serves Sanity Studio.
  * @public
  */
@@ -52,7 +87,7 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
 
   // Will be resolved in configResolved
   let resolvedRoot: string
-  let resolvedConfigPath: string | null
+  let resolvedConfigPath: string | null = null
   let resolvedBasePath: string
 
   const plugins: Plugin[] = []
@@ -60,7 +95,26 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
   // Main plugin
   plugins.push({
     name: 'sanity/studio',
-    // TODO: Implement plugin hooks
+
+    async configResolved(config) {
+      resolvedRoot = config.root
+      resolvedBasePath = normalizeBasePath(basePath)
+
+      if (configPathOption) {
+        resolvedConfigPath = path.isAbsolute(configPathOption)
+          ? configPathOption
+          : path.join(resolvedRoot, configPathOption)
+      } else {
+        resolvedConfigPath = await findSanityConfig(resolvedRoot)
+      }
+
+      if (!resolvedConfigPath) {
+        throw new Error(
+          `Could not find sanity.config.{ts,js,mjs,jsx,tsx} in ${resolvedRoot}. ` +
+            `Either create one or specify the path via the configPath option.`,
+        )
+      }
+    },
   })
 
   return plugins
