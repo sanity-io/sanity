@@ -185,6 +185,50 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       }
       return null
     },
+
+    configureServer(server) {
+      return () => {
+        server.middlewares.use(async (req, res, next) => {
+          const url = req.url || '/'
+
+          // Check if this request should be handled by the studio
+          const shouldHandle =
+            resolvedBasePath === '/'
+              ? url === '/' || url === '/index.html'
+              : url.startsWith(resolvedBasePath) || url === resolvedBasePath.slice(0, -1)
+
+          if (!shouldHandle) {
+            return next()
+          }
+
+          // For HTML requests, serve our virtual HTML
+          const accept = req.headers.accept || ''
+          const isHtmlRequest =
+            accept.includes('text/html') ||
+            url.endsWith('.html') ||
+            url === resolvedBasePath ||
+            url === resolvedBasePath.slice(0, -1) ||
+            url === '/'
+
+          if (isHtmlRequest) {
+            try {
+              let html = getVirtualHtmlModule({
+                basePath: resolvedBasePath,
+                entryPath: VIRTUAL_ENTRY_ID,
+              })
+              html = await server.transformIndexHtml(url, html)
+              res.setHeader('Content-Type', 'text/html')
+              res.end(html)
+              return
+            } catch (err) {
+              return next(err)
+            }
+          }
+
+          next()
+        })
+      }
+    },
   })
 
   return plugins
