@@ -1,13 +1,20 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type ReactElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
+import readPkgUp from 'read-pkg-up'
 import {type Plugin} from 'vite'
 
+import {getSanityPkgExportAliases} from '../getBrowserAliases'
+import {getStudioEnvironmentVariables} from '../getStudioEnvironmentVariables'
+import {getMonorepoAliases, loadSanityMonorepo} from '../sanityMonorepo'
 import {DefaultDocument} from '../components/DefaultDocument'
 import {decorateIndexWithBridgeScript} from '../renderDocument'
 import {type SchemaExtractionPluginOptions} from './plugin-schema-extraction'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * Options for the Sanity Studio Vite plugin.
@@ -158,6 +165,39 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
   // Main plugin
   plugins.push({
     name: 'sanity/studio',
+
+    async config(config, env) {
+      const root = config.root || process.cwd()
+      const monorepo = await loadSanityMonorepo(root)
+
+      const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
+      if (!sanityPkgPath) {
+        throw new Error('Unable to resolve `sanity` module root')
+      }
+
+      const aliases = monorepo?.path
+        ? await getMonorepoAliases(monorepo.path)
+        : getSanityPkgExportAliases(sanityPkgPath)
+
+      const envVars = getStudioEnvironmentVariables({
+        prefix: 'process.env.',
+        jsonEncode: true,
+      })
+
+      return {
+        resolve: {
+          alias: aliases,
+          dedupe: ['styled-components'],
+        },
+        define: {
+          '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
+          'process.env.MODE': JSON.stringify(env.mode),
+          'process.env.SC_DISABLE_SPEEDY': JSON.stringify('false'),
+          ...envVars,
+        },
+        envPrefix: 'SANITY_STUDIO_',
+      }
+    },
 
     async configResolved(config) {
       resolvedRoot = config.root
