@@ -463,9 +463,26 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       )
 
       if (!hasReact) {
+        const root = config.root || process.cwd()
+        const monorepo = await loadSanityMonorepo(root)
         const {default: viteReact} = await import('@vitejs/plugin-react')
+
+        // Configure React plugin to include monorepo packages if in monorepo
+        const reactOptions: {include?: (string | RegExp)[]} = {}
+        if (monorepo?.path) {
+          // Include the monorepo packages directory for JSX transformation
+          reactOptions.include = [
+            // Default patterns
+            /\.[jt]sx?$/,
+            // Also include files from the monorepo packages
+            new RegExp(
+              `${monorepo.path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/packages/.*\\.[jt]sx?$`,
+            ),
+          ]
+        }
+
         return {
-          plugins: [viteReact()],
+          plugins: [viteReact(reactOptions)],
         }
       }
 
@@ -530,7 +547,19 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       return {
         resolve: {
           alias: aliases,
-          dedupe: ['styled-components'],
+          // Dedupe React and styled-components to prevent multiple instances
+          // This is critical in monorepo setups where packages may resolve to different locations
+          dedupe: [
+            'react',
+            'react-dom',
+            'react/jsx-runtime',
+            'react/jsx-dev-runtime',
+            'styled-components',
+          ],
+        },
+        // Ensure React is pre-bundled from the project's node_modules
+        optimizeDeps: {
+          include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
         },
         define: {
           '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
@@ -539,6 +568,11 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
           ...envVars,
         },
         envPrefix: 'SANITY_STUDIO_',
+        // Configure esbuild to use automatic JSX runtime
+        // This ensures files outside the project root (monorepo packages) get proper JSX transform
+        esbuild: {
+          jsx: 'automatic',
+        },
         build: {
           rollupOptions: {
             input: {
