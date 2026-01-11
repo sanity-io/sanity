@@ -2,19 +2,13 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {type ReactElement} from 'react'
-import {renderToStaticMarkup} from 'react-dom/server'
 import readPkgUp from 'read-pkg-up'
 import {type Plugin} from 'vite'
 
 import {getSanityPkgExportAliases} from '../getBrowserAliases'
 import {getStudioEnvironmentVariables} from '../getStudioEnvironmentVariables'
 import {getMonorepoAliases, loadSanityMonorepo} from '../sanityMonorepo'
-import {DefaultDocument} from '../components/DefaultDocument'
-import {
-  decorateIndexWithBridgeScript,
-  getPossibleDocumentComponentLocations,
-} from '../renderDocument'
+import {getPossibleDocumentComponentLocations} from '../renderDocument'
 import {sanityFaviconsPlugin} from './plugin-sanity-favicons'
 import {
   sanitySchemaExtractionPlugin,
@@ -139,18 +133,305 @@ interface HtmlModuleOptions {
 }
 
 /**
+ * Gets the URL to the Sanity bridge script based on environment.
+ */
+function getBridgeScriptUrl(): string {
+  const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
+  return sanityEnv === 'production'
+    ? 'https://core.sanity-cdn.com/bridge.js'
+    : 'https://core.sanity-cdn.work/bridge.js'
+}
+
+/**
+ * Global styles for the Studio HTML document.
+ */
+const globalStyles = `
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Regular.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Italic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Medium.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-MediumItalic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-SemiBold.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 600;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-SemiBoldItalic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Bold.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-BoldItalic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-ExtraBold.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 800;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-ExtraBoldItalic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Black.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 900;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-BlackItalic.woff2") format("woff2");
+  }
+  html {
+    @media (prefers-color-scheme: dark) {
+      background-color: #13141b;
+    }
+    @media (prefers-color-scheme: light) {
+      background-color: #ffffff;
+    }
+  }
+  html,
+  body,
+  #sanity {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+`
+
+/**
+ * Global error handler script for the Studio.
+ */
+const errorHandlerScript = `
+;(function () {
+  var errorChannel = (function () {
+    var subscribers = Object.create(null)
+    var nextId = 0
+    function subscribe(subscriber) {
+      var id = nextId++
+      subscribers[id] = subscriber
+      return function unsubscribe() {
+        delete subscribers[id]
+      }
+    }
+    function publish(event) {
+      for (var id in subscribers) {
+        if (Object.hasOwn(subscribers, id)) {
+          subscribers[id](event)
+        }
+      }
+    }
+    return { subscribers, publish, subscribe }
+  })()
+
+  window.__sanityErrorChannel = { subscribe: errorChannel.subscribe }
+
+  function _handleError(event) {
+    if (Object.keys(errorChannel.subscribers).length > 0) {
+      errorChannel.publish(event)
+    } else {
+      _renderErrorOverlay(event)
+    }
+  }
+
+  var ERROR_BOX_STYLE = [
+    'background: #fff',
+    'border-radius: 6px',
+    'box-sizing: border-box',
+    'color: #121923',
+    'flex: 1',
+    "font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue','Liberation Sans',Helvetica,Arial,system-ui,sans-serif",
+    'font-size: 16px',
+    'line-height: 21px',
+    'margin: 0 auto',
+    'max-width: 960px',
+    'max-height: 90dvh',
+    'overflow: auto',
+    'padding: 20px',
+    'width: 100%',
+  ].join(';')
+
+  var ERROR_CODE_STYLE = [
+    'color: #972E2A',
+    "font-family: -apple-system-ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace",
+    'font-size: 13px',
+    'line-height: 17px',
+    'margin: 0',
+  ].join(';')
+
+  function _renderErrorOverlay(event) {
+    var errorElement = document.querySelector('#__sanityError') || document.createElement('div')
+    var error = event.error
+    var colno = event.colno
+    var lineno = event.lineno
+    var filename = event.filename
+
+    errorElement.id = '__sanityError'
+    errorElement.innerHTML = [
+      '<div style="' + ERROR_BOX_STYLE + '">',
+      '<div style="font-weight: 700;">Uncaught error: ' + error.message + '</div>',
+      '<div style="color: #515E72; font-size: 13px; line-height: 17px; margin: 10px 0;">' +
+        filename + ':' + lineno + ':' + colno + '</div>',
+      '<pre style="' + ERROR_CODE_STYLE + '">' + error.stack + '</pre>',
+      '</div>',
+    ].join('')
+
+    errorElement.style.position = 'fixed'
+    errorElement.style.zIndex = 1000000
+    errorElement.style.top = 0
+    errorElement.style.left = 0
+    errorElement.style.right = 0
+    errorElement.style.bottom = 0
+    errorElement.style.padding = '20px'
+    errorElement.style.background = 'rgba(16,17,18,0.66)'
+    errorElement.style.display = 'flex'
+    errorElement.style.alignItems = 'center'
+    errorElement.style.justifyContent = 'center'
+
+    document.body.appendChild(errorElement)
+  }
+
+  window.addEventListener('error', (event) => {
+    _handleError({
+      type: 'error',
+      error: event.error,
+      lineno: event.lineno,
+      colno: event.colno,
+      filename: event.filename
+    })
+  })
+
+  window.addEventListener('unhandledrejection', (event) => {
+    _handleError({
+      type: 'rejection',
+      error: event.reason
+    })
+  })
+})()
+`
+
+/**
+ * NoJavaScript styles for when JS is disabled.
+ */
+const noJsStyles = `
+.sanity-app-no-js__root {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: #fff;
+}
+
+.sanity-app-no-js__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: helvetica, arial, sans-serif;
+}
+`
+
+/**
  * Generates the virtual HTML module that serves as the Studio's index.html.
+ * Uses string templates instead of React components to avoid React compiler hook issues
+ * when running in the Vite plugin context.
  */
 function getVirtualHtmlModule(options: HtmlModuleOptions): string {
-  const {basePath, entryPath, css} = options
+  const {entryPath, css = []} = options
   // TODO: Support custom _document.tsx files
-  // Currently uses DefaultDocument; custom document support would require
+  // Currently uses a string template; custom document support would require
   // dynamic import/SSR compilation which is complex in Vite plugin context.
   // The hasCustomDocument() helper is available to detect if a custom document exists.
   const normalizedEntryPath = entryPath.startsWith('/') ? entryPath : `/${entryPath}`
-  const element = DefaultDocument({basePath, entryPath: normalizedEntryPath, css})
-  const html = renderToStaticMarkup(element as ReactElement)
-  return `<!DOCTYPE html>${decorateIndexWithBridgeScript(html)}`
+  const base = '/static'
+
+  const cssLinks = css.map((href) => `<link rel="stylesheet" href="${href}">`).join('\n        ')
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex">
+    <meta name="referrer" content="same-origin">
+    <link rel="icon" href="${base}/favicon.ico" sizes="any">
+    <link rel="icon" href="${base}/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="${base}/apple-touch-icon.png">
+    <link rel="manifest" href="${base}/manifest.webmanifest">
+    <title>Sanity Studio</title>
+    <script>${errorHandlerScript}</script>
+    ${cssLinks}
+    <style>${globalStyles}</style>
+    <script src="${getBridgeScriptUrl()}" async type="module" data-sanity-core></script>
+  </head>
+  <body>
+    <div id="sanity"></div>
+    <script type="module" src="${normalizedEntryPath}"></script>
+    <noscript>
+      <div class="sanity-app-no-js__root">
+        <div class="sanity-app-no-js__content">
+          <style type="text/css">${noJsStyles}</style>
+          <h1>JavaScript disabled</h1>
+          <p>Please <a href="https://www.enable-javascript.com/">enable JavaScript</a> in your browser and reload the page to proceed.</p>
+        </div>
+      </div>
+    </noscript>
+  </body>
+</html>`
+
+  return html
 }
 
 /**
@@ -289,10 +570,11 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
     },
 
     resolveId(id) {
-      if (id === VIRTUAL_ENTRY_ID) {
+      // Handle both with and without leading slash (browser requests with /)
+      if (id === VIRTUAL_ENTRY_ID || id === `/${VIRTUAL_ENTRY_ID}`) {
         return RESOLVED_VIRTUAL_ENTRY_ID
       }
-      if (id === VIRTUAL_HTML_ID) {
+      if (id === VIRTUAL_HTML_ID || id === `/${VIRTUAL_HTML_ID}`) {
         return RESOLVED_VIRTUAL_HTML_ID
       }
       return null
