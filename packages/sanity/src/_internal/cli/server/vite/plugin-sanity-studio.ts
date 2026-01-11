@@ -12,6 +12,7 @@ import {getStudioEnvironmentVariables} from '../getStudioEnvironmentVariables'
 import {getMonorepoAliases, loadSanityMonorepo} from '../sanityMonorepo'
 import {DefaultDocument} from '../components/DefaultDocument'
 import {decorateIndexWithBridgeScript} from '../renderDocument'
+import {sanityFaviconsPlugin} from './plugin-sanity-favicons'
 import {type SchemaExtractionPluginOptions} from './plugin-schema-extraction'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -159,6 +160,38 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
       }
 
       return {}
+    },
+  })
+
+  // Store paths for favicon plugin
+  let faviconPaths: {
+    customFaviconsPath: string
+    defaultFaviconsPath: string
+    staticUrlPath: string
+  } | null = null
+
+  // Favicons plugin
+  plugins.push({
+    name: 'sanity/studio-favicons',
+    async configResolved(config) {
+      const pkgPath = (await readPkgUp({cwd: __dirname}))?.path
+      if (!pkgPath) return
+
+      faviconPaths = {
+        customFaviconsPath: path.join(config.root, 'static'),
+        defaultFaviconsPath: path.join(path.dirname(pkgPath), 'static', 'favicons'),
+        staticUrlPath: `${normalizeBasePath(basePath)}static`,
+      }
+    },
+    configureServer(server) {
+      if (!faviconPaths) return
+
+      const faviconPluginInstance = sanityFaviconsPlugin(faviconPaths)
+      if (typeof faviconPluginInstance.configureServer === 'function') {
+        // The favicons plugin's configureServer is synchronous, but the type signature
+        // allows for async. Use void to explicitly handle any potential promise.
+        void faviconPluginInstance.configureServer(server)
+      }
     },
   })
 
