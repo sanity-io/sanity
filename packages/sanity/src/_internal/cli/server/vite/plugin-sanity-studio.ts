@@ -115,14 +115,16 @@ renderStudio(
 interface HtmlModuleOptions {
   basePath: string
   entryPath: string
+  css?: string[]
 }
 
 /**
  * Generates the virtual HTML module that serves as the Studio's index.html.
  */
 function getVirtualHtmlModule(options: HtmlModuleOptions): string {
-  const {basePath, entryPath} = options
-  const element = DefaultDocument({basePath, entryPath: `/${entryPath}`})
+  const {basePath, entryPath, css} = options
+  const normalizedEntryPath = entryPath.startsWith('/') ? entryPath : `/${entryPath}`
+  const element = DefaultDocument({basePath, entryPath: normalizedEntryPath, css})
   const html = renderToStaticMarkup(element as ReactElement)
   return `<!DOCTYPE html>${decorateIndexWithBridgeScript(html)}`
 }
@@ -232,6 +234,13 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
           ...envVars,
         },
         envPrefix: 'SANITY_STUDIO_',
+        build: {
+          rollupOptions: {
+            input: {
+              sanity: VIRTUAL_ENTRY_ID,
+            },
+          },
+        },
       }
     },
 
@@ -280,6 +289,66 @@ export function sanityStudioPlugin(options: SanityStudioPluginOptions = {}): Plu
         })
       }
       return null
+    },
+
+    buildStart() {
+      // Only emit entry chunk during actual build (not dev)
+      if (this.meta.watchMode) return
+
+      this.emitFile({
+        type: 'chunk',
+        id: VIRTUAL_ENTRY_ID,
+        name: 'sanity',
+      })
+    },
+
+    async generateBundle(_options, bundle) {
+      if (this.meta.watchMode) return
+
+      // Find the entry chunk we emitted
+      const entryFile = Object.values(bundle).find(
+        (file): file is import('rollup').OutputChunk =>
+          file.type === 'chunk' &&
+          file.name === 'sanity' &&
+          file.facadeModuleId === RESOLVED_VIRTUAL_ENTRY_ID,
+      )
+
+      if (!entryFile) {
+        throw new Error('Failed to find entry file in bundle')
+      }
+
+      const entryPath = [resolvedBasePath.replace(/\/+$/, ''), entryFile.fileName].join('/')
+
+      // Collect CSS from entry and its imports
+      let css: string[] = []
+      const viteMetadata = (entryFile as any).viteMetadata as
+        | {importedCss?: Set<string>}
+        | undefined
+      if (viteMetadata?.importedCss) {
+        css = [...viteMetadata.importedCss]
+        for (const key of entryFile.imports || []) {
+          const entry = bundle[key]
+          const entryViteMetadata = (entry as any)?.viteMetadata as
+            | {importedCss?: Set<string>}
+            | undefined
+          if (entry?.type === 'chunk' && entryViteMetadata?.importedCss) {
+            css.push(...entryViteMetadata.importedCss)
+          }
+        }
+      }
+
+      // Generate final HTML
+      const html = getVirtualHtmlModule({
+        basePath: resolvedBasePath,
+        entryPath,
+        css: css.map((c) => `${resolvedBasePath}${c}`),
+      })
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'index.html',
+        source: html,
+      })
     },
 
     configureServer(server) {
