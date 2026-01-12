@@ -306,20 +306,23 @@ export function _createAuthStore({
   }
 }
 
-function hash(value: unknown): string {
-  if (typeof value !== 'object' || value === null) return `${value}`
-
-  // note: this code path works for arrays as well as objects
-  return JSON.stringify(
-    Object.fromEntries(
-      Object.entries(value)
-        .sort(([a], [b]) => a.localeCompare(b, 'en'))
-        .map(([k, v]) => [k, hash(v)]),
-    ),
-  )
+/**
+ * Generates a cache key for auth store memoization.
+ * Only includes properties that affect user identity/authentication:
+ * - projectId: determines which project's users to query
+ * - apiHost: determines production vs staging API
+ * - loginMethod: affects auth mechanism (cookie vs token)
+ *
+ * Notably excludes:
+ * - dataset: users are the same across all datasets in a project
+ * - clientFactory: just a factory function, doesn't affect identity
+ */
+function authStoreKey(options: AuthStoreOptions): string {
+  const {projectId, apiHost, loginMethod} = options
+  return `${projectId}:${apiHost || 'default'}:${loginMethod || 'dual'}`
 }
 
 /**
  * @internal
  */
-export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)
+export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, authStoreKey)
