@@ -128,7 +128,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "1.38.0",
+    "oxlint": "1.39.0",
     "oxlint-tsgolint": "0.11.0",
     "playwright": "catalog:",
     "prettier": "catalog:",
