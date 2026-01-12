@@ -17,6 +17,7 @@ import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {useSingleDocRelease} from '../../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
@@ -118,6 +119,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const {createVersion} = useVersionOperations()
   const toast = useToast()
   const {t} = useTranslation()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
   const close = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
@@ -179,11 +181,18 @@ export const VersionChip = memo(function VersionChip(props: {
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
   const isScheduledDraft = release && isVersion && isCardinalityOneRelease(release)
+
+  const handleEditScheduleComplete = useCallback(() => {
+    if (!release) return
+    onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(release._id))
+  }, [release, onSetScheduledDraftPerspective])
+
   const scheduledDraftMenuActions = useScheduledDraftMenuActions({
     release,
     documentType,
     documentId,
     disabled: contextMenuDisabled,
+    onActionComplete: handleEditScheduleComplete,
   })
 
   const isPaused = isPausedCardinalityOneRelease(release)
