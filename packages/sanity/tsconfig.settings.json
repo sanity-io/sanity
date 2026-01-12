@@ -3,19 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "./lib",
-    "paths": {
-      "sanity/_internal": ["./src/_exports/_internal.ts"],
-      "sanity/_singletons": ["./src/_exports/_singletons.ts"],
-      "sanity/_createContext": ["./src/_exports/_createContext.ts"],
-      "sanity/cli": ["./src/_exports/cli.ts"],
-      "sanity/desk": ["./src/_exports/desk.ts"],
-      "sanity/media-library": ["./src/_exports/media-library.ts"],
-      "sanity/migrate": ["./src/_exports/migrate.ts"],
-      "sanity/presentation": ["./src/_exports/presentation.ts"],
-      "sanity/router": ["./src/_exports/router.ts"],
-      "sanity/structure": ["./src/_exports/structure.ts"],
-      "sanity": ["./src/_exports/index.ts"]
-    },
+    "allowImportingTsExtensions": true,
     "types": [
       // vite/client: For import.meta.env/import.meta.hot definition and similar
       "vite/client",

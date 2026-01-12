@@ -8,7 +8,12 @@ import {
   isDocumentSchemaType,
 } from 'sanity'
 
-import {DEFAULT_TOOL_ICON, DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
+import {
+  DEFAULT_TOOL_ICON,
+  DEFAULT_TOOL_NAME,
+  DEFAULT_TOOL_TITLE,
+  EDIT_INTENT_MODE,
+} from './constants'
 import {PresentationDocumentHeader} from './document/PresentationDocumentHeader'
 import {PresentationDocumentProvider} from './document/PresentationDocumentProvider'
 import {openInStructure} from './fieldActions/openInStructure'
@@ -133,7 +138,7 @@ export const presentationTool = definePlugin<PresentationPluginOptions>((options
       {
         icon: options.icon || DEFAULT_TOOL_ICON,
         name: toolName,
-        title: options.title,
+        title: options.title || DEFAULT_TOOL_TITLE,
         component: PresentationTool,
         options,
         canHandleIntent(intent, params) {

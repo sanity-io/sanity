@@ -27,6 +27,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -67,6 +68,7 @@
     "esbuild-register": "catalog:",
     "get-it": "^8.7.0",
     "get-latest-version": "^5.1.0",
+    "jsonc-parser": "^3.3.1",
     "pkg-dir": "^5.0.0",
     "prettier": "catalog:",
     "semver": "^7.7.2"
@@ -78,7 +80,7 @@
     "@repo/tsconfig": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.28.0",
@@ -139,5 +141,11 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }
