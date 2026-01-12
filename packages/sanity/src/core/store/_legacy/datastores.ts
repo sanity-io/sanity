@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -288,33 +289,43 @@ export function useProjectStore(): ProjectStore {
 }
 
 /**
+ * Module-level cache for KeyValueStore instances, keyed by project identity.
+ * Uses a simple Map with string keys since the ResourceCache's WeakMap
+ * doesn't support primitive-based cache keys.
+ */
+const keyValueStoreCache = new Map<string, KeyValueStore>()
+
+/**
+ * Generates a cache key for KeyValueStore based on project identity.
+ * The /users/me/keyvalue endpoint is project-scoped, so we only need
+ * projectId and apiHost (not dataset) to identify unique stores.
+ */
+function getKeyValueStoreCacheKey(client: SanityClient): string {
+  const config = client.config()
+  return `${config.projectId}:${config.apiHost || 'default'}`
+}
+
+/**
  * Returns a KeyValueStore instance for storing user preferences.
  *
- * The store is cached by client identity (which encapsulates project ID and API host)
- * rather than workspace, because the /users/me/keyvalue endpoint is project-scoped -
+ * The store is cached by project identity (projectId + apiHost) rather than
+ * workspace, because the /users/me/keyvalue endpoint is project-scoped -
  * user preferences are shared across all datasets within a project.
  *
  * @internal
  */
 export function useKeyValueStore(): KeyValueStore {
-  const resourceCache = useResourceCache()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
-    const keyValueStore =
-      resourceCache.get<KeyValueStore>({
-        dependencies: [client],
-        namespace: 'KeyValueStore',
-      }) || createKeyValueStore({client})
+    const cacheKey = getKeyValueStoreCacheKey(client)
+    const cached = keyValueStoreCache.get(cacheKey)
+    if (cached) return cached
 
-    resourceCache.set({
-      dependencies: [client],
-      namespace: 'KeyValueStore',
-      value: keyValueStore,
-    })
-
+    const keyValueStore = createKeyValueStore({client})
+    keyValueStoreCache.set(cacheKey, keyValueStore)
     return keyValueStore
-  }, [client, resourceCache])
+  }, [client])
 }
 
 /** @internal */
