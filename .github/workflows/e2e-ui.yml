@@ -26,7 +26,7 @@ jobs:
       - name: Namespace version with build run id
         run: npm version --no-git-commit-hooks --no-git-tag-version "${{ steps.npm-version.outputs.NPM_VERSION }}-gh.${{ github.run_id }}"
       - run: pnpm pack --pack-destination ./artifacts
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -47,7 +47,7 @@ jobs:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -76,7 +76,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -139,7 +139,7 @@ jobs:
         with:
           repository: sanity-io/sanity
       - uses: ./.github/actions/setup
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: pack-sanity-ui
           path: artifacts
@@ -183,7 +183,7 @@ jobs:
         # As e2e:build ran in the `install` job, turbopack restores it from cache here
         run: pnpm e2e:build && pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
@@ -201,7 +201,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
@@ -211,7 +211,7 @@ jobs:
         run: npx playwright merge-reports --reporter html ./playwright-report
 
       - name: Upload HTML report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report

@@ -8,7 +8,7 @@ Content teams need to share their content across multiple social media platforms
 
 ## Solution
 
-This Sanity Function automatically posts content to multiple social media platforms (X, Mastodon, Bluesky, LinkedIn, Discord, Telegram, Slack, and Dev.to) when a social post document is created. Using the `@humanwhocodes/crosspost` library, it handles platform-specific formatting, character limits, and authentication, allowing you to write once and publish everywhere from a single Sanity document.
+This Sanity Function automatically posts content to multiple social media platforms (X, Mastodon, Bluesky, LinkedIn, Discord, Telegram, Slack, and Dev.to) when you publish a social post document. Using the `@humanwhocodes/crosspost` library, it handles platform-specific formatting, character limits, and authentication, allowing you to write once and publish everywhere from a single Sanity document.
 
 ## Benefits
 
