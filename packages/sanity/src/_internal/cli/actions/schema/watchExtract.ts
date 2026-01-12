@@ -30,27 +30,29 @@ interface WatchExtractOptions {
   output: CliOutputter
 }
 
-interface WatchState {
+/** State for tracking extraction status */
+export interface WatchState {
   isExtracting: boolean
   pendingExtraction: boolean
 }
 
-/**
- * Creates a file watcher that triggers schema extraction on changes.
- * Implements debouncing and concurrency control to prevent multiple extractions.
- */
-export async function createSchemaWatcher(options: WatchExtractOptions): Promise<FSWatcher> {
-  const {workDir, patterns, debounceMs, onExtract, output} = options
+/** Return type for createExtractionRunner */
+export interface ExtractionRunner {
+  state: WatchState
+  runExtraction: () => Promise<void>
+}
 
+/**
+ * Creates an extraction runner with concurrency control.
+ * If extraction is already running, queues one more extraction to run after completion.
+ * Multiple queued requests are coalesced into a single pending extraction.
+ */
+export function createExtractionRunner(onExtract: () => Promise<void>): ExtractionRunner {
   const state: WatchState = {
     isExtracting: false,
     pendingExtraction: false,
   }
 
-  /**
-   * Runs extraction with concurrency control.
-   * If extraction is already running, queues one more extraction to run after completion.
-   */
   async function runExtraction(): Promise<void> {
     if (state.isExtracting) {
       state.pendingExtraction = true
@@ -72,6 +74,18 @@ export async function createSchemaWatcher(options: WatchExtractOptions): Promise
       }
     }
   }
+
+  return {state, runExtraction}
+}
+
+/**
+ * Creates a file watcher that triggers schema extraction on changes.
+ * Implements debouncing and concurrency control to prevent multiple extractions.
+ */
+export async function createSchemaWatcher(options: WatchExtractOptions): Promise<FSWatcher> {
+  const {workDir, patterns, debounceMs, onExtract, output} = options
+
+  const {runExtraction} = createExtractionRunner(onExtract)
 
   // Debounced extraction trigger
   const debouncedExtract = debounce(() => {
