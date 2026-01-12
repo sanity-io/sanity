@@ -15,7 +15,6 @@
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "lodash-es": "^4.17.22",
-    "vite": "catalog:",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "catalog:"
   }
 }
