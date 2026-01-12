@@ -281,7 +281,7 @@
     "@sanity/codegen": "workspace:*",
     "@sanity/descriptors": "^1.3.0",
     "@sanity/eslint-config-i18n": "catalog:",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.4",
