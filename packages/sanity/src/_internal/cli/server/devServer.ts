@@ -9,7 +9,7 @@ import {type ViteDevServer} from 'vite'
 import {debug} from './debug'
 import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
-import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
+import { sanitySchemaExtractionPlugin } from './vite/plugin-schema-extraction'
 
 export interface SchemaExtractionOptions {
   enabled: boolean
