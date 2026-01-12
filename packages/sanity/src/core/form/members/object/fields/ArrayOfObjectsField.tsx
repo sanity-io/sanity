@@ -1,5 +1,6 @@
 import {
   type AssetFromSource,
+  type AssetSource,
   type AssetSourceUploader,
   type Path,
   type SchemaType,
@@ -19,6 +20,7 @@ import {tap} from 'rxjs/operators'
 
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
+import {SiblingImageInsertionProvider} from '../../../contexts/SiblingImageInsertion'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
@@ -365,6 +367,170 @@ export function ArrayOfObjectsField(props: {
     [handleChange, resolveUploader],
   )
 
+  // Callback for inserting sibling images when multiple are selected from an asset source
+  // This is used by the ImageInput when in multi-select mode
+  const handleInsertSiblingImages = useCallback(
+    (assets: AssetFromSource[], afterKey: string) => {
+      // Get the array's item schema type (should be image type for this to work)
+      const itemSchemaType = member.field.schemaType.of?.[0]
+      if (!itemSchemaType || itemSchemaType.name !== 'image') {
+        // Only support pure image arrays for now
+        return
+      }
+
+      // Create new array items for each asset
+      const newItems = assets.map(() => createProtoArrayValue(itemSchemaType))
+
+      // Insert all items after the reference item
+      handleInsert({
+        items: newItems,
+        position: 'after',
+        referenceItem: {_key: afterKey},
+        open: false,
+        skipInitialValue: true,
+      })
+
+      // For each asset, set the asset reference on its corresponding item
+      assets.forEach((asset, index) => {
+        const itemKey = newItems[index]._key
+        if (asset.kind === 'assetDocumentId') {
+          handleChange(
+            PatchEvent.from([
+              setIfMissing({_type: itemSchemaType.name}, [{_key: itemKey}]),
+              set({_type: 'reference', _ref: asset.value as string}, [{_key: itemKey}, 'asset']),
+            ]),
+          )
+        }
+        // TODO(#4483): Add support for other asset kinds (file, base64, url) which would
+        // need upload handling. For MVP we focus on assetDocumentId which is what the
+        // default asset browser uses.
+      })
+    },
+    [handleChange, handleInsert, member.field.schemaType.of],
+  )
+
+  // Callback for inserting sibling images when multiple files are uploaded at once
+  // This is used by the ImageInput when uploading multiple files via drag-drop or file picker
+  const handleInsertSiblingFiles = useCallback(
+    (assetSource: AssetSource, files: File[], afterKey: string) => {
+      if (!assetSource.Uploader || files.length === 0) {
+        return
+      }
+
+      // Get the array's item schema type (should be image type for this to work)
+      const itemSchemaType = member.field.schemaType.of?.[0]
+      if (!itemSchemaType || itemSchemaType.name !== 'image') {
+        // Only support pure image arrays for now
+        return
+      }
+
+      // Create new array items for each file
+      const newItems = files.map(() => createProtoArrayValue(itemSchemaType))
+
+      // Insert all items after the reference item
+      handleInsert({
+        items: newItems,
+        position: 'after',
+        referenceItem: {_key: afterKey},
+        open: false,
+        skipInitialValue: true,
+      })
+
+      // Capture Uploader constructor before the loop (TypeScript narrowing doesn't work inside forEach)
+      const UploaderClass = assetSource.Uploader
+
+      // Set up uploaders for each file
+      files.forEach((file, index) => {
+        const key = newItems[index]._key
+
+        try {
+          // Initialize upload status for this item
+          handleChange(PatchEvent.from(createInitialUploadPatches(file)).prefixAll({_key: key}))
+
+          const uploader = new UploaderClass()
+
+          setAssetSourceUploadComponents((prev) => {
+            const AssetSourceComponent = assetSource.component
+            const assetSourceComponent = (
+              <AssetSourceComponent
+                key={key}
+                assetSource={assetSource}
+                action="upload"
+                onSelect={(assets) => handleSelectAssetsFromSource(assets, itemSchemaType, key)}
+                accept="*/*"
+                onClose={noop}
+                selectedAssets={[]}
+                selectionType="single"
+                uploader={uploader}
+              />
+            )
+            return [...prev, assetSourceComponent]
+          })
+
+          const unsubscribe = uploader.subscribe((event) => {
+            switch (event.type) {
+              case 'progress':
+                handleChange(
+                  PatchEvent.from([
+                    set(Math.max(2, event.progress), [{_key: key}, UPLOAD_STATUS_KEY, 'progress']),
+                    set(new Date().toISOString(), [{_key: key}, UPLOAD_STATUS_KEY, 'updatedAt']),
+                  ]),
+                )
+                break
+              case 'error':
+                event.files.forEach((_file) => {
+                  console.error(_file.error)
+                })
+                toast.push({
+                  status: 'error',
+                  description: t('asset-sources.common.uploader.upload-failed.description'),
+                  title: t('asset-sources.common.uploader.upload-failed.title'),
+                })
+                break
+              case 'all-complete':
+                handleChange(PatchEvent.from([unset([{_key: key}, UPLOAD_STATUS_KEY])]))
+                break
+              default:
+            }
+          })
+
+          assetSourceUploaderRef.current = {
+            ...assetSourceUploaderRef.current,
+            [key]: {
+              unsubscribe: () => {
+                // Remove the asset source component when upload is done or aborted
+                setAssetSourceUploadComponents((prev) => prev.filter((el) => el.key !== key))
+                return unsubscribe
+              },
+              uploader,
+            },
+          }
+
+          uploader.upload([file], {
+            schemaType: itemSchemaType,
+            onChange: (patches) => {
+              handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key}))
+            },
+          })
+        } catch (err) {
+          console.error(err)
+          assetSourceUploaderRef.current?.[key]?.unsubscribe()
+          handleChange(PatchEvent.from([unset(['_upload'])]).prefixAll({_key: key}))
+          handleRemoveItem(key)
+        }
+      })
+    },
+    [
+      handleInsert,
+      handleSelectAssetsFromSource,
+      handleChange,
+      toast,
+      t,
+      handleRemoveItem,
+      member.field.schemaType.of,
+    ],
+  )
+
   const handleSelectFile = useCallback(
     ({assetSource, schemaType, file}: InputOnSelectFileFunctionProps) => {
       if (assetSource.Uploader) {
@@ -549,30 +715,35 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      <RenderField
-        actions={fieldActions}
-        name={member.name}
-        index={member.index}
-        level={member.field.level}
-        value={member.field.value}
-        title={member.field.schemaType.title}
-        description={member.field.schemaType.description}
-        collapsible={member.collapsible}
-        collapsed={member.collapsed}
-        changed={member.field.changed}
-        onCollapse={handleCollapse}
-        onExpand={handleExpand}
-        schemaType={member.field.schemaType}
-        inputId={member.field.id}
-        path={member.field.path}
-        presence={member.field.presence}
-        validation={member.field.validation}
-        inputProps={inputProps as ArrayOfObjectsInputProps}
-        render={renderField}
+      <SiblingImageInsertionProvider
+        onInsertSiblingImages={handleInsertSiblingImages}
+        onInsertSiblingFiles={handleInsertSiblingFiles}
       >
-        <RenderInput {...inputProps} render={renderInput} />
-      </RenderField>
-      {assetSourceUploadComponents}
+        <RenderField
+          actions={fieldActions}
+          name={member.name}
+          index={member.index}
+          level={member.field.level}
+          value={member.field.value}
+          title={member.field.schemaType.title}
+          description={member.field.schemaType.description}
+          collapsible={member.collapsible}
+          collapsed={member.collapsed}
+          changed={member.field.changed}
+          onCollapse={handleCollapse}
+          onExpand={handleExpand}
+          schemaType={member.field.schemaType}
+          inputId={member.field.id}
+          path={member.field.path}
+          presence={member.field.presence}
+          validation={member.field.validation}
+          inputProps={inputProps as ArrayOfObjectsInputProps}
+          render={renderField}
+        >
+          <RenderInput {...inputProps} render={renderInput} />
+        </RenderField>
+        {assetSourceUploadComponents}
+      </SiblingImageInsertionProvider>
     </FormCallbacksProvider>
   )
 }

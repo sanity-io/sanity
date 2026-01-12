@@ -23,6 +23,10 @@ import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
+import {
+  extractKeyFromPathSegment,
+  useSiblingImageInsertion,
+} from '../../../contexts/SiblingImageInsertion'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
@@ -56,6 +60,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     members,
     observeAsset,
     onChange,
+    onInsertSiblingImages,
     onPathFocus,
     path,
     readOnly,
@@ -72,6 +77,15 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+
+  // Get sibling insertion callbacks from context (for array contexts)
+  const {
+    onInsertSiblingImages: onInsertSiblingImagesFromContext,
+    onInsertSiblingFiles: onInsertSiblingFilesFromContext,
+  } = useSiblingImageInsertion()
+  // Prefer prop over context, but context allows array to provide callback without modifying prop chain
+  const effectiveOnInsertSiblingImages = onInsertSiblingImages ?? onInsertSiblingImagesFromContext
+  const effectiveOnInsertSiblingFiles = onInsertSiblingFilesFromContext
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -192,18 +206,45 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const handleSelectAssetFromSource = useCallback(
     (assetsFromSource: AssetFromSource[]) => {
+      // Process the first asset for this image field (existing behavior)
       handleSelectAssetFromSourceShared({
-        assetsFromSource,
+        assetsFromSource: assetsFromSource.slice(0, 1),
         onChange,
         type: schemaType,
         resolveUploader,
         uploadWith,
       })
 
+      // If multiple assets were selected and we have a callback for sibling insertion,
+      // pass the additional assets to the parent array to create new items
+      if (assetsFromSource.length > 1 && effectiveOnInsertSiblingImages) {
+        // Extract the current item's key from the path to insert after it
+        const currentKey = extractKeyFromPathSegment(path[path.length - 1])
+        if (currentKey) {
+          effectiveOnInsertSiblingImages(assetsFromSource.slice(1), currentKey)
+        } else {
+          // This shouldn't happen in a properly configured array context
+          push({
+            closable: true,
+            status: 'warning',
+            title: t('inputs.image.multi-select.warning.skipped-images'),
+          })
+        }
+      }
+
       setSelectedAssetSource(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
-    [onChange, resolveUploader, schemaType, uploadWith],
+    [
+      onChange,
+      effectiveOnInsertSiblingImages,
+      path,
+      push,
+      resolveUploader,
+      schemaType,
+      t,
+      uploadWith,
+    ],
   )
 
   const handleCancelUpload = useCallback(() => {
@@ -291,6 +332,33 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
   )
 
+  // Handle multiple files being selected for upload
+  // First file goes to current item, additional files go to sibling items via context
+  const handleSelectFilesToUpload = useCallback(
+    (assetSource: AssetSource, files: File[]) => {
+      if (files.length === 0) return
+
+      // Upload the first file to this image field
+      handleSelectFileToUpload(assetSource, files[0])
+
+      // If there are additional files and we're in array context, pass them to the parent
+      if (files.length > 1 && effectiveOnInsertSiblingFiles) {
+        const currentKey = extractKeyFromPathSegment(path[path.length - 1])
+        if (currentKey) {
+          effectiveOnInsertSiblingFiles(assetSource, files.slice(1), currentKey)
+        } else {
+          // This shouldn't happen in a properly configured array context
+          push({
+            closable: true,
+            status: 'warning',
+            title: t('inputs.image.multi-select.warning.skipped-files'),
+          })
+        }
+      }
+    },
+    [effectiveOnInsertSiblingFiles, handleSelectFileToUpload, path, push, t],
+  )
+
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
@@ -325,6 +393,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
 
+  // Enable multi-file selection in array context (when sibling file insertion is available)
+  const isMultiFileUploadEnabled = Boolean(effectiveOnInsertSiblingFiles)
+
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
@@ -332,11 +403,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
         handleRemoveButtonClick={handleRemoveButtonClick}
-        onSelectFile={handleSelectFileToUpload}
+        onSelectFiles={handleSelectFilesToUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
         isImageToolEnabled={isImageToolEnabled()}
         isMenuOpen={isMenuOpen}
+        multiple={isMultiFileUploadEnabled}
         observeAsset={observeAsset}
         readOnly={readOnly}
         schemaType={schemaType}
@@ -351,11 +423,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    handleSelectFileToUpload,
+    handleSelectFilesToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
+    isMultiFileUploadEnabled,
     observeAsset,
     readOnly,
     schemaType,
@@ -380,13 +453,22 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
-        onSelectFile={handleSelectFileToUpload}
+        multiple={isMultiFileUploadEnabled}
+        onSelectFiles={handleSelectFilesToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
+  }, [
+    assetSources,
+    directUploads,
+    handleSelectFilesToUpload,
+    isMultiFileUploadEnabled,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  ])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (
@@ -412,7 +494,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           handleClearUploadState={handleClearUploadState}
           inputProps={inputProps}
           isStale={isStale}
-          onSelectFile={handleSelectFileToUpload}
+          onSelectFiles={handleSelectFilesToUpload}
           readOnly={readOnly}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
@@ -430,7 +512,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       elementProps,
       handleClearField,
       handleClearUploadState,
-      handleSelectFileToUpload,
+      handleSelectFilesToUpload,
       isStale,
       readOnly,
       renderAssetMenu,
@@ -460,6 +542,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       <ImageInputAssetSource
         handleAssetSourceClosed={handleAssetSourceClosed}
         handleSelectAssetFromSource={handleSelectAssetFromSource}
+        isArrayContext={valueIsArrayElement()}
         isUploading={isUploading}
         observeAsset={observeAsset}
         schemaType={schemaType}
@@ -477,6 +560,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     schemaType,
     selectedAssetSource,
     value,
+    valueIsArrayElement,
   ])
 
   // we use the hotspot field as the "owner" of both hotspot and crop
