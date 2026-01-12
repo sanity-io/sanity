@@ -103,9 +103,9 @@
   },
   "prettier": "@sanity/prettier-config",
   "devDependencies": {
-    "@lerna-lite/cli": "^4.10.4",
-    "@lerna-lite/list": "^4.10.4",
-    "@lerna-lite/publish": "^4.10.4",
+    "@lerna-lite/cli": "^4.10.5",
+    "@lerna-lite/list": "^4.10.5",
+    "@lerna-lite/publish": "^4.10.5",
     "@repo/bundle-manager": "workspace:*",
     "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
