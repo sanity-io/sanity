@@ -1965,9 +1965,6 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
-      arrify:
-        specifier: ^2.0.1
-        version: 2.0.1
       async-mutex:
         specifier: ^0.5.0
         version: 0.5.0
