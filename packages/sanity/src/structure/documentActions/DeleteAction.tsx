@@ -4,9 +4,11 @@ import {
   type DocumentActionComponent,
   getVersionFromId,
   InsufficientPermissionsMessage,
+  isReleaseScheduledOrScheduling,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
 
@@ -27,6 +29,9 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
 
   const {t} = useTranslation(structureLocaleNamespace)
+
+  const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId: id})
+  const hasScheduledRelease = sortedDocumentList.some(isReleaseScheduledOrScheduling)
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
@@ -68,11 +73,21 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
       }
     }
 
+    const getTitle = () => {
+      if (hasScheduledRelease) {
+        return t('action.delete.disabled.scheduled-release')
+      }
+      if (deleteOp.disabled) {
+        return t(DISABLED_REASON_TITLE_KEY[deleteOp.disabled])
+      }
+      return ''
+    }
+
     return {
       tone: 'critical',
       icon: TrashIcon,
-      disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
-      title: 'disabled as some releases are scheduled',
+      disabled: isDeleting || hasScheduledRelease || Boolean(deleteOp.disabled) || isPermissionsLoading,
+      title: getTitle(),
       label: isDeleting ? t('action.delete.running.label') : t('action.delete.label'),
       shortcut: 'Ctrl+Alt+D',
       onHandle: handle,
@@ -96,6 +111,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
     handle,
     handleCancel,
     handleConfirm,
+    hasScheduledRelease,
     id,
     isConfirmDialogOpen,
     isDeleting,
