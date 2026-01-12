@@ -1,6 +1,21 @@
-import {describe, expect, it, vi} from 'vitest'
+import {type CliOutputter} from '@sanity/cli'
+import {type FSWatcher} from 'chokidar'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createExtractionRunner} from '../watchExtract'
+import {createExtractionRunner, createSchemaWatcher} from '../watchExtract'
+
+// Mock chokidar
+vi.mock('chokidar', () => {
+  const mockWatcher = {
+    on: vi.fn().mockReturnThis(),
+    close: vi.fn().mockResolvedValue(undefined),
+  }
+  return {
+    default: {
+      watch: vi.fn(() => mockWatcher),
+    },
+  }
+})
 
 describe('createExtractionRunner', () => {
   it('runs extraction when not already extracting', async () => {
@@ -111,5 +126,95 @@ describe('createExtractionRunner', () => {
     await vi.waitFor(() => {
       expect(onExtract).toHaveBeenCalledTimes(2)
     })
+  })
+})
+
+describe('createSchemaWatcher', () => {
+  let eventHandlers: Record<string, ((...args: unknown[]) => void)[]>
+  let chokidarWatch: ReturnType<typeof vi.fn>
+
+  const mockOutput = {
+    print: vi.fn(),
+    error: vi.fn(),
+  } as unknown as CliOutputter
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+    eventHandlers = {}
+
+    const chokidar = await import('chokidar')
+    const mockWatcher = {
+      on: vi.fn((event: string, handler: (...args: unknown[]) => void) => {
+        if (!eventHandlers[event]) eventHandlers[event] = []
+        eventHandlers[event].push(handler)
+        return mockWatcher
+      }),
+    }
+    chokidarWatch = vi.mocked(chokidar.default.watch)
+    chokidarWatch.mockReturnValue(mockWatcher as unknown as FSWatcher)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('converts relative patterns to absolute and preserves absolute patterns', async () => {
+    await createSchemaWatcher({
+      workDir: '/project',
+      patterns: ['/absolute/path/*.ts', 'relative/*.ts'],
+      debounceMs: 100,
+      onExtract: vi.fn(),
+      output: mockOutput,
+    })
+
+    expect(chokidarWatch).toHaveBeenCalledWith(
+      ['/absolute/path/*.ts', '/project/relative/*.ts'],
+      expect.objectContaining({ignoreInitial: true, cwd: '/project'}),
+    )
+  })
+
+  it('debounces file changes and triggers extraction once', async () => {
+    const onExtract = vi.fn().mockResolvedValue(undefined)
+
+    await createSchemaWatcher({
+      workDir: '/project',
+      patterns: ['**/*.ts'],
+      debounceMs: 500,
+      onExtract,
+      output: mockOutput,
+    })
+
+    const triggerChange = eventHandlers.all?.[0]
+
+    // Multiple rapid changes
+    triggerChange!('change', 'schema/post.ts')
+    await vi.advanceTimersByTimeAsync(100)
+    triggerChange!('change', 'schema/author.ts')
+
+    // Not called yet (within debounce window)
+    expect(onExtract).not.toHaveBeenCalled()
+
+    // Advance past debounce
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(onExtract).toHaveBeenCalledTimes(1)
+  })
+
+  it('logs errors from watcher', async () => {
+    const errorLog = vi.fn()
+    const output = {print: vi.fn(), error: errorLog} as unknown as CliOutputter
+
+    await createSchemaWatcher({
+      workDir: '/project',
+      patterns: ['**/*.ts'],
+      debounceMs: 100,
+      onExtract: vi.fn(),
+      output,
+    })
+
+    eventHandlers.error?.[0]!(new Error('Permission denied'))
+
+    expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('Permission denied'))
   })
 })
