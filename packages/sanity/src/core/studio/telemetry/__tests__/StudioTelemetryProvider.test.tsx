@@ -15,6 +15,7 @@ vi.mock('../../../store/_legacy/project/useProjectOrganizationId')
 vi.mock('sanity/router')
 vi.mock('../../../environment', () => ({
   isProd: false,
+  isDev: true,
 }))
 vi.mock('../../../version', () => ({
   SANITY_VERSION: '3.0.0-test',
