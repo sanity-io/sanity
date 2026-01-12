@@ -23,9 +23,7 @@ interface ConfirmScheduledDraftsDialogProps {
   onClose: () => void
 }
 
-const confirmScheduledDraftsColumnDefs = (
-  t: TFunction<'releases', undefined>,
-): Column<TableRelease>[] => [
+const confirmScheduledDraftsColumnDefs = (t: TFunction<'releases'>): Column<TableRelease>[] => [
   {
     id: 'documentPreview',
     sorting: false,

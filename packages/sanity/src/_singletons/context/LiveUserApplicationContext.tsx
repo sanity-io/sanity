@@ -8,6 +8,7 @@ import type {UserApplication} from '../../core/store/userApplications'
  */
 export type LiveUserApplicationContextValue = {
   userApplication: UserApplication | undefined
+  isLoading: boolean
 }
 /**
  *
@@ -18,5 +19,6 @@ export const LiveUserApplicationContext = createContext<LiveUserApplicationConte
   'sanity/_singletons/context/live-user-application',
   {
     userApplication: undefined,
+    isLoading: true,
   },
 )

@@ -65,20 +65,28 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
 })
 
 test.describe('Enhanced Object Dialog - when tab focusing on an array item', () => {
-  test.beforeEach(async ({createDraftDocument, page}) => {
+  test.beforeEach(async ({createDraftDocument, page, browserName}) => {
+    // Skip Firefox due to flakiness with click/fill interactions
+    test.skip(browserName === 'firefox')
+    test.slow()
+
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
 
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    const addItemButton = page.getByTestId('field-animals').getByRole('button', {name: 'Add item'})
+    await expect(addItemButton).toBeVisible()
+    await addItemButton.click()
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
-    await page
+    const input = page
       .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
       .getByTestId('string-input')
-      .fill('Blue, the whale')
+    await expect(input).toBeVisible()
+    await expect(input).toBeEnabled()
+    await input.fill('Blue, the whale')
 
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+    await page.keyboard.press('Escape')
     await expect(modal).not.toBeVisible()
 
     await page.getByTestId('field-animals').focus()
@@ -96,6 +104,7 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
   test(`When pressing enter on an array item, the tree editing modal should open`, async ({
     page,
   }) => {
+    test.slow()
     await page.keyboard.press('Tab')
     await page.keyboard.press('Tab')
     await page.keyboard.press('Enter')

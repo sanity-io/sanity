@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TypeGenerator > ArrayOf should be handled for a complex query too 1`] = `
+"export type Post = {
+  _id: string;
+  _type: "post";
+  sections?: Array<{
+    _key: string;
+    _type: "section";
+    title?: string;
+  }>;
+  tags?: ArrayOf<Tag | Rag>;
+  strings: Array<string>;
+};
+
+export type Tag = {
+  _key: string;
+  _type: "tag";
+  label?: string;
+};
+
+export type Rag = {
+  _key: string;
+  _type: "rag";
+  color?: string;
+};
+
+export type AllSanitySchemaTypes = Post | Tag | Rag;
+
+export declare const internalGroqTypeReferenceTo: unique symbol;
+
+type ArrayOf<T> = Array<T & {
+  _key: string;
+}>;
+
+// Source: foo.ts
+// Variable: STRANGE_QUERY
+// Query: *[_type == "post"]{              sections[]{                ...,                "_key": 123              },              "surpriseField": coalesce(tags[_type == "rag"], *[_type == 'post'][0].strings, 123)            }
+export type STRANGE_QUERY_RESULT = Array<{
+  sections: Array<{
+    _key: 123;
+    _type: "section";
+    title?: string;
+  }> | null;
+  surpriseField: Array<string> | ArrayOf<Rag> | 123;
+}>;
+
+"
+`;

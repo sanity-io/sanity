@@ -278,7 +278,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     documentId,
     initialValue: initialValue,
     comparisonValue: getComparisonValue,
-    releaseId: selectedReleaseId,
+    releaseId: selectedPerspectiveName,
     selectedPerspectiveName,
     initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
     readOnly: getIsReadOnly,

@@ -40,7 +40,7 @@ export function createFilterMenuItems({
   schema: Schema
   titleFilter: string
   types: SchemaType[]
-  t: TFunction<'studio', undefined>
+  t: TFunction<'studio'>
 }): FilterMenuItem[] {
   // Construct field filters based on available definitions and current title fitler
   const fieldFilters = Object.values(fieldDefinitions)
@@ -148,7 +148,7 @@ function buildFieldMenuItemsNarrowed({
   filters: SearchFilter[]
   schema: Schema
   types: SchemaType[]
-  t: TFunction<'studio', undefined>
+  t: TFunction<'studio'>
 }) {
   const sharedFilters = filters.filter((filter) => {
     const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)

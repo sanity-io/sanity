@@ -1,6 +1,6 @@
 import {type EventEmitter} from 'node:events'
 import {mkdir, writeFile} from 'node:fs/promises'
-import {Worker} from 'node:worker_threads'
+import {type Worker} from 'node:worker_threads'
 
 import type * as SanityCodegen from '@sanity/codegen'
 import {
@@ -24,15 +24,18 @@ vi.mock('@sanity/codegen', async (importOriginal) => {
   return {...original, readConfig: vi.fn()}
 })
 
+const workerInstances: EventEmitter[] = []
+
 vi.mock('node:worker_threads', async () => {
   const {EventEmitter} = await import('node:events')
-  function MockWorker(this: EventEmitter) {
-    EventEmitter.call(this)
+  class MockWorker extends EventEmitter {
+    terminate = vi.fn()
+    constructor() {
+      super()
+      workerInstances.push(this)
+    }
   }
-  MockWorker.prototype = Object.create(EventEmitter.prototype)
-  MockWorker.prototype.constructor = MockWorker
-  MockWorker.prototype.terminate = vi.fn()
-  return {Worker: vi.fn(MockWorker)}
+  return {Worker: MockWorker}
 })
 
 vi.mock('../../../util/cliWorker', () => ({
@@ -100,7 +103,7 @@ test(generateAction.name, async () => {
 
   const worker = await new Promise<Worker>((resolve) => {
     const id = setInterval(() => {
-      const [instance] = vi.mocked(Worker).mock.instances
+      const instance = workerInstances[0]
       if (!instance) return
       clearInterval(id)
       resolve(instance)
@@ -243,6 +246,10 @@ test(generateAction.name, async () => {
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
+    type ArrayOf<T> = Array<T & {
+      _key: string;
+    }>;
+
     // Source: src/queries.ts
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
@@ -304,6 +311,12 @@ test(generateAction.name, async () => {
 
     export declare const internalGroqTypeReferenceTo: unique symbol;
 
+    type ArrayOf<T> = Array<
+      T & {
+        _key: string;
+      }
+    >;
+
     // Source: src/queries.ts
     // Variable: postTitles
     // Query: *[_type == "post"]{title}
@@ -342,7 +355,7 @@ test(generateAction.name, async () => {
         "configOverloadClientMethods": true,
         "emptyUnionTypeNodesGenerated": 0,
         "filesWithErrors": 1,
-        "outputSize": 823,
+        "outputSize": 874,
         "queriesCount": 2,
         "queryFilesCount": 1,
         "schemaTypesCount": 2,

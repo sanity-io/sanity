@@ -6,7 +6,12 @@ import {type SchemaType} from 'groq-js'
 import {createSelector} from 'reselect'
 
 import {resultSuffix} from '../casing'
-import {ALL_SANITY_SCHEMA_TYPES, INTERNAL_REFERENCE_SYMBOL, SANITY_QUERIES} from './constants'
+import {
+  ALL_SANITY_SCHEMA_TYPES,
+  ARRAY_OF,
+  INTERNAL_REFERENCE_SYMBOL,
+  SANITY_QUERIES,
+} from './constants'
 import {computeOnce, generateCode, getUniqueIdentifierForName, normalizePath} from './helpers'
 import {SchemaTypeGenerator} from './schemaTypeGenerator'
 import {
@@ -77,6 +82,30 @@ export class TypeGenerator {
     const code = generateCode(ast)
 
     return {id, code, ast}
+  })
+
+  private getArrayOfDeclaration = computeOnce(() => {
+    // Creates: type ArrayOf<T> = Array<T & { _key: string }>;
+    const typeParam = t.tsTypeParameter(null, null, 'T')
+    const intersectionType = t.tsIntersectionType([
+      t.tsTypeReference(t.identifier('T')),
+      t.tsTypeLiteral([
+        t.tsPropertySignature(t.identifier('_key'), t.tsTypeAnnotation(t.tsStringKeyword())),
+      ]),
+    ])
+    const arrayType = t.tsTypeReference(
+      t.identifier('Array'),
+      t.tsTypeParameterInstantiation([intersectionType]),
+    )
+
+    const ast = t.tsTypeAliasDeclaration(
+      ARRAY_OF,
+      t.tsTypeParameterDeclaration([typeParam]),
+      arrayType,
+    )
+    const code = generateCode(ast)
+
+    return {id: ARRAY_OF, code, ast}
   })
 
   private getSchemaTypeGenerator = createSelector(
@@ -236,6 +265,7 @@ export class TypeGenerator {
   async generateTypes(options: GenerateTypesOptions) {
     const {reporter: report} = options
     const internalReferenceSymbol = this.getInternalReferenceSymbolDeclaration()
+    const arrayOfDeclaration = this.getArrayOfDeclaration()
     const schemaTypeDeclarations = this.getSchemaTypeDeclarations(options)
     const allSanitySchemaTypesDeclaration = this.getAllSanitySchemaTypesDeclaration(options)
 
@@ -258,6 +288,9 @@ export class TypeGenerator {
 
     program.body.push(internalReferenceSymbol.ast)
     code += internalReferenceSymbol.code
+
+    program.body.push(arrayOfDeclaration.ast)
+    code += arrayOfDeclaration.code
 
     const evaluatedModules = await TypeGenerator.getEvaluatedModules({
       ...options,

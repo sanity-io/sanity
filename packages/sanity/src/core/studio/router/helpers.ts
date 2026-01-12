@@ -6,7 +6,7 @@ import {isRecord} from '../../util/isRecord'
 import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
 
-const WEIGHTED_CREATE_INTENT_PARAMS = ['template']
+const WEIGHTED_CREATE_INTENT_PARAMS = ['mode', 'template']
 const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']
 
 function resolveUrlStateWithDefaultTool(tools: Tool[], state: Record<string, unknown> | null) {
@@ -84,7 +84,7 @@ export function resolveIntentState(
   // Rank tools by how well they can handle the intent, based on the params they support.
   // Only the ones defined in `WEIGHTED_*_INTENT_PARAMS` are considered, and on ties in score,
   // the first tool wins. Any active tool is considered first, then the rest.
-  const initialMatch: {score: number; tool: Tool<any> | null} = {score: -1, tool: null}
+  const initialMatch: {score: number; tool: Tool | null} = {score: -1, tool: null}
   const {tool: matchingTool} = (currentTool ? [currentTool, ...otherTools] : orderedTools).reduce(
     (prev, tool) => {
       if (!tool || typeof tool.canHandleIntent !== 'function') {
@@ -104,9 +104,7 @@ export function resolveIntentState(
 
       // Rank by number of supported, weighted values
       const score = weightedParams.reduce((prevScore, weightedParam) => {
-        return weightedParam in params && canHandle[weightedParam] === true
-          ? prevScore + 1
-          : prevScore
+        return weightedParam in params && canHandle[weightedParam] ? prevScore + 1 : prevScore
       }, 0)
 
       return score > prev.score ? {score, tool} : prev

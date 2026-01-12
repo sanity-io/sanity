@@ -1,10 +1,11 @@
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {
   defineConfig,
   type SanityClient,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
+  useValuePreview,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
@@ -55,6 +56,7 @@ vi.mock('../../../../useDocumentTitle', () => ({
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
+    useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
@@ -69,6 +71,7 @@ const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof use
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
   const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',
@@ -101,8 +104,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('New Test Schema')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return an empty fragment when connectionState is not "connected" and editState is empty', async () => {
@@ -135,8 +138,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('Test Title')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Test Title')
   })
 
   it('should return the title if it is provided', async () => {
@@ -148,8 +151,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('Test Title')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Test Title')
   })
 
   it('should return "New {schemaType?.title || schemaType?.name}" if documentValue is not provided', async () => {
@@ -161,8 +164,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('New Test Schema')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return the value.title if value is provided and no error occurred', async () => {
@@ -174,8 +177,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('New Test Schema')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return "New Test Schema" if value is not provided and no error occurred', async () => {
@@ -184,8 +187,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('New Test Schema')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return "Error: {error.message}" if an error occurred while getting the preview value', async () => {
@@ -202,8 +205,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('Error: Test Error')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Error: Test Error')
   })
 
   it('should display the value returned by useValuePreview hook correctly when no error occurs', async () => {
@@ -215,7 +218,7 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText, findByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await findByText('New Test Schema')
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 })

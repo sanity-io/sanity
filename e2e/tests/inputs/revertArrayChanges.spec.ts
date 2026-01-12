@@ -3,6 +3,7 @@ import {expect} from '@playwright/test'
 import {test} from '../../studio-test'
 
 test.describe('Array revert changes', () => {
+  // eslint-disable-next-line max-statements
   test('should revert deletion of middle array item without duplicate key error', async ({
     page,
     createDraftDocument,
@@ -22,17 +23,33 @@ test.describe('Array revert changes', () => {
       .click()
 
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-    await page
+
+    /** item 1 */
+    /** title */
+    const itemTitleInput = page
       .getByTestId('nested-object-dialog')
       .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.title$/)
       .getByTestId('string-input')
-      .fill('Item 1')
-    await page
+
+    const itemDescriptionInput = page
       .getByTestId('nested-object-dialog')
       .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
       .getByTestId('string-input')
-      .fill('description 1')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+
+    await expect(itemTitleInput).toBeVisible()
+    await expect(itemTitleInput).toBeEnabled()
+    await itemTitleInput.fill('Item 1')
+
+    /** description */
+    await expect(itemDescriptionInput).toBeVisible()
+    await expect(itemDescriptionInput).toBeEnabled()
+    await itemDescriptionInput.fill('description 1')
+    const closeButton = page
+      .getByTestId('nested-object-dialog')
+      .getByRole('button', {name: 'Close dialog'})
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** item 2 */
@@ -41,17 +58,19 @@ test.describe('Array revert changes', () => {
       .getByTestId('add-single-object-button')
       .click()
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-    await page
-      .getByTestId('nested-object-dialog')
-      .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.title$/)
-      .getByTestId('string-input')
-      .fill('Item 2')
-    await page
-      .getByTestId('nested-object-dialog')
-      .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
-      .getByTestId('string-input')
-      .fill('description 2')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+
+    /** title */
+    await expect(itemTitleInput).toBeVisible()
+    await expect(itemTitleInput).toBeEnabled()
+    await itemTitleInput.fill('Item 2')
+
+    /** description */
+    await expect(itemDescriptionInput).toBeVisible()
+    await expect(itemDescriptionInput).toBeEnabled()
+    await itemDescriptionInput.fill('description 2')
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** item 3 */
@@ -60,23 +79,26 @@ test.describe('Array revert changes', () => {
       .getByTestId('add-single-object-button')
       .click()
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
-    await page
-      .getByTestId('nested-object-dialog')
-      .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.title$/)
-      .getByTestId('string-input')
-      .fill('Item 3')
-    await page
-      .getByTestId('nested-object-dialog')
-      .getByTestId(/^field-inlineEditingArray\[_key=="[^"]+"\]\.description$/)
-      .getByTestId('string-input')
-      .fill('description 3')
-    await page.getByRole('button', {name: 'Close dialog'}).click()
+
+    await expect(itemTitleInput).toBeVisible()
+    await expect(itemTitleInput).toBeEnabled()
+    await itemTitleInput.fill('Item 3')
+    await expect(itemDescriptionInput).toBeVisible()
+    await expect(itemDescriptionInput).toBeEnabled()
+    await itemDescriptionInput.fill('description 3')
+    await expect(closeButton).toBeVisible()
+    await expect(closeButton).toBeEnabled()
+    await closeButton.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
     /** publish */
+    await expect(page.getByTestId('action-publish')).toBeVisible()
+    await expect(page.getByTestId('action-publish')).toBeEnabled()
     await page.getByTestId('action-publish').click()
 
     /** click to review history pane */
+    await expect(page.getByTestId('pane-footer-document-status')).toBeVisible()
+    await expect(page.getByTestId('pane-footer-document-status')).toBeEnabled()
     await page.getByTestId('pane-footer-document-status').click()
     await expect(page.getByTestId('review-changes-pane').nth(1)).toBeVisible()
 

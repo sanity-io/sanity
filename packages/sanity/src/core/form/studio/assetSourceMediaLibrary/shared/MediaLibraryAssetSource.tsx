@@ -36,6 +36,8 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     throw new Error('No projectId found')
   }
 
+  const selectAssetType = assetType === 'sanity.video' ? 'video' : assetType
+
   return (
     <MediaLibraryProvider projectId={projectId} libraryId={libraryIdProp}>
       <UploadAssetsDialog
@@ -50,7 +52,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
           dialogHeaderTitle={
             dialogHeaderTitle ||
             t('asset-sources.media-library.select-dialog.title', {
-              context: assetType === 'sanity.video' ? 'video' : assetType,
+              context: selectAssetType,
               targetTitle: schemaType?.title,
             })
           }
@@ -60,7 +62,7 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
           onSelect={onSelect}
           selection={[]}
           schemaType={schemaType}
-          selectAssetType={assetType}
+          selectAssetType={selectAssetType}
         />
       </PortalProvider>
     </MediaLibraryProvider>

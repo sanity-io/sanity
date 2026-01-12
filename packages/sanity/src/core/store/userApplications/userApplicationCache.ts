@@ -73,7 +73,7 @@ export function createUserApplicationCache(): UserApplicationCache {
       if (existingIndex) {
         // If we have the index, resolve apps from the main cache
         const appIds = await existingIndex
-        return Promise.all(appIds.map((id) => appCache[id])) as Promise<UserApplication[]>
+        return Promise.all(appIds.map((id) => appCache[id]))
       }
 
       const projectClient = client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)

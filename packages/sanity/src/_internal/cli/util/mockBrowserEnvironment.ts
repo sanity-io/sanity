@@ -1,4 +1,5 @@
-import {createRequire} from 'node:module'
+import {createRequire, register} from 'node:module'
+import {pathToFileURL} from 'node:url'
 
 import {ResizeObserver} from '@juggle/resize-observer'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
@@ -10,6 +11,12 @@ import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVaria
 import {setupImportErrorHandler} from './importErrorHandler'
 
 const require = createRequire(import.meta.url)
+
+// Handle require(esm) cases that breaks free from esbuild-register+pirates
+register(
+  './mock-browser-env-stub-loader.mjs',
+  pathToFileURL(require.resolve('sanity/package.json')),
+)
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -55,6 +62,8 @@ export function mockBrowserEnvironment(basePath: string): () => void {
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
       // define the `import.meta.env` global
       ...getStudioEnvironmentVariables({prefix: 'import.meta.env.', jsonEncode: true}),
+      // define the `import.meta.hot` global, so we don't get `"import.meta" is not available with the "cjs" output format and will be empty` warnings
+      'import.meta.hot': 'false',
     },
   })
 
@@ -167,7 +176,7 @@ function tryGetAceGlobal(basePath: string) {
   try {
     // eslint-disable-next-line import/no-dynamic-require
     return require(acePath)
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

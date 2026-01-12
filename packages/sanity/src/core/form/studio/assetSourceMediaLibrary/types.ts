@@ -69,8 +69,6 @@ export interface AssetMenuAction {
   type: 'delete' | 'showUsage'
 }
 
-export type AssetType = 'image' | 'file' | 'sanity.video'
-
 /**
  * The type that is returned from the Media Library for an selected asset item
  * @internal

@@ -1,4 +1,4 @@
-import {render, within} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -17,10 +17,10 @@ describe('ReleaseStatusItems', () => {
       resources: [releasesUsEnglishLocaleBundle],
     })
 
-    const component = render(<ReleaseStatusItems events={[]} release={activeASAPRelease} />, {
+    render(<ReleaseStatusItems events={[]} release={activeASAPRelease} />, {
       wrapper,
     })
-    const text = await component.findByText('Created')
+    const text = await screen.findByText('Created')
     expect(text).toBeInTheDocument()
   })
   it('renders the creation event, when no any other relevant event is present', async () => {
@@ -28,15 +28,15 @@ describe('ReleaseStatusItems', () => {
       resources: [releasesUsEnglishLocaleBundle],
     })
 
-    const component = render(
+    render(
       <ReleaseStatusItems events={[publishedReleaseEvents[2]]} release={activeASAPRelease} />,
       {
         wrapper,
       },
     )
-    const timeElement = await component.findByRole('time')
+    const timeElement = await screen.findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-03T00:00:00.000Z')
-    const text = await component.findByText('Created')
+    const text = await screen.findByText('Created')
     expect(text).toBeInTheDocument()
   })
   it('renders a status item for a PublishRelease event and the create event', async () => {
@@ -44,19 +44,16 @@ describe('ReleaseStatusItems', () => {
       resources: [releasesUsEnglishLocaleBundle],
     })
 
-    const component = render(
-      <ReleaseStatusItems events={publishedReleaseEvents} release={activeASAPRelease} />,
-      {
-        wrapper,
-      },
-    )
-    const publishEvent = await component.findByTestId('status-publishRelease')
+    render(<ReleaseStatusItems events={publishedReleaseEvents} release={activeASAPRelease} />, {
+      wrapper,
+    })
+    const publishEvent = await screen.findByTestId('status-publishRelease')
     const timeElement = await within(publishEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-05T00:00:00.000Z')
     const text = await within(publishEvent).findByText('Published')
     expect(text).toBeInTheDocument()
 
-    const createEvent = await component.findByTestId('status-createRelease')
+    const createEvent = await screen.findByTestId('status-createRelease')
     expect(createEvent).toBeInTheDocument()
   })
   it('renders a status item for an ArchiveRelease event', async () => {
@@ -64,40 +61,34 @@ describe('ReleaseStatusItems', () => {
       resources: [releasesUsEnglishLocaleBundle],
     })
 
-    const component = render(
-      <ReleaseStatusItems events={archivedReleaseEvents} release={activeASAPRelease} />,
-      {
-        wrapper,
-      },
-    )
-    const archivedEvent = await component.findByTestId('status-archiveRelease')
+    render(<ReleaseStatusItems events={archivedReleaseEvents} release={activeASAPRelease} />, {
+      wrapper,
+    })
+    const archivedEvent = await screen.findByTestId('status-archiveRelease')
 
     const timeElement = await within(archivedEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-05T00:00:00.000Z')
     const text = await within(archivedEvent).findByText('Archived')
     expect(text).toBeInTheDocument()
 
-    const createEvent = await component.findByTestId('status-createRelease')
+    const createEvent = await screen.findByTestId('status-createRelease')
     expect(createEvent).toBeInTheDocument()
   })
   it('renders a status item for an UnarchiveRelease event', async () => {
     const wrapper = await createTestProvider({
       resources: [releasesUsEnglishLocaleBundle],
     })
-    const component = render(
-      <ReleaseStatusItems events={unarchivedReleaseEvents} release={activeASAPRelease} />,
-      {
-        wrapper,
-      },
-    )
-    const unarchiveEvent = await component.findByTestId('status-unarchiveRelease')
+    render(<ReleaseStatusItems events={unarchivedReleaseEvents} release={activeASAPRelease} />, {
+      wrapper,
+    })
+    const unarchiveEvent = await screen.findByTestId('status-unarchiveRelease')
 
     const timeElement = await within(unarchiveEvent).findByRole('time')
     expect(timeElement).toHaveAttribute('datetime', '2024-12-06T00:00:00.000Z')
     const text = await within(unarchiveEvent).findByText('Unarchived')
     expect(text).toBeInTheDocument()
 
-    const createEvent = await component.findByTestId('status-createRelease')
+    const createEvent = await screen.findByTestId('status-createRelease')
     expect(createEvent).toBeInTheDocument()
   })
 })

@@ -1,4 +1,4 @@
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {GetHookCollectionState} from '../../../components/hookCollection'
@@ -144,7 +144,7 @@ describe('ReleaseActionsResolver', () => {
   it('should render children when provided', () => {
     const mockChildren = vi.fn(() => <div data-testid="custom-children">Custom Content</div>)
 
-    const {getByTestId} = render(
+    render(
       <ReleaseActionsResolver
         actions={[mockReleaseAction1]}
         release={mockRelease}
@@ -155,7 +155,7 @@ describe('ReleaseActionsResolver', () => {
       </ReleaseActionsResolver>,
     )
 
-    expect(getByTestId('custom-children')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-children')).toBeInTheDocument()
     expect(mockChildren).toHaveBeenCalledWith({
       states: [mockReleaseActionDescription1],
     })

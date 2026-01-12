@@ -43,7 +43,7 @@ export function createBroadcastChannel<T>(namespace: string): BroadcastChannel<T
       storage.removeItem(storageKey)
 
       broadcastedMessages$.next(message)
-    } catch (err) {
+    } catch {
       // intentional noop
     }
   }

@@ -108,7 +108,7 @@ export interface CommentsListItemProps {
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentUpdatePayload) => void
-  onKeyDown?: (event: KeyboardEvent<Element>) => void
+  onKeyDown?: (event: KeyboardEvent) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onReply: (payload: CommentBaseCreatePayload) => void
@@ -185,7 +185,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   }, [hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: KeyboardEvent<Element>) => {
+    (event: KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return

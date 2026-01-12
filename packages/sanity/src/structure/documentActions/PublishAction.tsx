@@ -96,7 +96,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
     const validationComplete =
-      validationStatus.isValidating === false && validationStatus.revision !== revision
+      !validationStatus.isValidating && validationStatus.revision !== revision
 
     if (!publishScheduled || isSyncing || !validationComplete) {
       return

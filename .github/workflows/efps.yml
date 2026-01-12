@@ -31,11 +31,21 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     outputs:
       preview_url: ${{ steps.deploy-preview.outputs.DEPLOY_URL }}
+      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        id: check_examples_only
+        uses: ./.github/actions/check-examples-only
+
       - uses: ./.github/actions/setup
+        if: steps.check_examples_only.outputs.examples_only != 'true'
 
       - name: Pull Vercel Environment Information
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_EFPS_STUDIO_PROJECT_ID }}
@@ -46,6 +56,7 @@ jobs:
             --token=${{ secrets.VERCEL_EFPS_STUDIO_TOKEN }}
 
       - name: Load Vercel Env Vars into GITHUB_ENV
+        if: steps.check_examples_only.outputs.examples_only != 'true'
         uses: ./.github/actions/vercel-env
         with:
           org-id: ${{ secrets.VERCEL_EFPS_STUDIO_ORG_ID }}
@@ -59,7 +70,7 @@ jobs:
 
       - name: Build Experiment Studio from PR
         # We prebuild in the GH action if in a branch to make it faster
-        if: ${{github.ref_name != 'main'}}
+        if: ${{github.ref_name != 'main' && steps.check_examples_only.outputs.examples_only != 'true'}}
         env:
           SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID }}
           SANITY_STUDIO_EFPS_EXPERIMENT_DATASET: ${{ env.SANITY_STUDIO_EFPS_EXPERIMENT_DATASET }}
@@ -72,7 +83,7 @@ jobs:
 
       - name: Deploy Experiment Studio from PR
         id: deploy-preview
-        if: ${{github.ref_name != 'main'}}
+        if: ${{github.ref_name != 'main' && steps.check_examples_only.outputs.examples_only != 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
@@ -92,7 +103,7 @@ jobs:
 
       - name: Deploy new reference Studio from main
         id: deploy-main
-        if: ${{github.ref_name == 'main'}}
+        if: ${{github.ref_name == 'main' && steps.check_examples_only.outputs.examples_only != 'true'}}
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
@@ -111,7 +122,7 @@ jobs:
   efps-test:
     # We do not currently run in main, but we could do that if we want to compare main
     # against e.g. previous release
-    if: ${{github.ref_name != 'main'}}
+    if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true'}}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: [deploy]
@@ -126,7 +137,7 @@ jobs:
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Add PR comment placeholder
@@ -148,7 +159,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
@@ -191,23 +202,23 @@ jobs:
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: efps-report-${{ matrix.shardIndex }}
+          name: efps-report-${{ matrix.shardIndex }}-attempt-${{ github.run_attempt }}
           path: ${{ github.workspace }}/dev/efps/results/
           retention-days: 30
 
   merge-reports:
-    if: ${{github.ref_name != 'main'}}
-    needs: [efps-test]
+    if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true'}}
+    needs: [deploy, efps-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: efps-report-*
           merge-multiple: true

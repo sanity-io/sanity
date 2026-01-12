@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto'
-import {createReadStream, type ReadStream} from 'node:fs'
+import {createReadStream} from 'node:fs'
 import fs, {mkdtemp} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
@@ -41,7 +41,7 @@ import {glob} from 'tinyglobby'
 import {debug as baseDebug} from '../../debug'
 import {MINIMUM_API_VERSION} from './constants'
 import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
-import {findNdjsonEntry} from './lib/findNdjsonEntry'
+import {readNdjsonFile} from './lib/findNdjsonEntry'
 
 interface ImportAssetsFlags {
   'media-library-id'?: string
@@ -110,9 +110,14 @@ interface Options {
   output: CliOutputter
 }
 
+interface AspectDataEntry {
+  filename: string
+  aspects?: unknown
+}
+
 interface Context extends Options {
   workingPath: string
-  ndjson: () => ReadStream | null
+  aspectsData: AspectDataEntry[]
 }
 
 // TODO: Order assets lexicographically before processing, allow resumable import
@@ -175,23 +180,33 @@ export function importer(options: Options): Observable<State> {
         throw new Error('No assets to import')
       }
 
-      const context: Context = {
-        ...options,
-        workingPath,
-        ndjson: () => (aspectsNdjsonPath ? createReadStream(aspectsNdjsonPath) : null),
-      }
+      // Read the ndjson file once upfront and cache the data to avoid creating
+      // multiple read streams (which causes file descriptor leaks)
+      const aspectsDataPromise = aspectsNdjsonPath
+        ? readNdjsonFile<AspectDataEntry>(createReadStream(aspectsNdjsonPath))
+        : Promise.resolve([])
 
-      return from(files).pipe(
-        switchMap((file) => zip(of<'file'>('file'), of(file))),
-        mergeWith(from(images).pipe(switchMap((file) => zip(of<'image'>('image'), of(file))))),
-        fetchExistingAssets(context),
-        uploadAsset(context),
-        resolveAspectData(context),
-        setAspects(context),
-        map((asset) => ({
-          asset,
-          fileCount,
-        })),
+      return from(aspectsDataPromise).pipe(
+        mergeMap((aspectsData) => {
+          const context: Context = {
+            ...options,
+            workingPath,
+            aspectsData,
+          }
+
+          return from(files).pipe(
+            switchMap((file) => zip(of<'file'>('file'), of(file))),
+            mergeWith(from(images).pipe(switchMap((file) => zip(of<'image'>('image'), of(file))))),
+            fetchExistingAssets(context),
+            uploadAsset(context),
+            resolveAspectData(context),
+            setAspects(context),
+            map((asset) => ({
+              asset,
+              fileCount,
+            })),
+          )
+        }),
       )
     }),
   )
@@ -358,37 +373,31 @@ function fetchExistingAssets({
 }
 
 /**
- * Find the first matching entry in the provided NDJSON stream and attach it to the asset object.
+ * Find the matching entry in the cached aspect data and attach it to the asset object.
  *
  * @internal
  */
-function resolveAspectData({ndjson}: Context): OperatorFunction<ResolvedAsset, AssetWithAspects> {
-  return mergeMap((resolvedAsset) => {
-    const ndjsonStream = ndjson()
-
-    // If no ndjson file exists, return asset with undefined aspects
-    if (!ndjsonStream) {
-      return of({
+function resolveAspectData({
+  aspectsData,
+}: Context): OperatorFunction<ResolvedAsset, AssetWithAspects> {
+  return map((resolvedAsset) => {
+    // If no aspects data exists, return asset with undefined aspects
+    if (!aspectsData || aspectsData.length === 0) {
+      return {
         ...resolvedAsset,
         aspects: undefined,
-      })
+      }
     }
 
-    return from(
-      findNdjsonEntry<{aspects: unknown}>(
-        ndjsonStream,
-        (line) =>
-          typeof line === 'object' &&
-          line !== null &&
-          'filename' in line &&
-          line.filename === resolvedAsset.originalFilename,
-      ),
-    ).pipe(
-      map((aspectsFromImport) => ({
-        ...resolvedAsset,
-        aspects: aspectsFromImport?.aspects,
-      })),
+    // Find matching aspect data from the cached data
+    const aspectsFromImport = aspectsData.find(
+      (entry) => entry.filename === resolvedAsset.originalFilename,
     )
+
+    return {
+      ...resolvedAsset,
+      aspects: aspectsFromImport?.aspects,
+    }
   })
 }
 

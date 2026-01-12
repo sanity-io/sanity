@@ -92,7 +92,7 @@ export function tasksReducer(
     }
 
     case 'TASK_RECEIVED': {
-      const nextTaskResult = action.payload as TaskDocument
+      const nextTaskResult = action.payload
 
       return {
         ...state,
