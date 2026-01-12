@@ -43,8 +43,11 @@ import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
 import {type Plugin} from 'vite'
 
-import {formatSchemaValidation} from '../../actions/schema/formatSchemaValidation'
-import {extractSchemaToFile, SchemaExtractionError} from '../../actions/schema/schemaExtractorApi'
+import {formatSchemaValidation} from '../_internal/cli/actions/schema/formatSchemaValidation'
+import {
+  extractSchemaToFile,
+  SchemaExtractionError,
+} from '../_internal/cli/actions/schema/schemaExtractorApi'
 
 /**
  * Default glob patterns to watch for schema changes.
