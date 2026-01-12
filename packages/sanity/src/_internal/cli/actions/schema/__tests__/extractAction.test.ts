@@ -1,5 +1,5 @@
-import {describe, expect, it} from 'vitest'
 import {SchemaError as CoreSchemaError} from 'sanity'
+import {describe, expect, it} from 'vitest'
 
 // Re-implement the helper functions for testing since they're not exported
 // These mirror the implementation in extractAction.ts
