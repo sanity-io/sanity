@@ -14,6 +14,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
     "This document doesn't yet exist or is already deleted",
+  /** Tooltip when action button is disabled because the document exists in scheduled releases */
+  'action.delete.disabled.scheduled-release':
+    'This document cannot be deleted as it exists within scheduled releases',
   /** Label for the "Delete" document action button */
   'action.delete.label': 'Delete',
   /** Label for the "Delete" document action while the document is being deleted */
