@@ -72,7 +72,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft, versi
       tone: 'critical',
       icon: TrashIcon,
       disabled: isDeleting || Boolean(deleteOp.disabled) || isPermissionsLoading,
-      title: (deleteOp.disabled && t(DISABLED_REASON_TITLE_KEY[deleteOp.disabled])) || '',
+      title: 'disabled as some releases are scheduled',
       label: isDeleting ? t('action.delete.running.label') : t('action.delete.label'),
       shortcut: 'Ctrl+Alt+D',
       onHandle: handle,
