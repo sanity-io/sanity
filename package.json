@@ -124,7 +124,7 @@
     "dotenv": "^16.6.1",
     "dotenv-flow": "^4.1.0",
     "eslint": "catalog:",
-    "eslint-formatter-gha": "^1.6.0",
+    "eslint-formatter-gha": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
