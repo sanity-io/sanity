@@ -36,21 +36,22 @@ interface StructureErrorProps {
 }
 
 export function StructureError({error}: StructureErrorProps) {
-  if (!(error instanceof PaneResolutionError)) {
-    throw error
-  }
-  const {cause} = error
   const {t} = useTranslation(structureLocaleNamespace)
+  const isPaneResolutionError = error instanceof PaneResolutionError
+  const cause = isPaneResolutionError ? error.cause : undefined
 
   // Serialize errors are well-formatted and should be readable, in these cases a stack trace is
   // usually not helpful. Build errors in dev (with HMR) usually also contains a bunch of garbage
   // instead of an actual error message, so make sure we show the message in these cases as well
-  const stack = cause?.stack || error.stack
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  const stack = cause?.stack || (error instanceof Error ? error.stack : undefined)
   const showStack =
-    stack && !(cause instanceof SerializeError) && !error.message.includes('Module build failed:')
+    stack && !(cause instanceof SerializeError) && !errorMessage.includes('Module build failed:')
 
   const path = cause instanceof SerializeError ? cause.path : []
-  const helpId = (cause instanceof SerializeError && cause.helpId) || error.helpId
+  const helpId =
+    (cause instanceof SerializeError && cause.helpId) ||
+    (isPaneResolutionError ? error.helpId : undefined)
 
   const handleReload = useCallback(() => {
     window.location.reload()
@@ -81,7 +82,7 @@ export function StructureError({error}: StructureErrorProps) {
             <Text size={1} weight="medium">
               {t('structure-error.error.label')}
             </Text>
-            <Code>{showStack ? formatStack(stack) : error.message}</Code>
+            <Code>{showStack ? formatStack(stack) : errorMessage}</Code>
           </Stack>
 
           {helpId && (
