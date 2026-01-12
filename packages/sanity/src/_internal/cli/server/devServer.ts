@@ -1,10 +1,10 @@
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {sanitySchemaExtractionPlugin} from 'sanity/vite'
 import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
 import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
-import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
 
 export interface SchemaExtractionOptions {
   enabled: boolean
