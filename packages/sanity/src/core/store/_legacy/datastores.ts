@@ -287,27 +287,34 @@ export function useProjectStore(): ProjectStore {
   }, [client, resourceCache])
 }
 
-/** @internal */
+/**
+ * Returns a KeyValueStore instance for storing user preferences.
+ *
+ * The store is cached by client identity (which encapsulates project ID and API host)
+ * rather than workspace, because the /users/me/keyvalue endpoint is project-scoped -
+ * user preferences are shared across all datasets within a project.
+ *
+ * @internal
+ */
 export function useKeyValueStore(): KeyValueStore {
   const resourceCache = useResourceCache()
-  const workspace = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const keyValueStore =
       resourceCache.get<KeyValueStore>({
-        dependencies: [workspace],
+        dependencies: [client],
         namespace: 'KeyValueStore',
       }) || createKeyValueStore({client})
 
     resourceCache.set({
-      dependencies: [workspace],
+      dependencies: [client],
       namespace: 'KeyValueStore',
       value: keyValueStore,
     })
 
     return keyValueStore
-  }, [client, resourceCache, workspace])
+  }, [client, resourceCache])
 }
 
 /** @internal */
