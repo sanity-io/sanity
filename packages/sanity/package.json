@@ -80,6 +80,7 @@
     },
     "./vite": {
       "source": "./src/_exports/vite.ts",
+      "monorepo": "./src/_exports/vite.ts",
       "default": "./lib/vite.js"
     },
     "./package.json": "./package.json"
