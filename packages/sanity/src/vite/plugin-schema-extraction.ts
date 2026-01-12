@@ -62,6 +62,12 @@ const DEFAULT_SCHEMA_PATTERNS = [
 const DEFAULT_DEBOUNCE_MS = 1000
 
 /**
+ * Delay before initial extraction to allow Vite to finish startup
+ * and avoid race conditions with module resolution.
+ */
+const INITIAL_EXTRACTION_DELAY_MS = 1000
+
+/**
  * Options for the Sanity schema extraction Vite plugin.
  *
  * @public
@@ -109,6 +115,13 @@ export interface SchemaExtractionPluginOptions {
    * @defaultValue 1000
    */
   debounceMs?: number
+
+  /**
+   * When true, marks all fields as required in the extracted schema
+   * unless they are explicitly marked as optional.
+   * @defaultValue false
+   */
+  enforceRequiredFields?: boolean
 }
 
 const prefix = chalk.cyan('[schema]')
@@ -138,6 +151,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     workspaceName,
     additionalPatterns = [],
     debounceMs = DEFAULT_DEBOUNCE_MS,
+    enforceRequiredFields = false,
   } = options
 
   const watchPatterns = [...DEFAULT_SCHEMA_PATTERNS, ...additionalPatterns]
@@ -170,6 +184,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         workDir: resolvedWorkDir,
         outputPath: resolvedOutputPath,
         workspaceName,
+        enforceRequiredFields,
       })
       output.log(prefix, logSymbols.success, `extracted to ${resolvedOutputPath}`)
     } catch (err) {
@@ -225,7 +240,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       server.watcher.on('unlink', handleChange)
 
       // Run initial extraction after server is ready
-      server.httpServer?.once('listening', () => {
+      const startExtraction = () => {
         setTimeout(() => {
           // Notify about schema extraction enabled
           output.info(prefix, logSymbols.info, 'Schema extraction enabled. Watching:')
@@ -235,8 +250,15 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
 
           // Perform first extraction
           void runExtraction()
-        }, 1000)
-      })
+        }, INITIAL_EXTRACTION_DELAY_MS)
+      }
+
+      if (server.httpServer) {
+        server.httpServer.once('listening', startExtraction)
+      } else {
+        // Middleware mode - no HTTP server, run extraction immediately
+        startExtraction()
+      }
     },
   }
 }
