@@ -195,7 +195,6 @@
     "@vitejs/plugin-react": "catalog:",
     "@xstate/react": "^6.0.0",
     "archiver": "^7.0.1",
-    "arrify": "^2.0.1",
     "async-mutex": "^0.5.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.6.0",

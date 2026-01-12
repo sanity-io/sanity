@@ -153,8 +153,8 @@ importers:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
       eslint-formatter-gha:
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^2.0.1
+        version: 2.0.1
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -1951,9 +1951,6 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
-      arrify:
-        specifier: ^2.0.1
-        version: 2.0.1
       async-mutex:
         specifier: ^0.5.0
         version: 0.5.0
@@ -8067,16 +8064,16 @@ packages:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
 
-  eslint-formatter-gha@1.6.0:
-    resolution: {integrity: sha512-f+jY9I1qAlN4/bM6Cyiob/0W97yGbalp4uoMyHA4gelR0vp0sbusTlPXqRKtedBkq4MbEziAuL+0+STsaphM5Q==}
+  eslint-formatter-gha@2.0.1:
+    resolution: {integrity: sha512-HbiPXXjIley/JRcQ9zRZ4HJhhU8ZIf0wVLbfyQKm/7HIcbvOsA2xwl/Lblyd8fhYalUWxKcodJOwsOwxw7O0Cw==}
 
-  eslint-formatter-json@8.40.0:
-    resolution: {integrity: sha512-0bXo4At1EoEU23gFfN7wcDeqRXDHLJnvDOuQKD3Q6FkBlk7L2oVNPYg/sciIWdYrUnCBcKuMit3IWXkdSfzChg==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+  eslint-formatter-json@9.0.1:
+    resolution: {integrity: sha512-EQ/X+bPjiOUDo4frNbkY+5R6emaHTL7t2jHsJw5s8p8w1BTJ6ao6S7g/PaRyx/CqqaYcjJkWAPHH/onNyFlJBQ==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  eslint-formatter-stylish@8.40.0:
-    resolution: {integrity: sha512-blbD5ZSQnjNEUaG38VCO4WG9nfDQWE8/IOmt8DFRHXUIfZikaIXmsQTdWNFk0/e0j7RgIVRza86MpsJ+aHgFLg==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+  eslint-formatter-stylish@9.0.1:
+    resolution: {integrity: sha512-FlhMRUiDUHztGj+bhm3pYo5DJ6Gbjh/FGPClcDENme7f9+Sc3+HZg6wMq80KJmRD8/oj/Ib6gy4D/ppjmHfGVA==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   eslint-import-context@0.1.9:
     resolution: {integrity: sha512-K9Hb+yRaGAGUbwjhFNHvSmmkZs9+zbuoe3kFQ4V1wYjrepUFYM2dZAfNtjbbj3qsPfUfsA68Bx/ICWQMi+C8Eg==}
@@ -19784,14 +19781,14 @@ snapshots:
       eslint-plugin-turbo: 2.7.3(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.3)
       turbo: 2.7.3
 
-  eslint-formatter-gha@1.6.0:
+  eslint-formatter-gha@2.0.1:
     dependencies:
-      eslint-formatter-json: 8.40.0
-      eslint-formatter-stylish: 8.40.0
+      eslint-formatter-json: 9.0.1
+      eslint-formatter-stylish: 9.0.1
 
-  eslint-formatter-json@8.40.0: {}
+  eslint-formatter-json@9.0.1: {}
 
-  eslint-formatter-stylish@8.40.0:
+  eslint-formatter-stylish@9.0.1:
     dependencies:
       chalk: 4.1.2
       strip-ansi: 6.0.1
