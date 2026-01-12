@@ -86,11 +86,11 @@ export function StudioProvider({
             LoadingComponent={LoadingBlock}
             ConfigErrorsComponent={ConfigErrorsScreen}
           >
-            <StudioTelemetryProvider>
-              <LocaleProvider>
-                <PackageVersionStatusProvider>
-                  <MaybeEnableErrorReporting errorReporter={errorReporter} />
-                  <ResourceCacheProvider>
+            <LocaleProvider>
+              <PackageVersionStatusProvider>
+                <MaybeEnableErrorReporting errorReporter={errorReporter} />
+                <ResourceCacheProvider>
+                  <StudioTelemetryProvider>
                     <AppIdCacheProvider>
                       <ComlinkRouteHandler />
                       <StudioAnnouncementsProvider>
@@ -101,10 +101,10 @@ export function StudioProvider({
                         </GlobalPerspectiveProvider>
                       </StudioAnnouncementsProvider>
                     </AppIdCacheProvider>
-                  </ResourceCacheProvider>
-                </PackageVersionStatusProvider>
-              </LocaleProvider>
-            </StudioTelemetryProvider>
+                  </StudioTelemetryProvider>
+                </ResourceCacheProvider>
+              </PackageVersionStatusProvider>
+            </LocaleProvider>
           </WorkspaceLoader>
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
