@@ -80,7 +80,7 @@
     "@repo/tsconfig": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.28.0",
