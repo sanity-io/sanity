@@ -45,7 +45,7 @@ async function runSingleExtraction(
   const flags = args.extOptions
   const format = flags.format || 'groq-type-nodes'
   const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(process.cwd(), 'schema.json')
+  const outputPath = flags.path || join(workDir, 'schema.json')
 
   const spinner = output
     .spinner({})
@@ -102,7 +102,7 @@ async function runWatchMode(
   const flags = args.extOptions
   const format = flags.format || 'groq-type-nodes'
   const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(process.cwd(), 'schema.json')
+  const outputPath = flags.path || join(workDir, 'schema.json')
 
   // Build watch patterns
   const additionalPaths = flags['watch-path']
