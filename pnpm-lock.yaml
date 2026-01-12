@@ -107,9 +107,6 @@ importers:
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
-      '@repo/dev-aliases':
-        specifier: workspace:*
-        version: link:packages/@repo/dev-aliases
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:packages/@repo/eslint-config
@@ -267,9 +264,6 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.56.1
-      '@repo/dev-aliases':
-        specifier: workspace:*
-        version: link:../../packages/@repo/dev-aliases
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -371,9 +365,6 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)'
     devDependencies:
-      '@repo/dev-aliases':
-        specifier: workspace:*
-        version: link:../../packages/@repo/dev-aliases
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -811,8 +802,6 @@ importers:
         specifier: ^4.0.16
         version: 4.0.16(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/@repo/dev-aliases: {}
-
   packages/@repo/eslint-config:
     dependencies:
       '@eslint/js':
@@ -884,9 +873,6 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 7.2.7(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      vite-tsconfig-paths:
-        specifier: ^5.1.4
-        version: 5.1.4(typescript@5.9.3)(vite@7.2.7(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/@repo/package.config:
     devDependencies:
@@ -908,9 +894,6 @@ importers:
 
   packages/@repo/test-config:
     devDependencies:
-      '@repo/dev-aliases':
-        specifier: workspace:*
-        version: link:../dev-aliases
       vitest:
         specifier: ^4.0.16
         version: 4.0.16(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -2067,9 +2050,6 @@ importers:
       mendoza:
         specifier: ^3.0.8
         version: 3.0.8
-      module-alias:
-        specifier: ^2.2.3
-        version: 2.2.3
       motion:
         specifier: ^12.25.0
         version: 12.25.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2151,9 +2131,6 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
-      resolve.exports:
-        specifier: ^2.0.3
-        version: 2.0.3
       rimraf:
         specifier: ^5.0.10
         version: 5.0.10
@@ -2224,9 +2201,6 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.56.1
-      '@repo/dev-aliases':
-        specifier: workspace:*
-        version: link:../@repo/dev-aliases
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../@repo/eslint-config
@@ -2296,9 +2270,6 @@ importers:
       '@types/log-symbols':
         specifier: ^2.0.0
         version: 2.0.0
-      '@types/module-alias':
-        specifier: ^2.0.4
-        version: 2.0.4
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
@@ -2362,6 +2333,9 @@ importers:
       swr:
         specifier: 2.2.5
         version: 2.2.5(react@19.2.3)
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
       vitest:
         specifier: ^4.0.16
         version: 4.0.16(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -5906,9 +5880,6 @@ packages:
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
-
-  '@types/module-alias@2.0.4':
-    resolution: {integrity: sha512-5+G/QXO/DvHZw60FjvbDzO4JmlD/nG5m2/vVGt25VN1eeP3w2bCoks1Wa7VuptMPM1TxJdx6RjO70N9Fw0nZPA==}
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -10178,9 +10149,6 @@ packages:
   modern-ahocorasick@1.1.0:
     resolution: {integrity: sha512-sEKPVl2rM+MNVkGQt3ChdmD8YsigmXdn5NifZn6jiwn9LRJpWm8F3guhaqrJT/JOat6pwpbXEk6kv+b9DMIjsQ==}
 
-  module-alias@2.2.3:
-    resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
-
   motion-dom@12.24.11:
     resolution: {integrity: sha512-DlWOmsXMJrV8lzZyd+LKjG2CXULUs++bkq8GZ2Sr0R0RRhs30K2wtY+LKiTjhmJU3W61HK+rB0GLz6XmPvTA1A==}
 
@@ -11392,10 +11360,6 @@ packages:
   resolve-url@0.2.1:
     resolution: {integrity: sha512-ZuF55hVUQaaczgOIwqWzkEcEidmlD/xl44x1UZnhOXcYuFN2S6+rcxpG+C1N3So0wvNI3DmJICUFfu2SxhBmvg==}
     deprecated: https://github.com/lydell/resolve-url#deprecated
-
-  resolve.exports@2.0.3:
-    resolution: {integrity: sha512-OcXjMsGdhL4XnbShKpAcSqPMzQoYkYyhbEaeSko47MjRP9NfEQMhZkXL1DoFlt9LWQn4YttrdnV6X2OiyzBi+A==}
-    engines: {node: '>=10'}
 
   resolve@1.22.11:
     resolution: {integrity: sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==}
@@ -17251,8 +17215,6 @@ snapshots:
 
   '@types/minimist@1.2.5': {}
 
-  '@types/module-alias@2.0.4': {}
-
   '@types/ms@2.1.0': {}
 
   '@types/node@16.18.11': {}
@@ -22107,8 +22069,6 @@ snapshots:
 
   modern-ahocorasick@1.1.0: {}
 
-  module-alias@2.2.3: {}
-
   motion-dom@12.24.11:
     dependencies:
       motion-utils: 12.24.10
@@ -23378,8 +23338,6 @@ snapshots:
   resolve-pkg-maps@1.0.0: {}
 
   resolve-url@0.2.1: {}
-
-  resolve.exports@2.0.3: {}
 
   resolve@1.22.11:
     dependencies:

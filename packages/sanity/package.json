@@ -25,46 +25,57 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
+      "monorepo": "./src/_exports/_singletons.ts",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
+      "monorepo": "./src/_exports/_createContext.ts",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
+      "monorepo": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
+      "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
+      "monorepo": "./src/_exports/presentation.ts",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
+      "monorepo": "./src/_exports/router.ts",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
+      "monorepo": "./src/_exports/structure.ts",
       "default": "./lib/structure.js"
     },
     "./media-library": {
       "source": "./src/_exports/media-library.ts",
+      "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
+      "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
@@ -115,7 +126,7 @@
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
     "lint": "eslint .",
@@ -217,7 +228,6 @@
     "lodash-es": "^4.17.22",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
-    "module-alias": "^2.2.3",
     "motion": "^12.25.0",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
@@ -245,7 +255,6 @@
     "read-pkg-up": "^7.0.1",
     "refractor": "^5.0.0",
     "resolve-from": "^5.0.0",
-    "resolve.exports": "^2.0.3",
     "rimraf": "^5.0.10",
     "rxjs": "^7.8.2",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
@@ -271,7 +280,6 @@
   "devDependencies": {
     "@playwright/experimental-ct-react": "catalog:",
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
@@ -295,7 +303,6 @@
     "@types/jsdom": "27.0.0",
     "@types/lodash-es": "^4.17.12",
     "@types/log-symbols": "^2.0.0",
-    "@types/module-alias": "^2.0.4",
     "@types/node": "catalog:",
     "@types/raf": "^3.4.3",
     "@types/react": "catalog:",
@@ -317,6 +324,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",
+    "tsx": "^4.21.0",
     "vitest": "catalog:",
     "vitest-package-exports": "^1.1.2"
   },
@@ -327,5 +335,21 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./_singletons": "./lib/_singletons.js",
+      "./_createContext": "./lib/_createContext.js",
+      "./cli": "./lib/cli.js",
+      "./desk": "./lib/desk.js",
+      "./presentation": "./lib/presentation.js",
+      "./router": "./lib/router.js",
+      "./structure": "./lib/structure.js",
+      "./media-library": "./lib/media-library.js",
+      "./migrate": "./lib/migrate.js",
+      "./package.json": "./package.json"
+    }
   }
 }

@@ -35,6 +35,7 @@
     "dev": "pnpm dev:test-studio",
     "dev:cli": "pnpm watch",
     "dev:design-studio": "pnpm --filter design-studio dev",
+    "predev:embedded-studio": "turbo run build --filter=embedded-studio^...",
     "dev:embedded-studio": "pnpm --filter embedded-studio dev",
     "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=triangles pnpm start",
     "dev:i18n:reverse": "SANITY_STUDIO_DEBUG_I18N=reverse pnpm start",
@@ -43,7 +44,7 @@
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
-    "e2e:build": "pnpm turbo run build --filter=studio-e2e-testing",
+    "e2e:build": "turbo run build --filter=studio-e2e-testing",
     "e2e:cleanup:pr": "tsx -r dotenv-flow/config e2e/scripts/cleanupPr",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
@@ -53,6 +54,7 @@
     "efps:dev": "cd dev/efps && pnpm dev",
     "efps:test": "cd dev/efps && pnpm test",
     "efps:write:report": "cd dev/efps && pnpm write:report",
+    "preembedded-studio-vite:dev": "turbo run build --filter=e2e-embedded-studio-vite^...",
     "embedded-studio-vite:dev": "pnpm --filter e2e-embedded-studio-vite dev",
     "embedded-studio-vite:test": "pnpm --filter e2e-embedded-studio-vite test",
     "example:blog-studio": "cd examples/studios/blog-studio && pnpm start",
@@ -107,7 +109,6 @@
     "@lerna-lite/list": "^4.10.5",
     "@lerna-lite/publish": "^4.10.5",
     "@repo/bundle-manager": "workspace:*",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
@@ -140,6 +141,5 @@
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.28.0",
-  "//": "pnpm settings moved to pnpm-workspace.yaml",
-  "isSanityMonorepo": true
+  "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

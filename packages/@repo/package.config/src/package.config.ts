@@ -32,5 +32,6 @@ export default defineConfig({
   strictOptions: {
     noImplicitBrowsersList: 'off',
     noImplicitSideEffects: 'error',
+    noPublishConfigExports: 'error',
   },
 })
