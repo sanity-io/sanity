@@ -216,6 +216,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
 
+  /** Select new asset button text */
+  'asset-sources.media-library.open-in-source-dialog.button.done': 'Done',
+
+  /** Select new asset button text */
+  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset':
+    'Select new asset for “{{targetTitle}}”',
+  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback':
+    'Select new asset',
+
+  /** Title for the open in source dialog */
+  'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
+
   /** Info messages for the Media Library Asset Source  */
   'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
   'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
@@ -738,6 +750,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.files.common.actions-menu.download.label': 'Download',
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
+  /** Open in source */
+  'inputs.files.common.actions-menu.open-in-source.label': 'Open in {{sourceName}}',
   /** Replace */
   'inputs.files.common.actions-menu.replace.label': 'Replace',
   /** Upload */
