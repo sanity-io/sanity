@@ -93,6 +93,7 @@ export const Preview = memo(
       loadersConnection,
       overlaysConnection,
       perspective,
+      previewUrl: previewUrlProp,
       viewport,
       vercelProtectionBypass,
       presentationRef,
@@ -104,7 +105,10 @@ export const Preview = memo(
       stablePerspective === null ? perspective : stablePerspective,
     )
     const previewUrl = useMemo(() => {
-      const url = new URL(initialUrl)
+      // Use the preview URL from props (from intent params) if available, otherwise fall back to initialUrl
+      // This ensures that when navigating to Studio via an intent link with a preview param,
+      // the iframe loads the correct URL instead of the default initial URL
+      const url = new URL(previewUrlProp ?? initialUrl)
       // Always set the perspective that's being used, even if preview mode isn't configured
       if (!url.searchParams.get(urlSearchParamPreviewPerspective)) {
         url.searchParams.set(urlSearchParamPreviewPerspective, urlPerspective)
@@ -123,7 +127,7 @@ export const Preview = memo(
       }
 
       return url
-    }, [initialUrl, urlPerspective, vercelProtectionBypass])
+    }, [initialUrl, previewUrlProp, urlPerspective, vercelProtectionBypass])
 
     useEffect(() => {
       /**
