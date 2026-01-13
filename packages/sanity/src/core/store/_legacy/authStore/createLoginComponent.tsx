@@ -2,6 +2,7 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
@@ -9,7 +10,7 @@ import {LoadingBlock} from '../../../components/loadingBlock'
 import {type AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
-import {type LoginComponentProps} from './types'
+import {type AuthState, type LoginComponentProps} from './types'
 
 const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
 
@@ -57,6 +58,7 @@ async function getProviders({
 }
 
 interface CreateLoginComponentOptions extends AuthConfig {
+  state$: Observable<AuthState>
   getClient: () => Observable<SanityClient>
 }
 
@@ -91,14 +93,15 @@ function createHrefForProvider({
 }
 
 export function createLoginComponent({
+  state$,
   getClient,
   loginMethod,
   redirectOnSingle,
   ...providerOptions
 }: CreateLoginComponentOptions) {
   const useClient = createHookFromObservableFactory(getClient)
-
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
+    const authState = useObservable(state$, null)
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providerData, setProviderData] = useState<{
@@ -168,10 +171,11 @@ export function createLoginComponent({
     const providerList = providers.filter(({name}) => name !== lastUsedProvider?.name)
 
     useEffect(() => {
-      if (redirectUrlForRedirectOnSingle) {
+      // Only redirect after handleCallbackUrl has completed processing
+      if (redirectUrlForRedirectOnSingle && authState?.callbackHandled) {
         window.location.href = redirectUrlForRedirectOnSingle
       }
-    }, [redirectUrlForRedirectOnSingle])
+    }, [redirectUrlForRedirectOnSingle, authState?.callbackHandled])
 
     if (loading) {
       return <LoadingBlock showText />
