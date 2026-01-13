@@ -62,6 +62,11 @@ export const GlobalStyle = createGlobalStyle((props) => {
       font-family: ${font.text.family};
     }
 
+    /* Fix toast positioning - remove bottom padding so toasts appear flush with screen edge */
+    [data-ui='ToastProvider'] {
+      padding-bottom: 0 !important;
+    }
+
     b {
       font-weight: ${font.text.weights.medium};
     }
