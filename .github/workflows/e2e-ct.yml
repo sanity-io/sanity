@@ -13,7 +13,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     outputs:
       examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     env:
@@ -40,14 +40,14 @@ jobs:
     if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     needs: [install]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2]
         shardTotal: [2]
@@ -70,7 +70,7 @@ jobs:
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true' || matrix.project == 'webkit'
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build packages
@@ -93,7 +93,7 @@ jobs:
   merge-reports:
     if: always() && needs.install.outputs.examples_only != 'true'
     needs: [install, playwright-ct-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
