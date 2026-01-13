@@ -38,10 +38,12 @@ export interface ExtractSchemaOptions {
 }
 
 /**
- * Extracts schema to a file. Runs in a worker thread for isolation.
+ * Extracts schema to a file. Runs in a worker thread for isolation. Returns the extracted schema
+ * after the extraction has completed and the file has been written to the file.
+ *
  * Throws SchemaExtractionError with validation details if extraction fails.
  */
-export async function extractSchemaToFile(options: ExtractSchemaOptions): Promise<void> {
+export async function extractSchemaToFile(options: ExtractSchemaOptions) {
   const {
     workDir,
     outputPath,
@@ -84,6 +86,8 @@ export async function extractSchemaToFile(options: ExtractSchemaOptions): Promis
   }
 
   await writeFile(outputPath, `${JSON.stringify(message.schema, null, 2)}\n`)
+
+  return message.schema
 }
 
 /** Options for starting a schema watcher */

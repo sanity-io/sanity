@@ -59,12 +59,20 @@ async function runSingleExtraction(
   trace.start()
 
   try {
-    await extractSchemaToFile({
+    const schema = await extractSchemaToFile({
       workDir,
       outputPath,
       workspaceName: flags.workspace,
       enforceRequiredFields,
       format,
+    })
+
+    trace.log({
+      schemaAllTypesCount: schema.length,
+      schemaDocumentTypesCount: schema.filter((type) => type.type === 'document').length,
+      schemaTypesCount: schema.filter((type) => type.type === 'type').length,
+      enforceRequiredFields,
+      schemaFormat: format,
     })
 
     trace.complete()
