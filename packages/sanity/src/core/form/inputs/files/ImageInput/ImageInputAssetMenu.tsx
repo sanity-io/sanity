@@ -10,6 +10,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
+import {findOpenInSourceResult} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
@@ -34,6 +35,7 @@ function ImageInputAssetMenuComponent(
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
     setMenuButtonElement: (el: HTMLButtonElement | null) => void
     setMenuOpen: (isOpen: boolean) => void
+    onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
   },
 ) {
   const {
@@ -47,6 +49,7 @@ function ImageInputAssetMenuComponent(
     isImageToolEnabled,
     isMenuOpen,
     observeAsset,
+    onOpenInSource,
     readOnly,
     schemaType,
     setHotspotButtonElement,
@@ -111,6 +114,7 @@ function ImageInputAssetMenuComponent(
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
+      onOpenInSource={onOpenInSource}
       readOnly={readOnly}
       reference={asset}
       schemaType={schemaType}
@@ -135,6 +139,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
+    onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
@@ -154,6 +159,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     onSelectFile,
     imageUrlBuilder,
     isMenuOpen,
+    onOpenInSource,
     observeAsset,
     readOnly,
     reference,
@@ -171,7 +177,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const asset = useObservable(observable)
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
-  // TODO: fix this in same style as FileInput
+  // Find the first asset source that can handle opening this asset in source
+  const openInSourceResult = useMemo(
+    () => (asset ? findOpenInSourceResult(asset, assetSources) : null),
+    [asset, assetSources],
+  )
+
   const handleSelectFilesFromAssetSource = useCallback(
     (assetSource: AssetSource, files: File[]) => {
       onSelectFile(assetSource, files[0])
@@ -185,6 +196,17 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     },
     [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
   )
+
+  const handleOpenInSource = useCallback(() => {
+    if (!openInSourceResult || !asset) return
+
+    const {source, result} = openInSourceResult
+    if (result && typeof result === 'object' && result.type === 'url') {
+      window.open(result.url, result.target || '_blank')
+    } else if (result && typeof result === 'object' && result.type === 'component') {
+      onOpenInSource?.(source, asset)
+    }
+  }, [asset, onOpenInSource, openInSourceResult])
 
   if (!documentId || !asset) {
     return <ImageActionsMenuWaitPlaceholder />
@@ -245,6 +267,14 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
         browse={browseMenuItem}
         onReset={handleRemoveButtonClick}
         downloadUrl={downloadUrl}
+        openInSource={openInSourceResult ? handleOpenInSource : undefined}
+        openInSourceName={
+          openInSourceResult
+            ? (openInSourceResult.source.i18nKey
+                ? t(openInSourceResult.source.i18nKey)
+                : openInSourceResult.source.title) || openInSourceResult.source.name
+            : undefined
+        }
         copyUrl={copyUrl}
         readOnly={readOnly}
       />
