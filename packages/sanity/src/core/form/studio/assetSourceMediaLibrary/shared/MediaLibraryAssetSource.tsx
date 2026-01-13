@@ -1,11 +1,12 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useEffect, useState} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
+import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
@@ -17,9 +18,11 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
     accept, // TODO: make the plugin respect this filter?
     action = 'select',
     assetSource,
+    assetToOpen,
     assetType = 'image',
     dialogHeaderTitle,
     libraryId: libraryIdProp,
+    onChangeAction,
     onClose,
     onSelect,
     selectedAssets, // TODO: allow for pre-selected assets?
@@ -31,6 +34,9 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
   const portalElement = useRootPortalElement()
+  const handleSelectNewAsset = useCallback(() => {
+    onChangeAction('select')
+  }, [onChangeAction])
 
   if (!projectId) {
     throw new Error('No projectId found')
@@ -64,6 +70,20 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
           schemaType={schemaType}
           selectAssetType={selectAssetType}
         />
+        {action === 'openInSource' && assetToOpen && (
+          <OpenInSourceDialog
+            asset={assetToOpen}
+            dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
+            selectNewAssetButtonLabel={t(
+              'asset-sources.media-library.open-in-source-dialog.button.select-new-asset',
+              {
+                targetTitle: schemaType?.title,
+              },
+            )}
+            onClose={onClose}
+            onSelectNewAsset={handleSelectNewAsset}
+          />
+        )}
       </PortalProvider>
     </MediaLibraryProvider>
   )
