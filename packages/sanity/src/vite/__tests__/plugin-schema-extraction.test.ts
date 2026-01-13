@@ -27,6 +27,7 @@ describe('sanitySchemaExtractionPlugin', () => {
     const plugin = sanitySchemaExtractionPlugin({
       output: {log: vi.fn(), info: vi.fn(), error: vi.fn()},
       debounceMs: 100,
+      enforceRequiredFields: true,
     })
 
     // Simulate Vite's configResolved hook
@@ -54,6 +55,7 @@ describe('sanitySchemaExtractionPlugin', () => {
 
     // Called with correct params in object
     expect(extractSchemaToFile).toHaveBeenCalledWith({
+      enforceRequiredFields: true,
       workDir: '/project',
       outputPath: '/project/schema.json',
       workspaceName: undefined,
