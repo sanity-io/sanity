@@ -5,6 +5,8 @@ import {encodeQueryString, getVisionRegions, openVisionTool} from './utils'
 
 test.describe('Vision', () => {
   test('should be possible to type an execute a query', async ({page, sanityClient}) => {
+    test.slow()
+
     const bookTitle = 'Test Book'
     const bookDocument = await sanityClient.create({
       _type: 'book',
@@ -41,12 +43,16 @@ test.describe('Vision', () => {
     await expect(paramsEditor).toHaveText(paramsInputText)
 
     // Find the button with the text "Fetch" and click it.
-    await page.locator('button').filter({hasText: 'Fetch'}).click()
+    const fetchButton = page.locator('button').filter({hasText: 'Fetch'})
+    await expect(fetchButton).toBeVisible()
+    await expect(fetchButton).toBeEnabled()
+    await fetchButton.click()
 
     // Assert that the results are visible
     // It should find the book document assert that by checking the title and the id
-    await expect(resultRegion.getByText(bookTitle)).toBeVisible()
-    await expect(resultRegion.getByText(bookDocument._id)).toBeVisible()
+    // Use longer timeout since query execution can take time
+    await expect(resultRegion.getByText(bookTitle)).toBeVisible({timeout: 30_000})
+    await expect(resultRegion.getByText(bookDocument._id)).toBeVisible({timeout: 10_000})
   })
 
   test('should be possible to paste and parse a query', async ({
