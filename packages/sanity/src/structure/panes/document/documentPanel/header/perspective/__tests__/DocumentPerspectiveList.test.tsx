@@ -66,6 +66,10 @@ vi.mock('sanity/router', () => {
   }
 })
 
+vi.mock('../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider', () => ({
+  useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
+}))
+
 vi.mock('../../../../useDocumentPane')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
