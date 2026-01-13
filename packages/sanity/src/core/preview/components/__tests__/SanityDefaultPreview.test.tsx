@@ -12,36 +12,48 @@ vi.mock('@sanity/asset-utils')
 vi.mock('../../../hooks')
 vi.mock('../../../form/inputs/files/ImageInput/useImageUrl')
 vi.mock('@sanity/image-url')
+
+let capturedMedia: unknown
+
 vi.mock('../_previewComponents', () => ({
   _previewComponents: {
-    default: vi.fn(() => null),
+    default: vi.fn((props: {media?: unknown}) => {
+      capturedMedia = props.media
+      return null
+    }),
   },
 }))
 
-describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+beforeEach(() => {
+  vi.clearAllMocks()
+  capturedMedia = undefined
 
-    vi.mocked(useClient).mockReturnValue({} as unknown as ReturnType<typeof useClient>)
-    vi.mocked(createImageUrlBuilder).mockReturnValue(
-      {} as unknown as ReturnType<typeof createImageUrlBuilder>,
-    )
-    vi.mocked(useImageUrl).mockReturnValue({
-      url: 'https://cdn.sanity.io/transformed.jpg',
-      isLoading: false,
-    })
+  vi.mocked(useClient).mockReturnValue({} as ReturnType<typeof useClient>)
+  vi.mocked(createImageUrlBuilder).mockReturnValue({} as ReturnType<typeof createImageUrlBuilder>)
+  vi.mocked(useImageUrl).mockReturnValue({
+    url: 'https://cdn.sanity.io/transformed.jpg',
+    isLoading: false,
   })
+})
 
+function renderPreview(media: unknown): void {
+  render(<SanityDefaultPreview layout="default" media={media} title="Test" />)
+}
+
+describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
   it('should handle valid Sanity image URL strings without crashing', () => {
+    const sanityUrl = 'https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg'
+
     vi.mocked(isSanityImageUrl).mockReturnValue(true)
     vi.mocked(parseImageAssetUrl).mockReturnValue({
       assetId: 'image-abc123-1920x1080-jpg',
+      projectId: 'project',
+      dataset: 'dataset',
+      type: 'image',
       width: 1920,
       height: 1080,
-      format: 'jpg',
-    } as unknown as ReturnType<typeof parseImageAssetUrl>)
+    })
 
-    let capturedMedia: unknown
     vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
       capturedMedia = props.media
       if (typeof capturedMedia === 'function') {
@@ -50,42 +62,22 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
       return null
     })
 
-    render(
-      <SanityDefaultPreview
-        layout="default"
-        media="https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg"
-        title="Test"
-      />,
-    )
+    renderPreview(sanityUrl)
 
-    expect(isSanityImageUrl).toHaveBeenCalledWith(
-      'https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg',
-    )
+    expect(isSanityImageUrl).toHaveBeenCalledWith(sanityUrl)
     expect(typeof capturedMedia).toBe('function')
     expect(parseImageAssetUrl).toHaveBeenCalled()
   })
 
   it('should handle malformed/invalid Sanity-like URL strings gracefully', () => {
+    const invalidUrl = 'https://not-a-sanity-url.com/image.jpg'
+
     vi.mocked(isSanityImageUrl).mockReturnValue(false)
 
-    let capturedMedia: unknown
-    vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
-      capturedMedia = props.media
-      return null
-    })
+    renderPreview(invalidUrl)
 
-    expect(() => {
-      render(
-        <SanityDefaultPreview
-          layout="default"
-          media="https://not-a-sanity-url.com/image.jpg"
-          title="Test"
-        />,
-      )
-    }).not.toThrow()
-
-    expect(parseImageAssetUrl).not.toHaveBeenCalled()
-    expect(capturedMedia).toBe('https://not-a-sanity-url.com/image.jpg')
+    expect(parseImageAssetUrl).toHaveBeenCalledTimes(0)
+    expect(capturedMedia).toBe(invalidUrl)
   })
 
   it('should handle valid image sources (asset objects) as before', () => {
@@ -96,15 +88,9 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
       asset: {_ref: 'image-abc123-1920x1080-jpg', _type: 'reference'},
     }
 
-    let capturedMedia: unknown
-    vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
-      capturedMedia = props.media
-      return null
-    })
-
-    render(<SanityDefaultPreview layout="default" media={imageSource} title="Test" />)
+    renderPreview(imageSource)
 
     expect(typeof capturedMedia).toBe('function')
-    expect(parseImageAssetUrl).not.toHaveBeenCalled()
+    expect(parseImageAssetUrl).toHaveBeenCalledTimes(0)
   })
 })
