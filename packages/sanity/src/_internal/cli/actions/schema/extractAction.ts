@@ -1,6 +1,7 @@
 import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {once} from 'lodash-es'
 
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
@@ -151,8 +152,11 @@ async function runWatchMode(
 
   const {resolve, promise} = promiseWithResolvers<void>()
 
-  // Handle graceful shutdown
-  const cleanup = () => {
+  /**
+   * Handle graceful shutdown. Wrapped in once to prevent it being called twice by the
+   * SIGINT/SIGTERM callbacks, causing double trace logs etc..
+   */
+  const cleanup = once(() => {
     trace.log({step: 'stopped'})
     trace.complete()
 
@@ -160,7 +164,7 @@ async function runWatchMode(
     output.print('Stopping watch mode...')
     void stop()
     resolve()
-  }
+  })
 
   process.on('SIGINT', cleanup)
   process.on('SIGTERM', cleanup)
