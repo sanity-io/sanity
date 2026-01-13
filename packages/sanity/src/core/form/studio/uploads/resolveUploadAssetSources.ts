@@ -19,7 +19,11 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || 'image/*')) {
       return []
     }
-    return formBuilder.__internal.image.assetSources.filter((source) => Boolean(source.Uploader))
+    const assetSources = formBuilder.__internal.image.assetSources
+    const sourcesWithUploader = assetSources.filter((source) => Boolean(source.Uploader))
+    // If no asset sources have an Uploader, return all sources to allow drag-and-drop
+    // to proceed. The upload step will handle missing Uploaders by finding a fallback.
+    return sourcesWithUploader.length > 0 ? sourcesWithUploader : assetSources
   }
   if (is.type('file', type)) {
     if (!supportsDirectFileUploads) {
@@ -28,7 +32,11 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || '')) {
       return []
     }
-    return formBuilder.__internal.file.assetSources.filter((source) => Boolean(source.Uploader))
+    const assetSources = formBuilder.__internal.file.assetSources
+    const sourcesWithUploader = assetSources.filter((source) => Boolean(source.Uploader))
+    // If no asset sources have an Uploader, return all sources to allow drag-and-drop
+    // to proceed. The upload step will handle missing Uploaders by finding a fallback.
+    return sourcesWithUploader.length > 0 ? sourcesWithUploader : assetSources
   }
   return []
 }

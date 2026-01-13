@@ -296,9 +296,56 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           })
           console.error(err)
         }
+      } else {
+        // Fallback for asset sources without an Uploader (e.g., sanity-plugin-media)
+        // Use the standard uploader mechanism to handle the file upload
+        const uploader = resolveUploader(schemaType, file)
+        if (uploader) {
+          setIsUploading(true)
+          onChange(PatchEvent.from(createInitialUploadPatches(file)))
+          const uploadOptions: UploadOptions = {
+            metadata: get(schemaType, 'options.metadata'),
+            storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
+          }
+          const subscription = uploader.upload(client, file, schemaType, uploadOptions).subscribe({
+            next: (uploadEvent) => {
+              if (uploadEvent.patches) {
+                onChange(PatchEvent.from(uploadEvent.patches))
+              }
+            },
+            error: (err) => {
+              console.error(err)
+              push({
+                status: 'error',
+                description: t('asset-sources.common.uploader.upload-failed.description'),
+                title: t('asset-sources.common.uploader.upload-failed.title'),
+              })
+              onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
+              setIsUploading(false)
+            },
+            complete: () => {
+              onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
+              setIsUploading(false)
+            },
+          })
+          // Store subscription for cleanup
+          setAssetSourceUploader({
+            unsubscribe: () => subscription.unsubscribe(),
+            uploader: {abort: () => subscription.unsubscribe()} as AssetSourceUploader,
+          })
+        }
       }
     },
-    [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
+    [
+      handleAssetLimitUpsellDialog,
+      assetSourceUploader,
+      onChange,
+      push,
+      schemaType,
+      t,
+      resolveUploader,
+      client,
+    ],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
