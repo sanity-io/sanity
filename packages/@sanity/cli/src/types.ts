@@ -375,6 +375,38 @@ export interface CliConfig {
    * Configuration for Sanity typegen
    */
   typegen?: Partial<TypeGenConfig>
+
+  /**
+   * Configuration for schema extraction (`sanity schema extract`)
+   */
+  schemaExtract?: {
+    /**
+     * Output path for the extracted schema file.
+     * Defaults to `schema.json` in the working directory.
+     */
+    path?: string
+
+    /**
+     * Format for the extracted schema.
+     * Currently only 'groq-type-nodes' is supported.
+     * Defaults to `groq-type-nodes`
+     */
+    format?: 'groq-type-nodes'
+
+    /**
+     * When true, schema fields marked as required will be non-optional in the output.
+     * Defaults to `false`
+     */
+    enforceRequiredFields?: boolean
+
+    /**
+     * Additional glob patterns to watch for schema changes in watch mode.
+     * These extend the default patterns:
+     * - `sanity.config.{js,jsx,ts,tsx,mjs}`
+     * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}`
+     */
+    watchPatterns?: string[]
+  }
 }
 
 export type UserViteConfig =

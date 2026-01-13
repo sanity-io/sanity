@@ -35,17 +35,36 @@ export default async function extractAction(
   return runSingleExtraction(args, context)
 }
 
+function getExtractOptions(
+  flags: ExtractFlags,
+  config: CliCommandContext['cliConfig'],
+  workDir: string,
+) {
+  const schemaExtract = config?.schemaExtract
+
+  return {
+    format: flags.format ?? schemaExtract?.format ?? 'groq-type-nodes',
+    enforceRequiredFields:
+      flags['enforce-required-fields'] ?? schemaExtract?.enforceRequiredFields ?? false,
+    outputPath: flags.path ?? schemaExtract?.path ?? join(workDir, 'schema.json'),
+    watchPatterns: flags['watch-patterns']
+      ? Array.isArray(flags['watch-patterns'])
+        ? flags['watch-patterns']
+        : [flags['watch-patterns']]
+      : (schemaExtract?.watchPatterns ?? []),
+  }
+}
+
 /**
  * Runs a single extraction with spinner and telemetry (original behavior).
  */
 async function runSingleExtraction(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output, telemetry}: CliCommandContext,
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const format = flags.format || 'groq-type-nodes'
-  const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(workDir, 'schema.json')
+  const {workDir, output, telemetry, cliConfig} = context
+  const {format, enforceRequiredFields, outputPath} = getExtractOptions(flags, cliConfig, workDir)
 
   const spinner = output
     .spinner({})
@@ -105,12 +124,9 @@ async function runSingleExtraction(
  */
 async function runWatchMode(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output, telemetry}: CliCommandContext,
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const format = flags.format || 'groq-type-nodes'
-  const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(workDir, 'schema.json')
 
   // Keep the start time + some simple stats for extractions as they happen
   const startTime = Date.now()
@@ -119,12 +135,9 @@ async function runWatchMode(
     failedCount: 0,
   }
 
-  // Build watch patterns
-  const additionalPatterns = Array.isArray(flags['watch-patterns'])
-    ? flags['watch-patterns']
-    : flags['watch-patterns']
-      ? [flags['watch-patterns']]
-      : []
+  const {workDir, output, telemetry, cliConfig} = context
+  const options = getExtractOptions(flags, cliConfig, workDir)
+  const {format, enforceRequiredFields, outputPath, watchPatterns: additionalPatterns} = options
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
   const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
