@@ -25,6 +25,7 @@ export function FileAsset(props: FileAssetProps) {
     isUploading,
     onCancelUpload,
     onClearUploadStatus,
+    onOpenInSource,
     onSelectAssets,
     onSelectFiles,
     onStale,
