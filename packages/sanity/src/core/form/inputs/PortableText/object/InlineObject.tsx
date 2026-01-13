@@ -6,7 +6,7 @@ import {
   type PortableTextChild,
 } from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths'
@@ -88,6 +88,7 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   const {validation, hasError, hasInfo, hasWarning} = useMemberValidation(memberItem?.node)
   const parentSchemaType = editor.schemaTypes.block
   const hasMarkers = markers.length > 0
+  const isDeleting = useRef<boolean>(false)
   const selfSelection = useMemo(
     (): EditorSelection => ({
       anchor: {path: relativePath, offset: 0},
@@ -97,9 +98,31 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   )
 
   const onRemove = useCallback(() => {
-    PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
-    PortableTextEditor.focus(editor)
+    // Guard against clicking "Delete" multiple times.
+    if (isDeleting.current) {
+      return
+    }
+    try {
+      // Select the inline object first to ensure the editor has the correct selection,
+      // since clicking the delete button in the popover shifts focus away from the editor.
+      PortableTextEditor.select(editor, selfSelection)
+      PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
+    } catch (err) {
+      console.error(err)
+    }
+    isDeleting.current = true
   }, [selfSelection, editor])
+
+  // Focus the editor if this object is removed because it was deleted.
+  // This is needed for the popover taking focus while clicking "Delete" from it.
+  useEffect(
+    () => () => {
+      if (isDeleting.current) {
+        PortableTextEditor.focus(editor)
+      }
+    },
+    [editor],
+  )
 
   const onOpen = useCallback(() => {
     if (memberItem) {
