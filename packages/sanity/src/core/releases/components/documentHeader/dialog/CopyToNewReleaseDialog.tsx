@@ -5,6 +5,7 @@ import {useState} from 'react'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -145,24 +146,24 @@ export function CopyToNewReleaseDialog(props: {
             <LoadingBlock />
           )}
 
-          <Flex
-            align="center"
-            gap={2}
-            padding={1}
-            paddingRight={2}
-            style={{
-              borderRadius: 999,
-              border: '1px solid var(--card-border-color)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            <ReleaseAvatar padding={1} tone={tone} />
-            <Text size={1} title={displayTitle}>
-              {displayTitle}
-            </Text>
-          </Flex>
+          <Tooltip content={displayTitle}>
+            <Flex
+              align="center"
+              gap={2}
+              padding={1}
+              paddingRight={2}
+              style={{
+                borderRadius: 999,
+                border: '1px solid var(--card-border-color)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <ReleaseAvatar padding={1} tone={tone} />
+              <Text size={1}>{displayTitle}</Text>
+            </Flex>
+          </Tooltip>
         </Flex>
       </Box>
 
