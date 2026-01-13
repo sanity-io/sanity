@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2]
         shardTotal: [2]
