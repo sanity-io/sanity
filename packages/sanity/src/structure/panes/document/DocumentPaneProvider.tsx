@@ -39,6 +39,7 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
+import {isDraftOrPublished} from '../../../core/releases/util/util'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
@@ -278,7 +279,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     documentId,
     initialValue: initialValue,
     comparisonValue: getComparisonValue,
-    releaseId: selectedPerspectiveName,
+    // Only pass releaseId for actual releases, not for system perspectives like 'published' or 'drafts'
+    releaseId:
+      selectedPerspectiveName && !isDraftOrPublished(selectedPerspectiveName)
+        ? selectedPerspectiveName
+        : undefined,
     selectedPerspectiveName,
     initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
     readOnly: getIsReadOnly,
