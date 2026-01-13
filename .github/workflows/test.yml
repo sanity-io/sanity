@@ -14,8 +14,8 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 60
-    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: Test (node ${{ matrix.node }})
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -25,7 +25,6 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        os: [ubuntu-8core]
         node: [20, 22, 24]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
