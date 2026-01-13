@@ -38,6 +38,7 @@ type VirtualDatum = {
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
+  validationFilter?: (data: TableData[]) => TableData[]
   data: TableData[]
   emptyState: (() => React.JSX.Element) | string
   loading?: boolean
@@ -63,6 +64,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   data,
   emptyState,
   searchFilter,
+  validationFilter,
   rowId,
   rowActions,
   loading = false,
@@ -70,14 +72,17 @@ const TableInner = <TableData, AdditionalRowTableData>({
   scrollContainerRef,
   hideTableInlinePadding = false,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  const {searchTerm, sort} = useTableContext()
+  const {searchTerm, sort, showValidationErrorsOnly} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
   const filteredData = useMemo(() => {
-    const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
-    if (!sort) return filteredResult
+    const searchFiltered = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
+    const validationFiltered =
+      showValidationErrorsOnly && validationFilter ? validationFilter(searchFiltered) : searchFiltered
+
+    if (!sort) return validationFiltered
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)
-    return [...filteredResult].sort((a, b) => {
+    return [...validationFiltered].sort((a, b) => {
       let order: number
 
       const [aValue, bValue]: (number | string)[] = [a, b].map(
@@ -109,7 +114,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       if (sort.direction === 'asc') return order
       return -order
     })
-  }, [columnDefs, data, searchFilter, searchTerm, sort])
+  }, [columnDefs, data, searchFilter, searchTerm, sort, showValidationErrorsOnly, validationFilter])
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,

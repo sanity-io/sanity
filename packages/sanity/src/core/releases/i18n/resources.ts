@@ -425,6 +425,8 @@ const releasesLocaleStrings = {
   'table-header.type': 'Type',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
+  /** Tooltip for the validation filter checkbox in the document table */
+  'table-header.validation-filter-tooltip': 'Show only documents with validation errors',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",

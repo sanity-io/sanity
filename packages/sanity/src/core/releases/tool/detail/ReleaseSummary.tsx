@@ -83,6 +83,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [],
   )
 
+  const filterValidationErrors = useCallback(
+    (data: DocumentInRelease[]) => data.filter((doc) => doc.validation.hasError),
+    [],
+  )
+
   const closeAddDialog = useCallback(
     async (documentToAdd?: AddedDocument) => {
       setAddDocumentDialog(false)
@@ -184,6 +189,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
             searchFilter={filterRows}
+            validationFilter={filterValidationErrors}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />

@@ -165,11 +165,7 @@ export const getDocumentTableColumnDefs: (
     id: 'validation',
     sorting: false,
     width: 50,
-    header: ({headerProps}) => (
-      <Flex {...headerProps} paddingY={3} sizing="border">
-        <Headers.BasicHeader text={''} />
-      </Flex>
-    ),
+    header: (props) => <Headers.ValidationFilterHeader {...props} />,
     cell: ({cellProps, datum}) => {
       if (datum.isLoading) return null
 
