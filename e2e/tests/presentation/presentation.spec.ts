@@ -77,8 +77,9 @@ test.describe('Presentation', () => {
     await expect(viewportToggleAfterSwitch).toBeEnabled()
     await expect(viewportToggleAfterSwitch).toHaveAttribute('data-viewport', 'mobile')
 
-    // Use force click for the second toggle as well
-    await viewportToggleAfterSwitch.click({force: true, timeout: 15000})
+    // Use dispatchEvent for the second toggle to bypass Playwright's scroll-into-view
+    // behavior which can timeout in Firefox after viewport changes
+    await viewportToggleAfterSwitch.dispatchEvent('click')
 
     // Wait for URL to no longer contain viewport=mobile parameter
     await expect(page).not.toHaveURL(/viewport=mobile/, {timeout: 10000})
