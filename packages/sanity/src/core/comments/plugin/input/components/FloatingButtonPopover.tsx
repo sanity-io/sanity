@@ -1,5 +1,5 @@
 import {AddCommentIcon} from '@sanity/icons'
-import {useClickOutsideEvent} from '@sanity/ui'
+import {Box, useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useRef} from 'react'
 import {styled} from 'styled-components'
@@ -38,23 +38,28 @@ export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
   const enabledText = t('inline-add-comment-button.title')
   const text = disabled ? disabledText : enabledText
 
+  // Wrap the button in a non-editable container to prevent it from being
+  // treated as editable content when rendered near Portable Text editors.
+  // Note: contentEditable={false} must be on the content, not the Popover itself,
+  // as applying it to the portal container can interfere with click event propagation.
   const content = (
-    <Button
-      data-testid="inline-comment-button"
-      disabled={disabled}
-      icon={disabled ? CommentDisabledIcon : AddCommentIcon}
-      mode="bleed"
-      onClick={onClick}
-      ref={buttonRef}
-      text={text}
-    />
+    <Box contentEditable={false}>
+      <Button
+        data-testid="inline-comment-button"
+        disabled={disabled}
+        icon={disabled ? CommentDisabledIcon : AddCommentIcon}
+        mode="bleed"
+        onClick={onClick}
+        ref={buttonRef}
+        text={text}
+      />
+    </Box>
   )
 
   return (
     <MotionPopover
       animate="visible"
       content={content}
-      contentEditable={false}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       initial="hidden"
       open
