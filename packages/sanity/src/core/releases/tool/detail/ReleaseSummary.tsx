@@ -50,6 +50,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
+  const [showErrorsOnly, setShowErrorsOnly] = useState(false)
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -72,6 +73,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
+
+  const handleToggleErrorsFilter = useCallback(() => {
+    setShowErrorsOnly((prev) => !prev)
+  }, [])
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) =>
@@ -151,10 +156,17 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       )
   }, [documents, pendingAddedDocument, t, toast])
 
-  const tableData = useMemo(
-    () => (pendingAddedDocument.length ? [...documents, ...pendingAddedDocument] : documents),
-    [documents, pendingAddedDocument],
-  )
+  const tableData = useMemo(() => {
+    const allDocuments = pendingAddedDocument.length
+      ? [...documents, ...pendingAddedDocument]
+      : documents
+
+    if (showErrorsOnly) {
+      return allDocuments.filter((doc) => doc.validation?.hasError)
+    }
+
+    return allDocuments
+  }, [documents, pendingAddedDocument, showErrorsOnly])
 
   return (
     <Card
@@ -170,9 +182,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     >
       <Stack>
         <ReleaseActionBadges
-          documents={tableData}
+          documents={
+            pendingAddedDocument.length ? [...documents, ...pendingAddedDocument] : documents
+          }
           releaseState={release.state}
           isLoading={isLoading}
+          showErrorsOnly={showErrorsOnly}
+          onToggleErrorsFilter={handleToggleErrorsFilter}
         />
         <Card borderTop>
           <Table<DocumentInReleaseDetail>

@@ -479,6 +479,13 @@ const releasesLocaleStrings = {
   /** Text for when no scheduled drafts are found */
   'no-scheduled-drafts': 'No Scheduled Drafts',
 
+  /** Label for the filter showing documents with validation errors */
+  'filter.validation-errors': 'Errors: {{count}}',
+  /** Aria label for the validation errors filter button */
+  'filter.validation-errors.aria-label': 'Show only documents with validation errors',
+  /** Aria label for clearing the validation errors filter */
+  'filter.validation-errors.clear-aria-label': 'Show all documents',
+
   /** Banner text showing count of active scheduled drafts requiring confirmation with one draft */
   'banner.confirm-active-scheduled-drafts_one':
     'There is {{count}} Scheduled Draft that requires scheduling confirmation',

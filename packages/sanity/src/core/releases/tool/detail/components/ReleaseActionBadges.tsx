@@ -1,7 +1,9 @@
 import {type ReleaseState} from '@sanity/client'
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {Badge, Box, Container, Flex, Skeleton} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 
+import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {DOCUMENT_ACTION_CONFIGS, getDocumentActionType} from '../releaseDocumentActions'
@@ -11,6 +13,8 @@ interface ReleaseActionBadgesProps {
   documents: DocumentInRelease[]
   releaseState: ReleaseState
   isLoading?: boolean
+  showErrorsOnly?: boolean
+  onToggleErrorsFilter?: () => void
 }
 
 const BadgesContainer = ({children}: {children: ReactNode}) => (
@@ -27,19 +31,24 @@ export function ReleaseActionBadges({
   documents,
   releaseState,
   isLoading = false,
+  showErrorsOnly = false,
+  onToggleErrorsFilter,
 }: ReleaseActionBadgesProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
-  const actionCounts = useMemo(() => {
+  const {actionCounts, errorCount} = useMemo(() => {
     return documents.reduce(
       (acc, doc) => {
         const actionType = getDocumentActionType(doc)
         if (actionType) {
-          acc[actionType]++
+          acc.actionCounts[actionType]++
+        }
+        if (doc.validation?.hasError) {
+          acc.errorCount++
         }
         return acc
       },
-      {added: 0, changed: 0, unpublished: 0},
+      {actionCounts: {added: 0, changed: 0, unpublished: 0}, errorCount: 0},
     )
   }, [documents])
 
@@ -66,6 +75,23 @@ export function ReleaseActionBadges({
         }
         return null
       })}
+
+      {/* Validation errors filter button */}
+      {errorCount > 0 && onToggleErrorsFilter && (
+        <Button
+          icon={ErrorOutlineIcon}
+          mode={showErrorsOnly ? 'default' : 'bleed'}
+          onClick={onToggleErrorsFilter}
+          selected={showErrorsOnly}
+          text={t('filter.validation-errors', {count: errorCount})}
+          tone="critical"
+          aria-label={
+            showErrorsOnly
+              ? t('filter.validation-errors.clear-aria-label')
+              : t('filter.validation-errors.aria-label')
+          }
+        />
+      )}
 
       {/* Show loading skeletons at the end for remaining action types */}
       {isLoading &&
