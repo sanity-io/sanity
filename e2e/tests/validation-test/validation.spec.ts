@@ -23,23 +23,33 @@ test.describe('Validation test', () => {
       })
 
       await createDraftDocument('/content/house')
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeEnabled()
       await page.getByTestId('field-name').getByTestId('string-input').fill('Test House')
+      await expect(page.getByTestId('add-single-object-button')).toBeVisible()
+      await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
       await page.getByTestId('add-single-object-button').click()
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      await page
-        .getByTestId(/field-house\[.*\]\.name/)
-        .getByTestId('string-input')
-        .fill('Test Room')
+      const roomNameInput = page.getByTestId(/field-house\[.*\]\.name/).getByTestId('string-input')
+      await expect(roomNameInput).toBeVisible()
+      await expect(roomNameInput).toBeEnabled()
+      await roomNameInput.fill('Test Room')
 
-      await page.getByRole('button', {name: 'Close dialog'}).click()
+      await page.keyboard.press('Escape')
 
       await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+      await expect(page.getByRole('button', {name: 'Validation'})).toBeVisible()
+      await expect(page.getByRole('button', {name: 'Validation'})).toBeEnabled()
       await page.getByRole('button', {name: 'Validation'}).click()
 
-      await page.getByTestId('array-item-menu-button').click()
+      const arrayItemMenuButton = page.getByTestId('array-item-menu-button')
+      await expect(arrayItemMenuButton).toBeVisible()
+      await expect(arrayItemMenuButton).toBeEnabled()
+      await arrayItemMenuButton.click()
       await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeVisible()
+      await expect(page.getByRole('menuitem', {name: 'Remove'})).toBeEnabled()
       await page.getByRole('menuitem', {name: 'Remove'}).click()
 
       await expect(
