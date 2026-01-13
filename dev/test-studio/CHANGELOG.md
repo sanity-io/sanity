@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+### Features
+
+* make enhancedObjectDialog opt out ([#11802](https://github.com/sanity-io/sanity/issues/11802)) ([66ca5b8](https://github.com/sanity-io/sanity/commit/66ca5b8ef6ba0959a605665e553e28b6db0dafa8)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#11740](https://github.com/sanity-io/sanity/issues/11740)) ([62a63ce](https://github.com/sanity-io/sanity/commit/62a63ce9a2dcfcc88d899506bb4532b92e7d3c42)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11797](https://github.com/sanity-io/sanity/issues/11797)) ([7b25305](https://github.com/sanity-io/sanity/commit/7b25305a78cd93a4bbe1c2cecbcfad5161492349)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 ### Bug Fixes
