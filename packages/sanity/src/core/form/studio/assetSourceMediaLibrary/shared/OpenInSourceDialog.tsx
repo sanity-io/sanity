@@ -1,3 +1,4 @@
+import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
@@ -37,11 +38,13 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   // Get the asset ID from the source property
   const sourceAssetId = asset.source?.id
 
-  const params = useMemo(
+  const params = useMemo<PluginPayload>(
     () => ({
       scheme: dark ? 'dark' : 'light',
       auth: authType,
       disableNavigation: true,
+      selectAssetTypes: [],
+      selectionType: 'single',
     }),
     [dark, authType],
   )
