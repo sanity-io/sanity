@@ -35,7 +35,9 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
   const projectId = client.config().projectId
   const portalElement = useRootPortalElement()
   const handleSelectNewAsset = useCallback(() => {
-    onChangeAction('select')
+    if (onChangeAction) {
+      onChangeAction('select')
+    }
   }, [onChangeAction])
 
   if (!projectId) {
