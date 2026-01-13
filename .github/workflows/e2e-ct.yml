@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2]
         shardTotal: [2]
@@ -70,7 +70,7 @@ jobs:
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true' || matrix.project == 'webkit'
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build packages
