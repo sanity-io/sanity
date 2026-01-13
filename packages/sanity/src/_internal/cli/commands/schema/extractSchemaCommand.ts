@@ -12,7 +12,6 @@ Options
   --format=[groq-type-nodes] Format the schema as GROQ type nodes. Only available format at the moment.
   --watch Enable watch mode to re-extract schema on file changes
   --watch-path <glob> Additional glob pattern(s) to watch (can be specified multiple times)
-  --debounce <ms> Debounce delay in milliseconds before re-extracting (default: 1000)
 
 Examples
   # Extracts schema types in a Sanity project with more than one workspace

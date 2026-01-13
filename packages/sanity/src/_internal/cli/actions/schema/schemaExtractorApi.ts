@@ -14,7 +14,7 @@ import {
   type ExtractSchemaWorkerMessage,
 } from '../../threads/extractSchema'
 import {formatSchemaValidation} from './formatSchemaValidation'
-import {createSchemaWatcher, DEFAULT_DEBOUNCE_MS, DEFAULT_WATCH_PATTERNS} from './watchExtract'
+import {createSchemaWatcher, DEFAULT_WATCH_PATTERNS} from './watchExtract'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -130,7 +130,6 @@ export async function startSchemaWatcher(
     enforceRequiredFields = false,
     format = 'groq-type-nodes',
     patterns = DEFAULT_WATCH_PATTERNS,
-    debounceMs = DEFAULT_DEBOUNCE_MS,
     onExtraction,
   } = options
 
@@ -173,7 +172,6 @@ export async function startSchemaWatcher(
   const watcher = await createSchemaWatcher({
     workDir,
     patterns,
-    debounceMs,
     onExtract,
     output,
   })
@@ -185,5 +183,4 @@ export async function startSchemaWatcher(
   return {stop, watcher}
 }
 
-// Re-export constants for convenience
-export {DEFAULT_DEBOUNCE_MS, DEFAULT_WATCH_PATTERNS}
+export {DEFAULT_WATCH_PATTERNS}

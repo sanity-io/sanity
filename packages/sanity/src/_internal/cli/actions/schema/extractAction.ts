@@ -6,7 +6,6 @@ import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
 import {formatSchemaValidation} from './formatSchemaValidation'
 import {
-  DEFAULT_DEBOUNCE_MS,
   DEFAULT_WATCH_PATTERNS,
   extractSchemaToFile,
   SchemaExtractionError,
@@ -20,7 +19,6 @@ interface ExtractFlags {
   'format'?: 'groq-type-nodes' | string
   'watch'?: boolean
   'watch-path'?: string | string[]
-  'debounce'?: number
 }
 
 export default async function extractAction(
@@ -122,14 +120,11 @@ async function runWatchMode(
       : []
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
-  const debounceMs = flags.debounce ?? DEFAULT_DEBOUNCE_MS
-
   const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
   trace.start()
 
   // Print watch mode header and patterns at the very beginning
   output.print('Schema extraction watch mode')
-  output.print(`Debounce: ${debounceMs}ms`)
   output.print('')
   output.print('Watching for changes in:')
   for (const pattern of watchPatterns) {
@@ -148,7 +143,6 @@ async function runWatchMode(
     enforceRequiredFields,
     format,
     patterns: watchPatterns,
-    debounceMs,
     onExtraction: (result) => trace.log({step: 'extracted', success: result.success}),
   })
 

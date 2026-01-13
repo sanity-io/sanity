@@ -19,13 +19,10 @@ const IGNORED_PATTERNS = [
   '**/.sanity/**',
 ]
 
-/** Default debounce delay in milliseconds */
-export const DEFAULT_DEBOUNCE_MS = 1000
-
 interface WatchExtractOptions {
   workDir: string
   patterns: string[]
-  debounceMs: number
+  debounceMs?: number
   onExtract: () => Promise<void>
   output: CliOutputter
 }
@@ -83,7 +80,7 @@ export function createExtractionRunner(onExtract: () => Promise<void>): Extracti
  * Implements debouncing and concurrency control to prevent multiple extractions.
  */
 export async function createSchemaWatcher(options: WatchExtractOptions): Promise<FSWatcher> {
-  const {workDir, patterns, debounceMs, onExtract, output} = options
+  const {workDir, patterns, debounceMs = 1000, onExtract, output} = options
 
   const {runExtraction} = createExtractionRunner(onExtract)
 
