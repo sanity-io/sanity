@@ -6,6 +6,7 @@ import {Worker} from 'node:worker_threads'
 import {type CliOutputter} from '@sanity/cli'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {type FSWatcher} from 'chokidar'
+import {type SchemaType} from 'groq-js'
 import readPkgUp from 'read-pkg-up'
 
 import {
@@ -100,6 +101,9 @@ export interface SchemaWatcherOptions {
   format?: string
   patterns?: string[]
   debounceMs?: number
+
+  /** Optional callback function for listening in on the schema extraction */
+  onExtraction?: (result: {success: boolean; schema?: SchemaType}) => void
 }
 
 /** Result from starting a schema watcher */
@@ -127,6 +131,7 @@ export async function startSchemaWatcher(
     format = 'groq-type-nodes',
     patterns = DEFAULT_WATCH_PATTERNS,
     debounceMs = DEFAULT_DEBOUNCE_MS,
+    onExtraction,
   } = options
 
   // Helper to run extraction with spinner and error display
@@ -134,16 +139,19 @@ export async function startSchemaWatcher(
     const spinner = output.spinner({}).start(spinnerText)
 
     try {
-      await extractSchemaToFile({
+      const schema = await extractSchemaToFile({
         workDir,
         outputPath,
         workspaceName,
         enforceRequiredFields,
         format,
       })
+
+      onExtraction?.({success: true, schema})
       spinner.succeed(successText)
       return true
     } catch (err) {
+      onExtraction?.({success: false})
       spinner.fail(`Extraction failed: ${err instanceof Error ? err.message : String(err)}`)
       if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
         output.print('')

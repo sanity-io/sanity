@@ -2,7 +2,7 @@ import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
-import {SchemaExtractedTrace} from './extractSchema.telemetry'
+import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
 import {formatSchemaValidation} from './formatSchemaValidation'
 import {
   DEFAULT_DEBOUNCE_MS,
@@ -105,7 +105,7 @@ async function runSingleExtraction(
  */
 async function runWatchMode(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output}: CliCommandContext,
+  {workDir, output, telemetry}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
   const format = flags.format || 'groq-type-nodes'
@@ -122,6 +122,9 @@ async function runWatchMode(
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
   const debounceMs = flags.debounce ?? DEFAULT_DEBOUNCE_MS
+
+  const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
+  trace.start()
 
   // Print watch mode header and patterns at the very beginning
   output.print('Schema extraction watch mode')
@@ -145,6 +148,7 @@ async function runWatchMode(
     format,
     patterns: watchPatterns,
     debounceMs,
+    onExtraction: (result) => trace.log({step: 'extracted', success: result.success}),
   })
 
   output.print('')
@@ -154,6 +158,8 @@ async function runWatchMode(
   const cleanup = () => {
     output.print('')
     output.print('Stopping watch mode...')
+    trace.log({step: 'stopped'})
+    trace.complete()
     void stop()
     process.exit(0)
   }
