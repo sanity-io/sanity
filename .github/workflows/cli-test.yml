@@ -14,8 +14,8 @@ concurrency:
 jobs:
   cli-test:
     timeout-minutes: 60
-    name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: CLI Tests (node ${{ matrix.node }})
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -27,7 +27,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-8core]
         node: [20.19.0, 20, 22.14.0, 22, 24.0.0, 24]
         experimental: [false]
         # include:
