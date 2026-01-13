@@ -74,32 +74,11 @@ async function main() {
 function extractValidationFromSchemaError(
   error: unknown,
 ): SchemaValidationProblemGroup[] | undefined {
-  if (!(error instanceof SchemaError)) {
-    return undefined
+  if (error instanceof SchemaError) {
+    return error.schema._validation
   }
 
-  const schema = error.schema as unknown as Record<string, unknown> | null | undefined
-  if (!schema || typeof schema !== 'object') {
-    return undefined
-  }
-
-  const validation = schema._validation
-  if (!Array.isArray(validation)) {
-    return undefined
-  }
-
-  // Validate the shape of each item
-  const isValid = validation.every((item: unknown) => {
-    if (typeof item !== 'object' || item === null) return false
-    const group = item as Record<string, unknown>
-    return Array.isArray(group.path) && Array.isArray(group.problems)
-  })
-
-  if (!isValid) {
-    return undefined
-  }
-
-  return validation as SchemaValidationProblemGroup[]
+  return undefined
 }
 
 void main().then(() => process.exit())
