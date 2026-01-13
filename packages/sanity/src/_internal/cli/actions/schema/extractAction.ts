@@ -2,6 +2,7 @@ import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
 import {formatSchemaValidation} from './formatSchemaValidation'
 import {
@@ -154,21 +155,22 @@ async function runWatchMode(
   output.print('')
   output.print('Watching for changes... (Ctrl+C to stop)')
 
+  const {resolve, promise} = promiseWithResolvers<void>()
+
   // Handle graceful shutdown
   const cleanup = () => {
-    output.print('')
-    output.print('Stopping watch mode...')
     trace.log({step: 'stopped'})
     trace.complete()
+
+    output.print('')
+    output.print('Stopping watch mode...')
     void stop()
-    process.exit(0)
+    resolve()
   }
 
   process.on('SIGINT', cleanup)
   process.on('SIGTERM', cleanup)
 
   // Keep process alive
-  await new Promise(() => {
-    // Never resolves - keeps the process running until interrupted
-  })
+  await promise
 }

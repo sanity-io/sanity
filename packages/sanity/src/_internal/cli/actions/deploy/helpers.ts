@@ -12,21 +12,11 @@ import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
 import {determineIsApp} from '../../util/determineIsApp'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const debug = debugIt.extend('deploy')
-
-// TODO: replace with `Promise.withResolvers()` once it lands in node
-function promiseWithResolvers<T>() {
-  let resolve!: (t: T) => void
-  let reject!: (err: unknown) => void
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res
-    reject = rej
-  })
-  return {promise, resolve, reject}
-}
 
 export interface ActiveDeployment {
   deployedAt: string
