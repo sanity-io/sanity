@@ -3,6 +3,7 @@ import {
   type AssetFromSource,
   type AssetSource,
   type AssetSourceUploader,
+  type ImageAsset,
   type UploadState,
 } from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
@@ -82,6 +83,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
+
+  // State for "open in source" component mode
+  const [openInSourceAsset, setOpenInSourceAsset] = useState<ImageAsset | null>(null)
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -201,6 +205,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       })
 
       setSelectedAssetSource(null)
+      setOpenInSourceAsset(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, resolveUploader, schemaType, uploadWith],
@@ -303,8 +308,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     setSelectedAssetSource(source)
   }, [])
 
+  const handleOpenInSource = useCallback((assetSource: AssetSource, asset: ImageAsset) => {
+    setSelectedAssetSource(assetSource)
+    setOpenInSourceAsset(asset)
+  }, [])
+
   const handleAssetSourceClosed = useCallback(() => {
     setSelectedAssetSource(null)
+    setOpenInSourceAsset(null)
 
     // Set focus on menu button in `ImageActionsMenu` when closing the dialog
     menuButtonElement?.focus()
@@ -338,6 +349,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         isImageToolEnabled={isImageToolEnabled()}
         isMenuOpen={isMenuOpen}
         observeAsset={observeAsset}
+        onOpenInSource={handleOpenInSource}
         readOnly={readOnly}
         schemaType={schemaType}
         setHotspotButtonElement={setHotspotButtonElement}
@@ -350,6 +362,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     assetSources,
     directUploads,
     handleOpenDialog,
+    handleOpenInSource,
     handleRemoveButtonClick,
     handleSelectFileToUpload,
     handleSelectImageFromAssetSource,
@@ -462,8 +475,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         handleSelectAssetFromSource={handleSelectAssetFromSource}
         isUploading={isUploading}
         observeAsset={observeAsset}
+        openInSourceAsset={openInSourceAsset}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
+        setOpenInSourceAsset={setOpenInSourceAsset}
         uploader={assetSourceUploader?.uploader}
         value={value}
       />
@@ -474,6 +489,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectAssetFromSource,
     isUploading,
     observeAsset,
+    openInSourceAsset,
     schemaType,
     selectedAssetSource,
     value,
