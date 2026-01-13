@@ -114,10 +114,13 @@ test.describe('Vision', () => {
     const {queryEditor, resultRegion} = await getVisionRegions(page)
 
     // Click to focus the editor
+    await expect(queryEditor).toBeVisible()
+    await expect(queryEditor).toBeEnabled()
     await queryEditor.click()
 
     // Type text into the CodeMirror editor
     const inputText = `*[_type == "book" && _id == "${bookDocumentId}"]`
+    await expect(queryEditor).toBeEnabled()
     await queryEditor.fill(inputText)
     // Assert that the text was correctly inserted
     await expect(queryEditor).toHaveText(inputText)
