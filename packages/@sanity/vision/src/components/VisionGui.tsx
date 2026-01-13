@@ -70,8 +70,8 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
-const sanityUrl =
-  /\.(?:api|apicdn)\.sanity\.(?:io|work)\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+// Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
+const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
