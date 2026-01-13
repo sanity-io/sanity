@@ -107,6 +107,7 @@ test.describe('Custom Release Actions', () => {
       })
 
       test('should verify context data', async ({page}) => {
+        test.slow()
         const consoleMessages: string[] = []
         page.on('console', (msg) => {
           consoleMessages.push(msg.text())
