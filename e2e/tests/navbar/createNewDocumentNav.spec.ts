@@ -4,7 +4,9 @@ import {test} from '../../studio-test'
 
 test('create new document from menu button', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/content')
-  await page.getByLabel('Create new document').click()
+  await expect(page.getByTestId('new-document-button')).toBeVisible()
+  await expect(page.getByTestId('new-document-button')).toBeEnabled()
+  await page.getByTestId('new-document-button').click()
   await page.getByTestId('new-document-button-search-input').fill('Author')
   const authorLink = page.getByTestId('create-new-author')
 
