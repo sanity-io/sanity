@@ -21,7 +21,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     outputs:
       examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     env:
@@ -87,7 +87,7 @@ jobs:
   dataset-setup:
     if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
       # TODO: Add a dataset setup for main for each project [chromium, firefox]
   deploy-preview:
     if: needs.install.outputs.examples_only != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     needs: [install]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -225,7 +225,7 @@ jobs:
   playwright-test:
     if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     needs: [deploy-preview, dataset-setup]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -305,7 +305,7 @@ jobs:
   merge-reports:
     if: always() && needs.install.outputs.examples_only != 'true'
     needs: [install, playwright-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup

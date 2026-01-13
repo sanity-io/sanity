@@ -13,7 +13,7 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     outputs:
       examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
     env:
@@ -40,7 +40,7 @@ jobs:
     if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     needs: [install]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -93,7 +93,7 @@ jobs:
   merge-reports:
     if: always() && needs.install.outputs.examples_only != 'true'
     needs: [install, playwright-ct-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup

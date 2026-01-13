@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-8core]
         node: [20.19.0, 20, 22.14.0, 22, 24.0.0, 24]
         experimental: [false]
         # include:
