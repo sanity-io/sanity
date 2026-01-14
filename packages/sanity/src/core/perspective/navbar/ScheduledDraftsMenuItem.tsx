@@ -1,7 +1,15 @@
 import {CalendarIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, useCallback} from 'react'
-import {useRouter} from 'sanity/router'
+import {
+  type ComponentProps,
+  type ComponentType,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react'
+import {IntentLink, useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
@@ -10,6 +18,10 @@ import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigatio
 import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 import {useWorkspace} from '../../studio/workspace'
+
+const StyledLinkComponent = styled(IntentLink)`
+  text-decoration: none;
+`
 
 export const ScheduledDraftsMenuItem: ComponentType = () => {
   const router = useRouter()
@@ -31,11 +43,30 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
     telemetry.log(NavigatedToScheduledDrafts, {source: 'menu'})
   }, [telemetry])
 
+  const LinkComponent = useMemo(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      forwardRef(function LinkComponent(
+        restProps: ComponentProps<typeof IntentLink>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
+        return (
+          <StyledLinkComponent
+            {...restProps}
+            intent={RELEASES_SCHEDULED_DRAFTS_INTENT}
+            params={{view: 'drafts'}}
+            ref={ref}
+          />
+        )
+      }),
+    [],
+  )
+
   if (!isScheduledDraftsEnabled || !isSingleDocReleaseEnabled || !isDraftModelEnabled) return null
 
   return (
     <MenuItem
-      as="a"
+      as={LinkComponent}
       href={scheduledDraftsUrl}
       onClick={handleClick}
       icon={CalendarIcon}
