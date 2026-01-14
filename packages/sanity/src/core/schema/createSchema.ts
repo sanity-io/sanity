@@ -6,7 +6,7 @@ import {inferFromSchema as inferValidation} from '../validation'
 
 const isError = (problem: SchemaValidationResult) => problem.severity === 'error'
 
-export const builtinSchema = SchemaBuilder.compile({
+export const builtinSchema: Schema = SchemaBuilder.compile({
   name: 'studio',
   types: builtinTypes,
 })
