@@ -1,9 +1,9 @@
 /**
- * Vite plugin for automatic Sanity schema extraction during development.
+ * Vite plugin for automatic Sanity schema extraction during development and build.
  *
- * This plugin watches for changes to schema files and automatically extracts
- * the schema to a JSON file. It integrates with Vite's built-in file watcher
- * for efficient change detection.
+ * After adding the plugin to your vite setup the schema will be extracted when building,
+ * and when starting the vite dev server it will trigger the schema extraction whenever
+ * files matching the watch pattern changes.
  *
  * @example Basic usage in vite.config.ts
  * ```ts
@@ -26,7 +26,6 @@
  *   outputPath: './generated/schema.json',
  *   workspaceName: 'default',
  *   additionalPatterns: ['lib/schemas/**\/*.ts'],
- *   debounceMs: 500,
  * })
  * ```
  *
@@ -37,6 +36,7 @@
  */
 import path from 'node:path'
 
+import {type SchemaType} from 'groq-js'
 import {debounce} from 'lodash-es'
 import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
@@ -172,7 +172,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
    * Runs extraction with concurrency control.
    * If extraction is already running, queues one more extraction to run after completion.
    */
-  async function runExtraction(): Promise<void> {
+  async function runExtraction(isBuilding = false): Promise<void> {
     if (isExtracting) {
       pendingExtraction = true
       return
@@ -191,6 +191,11 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         enforceRequiredFields,
       })
       onExtraction?.({success: true, duration: Date.now() - startTime, schema})
+
+      if (isBuilding) {
+        // TODO: Remove when we have better control over progress reporting in build
+        output.log('')
+      }
       output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
     } catch (err) {
       onExtraction?.({success: false, duration: Date.now() - startTime})
@@ -221,7 +226,6 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
 
   return {
     name: 'sanity/schema-extraction',
-    apply: 'serve',
 
     configResolved(config) {
       // Resolve workDir from option or Vite's project root
@@ -268,6 +272,10 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         // Middleware mode - no HTTP server, run extraction immediately
         startExtraction()
       }
+    },
+
+    async buildEnd() {
+      await runExtraction(true)
     },
   }
 }
