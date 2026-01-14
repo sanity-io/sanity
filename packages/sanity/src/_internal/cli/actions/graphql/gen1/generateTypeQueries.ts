@@ -1,4 +1,4 @@
-import {startCase, upperFirst} from 'lodash'
+import {startCase, upperFirst} from 'lodash-es'
 import pluralize from 'pluralize-esm'
 
 import {isNonUnion} from '../helpers'

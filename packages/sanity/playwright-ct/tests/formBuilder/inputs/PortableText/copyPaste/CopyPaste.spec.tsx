@@ -1,5 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 // import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
@@ -14,6 +15,8 @@ import {
   REMOVED_INPUT_SNAPSHOT,
   UNICODE_TEXT,
 } from './input'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
@@ -44,7 +47,7 @@ test.describe('Portable Text Input', () => {
 
       await insertPortableTextCopyPaste(GDOCS_INPUT, $pte)
 
-      const documentState = await waitForDocumentState((documentStateValue) => {
+      const documentState = await waitForDocumentState(async (documentStateValue) => {
         return (documentStateValue?.body?.length || 0) > 0
       })
 
@@ -55,7 +58,7 @@ test.describe('Portable Text Input', () => {
       // This isn't easy to fix, since we can't mock the randomKey generator, due to missing support in Playwright
       // We therefore compare the length of the body to the snapshot length here instead.
       // This will make sure we don't have extra whitespace blocks
-      await expect(documentState?.body?.length || 0).toEqual(snapshotLength)
+      expect(documentState?.body?.length || 0).toEqual(snapshotLength)
     })
     test(`Normalized whitespace`, async ({mount, page}) => {
       const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
@@ -67,14 +70,14 @@ test.describe('Portable Text Input', () => {
 
       await insertPortableTextCopyPaste(GDOCS_INPUT, $pte)
 
-      const documentState = await waitForDocumentState((documentStateValue) => {
+      const documentState = await waitForDocumentState(async (documentStateValue) => {
         return (documentStateValue?.bodyNormalized?.length || 0) > 0
       })
 
       // prettier-ignore
       const snapshotLength = NORMALIZED_INPUT_SNAPSHOT.length
 
-      await expect(documentState?.bodyNormalized?.length || 0).toEqual(snapshotLength)
+      expect(documentState?.bodyNormalized?.length || 0).toEqual(snapshotLength)
     })
   })
 
@@ -89,19 +92,19 @@ test.describe('Portable Text Input', () => {
 
       await insertPortableTextCopyPaste(UNICODE_TEXT, $pte)
 
-      const documentState = await waitForDocumentState((documentStateValue) => {
+      const documentState = await waitForDocumentState(async (documentStateValue) => {
         return (documentStateValue?.body?.length || 0) > 0
       })
 
       // strigify is needed in these cases in order to get the correct length for the content within the children
       // prettier-ignore
-      const bodyLength = await JSON.stringify(documentState?.body).length || 0
+      const bodyLength = JSON.stringify(documentState?.body).length || 0
       // prettier-ignore
       const snapshotLength = JSON.stringify(CLEANED_UNICODE_INPUT_SNAPSHOT).length
 
       // Ideally we would compare the snapshot with the document, but the keys will be different each time
       // We therefore compare the length of the body to the snapshot length here instead.
-      await expect(bodyLength).toEqual(snapshotLength)
+      expect(bodyLength).toEqual(snapshotLength)
     })
   })
 
@@ -116,7 +119,7 @@ test.describe('Portable Text Input', () => {
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await pasteFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
-
+      await page.getByTestId('upload-destination-sanity-default').click()
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })
     test(`Added dropped image as a block`, async ({mount, page}) => {
@@ -138,6 +141,8 @@ test.describe('Portable Text Input', () => {
       await dropFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
 
       await expect(page.getByText('Drop to upload 1 file')).not.toBeVisible()
+
+      await page.getByTestId('upload-destination-sanity-default').click()
 
       await expect($pte.getByTestId('block-preview')).toBeVisible()
     })

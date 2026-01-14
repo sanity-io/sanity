@@ -1,5 +1,10 @@
 import {type SanityClient} from '@sanity/client'
-import {type AssetMetadataType, type AssetSourceSpec, type SchemaType} from '@sanity/types'
+import {
+  type AssetMetadataType,
+  type AssetSource,
+  type AssetSourceSpec,
+  type SchemaType,
+} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 import {type FormPatch} from '../../patch'
@@ -83,3 +88,13 @@ export type UploaderResolver<S extends SchemaType = SchemaType> = (
   type: S,
   file: FileLike,
 ) => Uploader<S> | null
+
+/**
+ *
+ * @hidden
+ * @beta
+ */
+export type AssetSourcesResolver<S extends SchemaType = SchemaType> = (
+  type: S,
+  file?: FileLike,
+) => AssetSource[]

@@ -79,7 +79,7 @@ export interface ToolMenuProps {
  * @beta */
 // Config
 export interface StudioComponents {
-  layout: ComponentType<Omit<LayoutProps, 'renderDefault'>>
+  layout: ComponentType
   /**
    * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.
    * @see {@link https://www.sanity.io/docs/workspaces}

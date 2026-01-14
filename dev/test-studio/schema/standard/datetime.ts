@@ -35,6 +35,15 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithDisplayTimezoneInAmericaLosAngeles',
+      type: 'datetime',
+      title: 'A datetime field in America/Los_Angeles',
+      options: {
+        displayTimeZone: 'America/Los_Angeles',
+        allowTimeZoneSwitch: false,
+      },
+    },
+    {
       name: 'aDateTimeWithFixedDisplayTimezone',
       type: 'datetime',
       title: 'A datetime field with fixed display time zone',
@@ -43,6 +52,7 @@ export default defineType({
         allowTimeZoneSwitch: false,
       },
     },
+
     {
       name: 'justARegularStringFieldInBetween',
       type: 'string',

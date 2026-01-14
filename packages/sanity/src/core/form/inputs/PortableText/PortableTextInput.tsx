@@ -4,7 +4,6 @@ import {
   EditorProvider,
   type EditorSelection,
   type InvalidValue,
-  type OnPasteFn,
   type Patch,
   PortableTextEditor,
   type RangeDecoration,
@@ -14,9 +13,8 @@ import {
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {Box, useToast} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {sortBy} from 'lodash'
 import {
   forwardRef,
   type ReactNode,
@@ -29,8 +27,9 @@ import {
   useState,
 } from 'react'
 
-import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
+import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
@@ -38,12 +37,15 @@ import {
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
-import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor} from './Compositor'
+import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
+import {
+  type PortableTextOptimisticDiffApi,
+  useOptimisticPortableTextDiff,
+} from './diff/useOptimisticPortableTextDiff'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {PortableTextEditorPlugins} from './object/Plugins'
@@ -51,13 +53,7 @@ import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
 } from './presence-cursors'
-import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
-
-interface UploadTask {
-  file: File
-  uploaderCandidates: ResolvedUploader[]
-}
 
 function keyGenerator() {
   return randomKey(12)
@@ -122,8 +118,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     renderCustomMarkers,
     schemaType,
     value,
-    resolveUploader,
-    onUpload,
+    displayInlineChanges,
   } = props
 
   const {onBlur, ref: elementRef} = elementProps
@@ -139,30 +134,67 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     ),
   )
 
-  const {t} = useTranslation()
+  const {selectedPerspective} = usePerspective()
+
+  const {rangeDecorations: diffRangeDecorations, onOptimisticChange} =
+    useOptimisticPortableTextDiff({
+      upstreamValue: props.hasUpstreamVersion ? props.compareValue : [],
+      definitiveValue: value,
+      perspective: selectedPerspective,
+      displayInlineChanges,
+    })
+
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
   const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
   const telemetry = useTelemetry()
 
+  // Use fullscreen context to persist state across navigation
+  const {getFullscreenPath, setFullscreenPath} = useFullscreenPTE()
+  const [isFullscreen, setIsFullscreen] = useState(
+    Boolean(getFullscreenPath(path)) || (initialFullscreen ?? false),
+  )
+
+  const hasSyncedInitialFullscreenRef = useRef(false)
+  const previousPathRef = useRef(path)
+
+  useEffect(() => {
+    // If the initial fullscreen state is set and the path is not in the fullscreen context, set it
+    // This is to ensure that the fullscreen state is persisted across navigation
+    // This is especially important for nested fullscreen PTEs
+    if (!hasSyncedInitialFullscreenRef.current && initialFullscreen && !getFullscreenPath(path)) {
+      hasSyncedInitialFullscreenRef.current = true
+      setFullscreenPath(path, true)
+    }
+  }, [initialFullscreen, path, getFullscreenPath, setFullscreenPath])
+
+  // Sync local isFullscreen state with the fullscreen context
+  // This ensures the state updates when the fullscreen path changes from elsewhere
+  useEffect(() => {
+    // Check if the fullscreen path value has actually changed
+    if (pathToString(previousPathRef.current) !== pathToString(path)) {
+      previousPathRef.current = path
+      const currentFullscreenPath = getFullscreenPath(path)
+
+      setIsFullscreen(Boolean(currentFullscreenPath))
+    }
+  }, [getFullscreenPath, path])
+
   const toast = useToast()
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen((v) => {
-      const next = !v
-      if (next) {
-        telemetry.log(PortableTextInputExpanded)
-      } else {
-        telemetry.log(PortableTextInputCollapsed)
-      }
-
-      onFullScreenChange?.(next)
-      return next
-    })
-  }, [onFullScreenChange, telemetry])
+    const next = !isFullscreen
+    if (next) {
+      telemetry.log(PortableTextInputExpanded)
+    } else {
+      telemetry.log(PortableTextInputCollapsed)
+    }
+    setFullscreenPath(path, next)
+    onFullScreenChange?.(next)
+    setIsFullscreen(next)
+  }, [telemetry, path, setFullscreenPath, onFullScreenChange, isFullscreen])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -285,90 +317,26 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const previousRangeDecorations = useRef<RangeDecoration[]>([])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
-    const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    // Portable Text Editor cannot reliably handle overlapping range decorations. In the worst case,
+    // this can cause bugs such as diff segments being repeated, which is highly confusing.
+    //
+    // Range decorations cannot simply be merged, because they may rely on the `onMoved` API, which
+    // expects each instance to be treated discretely.
+    //
+    // To avoid confusion, no other range decorations are rendered while inline diffs are switched on.
+    //
+    // Users are able to quickly toggle inline diffs on and off from the Studio UI, so this is a
+    // reasonable trade-off for now.
+    const result: RangeDecoration[] = displayInlineChanges
+      ? diffRangeDecorations
+      : [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+
+    // eslint-disable-next-line react-hooks/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
     const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    // eslint-disable-next-line react-hooks/refs -- see above
     previousRangeDecorations.current = reconciled
     return reconciled
-  }, [presenceCursorDecorations, rangeDecorationsProp])
-
-  const uploadFile = useCallback(
-    (file: File, resolvedUploader: ResolvedUploader) => {
-      const {type, uploader} = resolvedUploader
-      onUpload?.({file, schemaType: type, uploader})
-    },
-    [onUpload],
-  )
-
-  const handleFiles = useCallback(
-    (files: File[]) => {
-      if (!resolveUploader) {
-        return
-      }
-      const tasks: UploadTask[] = files.map((file) => ({
-        file,
-        uploaderCandidates: getUploadCandidates(schemaType.of, resolveUploader, file),
-      }))
-      const readyTasks = tasks.filter((task) => task.uploaderCandidates.length > 0)
-      const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
-
-      if (rejected.length > 0) {
-        toast.push({
-          closable: true,
-          status: 'warning',
-          title: t('inputs.array.error.cannot-upload-unable-to-convert', {
-            count: rejected.length,
-          }),
-          description: rejected.map((task, i) => (
-            // oxlint-disable-next-line no-array-index-key
-            <Flex key={i} gap={2} padding={2}>
-              <Box>
-                <Text weight="medium">{task.file.name}</Text>
-              </Box>
-              <Box>
-                <Text size={1}>({task.file.type})</Text>
-              </Box>
-            </Flex>
-          )),
-        })
-      }
-
-      // todo: consider if we should to ask the user here
-      // the list of candidates is sorted by their priority and the first one is selected
-      readyTasks.forEach((task) => {
-        uploadFile(
-          task.file,
-          sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0],
-        )
-      })
-    },
-    [toast, resolveUploader, schemaType, uploadFile, t],
-  )
-
-  const handlePaste: OnPasteFn = useCallback(
-    (input) => {
-      const {event} = input
-
-      // Some applications may put both text and files on the clipboard when content is copied.
-      // If we have both text and html on the clipboard, just ignore the files if this is a paste event.
-      // Drop events will most probably be files so skip this test for those.
-      const eventType = event.type === 'paste' ? 'paste' : 'drop'
-      const hasHtml = !!event.clipboardData.getData('text/html')
-      const hasText = !!event.clipboardData.getData('text/plain')
-      if (eventType === 'paste' && hasHtml && hasText) {
-        return onPaste?.(input)
-      }
-
-      extractPastedFiles(event.clipboardData)
-        .then((files) => {
-          return files.length > 0 ? files : []
-        })
-        .then((files) => {
-          handleFiles(files)
-        })
-      return onPaste?.(input)
-    },
-    [handleFiles, onPaste],
-  )
+  }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
 
   return (
     <Box>
@@ -384,7 +352,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 schema: schemaType,
               }}
             >
-              <EditorChangePlugin onChange={handleEditorChange} />
+              <EditorChangePlugin
+                onChange={handleEditorChange}
+                onOptimisticChange={onOptimisticChange}
+              />
               <EditorRefPlugin ref={editorRef} />
               <PatchesPlugin path={path} />
               <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
@@ -401,7 +372,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
-                onPaste={handlePaste}
+                onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
                 readOnly={readOnly || !ready}
@@ -421,7 +392,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
  *
  * @internal
  */
-function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
+function EditorChangePlugin(
+  props: {
+    onChange: (change: EditorChange) => void
+  } & Pick<PortableTextOptimisticDiffApi, 'onOptimisticChange'>,
+) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
       switch (event.type) {
@@ -465,9 +440,16 @@ function EditorChangePlugin(props: {onChange: (change: EditorChange) => void}) {
           })
           break
         case 'mutation':
-          props.onChange(event)
+          props.onChange({
+            type: 'mutation',
+            snapshot: event.value,
+            patches: event.patches,
+          })
           break
         case 'patch': {
+          if (event.patch.type === 'diffMatchPatch' && event.patch.origin === 'local') {
+            props.onOptimisticChange(event.patch)
+          }
           props.onChange(event)
           break
         }

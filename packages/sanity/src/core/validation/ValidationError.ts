@@ -11,9 +11,7 @@ import {
  * interface instead of using this.
  */
 // Follows the same pattern as Rule and RuleClass. @see Rule
-export const ValidationError: ValidationErrorClass = class ValidationError
-  implements IValidationError
-{
+export const ValidationError: ValidationErrorClass = class ValidationError implements IValidationError {
   message: string
   paths: Path[]
   children: ValidationMarker[] | undefined

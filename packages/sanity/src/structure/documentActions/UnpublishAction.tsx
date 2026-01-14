@@ -20,12 +20,12 @@ const DISABLED_REASON_KEY = {
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const UnpublishAction: DocumentActionComponent = ({
+export const useUnpublishAction: DocumentActionComponent = ({
   id,
   type,
   draft,
-  onComplete,
   liveEdit,
   release,
 }) => {
@@ -44,20 +44,18 @@ export const UnpublishAction: DocumentActionComponent = ({
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
   const handleConfirm = useCallback(() => {
     setConfirmDialogOpen(false)
     unpublish.execute()
-    onComplete()
-  }, [onComplete, unpublish])
+  }, [unpublish])
 
   const dialog: DocumentActionModalDialogProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
         type: 'dialog',
-        onClose: onComplete,
+        onClose: handleCancel,
         content: (
           <ConfirmDeleteDialog
             id={draft?._id || id}
@@ -71,7 +69,7 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
+  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, type])
 
   return useMemo(() => {
     if (release || isDraft) {
@@ -117,5 +115,5 @@ export const UnpublishAction: DocumentActionComponent = ({
   ])
 }
 
-UnpublishAction.action = 'unpublish'
-UnpublishAction.displayName = 'UnpublishAction'
+useUnpublishAction.action = 'unpublish'
+useUnpublishAction.displayName = 'UnpublishAction'

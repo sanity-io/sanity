@@ -1,15 +1,22 @@
 import {writeFile} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
 import readPkgUp from 'read-pkg-up'
+import {SchemaError as CoreSchemaError} from 'sanity'
 
 import {
   type ExtractSchemaWorkerData,
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
+import {getStudioWorkspaces} from '../../util/getStudioWorkspaces'
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
+import {formatSchemaValidation} from './formatSchemaValidation'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 interface ExtractFlags {
   'workspace'?: string
@@ -39,7 +46,7 @@ export default async function extractAction(
     '_internal',
     'cli',
     'threads',
-    'extractSchema.js',
+    'extractSchema.cjs',
   )
 
   const spinner = output
@@ -97,6 +104,79 @@ export default async function extractAction(
         ? 'Failed to extract schema, with enforced required fields'
         : 'Failed to extract schema',
     )
+
+    if (isSchemaError(err)) {
+      try {
+        // Re-resolve config in-process to surface validation details
+        await getStudioWorkspaces({basePath: workDir})
+      } catch (innerErr) {
+        const validation = extractValidationFromCoreSchemaError(innerErr)
+        if (validation && validation.length > 0) {
+          output.print('')
+          output.print(formatSchemaValidation(validation))
+        }
+        throw err
+      }
+    }
     throw err
   }
+}
+
+/**
+ * Type guard to check if an item conforms to the SchemaValidationProblemGroup shape.
+ */
+function isValidationProblemGroup(item: unknown): item is SchemaValidationProblemGroup {
+  if (typeof item !== 'object' || item === null) {
+    return false
+  }
+  const group = item as Record<string, unknown>
+  return Array.isArray(group.path) && Array.isArray(group.problems)
+}
+
+/**
+ * Extracts the `_validation` array from a CoreSchemaError's internal schema object.
+ *
+ * CoreSchemaError stores the compiled schema (which includes validation results) on
+ * `error.schema._validation`. This function safely navigates that structure and validates
+ * it conforms to the expected `SchemaValidationProblemGroup[]` shape before returning.
+ */
+function extractValidationFromCoreSchemaError(
+  error: unknown,
+): SchemaValidationProblemGroup[] | null {
+  if (!(error instanceof CoreSchemaError)) {
+    return null
+  }
+
+  const schema = error.schema as unknown as Record<string, unknown> | null | undefined
+  if (!schema || typeof schema !== 'object') {
+    return null
+  }
+
+  const validation = schema._validation
+  if (!Array.isArray(validation)) {
+    return null
+  }
+
+  if (!validation.every(isValidationProblemGroup)) {
+    return null
+  }
+
+  return validation
+}
+
+/**
+ * Type guard for SchemaError. Checks both `name` and `message` properties because
+ * errors from worker threads lose their prototype chain during serialization,
+ * and may only preserve the error name in the message string.
+ */
+function isSchemaError(err: unknown): err is Error & {name: 'SchemaError'} {
+  if (typeof err !== 'object' || err === null) {
+    return false
+  }
+
+  const errorLike = err as {name?: unknown; message?: unknown}
+  const hasSchemaErrorName = errorLike.name === 'SchemaError'
+  const hasSchemaErrorMessage = errorLike.message === 'SchemaError'
+
+  return hasSchemaErrorName || hasSchemaErrorMessage
 }

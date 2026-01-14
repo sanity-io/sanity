@@ -46,7 +46,7 @@ export function sanityFaviconsPlugin({
     try {
       await fs.access(path.join(customFaviconsPath, fileName))
       return true
-    } catch (err) {
+    } catch {
       return false
     }
   }

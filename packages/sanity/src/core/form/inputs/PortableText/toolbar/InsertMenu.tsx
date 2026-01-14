@@ -1,5 +1,5 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {upperFirst} from 'lodash'
+import {upperFirst} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
 
 import {type PopoverProps} from '../../../../../ui-components'
@@ -48,12 +48,9 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
             {typeName: title},
           )}
           mode="bleed"
-          disabled={
-            disabled || (isVoidFocus && item.inline === true) || Boolean(item.type.deprecated)
-          }
+          disabled={disabled || (isVoidFocus && item.inline) || Boolean(item.type.deprecated)}
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
-          // eslint-disable-next-line react/jsx-handler-names
           onClick={item.handle}
           text={title}
           tooltipText={t(

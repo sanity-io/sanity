@@ -89,9 +89,8 @@ describe('ReleaseDocumentPreview', () => {
 
   it('renders in loading state', async () => {
     // Mock loading state
-    const {useDocumentPreviewValues} = await import(
-      '../../../../tasks/hooks/useDocumentPreviewValues'
-    )
+    const {useDocumentPreviewValues} =
+      await import('../../../../tasks/hooks/useDocumentPreviewValues')
     vi.mocked(useDocumentPreviewValues).mockReturnValueOnce({
       isLoading: true,
       value: null,

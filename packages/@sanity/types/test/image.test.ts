@@ -38,7 +38,7 @@ describe('image types', () => {
         collapsed: true,
         collapsible: true,
         columns: 2,
-        metadata: ['blurhash', 'lqip', 'palette', 'exif', 'location'],
+        metadata: ['blurhash', 'thumbhash', 'lqip', 'palette', 'exif', 'location'],
         hotspot: true,
         storeOriginalFilename: true,
         accept: 'yolo/files',
@@ -151,5 +151,3 @@ describe('image types', () => {
     const fieldsType = imageDef.fields
   })
 })
-
-export {}

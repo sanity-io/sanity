@@ -139,6 +139,13 @@ export default defineType({
       type: 'string',
       description: 'Image displayed in both cart and checkout',
     }),
+    // Shop details
+    defineField({
+      name: 'shop',
+      title: 'Shop',
+      type: 'shop',
+      description: 'Shopify Shop details',
+    }),
   ],
   readOnly: true,
 })

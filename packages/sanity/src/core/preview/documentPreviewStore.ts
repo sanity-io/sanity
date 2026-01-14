@@ -10,7 +10,10 @@ import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 import {isRecord} from '../util'
-import {createPreviewAvailabilityObserver} from './availability'
+import {
+  createDocumentStackAvailabilityObserver,
+  createPreviewAvailabilityObserver,
+} from './availability'
 import {createGlobalListener} from './createGlobalListener'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
@@ -20,6 +23,7 @@ import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './li
 import {createObserveFields} from './observeFields'
 import {
   type ApiConfig,
+  type DocumentStackAvailability,
   type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
   type ObservePathsFn,
@@ -53,7 +57,11 @@ export type ObserveForPreviewFn = (
 export interface DocumentPreviewStore {
   observePaths: ObservePathsFn
   observeForPreview: ObserveForPreviewFn
-  observeDocumentTypeFromId: (id: string, apiConfig?: ApiConfig) => Observable<string | undefined>
+  observeDocumentTypeFromId: (
+    id: string,
+    apiConfig?: ApiConfig,
+    perspective?: StackablePerspective[],
+  ) => Observable<string | undefined>
 
   /**
    *
@@ -64,6 +72,16 @@ export interface DocumentPreviewStore {
     id: string,
     options?: {version?: string},
   ) => Observable<DraftsModelDocumentAvailability>
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocumentStackAvailability: (
+    id: string,
+    perspectiveStack: StackablePerspective[],
+  ) => Observable<DocumentStackAvailability[]>
 
   unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
     id: string,
@@ -156,6 +174,11 @@ export function createDocumentPreviewStore({
   const observeDocumentIdSet = createDocumentIdSetObserver(versionedClient)
 
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
+
+  const observeDocumentStackAvailability = createDocumentStackAvailabilityObserver(
+    versionedClient,
+    observePaths,
+  )
   const observeDocumentPairAvailability = createPreviewAvailabilityObserver(
     versionedClient,
     observePaths,
@@ -178,6 +201,7 @@ export function createDocumentPreviewStore({
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
+    unstable_observeDocumentStackAvailability: observeDocumentStackAvailability,
     unstable_observePathsDocumentPair: observePathsDocumentPair,
   }
 }

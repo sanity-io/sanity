@@ -47,17 +47,11 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      EXPECTED_NPM_USER: sanity-io
+      EXPECTED_NPM_USER: sanity-svc.npm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Set publishing config
         run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
@@ -101,14 +95,8 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install deps
-        run: pnpm install --ignore-scripts
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Update manifest with stable tag (staging)
         env:

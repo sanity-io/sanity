@@ -9,8 +9,9 @@ import {
 } from '@sanity/cli'
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import semver from 'semver'
+import {version} from 'vite'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
@@ -26,7 +27,6 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
-import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 
 export interface StartDevServerCommandFlags {
   'host'?: string
@@ -49,7 +49,7 @@ const getDefaultDashboardURL = ({
   url: string
 }): string => {
   return `${baseUrl}/@${organizationId}?${new URLSearchParams({
-    url,
+    dev: url,
   }).toString()}`
 }
 
@@ -167,15 +167,8 @@ export default async function startSanityDevServer(
     ]
     const appId = getAppId({cliConfig, output})
 
-    output.print(`${info} Running with auto-updates enabled`)
-    if (!appId) {
-      warnAboutMissingAppId({
-        appType: 'studio',
-        cliConfigPath,
-        output,
-        projectId: cliConfig?.api?.projectId,
-      })
-    }
+    output.print(`${logSymbols.info} Running with auto-updates enabled`)
+
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
@@ -280,7 +273,7 @@ export default async function startSanityDevServer(
 
       loggerInfo(
         `${appType} ` +
-          `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
+          `using ${chalk.cyan(`vite@${version}`)} ` +
           `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
           `and running at ${chalk.cyan(url)}`,
       )

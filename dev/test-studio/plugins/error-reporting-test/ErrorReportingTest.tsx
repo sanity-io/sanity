@@ -7,7 +7,7 @@ function triggerCustomErrorOnEvent() {
 
 function triggerImportError() {
   const filename = '/does-not-exist.js'
-  import(/* @vite-ignore */ filename)
+  void import(/* @vite-ignore */ filename)
 }
 
 function triggerTypeErrorOnEvent(evt: any) {

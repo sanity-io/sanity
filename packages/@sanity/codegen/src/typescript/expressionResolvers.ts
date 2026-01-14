@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import {type TransformOptions} from '@babel/core'
-import traverse, {Scope} from '@babel/traverse'
+import {type TransformOptions, traverse} from '@babel/core'
+import {Scope} from '@babel/traverse'
 import * as babelTypes from '@babel/types'
 import createDebug from 'debug'
 
@@ -11,30 +11,6 @@ import {parseSourceFile} from './parseSource'
 const debug = createDebug('sanity:codegen:findQueries:debug')
 
 type resolveExpressionReturnType = string
-
-/**
- * NamedQueryResult is a result of a named query
- */
-export interface NamedQueryResult {
-  /** name is the name of the query */
-  name: string
-  /** result is a groq query */
-  result: resolveExpressionReturnType
-
-  /** location is the location of the query in the source */
-  location: {
-    start?: {
-      line: number
-      column: number
-      index: number
-    }
-    end?: {
-      line: number
-      column: number
-      index: number
-    }
-  }
-}
 
 const TAGGED_TEMPLATE_ALLOW_LIST = ['groq']
 const FUNCTION_WRAPPER_ALLOW_LIST = ['defineQuery']
@@ -214,6 +190,20 @@ export function resolveExpression({
   if (babelTypes.isAssignmentPattern(node)) {
     return resolveExpression({
       node: node.right,
+      scope,
+      filename,
+      file,
+      resolver,
+      params,
+      babelConfig,
+      fnArguments,
+    })
+  }
+
+  // Handle TypeScript type assertions (e.g., `'foo' as string`)
+  if (babelTypes.isTSAsExpression(node)) {
+    return resolveExpression({
+      node: node.expression,
       scope,
       filename,
       file,
@@ -500,7 +490,7 @@ function resolveExportSpecifier({
       node: binding.path.node,
       file: tree,
       scope: newScope,
-      filename: importFileName,
+      filename: resolvedFile,
       babelConfig,
       resolver,
       fnArguments,

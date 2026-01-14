@@ -1,4 +1,4 @@
-import {flatten, isPlainObject} from 'lodash'
+import {flatten, isPlainObject} from 'lodash-es'
 
 import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS} from '../createValidationResult'

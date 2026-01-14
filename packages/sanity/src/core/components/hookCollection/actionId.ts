@@ -10,7 +10,7 @@ export function getHookId<T, K>(actionHook: HookCollectionActionHook<T, K>): str
 
   if (cachedId) return cachedId
 
-  const id = `${actionHook.name || (actionHook as any).displayName || '<anonymous>'}-${counter++}`
+  const id = `${(actionHook as any).displayName || actionHook.name || '<anonymous>'}-${counter++}`
 
   actionIds.set(actionHook, id)
 

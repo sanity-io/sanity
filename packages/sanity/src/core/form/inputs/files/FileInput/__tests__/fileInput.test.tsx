@@ -1,5 +1,6 @@
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
-import {fireEvent, waitFor} from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 
@@ -27,7 +28,7 @@ describe('FileInput with empty state', () => {
       observeAsset: observeAssetStub,
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
-    expect(result.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
+    expect(screen.queryByTestId('file-button-input')!.getAttribute('value')).toBe('')
   })
 
   it.todo('renders new file when a new file in uploaded')
@@ -47,8 +48,8 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} />,
     })
 
-    expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-    expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
+    expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+    expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
   })
 
   it('renders only the upload button when it has no assetSources', async () => {
@@ -61,9 +62,9 @@ describe('FileInput with empty state', () => {
       observeAsset: observeAssetStub,
       render: (inputProps) => <BaseFileInput {...inputProps} assetSources={[]} />,
     })
-    expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
-    expect(result.queryByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
-    expect(result.queryByTestId('file-input-browse-button-sanity-default')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
+    expect(screen.getByTestId('file-input-upload-button-sanity-default')).toBeInTheDocument()
+    expect(screen.queryByTestId('file-input-browse-button-sanity-default')).not.toBeInTheDocument()
   })
 
   it('renders the browse button with a tooltip when it has at least one element in assetSources', async () => {
@@ -82,16 +83,16 @@ describe('FileInput with empty state', () => {
       ),
     })
 
-    const browseButton = result.queryByTestId('file-input-multi-browse-button')
+    const browseButton = screen.queryByTestId('file-input-multi-browse-button')
 
-    expect(result.queryByTestId('file-input-upload-button-source1')).toBeInTheDocument()
+    expect(screen.getByTestId('file-input-upload-button-source1')).toBeInTheDocument()
     expect(browseButton).toBeInTheDocument()
 
-    fireEvent.click(browseButton!)
+    await userEvent.click(browseButton!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+      expect(screen.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+      expect(screen.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
     })
   })
 
@@ -109,7 +110,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      result.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -125,7 +126,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      result.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId('file-input-upload-button-test-source')!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -143,7 +144,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -159,7 +160,7 @@ describe('FileInput with empty state', () => {
     })
 
     expect(
-      result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+      screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
     ).toBe('true')
   })
 
@@ -174,16 +175,12 @@ describe('FileInput with empty state', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
     })
 
-    const input = result.queryByTestId('file-button-input')
+    const input = screen.queryByTestId('file-button-input')
 
-    fireEvent.change(input!, {
-      target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
-      },
-    })
+    await userEvent.upload(input!, new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'}))
 
     await waitFor(() => {
-      expect(result.queryByText('Read only')).toBeInTheDocument()
+      expect(screen.getByText('Read only')).toBeInTheDocument()
     })
   })
 
@@ -210,8 +207,8 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
-    expect(result.queryByText('cats.txt')).toBeInTheDocument()
-    expect(result.queryByText('31 Bytes')).toBeInTheDocument()
+    expect(screen.getByText('cats.txt')).toBeInTheDocument()
+    expect(screen.getByText('31 Bytes')).toBeInTheDocument()
   })
 
   it.todo('renders new file when a new file in uploaded')
@@ -221,7 +218,7 @@ describe('FileInput with asset', () => {
   /* assetSources - adds a list of sources that a user can pick from when browsing */
 
   it('renders the browse button in the file menu when it has at least one element in assetSources', async () => {
-    // const {queryByTestId} = render(<BaseFileInput value={value} />)
+    // render(<BaseFileInput value={value} />)
     // const {result} = render({
     //   value,
     // })
@@ -235,10 +232,10 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
+      expect(screen.getByTestId('file-input-browse-button-test-source')).toBeInTheDocument()
     })
   })
 
@@ -262,11 +259,11 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
+      expect(screen.getByTestId('file-input-upload-button-test-source')).toBeInTheDocument()
+      expect(screen.queryByTestId('file-input-browse-button-test-source')).not.toBeInTheDocument()
     })
   })
 
@@ -287,11 +284,11 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-browse-button-source1')).toBeInTheDocument()
-      expect(result.queryByTestId('file-input-browse-button-source2')).toBeInTheDocument()
+      expect(screen.getByTestId('file-input-browse-button-source1')).toBeInTheDocument()
+      expect(screen.getByTestId('file-input-browse-button-source2')).toBeInTheDocument()
     })
   })
 
@@ -308,11 +305,11 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} directUploads={false} value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
-        result.queryByTestId('file-input-upload-button-test-source')?.getAttribute('data-disabled'),
+        screen.queryByTestId('file-input-upload-button-test-source')?.getAttribute('data-disabled'),
       ).toBe('')
     })
   })
@@ -330,11 +327,11 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
-        result.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
+        screen.queryByTestId('file-input-browse-button-test-source')!.getAttribute('data-disabled'),
       ).toBe('')
     })
   })
@@ -350,11 +347,11 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
-        result.queryByTestId('file-input-browse-button-test-source')!.hasAttribute('data-disabled'),
+        screen.queryByTestId('file-input-browse-button-test-source')!.hasAttribute('data-disabled'),
       )
     })
   })
@@ -377,14 +374,14 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
       expect(
-        result.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'),
+        screen.queryByTestId('file-input-browse-button-source1')!.hasAttribute('data-disabled'),
       )
       expect(
-        result.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'),
+        screen.queryByTestId('file-input-browse-button-source2')!.hasAttribute('data-disabled'),
       )
     })
   })
@@ -400,10 +397,10 @@ describe('FileInput with asset', () => {
       render: (inputProps) => <BaseFileInput {...inputProps} readOnly value={value} />,
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
     await waitFor(() => {
-      expect(result.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
+      expect(screen.queryByTestId('file-input-clear')!.hasAttribute('data-disabled'))
     })
   })
 
@@ -452,17 +449,16 @@ describe('FileInput with asset', () => {
       ),
     })
 
-    fireEvent.click(result.queryByTestId('options-menu-button')!)
+    await userEvent.click(screen.queryByTestId('options-menu-button')!)
 
-    fireEvent.change(result.queryByTestId('file-button-input')!, {
-      target: {
-        files: [new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'})],
-      },
-    })
+    await userEvent.upload(
+      screen.queryByTestId('file-button-input')!,
+      new File(['(⌐□_□)'], 'cool_sunglasses.pdf', {type: 'file/pdf'}),
+    )
 
     await waitFor(() => {
-      expect(result.queryByText('cats.txt')).toBeInTheDocument()
-      expect(result.queryByText('31 Bytes')).toBeInTheDocument()
+      expect(screen.getByText('cats.txt')).toBeInTheDocument()
+      expect(screen.getByText('31 Bytes')).toBeInTheDocument()
     })
   })
 

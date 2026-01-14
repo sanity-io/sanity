@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
@@ -106,7 +107,7 @@ describe('StudioAnnouncementsMenuItem', () => {
       wrapper,
     })
 
-    fireEvent.click(screen.getByText('Announcements'))
+    await userEvent.click(screen.getByText('Announcements'))
 
     expect(onDialogOpenMock).toHaveBeenCalledWith('help_menu')
     expect(mockLog).toHaveBeenCalledTimes(1)

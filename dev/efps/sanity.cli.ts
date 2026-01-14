@@ -1,15 +1,8 @@
 import {defineCliConfig} from 'sanity/cli'
 
+import {apiConfig} from './apiConfig'
+
 export default defineCliConfig({
-  api: {
-    projectId: 'b8j69ts2',
-    dataset: 'production',
-  },
-  deployment: {
-    /**
-     * Enable auto-updates for studios.
-     * Learn more at https://www.sanity.io/docs/cli#auto-updates
-     */
-    autoUpdates: true,
-  },
+  api: apiConfig,
+  reactCompiler: {target: '19'},
 })

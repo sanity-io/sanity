@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
-import {flatten, uniqBy} from 'lodash'
+import {flatten, uniqBy} from 'lodash-es'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
@@ -47,6 +47,33 @@ const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> 
 
 const isNonNullable = <T>(value: T): value is NonNullable<T> =>
   value !== null && value !== undefined
+
+/**
+ * Recursively extracts all `_fieldRules` from a rule and its nested constraints.
+ * This handles cases where `Rule.fields()` is used inside `Rule.all()` or `Rule.either()`.
+ */
+function extractFieldRulesFromRule(rule: Rule): NonNullable<Rule['_fieldRules']>[] {
+  const results: NonNullable<Rule['_fieldRules']>[] = []
+
+  // Add direct _fieldRules if present
+  if (rule._fieldRules) {
+    results.push(rule._fieldRules)
+  }
+
+  // Check for nested rules in 'all' or 'either' constraints
+  for (const ruleSpec of rule._rules) {
+    if (ruleSpec.flag === 'all' || ruleSpec.flag === 'either') {
+      const childRules = ruleSpec.constraint
+      if (Array.isArray(childRules)) {
+        for (const childRule of childRules) {
+          results.push(...extractFieldRulesFromRule(childRule))
+        }
+      }
+    }
+  }
+
+  return results
+}
 
 /**
  * @internal
@@ -171,8 +198,10 @@ export function validateDocument({
 /**
  * @internal
  */
-export interface ValidateDocumentObservableOptions
-  extends Pick<ValidationContext, 'getDocumentExists' | 'i18n'> {
+export interface ValidateDocumentObservableOptions extends Pick<
+  ValidationContext,
+  'getDocumentExists' | 'i18n'
+> {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
@@ -341,10 +370,10 @@ function validateItemObservable({
     }, {})
 
     // Validation for rules set at the object level with `Rule.fields({/* ... */})`
+    // Use extractFieldRulesFromRule to handle Rule.fields() inside Rule.all() or Rule.either()
     nestedChecks = nestedChecks.concat(
       rules
-        .map((rule) => rule._fieldRules)
-        .filter(isNonNullable)
+        .flatMap((rule) => extractFieldRulesFromRule(rule))
         .flatMap((fieldResults) => Object.entries(fieldResults))
         .flatMap(([name, validation]) => {
           const fieldType = fieldTypes[name]
@@ -411,8 +440,8 @@ function validateItemObservable({
     map(flatten),
     map((results) => {
       // run `uniqBy` if `_fieldRules` are present because they can
-      // cause repeat markers
-      if (rules.some((rule) => rule._fieldRules)) {
+      // cause repeat markers (check recursively for nested rules)
+      if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
         return uniqBy(results, (rule) => JSON.stringify(rule))
       }
       return results

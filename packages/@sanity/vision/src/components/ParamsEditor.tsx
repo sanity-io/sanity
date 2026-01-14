@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
-import {debounce} from 'lodash'
+import {debounce} from 'lodash-es'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
@@ -61,10 +61,7 @@ export function ParamsEditor(props: ParamsEditorProps) {
   )
 }
 
-export function parseParams(
-  value: string,
-  t: TFunction<typeof visionLocaleNamespace, undefined>,
-): Params {
+export function parseParams(value: string, t: TFunction<typeof visionLocaleNamespace>): Params {
   const parsedParams = tryParseParams(value, t)
   const params = parsedParams instanceof Error ? {} : parsedParams
   const validationError = parsedParams instanceof Error ? parsedParams.message : undefined

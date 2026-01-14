@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
 import {type PluginOptions as ReactCompilerOptions} from 'babel-plugin-react-compiler'
 import type chalk from 'chalk'
@@ -350,13 +351,13 @@ export interface CliConfig {
      * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
      * Get the appId either by
      * - Checking the output of `sanity deploy`.
-     * - Get it from your project's Studio tab in https://sanity.io/manage
+     * - Get it from your project's Studio tab in https://www.sanity.io/manage
      */
     appId?: string
 
     /**
      * Enable auto-updates for studios.
-     * {@link https://www.sanity.io/docs/cli#auto-updates}
+     * {@link https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56}
      */
     autoUpdates?: boolean
   }
@@ -370,6 +371,10 @@ export interface CliConfig {
      */
     aspectsPath: string
   }
+  /**
+   * Configuration for Sanity typegen
+   */
+  typegen?: Partial<TypeGenConfig>
 }
 
 export type UserViteConfig =

@@ -5,8 +5,8 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, MenuItem, Popover} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
-import {useScheduledDraftDocument} from '../../hooks/useScheduledDraftDocument'
-import {useScheduledDraftMenuActions} from '../../hooks/useScheduledDraftMenuActions'
+import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useScheduledDraftDocument'
+import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {type Mode} from './queryParamUtils'
 
 export const ScheduledDraftMenuButtonWrapper = ({
@@ -26,6 +26,7 @@ export const ScheduledDraftMenuButtonWrapper = ({
   const {actions, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({
     release,
     documentType: scheduledDraftDocument?._type,
+    documentId: scheduledDraftDocument?._id,
     disabled: !scheduledDraftDocument,
   })
 

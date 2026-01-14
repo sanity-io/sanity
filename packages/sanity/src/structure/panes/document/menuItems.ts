@@ -1,4 +1,4 @@
-import {EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
+import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
 import {
   type DocumentIdStack,
   type DocumentInspector,
@@ -7,6 +7,7 @@ import {
 } from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
+import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
@@ -18,6 +19,7 @@ interface GetMenuItemsParams {
   documentIdStack?: DocumentIdStack
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
+  displayInlineChanges: boolean
 }
 
 function getInspectorItems({
@@ -72,6 +74,17 @@ function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneM
   }
 }
 
+function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): PaneMenuItem {
+  return {
+    action: 'toggleInlineChanges',
+    group: 'inspectors',
+    title: t('toggle-inline-changes.menu-item.title'),
+    // The simplest way to render no icon, while preserving an icon-sized space, is to render a
+    // hidden icon.
+    icon: displayInlineChanges ? CheckmarkIcon : HiddenCheckmarkIcon,
+  }
+}
+
 export function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
@@ -90,6 +103,7 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
     // Get production preview item
     getProductionPreviewItem(params),
     getCompareVersionsItem(params),
+    getInlineChangesItem(params),
   ].filter(Boolean) as PaneMenuItem[]
 
   return [

@@ -1,3 +1,4 @@
+/* eslint-disable no-new-func */
 import {type Page} from 'playwright'
 
 import {type EfpsResult} from '../types'
@@ -8,14 +9,24 @@ interface MeasureFpsForInputOptions {
   label?: string
   page: Page
   fieldName: string
+  /** Timeout in milliseconds for waiting on elements. Defaults to 60000 (60s) */
+  timeout?: number
 }
+
+const DEFAULT_TIMEOUT = 60_000
 
 export async function measureFpsForInput({
   label,
   fieldName,
   page,
+  timeout = DEFAULT_TIMEOUT,
 }: MeasureFpsForInputOptions): Promise<EfpsResult> {
   const start = Date.now()
+
+  // First, wait for the document form to be visible, indicating the page has loaded
+  // This helps avoid flakiness when the page is still loading/hydrating
+  const formView = page.locator('[data-testid="form-view"]')
+  await formView.waitFor({state: 'visible', timeout})
 
   const input = page
     .locator(
@@ -23,7 +34,7 @@ export async function measureFpsForInput({
         `[data-testid="field-${fieldName}"] textarea`,
     )
     .first()
-  await input.waitFor({state: 'visible'})
+  await input.waitFor({state: 'visible', timeout})
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   await input.click()
@@ -31,21 +42,25 @@ export async function measureFpsForInput({
 
   const rendersPromise = input.evaluate(
     // Had to add this so we can run the tests
-    // eslint-disable-next-line no-new-func
+    // oxlint-disable-next-line no-implied-eval
     new Function(
       'el',
       `
     return (async function() {
       const updates = []
 
-      const mutationObserver = new MutationObserver(() => {
-        updates.push({value: el.value, timestamp: Date.now()})
-      })
-
+      // For textarea, use MutationObserver on text content
+      // For input, use 'input' event because MutationObserver on 'value' attribute
+      // doesn't work - React/Sanity updates the value property, not the attribute
       if (el instanceof HTMLTextAreaElement) {
+        const mutationObserver = new MutationObserver(() => {
+          updates.push({value: el.value, timestamp: Date.now()})
+        })
         mutationObserver.observe(el, {childList: true, characterData: true, subtree: true})
       } else {
-        mutationObserver.observe(el, {attributes: true, attributeFilter: ['value']})
+        el.addEventListener('input', () => {
+          updates.push({value: el.value, timestamp: Date.now()})
+        })
       }
 
       await new Promise((resolve) => {
@@ -83,7 +98,7 @@ export async function measureFpsForInput({
 
   for (const character of characters) {
     inputEvents.push({character, timestamp: Date.now()})
-    await input.press(character)
+    await input.pressSequentially(character)
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
 

@@ -3,11 +3,11 @@
 import 'dotenv/config'
 
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import {fileURLToPath} from 'node:url'
 
+import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import chalk from 'chalk'
 import Table from 'cli-table3'
@@ -16,7 +16,8 @@ import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'
 
 import {exec} from './helpers/exec'
-import {runTest} from './runTest'
+import {readEnvVar} from './readEnvVar'
+import {createBrowser, runTest} from './runTest'
 import article from './tests/article/article'
 import recipe from './tests/recipe/recipe'
 import singleString from './tests/singleString/singleString'
@@ -30,28 +31,34 @@ const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 const HEADLESS = process.env.HEADLESS !== 'false'
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const ENABLE_PROFILER = process.env.ENABLE_PROFILER === 'true'
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'
+
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const RECORD_VIDEO = process.env.RECORD_VIDEO === 'true'
+const REFERENCE_STUDIO_URL = 'https://efps.sanity.dev'
+
+const EXPERIMENT_STUDIO_URL = readEnv('STUDIO_URL')
+
 const TESTS = [article, recipe, singleString, synthetic]
 
-// this is the project for the efps
-const projectId = process.env.VITE_PERF_EFPS_PROJECT_ID!
-const dataset = process.env.VITE_PERF_EFPS_DATASET!
-const token = process.env.PERF_EFPS_SANITY_TOKEN!
+const stagingToken = readEnvVar('EFPS_SANITY_TOKEN_STAGING')
+const prodToken = readEnvVar('EFPS_SANITY_TOKEN_PROD')
 
-const client = createClient({
-  projectId,
-  dataset,
-  token,
-  useCdn: false,
-  apiVersion: 'v2024-08-08',
-  apiHost: 'https://api.sanity.work',
-})
+const referenceConfig = {
+  projectId: readEnv('SANITY_STUDIO_EFPS_REFERENCE_PROJECT_ID'),
+  dataset: readEnv('SANITY_STUDIO_EFPS_REFERENCE_DATASET'),
+  apiHost: readEnv('SANITY_STUDIO_EFPS_REFERENCE_API_HOST'),
+} as const
+
+const experimentConfig = {
+  projectId: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_PROJECT_ID'),
+  dataset: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_DATASET'),
+  apiHost: readEnv('SANITY_STUDIO_EFPS_EXPERIMENT_API_HOST'),
+} as const
+
+const referenceToken = referenceConfig.apiHost?.endsWith('.work') ? stagingToken : prodToken
+const experimentToken = experimentConfig.apiHost?.endsWith('.work') ? stagingToken : prodToken
 
 const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
-const monorepoRoot = path.resolve(workspaceDir, '../..')
 const timestamp = new Date()
 
 const resultsDir = path.join(
@@ -94,26 +101,6 @@ function getTestsForShard(tests: EfpsTest[], shard: {current: number; total: num
 const shard = argv.shard ? parseShard(argv.shard) : null
 const selectedTests = shard ? getTestsForShard(TESTS, shard) : TESTS
 
-const getSanityPkgPathForTag = async (tag: string) => {
-  const tmpDir = path.join(os.tmpdir(), `sanity-${tag}`)
-
-  try {
-    await fs.promises.rm(tmpDir, {recursive: true})
-  } catch {
-    // intentionally blank
-  }
-  await fs.promises.mkdir(tmpDir, {recursive: true})
-
-  await exec({
-    command: `npm install sanity@${tag}`,
-    cwd: tmpDir,
-    spinner,
-    text: [`Downloading sanity@${tag} package…`, `Downloaded sanity@${tag}`],
-  })
-
-  return path.join(tmpDir, 'node_modules', 'sanity')
-}
-
 const formatEfps = (latencyMs: number) => {
   const efps = 1000 / latencyMs
   const rounded = efps.toFixed(1)
@@ -131,22 +118,10 @@ spinner.info(
 )
 
 await exec({
-  text: ['Building the monorepo…', 'Built monorepo'],
-  command: 'pnpm run build',
-  spinner,
-  cwd: monorepoRoot,
-})
-
-await exec({
   text: ['Ensuring playwright is installed…', 'Playwright is installed'],
-  command: 'npx playwright install',
+  command: 'pnpm playwright install',
   spinner,
 })
-
-const localSanityPkgPath = path.dirname(fileURLToPath(import.meta.resolve('sanity/package.json')))
-
-const referenceSanityPkgPath = await getSanityPkgPathForTag(REFERENCE_TAG)
-const experimentSanityPkgPath = localSanityPkgPath
 
 function mergeResults(baseResults: EfpsResult[] | undefined, incomingResults: EfpsResult[]) {
   if (!baseResults) return incomingResults
@@ -170,59 +145,126 @@ const testResults: Array<{
 }> = []
 
 async function runAbTest(test: EfpsTest) {
+  const referenceStudioClient = createClient({
+    ...referenceConfig,
+    token: referenceToken,
+    useCdn: false,
+    apiVersion: 'v2024-08-08',
+  })
+
+  const experimentStudioClient = createClient({
+    ...experimentConfig,
+    token: experimentToken,
+    useCdn: false,
+    apiVersion: 'v2024-08-08',
+  })
+
+  // Create reusable browsers for each branch
+  spinner.start(`Launching browsers for test '${test.name}'...`)
+  const [referenceBrowser, experimentBrowser] = await Promise.all([
+    createBrowser(HEADLESS),
+    createBrowser(HEADLESS),
+  ])
+  spinner.succeed(`Browsers launched for test '${test.name}'`)
+
   let referenceResults: EfpsResult[] | undefined
   let experimentResults: EfpsResult[] | undefined
 
-  for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
-    const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
-    const referenceMessage = `Running test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`
-    spinner.start(referenceMessage)
+  try {
+    // Run all attempts in parallel for both reference and experiment
+    const runAllAttempts = async (
+      key: 'reference' | 'experiment',
+      client: typeof referenceStudioClient,
+      studioUrl: string,
+      browser: typeof referenceBrowser,
+      branchLabel: string,
+    ) => {
+      let results: EfpsResult[] | undefined
+      let lastError: unknown
 
-    referenceResults = mergeResults(
-      referenceResults,
-      await runTest({
-        key: 'reference',
-        test,
-        resultsDir,
-        client,
-        headless: HEADLESS,
-        recordVideo: RECORD_VIDEO,
-        enableProfiler: ENABLE_PROFILER,
-        projectId,
-        sanityPkgPath: referenceSanityPkgPath,
-        log: (message) => {
-          spinner.text = `${referenceMessage}: ${message}`
-        },
-      }),
-    )
-    spinner.succeed(`Ran test '${test.name}' on \`sanity@${REFERENCE_TAG}\`${attemptMessage}`)
+      // Run attempts sequentially to get stable measurements, but both branches run in parallel
+      for (let attempt = 0; attempt < TEST_ATTEMPTS; attempt++) {
+        const attemptMessage = TEST_ATTEMPTS > 1 ? ` [${attempt + 1}/${TEST_ATTEMPTS}]` : ''
+        const message = `Running test '${test.name}' on ${branchLabel}${attemptMessage}`
 
-    const experimentMessage = `Running test '${test.name}' on this branch${attemptMessage}`
-    spinner.start(experimentMessage)
-    experimentResults = mergeResults(
-      experimentResults,
-      await runTest({
-        key: 'experiment',
-        test,
-        resultsDir,
-        client,
-        headless: HEADLESS,
-        recordVideo: RECORD_VIDEO,
-        enableProfiler: ENABLE_PROFILER,
-        projectId,
-        sanityPkgPath: experimentSanityPkgPath,
-        log: (message) => {
-          spinner.text = `${experimentMessage}: ${message}`
-        },
-      }),
+        try {
+          // Note: We can't use spinner here since both branches run in parallel
+          // but the individual test logs will still work
+          results = mergeResults(
+            results,
+            await runTest({
+              browser,
+              key: `${key}-attempt-${attempt}`,
+              test,
+              resultsDir,
+              client,
+              headless: HEADLESS,
+              recordVideo: RECORD_VIDEO,
+              enableProfiler: ENABLE_PROFILER,
+              studioUrl,
+              log: () => {
+                // Suppress logs during parallel execution to avoid interleaving
+              },
+            }),
+          )
+          spinner.succeed(`${message}`)
+        } catch (error) {
+          lastError = error
+          spinner.fail(`${message} - failed, ${TEST_ATTEMPTS - attempt - 1} attempts remaining`)
+        }
+      }
+
+      // Only fail if all attempts failed
+      if (!results) {
+        throw lastError
+      }
+
+      return results
+    }
+
+    spinner.info(
+      `Running test '${test.name}' (${TEST_ATTEMPTS} attempts each, reference and experiment in parallel)`,
     )
-    spinner.succeed(`Ran test '${test.name}' on this branch${attemptMessage}`)
+
+    // Run reference and experiment in parallel - this is the main speedup!
+    // Use Promise.allSettled to ensure both branches complete before cleanup,
+    // preventing one branch's failure from closing the other's browser mid-execution
+    const [refResult, expResult] = await Promise.allSettled([
+      runAllAttempts(
+        'reference',
+        referenceStudioClient,
+        REFERENCE_STUDIO_URL,
+        referenceBrowser,
+        '`main`',
+      ),
+      runAllAttempts(
+        'experiment',
+        experimentStudioClient,
+        EXPERIMENT_STUDIO_URL,
+        experimentBrowser,
+        'this branch',
+      ),
+    ])
+
+    // Check for errors after both have settled
+    if (refResult.status === 'rejected') {
+      throw refResult.reason
+    }
+    if (expResult.status === 'rejected') {
+      throw expResult.reason
+    }
+
+    referenceResults = refResult.value
+    experimentResults = expResult.value
+  } finally {
+    // Clean up browsers
+    await Promise.all([referenceBrowser.close(), experimentBrowser.close()])
   }
 
-  return experimentResults!.map(
+  return experimentResults.map(
     (experimentResult, index): EfpsAbResult => ({
       experiment: experimentResult,
-      reference: referenceResults![index],
+      reference: referenceResults[index],
     }),
   )
 }

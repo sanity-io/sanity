@@ -1,4 +1,4 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
@@ -21,9 +21,7 @@ export const ArrayType = {
       type: ARRAY_CORE,
     })
     lazyGetter(parsed, 'of', () => {
-      return subTypeDef.of.map((ofTypeDef: any) => {
-        return createMemberType(ofTypeDef)
-      })
+      return subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
     })
     lazyGetter(parsed, OWN_PROPS_NAME, () => ({...subTypeDef, of: parsed.of}), {
       enumerable: false,

@@ -3,10 +3,10 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import {type CliCommandContext, type CliCommandDefinition, type CliOutputter} from '@sanity/cli'
-import sanityImport from '@sanity/import'
+import {sanityImport} from '@sanity/import'
 import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
-import {padStart} from 'lodash'
+import {padStart} from 'lodash-es'
 import prettyMs from 'pretty-ms'
 
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
@@ -47,7 +47,7 @@ Examples
 interface ImportFlags {
   'allow-assets-in-different-dataset'?: boolean
   'allow-failing-assets'?: boolean
-  'asset-concurrency'?: boolean
+  'asset-concurrency'?: string
   'replace-assets'?: boolean
   'skip-cross-dataset-references'?: boolean
   'allow-system-documents'?: boolean
@@ -58,7 +58,7 @@ interface ImportFlags {
 interface ParsedImportFlags {
   allowAssetsInDifferentDataset?: boolean
   allowFailingAssets?: boolean
-  assetConcurrency?: boolean
+  assetConcurrency?: number
   skipCrossDatasetReferences?: boolean
   allowSystemDocuments?: boolean
   replaceAssets?: boolean
@@ -73,6 +73,7 @@ interface ProgressEvent {
 }
 
 interface ImportWarning {
+  message: string
   type?: string
   url?: string
 }
@@ -84,7 +85,9 @@ function toBoolIfSet(flag: unknown): boolean | undefined {
 function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
   const allowAssetsInDifferentDataset = toBoolIfSet(rawFlags['allow-assets-in-different-dataset'])
   const allowFailingAssets = toBoolIfSet(rawFlags['allow-failing-assets'])
-  const assetConcurrency = toBoolIfSet(rawFlags['asset-concurrency'])
+  const assetConcurrency = rawFlags['asset-concurrency']
+    ? parseInt(rawFlags['asset-concurrency'], 10)
+    : undefined
   const replaceAssets = toBoolIfSet(rawFlags['replace-assets'])
   const skipCrossDatasetReferences = toBoolIfSet(rawFlags['skip-cross-dataset-references'])
   const allowSystemDocuments = toBoolIfSet(rawFlags['allow-system-documents'])
@@ -125,6 +128,7 @@ const importDatasetCommand: CliCommandDefinition = {
     } = flags
 
     const operation = getMutationOperation(args.extOptions)
+    const releasesOperation = getReleasesOperation(flags)
     const client = apiClient()
 
     const [file, target] = args.argsWithoutOptions
@@ -159,7 +163,7 @@ const importDatasetCommand: CliCommandDefinition = {
         inputStream = sourceFile
       } else {
         assetsBase = path.dirname(sourceFile)
-        inputStream = await createReadStream(sourceFile)
+        inputStream = createReadStream(sourceFile)
       }
     }
 
@@ -258,6 +262,7 @@ const importDatasetCommand: CliCommandDefinition = {
         client: importClient,
         assetsBase,
         operation,
+        releasesOperation,
         onProgress,
         allowFailingAssets,
         allowAssetsInDifferentDataset,
@@ -359,6 +364,17 @@ function getMutationOperation(flags: ParsedImportFlags) {
   }
 
   return 'create'
+}
+
+function getReleasesOperation(flags: ParsedImportFlags): 'fail' | 'ignore' | 'replace' {
+  const {replace, missing} = flags
+  if (replace) {
+    return 'replace'
+  }
+  if (missing) {
+    return 'ignore'
+  }
+  return 'fail'
 }
 
 function getPercentage(opts: ProgressEvent) {

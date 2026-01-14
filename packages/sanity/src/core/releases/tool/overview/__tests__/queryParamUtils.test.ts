@@ -13,16 +13,54 @@ const createMockRouter = (searchParams: string): RouterContextValue =>
 
 describe('queryParamUtils', () => {
   describe('getInitialCardinalityView', () => {
-    it('should return "releases" by default', () => {
+    it('should return "releases" by default when both features are enabled', () => {
       const router = createMockRouter('')
-      const result = getInitialCardinalityView(router)()
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: true,
+      })()
       expect(result).toBe('releases')
     })
 
-    it('should return "drafts" when view param is "drafts"', () => {
+    it('should return "drafts" when view param is "drafts" and both features are enabled', () => {
       const router = createMockRouter('view=drafts')
-      const result = getInitialCardinalityView(router)()
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: true,
+      })()
       expect(result).toBe('drafts')
+    })
+
+    it('should return "releases" when scheduled drafts is disabled', () => {
+      const router = createMockRouter('view=drafts')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: false,
+        isReleasesEnabled: true,
+      })()
+      expect(result).toBe('releases')
+    })
+
+    it('should return "drafts" when releases is disabled', () => {
+      const router = createMockRouter('view=releases')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: true,
+        isReleasesEnabled: false,
+      })()
+      expect(result).toBe('drafts')
+    })
+
+    it('should return "releases" when both features are disabled', () => {
+      const router = createMockRouter('view=drafts')
+      const result = getInitialCardinalityView({
+        router,
+        isScheduledDraftsEnabled: false,
+        isReleasesEnabled: false,
+      })()
+      expect(result).toBe('releases')
     })
   })
 

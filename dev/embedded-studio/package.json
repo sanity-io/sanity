@@ -1,6 +1,6 @@
 {
   "name": "embedded-studio",
-  "version": "4.10.0",
+  "version": "5.3.1",
   "private": true,
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",
@@ -19,6 +19,6 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "typescript": "catalog:",
-    "vite": "^7.1.7"
+    "vite": "catalog:"
   }
 }

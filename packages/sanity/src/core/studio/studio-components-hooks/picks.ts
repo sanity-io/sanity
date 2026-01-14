@@ -2,7 +2,6 @@ import {type ComponentType} from 'react'
 
 import {
   type ActiveToolLayoutProps,
-  type LayoutProps,
   type LogoProps,
   type NavbarProps,
   type PluginOptions,
@@ -21,10 +20,8 @@ export function pickNavbarComponent(
   return plugin.studio?.components?.navbar as ComponentType<Omit<NavbarProps, 'renderDefault'>>
 }
 
-export function pickLayoutComponent(
-  plugin: PluginOptions,
-): ComponentType<Omit<LayoutProps, 'renderDefault'>> {
-  return plugin.studio?.components?.layout as ComponentType<Omit<LayoutProps, 'renderDefault'>>
+export function pickLayoutComponent(plugin: PluginOptions): ComponentType {
+  return plugin.studio?.components?.layout as ComponentType
 }
 
 export function pickLogoComponent(

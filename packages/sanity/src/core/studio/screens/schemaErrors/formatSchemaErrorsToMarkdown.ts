@@ -1,6 +1,6 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {capitalize} from 'lodash'
+import {capitalize} from 'lodash-es'
 
 import {getTypeInfo} from './getTypeInfo'
 

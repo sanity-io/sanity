@@ -1,4 +1,9 @@
 import {
+  type PluginFilter,
+  type PluginPayload,
+  type PluginSelectAssetType,
+} from '@sanity/media-library-types'
+import {
   type AssetFromSource,
   type FileSchemaType,
   type ImageSchemaType,
@@ -22,9 +27,10 @@ import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
-import {type AssetSelectionItem, type AssetType, type PluginPostMessage} from '../types'
+import {type AssetSelectionItem, type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
+import {filterMediaValidationMarkers} from './validation'
 
 export interface SelectAssetsDialogProps {
   dialogHeaderTitle?: ReactNode
@@ -33,7 +39,7 @@ export interface SelectAssetsDialogProps {
   onSelect: (assetFromSource: AssetFromSource[]) => void
   ref: React.Ref<HTMLDivElement>
   schemaType?: ImageSchemaType | FileSchemaType
-  selectAssetType?: AssetType
+  selectAssetType?: PluginSelectAssetType
   selection: AssetSelectionItem[]
   selectionType?: 'single' | 'multiple'
 }
@@ -99,33 +105,27 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
           return true
         },
       })
-      return result
+      return filterMediaValidationMarkers(result)
     },
     [client, document, mediaLibraryIds?.libraryId, schema, schemaType, workspace.i18n],
   )
 
-  const pluginFilters = useMemo(() => {
-    const filters: any[] = []
-    if (schemaType?.options?.mediaLibrary?.filters) {
-      filters.push(
-        ...schemaType.options.mediaLibrary.filters.map((filter) => ({
-          type: 'groq',
-          name: filter.name,
-          query: filter.query,
-          active: true,
-        })),
-      )
-    }
-    return filters
-  }, [schemaType?.options?.mediaLibrary?.filters])
+  const pluginFilters: PluginFilter[] = (schemaType?.options?.mediaLibrary?.filters || []).map(
+    (filter) => ({
+      type: 'groq' as const,
+      name: filter.name,
+      query: filter.query,
+    }),
+  )
 
-  const params = useMemo(
+  const params = useMemo<PluginPayload>(
     () => ({
-      selectionType,
-      selectAssetTypes: [selectAssetType === 'sanity.video' ? 'video' : selectAssetType],
-      scheme: dark ? 'dark' : 'light',
       auth: authType,
+      capabilities: {privateAssets: true},
       pluginFilters,
+      scheme: dark ? 'dark' : 'light',
+      selectAssetTypes: selectAssetType ? [selectAssetType] : [],
+      selectionType,
     }),
     [selectionType, selectAssetType, dark, authType, pluginFilters],
   )
@@ -175,7 +175,7 @@ export function SelectAssetsDialog(props: SelectAssetsDialogProps): ReactNode {
     (message: PluginPostMessage) => {
       if (message.type === 'assetSelection') {
         setAssetSelection(message.selection)
-        handleAssetSelection(message.selection)
+        void handleAssetSelection(message.selection)
       }
     },
     [handleAssetSelection],

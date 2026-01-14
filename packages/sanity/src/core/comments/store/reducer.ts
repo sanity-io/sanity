@@ -93,7 +93,7 @@ export function commentsReducer(
     }
 
     case 'COMMENT_RECEIVED': {
-      const nextCommentResult = action.payload as CommentDocument
+      const nextCommentResult = action.payload
 
       return {
         ...state,

@@ -6,6 +6,6 @@ export function useEnvAwareSanityWebsiteUrl() {
   const {getClient} = useWorkspace()
   return useMemo(() => {
     const apiHost = getClient({apiVersion: '2025-08-15'}).config().apiHost
-    return apiHost.endsWith('.work') ? 'https://sanity.work' : 'https://sanity.io'
+    return apiHost.endsWith('.work') ? 'https://www.sanity.work' : 'https://www.sanity.io'
   }, [getClient])
 }

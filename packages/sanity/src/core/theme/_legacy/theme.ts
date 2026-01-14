@@ -30,7 +30,7 @@ import {type LegacyThemeProps} from './types'
  *
  * @param partialLegacyTheme - Properties to override the theme with. See {@link LegacyThemeProps}
  * @public
- * @deprecated Legacy theming will be deprecated in a future version of Sanity Studio
+ * @deprecated – Will be removed in upcoming major version
  */
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)

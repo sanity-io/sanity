@@ -49,5 +49,3 @@ describe('text types', () => {
     })
   })
 })
-
-export {}

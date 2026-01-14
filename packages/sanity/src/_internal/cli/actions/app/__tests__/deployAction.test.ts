@@ -118,7 +118,7 @@ describe('deployAppAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isApp: true,
+      isSdkApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
@@ -169,7 +169,7 @@ describe('deployAppAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isApp: true,
+      isSdkApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')

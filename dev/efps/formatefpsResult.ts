@@ -36,14 +36,37 @@ async function writeEPSResults() {
   // read all the test results from the report directory
   const reportDir = path.join(workspaceDir, 'results', 'report')
 
-  const jsonFiles = await fs.promises.readdir(reportDir)
+  const allFiles = await fs.promises.readdir(reportDir)
+  // Only process .json files to avoid issues with other files (e.g., .DS_Store, partial files)
+  const jsonFiles = allFiles.filter((file) => file.endsWith('.json'))
+
+  if (jsonFiles.length === 0) {
+    throw new Error(`No JSON files found in ${reportDir}. Available files: ${allFiles.join(', ')}`)
+  }
+
   const testResults: Array<{
     name: string
     results: EfpsAbResult[]
   }> = []
   for (const jsonFile of jsonFiles) {
-    const json = await fs.promises.readFile(path.join(reportDir, jsonFile), 'utf-8')
-    const parsedJson = JSON.parse(json) as {name: string; results: EfpsAbResult[]}
+    const filePath = path.join(reportDir, jsonFile)
+    const json = await fs.promises.readFile(filePath, 'utf-8')
+
+    let parsedJson: {name: string; results: EfpsAbResult[]}
+    try {
+      parsedJson = JSON.parse(json)
+    } catch (parseError) {
+      throw parseError
+    }
+
+    // Validate the parsed JSON structure
+    if (!Array.isArray(parsedJson)) {
+      throw new Error(
+        `Expected ${jsonFile} to contain an array, got ${typeof parsedJson}. ` +
+          `This might indicate corrupted or merged artifact files.`,
+      )
+    }
+
     testResults.push(parsedJson)
   }
 
@@ -156,4 +179,4 @@ ${experimentTable}
   await fs.promises.writeFile(markdownOutputPath, markdown)
 }
 
-writeEPSResults()
+void writeEPSResults()

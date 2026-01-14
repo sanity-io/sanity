@@ -1,4 +1,4 @@
-import {isPlainObject, toPath} from 'lodash'
+import {isPlainObject, toPath} from 'lodash-es'
 
 export function normalizeSearchConfigs(configs: any) {
   if (!Array.isArray(configs)) {

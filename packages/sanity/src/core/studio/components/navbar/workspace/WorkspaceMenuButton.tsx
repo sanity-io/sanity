@@ -9,6 +9,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -30,12 +31,14 @@ export function WorkspaceMenuButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
 
-  const multipleWorkspaces = workspaces.length > 1
-
-  if (!multipleWorkspaces) {
-    return null
-  }
+  const stackRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      const hasScroll = node.scrollHeight > node.clientHeight
+      setScrollbarWidth(hasScroll ? node.offsetWidth - node.clientWidth : 0)
+    }
+  }, [])
 
   const disabled = !authStates
 
@@ -63,18 +66,18 @@ export function WorkspaceMenuButton() {
       menu={
         !disabled && authStates ? (
           <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-            <ManageMenu />
+            <ManageMenu multipleWorkspaces={workspaces.length > 1} />
             {workspaces.length > 1 && (
               <>
-                <MenuDivider />
-                <Box paddingTop={2}>
-                  <Box paddingX={5} paddingBottom={2}>
+                <MenuDivider style={{padding: 0}} />
+                <Box paddingTop={2} paddingBottom={1}>
+                  <Box paddingRight={5} paddingLeft={4} paddingBottom={3}>
                     <Text size={0} weight="medium">
                       {t('workspaces.action.switch-workspace')}
                     </Text>
                   </Box>
 
-                  <Stack space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                  <Stack ref={stackRef} space={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                     {workspaces.map((workspace) => {
                       const authState = authStates[workspace.name]
 
@@ -100,9 +103,12 @@ export function WorkspaceMenuButton() {
                           preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                           selected={isSelected}
                           __unstable_subtitle={workspace.subtitle}
-                          __unstable_space={1}
                           text={workspace?.title || workspace.name}
-                          style={{paddingLeft: '2rem', paddingRight: '2rem'}}
+                          style={{
+                            marginLeft: '1rem',
+                            marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+                          }}
+                          __unstable_space={0}
                         />
                       )
                     })}

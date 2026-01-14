@@ -1,4 +1,5 @@
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import debug from 'debug'
@@ -6,16 +7,16 @@ import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
 
 import {createExternalFromImportMap} from './createExternalFromImportMap'
-import {getSanityPkgExportAliases} from './getBrowserAliases'
 import {
   getAppEnvironmentVariables,
   getStudioEnvironmentVariables,
 } from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
-import {getMonorepoAliases, loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export interface ViteOptions {
   /**
@@ -78,8 +79,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     reactCompiler,
     isApp,
   } = options
-
-  const monorepo = await loadSanityMonorepo(cwd)
   const basePath = normalizeBasePath(rawBasePath)
 
   const sanityPkgPath = (await readPkgUp({cwd: __dirname}))?.path
@@ -129,22 +128,28 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     mode,
     plugins: [
       viteReact(
-        reactCompiler ? {babel: {plugins: [['babel-plugin-react-compiler', reactCompiler]]}} : {},
+        reactCompiler
+          ? {
+              babel: {
+                plugins: [['babel-plugin-react-compiler', reactCompiler]],
+                generatorOpts: {compact: true},
+              },
+            }
+          : {},
       ),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
-      sanityBuildEntries({basePath, cwd, monorepo, importMap, isApp}),
+      sanityBuildEntries({basePath, cwd, importMap, isApp}),
     ],
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',
     resolve: {
-      alias: monorepo?.path
-        ? await getMonorepoAliases(monorepo.path)
-        : getSanityPkgExportAliases(sanityPkgPath),
-      dedupe: ['styled-components'],
+      dedupe: ['react', 'react-dom', 'sanity', 'styled-components'],
     },
     define: {
       '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
+      '__SANITY_BUILD_TIMESTAMP__': JSON.stringify(Date.now()),
+      'process.env.PKG_BUILD_VERSION': JSON.stringify(process.env.PKG_BUILD_VERSION),
       'process.env.MODE': JSON.stringify(mode),
       /**
        * Yes, double negatives are confusing.

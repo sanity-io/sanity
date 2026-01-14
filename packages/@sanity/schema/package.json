@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "4.10.0",
+  "version": "5.3.1",
   "description": "",
   "keywords": [
     "sanity",
@@ -22,24 +22,21 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
-      "import": "./lib/_internal.mjs",
-      "require": "./lib/_internal.js",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -53,7 +50,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -62,25 +59,36 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/descriptors": "^1.1.1",
-    "@sanity/generate-help-url": "^3.0.0",
+    "@sanity/descriptors": "^1.3.0",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
-    "groq-js": "^1.18.0",
+    "groq-js": "^1.25.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "object-inspect": "^1.13.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
     "@sanity/icons": "^3.7.4",
-    "@types/lodash": "^4.17.20",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/lodash-es": "^4.17.12",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./package.json": "./package.json"
+    }
   }
 }

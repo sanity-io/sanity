@@ -1,6 +1,7 @@
 import {constants as fsConstants} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
@@ -9,6 +10,8 @@ import {debug as serverDebug} from './debug'
 import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 import {generateWebManifest} from './webManifest'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const debug = serverDebug.extend('static')
 

@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {flatten, keyBy} from 'lodash'
+import {type SanityClient, type StackablePerspective} from '@sanity/client'
+import {flatten, keyBy} from 'lodash-es'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
@@ -14,6 +14,7 @@ import {
 import {
   type AvailabilityResponse,
   type DocumentAvailability,
+  type DocumentStackAvailability,
   type DraftsModelDocumentAvailability,
   type ObservePathsFn,
 } from './types'
@@ -71,40 +72,10 @@ function mutConcat<T>(array: T[], chunks: T[]) {
   return array
 }
 
-export function createPreviewAvailabilityObserver(
+export function createDocumentAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
-): (id: string) => Observable<DraftsModelDocumentAvailability> {
-  /**
-   * Observable of metadata for the document with the given id
-   * If we can't read a document it is either because it's not readable or because it doesn't exist
-   *
-   * @internal
-   */
-  function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
-    // check for existence
-    return observePaths({_ref: id}, [['_rev'], ['_system']]).pipe(
-      map((res) => ({
-        hasRev: isRecord(res) && Boolean('_rev' in res && res?._rev),
-        isDeleted: isRecord(res) && res._system?.delete === true,
-      })),
-      distinctUntilChanged(),
-      switchMap(({hasRev, isDeleted}) => {
-        if (isDeleted) {
-          return of(AVAILABILITY_VERSION_DELETED)
-        }
-
-        return hasRev
-          ? // short circuit: if we can read the _rev field we know it both exists and is readable
-            of(AVAILABILITY_READABLE)
-          : // we can't read the _rev field for two possible reasons: 1) the document isn't readable or 2) the document doesn't exist
-            fetchDocumentReadability(id)
-      }),
-      swr(id),
-      map((ev) => ev.value),
-    )
-  }
-
+): (id: string) => Observable<DocumentAvailability> {
   const fetchDocumentReadability = debounceCollect(function fetchDocumentReadability(
     args: string[][],
   ): Observable<DocumentAvailability[]> {
@@ -147,6 +118,76 @@ export function createPreviewAvailabilityObserver(
     })
   }
 
+  /**
+   * Observable of metadata for the document with the given id
+   * If we can't read a document it is either because it's not readable or because it doesn't exist
+   *
+   * @internal
+   */
+  return function observeDocumentAvailability(id: string): Observable<DocumentAvailability> {
+    // check for existence first, observePaths is lightweight
+    return observePaths({_id: id}, [['_rev'], ['_system']]).pipe(
+      map((res) => ({
+        hasRev: isRecord(res) && Boolean('_rev' in res && res?._rev),
+        isDeleted: isRecord(res) && res._system?.delete === true,
+      })),
+      distinctUntilChanged(),
+      switchMap(({hasRev, isDeleted}) => {
+        if (isDeleted) {
+          return of(AVAILABILITY_VERSION_DELETED)
+        }
+
+        return hasRev
+          ? // short circuit: if we can read the _rev field we know it both exists and is readable
+            of(AVAILABILITY_READABLE)
+          : // we can't read the _rev field for two possible reasons: 1) the document isn't readable or 2) the document doesn't exist
+            fetchDocumentReadability(id)
+      }),
+      swr(id),
+      map((ev) => ev.value),
+    )
+  }
+}
+
+function ensurePublished(stack: StackablePerspective[]) {
+  return stack.includes('published') ? stack : stack.concat(['published'])
+}
+
+export function createDocumentStackAvailabilityObserver(
+  versionedClient: SanityClient,
+  observePaths: ObservePathsFn,
+): (id: string, perspective: StackablePerspective[]) => Observable<DocumentStackAvailability[]> {
+  const observeDocumentAvailability = createDocumentAvailabilityObserver(
+    versionedClient,
+    observePaths,
+  )
+
+  return (id: string, stack: StackablePerspective[]) => {
+    return combineLatest(
+      // explicitly check availability for published id (we're not using perspective in the following fetch here)
+      ensurePublished(stack).map((perspective) => {
+        const versionId =
+          perspective === 'drafts'
+            ? getDraftId(id)
+            : perspective === 'published'
+              ? getPublishedId(id)
+              : getVersionId(id, perspective)
+        return observeDocumentAvailability(versionId).pipe(
+          map((availability) => ({availability, id: versionId})),
+        )
+      }),
+    )
+  }
+}
+
+export function createPreviewAvailabilityObserver(
+  versionedClient: SanityClient,
+  observePaths: ObservePathsFn,
+): (id: string) => Observable<DraftsModelDocumentAvailability> {
+  const observeDocumentAvailability = createDocumentAvailabilityObserver(
+    versionedClient,
+    observePaths,
+  )
   /**
    * Returns an observable of metadata for a given drafts model document
    */

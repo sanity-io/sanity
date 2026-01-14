@@ -1,89 +1,54 @@
 import fs from 'node:fs'
-import {createServer} from 'node:http'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
 
 import {type SanityClient} from '@sanity/client'
-import react from '@vitejs/plugin-react'
-import {chromium} from 'playwright'
-import sourcemaps from 'rollup-plugin-sourcemaps'
-import handler from 'serve-handler'
-import * as vite from 'vite'
+import {type Browser, chromium} from 'playwright'
 
-import {remapCpuProfile} from './helpers/remapCpuProfile'
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
-const workspaceDir = path.dirname(fileURLToPath(import.meta.url))
-
 interface RunTestOptions {
+  /** Optional browser instance to reuse. If not provided, a new browser will be launched. */
+  browser?: Browser
   client: SanityClient
   enableProfiler: boolean
   headless: boolean
   key: string
   log: (text: string) => void
-  projectId: string
   recordVideo: boolean
   resultsDir: string
-  sanityPkgPath: string
+  studioUrl: string
   test: EfpsTest
 }
 
 export async function runTest({
+  browser: existingBrowser,
   client,
   enableProfiler,
   headless,
   key,
   log,
-  projectId,
   recordVideo,
   resultsDir,
-  sanityPkgPath,
+  studioUrl,
   test,
 }: RunTestOptions): Promise<EfpsResult[]> {
-  const outDir = path.join(workspaceDir, 'builds', test.name, key)
   const testResultsDir = path.join(resultsDir, test.name, key)
 
-  await fs.promises.mkdir(outDir, {recursive: true})
-  log('Building…')
-
-  const alias: Record<string, string> = {
-    '#config': fileURLToPath(test.configPath!),
-    'sanity': `${sanityPkgPath}/lib`,
-  }
-
-  await vite.build({
-    appType: 'spa',
-    build: {outDir, sourcemap: true},
-    plugins: [
-      {...sourcemaps(), enforce: 'pre'},
-      react({
-        babel: {plugins: [['babel-plugin-react-compiler', {target: '18'}]]},
-      }),
-    ],
-    resolve: {alias},
-    logLevel: 'silent',
-  })
-
-  log('Starting server…')
-  const server = createServer((req, res) => {
-    handler(req, res, {
-      rewrites: [{source: '**', destination: '/index.html'}],
-      public: outDir,
-    })
-  })
-
-  await new Promise<void>((resolve) => server.listen(3300, resolve))
-
-  let browser
+  let browser: Browser | undefined
   let document
   let context
+  const shouldCloseBrowser = !existingBrowser
 
   try {
-    log('Launching browser…')
-    browser = await chromium.launch({
-      headless,
-      args: ['--disable-gpu', '--disable-software-rasterizer'],
-    })
+    if (existingBrowser) {
+      browser = existingBrowser
+    } else {
+      log('Launching browser…')
+      browser = await chromium.launch({
+        headless,
+        args: ['--disable-gpu', '--disable-software-rasterizer'],
+      })
+    }
     context = await browser.newContext({
       recordVideo: recordVideo ? {dir: testResultsDir} : undefined,
       reducedMotion: 'reduce',
@@ -91,10 +56,10 @@ export async function runTest({
         cookies: [],
         origins: [
           {
-            origin: 'http://localhost:3300',
+            origin: studioUrl,
             localStorage: [
               {
-                name: `__studio_auth_token_${projectId}`,
+                name: `__studio_auth_token_${client.config().projectId}`,
                 value: JSON.stringify({
                   token: client.config().token,
                   time: new Date().toISOString(),
@@ -119,10 +84,17 @@ export async function runTest({
 
     log('Loading editor…')
     await page.goto(
-      `http://localhost:3300/intent/edit/id=${encodeURIComponent(
+      `${studioUrl}/${test.name}/intent/edit/id=${encodeURIComponent(
         document._id,
       )};type=${encodeURIComponent(documentToCreate._type)}`,
+      {waitUntil: 'domcontentloaded', timeout: 60_000},
     )
+
+    // Wait for the form view to be visible and editable, indicating the studio has fully loaded
+    await page.locator('[data-testid="form-view"]').waitFor({state: 'visible', timeout: 60_000})
+    await page
+      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
+      .waitFor({state: 'visible', timeout: 60_000})
 
     if (cdp) {
       await cdp.send('Profiler.enable')
@@ -147,21 +119,20 @@ export async function runTest({
         path.join(testResultsDir, 'raw.cpuprofile'),
         JSON.stringify(profile),
       )
-      const remappedProfile = await remapCpuProfile(profile, outDir)
+
       await fs.promises.writeFile(
         path.join(testResultsDir, 'mapped.cpuprofile'),
-        JSON.stringify(remappedProfile),
+        JSON.stringify(profile),
       )
     }
 
     return results
   } finally {
-    await new Promise<void>((resolve, reject) =>
-      server.close((err) => (err ? reject(err) : resolve())),
-    )
-
     await context?.close()
-    await browser?.close()
+    // Only close the browser if we created it (not if it was passed in for reuse)
+    if (shouldCloseBrowser) {
+      await browser?.close()
+    }
 
     if (document) {
       await Promise.allSettled([
@@ -170,4 +141,15 @@ export async function runTest({
       ])
     }
   }
+}
+
+/**
+ * Creates a reusable browser instance for running multiple tests.
+ * The caller is responsible for closing the browser when done.
+ */
+export async function createBrowser(headless: boolean): Promise<Browser> {
+  return chromium.launch({
+    headless,
+    args: ['--disable-gpu', '--disable-software-rasterizer'],
+  })
 }

@@ -1,6 +1,6 @@
 {
   "name": "efps-tests",
-  "version": "4.10.0",
+  "version": "5.3.1",
   "private": true,
   "description": "Sanity Studio eFPS perf suite",
   "keywords": [],
@@ -19,33 +19,28 @@
     "write:report": "tsx ./formatefpsResult.ts"
   },
   "dependencies": {
-    "@sanity/eslint-config-studio": "catalog:",
-    "styled-components": "^6.1.19",
-    "tsx": "^4.20.5"
+    "styled-components": "catalog:",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@sanity/client": "^7.11.2",
-    "@swc-node/register": "^1.11.1",
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/serve-handler": "^6.1.4",
-    "@types/yargs": "^17.0.33",
-    "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
+    "@types/yargs": "^17.0.35",
+    "babel-plugin-react-compiler": "1.0.0",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "dotenv": "^16.6.1",
+    "eslint": "catalog:",
     "globby": "^11.1.0",
     "ora": "^8.2.0",
     "playwright": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "rollup-plugin-sourcemaps": "^0.6.3",
     "sanity": "workspace:*",
-    "serve-handler": "^6.1.6",
     "source-map": "^0.7.6",
-    "vite": "^7.1.7",
     "yargs": "^17.7.2"
   }
 }

@@ -1,9 +1,10 @@
 import path from 'node:path'
 
 import {defineCliConfig} from 'sanity/cli'
-import {type UserConfig} from 'vite'
+import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 
 const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
+const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
 
 export default defineCliConfig({
   api: isStaging
@@ -19,18 +20,31 @@ export default defineCliConfig({
   // A) `SANITY_STUDIO_REACT_STRICT_MODE=false pnpm dev`
   // B) creating a `.env` file locally that sets the same env variable as above
   reactStrictMode: true,
-  reactCompiler: {target: '19'},
-  vite(viteConfig: UserConfig): UserConfig {
+  reactCompiler: {
+    target: '19',
+    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `@sanity/pkg-utils`,
+    // and so we filter by just studio files
+    sources: (filename) => {
+      // The default behavior is to always skip node_modules: https://github.com/facebook/react/blob/d6cae440e34c6250928e18bed4a16480f83ae18a/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L326
+      if (filename.indexOf('node_modules') !== -1) {
+        return false
+      }
+      // Compile files in the test studio itself
+      if (filename.indexOf('dev/test-studio') !== -1) {
+        return true
+      }
+      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `monorepo` condition during `sanity dev`)
+      // otherwise it's likely resolving a built file that had react compiler already applied during its build process
+      return reactCompilerAllowList.test(filename)
+    },
+  },
+  vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
-    return {
-      ...viteConfig,
+    const nextConfig = mergeConfig(viteConfig, {
       server: {
-        ...viteConfig.server,
         warmup: {
-          ...viteConfig.server?.warmup,
           clientFiles: [
-            ...(viteConfig.server?.warmup?.clientFiles || []),
             /**
              * Since the test studio on the monorepo is using src files for `sanity`, `sanity/structure`, `@sanity/vision`, etc,
              * it's not enough with the default `./.sanity/runtime/app.js` warmup file,
@@ -55,39 +69,10 @@ export default defineCliConfig({
           ],
         },
       },
-      optimizeDeps: {
-        ...viteConfig.optimizeDeps,
-        include: ['react/jsx-runtime'],
-        exclude: [
-          ...(viteConfig.optimizeDeps?.exclude || []),
-          '@sanity/assist',
-          'sanity',
-          // This is needed to avoid a full page reload as vite discovers it while rendering the `./preview/index.html` iframe
-          '@portabletext/toolkit',
-        ],
-      },
-      resolve: reactProductionProfiling
-        ? {
-            ...viteConfig.resolve,
-            alias: {
-              ...viteConfig.resolve?.alias,
-              'react-dom/client': require.resolve('react-dom/profiling'),
-            },
-          }
-        : viteConfig.resolve,
-      esbuild: reactProductionProfiling
-        ? {
-            ...viteConfig.esbuild,
-            // Makes it much easier to look through profiling traces
-            minifyIdentifiers: false,
-          }
-        : viteConfig.esbuild,
+      // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
+      optimizeDeps: {exclude: ['sanity']},
       build: {
-        ...viteConfig.build,
-        // Enable production source maps to easier debug deployed test studios
-        sourcemap: reactProductionProfiling || viteConfig.build?.sourcemap,
         rollupOptions: {
-          ...viteConfig.build?.rollupOptions,
           input: {
             // NOTE: this is required to build static files for the workshop frame
             'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
@@ -96,6 +81,27 @@ export default defineCliConfig({
           },
         },
       },
+    } satisfies UserConfig)
+
+    // Support React Production Profiling on deployed studios
+    if (reactProductionProfiling && command === 'build') {
+      return mergeConfig(nextConfig, {
+        // Aliasing to react-dom/profiling is necessary in the production build, otherwise React can't run the profiler on the deployed studio
+        resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
+        // Not minifying identifiers ensures that the React DevTools components inspector has readable component names
+        esbuild: {minifyIdentifiers: false},
+        // Enable production source maps to easier debug deployed test studios
+        build: {sourcemap: true},
+      } satisfies UserConfig)
     }
+
+    // Support hot reloading of files from monorepo workspaces during development
+    if (mode !== 'production' && command === 'serve') {
+      return mergeConfig(nextConfig, {
+        resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+      } satisfies UserConfig)
+    }
+
+    return nextConfig
   },
 })

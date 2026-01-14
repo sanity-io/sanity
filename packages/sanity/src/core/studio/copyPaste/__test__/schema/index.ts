@@ -1,5 +1,3 @@
-import {type Schema} from '@sanity/types'
-
 import {createSchema} from '../../../../schema'
 import {authorDocument} from './author'
 import {bookDocument} from './documents/book'
@@ -49,4 +47,4 @@ export const mockTypes = [
 export const schema = createSchema({
   name: 'default',
   types: mockTypes,
-}) as Schema
+})

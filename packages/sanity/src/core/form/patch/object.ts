@@ -1,4 +1,4 @@
-import {clone, isObject, omit} from 'lodash'
+import {clone, isObject, omit} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'

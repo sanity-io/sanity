@@ -5,7 +5,7 @@ import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
@@ -39,13 +39,13 @@ import {
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
+  enhancedObjectDialogEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
-  internalQuotaExcludedReleasesEnabledReducer,
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
@@ -55,6 +55,7 @@ import {
   partialIndexingEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
+  scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
   serverDocumentActionsReducer,
@@ -74,7 +75,6 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -276,6 +276,7 @@ export function prepareConfig(
       auth: resolvedSources[0].auth,
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
+      apiHost: rootSource.apiHost,
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
@@ -360,10 +361,6 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
-    [QUOTA_EXCLUDED_RELEASES_ENABLED]: internalQuotaExcludedReleasesEnabledReducer({
-      config,
-      initialValue: false,
-    }),
     [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
       config,
       initialValue: undefined,
@@ -751,9 +748,10 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-      treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
+      form: {
+        enhancedObjectDialog: {
+          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: true}),
+        },
       },
       create: {
         startInCreateEnabled: false,
@@ -783,10 +781,13 @@ function resolveSource({
         initialValue: false,
       }),
     },
+    scheduledDrafts: {
+      enabled: scheduledDraftsEnabledReducer({config, initialValue: true}),
+    },
 
     releases: config.releases
       ? {
-          enabled: config.releases.enabled,
+          enabled: config.releases.enabled ?? true,
           limit: config.releases.limit,
           actions: (partialContext) =>
             resolveConfigProperty({
@@ -797,7 +798,7 @@ function resolveSource({
               reducer: releaseActionsReducer,
             }),
         }
-      : undefined,
+      : {enabled: true},
   }
 
   return source

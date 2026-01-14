@@ -121,11 +121,16 @@ test.describe('Portable Text Input', () => {
       // Open up the editing interface again
       await page.getByTestId('edit-annotation-button').click()
 
+      // Re-query the input since the popover was recreated
+      const $linkInputReopened = page.getByTestId('popover-edit-dialog').getByLabel('Link').first()
+      await expect($linkInputReopened).toBeVisible()
+      await expect($linkInputReopened).toBeEnabled()
+
       // Focus the URL input
-      await $linkInput.focus()
+      await $linkInputReopened.focus()
 
       // Assertion: The URL input should be focused
-      await expect($linkInput).toBeFocused()
+      await expect($linkInputReopened).toBeFocused()
     })
   })
 })

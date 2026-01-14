@@ -1,11 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {
-  ErrorOutlineIcon,
-  InfoOutlineIcon,
-  PinFilledIcon,
-  PinIcon,
-  WarningOutlineIcon,
-} from '@sanity/icons'
+import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
@@ -13,15 +7,16 @@ import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {Details} from '../../../form/components/Details'
-import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../studio/workspace'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease} from '../../util/util'
+import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {type DocumentInRelease} from './useBundleDocuments'
@@ -35,6 +30,7 @@ export function ReleaseDashboardDetails({
   documents: DocumentInRelease[]
 }) {
   const {state} = release
+
   const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
   const {checkWithPermissionGuard} = useReleasePermissions()
   const {publishRelease, schedule} = useReleaseOperations()
@@ -42,10 +38,7 @@ export function ReleaseDashboardDetails({
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const {selectedReleaseId} = usePerspective()
   const setPerspective = useSetPerspective()
-  const {projectSubscriptions} = useProjectSubscriptions()
 
-  const retentionDays =
-    projectSubscriptions?.featureTypes.retention.features[0].attributes.maxRetentionDays
   const isSelected = releaseId === selectedReleaseId
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
   const isReleaseOpen = state !== 'archived' && state !== 'published'
@@ -54,19 +47,23 @@ export function ReleaseDashboardDetails({
   const [shouldDisplayPermissionWarning, setShouldDisplayPermissionWarning] = useState(false)
   const shouldDisplayWarnings = isActive && shouldDisplayPermissionWarning
   const isMounted = useRef(false)
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
   useEffect(() => {
     isMounted.current = true
 
     // only run if the release is active
     if (isActive) {
-      checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
+      void checkWithPermissionGuard(publishRelease, release._id).then((hasPermission) => {
         if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
         return null
       })
 
       // if it's a release that can be scheduled, check if it can be scheduled
       if (release.metadata.intendedPublishAt && isAtTimeRelease) {
-        checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
+        void checkWithPermissionGuard(schedule, release._id, new Date()).then((hasPermission) => {
           if (isMounted.current) setShouldDisplayPermissionWarning(!hasPermission)
           return null
         })
@@ -87,11 +84,11 @@ export function ReleaseDashboardDetails({
 
   const handlePinRelease = useCallback(() => {
     if (isSelected) {
-      setPerspective('drafts')
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     } else {
       setPerspective(releaseId)
     }
-  }, [isSelected, releaseId, setPerspective])
+  }, [isDraftModelEnabled, isSelected, releaseId, setPerspective])
 
   return (
     <Container width={3}>
@@ -184,25 +181,7 @@ export function ReleaseDashboardDetails({
           </Card>
         )}
 
-        {!isReleaseOpen && retentionDays && (
-          <Card padding={4} radius={4} tone="primary" data-testid="retention-policy-card">
-            <Flex gap={3}>
-              <Text size={1}>
-                <InfoOutlineIcon />
-              </Text>
-              <Stack space={4}>
-                <Text size={1} weight="semibold">
-                  {state === 'archived'
-                    ? tRelease('archive-info.title')
-                    : tRelease('publish-info.title')}
-                </Text>
-                <Text size={1} accent>
-                  {tRelease('archive-info.description', {retentionDays})}
-                </Text>
-              </Stack>
-            </Flex>
-          </Card>
-        )}
+        {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
       </Stack>
     </Container>
   )

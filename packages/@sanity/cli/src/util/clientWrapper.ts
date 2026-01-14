@@ -1,6 +1,7 @@
 import path from 'node:path'
 
 import {
+  type ClientConfig,
   type ClientError,
   createClient,
   requester as defaultRequester,
@@ -78,17 +79,23 @@ export function getClientWrapper(
     // Read these environment variables "late" to allow `.env` files
 
     const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
+    const rateLimitBypass = process.env.SANITY_CLI_API_RATE_LIMIT_BYPASS
 
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const token = getCliToken()
     const apiHost = apiHosts[sanityEnv]
-    const apiConfig = {
+    const apiConfig: Partial<ClientConfig> = {
       ...cliApiConfig,
       ...api,
     }
 
     if (apiHost) {
       apiConfig.apiHost = apiHost
+    }
+
+    if (sanityEnv === 'staging' && rateLimitBypass) {
+      apiConfig.headers ??= {}
+      apiConfig.headers['x-sanity-ratelimit-bypass'] = rateLimitBypass
     }
 
     if (requireUser && !token) {

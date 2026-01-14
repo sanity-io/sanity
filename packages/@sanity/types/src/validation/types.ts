@@ -374,6 +374,14 @@ export interface ValidationError {
   path?: Path
 
   /**
+   * Extra metadata for the validation error. Currently used by the Media Library asset source to ignore
+   * certain validation markers when validating asset source media library assets.
+   *
+   * @internal
+   */
+  __internal_metadata?: unknown
+
+  /**
    * Same as `path` but allows more than one value. If provided, the same
    * message will create two markers from each path with the same message
    * provided.

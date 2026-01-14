@@ -1,12 +1,13 @@
 /* eslint-disable complexity */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {
   type FocusEvent,
   type KeyboardEvent,
   useCallback,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -17,7 +18,7 @@ import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} fro
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ChangeIndicator} from '../../../changeIndicators'
-import {PreviewCard} from '../../../components'
+import {PreviewCard, ReferenceInputPreviewCard} from '../../../components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled} from '../../../hooks'
@@ -43,8 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 /** @internal */
-export interface CrossDatasetReferenceInputProps
-  extends ObjectInputProps<CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType> {
+export interface CrossDatasetReferenceInputProps extends ObjectInputProps<
+  CrossDatasetReferenceValue,
+  CrossDatasetReferenceSchemaType
+> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: CrossDatasetReferenceSchemaType,
@@ -72,7 +75,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     schemaType,
     validation,
     value,
-    elementProps,
+    elementProps: {ref: forwardRef, ...elementProps},
   } = props
 
   const {t} = useTranslation()
@@ -149,7 +152,8 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- focus handling
-  const focusElementRef = elementProps.ref
+  const focusElementRef = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle(forwardRef, () => focusElementRef.current)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
     const refUpdated = prev?.ref !== current.ref
     const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -176,22 +180,20 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.([])
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
-
-  const handleBlur = useCallback((event: FocusEvent) => elementProps.onBlur(event), [elementProps])
 
   const handleAutocompleteFocus = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.(REF_PATH)
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
@@ -207,7 +209,11 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
         concat(
           of({isLoading: true}),
           onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
+            map((hits) => ({
+              hits,
+              searchString,
+              isLoading: false,
+            })),
             catchError((error) => {
               push({
                 title: 'Reference search failed',
@@ -250,15 +256,13 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const renderOption = useCallback(
     (option: FIXME) => {
       return (
-        <PreviewCard as="button" type="button" radius={2}>
-          <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              referenceType={schemaType}
-              document={option.hit.published}
-              getReferenceInfo={getReferenceInfoMemo}
-            />
-          </Box>
-        </PreviewCard>
+        <ReferenceInputPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
+          <OptionPreview
+            referenceType={schemaType}
+            document={option.hit.published}
+            getReferenceInfo={getReferenceInfoMemo}
+          />
+        </ReferenceInputPreviewCard>
       )
     },
     [schemaType, getReferenceInfoMemo],
@@ -308,6 +312,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                     filterOption={NO_FILTER}
                     renderOption={renderOption}
                     openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                    ref={focusElementRef as unknown as React.Ref<HTMLInputElement>}
                   />
                 </div>
               </ChangeIndicator>
@@ -318,7 +323,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 padding={0}
                 border
                 flex={1}
-                radius={1}
+                radius={2}
                 tone={
                   readOnly
                     ? 'transparent'
@@ -336,15 +341,14 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       href={studioUrl}
                       data-as="a"
                       flex={1}
-                      padding={1}
                       paddingRight={3}
                       radius={2}
                       tone="inherit"
                       __unstable_focusRing
                       tabIndex={0}
                       onFocus={handleFocus}
-                      onBlur={handleBlur}
-                      ref={elementProps.ref}
+                      onBlur={elementProps.onBlur}
+                      ref={focusElementRef}
                     >
                       <PreviewReferenceValue
                         value={value}
@@ -357,15 +361,14 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                   ) : (
                     <PreviewCard
                       flex={1}
-                      padding={1}
                       paddingRight={3}
                       radius={2}
                       tone="inherit"
                       __unstable_focusRing
                       tabIndex={0}
                       onFocus={handleFocus}
-                      onBlur={handleBlur}
-                      ref={elementProps.ref}
+                      onBlur={elementProps.onBlur}
+                      ref={focusElementRef}
                     >
                       <PreviewReferenceValue
                         value={value}
@@ -417,7 +420,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                 {loadableReferenceInfo.error && (
                   <ReferenceMetadataLoadErrorAlertStrip
                     errorMessage={loadableReferenceInfo.error.message}
-                    onHandleRetry={loadableReferenceInfo.retry!}
+                    onHandleRetry={loadableReferenceInfo.retry}
                   />
                 )}
               </Card>

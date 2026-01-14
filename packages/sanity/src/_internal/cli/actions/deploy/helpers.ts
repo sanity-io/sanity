@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {PassThrough} from 'node:stream'
+import {fileURLToPath} from 'node:url'
 import {type Gzip} from 'node:zlib'
 
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
@@ -11,6 +12,8 @@ import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
 import {determineIsApp} from '../../util/determineIsApp'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const debug = debugIt.extend('deploy')
 
@@ -54,26 +57,33 @@ export interface GetUserApplicationsOptions {
   organizationId?: string
 }
 
-export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
+export interface GetUserApplicationOptions {
+  client: SanityClient
   appHost?: string
   appId?: string
+  isSdkApp?: boolean
 }
 export async function getUserApplication({
   client,
   appHost,
   appId,
+  isSdkApp,
 }: GetUserApplicationOptions): Promise<UserApplication | null> {
-  let query
-  let uri = '/user-applications'
-  if (appId) {
-    uri = `/user-applications/${appId}`
-  } else if (appHost) {
-    query = {appHost}
-  } else {
-    query = {default: 'true'}
+  let query: undefined | Record<string, string>
+
+  const uri = appId ? `/user-applications/${appId}` : '/user-applications'
+
+  if (isSdkApp) {
+    query = {appType: 'coreApp'}
+  } else if (!appId) {
+    // either request the app by host or get the default app
+    query = appHost ? {appHost} : {default: 'true'}
   }
   try {
-    return await client.request({uri, query})
+    return await client.request({
+      uri,
+      query,
+    })
   } catch (e) {
     if (e?.statusCode === 404) {
       return null
@@ -427,13 +437,12 @@ async function getOrCreateAppFromConfig({
   appId,
 }: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
-  const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
       appId,
       appHost,
-      organizationId: organizationId || undefined,
+      isSdkApp: determineIsApp(cliConfig),
     })
     spinner.succeed()
 
@@ -458,9 +467,9 @@ export async function getOrCreateUserApplicationFromConfig(
   options: UserApplicationConfigOptions,
 ): Promise<UserApplication> {
   const {context, appId, appHost} = options
-  const isApp = determineIsApp(context.cliConfig)
+  const isSdkApp = determineIsApp(context.cliConfig)
 
-  if (isApp) {
+  if (isSdkApp) {
     return getOrCreateAppFromConfig(options)
   }
 
@@ -479,7 +488,7 @@ export interface CreateDeploymentOptions {
   version: string
   isAutoUpdating: boolean
   tarball: Gzip
-  isApp?: boolean
+  isSdkApp?: boolean
 }
 
 export async function createDeployment({
@@ -488,7 +497,7 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-  isApp,
+  isSdkApp,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
@@ -500,7 +509,7 @@ export async function createDeployment({
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
-    query: isApp ? {appType: 'coreApp'} : {appType: 'studio'},
+    query: isSdkApp ? {appType: 'coreApp'} : {appType: 'studio'},
   })
 }
 

@@ -14,7 +14,7 @@ import {
   type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
-import {cloneDeep} from 'lodash'
+import {cloneDeep} from 'lodash-es'
 
 const FIELD_REF = Symbol('FIELD_REF')
 const ruleConstraintTypes: RuleTypeConstraint[] = [

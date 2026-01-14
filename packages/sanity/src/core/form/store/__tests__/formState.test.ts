@@ -451,6 +451,7 @@ const defaultOptions: RootFormStateOptions = {
   hidden: undefined,
   readOnly: undefined,
   perspective: 'published',
+  hasUpstreamVersion: true,
 }
 
 describe.each(

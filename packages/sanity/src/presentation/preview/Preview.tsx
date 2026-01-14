@@ -23,12 +23,13 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
+import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
   forwardRef,
   memo,
   useCallback,
   useEffect,
+  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -37,7 +38,6 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Button, TooltipDelayGroupProvider} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
@@ -171,11 +171,11 @@ export const Preview = memo(
 
       presentationRef.send({type: 'iframe reload'})
     }, [presentationRef, previewUrl])
+
+    const [continueAnyway, setContinueAnyway] = useState(false)
     const handleContinueAnyway = useCallback(() => {
       setContinueAnyway(true)
     }, [])
-
-    const [continueAnyway, setContinueAnyway] = useState(false)
     const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
     useEffect(() => {
       if (isLoading || isRefreshing) {

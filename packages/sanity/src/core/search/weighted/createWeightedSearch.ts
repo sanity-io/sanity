@@ -1,5 +1,5 @@
 import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
-import {sortBy} from 'lodash'
+import {sortBy} from 'lodash-es'
 import {map, tap} from 'rxjs/operators'
 
 import {

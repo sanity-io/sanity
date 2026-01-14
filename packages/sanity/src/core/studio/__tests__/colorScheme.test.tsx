@@ -1,4 +1,5 @@
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -46,7 +47,7 @@ describe('ColorScheme', () => {
   })
 
   describe('ColorSchemeLocalStorageProvider', () => {
-    test('persists scheme changes to localStorage', () => {
+    test('persists scheme changes to localStorage', async () => {
       const onSchemeChange = vi.fn()
       render(
         <ColorSchemeLocalStorageProvider onSchemeChange={onSchemeChange}>
@@ -69,7 +70,7 @@ describe('ColorScheme', () => {
       expect(screen.getByTestId('scheme')).toHaveTextContent('system')
 
       // Change scheme
-      fireEvent.click(screen.getByTestId('change-button'))
+      await userEvent.click(screen.getByTestId('change-button'))
       expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
       expect(onSchemeChange).toHaveBeenCalledWith('dark')
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith('sanityStudio:ui:colorScheme', 'dark')

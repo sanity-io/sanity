@@ -17,7 +17,7 @@ const releasesLocaleStrings = {
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
   /** Menu item label for showing scheduled drafts */
-  'action.drafts': 'Drafts',
+  'action.drafts': 'Scheduled drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
@@ -28,14 +28,6 @@ const releasesLocaleStrings = {
   'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
-  /** Action text for scheduling publish of a draft document */
-  'action.schedule-publish': 'Schedule Publish',
-  /** Tooltip text for when schedule publish is disabled due to validation errors */
-  'action.schedule-publish.disabled.validation-issues':
-    'Cannot Schedule Draft due to validation errors in the current draft.',
-  /** Tooltip text for when schedule publish is disabled due to cardinality one releases */
-  'action.schedule-publish.disabled.cardinality-one':
-    'A Scheduled Draft for this document already exists.',
   /** Action text for scheduling unpublish of a draft document */
   'action.schedule-unpublish': 'Schedule Unpublish',
   /** Tooltip text for when schedule unpublish is disabled because document is not published */
@@ -107,7 +99,7 @@ const releasesLocaleStrings = {
   'archive-info.title': 'This release is archived',
   /** Description for information card on a published or archived release to description retention effects */
   'archive-info.description':
-    'Your plan supports a {{retentionDays}}-day retention period. After this period this release will be removed.',
+    'It will be available for {{retentionDays}} days, then automatically removed on {{removalDate}}. <Link>Learn about retention</Link>.',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -159,6 +151,14 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title-release': 'Remove from release',
 
+  /** Title for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.title': 'Draft version already exists',
+  /** Description for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.description':
+    'A draft version of this document already exists. Copy the current version to the draft and override the existing draft version.',
+  /** Confirm button text for overriding existing draft */
+  'copy-to-draft-dialog.confirm-button': 'Yes, override Draft',
+
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
@@ -186,6 +186,8 @@ const releasesLocaleStrings = {
   'failed-publish-title': 'Failed to publish',
   /** Title text displayed for releases that failed to schedule  */
   'failed-schedule-title': 'Failed to schedule',
+  /** Tooltip text for releases that have passed their intended publish date */
+  'passed-intended-publish-date': 'This release has passed its intended publish date',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',
@@ -277,7 +279,7 @@ const releasesLocaleStrings = {
   'publish-dialog.validation.error': 'Some documents have validation errors',
 
   /** Title for information card on a published release */
-  'publish-info.title': 'This release is published',
+  'publish-info.title': 'This release is published successfully.',
 
   /** Placeholder title for a release with no title */
   'release-placeholder.title': 'Untitled',
@@ -340,8 +342,7 @@ const releasesLocaleStrings = {
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
   /** Description for warning that the published schedule time is in the past */
-  'schedule-dialog.publish-date-in-past-warning':
-    'Schedule this release for a future time and date.',
+  'schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
 
   /** Header for the schedule unpublish dialog */
   'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
@@ -477,6 +478,29 @@ const releasesLocaleStrings = {
     'Drafts mode has been disabled but there are still scheduled drafts to be published.',
   /** Text for when no scheduled drafts are found */
   'no-scheduled-drafts': 'No Scheduled Drafts',
+
+  /** Banner text showing count of active scheduled drafts requiring confirmation with one draft */
+  'banner.confirm-active-scheduled-drafts_one':
+    'There is {{count}} Scheduled Draft that requires scheduling confirmation',
+  /** Banner text showing count of active scheduled drafts requiring confirmation with multiple drafts */
+  'banner.confirm-active-scheduled-drafts_other':
+    'There are {{count}} Scheduled Drafts that require scheduling confirmation',
+  /** Button text for confirming scheduling of active drafts */
+  'banner.confirm-active-scheduled-drafts.button': 'Confirm scheduling',
+
+  /** Dialog title for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.title': 'Confirm Scheduled Drafts',
+  /** Dialog description for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.description':
+    'These drafts require confirmation to schedule their publishing.',
+  /** Dialog warning when some scheduled drafts have past dates */
+  'confirm-active-scheduled-drafts-dialog.past-dates-warning':
+    'Some of these Scheduled Drafts are scheduled for past dates. Confirming schedules will immediately publish those versions of documents.',
+  /** Dialog confirm button text for confirming all scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.confirm-button': 'Confirm Schedules',
+
+  /** Toast error message when bulk scheduling of active drafts fails */
+  'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
 }
 
 /**

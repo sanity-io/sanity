@@ -1,0 +1,4 @@
+{
+  "typescript.experimental.useTsgo": true,
+  "oxc.typeAware": true
+}

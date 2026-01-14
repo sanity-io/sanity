@@ -4,6 +4,7 @@ import {
   isDraftId,
   isPublishedId,
   type ReleaseDocument,
+  type TargetPerspective,
 } from 'sanity'
 
 /**
@@ -18,7 +19,7 @@ import {
 export function findRelease(
   documentId: string,
   releases: ReleaseDocument[],
-): ReleaseDocument | 'published' | 'draft' | undefined {
+): TargetPerspective | undefined {
   if (isPublishedId(documentId)) {
     return 'published'
   }
@@ -27,7 +28,9 @@ export function findRelease(
     return 'draft'
   }
 
-  return releases.find(
-    ({_id}) => getReleaseIdFromReleaseDocumentId(_id) === getVersionFromId(documentId),
+  return (
+    releases.find(
+      ({_id}) => getReleaseIdFromReleaseDocumentId(_id) === getVersionFromId(documentId),
+    ) ?? getVersionFromId(documentId)
   )
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "4.10.0",
+  "version": "5.3.1",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -25,18 +25,16 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"
@@ -44,7 +42,7 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/vision/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -52,61 +50,64 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.18.7",
-    "@codemirror/commands": "^6.8.1",
+    "@codemirror/autocomplete": "^6.20.0",
+    "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-javascript": "^6.2.4",
-    "@codemirror/language": "^6.11.3",
+    "@codemirror/language": "^6.12.1",
     "@codemirror/search": "^6.5.11",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.2",
+    "@codemirror/state": "^6.5.3",
+    "@codemirror/view": "^6.39.9",
     "@juggle/resize-observer": "^3.4.0",
-    "@lezer/highlight": "^1.2.1",
+    "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
     "@sanity/color": "^3.0.6",
     "@sanity/icons": "^3.7.4",
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.2",
-    "@uiw/react-codemirror": "^4.25.1",
+    "@uiw/react-codemirror": "^4.25.4",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.5.9",
     "json5": "^2.2.3",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.22",
     "quick-lru": "^5.1.1",
-    "react-compiler-runtime": "19.1.0-rc.3",
     "react-fast-compare": "^3.2.2",
-    "react-rx": "^4.2.1",
-    "rxjs": "^7.8.2",
-    "use-effect-event": "^2.0.3"
+    "react-rx": "^4.2.2",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
-    "@sanity/cli": "workspace:*",
-    "@sanity/client": "^7.11.2",
-    "@sanity/codegen": "workspace:*",
-    "@sanity/diff": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/client": "catalog:",
     "@sanity/eslint-config-i18n": "catalog:",
-    "@sanity/migrate": "workspace:*",
-    "@sanity/mutator": "workspace:*",
-    "@sanity/schema": "workspace:*",
-    "@sanity/types": "workspace:*",
-    "@sanity/util": "workspace:*",
-    "@testing-library/react": "^16.3.0",
-    "@types/lodash": "^4.17.20",
+    "@sanity/pkg-utils": "catalog:",
+    "@testing-library/react": "^16.3.1",
+    "@types/lodash-es": "^4.17.12",
+    "@types/react": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
-    "jsdom": "^23.2.0",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "sanity": "workspace:*",
+    "rimraf": "^5.0.10",
+    "sanity": "^5.3.1",
     "styled-components": "catalog:",
-    "vitest": "^3.2.4"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react": "^18 || ^19.0.0",
+    "react": "^19.2.2",
+    "sanity": "^4.0.0-0 || ^5.0.0-0",
     "styled-components": "^6.1.15"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

@@ -1,4 +1,4 @@
-import {useScheduledDraftDocument} from '../../../hooks/useScheduledDraftDocument'
+import {useScheduledDraftDocument} from '../../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useReleaseHistory} from '../../detail/documentTable/useReleaseHistory'
 

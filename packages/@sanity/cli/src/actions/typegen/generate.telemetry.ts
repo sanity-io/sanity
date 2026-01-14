@@ -1,6 +1,6 @@
 import {defineTrace} from '@sanity/telemetry'
 
-interface TypesGeneratedTraceAttrubutes {
+interface TypesGeneratedTraceAttributes {
   outputSize: number
   queriesCount: number
   schemaTypesCount: number
@@ -11,9 +11,10 @@ interface TypesGeneratedTraceAttrubutes {
   unknownTypeNodesRatio: number
   emptyUnionTypeNodesGenerated: number
   configOverloadClientMethods: boolean
+  configMethod: 'legacy' | 'cli'
 }
 
-export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttrubutes>({
+export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttributes>({
   name: 'Types Generated',
   version: 0,
   description: 'Trace emitted when generating TypeScript types for queries',

@@ -1,49 +1,171 @@
 #!/usr/bin/env node
-/* eslint-disable import/no-dynamic-require, no-sync, no-console, no-process-exit */
+/**
+ * `npx sanity`: in order for this to work, the `sanity` module should be the one
+ * exposing a binary. However, the `@sanity/cli` module is the one who _actually_ ship
+ * the CLI binary.
+ *
+ * To solve this:
+ * 1. `@sanity/cli` is a dependency of the `sanity` module
+ * 2. The path to this file is configured as `bin.sanity` in the `sanity` module
+ * 3. This script resolves the `@sanity/cli` package, finds the path to the `sanity`
+ *    binary from the `@sanity/cli` package declaration (`bin.sanity`)
+ * 4. Either imports the resolved path directly (if it's a Node.js script), or spawns it
+ *    (if the path specified does not point to a Node.js script)
+ *
+ * See `runSanityCli()` for more details on the dual approach of importing vs spawning.
+ */
 
-const fs = require('fs')
-const path = require('path')
-const readPkgUp = require('read-pkg-up')
+/* eslint-disable import/no-dynamic-require, no-process-exit */
+import {readFile, open} from 'node:fs/promises'
+import {createRequire} from 'node:module'
+import {dirname, resolve} from 'node:path'
+import execa from 'execa'
 
-const expectedPath = path.join(__dirname, '..', 'node_modules', '.bin', 'sanity')
+const require = createRequire(import.meta.url)
 
-if (fs.existsSync(expectedPath)) {
-  isNodeScript(expectedPath).then((isScript) => {
-    if (isScript) {
-      require(expectedPath)
-    } else {
-      runFromCli()
-    }
+runSanityCli().catch((err) => {
+  // Use setImmediate/setTimeout to throw outside the promise chain
+  setImmediate(() => {
+    throw err
   })
-} else {
-  runFromCli()
-}
+})
 
-function runFromCli() {
-  getSanityCliPath()
-    .then((cliPath) => require(path.join(cliPath, 'bin', 'sanity')))
-    .catch((err) => {
-      console.error(err)
-      process.exit(1)
-    })
-}
+/**
+ * Resolves the Sanity CLI binary from `@sanity/cli` and executes it in the best
+ * possible way available to us, based on the module type:
+ *
+ * - If the binary is a Node.js script, we either `import()` or `require()` it based on
+ *   the extension (cjs/mjs) or the package `type` field. This is prefered as it does
+ *   not require spawning a new process.
+ * - If the binary is not a Node.js script, we spawn it using `execa`, which handles
+ *   things correctly across platforms (windows doesn't enjoy shebangs etc). stdio is
+ *   inherited from the parent process.
+ *
+ * Note:
+ * The "new" CLI is an ESM module, while the "old" CLI is CommonJS.
+ * In theory, Node.js now has support for transparently mixing CommonJS and ESM, but in
+ * practice we've seen some issues with this approach for the CLI specifically. Thus, we
+ * explicitly check the package type and use either `import()` or `require()` accordingly.
+ */
+async function runSanityCli() {
+  const {bin, type} = await getSanityCliBin()
 
-async function getSanityCliPath() {
-  const modulePath = require.resolve('@sanity/cli')
-  const pkg = await readPkgUp({cwd: path.dirname(modulePath)})
-  if (pkg) {
-    return path.dirname(pkg.path)
+  // The optimal case: the binary is a Node.js script - import/require it directly to
+  // prevent needing to spawn a new process
+  if (await isNodeScript(bin)) {
+    if (type === 'module') {
+      await import(bin)
+    } else {
+      require(bin)
+    }
+    return
   }
 
-  throw new Error('Failed to resolve @sanity/cli path')
+  // Fallback: spawn the binary as a child process
+  const child = execa(bin, process.argv.slice(2), {
+    stdio: 'inherit',
+    encoding: null,
+    buffer: false,
+    reject: false,
+  })
+
+  // Forward signals to the child process
+  const signals = ['SIGINT', 'SIGTERM', 'SIGHUP']
+  const signalHandlers = signals.map((signal) => {
+    const handler = () => child.kill(signal)
+    process.on(signal, handler)
+    return {signal, handler}
+  })
+
+  try {
+    const {exitCode} = await child
+    process.exitCode = exitCode
+  } finally {
+    // Clean up signal handlers
+    for (const {signal, handler} of signalHandlers) {
+      process.off(signal, handler)
+    }
+  }
 }
 
-async function isNodeScript(scriptPath) {
-  const file = await fs.promises.open(scriptPath)
-  const {buffer} = await file.read({length: 256})
-  await file.close()
+async function getSanityCliBin() {
+  // Resolve package.json from `@sanity/cli` instead of the main export to allow
+  // resolving before the package is built. Note that this might fail if `@sanity/cli`
+  // does not explicitly list `./package.json` in the exports field, but since control
+  // this module, this feels like a safe assumption.
+  const pkgPath = require.resolve('@sanity/cli/package.json')
 
-  const content = buffer.toString('utf8')
-  const firstLine = content.trimStart().slice(0, content.indexOf('\n'))
-  return firstLine.endsWith('node')
+  let pkg
+  try {
+    pkg = JSON.parse(await readFile(pkgPath, 'utf8'))
+  } catch (err) {
+    throw new Error(`Failed to read @sanity/cli package.json: ${err.message}`)
+  }
+
+  if (!pkg.bin?.sanity) {
+    throw new Error('Failed to find `bin.sanity` field in @sanity/cli package.json')
+  }
+
+  // Assuming `package.json` is located at the root of the package - anything else would
+  // be… wild, unconventional, unorthodox… I'd even say… heretical.
+  const cliDir = dirname(pkgPath)
+
+  // Note that npm normalizes bin paths: `./bin/sanity` -> `bin/sanity`
+  const bin = resolve(cliDir, pkg.bin.sanity)
+  const type = determineModuleType(bin, pkg)
+  return {bin, type}
+}
+
+/**
+ * Determines if the file at `scriptPath` is a Node.js script by checking its shebang.
+ * Returns true if:
+ * - The shebang interpreter is `node` (e.g., `#!/usr/bin/node`, `#!/usr/bin/env node`)
+ * - The file has a `.js`, `.mjs`, or `.cjs` extension (fallback when no shebang)
+ */
+async function isNodeScript(scriptPath) {
+  let file
+  try {
+    file = await open(scriptPath)
+  } catch (err) {
+    throw new Error(
+      `Failed to read CLI binary at ${scriptPath}: ${err instanceof Error ? err.message : err}`,
+    )
+  }
+
+  try {
+    const {buffer, bytesRead} = await file.read({length: 256})
+    const content = buffer.toString('utf8', 0, bytesRead)
+
+    if (!content.startsWith('#!')) {
+      // No shebang - fall back to extension check (.js, .mjs, .cjs)
+      // This is not perfect - but it's better than nothing
+      return /\.(m?js|cjs)$/.test(scriptPath)
+    }
+
+    // Extract the interpreter, handling both direct paths and `env` invocations:
+    // `#!/usr/bin/node` => `node`
+    // `#!/usr/bin/env node` => `node`
+    // `#!/usr/bin/env -S node --flags` => `node`
+    const firstLine = content.slice(2, content.indexOf('\n')).trim()
+    const parts = firstLine.split(/\s+/)
+    const interpreter = parts[0].endsWith('/env')
+      ? parts.find((part, i) => i > 0 && !part.startsWith('-'))
+      : parts[0]
+
+    return interpreter && (interpreter.endsWith('node') || interpreter.endsWith('node.exe'))
+  } finally {
+    await file.close()
+  }
+}
+
+function determineModuleType(binPath, pkgJson) {
+  if (binPath.endsWith('.cjs')) {
+    return 'commonjs'
+  }
+
+  if (binPath.endsWith('.mjs')) {
+    return 'module'
+  }
+
+  return pkgJson.type === 'module' ? 'module' : 'commonjs'
 }

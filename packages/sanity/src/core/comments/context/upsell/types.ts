@@ -4,6 +4,7 @@ import {type UpsellData} from '../../../studio/upsell/types'
 export interface CommentsUpsellContextValue {
   upsellDialogOpen: boolean
   handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  handleClose: () => void
   upsellData: UpsellData | null
   telemetryLogs: {
     dialogSecondaryClicked: () => void

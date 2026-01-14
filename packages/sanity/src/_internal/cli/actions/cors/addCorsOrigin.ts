@@ -141,7 +141,7 @@ function filterOrigin(origin: string): string | null {
     host = host.replace(portReplacement, ':*').replace(new RegExp(wildcardReplacement, 'g'), '*')
 
     return `${parsed.protocol}//${host}`
-  } catch (err) {
+  } catch {
     return null
   }
 }
@@ -154,7 +154,7 @@ function validateOrigin(origin: string | null, givenOrigin: string): true | stri
   try {
     url.parse(origin || (0 as any as string)) // Use 0 to trigger error for unset values
     return true
-  } catch (err) {
+  } catch {
     // Fall-through to error
   }
 

@@ -17,7 +17,7 @@ import {
   UnknownIcon,
 } from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {capitalize, get} from 'lodash'
+import {capitalize, get} from 'lodash-es'
 import {type ComponentType} from 'react'
 
 import {CustomIcon} from './CustomIcon'
