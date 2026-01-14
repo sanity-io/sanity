@@ -111,7 +111,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
         <SanityDefaultMedia
           client={client}
           dimensions={options.dimensions}
-          imageSource={imageSource}
+          imageSource={imageSource as SanityImageSource}
           imageUrlBuilder={imageBuilder}
           title={title}
         />

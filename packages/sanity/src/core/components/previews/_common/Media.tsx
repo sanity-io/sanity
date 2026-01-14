@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import {isValidElement, type ComponentType, type ReactNode} from 'react'
+import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
 import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
