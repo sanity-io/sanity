@@ -10,6 +10,7 @@ import {
   useFilteredReleases,
   usePerspective,
 } from 'sanity'
+import {SingleDocReleaseContext} from 'sanity/_singletons'
 import {type IntentLinkProps} from 'sanity/router'
 import {
   beforeEach,
@@ -23,7 +24,6 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {SingleDocReleaseProvider} from '../../../../../../../core/singleDocRelease'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
@@ -107,13 +107,13 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
     },
   })
 
-  // Wrap with SingleDocReleaseProvider
+  // Wrap with SingleDocReleaseContext.Provider
   return function Wrapper({children}: {children: React.ReactNode}) {
     return (
       <BaseWrapper>
-        <SingleDocReleaseProvider onSetScheduledDraftPerspective={vi.fn()}>
+        <SingleDocReleaseContext.Provider value={{onSetScheduledDraftPerspective: vi.fn()}}>
           {children}
-        </SingleDocReleaseProvider>
+        </SingleDocReleaseContext.Provider>
       </BaseWrapper>
     )
   }
