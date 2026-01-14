@@ -1,6 +1,6 @@
 {
   "name": "e2e-embedded-studio-vite",
-  "version": "5.3.0",
+  "version": "5.3.1",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+### Bug Fixes
+
+* **core:** use intent links for content releases navigation ([#11828](https://github.com/sanity-io/sanity/issues/11828)) ([79afdaa](https://github.com/sanity-io/sanity/commit/79afdaa626b6461db733ad5c1878ee91eba5f883)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
 
 ### Features
