@@ -37,7 +37,6 @@ jobs:
         run: pnpm build --output-logs=full --log-order=grouped
 
   playwright-ct-test:
-    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     needs: [install]
     runs-on: ubuntu-8core
@@ -54,14 +53,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
+        if: needs.install.outputs.examples_only != 'true'
 
       - name: Store Playwright's Version
+        if: needs.install.outputs.examples_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
+        if: needs.install.outputs.examples_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -70,21 +72,23 @@ jobs:
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: needs.install.outputs.examples_only != 'true' && (steps.cache-playwright-browsers.outputs.cache-hit != 'true' || matrix.project == 'webkit')
         run: npx playwright install --with-deps
 
       - name: Build packages
+        if: needs.install.outputs.examples_only != 'true'
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Run end-to-end tests
+        if: needs.install.outputs.examples_only != 'true'
         env:
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v6
-        if: always()
+        if: always() && needs.install.outputs.examples_only != 'true'
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: ${{ github.workspace }}/packages/sanity/blob-report

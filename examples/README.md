@@ -1,7 +1,5 @@
 # Sanity Examples
 
--- validating examples CI --
-
 This directory contains comprehensive examples and reference implementations for various Sanity features and integrations. Whether you're building your first Sanity project or exploring advanced functionality, these examples provide practical code you can reference and adapt.
 
 ## 📁 Directory Structure
