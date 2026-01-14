@@ -19,7 +19,7 @@ interface ExtractFlags {
   'enforce-required-fields'?: boolean
   'format'?: 'groq-type-nodes' | string
   'watch'?: boolean
-  'watch-path'?: string | string[]
+  'watch-patterns'?: string | string[]
 }
 
 export default async function extractAction(
@@ -113,11 +113,10 @@ async function runWatchMode(
   const outputPath = flags.path || join(workDir, 'schema.json')
 
   // Build watch patterns
-  const additionalPaths = flags['watch-path']
-  const additionalPatterns = Array.isArray(additionalPaths)
-    ? additionalPaths
-    : additionalPaths
-      ? [additionalPaths]
+  const additionalPatterns = Array.isArray(flags['watch-patterns'])
+    ? flags['watch-patterns']
+    : flags['watch-patterns']
+      ? [flags['watch-patterns']]
       : []
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
