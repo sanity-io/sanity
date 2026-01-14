@@ -1,7 +1,7 @@
 import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {once} from 'lodash-es'
+import {mean, once} from 'lodash-es'
 
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
@@ -112,6 +112,13 @@ async function runWatchMode(
   const enforceRequiredFields = flags['enforce-required-fields'] || false
   const outputPath = flags.path || join(workDir, 'schema.json')
 
+  // Keep the start time + some simple stats for extractions as they happen
+  const startTime = Date.now()
+  const stats: {successfulDurations: number[]; failedCount: number} = {
+    successfulDurations: [],
+    failedCount: 0,
+  }
+
   // Build watch patterns
   const additionalPatterns = Array.isArray(flags['watch-patterns'])
     ? flags['watch-patterns']
@@ -143,7 +150,19 @@ async function runWatchMode(
     enforceRequiredFields,
     format,
     patterns: watchPatterns,
-    onExtraction: (result) => trace.log({step: 'extracted', success: result.success}),
+    onExtraction: ({success, duration}) => {
+      if (success) {
+        stats.successfulDurations.push(duration)
+      } else {
+        stats.failedCount++
+      }
+    },
+  })
+
+  trace.log({
+    step: 'started',
+    enforceRequiredFields,
+    schemaFormat: format,
   })
 
   output.print('')
@@ -156,7 +175,13 @@ async function runWatchMode(
    * SIGINT/SIGTERM callbacks, causing double trace logs etc..
    */
   const cleanup = once(() => {
-    trace.log({step: 'stopped'})
+    trace.log({
+      step: 'stopped',
+      watcherDuration: Date.now() - startTime,
+      averageExtractionDuration: mean(stats.successfulDurations),
+      extractionSuccessfulCount: stats.successfulDurations.length,
+      extractionFailedCount: stats.failedCount,
+    })
     trace.complete()
 
     output.print('')

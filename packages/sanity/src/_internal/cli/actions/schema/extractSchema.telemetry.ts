@@ -15,8 +15,13 @@ type SchemaExtractionWatchModeAttributes =
       enforceRequiredFields: boolean
       schemaFormat: string
     }
-  | {step: 'extracted'; success: boolean}
-  | {step: 'stopped'}
+  | {
+      step: 'stopped'
+      extractionSuccessfulCount: number
+      extractionFailedCount: number
+      averageExtractionDuration: number
+      watcherDuration: number
+    }
 
 export const SchemaExtractedTrace = defineTrace<SchemaExtractedTraceAttrubutes>({
   name: 'Schema Extracted',
@@ -25,7 +30,7 @@ export const SchemaExtractedTrace = defineTrace<SchemaExtractedTraceAttrubutes>(
 })
 
 export const SchemaExtractionWatchModeTrace = defineTrace<SchemaExtractionWatchModeAttributes>({
-  name: 'Schema Extraction Watch Mode Running',
+  name: 'Schema Extraction Watch Mode Started',
   version: 0,
-  description: 'Trace emitted when schema extraction watch mode is running',
+  description: 'Trace emitted when schema extraction watch mode is run',
 })

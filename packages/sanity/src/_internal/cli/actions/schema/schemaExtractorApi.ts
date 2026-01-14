@@ -38,6 +38,12 @@ export interface ExtractSchemaOptions {
   format?: string
 }
 
+interface OnExtractionCallbackData {
+  success: boolean
+  schema?: SchemaType
+  duration: number
+}
+
 /**
  * Extracts schema to a file. Runs in a worker thread for isolation. Returns the extracted schema
  * after the extraction has completed and the file has been written to the file.
@@ -103,7 +109,7 @@ export interface SchemaWatcherOptions {
   debounceMs?: number
 
   /** Optional callback function for listening in on the schema extraction */
-  onExtraction?: (result: {success: boolean; schema?: SchemaType}) => void
+  onExtraction?: (result: OnExtractionCallbackData) => void
 }
 
 /** Result from starting a schema watcher */
@@ -136,6 +142,7 @@ export async function startSchemaWatcher(
   // Helper to run extraction with spinner and error display
   const runExtraction = async (spinnerText: string, successText: string): Promise<boolean> => {
     const spinner = output.spinner({}).start(spinnerText)
+    const startTime = Date.now()
 
     try {
       const schema = await extractSchemaToFile({
@@ -146,11 +153,11 @@ export async function startSchemaWatcher(
         format,
       })
 
-      onExtraction?.({success: true, schema})
+      onExtraction?.({success: true, schema, duration: Date.now() - startTime})
       spinner.succeed(successText)
       return true
     } catch (err) {
-      onExtraction?.({success: false})
+      onExtraction?.({success: false, duration: Date.now() - startTime})
       spinner.fail(`Extraction failed: ${err instanceof Error ? err.message : String(err)}`)
       if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
         output.print('')
