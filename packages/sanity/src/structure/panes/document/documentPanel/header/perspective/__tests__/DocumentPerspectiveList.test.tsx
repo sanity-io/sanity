@@ -9,7 +9,6 @@ import {
   useDocumentVersions,
   useFilteredReleases,
   usePerspective,
-  useSingleDocRelease,
 } from 'sanity'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -24,6 +23,7 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {SingleDocReleaseProvider} from '../../../../../../../core/singleDocRelease'
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
@@ -40,7 +40,6 @@ vi.mock('sanity', async (importOriginal) => ({
   }),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
-  useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
   SANITY_VERSION: '0.0.0',
 }))
 
@@ -66,17 +65,12 @@ vi.mock('sanity/router', () => {
   }
 })
 
-vi.mock('../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider', () => ({
-  useSingleDocRelease: vi.fn().mockReturnValue({onSetScheduledDraftPerspective: vi.fn()}),
-}))
-
 vi.mock('../../../../useDocumentPane')
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseSingleDocRelease = useSingleDocRelease as Mock<typeof useSingleDocRelease>
 
 const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
@@ -98,7 +92,7 @@ const mockCurrent: ReleaseDocument = {
 }
 
 const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
-  const wrapper = await createTestProvider({
+  const BaseWrapper = await createTestProvider({
     config: {
       schema: {
         types: [
@@ -113,7 +107,16 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
     },
   })
 
-  return wrapper
+  // Wrap with SingleDocReleaseProvider
+  return function Wrapper({children}: {children: React.ReactNode}) {
+    return (
+      <BaseWrapper>
+        <SingleDocReleaseProvider onSetScheduledDraftPerspective={vi.fn()}>
+          {children}
+        </SingleDocReleaseProvider>
+      </BaseWrapper>
+    )
+  }
 }
 
 const usePerspectiveMockValue: Mocked<ReturnType<typeof usePerspective>> = {
@@ -190,9 +193,6 @@ describe('DocumentPerspectiveList', () => {
       loading: false,
       data: [mockCurrent],
       dispatch: vi.fn(),
-    })
-    mockUseSingleDocRelease.mockReturnValue({
-      onSetScheduledDraftPerspective: vi.fn(),
     })
 
     mockUseDocumentVersions.mockReturnValue({
