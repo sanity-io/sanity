@@ -406,6 +406,12 @@ export interface CliConfig {
      * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}`
      */
     watchPatterns?: string[]
+
+    /**
+     * The name of the workspace to generate a schema for. Required if your Sanity project has more than one
+     * workspace.
+     */
+    workspace?: string
   }
 }
 

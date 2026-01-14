@@ -43,6 +43,7 @@ function getExtractOptions(
   const schemaExtract = config?.schemaExtract
 
   return {
+    workspace: flags.workspace ?? schemaExtract?.workspace,
     format: flags.format ?? schemaExtract?.format ?? 'groq-type-nodes',
     enforceRequiredFields:
       flags['enforce-required-fields'] ?? schemaExtract?.enforceRequiredFields ?? false,
@@ -64,7 +65,12 @@ async function runSingleExtraction(
 ): Promise<void> {
   const flags = args.extOptions
   const {workDir, output, telemetry, cliConfig} = context
-  const {format, enforceRequiredFields, outputPath} = getExtractOptions(flags, cliConfig, workDir)
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    workspace: workspaceName,
+  } = getExtractOptions(flags, cliConfig, workDir)
 
   const spinner = output
     .spinner({})
@@ -81,7 +87,7 @@ async function runSingleExtraction(
     const schema = await extractSchemaToFile({
       workDir,
       outputPath,
-      workspaceName: flags.workspace,
+      workspaceName,
       enforceRequiredFields,
       format,
     })
@@ -137,7 +143,13 @@ async function runWatchMode(
 
   const {workDir, output, telemetry, cliConfig} = context
   const options = getExtractOptions(flags, cliConfig, workDir)
-  const {format, enforceRequiredFields, outputPath, watchPatterns: additionalPatterns} = options
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    watchPatterns: additionalPatterns,
+    workspace: workspaceName,
+  } = options
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
   const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
@@ -159,7 +171,7 @@ async function runWatchMode(
     workDir,
     outputPath,
     output,
-    workspaceName: flags.workspace,
+    workspaceName,
     enforceRequiredFields,
     format,
     patterns: watchPatterns,
