@@ -37,7 +37,6 @@
  */
 import path from 'node:path'
 
-import chalk from 'chalk'
 import {debounce} from 'lodash-es'
 import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
@@ -124,8 +123,6 @@ export interface SchemaExtractionPluginOptions {
   enforceRequiredFields?: boolean
 }
 
-const prefix = chalk.cyan('[schema]')
-
 /**
  * Creates a Vite plugin that automatically extracts Sanity schema during development.
  *
@@ -186,11 +183,14 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         workspaceName,
         enforceRequiredFields,
       })
-      output.log(prefix, logSymbols.success, `extracted to ${resolvedOutputPath}`)
+      output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
     } catch (err) {
-      output.log(prefix, `Extraction failed: ${err instanceof Error ? err.message : String(err)}`)
+      output.log(
+        logSymbols.error,
+        `Extraction failed: ${err instanceof Error ? err.message : String(err)}`,
+      )
       if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
-        output.log(prefix, logSymbols.error, formatSchemaValidation(err.validation))
+        output.log(logSymbols.error, formatSchemaValidation(err.validation))
       }
     } finally {
       isExtracting = false
@@ -243,7 +243,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       const startExtraction = () => {
         setTimeout(() => {
           // Notify about schema extraction enabled
-          output.info(prefix, logSymbols.info, 'Schema extraction enabled. Watching:')
+          output.info(logSymbols.info, 'Schema extraction enabled. Watching:')
           for (const pattern of watchPatterns) {
             output.info(`  - ${pattern}`)
           }
