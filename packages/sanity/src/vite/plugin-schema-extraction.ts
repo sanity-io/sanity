@@ -121,6 +121,12 @@ export interface SchemaExtractionPluginOptions {
    * @defaultValue false
    */
   enforceRequiredFields?: boolean
+
+  /**
+   * Callback that is called after an extraction run with information about
+   * the result of the extraction.
+   */
+  onExtraction?: (result: {success: boolean; duration: number; schema?: SchemaType}) => void
 }
 
 /**
@@ -149,6 +155,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     additionalPatterns = [],
     debounceMs = DEFAULT_DEBOUNCE_MS,
     enforceRequiredFields = false,
+    onExtraction,
   } = options
 
   const watchPatterns = [...DEFAULT_SCHEMA_PATTERNS, ...additionalPatterns]
@@ -174,17 +181,19 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     isExtracting = true
     pendingExtraction = false
 
-    output.log(prefix, 'Extracting schema...')
+    const startTime = Date.now()
 
     try {
-      await extractSchemaToFile({
+      const schema = await extractSchemaToFile({
         workDir: resolvedWorkDir,
         outputPath: resolvedOutputPath,
         workspaceName,
         enforceRequiredFields,
       })
+      onExtraction?.({success: true, duration: Date.now() - startTime, schema})
       output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
     } catch (err) {
+      onExtraction?.({success: false, duration: Date.now() - startTime})
       output.log(
         logSymbols.error,
         `Extraction failed: ${err instanceof Error ? err.message : String(err)}`,
