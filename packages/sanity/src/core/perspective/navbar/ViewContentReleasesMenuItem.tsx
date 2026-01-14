@@ -1,13 +1,25 @@
 import {CalendarIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, useCallback} from 'react'
-import {useRouter} from 'sanity/router'
+import {
+  type ComponentProps,
+  type ComponentType,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react'
+import {IntentLink, useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n'
 import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
+import {RELEASES_INTENT} from '../../releases/plugin'
 import {SCHEDULES_TOOL_NAME} from '../../schedules/plugin'
 
+const StyledLinkComponent = styled(IntentLink)`
+  text-decoration: none;
+`
 export const ViewContentReleasesMenuItem: ComponentType = () => {
   const router = useRouter()
   const {t} = useTranslation()
@@ -21,9 +33,28 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
     telemetry.log(NavigatedToReleasesOverview, {source: 'menu'})
   }, [telemetry])
 
+  const LinkComponent = useMemo(
+    () =>
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      forwardRef(function LinkComponent(
+        restProps: ComponentProps<typeof IntentLink>,
+        ref: ForwardedRef<HTMLAnchorElement>,
+      ) {
+        return (
+          <StyledLinkComponent
+            {...restProps}
+            intent={RELEASES_INTENT}
+            params={{source: 'menu'}}
+            ref={ref}
+          />
+        )
+      }),
+    [],
+  )
+
   return (
     <MenuItem
-      as="a"
+      as={LinkComponent}
       href={releasesUrl}
       onClick={handleClick}
       icon={CalendarIcon}
