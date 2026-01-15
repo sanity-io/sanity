@@ -13,7 +13,7 @@ import {
   startSchemaWatcher,
 } from './schemaExtractorApi'
 
-interface ExtractFlags {
+export interface ExtractFlags {
   'workspace'?: string
   'path'?: string
   'enforce-required-fields'?: boolean
@@ -35,7 +35,7 @@ export default async function extractAction(
   return runSingleExtraction(args, context)
 }
 
-function getExtractOptions(
+export function getExtractOptions(
   flags: ExtractFlags,
   config: CliCommandContext['cliConfig'],
   workDir: string,
