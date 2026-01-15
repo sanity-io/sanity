@@ -103,7 +103,8 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   const titleInput = insertDialog.getByRole('textbox', {name: 'Title'}).first()
   await expect(titleInput).toBeVisible()
   await titleInput.fill('Book title')
-  await expect(titleInput).toHaveValue('Book title')
+  // Re-query after fill since React may re-render the form
+  await expect(insertDialog.getByRole('textbox', {name: 'Title'}).first()).toHaveValue('Book title')
 
   // And the dialog is closed
   const closeDialogButton = insertDialog.getByLabel('Close dialog')
