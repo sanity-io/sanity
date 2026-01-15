@@ -171,7 +171,7 @@
     "@sanity/insert-menu": "^3.0.3",
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.1.0",
-    "@sanity/message-protocol": "^0.18.0",
+    "@sanity/message-protocol": "^0.19.0",
     "@sanity/migrate": "catalog:",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.0.1",
