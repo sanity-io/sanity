@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+### Bug Fixes
+
+* **deps:** Update dev-non-major ([#11837](https://github.com/sanity-io/sanity/issues/11837)) ([6444584](https://github.com/sanity-io/sanity/commit/64445845eb189a8989e77b9110bbde3817e635db)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
 
 **Note:** Version bump only for package test-create-integration-studio

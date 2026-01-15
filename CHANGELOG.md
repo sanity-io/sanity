@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+### Features
+
+* add media-library-auto-alt-text function example ([#11337](https://github.com/sanity-io/sanity/issues/11337)) ([85d983d](https://github.com/sanity-io/sanity/commit/85d983d3e8752502dfda6253df5b2e176d92392a)) by Bram Doppen (bramdoppen@gmail.com)
+* edit content of scheduled drafts ([#11692](https://github.com/sanity-io/sanity/issues/11692)) ([8862905](https://github.com/sanity-io/sanity/commit/8862905e93f3af7779f792b9c3d455573c5a88d7)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **core:** dont crash when image url string is passed to preview ([#6727](https://github.com/sanity-io/sanity/issues/6727)) ([98f37b8](https://github.com/sanity-io/sanity/commit/98f37b8b6656757d8babdb6fe0368c477cd33ba5)) by Fred Carlsen (fred@sjelfull.no)
+* correct navigation function call for confirming drafts ([#11842](https://github.com/sanity-io/sanity/issues/11842)) ([d0c01bd](https://github.com/sanity-io/sanity/commit/d0c01bd2382cee42af4033ed2660639b4b9d37b0)) by Jordan Lawrence (jordanl17@me.com)
+* correcting mismatch with filtering of CI for examples only changes ([#11831](https://github.com/sanity-io/sanity/issues/11831)) ([5cdb49d](https://github.com/sanity-io/sanity/commit/5cdb49da73f4ff1dd1155f276de3ee884875df77)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** update dependency @sanity/import to ^4.0.4 ([#11832](https://github.com/sanity-io/sanity/issues/11832)) ([8bea477](https://github.com/sanity-io/sanity/commit/8bea477b3787d29c03fcd79dc9b7d1c22de6bdaa)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update dev-non-major ([#11837](https://github.com/sanity-io/sanity/issues/11837)) ([6444584](https://github.com/sanity-io/sanity/commit/64445845eb189a8989e77b9110bbde3817e635db)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** ensure close button is rightmost in split pane toolbar ([#11817](https://github.com/sanity-io/sanity/issues/11817)) ([2e8e974](https://github.com/sanity-io/sanity/commit/2e8e9740a0cf1b06faf96090c4fb46711fb530bc)) by Eoin Falconer (eoin.falc@gmail.com)
+* **vision:** allow custom domains for saved query recall ([#11821](https://github.com/sanity-io/sanity/issues/11821)) ([dbf74ce](https://github.com/sanity-io/sanity/commit/dbf74ce69a60343f1cbae8217dbde75be21bd5f3)) by Eoin Falconer (eoin.falc@gmail.com)
+
 ## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
 
 ### Bug Fixes
