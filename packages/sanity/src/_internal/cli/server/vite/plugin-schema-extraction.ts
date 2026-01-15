@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import {type CliCommandContext} from '@sanity/cli'
-import {debounce, mean} from 'lodash-es'
+import {debounce, mean, once} from 'lodash-es'
 import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
 import {type Plugin} from 'vite'
@@ -242,8 +242,8 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         }
       }
 
-      // Log that the trace stopped when the watcher is shut down
-      const watcherClosed = () => {
+      // Prepare function to log "stopped" event to trace and complete the trace
+      const onClose = once(() => {
         if (!trace) {
           return
         }
@@ -254,12 +254,17 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
           extractionFailedCount: stats.failedCount,
           averageExtractionDuration: mean(stats.successfulDurations),
         })
-      }
+        trace.complete()
+      })
 
       server.watcher.on('change', handleChange)
       server.watcher.on('add', handleChange)
       server.watcher.on('unlink', handleChange)
-      server.watcher.on('close', watcherClosed)
+
+      // call the watcherClosed method when watcher is closed or when process is stopped/killed
+      server.watcher.on('close', onClose)
+      process.on('SIGTERM', onClose)
+      process.on('SIGINT', onClose)
 
       // Run initial extraction after server is ready
       const startExtraction = () => {
@@ -300,6 +305,8 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       } catch (err) {
         trace?.error(err)
         throw err
+      } finally {
+        trace?.complete()
       }
     },
   } satisfies Plugin
