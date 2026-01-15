@@ -1,39 +1,3 @@
-/**
- * Vite plugin for automatic Sanity schema extraction during development and build.
- *
- * After adding the plugin to your vite setup the schema will be extracted when building,
- * and when starting the vite dev server it will trigger the schema extraction whenever
- * files matching the watch pattern changes.
- *
- * @example Basic usage in vite.config.ts
- * ```ts
- * import {defineConfig} from 'vite'
- * import {sanitySchemaExtractionPlugin} from 'sanity/vite'
- *
- * export default defineConfig({
- *   plugins: [
- *     // Uses Vite's project root by default
- *     sanitySchemaExtractionPlugin(),
- *   ],
- * })
- * ```
- *
- * @example With custom options
- * ```ts
- * sanitySchemaExtractionPlugin({
- *   // Override the working directory if sanity.config.ts is not in Vite's root
- *   workDir: path.join(process.cwd(), 'studio'),
- *   outputPath: './generated/schema.json',
- *   workspaceName: 'default',
- *   additionalPatterns: ['lib/schemas/**\/*.ts'],
- * })
- * ```
- *
- * @remarks
- * Default watch patterns:
- * - `sanity.config.{js,jsx,ts,tsx,mjs}` - Sanity configuration file
- * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}` - Schema directories (schemas/, schemaTypes/, etc.)
- */
 import path from 'node:path'
 
 import {type CliCommandContext} from '@sanity/cli'
@@ -45,12 +9,9 @@ import {type Plugin} from 'vite'
 import {
   SchemaExtractedTrace,
   SchemaExtractionWatchModeTrace,
-} from '../_internal/cli/actions/schema/extractSchema.telemetry'
-import {formatSchemaValidation} from '../_internal/cli/actions/schema/formatSchemaValidation'
-import {
-  extractSchemaToFile,
-  SchemaExtractionError,
-} from '../_internal/cli/actions/schema/schemaExtractorApi'
+} from '../../actions/schema/extractSchema.telemetry'
+import {formatSchemaValidation} from '../../actions/schema/formatSchemaValidation'
+import {extractSchemaToFile, SchemaExtractionError} from '../../actions/schema/schemaExtractorApi'
 
 /**
  * Default glob patterns to watch for schema changes.
@@ -158,7 +119,7 @@ export interface SchemaExtractionPluginOptions {
  * @param options - Configuration options for the plugin
  * @returns A Vite plugin configured for schema extraction
  *
- * @public
+ * @internal
  */
 export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}) {
   const {

@@ -2,10 +2,10 @@ import {EventEmitter} from 'node:events'
 
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {SchemaExtractionError} from '../../_internal/cli/actions/schema/schemaExtractorApi'
+import {SchemaExtractionError} from '../../../actions/schema/schemaExtractorApi'
 import {sanitySchemaExtractionPlugin} from '../plugin-schema-extraction'
 
-vi.mock('../../_internal/cli/actions/schema/schemaExtractorApi', async (importOriginal) => ({
+vi.mock('../../../actions/schema/schemaExtractorApi', async (importOriginal) => ({
   ...(await importOriginal()),
   extractSchemaToFile: vi.fn().mockResolvedValue(undefined),
 }))
@@ -15,7 +15,7 @@ describe('sanitySchemaExtractionPlugin', () => {
 
   beforeEach(async () => {
     vi.useFakeTimers()
-    const module = await import('../../_internal/cli/actions/schema/schemaExtractorApi')
+    const module = await import('../../../actions/schema/schemaExtractorApi')
     extractSchemaToFile = vi.mocked(module.extractSchemaToFile)
     extractSchemaToFile.mockReset()
     extractSchemaToFile.mockResolvedValue(undefined)

@@ -78,11 +78,6 @@
       "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
-    "./vite": {
-      "source": "./src/_exports/vite.ts",
-      "monorepo": "./src/_exports/vite.ts",
-      "default": "./lib/vite.js"
-    },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
@@ -115,9 +110,6 @@
       ],
       "structure": [
         "./lib/structure.d.ts"
-      ],
-      "vite": [
-        "./lib/vite.d.ts"
       ]
     }
   },
@@ -360,7 +352,6 @@
       "./structure": "./lib/structure.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
-      "./vite": "./lib/vite.js",
       "./package.json": "./package.json"
     }
   }
