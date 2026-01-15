@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+### Features
+
+* edit content of scheduled drafts ([#11692](https://github.com/sanity-io/sanity/issues/11692)) ([8862905](https://github.com/sanity-io/sanity/commit/8862905e93f3af7779f792b9c3d455573c5a88d7)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **core:** dont crash when image url string is passed to preview ([#6727](https://github.com/sanity-io/sanity/issues/6727)) ([98f37b8](https://github.com/sanity-io/sanity/commit/98f37b8b6656757d8babdb6fe0368c477cd33ba5)) by Fred Carlsen (fred@sjelfull.no)
+* correct navigation function call for confirming drafts ([#11842](https://github.com/sanity-io/sanity/issues/11842)) ([d0c01bd](https://github.com/sanity-io/sanity/commit/d0c01bd2382cee42af4033ed2660639b4b9d37b0)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** update dependency @sanity/import to ^4.0.4 ([#11832](https://github.com/sanity-io/sanity/issues/11832)) ([8bea477](https://github.com/sanity-io/sanity/commit/8bea477b3787d29c03fcd79dc9b7d1c22de6bdaa)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** ensure close button is rightmost in split pane toolbar ([#11817](https://github.com/sanity-io/sanity/issues/11817)) ([2e8e974](https://github.com/sanity-io/sanity/commit/2e8e9740a0cf1b06faf96090c4fb46711fb530bc)) by Eoin Falconer (eoin.falc@gmail.com)
+
 ## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
 
 ### Bug Fixes
