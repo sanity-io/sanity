@@ -196,6 +196,8 @@ export default async function buildSanityApp(
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
       isApp: true,
+      schemaExtraction: cliConfig?.schemaExtraction,
+      telemetryLogger: context.telemetry,
     })
 
     trace.log({

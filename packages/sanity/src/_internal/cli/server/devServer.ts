@@ -7,9 +7,8 @@ import {
 import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
-import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
 
 export interface SchemaExtractionOptions {
   enabled: boolean
@@ -44,7 +43,7 @@ export interface DevServerOptions {
   telemetryLogger?: CliCommandContext['telemetry']
 
   /** Schema extraction options */
-  schemaExtraction?: SchemaExtractionOptions
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export interface DevServer {
@@ -83,20 +82,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     isApp,
     typegen,
     telemetryLogger,
+    schemaExtraction
   })
-
-  // Add schema extraction plugin if enabled
-  if (schemaExtraction?.enabled) {
-    debug('Adding schema extraction plugin')
-    viteConfig.plugins = [
-      ...(viteConfig.plugins || []),
-      sanitySchemaExtractionPlugin({
-        workDir: cwd,
-        outputPath: schemaExtraction.outputPath,
-        workspaceName: schemaExtraction.workspaceName,
-      }),
-    ]
-  }
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {

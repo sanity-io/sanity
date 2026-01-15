@@ -21,6 +21,7 @@ import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityTypegenPlugin} from './vite/plugin-typegen'
+import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -50,6 +51,11 @@ export interface ViteOptions {
    * Whether or not to minify the output (only used in `mode: 'production'`)
    */
   minify?: boolean
+
+  /**
+   * Schema extraction configuration
+   */
+  schemaExtraction?: CliConfig['schemaExtraction']
 
   /**
    * HTTP development server configuration
@@ -97,6 +103,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     isApp,
     typegen,
     telemetryLogger,
+    schemaExtraction,
   } = options
   const basePath = normalizeBasePath(rawBasePath)
 
@@ -166,6 +173,20 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
               workDir: cwd,
               config: typegen,
               telemetryLogger,
+            })
+          ]
+        : []
+      ),
+      // Add schema extraction when enabled
+      ...(schemaExtraction?.enabled
+        ? [
+            sanitySchemaExtractionPlugin({
+              workDir: cwd,
+              outputPath: schemaExtraction.path,
+              workspaceName: schemaExtraction.workspace,
+              additionalPatterns: schemaExtraction.watchPatterns,
+              enforceRequiredFields: schemaExtraction.enforceRequiredFields,
+              telemetryLogger: telemetryLogger,
             }),
           ]
         : []),

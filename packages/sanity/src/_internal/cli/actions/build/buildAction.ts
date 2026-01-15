@@ -241,6 +241,7 @@ export default async function buildSanityStudio(
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
       typegen: cliConfig?.typegen,
       telemetryLogger: telemetry,
+      schemaExtraction: cliConfig?.schemaExtraction,
     })
 
     trace.log({
