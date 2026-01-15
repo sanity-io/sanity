@@ -9706,7 +9706,7 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -20120,7 +20120,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -30534,7 +30534,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -35387,7 +35387,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -40240,7 +40240,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -43429,7 +43429,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -46617,3 +46617,4 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
   ],
 }
 `;
+

@@ -78,7 +78,17 @@ export function useDocumentIdStack({
       editState?.id && getVersionId(editState.id, getReleaseIdFromReleaseDocumentId(release._id)),
   )
 
-  const stack = systemStack.concat(releaseStack).filter((id) => typeof id === 'string')
+  // Infer the subject is an anonymous version if:
+  //
+  //   1. The subject has a version checked out.
+  //   2. *And* there is no release containing the checked-out version.
+  const isAnonymousVersion = editState?.version !== null && !releaseStack.includes(displayed?._id)
+  const anonymousVersionsStack = isAnonymousVersion ? [displayed?._id] : []
+
+  const stack = systemStack
+    .concat(!isAnonymousVersion || !strict ? releaseStack : [])
+    .concat(anonymousVersionsStack)
+    .filter((id) => typeof id === 'string')
 
   const position = useMemo(
     () => stack.findIndex((id) => id === displayed?._id),

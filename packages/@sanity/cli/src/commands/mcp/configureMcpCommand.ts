@@ -1,8 +1,6 @@
-import {
-  detectAvailableEditors,
-  NO_EDITORS_DETECTED_MESSAGE,
-  setupMCP,
-} from '../../actions/init-project/setupMCP'
+import {NO_EDITORS_DETECTED_MESSAGE} from '../../actions/mcp/constants'
+import {detectAvailableEditors} from '../../actions/mcp/editors'
+import {setupMCP} from '../../actions/mcp/mcp'
 import {type CliCommandDefinition} from '../../types'
 import {MCPConfigureTrace} from './mcp.telemetry'
 
@@ -17,7 +15,7 @@ const configureMcpCommand: CliCommandDefinition = {
   group: 'mcp',
   helpText,
   signature: '',
-  description: 'Configure Sanity MCP server for AI editors (Cursor, VS Code, Claude Code)',
+  description: 'Configure Sanity MCP server for AI editors',
   async action(args, context) {
     const {output, telemetry} = context
     const trace = telemetry.trace(MCPConfigureTrace)

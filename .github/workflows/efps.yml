@@ -25,7 +25,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -124,7 +124,7 @@ jobs:
     # against e.g. previous release
     if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true'}}
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     needs: [deploy]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -202,23 +202,23 @@ jobs:
           STUDIO_URL: ${{ needs.deploy.outputs.preview_url }}
         run: pnpm efps:test -- -- --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
-          name: efps-report-${{ matrix.shardIndex }}
+          name: efps-report-${{ matrix.shardIndex }}-attempt-${{ github.run_attempt }}
           path: ${{ github.workspace }}/dev/efps/results/
           retention-days: 30
 
   merge-reports:
     if: ${{github.ref_name != 'main' && needs.deploy.outputs.examples_only != 'true'}}
     needs: [deploy, efps-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: efps-report-*
           merge-multiple: true

@@ -216,7 +216,8 @@ defineField({
          src: './functions/product-mapping',
          event: {
            on: ['create', 'update'],
-           filter: "_type == 'product' && delta::changedAny(store.tags)",
+           filter:
+             "_type == 'product' && (delta::changedAny(store.tags) || (delta::operation() == 'create' && defined(store.tags)))",
            projection:
              '{_id, _type, store, colorVariant, productMap, "operation": delta::operation()}',
          },

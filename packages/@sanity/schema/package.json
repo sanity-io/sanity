@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "5.2.0",
+  "version": "5.4.0",
   "description": "",
   "keywords": [
     "sanity",
@@ -26,10 +26,12 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./package.json": "./package.json"
@@ -58,7 +60,7 @@
   },
   "dependencies": {
     "@sanity/descriptors": "^1.3.0",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
     "groq-js": "^1.25.0",
@@ -81,5 +83,12 @@
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./package.json": "./package.json"
+    }
   }
 }

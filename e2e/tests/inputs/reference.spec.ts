@@ -8,7 +8,10 @@ withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
     page,
     createDraftDocument,
+    browserName,
   }) => {
+    // Skip Firefox due to flaky publish operation timing
+    test.skip(browserName === 'firefox')
     test.slow()
 
     // Create test documents to use as reference targets.

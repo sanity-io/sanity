@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "5.2.0",
+  "version": "5.4.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -26,6 +26,7 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -85,6 +86,9 @@
     "node": ">=20.19 <22 || >=22.12"
   },
   "publishConfig": {
-    "access": "public"
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

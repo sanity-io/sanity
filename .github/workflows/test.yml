@@ -14,8 +14,8 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 60
-    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: Test (node ${{ matrix.node }})
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -25,7 +25,6 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         node: [20, 22, 24]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
@@ -69,7 +68,7 @@ jobs:
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples_only.outputs.examples_only != 'true' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
           path: ".vitest-reports/*"
@@ -79,7 +78,7 @@ jobs:
   report-coverage:
     if: ${{ !cancelled() }}
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     permissions:
       # Required to put a comment into the pull-request
       pull-requests: write
@@ -98,7 +97,7 @@ jobs:
 
       - name: "Download coverage artifacts"
         if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           path: .vitest-reports
           pattern: blob-report-${{ github.run_id }}-*

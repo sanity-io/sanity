@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+**Note:** Version bump only for package @sanity/cli
+
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+### Features
+
+* **cli:** add mcp configuration support for zed and opencode ([#11747](https://github.com/sanity-io/sanity/issues/11747)) ([30121a5](https://github.com/sanity-io/sanity/commit/30121a5fe05f02f7588932a0327dfc848d7c0c1e)) by James Woods (jwwoods01@gmail.com)
+* GRO-4157 dynamic mcp init prompt ([#11555](https://github.com/sanity-io/sanity/issues/11555)) ([e6f4485](https://github.com/sanity-io/sanity/commit/e6f4485432679942aa53155363c97b73d77aceda)) by Matthew Ritter (matthew.ritter@sanity.io)
+* **typegen:** add ArrayOf utility type for inline object array members ([#11698](https://github.com/sanity-io/sanity/issues/11698)) ([895b404](https://github.com/sanity-io/sanity/commit/895b404899446c0dec5c5e130cefaa645fccde3e)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Bug Fixes
+
+* **linter:** enforce no unnecessary boolean literal comparisons ([#11734](https://github.com/sanity-io/sanity/issues/11734)) ([94462ad](https://github.com/sanity-io/sanity/commit/94462ad1f55c5a809f030ab21db5148bf921726b)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **vitest:** migrate Date, Worker, and Observer mocking to v4 API ([#11754](https://github.com/sanity-io/sanity/issues/11754)) ([20caed1](https://github.com/sanity-io/sanity/commit/20caed10d7531f82167354623799371e580449be)) by Copilot (198982749+Copilot@users.noreply.github.com)
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 ### Bug Fixes

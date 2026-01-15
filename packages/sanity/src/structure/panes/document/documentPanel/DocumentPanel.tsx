@@ -7,6 +7,7 @@ import {
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
+  isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
@@ -16,6 +17,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useFilteredReleases,
+  usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -43,6 +45,7 @@ import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
+import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
@@ -172,13 +175,15 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   }, [isInspectOpen, displayed, value])
 
   const showInspector = Boolean(!collapsed && inspector)
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedReleaseId, selectedPerspectiveName} = usePerspective()
 
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
     displayed,
     documentId,
   })
+
+  const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
@@ -218,14 +223,35 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
+    if (isPausedDraft && displayed?._id) {
+      return <PausedScheduledDraftBanner />
+    }
+
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const hasCardinalityOneReleases = filteredReleases.currentReleases.some(isCardinalityOneRelease)
+    const allFilteredReleases = [
+      ...filteredReleases.currentReleases,
+      ...filteredReleases.notCurrentReleases,
+    ]
+    // if the scheduled draft is paused then it will be available in notCurrentReleases
+    // otherwise a locked-in scheduled draft will be available in currentReleases
+    // so must look across both to find the scheduled draft release
+    const scheduledCardinalityOneRelease = allFilteredReleases.find(
+      (release) =>
+        isCardinalityOneRelease(release) &&
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
+    )
     const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
-    if (selectedPerspective === 'drafts' && hasCardinalityOneReleases && displayedIsDraft) {
-      return <ScheduledDraftOverrideBanner />
+
+    if (selectedPerspective === 'drafts' && scheduledCardinalityOneRelease && displayedIsDraft) {
+      return (
+        <ScheduledDraftOverrideBanner
+          releaseId={scheduledCardinalityOneRelease._id}
+          draftDocument={displayed}
+        />
+      )
     }
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -233,9 +259,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       editState?.version && isGoingToUnpublish(editState?.version)
 
     if (
-      isReleaseDocument(selectedPerspective) &&
+      !isSystemBundle(selectedPerspective) &&
       displayed?._id &&
-      getVersionFromId(displayed._id) !== selectedReleaseId &&
+      getVersionFromId(displayed._id) !== selectedPerspectiveName &&
       ready &&
       !isPinnedDraftOrPublish &&
       isNewDocument(editState) === false &&
@@ -306,6 +332,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     selectedPerspective,
     displayed,
     selectedReleaseId,
+    selectedPerspectiveName,
     editState,
     ready,
     activeView.type,
@@ -318,6 +345,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     filteredReleases,
     workspace,
+    isPausedDraft,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),

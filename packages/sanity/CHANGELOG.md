@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+### Features
+
+* edit content of scheduled drafts ([#11692](https://github.com/sanity-io/sanity/issues/11692)) ([8862905](https://github.com/sanity-io/sanity/commit/8862905e93f3af7779f792b9c3d455573c5a88d7)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **core:** dont crash when image url string is passed to preview ([#6727](https://github.com/sanity-io/sanity/issues/6727)) ([98f37b8](https://github.com/sanity-io/sanity/commit/98f37b8b6656757d8babdb6fe0368c477cd33ba5)) by Fred Carlsen (fred@sjelfull.no)
+* correct navigation function call for confirming drafts ([#11842](https://github.com/sanity-io/sanity/issues/11842)) ([d0c01bd](https://github.com/sanity-io/sanity/commit/d0c01bd2382cee42af4033ed2660639b4b9d37b0)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** update dependency @sanity/import to ^4.0.4 ([#11832](https://github.com/sanity-io/sanity/issues/11832)) ([8bea477](https://github.com/sanity-io/sanity/commit/8bea477b3787d29c03fcd79dc9b7d1c22de6bdaa)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** ensure close button is rightmost in split pane toolbar ([#11817](https://github.com/sanity-io/sanity/issues/11817)) ([2e8e974](https://github.com/sanity-io/sanity/commit/2e8e9740a0cf1b06faf96090c4fb46711fb530bc)) by Eoin Falconer (eoin.falc@gmail.com)
+
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+### Bug Fixes
+
+* **core:** use intent links for content releases navigation ([#11828](https://github.com/sanity-io/sanity/issues/11828)) ([79afdaa](https://github.com/sanity-io/sanity/commit/79afdaa626b6461db733ad5c1878ee91eba5f883)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+### Features
+
+* add thumbhash supoort for media-library ([76cda08](https://github.com/sanity-io/sanity/commit/76cda086e3138af4a28cda127260f0b530d9c3dc)) by Dan Groves (dan.groves@sanity.io)
+* enable private asset selection from media library ([#11756](https://github.com/sanity-io/sanity/issues/11756)) ([38a9241](https://github.com/sanity-io/sanity/commit/38a92411651da35566021383b48345479fc62051)) by Rupert Dunk (rupert@rupertdunk.com)
+* log schema errors on extraction failure ([#10573](https://github.com/sanity-io/sanity/issues/10573)) ([321e16b](https://github.com/sanity-io/sanity/commit/321e16bb627ec55d82880a0bcb39ce686cac4309)) by Simeon Griggs (simeon@hey.com)
+* make enhancedObjectDialog opt out ([#11802](https://github.com/sanity-io/sanity/issues/11802)) ([66ca5b8](https://github.com/sanity-io/sanity/commit/66ca5b8ef6ba0959a605665e553e28b6db0dafa8)) by RitaDias (rita@sanity.io)
+* **sanity:** omit search weights when possible ([#7751](https://github.com/sanity-io/sanity/issues/7751)) ([921efbb](https://github.com/sanity-io/sanity/commit/921efbbd4d90fdbdae94cc2a3e31771134f94e11)) by Ash (ash@sanity.io)
+* **telemetry:** add Core Web Vitals tracking via web-vitals library ([#11765](https://github.com/sanity-io/sanity/issues/11765)) ([39d0134](https://github.com/sanity-io/sanity/commit/39d01342e22e750ed78b8593a48379478fa5ef21)) by David Annez (david.annez@gmail.com)
+* **telemetry:** enrich events with Studio context ([#11764](https://github.com/sanity-io/sanity/issues/11764)) ([e6011be](https://github.com/sanity-io/sanity/commit/e6011be4ca845fa247364d4be338f5bad0f3c957)) by David Annez (david.annez@gmail.com)
+* warning on releases overview when release has missed intended publish date ([#11631](https://github.com/sanity-io/sanity/issues/11631)) ([128296c](https://github.com/sanity-io/sanity/commit/128296cc04fff5fccc83ccc94fc18e54b4cd21f7)) by Jordan Lawrence (jordanl17@me.com)
+
+### Bug Fixes
+
+* **cli:** improve autoUpdates config upgrade message ([#10778](https://github.com/sanity-io/sanity/issues/10778)) ([5e9770d](https://github.com/sanity-io/sanity/commit/5e9770d0324b351fdefe5a3100c3042dce144abe)) by Filips Alpe (filips.alpe@gmail.com)
+* **cli:** prevent file descriptor leak in dataset import ([#11687](https://github.com/sanity-io/sanity/issues/11687)) ([fd350a7](https://github.com/sanity-io/sanity/commit/fd350a7a7120066ba5f1f28b55ba2e7e7d50c6c1)) by Ryan Bonial (4294665+ryanbonial@users.noreply.github.com)
+* **deps:** update dependency @sanity/import to ^4.0.3 ([#11735](https://github.com/sanity-io/sanity/issues/11735)) ([679e81d](https://github.com/sanity-io/sanity/commit/679e81db41de790edfe0f23ab2a4d0a00898b838)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency motion to ^12.25.0 ([#11791](https://github.com/sanity-io/sanity/issues/11791)) ([daa18a1](https://github.com/sanity-io/sanity/commit/daa18a10b4f7553067848818bb8f6ea489a9385b)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11740](https://github.com/sanity-io/sanity/issues/11740)) ([62a63ce](https://github.com/sanity-io/sanity/commit/62a63ce9a2dcfcc88d899506bb4532b92e7d3c42)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11797](https://github.com/sanity-io/sanity/issues/11797)) ([7b25305](https://github.com/sanity-io/sanity/commit/7b25305a78cd93a4bbe1c2cecbcfad5161492349)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **form:** sanitize timezone storage keys for datetime fields in arrays ([#11683](https://github.com/sanity-io/sanity/issues/11683)) ([0e6cb20](https://github.com/sanity-io/sanity/commit/0e6cb2006df29cf52a855417b8b3bbc408b28cdb)) by David Annez (david.annez@gmail.com)
+* **linter:** enforce no unnecessary boolean literal comparisons ([#11734](https://github.com/sanity-io/sanity/issues/11734)) ([94462ad](https://github.com/sanity-io/sanity/commit/94462ad1f55c5a809f030ab21db5148bf921726b)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **presentation:** render "Presentation" in page title when `options.title` is not passed ([#11784](https://github.com/sanity-io/sanity/issues/11784)) ([d3adc83](https://github.com/sanity-io/sanity/commit/d3adc837a12cf95166b4a24702e013492c482dc5)) by Adam Söderström (adam.soderstrom@noaignite.com)
+* removing the deletion of drafts when creating scheduled drafts ([#11744](https://github.com/sanity-io/sanity/issues/11744)) ([c54a29e](https://github.com/sanity-io/sanity/commit/c54a29e8a10dd4f3f063b5a58cca00d9057c5000)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** add support for anonymous versions in `useDocumentIdStack` ([a56390d](https://github.com/sanity-io/sanity/commit/a56390dcaa0a7a9540fe2fa8ec47cfefc4c7ec5e)) by Ash (ash@sanity.io)
+* **sanity:** allow display of anonymous versions in document comparison tool ([3bd4bf3](https://github.com/sanity-io/sanity/commit/3bd4bf3b14f7460778936cb22a7eb21173049ed8)) by Ash (ash@sanity.io)
+* **sanity:** read-only state of documents outside of globally selected anonymous bundle ([0b83c89](https://github.com/sanity-io/sanity/commit/0b83c899a022f1ba801eff37b58fbedf646bd0ce)) by Ash (ash@sanity.io)
+* **sanity:** render `DocumentNotInReleaseBanner` when document has no version in globally selected anonymous bundle ([0a14cf5](https://github.com/sanity-io/sanity/commit/0a14cf5d42b62c0edcfefeb7d01910aef31235a7)) by Ash (ash@sanity.io)
+* **sanity:** support anonymous bundles in `DocumentNotInReleaseBanner` ([1beb5f0](https://github.com/sanity-io/sanity/commit/1beb5f080699c064b7f85645af200b1842a68c51)) by Ash (ash@sanity.io)
+* scheduled versions disable delete action ([#11798](https://github.com/sanity-io/sanity/issues/11798)) ([43fa9d9](https://github.com/sanity-io/sanity/commit/43fa9d948aaac2a0b5b53ceb3e395bb52141b47e)) by Jordan Lawrence (jordanl17@me.com)
+* **structure:** thread sortOrder through preview system for viewOptions ([#11625](https://github.com/sanity-io/sanity/issues/11625)) ([a87917c](https://github.com/sanity-io/sanity/commit/a87917c6e47fc51a003348dbab1abf304005c9ce)) by David Annez (david.annez@gmail.com)
+* **vitest:** migrate Date, Worker, and Observer mocking to v4 API ([#11754](https://github.com/sanity-io/sanity/issues/11754)) ([20caed1](https://github.com/sanity-io/sanity/commit/20caed10d7531f82167354623799371e580449be)) by Copilot (198982749+Copilot@users.noreply.github.com)
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 ### Features

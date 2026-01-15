@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "5.2.0",
+  "version": "5.4.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -27,6 +27,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -48,7 +49,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.0.2"
+    "@sanity/media-library-types": "^1.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -67,5 +68,11 @@
   },
   "peerDependencies": {
     "@types/react": "^19.2"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

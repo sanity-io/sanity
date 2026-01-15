@@ -1,6 +1,6 @@
 {
   "name": "e2e-embedded-studio-vite",
-  "version": "5.2.0",
+  "version": "5.4.0",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",
@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",

@@ -30,7 +30,9 @@
     "*.css",
     "*.snap",
     "*.md",
-    "packages/@sanity/cli/templates/**/*"
+    "packages/@sanity/cli/templates/**/*",
+    "dev/test-studio/sanity.theme.mjs",
+    "dev/test-studio/workshop/scopes.js"
   ],
   "categories": {
     "correctness": "error",
@@ -125,7 +127,7 @@
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
     // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
-    "import/no-commonjs ": "error",
+    "import/no-commonjs": "error",
     "no-restricted-globals": [
       "error",
       {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
@@ -211,9 +213,16 @@
     },
     {
       // We still allow CJS in some places, for legacy reasons
-      "files": ["packages/@sanity/cli/**/*", "scripts/**/*"],
+      "files": [
+        "packages/@sanity/cli/**/*",
+        "packages/sanity/src/_internal/cli/**/*",
+        "scripts/**/*",
+        "**/*.cjs",
+        "**/*.cts.ts",
+        "**/perf/**/*"
+      ],
       "rules": {
-        "import/no-commonjs ": "off",
+        "import/no-commonjs": "off",
         "no-restricted-globals": "off"
       }
     },
@@ -222,6 +231,46 @@
       "files": ["**/test/matchers/**/*.ts"],
       "rules": {
         "oxc/no-this-in-exported-function": "off"
+      }
+    },
+    {
+      "files": ["e2e/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["dev/test-studio/**/*"],
+      "rules": {
+        "eslint/no-console": "off",
+        "no-explicit-any": "off",
+        "jsx_a11y/iframe-has-title": "off",
+        "react/iframe-missing-sandbox": "off",
+        "unicorn/prefer-array-find": "off",
+        "no-restricted-globals": "off",
+        "import/no-commonjs": "off"
+      }
+    },
+    {
+      "files": ["dev/design-studio/**/*"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["packages/@repo/test-dts-exports/**/*"],
+      "rules": {
+        "no-console": "off",
+        "no-await-in-loop": "off",
+        "no-explicit-any": "off",
+        "no-unused-vars": "error",
+        "no-unnecessary-type-arguments": "off"
+      }
+    },
+    {
+      "files": ["packages/@repo/bundle-manager/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
       }
     }
   ]
