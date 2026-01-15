@@ -5,8 +5,8 @@ export interface RuntimeCliCommand {
   summary: string
 }
 
-// eslint-disable-next-line no-control-regex -- yes, the ANSI escape regex contains control characters
-const ANSI_REGEX = /\x1b\[[0-9;]*m/g
+// Built dynamically to avoid oxlint's no-control-regex while eslint complains about unused disables
+const ANSI_REGEX = new RegExp(`${String.fromCharCode(0x1b)}\\[[0-9;]*m`, 'g')
 const OCLIF_HEADERS = [
   'ARGUMENTS',
   'FLAGS',
