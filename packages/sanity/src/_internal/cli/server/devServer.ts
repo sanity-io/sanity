@@ -1,9 +1,8 @@
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {type CliCommandContext, type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import {type ViteDevServer} from 'vite'
 
-import {sanitySchemaExtractionPlugin} from '../../../vite'
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 
 export interface SchemaExtractionOptions {
@@ -28,7 +27,10 @@ export interface DevServerOptions {
   isApp?: boolean
 
   /** Schema extraction options */
-  schemaExtraction?: SchemaExtractionOptions
+  schemaExtraction?: ViteOptions['schemaExtraction']
+
+  /** Telemetry logger */
+  telemetry?: CliCommandContext['telemetry']
 }
 
 export interface DevServer {
@@ -48,6 +50,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     entry,
     isApp,
     schemaExtraction,
+    telemetry,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -56,27 +59,18 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   debug('Resolving vite config')
   const mode = 'development'
 
-  let viteConfig = await getViteConfig({
-    basePath,
-    mode: 'development',
-    server: {port: httpPort, host: httpHost},
-    cwd,
-    reactCompiler,
-    isApp,
-  })
-
-  // Add schema extraction plugin if enabled
-  if (schemaExtraction?.enabled) {
-    debug('Adding schema extraction plugin')
-    viteConfig.plugins = [
-      ...(viteConfig.plugins || []),
-      sanitySchemaExtractionPlugin({
-        workDir: cwd,
-        outputPath: schemaExtraction.outputPath,
-        workspaceName: schemaExtraction.workspaceName,
-      }),
-    ]
-  }
+  let viteConfig = await getViteConfig(
+    {
+      basePath,
+      mode: 'development',
+      server: {port: httpPort, host: httpHost},
+      cwd,
+      reactCompiler,
+      isApp,
+      schemaExtraction,
+    },
+    {telemetry},
+  )
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {
