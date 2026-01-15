@@ -1,4 +1,4 @@
-import {isImageSource} from '@sanity/asset-utils'
+import {isImageSource, isSanityImageUrl, parseImageAssetUrl} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
 import {DocumentIcon} from '@sanity/icons'
 import {
@@ -97,14 +97,21 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   // for the rendering of the media (dimensions)
   const renderMedia = useCallback(
     (options: {dimensions: PreviewMediaDimensions}) => {
-      // Will only enter this code path if it's compatible
-      const imageSource = mediaProp as SanityImageSource
+      let imageSource = mediaProp
+
+      // If this is a string and a valid Sanity Image URL, parse it so that we can
+      // pass it as a valid asset ID to the image builder
+      if (isString(imageSource) && isSanityImageUrl(imageSource)) {
+        const {assetId} = parseImageAssetUrl(imageSource)
+
+        imageSource = assetId
+      }
 
       return (
         <SanityDefaultMedia
           client={client}
           dimensions={options.dimensions}
-          imageSource={imageSource}
+          imageSource={imageSource as SanityImageSource}
           imageUrlBuilder={imageBuilder}
           title={title}
         />
@@ -123,16 +130,23 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return false
     }
 
+    // If this is a string and a valid Sanity Image URL, pass it to the renderMedia function early
+    // If we don't do this check early, then isValidElementType will return true for strings and create an
+    // exception when used inside the BlockImagePreview
+    if (isString(mediaProp) && isSanityImageUrl(mediaProp)) {
+      return renderMedia
+    }
+
+    if (isImageSource(mediaProp)) {
+      return renderMedia
+    }
+
     if (isValidElementType(mediaProp)) {
       return mediaProp
     }
 
     if (isValidElement(mediaProp)) {
       return mediaProp
-    }
-
-    if (isImageSource(mediaProp)) {
-      return renderMedia
     }
 
     // Handle image urls
