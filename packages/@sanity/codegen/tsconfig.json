@@ -1,9 +1,0 @@
-{
-  "extends": "@repo/tsconfig/base.json",
-  "include": ["./src"],
-  "compilerOptions": {
-    "rootDir": ".",
-    "lib": ["dom", "es2022"],
-    "customConditions": ["monorepo"]
-  }
-}
