@@ -42,7 +42,7 @@ export function ConfirmActiveScheduledDraftsBanner({
   }, [])
 
   const handleClick = useCallback(
-    () => (shouldOpenDialog ? setIsDialogOpen(true) : onNavigateToPaused),
+    () => (shouldOpenDialog ? setIsDialogOpen(true) : onNavigateToPaused()),
     [shouldOpenDialog, onNavigateToPaused],
   )
 
