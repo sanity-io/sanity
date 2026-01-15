@@ -125,10 +125,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('host', {type: 'string'})
     .options('port', {type: 'number'})
     .options('auto-updates', {type: 'boolean'})
-    .option('load-in-dashboard', {type: 'boolean', default: false})
-    .option('extract-schema', {type: 'boolean', default: false})
-    .option('schema-path', {type: 'string'})
-    .option('schema-workspace', {type: 'string'}).argv
+    .option('load-in-dashboard', {type: 'boolean', default: false}).argv
 }
 
 export default async function startSanityDevServer(
@@ -251,13 +248,7 @@ export default async function startSanityDevServer(
     const spinner = output.spinner('Starting dev server').start()
     const {server} = await startDevServer({
       ...config,
-      schemaExtraction: flags.extractSchema
-        ? {
-            enabled: true,
-            outputPath: flags.schemaPath,
-            workspaceName: flags.schemaWorkspace,
-          }
-        : undefined,
+      telemetry: context.telemetry,
     })
 
     const {info: loggerInfo} = server.config.logger
@@ -341,5 +332,6 @@ export function getDevServerConfig({
     staticPath: path.join(workDir, 'static'),
     reactStrictMode,
     reactCompiler: cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
+    schemaExtraction: cliConfig?.schemaExtraction,
   }
 }
