@@ -36,12 +36,16 @@
  */
 import path from 'node:path'
 
-import {type SchemaType} from 'groq-js'
-import {debounce} from 'lodash-es'
+import {type CliCommandContext} from '@sanity/cli'
+import {debounce, mean} from 'lodash-es'
 import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
 import {type Plugin} from 'vite'
 
+import {
+  SchemaExtractedTrace,
+  SchemaExtractionWatchModeTrace,
+} from '../_internal/cli/actions/schema/extractSchema.telemetry'
 import {formatSchemaValidation} from '../_internal/cli/actions/schema/formatSchemaValidation'
 import {
   extractSchemaToFile,
@@ -123,19 +127,29 @@ export interface SchemaExtractionPluginOptions {
   enforceRequiredFields?: boolean
 
   /**
-   * Callback that is called after an extraction run with information about
-   * the result of the extraction.
+   * Format of schema export. groq-type-nodes is the only avilable format at the moment
    */
-  onExtraction?: (result: {success: boolean; duration: number; schema?: SchemaType}) => void
+  format?: string
+
+  /**
+   * Telemetry logger for the Sanity CLI tooling. If no logger is provided no telemetry
+   * is sent. Also, no telemetry will be sent if telemetry is disabled in the sanity CLI.
+   */
+  telemetryLogger?: CliCommandContext['telemetry']
 }
 
 /**
- * Creates a Vite plugin that automatically extracts Sanity schema during development.
+ * Creates a Vite plugin that automatically extracts Sanity schema during development and build.
  *
+ * **During development:**
  * The plugin performs an initial extraction when the dev server starts, then watches
  * for file changes and re-extracts the schema when relevant files are modified.
  *
- * **How it works:**
+ * **During build:**
+ * The plugin extracts the schema once at the end of the build process, ensuring
+ * the schema is always up-to-date when deploying.
+ *
+ * **How it works in dev mode:**
  * 1. Registers watch patterns with Vite's built-in file watcher
  * 2. Performs initial schema extraction when the server starts
  * 3. On file changes matching the patterns, triggers a debounced extraction
@@ -146,7 +160,7 @@ export interface SchemaExtractionPluginOptions {
  *
  * @public
  */
-export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}): Plugin {
+export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}) {
   const {
     workDir: workDirOption,
     outputPath: outputPathOption,
@@ -155,7 +169,8 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     additionalPatterns = [],
     debounceMs = DEFAULT_DEBOUNCE_MS,
     enforceRequiredFields = false,
-    onExtraction,
+    telemetryLogger,
+    format = 'groq-type-nodes',
   } = options
 
   const watchPatterns = [...DEFAULT_SCHEMA_PATTERNS, ...additionalPatterns]
@@ -167,6 +182,22 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
   // State for concurrency control
   let isExtracting = false
   let pendingExtraction = false
+
+  // Stats for telemetry
+  const startTime = Date.now()
+  const stats: {successfulDurations: number[]; failedCount: number} = {
+    successfulDurations: [],
+    failedCount: 0,
+  }
+
+  const extractSchema = () =>
+    extractSchemaToFile({
+      workDir: resolvedWorkDir,
+      outputPath: resolvedOutputPath,
+      workspaceName,
+      enforceRequiredFields,
+      format,
+    })
 
   /**
    * Runs extraction with concurrency control.
@@ -181,24 +212,18 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     isExtracting = true
     pendingExtraction = false
 
-    const startTime = Date.now()
-
+    const extractionStartTime = Date.now()
     try {
-      const schema = await extractSchemaToFile({
-        workDir: resolvedWorkDir,
-        outputPath: resolvedOutputPath,
-        workspaceName,
-        enforceRequiredFields,
-      })
-      onExtraction?.({success: true, duration: Date.now() - startTime, schema})
-
+      await extractSchema()
       if (isBuilding) {
         // TODO: Remove when we have better control over progress reporting in build
         output.log('')
       }
       output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
+
+      // add stats for the successful extraction run to use later for telemetry
+      stats.successfulDurations.push(Date.now() - extractionStartTime)
     } catch (err) {
-      onExtraction?.({success: false, duration: Date.now() - startTime})
       output.log(
         logSymbols.error,
         `Extraction failed: ${err instanceof Error ? err.message : String(err)}`,
@@ -206,6 +231,9 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
         output.log(logSymbols.error, formatSchemaValidation(err.validation))
       }
+
+      // track the failed extraction
+      stats.failedCount++
     } finally {
       isExtracting = false
 
@@ -234,6 +262,11 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     },
 
     configureServer(server) {
+      const trace = telemetryLogger?.trace(SchemaExtractionWatchModeTrace)
+      trace?.start()
+
+      trace?.log({step: 'started', enforceRequiredFields, schemaFormat: format})
+
       // Add schema patterns to Vite's watcher
       const absolutePatterns = watchPatterns.map((pattern) => path.join(resolvedWorkDir, pattern))
       server.watcher.add(absolutePatterns)
@@ -248,9 +281,24 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         }
       }
 
+      // Log that the trace stopped when the watcher is shut down
+      const watcherClosed = () => {
+        if (!trace) {
+          return
+        }
+        trace.log({
+          step: 'stopped',
+          watcherDuration: Date.now() - startTime,
+          extractionSuccessfulCount: stats.successfulDurations.length,
+          extractionFailedCount: stats.failedCount,
+          averageExtractionDuration: mean(stats.successfulDurations),
+        })
+      }
+
       server.watcher.on('change', handleChange)
       server.watcher.on('add', handleChange)
       server.watcher.on('unlink', handleChange)
+      server.watcher.on('close', watcherClosed)
 
       // Run initial extraction after server is ready
       const startExtraction = () => {
@@ -275,7 +323,23 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     },
 
     async buildEnd() {
-      await runExtraction(true)
+      const trace = telemetryLogger?.trace(SchemaExtractedTrace)
+      trace?.start()
+
+      try {
+        const schema = await extractSchema()
+
+        trace?.log({
+          schemaAllTypesCount: schema.length,
+          schemaDocumentTypesCount: schema.filter((type) => type.type === 'document').length,
+          schemaTypesCount: schema.filter((type) => type.type === 'type').length,
+          enforceRequiredFields,
+          schemaFormat: format,
+        })
+      } catch (err) {
+        trace?.error(err)
+        throw err
+      }
     },
-  }
+  } satisfies Plugin
 }
