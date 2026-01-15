@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.1.0"
+    "@sanity/media-library-types": "^1.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
