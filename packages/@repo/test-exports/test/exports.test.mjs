@@ -22,7 +22,7 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
           try {
             await import(path)
           } catch (error) {
-            if (workspace === '@sanity/cli' || workspace === '@sanity/codegen') {
+            if (workspace === '@sanity/cli') {
               t.todo('native ESM not supported yet')
             } else {
               throw error
