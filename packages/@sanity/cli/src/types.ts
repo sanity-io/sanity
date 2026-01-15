@@ -379,7 +379,7 @@ export interface CliConfig {
   /**
    * Configuration for schema extraction (`sanity schema extract`)
    */
-  schemaExtract?: {
+  schemaExtraction?: {
     /**
      * Output path for the extracted schema file.
      * Defaults to `schema.json` in the working directory.

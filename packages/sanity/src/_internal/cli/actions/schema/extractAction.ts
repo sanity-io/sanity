@@ -40,19 +40,19 @@ function getExtractOptions(
   config: CliCommandContext['cliConfig'],
   workDir: string,
 ) {
-  const schemaExtract = config?.schemaExtract
+  const schemaExtraction = config?.schemaExtraction
 
   return {
-    workspace: flags.workspace ?? schemaExtract?.workspace,
-    format: flags.format ?? schemaExtract?.format ?? 'groq-type-nodes',
+    workspace: flags.workspace ?? schemaExtraction?.workspace,
+    format: flags.format ?? schemaExtraction?.format ?? 'groq-type-nodes',
     enforceRequiredFields:
-      flags['enforce-required-fields'] ?? schemaExtract?.enforceRequiredFields ?? false,
-    outputPath: flags.path ?? schemaExtract?.path ?? join(workDir, 'schema.json'),
+      flags['enforce-required-fields'] ?? schemaExtraction?.enforceRequiredFields ?? false,
+    outputPath: flags.path ?? schemaExtraction?.path ?? join(workDir, 'schema.json'),
     watchPatterns: flags['watch-patterns']
       ? Array.isArray(flags['watch-patterns'])
         ? flags['watch-patterns']
         : [flags['watch-patterns']]
-      : (schemaExtract?.watchPatterns ?? []),
+      : (schemaExtraction?.watchPatterns ?? []),
   }
 }
 
