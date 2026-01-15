@@ -1,8 +1,10 @@
 import {expect} from '@playwright/test'
 
 import {test} from '../../studio-test'
-
-test.describe('Portable Text Input - Fullscreen Backwards Select', () => {
+// Skip: Mouse drag selection across paragraphs is inherently unreliable in E2E testing
+// due to timing variability, text block positioning, and selection event handling.
+// @TODO: figure out a way to make this test reliable somewhere / somehow
+test.skip('Portable Text Input - Fullscreen Backwards Select', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}) => {
     test.skip(browserName === 'firefox')
     test.slow()

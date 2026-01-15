@@ -14,19 +14,26 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
 
   await createDraftDocument('/content/playlist')
   // Navigate to the published perspective
-  await page.getByRole('button', {name: 'Published'}).click()
-  // Wait a little bit for the document to load
-  await page.waitForTimeout(2_000)
-  await expect(page.getByTestId('field-name')).not.toBeDisabled()
-  await page.getByTestId('field-name').getByTestId('string-input').fill(name)
+  const publishedButton = page.getByRole('button', {name: 'Published'})
+  await expect(publishedButton).toBeVisible()
+  await expect(publishedButton).toBeEnabled()
+  await publishedButton.click()
 
-  // Wait a little bit for the document to start saving
-  await page.waitForTimeout(2_000)
+  // Wait for the form field to be ready
+  const nameField = page.getByTestId('field-name').getByTestId('string-input')
+  await expect(nameField).toBeVisible()
+  await expect(nameField).toBeEnabled()
+  await nameField.fill(name)
 
-  //await page.getByTestId('action-menu-button').click()
-  //await page.getByTestId('action-Delete').click()
-  await page.getByTestId('action-menu-button').click()
-  await page.getByTestId('action-Delete').click()
+  // Wait for the action menu button to be available
+  const actionMenuButton = page.getByTestId('action-menu-button')
+  await expect(actionMenuButton).toBeVisible({timeout: 30000})
+  await expect(actionMenuButton).toBeEnabled()
+  await actionMenuButton.click()
+
+  const deleteAction = page.getByTestId('action-Delete')
+  await expect(deleteAction).toBeVisible()
+  await deleteAction.click()
   await expect(page.getByTestId('pane-footer-document-status')).toBeHidden()
   await expect(page.getByRole('button', {name: 'Delete all versions'})).toBeVisible()
   await page.getByRole('button', {name: 'Delete all versions'}).click()

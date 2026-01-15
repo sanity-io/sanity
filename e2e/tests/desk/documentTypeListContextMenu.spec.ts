@@ -71,24 +71,33 @@ test('clicking custom sort order and direction sets value in storage', async ({
 
   await page.goto('/content/book')
 
-  const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-    uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
-  })
-
-  // If the value is not null there are existingKeys, delete them in that case
-  if (existingKeys[0].value !== null) {
-    // Clear the sort order
+  // Clear any existing sort order key (ignore error if key doesn't exist)
+  try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
       uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
       method: 'DELETE',
     })
+  } catch {
+    // Key doesn't exist, which is fine
   }
 
-  const keyValueRequest = page.waitForResponse(async (response) => {
-    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
-  })
-  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
-  await page.getByRole('menuitem', {name: 'Sort by Title'}).click()
+  const keyValueRequest = page.waitForResponse(
+    async (response) => {
+      return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+    },
+    {timeout: 30000},
+  )
+
+  // Click context menu button and wait for menu to appear
+  const contextMenuButton = page.getByTestId('pane').getByTestId('pane-context-menu-button')
+  await expect(contextMenuButton).toBeVisible()
+  await contextMenuButton.click()
+
+  // Wait for menu item and click with force to avoid interception issues
+  const sortMenuItem = page.getByRole('menuitem', {name: 'Sort by Title'})
+  await expect(sortMenuItem).toBeVisible()
+  await sortMenuItem.click({force: true})
+
   const responseBody = await (await keyValueRequest).json()
 
   expect(responseBody[0]).toMatchObject({
