@@ -86,3 +86,13 @@ export function transformHelpText(
     description: command.summary,
   }
 }
+/**
+ * The Functions Test Core expects the "error" function to be oclif's Command.error function.
+ * This custom error logger mimics the shapes used by the core.
+ */
+export function createErrorLogger(output: CliOutputter) {
+  return (message: string, options: {exit?: boolean; code?: number} = {}) => {
+    output.error(message) // does not exit, only prints with error prefix
+    if (options.exit) process.exit(options.code ?? 1) // exit if the core wants to exit
+  }
+}

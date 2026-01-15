@@ -133,3 +133,12 @@ DESCRIPTION
     expect(result.helpText).toContain('description:')
   })
 })
+describe('createErrorLogger', () => {
+  it('returns a function that logs an error message', () => {
+    const output = {error: vi.fn()} as unknown as CliOutputter
+    const errorLogger = createErrorLogger(output)
+    expect(errorLogger).toBeInstanceOf(Function)
+    errorLogger('test error', {exit: false})
+    expect(output.error).toHaveBeenCalledWith('test error')
+  })
+})
