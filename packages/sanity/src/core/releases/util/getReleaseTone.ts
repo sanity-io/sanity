@@ -1,6 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 
 import {type TargetPerspective} from '../../perspective/types'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {isReleaseDocument} from '../store/types'
 import {RELEASE_TYPES_TONES} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
@@ -21,6 +22,10 @@ export function getReleaseTone(release: TargetPerspective): BadgeTone {
 
     if (release?.metadata?.releaseType === 'undecided') {
       return RELEASE_TYPES_TONES.undecided.tone
+    }
+
+    if (isPausedCardinalityOneRelease(release)) {
+      return 'caution'
     }
 
     if (release?.metadata?.releaseType === 'scheduled') {
