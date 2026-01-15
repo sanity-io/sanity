@@ -100,7 +100,7 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   await expect(insertDialog).toBeVisible()
 
   // And when the "Title" input is filled
-  const titleInput = insertDialog.getByLabel('Title').first()
+  const titleInput = insertDialog.getByRole('textbox', {name: 'Title'}).first()
   await expect(titleInput).toBeVisible()
   await titleInput.fill('Book title')
   await expect(titleInput).toHaveValue('Book title')
