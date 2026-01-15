@@ -28,7 +28,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function WorkspaceMenuButton() {
   const workspaces = useWorkspaces()
-  const {activeWorkspace} = useActiveWorkspace()
+  const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
@@ -89,14 +89,10 @@ export function WorkspaceMenuButton() {
 
                       const isSelected = workspace.name === activeWorkspace.name
 
-                      // we have a temporary need to make a hard direct link to the workspace
-                      // because of possibly shared context between workspaces. When this is resolved,
-                      // we can remove this and use setActiveWorkspace instead
                       return (
                         <MenuItem
                           key={workspace.name}
-                          as="a"
-                          href={workspace.basePath}
+                          onClick={() => setActiveWorkspace(workspace.name)}
                           badgeText={STATE_TITLES[state]}
                           iconRight={isSelected ? CheckmarkIcon : undefined}
                           pressed={isSelected}
