@@ -59,13 +59,15 @@ test.describe('Custom Release Actions', () => {
       const menuButton = releaseRow.getByTestId('release-menu-button')
       await expect(menuButton).toBeVisible()
       await expect(menuButton).toBeEnabled()
-      await menuButton.click()
+      // Use force click to bypass vercel-live-feedback overlay
+      await menuButton.click({force: true})
     } else {
       // On individual release page, wait for the menu button and click it
       const menuButton = page.getByTestId('release-menu-button')
       await expect(menuButton).toBeVisible()
       await expect(menuButton).toBeEnabled()
-      await menuButton.click()
+      // Use force click to bypass vercel-live-feedback overlay
+      await menuButton.click({force: true})
     }
   }
 

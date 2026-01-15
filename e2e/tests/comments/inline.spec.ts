@@ -73,7 +73,13 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
 }
 
 test.describe('Inline comments:', () => {
-  test('should create and resolve inline comment', async ({page, createDraftDocument}) => {
+  test('should create and resolve inline comment', async ({
+    page,
+    createDraftDocument,
+    browserName,
+  }) => {
+    // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
+    test.skip(browserName === 'firefox')
     // 1. Create a new inline comment
     await inlineCommentCreationTest({page, createDraftDocument})
 
