@@ -46,11 +46,14 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
 
     if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
+    const resolvedHost = flags.h ?? flags.host
+    const resolvedPort = flags.p ?? flags.port
+
     const {success, error} = await functionDevCore({
       ...cmdConfig.value,
       flags: {
-        host: flags.h ?? flags.host,
-        port: flags.p ?? flags.port,
+        host: resolvedHost,
+        port: resolvedPort,
         timeout: flags.t ?? flags.timeout,
       },
     })
@@ -58,7 +61,7 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
     if (!success) throw new Error(error)
 
     if (shouldOpen) {
-      await open(`http://${flags.host}:${flags.port}`)
+      await open(`http://${resolvedHost}:${resolvedPort}`)
     }
   },
 }
