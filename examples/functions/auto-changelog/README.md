@@ -8,7 +8,7 @@ Returning readers can see when an article was last updated, but not _what_ was c
 
 ## Solution
 
-This Sanity Function automatically generates changelog entries when documents are updated with meaningful changes. It uses AI to analyze both content and nested code block changes, filtering out formatting-only and minor modifications, and generates concise, reader-friendly descriptions of what actually changed. Fine-grained changes for all fields can still be track with Sanity's out of the box [History](https://www.sanity.io/docs/user-guides/history-experience).
+This Sanity Function automatically generates changelog entries when documents are updated with meaningful changes. It uses AI to analyze content changes, filtering out minor modifications, and generates concise, reader-friendly descriptions of what actually changed. Fine-grained changes for all fields can still be track with Sanity's out of the box [History](https://www.sanity.io/docs/user-guides/history-experience).
 
 ## Benefits
 
@@ -22,7 +22,6 @@ This Sanity Function automatically generates changelog entries when documents ar
 
 - **Saves editorial time** - Eliminates manual changelog maintenance
 - **Scales automatically** - No extra work as content volume grows
-- **Detailed code tracking** - Automatically captures technical changes in code examples
 - **Improved workflows** - Focus on creating content rather than documenting changes
 
 ## Compatible Templates
@@ -35,7 +34,6 @@ This function is built to be compatible with any of [the official "clean" templa
 - A schema with a `post` document type containing:
   - A `content` field (rich text/portable text) for content analysis
   - A `changelog` field (array of strings) for storing generated entries
-- Block content configuration with code block support (using [code-input plugin](https://www.sanity.io/plugins/code-input))
 - Production deployment for testing (local testing not supported)
 
 ## Usage Example
@@ -73,7 +71,7 @@ defineField({
 }),
 ```
 
-3. Configure your `content` field to support code blocks using the [code-input plugin](https://www.sanity.io/plugins/code-input):
+3. Configure your `content` field with basic block content:
 
 ```typescript
 defineField({
@@ -83,11 +81,6 @@ defineField({
   of: [
     defineArrayMember({
       type: 'block',
-    }),
-    defineField({
-      type: 'code',
-      name: 'code',
-      title: 'Code',
     }),
   ],
 }),
@@ -133,10 +126,9 @@ npx sanity schema deploy
      name: 'auto-changelog',
      event: {
        on: ['update'],
-       filter:
-         "_type == 'post' && (delta::changedAny(content) || delta::changedAny(content[_type == 'code']))",
+       filter: "_type == 'post' && delta::changedAny(content)",
        projection:
-         "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog, 'oldCodeBlocks': before().content[_type == 'code'], 'newCodeBlocks': after().content[_type == 'code']}",
+         "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog}",
      },
    })
    ```
@@ -179,6 +171,20 @@ These features are currently only available in the Sanity production environment
   ```
 - **Use staging/development dataset** if available for safer testing
 - **Test with small content changes** to verify behavior
+
+### Advanced: Code Block Support
+
+For advanced users who need automatic changelog tracking for code blocks within Portable Text, see this Gist with all three components:
+
+- [Full index.ts with code block support](https://gist.github.com/kenjonespizza/a27eb263d0f474a9a212eae870605134#file-auto-changelog-with-code-blocks-index-ts)
+- [Schema configuration with code blocks](https://gist.github.com/kenjonespizza/a27eb263d0f474a9a212eae870605134#file-post-ts)
+- [Blueprint configuration with code blocks](https://gist.github.com/kenjonespizza/a27eb263d0f474a9a212eae870605134#file-sanity-blueprint-ts)
+
+This adds:
+
+- Automatic detection of code block changes
+- Filtering of formatting-only changes
+- AI-powered analysis of code modifications
 
 ## Customization
 
