@@ -10,6 +10,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {Link} from 'sanity/router'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -28,7 +29,7 @@ const POPOVER_PROPS: MenuButtonProps['popover'] = {
 
 export function WorkspaceMenuButton() {
   const workspaces = useWorkspaces()
-  const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
+  const {activeWorkspace} = useActiveWorkspace()
   const [authStates] = useWorkspaceAuthStates(workspaces)
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
@@ -92,7 +93,8 @@ export function WorkspaceMenuButton() {
                       return (
                         <MenuItem
                           key={workspace.name}
-                          onClick={() => setActiveWorkspace(workspace.name)}
+                          as={Link}
+                          href={workspace.basePath}
                           badgeText={STATE_TITLES[state]}
                           iconRight={isSelected ? CheckmarkIcon : undefined}
                           pressed={isSelected}
@@ -103,6 +105,7 @@ export function WorkspaceMenuButton() {
                           style={{
                             marginLeft: '1rem',
                             marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+                            textDecoration: 'none',
                           }}
                           __unstable_space={0}
                         />
