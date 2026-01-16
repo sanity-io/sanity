@@ -45,7 +45,12 @@ export function ObjectEditModal(props: {
     onClose()
   }, [onClose])
 
-  const modalWidth = schemaModalOption?.width
+  // If width is an empty array (user set modal options but didn't specify width),
+  // pass undefined to let the modal component use its default width.
+  const modalWidth =
+    schemaModalOption?.width && schemaModalOption.width.length > 0
+      ? schemaModalOption.width
+      : undefined
 
   if (modalType === 'popover') {
     return (
