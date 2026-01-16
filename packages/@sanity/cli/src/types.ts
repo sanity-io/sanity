@@ -375,6 +375,37 @@ export interface CliConfig {
    * Configuration for Sanity typegen
    */
   typegen?: Partial<TypeGenConfig>
+
+  /**
+   * Configuration for schema extraction (`sanity schema extract`)
+   */
+  schemaExtraction?: {
+    /**
+     * Output path for the extracted schema file.
+     * Defaults to `schema.json` in the working directory.
+     */
+    path?: string
+
+    /**
+     * When true, schema fields marked as required will be non-optional in the output.
+     * Defaults to `false`
+     */
+    enforceRequiredFields?: boolean
+
+    /**
+     * Additional glob patterns to watch for schema changes in watch mode.
+     * These extend the default patterns:
+     * - `sanity.config.{js,jsx,ts,tsx,mjs}`
+     * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}`
+     */
+    watchPatterns?: string[]
+
+    /**
+     * The name of the workspace to generate a schema for. Required if your Sanity project has more than one
+     * workspace.
+     */
+    workspace?: string
+  }
 }
 
 export type UserViteConfig =

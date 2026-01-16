@@ -13,7 +13,7 @@ import {
   startSchemaWatcher,
 } from './schemaExtractorApi'
 
-interface ExtractFlags {
+export interface ExtractFlags {
   'workspace'?: string
   'path'?: string
   'enforce-required-fields'?: boolean
@@ -35,17 +35,42 @@ export default async function extractAction(
   return runSingleExtraction(args, context)
 }
 
+export function getExtractOptions(
+  flags: ExtractFlags,
+  config: CliCommandContext['cliConfig'],
+  workDir: string,
+) {
+  const schemaExtraction = config?.schemaExtraction
+
+  return {
+    workspace: flags.workspace ?? schemaExtraction?.workspace,
+    format: flags.format ?? 'groq-type-nodes',
+    enforceRequiredFields:
+      flags['enforce-required-fields'] ?? schemaExtraction?.enforceRequiredFields ?? false,
+    outputPath: flags.path ?? schemaExtraction?.path ?? join(workDir, 'schema.json'),
+    watchPatterns: flags['watch-patterns']
+      ? Array.isArray(flags['watch-patterns'])
+        ? flags['watch-patterns']
+        : [flags['watch-patterns']]
+      : (schemaExtraction?.watchPatterns ?? []),
+  }
+}
+
 /**
  * Runs a single extraction with spinner and telemetry (original behavior).
  */
 async function runSingleExtraction(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output, telemetry}: CliCommandContext,
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const format = flags.format || 'groq-type-nodes'
-  const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(workDir, 'schema.json')
+  const {workDir, output, telemetry, cliConfig} = context
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    workspace: workspaceName,
+  } = getExtractOptions(flags, cliConfig, workDir)
 
   const spinner = output
     .spinner({})
@@ -62,7 +87,7 @@ async function runSingleExtraction(
     const schema = await extractSchemaToFile({
       workDir,
       outputPath,
-      workspaceName: flags.workspace,
+      workspaceName,
       enforceRequiredFields,
       format,
     })
@@ -105,12 +130,9 @@ async function runSingleExtraction(
  */
 async function runWatchMode(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output, telemetry}: CliCommandContext,
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const format = flags.format || 'groq-type-nodes'
-  const enforceRequiredFields = flags['enforce-required-fields'] || false
-  const outputPath = flags.path || join(workDir, 'schema.json')
 
   // Keep the start time + some simple stats for extractions as they happen
   const startTime = Date.now()
@@ -119,12 +141,15 @@ async function runWatchMode(
     failedCount: 0,
   }
 
-  // Build watch patterns
-  const additionalPatterns = Array.isArray(flags['watch-patterns'])
-    ? flags['watch-patterns']
-    : flags['watch-patterns']
-      ? [flags['watch-patterns']]
-      : []
+  const {workDir, output, telemetry, cliConfig} = context
+  const options = getExtractOptions(flags, cliConfig, workDir)
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    watchPatterns: additionalPatterns,
+    workspace: workspaceName,
+  } = options
   const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
 
   const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
@@ -146,7 +171,7 @@ async function runWatchMode(
     workDir,
     outputPath,
     output,
-    workspaceName: flags.workspace,
+    workspaceName,
     enforceRequiredFields,
     format,
     patterns: watchPatterns,

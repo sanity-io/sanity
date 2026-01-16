@@ -100,7 +100,7 @@ function getWorkspace({
 
   if (workspaceName === undefined) {
     throw new Error(
-      `Multiple workspaces found. Please specify which workspace to use with '--workspace'. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
+      `Multiple workspaces found. Please specify which workspace to use with '--workspace' or with the schemaExtraction.workspace config prop. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
     )
   }
   const workspace = workspaces.find((w) => w.name === workspaceName)
