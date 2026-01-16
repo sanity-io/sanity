@@ -43,6 +43,7 @@ describe('extractAction', () => {
       outputPath: '/custom/path.json',
       workspaceName: 'my-workspace',
       enforceRequiredFields: true,
+      format: 'groq-type-nodes',
     })
   })
 
