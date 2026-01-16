@@ -10,10 +10,16 @@ export function resolveMediaLibraryClient(params: {
 
   const [, libraryId] = ref.split(':', 2)
 
+  const {apiHost: base, projectId: subdomain} = client.config()
+  const baseUrl = new URL(base)
+  baseUrl.hostname = `${subdomain}.${baseUrl.hostname}`
+  const apiHost = baseUrl.toString()
+
   return client.withConfig({
+    // apiHost,
     // Use '~experimental_resource' here as this client instance will be passed
     // to the image URL builder which does not yet support 'resource'
-    '~experimental_resource': {
+    resource: {
       id: libraryId,
       type: 'media-library',
     },
