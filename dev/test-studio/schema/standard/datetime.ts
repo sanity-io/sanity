@@ -35,6 +35,15 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithTimezoneSwitchNoDefault',
+      type: 'datetime',
+      title: 'A datetime field with timezone switch but no displayTimeZone',
+      description: 'The timezone switch button should be visible',
+      options: {
+        allowTimeZoneSwitch: true,
+      },
+    },
+    {
       name: 'aDateTimeWithDisplayTimezoneInAmericaLosAngeles',
       type: 'datetime',
       title: 'A datetime field in America/Los_Angeles',

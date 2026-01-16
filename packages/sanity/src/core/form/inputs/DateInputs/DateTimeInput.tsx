@@ -235,7 +235,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   validation={validation}
                   title={schemaType.title}
                   suffix={
-                    displayTimeZone && (
+                    // Check raw schema options for allowTimeZoneSwitch since the parsed value
+                    // defaults to true - we only want to show the button when explicitly configured
+                    (displayTimeZone || schemaType.options?.allowTimeZoneSwitch === true) && (
                       <TimeZoneButtonElementQuery>
                         <TimeZoneButton
                           tooltipContent={
