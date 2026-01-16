@@ -103,7 +103,8 @@ const CompareWithPublishedView = () => {
           schemaType,
           rootDiff,
           isComparingCurrent: true,
-          FieldWrapper: (props) => props.children,
+          FieldWrapper: (props) =>
+            props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children,
           value: displayed,
           showFromValue: true,
         }}
