@@ -105,6 +105,7 @@ export function WorkspaceMenuButton() {
                           style={{
                             marginLeft: '1rem',
                             marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
+                            textDecoration: 'none',
                           }}
                           __unstable_space={0}
                         />
