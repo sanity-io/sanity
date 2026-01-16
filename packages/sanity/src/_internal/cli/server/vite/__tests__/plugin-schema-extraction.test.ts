@@ -166,6 +166,7 @@ describe('sanitySchemaExtractionPlugin', () => {
       start: vi.fn(),
       log: vi.fn(),
       error: vi.fn(),
+      complete: vi.fn(),
     }
     const telemetryLogger = {
       trace: vi.fn().mockReturnValue(traceMock),
@@ -208,6 +209,7 @@ describe('sanitySchemaExtractionPlugin', () => {
     const traceMock = {
       start: vi.fn(),
       log: vi.fn(),
+      error: vi.fn(),
       complete: vi.fn(),
     }
     const telemetryLogger = {
