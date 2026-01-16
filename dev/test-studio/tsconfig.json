@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.dev",
   "compilerOptions": {
+    "rootDir": ".",
     "isolatedModules": false
   }
 }

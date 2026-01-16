@@ -2,7 +2,7 @@ import {Stack} from '@sanity/ui'
 import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
 
 export function CodeInput(props: ObjectInputProps) {
-  const {members, renderField, renderItem} = props
+  const {members, renderField, renderItem, renderPreview} = props
 
   const codeMember = members.find((member) => member.kind === 'field' && member.name === 'code')
 
@@ -14,6 +14,7 @@ export function CodeInput(props: ObjectInputProps) {
           renderField={renderField}
           renderInput={props.renderInput}
           renderItem={renderItem}
+          renderPreview={renderPreview}
         />
       )}
     </Stack>
