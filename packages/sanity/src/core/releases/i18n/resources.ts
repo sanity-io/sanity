@@ -190,6 +190,8 @@ const releasesLocaleStrings = {
   'failed-schedule-title': 'Failed to schedule',
   /** Tooltip text for releases that have passed their intended publish date */
   'passed-intended-publish-date': 'This release has passed its intended publish date',
+  /** Tooltip text for scheduled drafts that have passed their intended publish date */
+  'passed-intended-publish-date-draft': 'This draft has passed its intended publish date',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',

@@ -27,7 +27,7 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
       data-testid="warning-indicator"
     >
       {hasWarning && (
-        <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
+        <Tooltip content={<Text size={1}>{t('passed-intended-publish-date-draft')}</Text>} portal>
           <Text size={1}>
             <ToneIcon icon={WarningOutlineIcon} tone="caution" />
           </Text>
