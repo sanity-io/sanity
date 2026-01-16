@@ -34,3 +34,18 @@ export function isCardinalityOnePerspective(
 ): perspective is CardinalityOneRelease {
   return isReleaseDocument(perspective) && isCardinalityOneRelease(perspective)
 }
+
+/**
+ * Checks if a release is a paused cardinality one release (scheduled draft).
+ *
+ * @internal
+ */
+export function isPausedCardinalityOneRelease(release: ReleaseDocument | undefined): boolean {
+  if (!release) return false
+  return (
+    release.state === 'active' &&
+    release.metadata.releaseType === 'scheduled' &&
+    isCardinalityOneRelease(release) &&
+    Boolean(release.metadata.intendedPublishAt)
+  )
+}

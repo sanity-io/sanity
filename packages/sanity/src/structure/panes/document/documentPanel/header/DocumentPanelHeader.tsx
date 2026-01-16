@@ -248,16 +248,6 @@ export const DocumentPanelHeader = memo(
                     />
                   )}
 
-                  {showSplitPaneCloseButton && (
-                    <Button
-                      key="close-view-button"
-                      icon={CloseIcon}
-                      mode="bleed"
-                      onClick={onPaneClose}
-                      tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
-                    />
-                  )}
-
                   {onSetMaximizedPane && (
                     <Button
                       key="focus-pane-button"
@@ -277,6 +267,16 @@ export const DocumentPanelHeader = memo(
                       data-testid={
                         isMaximizedPane ? 'focus-pane-button-collapse' : 'focus-pane-button-focus'
                       }
+                    />
+                  )}
+
+                  {showSplitPaneCloseButton && (
+                    <Button
+                      key="close-view-button"
+                      icon={CloseIcon}
+                      mode="bleed"
+                      onClick={onPaneClose}
+                      tooltipProps={{content: t('buttons.split-pane-close-button.title')}}
                     />
                   )}
 

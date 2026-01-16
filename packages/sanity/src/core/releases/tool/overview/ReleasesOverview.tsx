@@ -18,7 +18,7 @@ import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/Sing
 import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -30,7 +30,11 @@ import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleaseDefaults, shouldShowReleaseInView} from '../../util/util'
+import {
+  filterReleasesForOverview,
+  getReleaseDefaults,
+  shouldShowReleaseInView,
+} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
@@ -68,6 +72,11 @@ const DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT: TableSort = {
   direction: 'desc',
 }
 
+function toLocalDateComponents(utcDate: Date, utcToZoneDate: (date: Date) => Date): Date {
+  const tz = utcToZoneDate(utcDate)
+  return new Date(tz.getFullYear(), tz.getMonth(), tz.getDate())
+}
+
 export function ReleasesOverview() {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
@@ -102,6 +111,14 @@ export function ReleasesOverview() {
   const archivedReleases = useMemo(
     () => allArchivedReleases.filter(shouldShowReleaseInView(cardinalityView)),
     [allArchivedReleases, cardinalityView],
+  )
+
+  const pausedReleases = useMemo(
+    () =>
+      cardinalityView === 'drafts'
+        ? releases.filter((release) => isPausedCardinalityOneRelease(release))
+        : [],
+    [releases, cardinalityView],
   )
 
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
@@ -148,9 +165,6 @@ export function ReleasesOverview() {
   // but there are still scheduled drafts
   const showDraftsDisabledBanner =
     cardinalityView === 'drafts' && (!isDraftModelEnabled || !isScheduledDraftsEnabled)
-  const showConfirmActiveScheduledDraftsBanner =
-    cardinalityView === 'drafts' &&
-    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
   const loadingOrHasReleases = loading || hasReleases
   const hasNoReleases = !loading && !hasReleases
 
@@ -180,6 +194,11 @@ export function ReleasesOverview() {
     setReleaseGroupMode('active')
   }
 
+  // switch to open mode if on paused mode and there are no paused releases
+  if (releaseGroupMode === 'paused' && !loadingReleases && !pausedReleases.length) {
+    setReleaseGroupMode('active')
+  }
+
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
       setReleaseGroupMode(groupMode as Mode)
@@ -196,12 +215,8 @@ export function ReleasesOverview() {
     (date?: Date) =>
       setReleaseFilterDate((prevFilterDate) => {
         if (!date) return undefined
-
-        const timeZoneAdjustedDate = utcToCurrentZoneDate(date)
-
-        return prevFilterDate && isSameDay(prevFilterDate, timeZoneAdjustedDate)
-          ? undefined
-          : timeZoneAdjustedDate
+        const normalized = toLocalDateComponents(date, utcToCurrentZoneDate)
+        return prevFilterDate && isSameDay(prevFilterDate, normalized) ? undefined : normalized
       }),
     [utcToCurrentZoneDate],
   )
@@ -209,6 +224,11 @@ export function ReleasesOverview() {
   const clearFilterDate = useCallback(() => {
     setReleaseFilterDate(undefined)
     setReleaseGroupMode('active')
+  }, [])
+
+  const handleNavigateToPaused = useCallback(() => {
+    setReleaseFilterDate(undefined)
+    setReleaseGroupMode('paused')
   }, [])
 
   useEffect(() => {
@@ -252,6 +272,25 @@ export function ReleasesOverview() {
           text={t('action.open')}
           value="active"
         />
+        {cardinalityView === 'drafts' && (
+          <Tooltip
+            disabled={pausedReleases.length !== 0}
+            content={t('no-paused-release')}
+            placement="bottom"
+          >
+            <div>
+              <MotionButton
+                key="paused-group"
+                {...groupModeButtonBaseProps}
+                disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
+                onClick={handleReleaseGroupModeChange}
+                selected={releaseGroupMode === 'paused'}
+                text={t('action.paused')}
+                value="paused"
+              />
+            </div>
+          </Tooltip>
+        )}
         <Tooltip
           disabled={archivedReleases.length !== 0}
           content={t('no-archived-release')}
@@ -279,6 +318,8 @@ export function ReleasesOverview() {
     releaseGroupMode,
     t,
     archivedReleases.length,
+    pausedReleases.length,
+    cardinalityView,
   ])
 
   const handleOnClickCreateRelease = useCallback(() => {
@@ -349,9 +390,7 @@ export function ReleasesOverview() {
       if (release.isDeleted || release.isLoading) return null
 
       if (cardinalityView === 'drafts') {
-        return (
-          <ScheduledDraftMenuButtonWrapper release={release} releaseGroupMode={releaseGroupMode} />
-        )
+        return <ScheduledDraftMenuButtonWrapper release={release} />
       }
 
       const documentsCount =
@@ -365,31 +404,32 @@ export function ReleasesOverview() {
   )
 
   const filteredReleases = useMemo(() => {
-    const filterActiveIfNeeded = (items: TableRelease[]) =>
-      cardinalityView === 'drafts' ? items.filter((release) => release.state !== 'active') : items
+    const dateFilter = releaseFilterDate
+      ? {
+          filterDate: releaseFilterDate,
+          getTimezoneAdjustedDateTimeRange,
+        }
+      : undefined
 
-    if (!releaseFilterDate) {
-      return filterActiveIfNeeded(releaseGroupMode === 'active' ? tableReleases : archivedReleases)
-    }
-
-    const [startOfDayForTimeZone, endOfDayForTimeZone] =
-      getTimezoneAdjustedDateTimeRange(releaseFilterDate)
-
-    const dateFiltered = tableReleases.filter((release) => {
-      if (!release.publishAt || release.metadata.releaseType !== 'scheduled') return false
-      const publishDateUTC = new Date(release.publishAt)
-      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
+    return filterReleasesForOverview({
+      releases: tableReleases,
+      archivedReleases,
+      cardinalityView,
+      releaseGroupMode,
+      dateFilter,
     })
-
-    return filterActiveIfNeeded(dateFiltered)
   }, [
-    releaseFilterDate,
-    releaseGroupMode,
     tableReleases,
     archivedReleases,
-    getTimezoneAdjustedDateTimeRange,
     cardinalityView,
+    releaseGroupMode,
+    releaseFilterDate,
+    getTimezoneAdjustedDateTimeRange,
   ])
+
+  const showConfirmActiveScheduledDraftsBanner =
+    cardinalityView === 'drafts' &&
+    releases.some((release) => release.state === 'active' && isCardinalityOneRelease(release))
 
   const renderCalendarFilter = useMemo(() => {
     return (
@@ -486,7 +526,12 @@ export function ReleasesOverview() {
             />
           )}
           {showConfirmActiveScheduledDraftsBanner && (
-            <ConfirmActiveScheduledDraftsBanner releases={releases} />
+            <ConfirmActiveScheduledDraftsBanner
+              releases={releases}
+              releaseGroupMode={releaseGroupMode}
+              hasDateFilter={Boolean(releaseFilterDate)}
+              onNavigateToPaused={handleNavigateToPaused}
+            />
           )}
 
           {hasNoReleases ? (

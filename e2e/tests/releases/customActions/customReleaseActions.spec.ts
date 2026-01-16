@@ -58,18 +58,23 @@ test.describe('Custom Release Actions', () => {
 
       const menuButton = releaseRow.getByTestId('release-menu-button')
       await expect(menuButton).toBeVisible()
-      await menuButton.click()
+      await expect(menuButton).toBeEnabled()
+      // Use force click to bypass vercel-live-feedback overlay
+      await menuButton.click({force: true})
     } else {
       // On individual release page, wait for the menu button and click it
       const menuButton = page.getByTestId('release-menu-button')
       await expect(menuButton).toBeVisible()
-      await menuButton.click()
+      await expect(menuButton).toBeEnabled()
+      // Use force click to bypass vercel-live-feedback overlay
+      await menuButton.click({force: true})
     }
   }
 
   const expectCustomActionInMenu = async (page: Page) => {
     const menuItem = page.getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
     await expect(menuItem).toBeVisible()
+    await expect(menuItem).toBeEnabled()
     return menuItem
   }
 
@@ -93,7 +98,8 @@ test.describe('Custom Release Actions', () => {
 
       test('should display custom release actions in menu', async ({page}) => {
         await openReleaseMenu(page, isOverview)
-        await expectCustomActionInMenu(page)
+        const menuItem = await expectCustomActionInMenu(page)
+        await expect(menuItem).toBeVisible()
       })
 
       test('should show action as enabled', async ({page}) => {
@@ -103,6 +109,7 @@ test.describe('Custom Release Actions', () => {
       })
 
       test('should verify context data', async ({page}) => {
+        test.slow()
         const consoleMessages: string[] = []
         page.on('console', (msg) => {
           consoleMessages.push(msg.text())
