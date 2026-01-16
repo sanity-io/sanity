@@ -1,6 +1,7 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
 
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {type FieldMember, type PrimitiveFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
@@ -35,11 +36,14 @@ export function PrimitiveField(props: {
 
   const {onPathBlur, onPathFocus, onChange} = useFormCallbacks()
 
-  useEffect(() => {
-    if (member.field.focused) {
+  // Use useDidUpdate to only focus when transitioning from unfocused to focused.
+  // This fixes Firefox focus issues when inline changes mode triggers re-renders,
+  // as it prevents redundant focus calls that can cause race conditions.
+  useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
+    if (!hadFocus && hasFocus) {
       focusRef.current?.focus()
     }
-  }, [member.field.focused])
+  })
 
   const handleBlur = useCallback(() => {
     onPathBlur(member.field.path)
