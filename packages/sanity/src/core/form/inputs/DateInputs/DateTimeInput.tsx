@@ -235,7 +235,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   validation={validation}
                   title={schemaType.title}
                   suffix={
-                    displayTimeZone && (
+                    (displayTimeZone || allowTimeZoneSwitch) && (
                       <TimeZoneButtonElementQuery>
                         <TimeZoneButton
                           tooltipContent={

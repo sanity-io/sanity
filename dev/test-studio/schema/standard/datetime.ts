@@ -35,6 +35,16 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithTimezoneSwitchNoDefault',
+      type: 'datetime',
+      title: 'A datetime field with timezone switch but no displayTimeZone',
+      description:
+        'This tests the fix for SAPP-3018 - allowTimeZoneSwitch should work without displayTimeZone',
+      options: {
+        allowTimeZoneSwitch: true,
+      },
+    },
+    {
       name: 'aDateTimeWithDisplayTimezoneInAmericaLosAngeles',
       type: 'datetime',
       title: 'A datetime field in America/Los_Angeles',
