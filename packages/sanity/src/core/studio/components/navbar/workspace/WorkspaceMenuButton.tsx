@@ -10,7 +10,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {Link} from 'sanity/router'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -90,10 +89,13 @@ export function WorkspaceMenuButton() {
 
                       const isSelected = workspace.name === activeWorkspace.name
 
+                      // we have a temporary need to make a hard direct link to the workspace
+                      // because of possibly shared context between workspaces. When this is resolved,
+                      // we can remove this and use setActiveWorkspace instead
                       return (
                         <MenuItem
                           key={workspace.name}
-                          as={Link}
+                          as="a"
                           href={workspace.basePath}
                           badgeText={STATE_TITLES[state]}
                           iconRight={isSelected ? CheckmarkIcon : undefined}
@@ -105,7 +107,6 @@ export function WorkspaceMenuButton() {
                           style={{
                             marginLeft: '1rem',
                             marginRight: `calc(1.25rem - ${scrollbarWidth}px)`,
-                            textDecoration: 'none',
                           }}
                           __unstable_space={0}
                         />
