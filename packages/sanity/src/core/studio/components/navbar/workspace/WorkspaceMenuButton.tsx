@@ -89,9 +89,6 @@ export function WorkspaceMenuButton() {
 
                       const isSelected = workspace.name === activeWorkspace.name
 
-                      // we have a temporary need to make a hard direct link to the workspace
-                      // because of possibly shared context between workspaces. When this is resolved,
-                      // we can remove this and use setActiveWorkspace instead
                       return (
                         <MenuItem
                           key={workspace.name}
