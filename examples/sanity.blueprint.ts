@@ -32,7 +32,7 @@ function loadFunctionResources() {
         }
 
         const resourceItem = packageJson.blueprintResourceItem
-        if (resourceItem.type === 'sanity.function.media-library.asset') {
+        if (resourceItem.type && resourceItem.type === 'sanity.function.media-library.asset') {
           // @ts-expect-error - TODO: fix this
           resources.push(defineMediaLibraryAssetFunction(resourceItem))
         } else {
