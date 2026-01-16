@@ -387,13 +387,6 @@ export interface CliConfig {
     path?: string
 
     /**
-     * Format for the extracted schema.
-     * Currently only 'groq-type-nodes' is supported.
-     * Defaults to `groq-type-nodes`
-     */
-    format?: 'groq-type-nodes'
-
-    /**
      * When true, schema fields marked as required will be non-optional in the output.
      * Defaults to `false`
      */

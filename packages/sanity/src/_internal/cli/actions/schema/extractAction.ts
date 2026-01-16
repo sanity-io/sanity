@@ -44,7 +44,7 @@ export function getExtractOptions(
 
   return {
     workspace: flags.workspace ?? schemaExtraction?.workspace,
-    format: flags.format ?? schemaExtraction?.format ?? 'groq-type-nodes',
+    format: flags.format ?? 'groq-type-nodes',
     enforceRequiredFields:
       flags['enforce-required-fields'] ?? schemaExtraction?.enforceRequiredFields ?? false,
     outputPath: flags.path ?? schemaExtraction?.path ?? join(workDir, 'schema.json'),

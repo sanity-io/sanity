@@ -32,7 +32,6 @@ describe('extractAction', () => {
       createContext({
         schemaExtraction: {
           workspace: 'my-workspace',
-          format: 'custom-format',
           enforceRequiredFields: true,
           path: '/custom/path.json',
         },
@@ -44,7 +43,6 @@ describe('extractAction', () => {
       outputPath: '/custom/path.json',
       workspaceName: 'my-workspace',
       enforceRequiredFields: true,
-      format: 'custom-format',
     })
   })
 
@@ -59,7 +57,6 @@ describe('extractAction', () => {
       createContext({
         schemaExtraction: {
           workspace: 'config-workspace',
-          format: 'config-format',
           enforceRequiredFields: true,
           path: '/config/path.json',
         },
