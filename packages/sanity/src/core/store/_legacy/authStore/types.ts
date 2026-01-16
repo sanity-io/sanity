@@ -72,6 +72,10 @@ export interface AuthState {
    * requests in the Studio
    */
   client: SanityClient
+  /**
+   * Tracks whether handleCallbackUrl has completed processing, useful for preventing redirects before the session ID has been validated for a token
+   */
+  callbackHandled: boolean
 }
 
 /**
