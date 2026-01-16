@@ -31,7 +31,14 @@ export function _objectApply(value: FIXME, patch: FIXME) {
     return omit(nextValue, head)
   }
 
-  nextValue[head] = applyPatch(nextValue[head], {
+  // If the nested value is undefined and we're applying a deep set operation,
+  // treat it as an empty object to allow nested property assignment.
+  // This fixes issues with file/image upload progress patches in nested documents
+  // where the parent object may not exist yet.
+  const currentNestedValue =
+    nextValue[head] === undefined && tail.length > 0 && patch.type === 'set' ? {} : nextValue[head]
+
+  nextValue[head] = applyPatch(currentNestedValue, {
     ...patch,
     path: tail,
   })
