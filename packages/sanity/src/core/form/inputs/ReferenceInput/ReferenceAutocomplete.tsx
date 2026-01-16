@@ -40,7 +40,14 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 ) {
   const {focusPath} = useFormBuilder()
   const {searchString, loading, portalRef, referenceElement, path, ...restProps} = props
-  const [autoFocus] = useState(() => (PathUtils.isEqual(focusPath, path) ? true : false))
+
+  /**
+   * Path here is the path of the reference input, not including the _ref segment, that is why we use the
+   * startsWith function to validate the autoFocus condition.
+   *
+   * If the focusPath is either `[field]` or `[field, _ref]` we want to autoFocus the input.
+   */
+  const [autoFocus] = useState(() => (PathUtils.startsWith(path, focusPath) ? true : false))
 
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
