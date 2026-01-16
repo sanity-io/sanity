@@ -33,6 +33,7 @@ test.describe('Decorations - renderMembers', () => {
 
     // The image field should be visible within the location object
     const imageField = page.getByTestId('field-location.image')
+    await imageField.scrollIntoViewIfNeeded()
     await expect(imageField).toBeVisible()
 
     // Check that the image decoration is visible
@@ -47,6 +48,7 @@ test.describe('Decorations - renderMembers', () => {
 
     // The file field should be visible within the location object
     const fileField = page.getByTestId('field-location.file')
+    await fileField.scrollIntoViewIfNeeded()
     await expect(fileField).toBeVisible()
 
     // Check that the file decoration is visible
