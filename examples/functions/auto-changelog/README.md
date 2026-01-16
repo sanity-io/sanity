@@ -42,13 +42,12 @@ This function is built to be compatible with any of [the official "clean" templa
 
 **Behind the scenes,** the function automatically:
 
-1. **Triggers** on update events for post documents with content or code block changes
-2. **Filters** out formatting-only changes using intelligent comparison
-3. **Analyzes** both content and code changes using AI
-4. **Generates** a concise, reader-friendly description of what changed
-5. **Appends** the changelog entry to the document's changelog array
+1. **Triggers** on update events for post documents with content changes
+2. **Analyzes** content changes using AI
+3. **Generates** a concise, reader-friendly description of what changed
+4. **Appends** the changelog entry to the document's changelog array
 
-**Reader outcome:** Visitors see clear change tracking like "Fixed syntax for the API call to use await; Added more context about the implementation process" without noise from minor formatting tweaks, helping them understand exactly what's new since their last visit.
+**Reader outcome:** Visitors see clear change tracking like "Clarified explanation of the model's limitations; Added more context about the implementation process" without noise from minor wording tweaks, helping them understand exactly what's new since their last visit.
 
 ### Adding required fields to your schema
 
@@ -150,27 +149,29 @@ npx sanity schema deploy
    npx sanity schema deploy
    ```
 
-## Local Development Limitations
+## Testing the function locally
 
-**Important:** This function cannot currently be tested locally as local development does not yet support GROQ functions and Delta GROQ operations used in the filter and projection.
+### 1. Test with Before/After Document States
 
-The function uses:
+The auto-changelog function uses delta GROQ operations (`delta::changedAny()`, `before()`, `after()`) to detect changes. To test this locally with the CLI, you need to provide both before and after versions of a document. This works well by making a draft of a document, and then using the documentId and the draft documentId:
 
-- `delta::changedAny()` - GROQ delta functions for detecting changes
-- `pt::text()` - GROQ functions for portable text processing
-- Complex projections with `before()` and `after()` document states
+```bash
+npx sanity functions test auto-changelog --event update \
+  --document-id-before <post-id> \
+  --document-id-after draft:<post-id> \
+  --dataset production \
+  --with-user-token
+```
 
-These features are currently only available in the Sanity production environment.
+### 2. Interactive Development Mode
 
-### Testing Strategy
+For a more interactive testing experience, use the development server:
 
-- **Deploy to production** for testing with real document updates
-- **Monitor function logs** using the CLI:
-  ```bash
-  npx sanity functions logs auto-changelog --watch
-  ```
-- **Use staging/development dataset** if available for safer testing
-- **Test with small content changes** to verify behavior
+```bash
+npx sanity functions dev
+```
+
+This opens a web UI where you can test the "before" and "after" data
 
 ### Advanced: Code Block Support
 
@@ -229,8 +230,7 @@ Customize the changelog generation style by editing the `instruction` string in 
 ```typescript
 instruction: `
   Generate changelog entries focusing on:
-  - Technical accuracy for code changes
-  - User-facing impacts for content changes  
+  - User-facing impacts for content changes
   - Concise, professional tone
   // ... your custom instructions
 `
