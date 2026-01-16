@@ -7,7 +7,6 @@ export default defineConfig({
   test: {
     projects: [
       'packages/@sanity/cli',
-      'packages/@sanity/codegen',
       'packages/@sanity/mutator',
       'packages/@sanity/schema',
       'packages/@sanity/types',
