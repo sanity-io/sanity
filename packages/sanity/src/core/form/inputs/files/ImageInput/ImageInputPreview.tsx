@@ -5,20 +5,22 @@ import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../../i18n'
 import {ImagePreview} from './ImagePreview'
-import {type BaseImageInputValue} from './types'
+import {type AssetAccessPolicy, type BaseImageInputValue} from './types'
 import {useImageUrl} from './useImageUrl'
 
 export const ImageInputPreview = memo(function ImageInputPreviewComponent(props: {
+  accessPolicy: AssetAccessPolicy
   client: SanityClient
   handleOpenDialog: () => void
   imageUrlBuilder: ImageUrlBuilder
   readOnly: boolean | undefined
   value: BaseImageInputValue
 }) {
-  const {client, handleOpenDialog, imageUrlBuilder, readOnly, value} = props
+  const {accessPolicy, client, handleOpenDialog, imageUrlBuilder, readOnly, value} = props
 
   return (
     <RenderImageInputPreview
+      accessPolicy={accessPolicy}
       client={client}
       handleOpenDialog={handleOpenDialog}
       imageUrlBuilder={imageUrlBuilder}
@@ -29,13 +31,14 @@ export const ImageInputPreview = memo(function ImageInputPreviewComponent(props:
 })
 
 function RenderImageInputPreview(props: {
+  accessPolicy: AssetAccessPolicy
   client: SanityClient
   handleOpenDialog: () => void
   imageUrlBuilder: ImageUrlBuilder
   readOnly: boolean | undefined
   value: BaseImageInputValue
 }) {
-  const {client, handleOpenDialog, imageUrlBuilder, readOnly, value} = props
+  const {accessPolicy, client, handleOpenDialog, imageUrlBuilder, readOnly, value} = props
 
   const {t} = useTranslation()
 
@@ -45,6 +48,7 @@ function RenderImageInputPreview(props: {
     builder.width(2000).fit('max').image(val).dpr(dpr).auto('format').url()
 
   const {url} = useImageUrl({
+    accessPolicy,
     client,
     imageSource: value,
     imageUrlBuilder,
@@ -54,6 +58,7 @@ function RenderImageInputPreview(props: {
   return (
     <ImagePreview
       alt={t('inputs.image.preview-uploaded-image')}
+      accessPolicy={accessPolicy}
       onDoubleClick={handleOpenDialog}
       readOnly={readOnly}
       src={url}

@@ -41,6 +41,7 @@ import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
+import {useAccessPolicy} from './useAccessPolicy'
 
 export {BaseImageInputProps, BaseImageInputValue}
 
@@ -310,12 +311,18 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
+  const accessPolicy = useAccessPolicy({
+    client,
+    imageSource: value,
+  })
+
   const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
       return <></>
     }
     return (
       <ImageInputPreview
+        accessPolicy={accessPolicy}
         client={client}
         handleOpenDialog={handleOpenDialog}
         imageUrlBuilder={imageUrlBuilder}
@@ -323,11 +330,12 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         value={value}
       />
     )
-  }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
+  }, [accessPolicy, client, handleOpenDialog, imageUrlBuilder, readOnly, value])
 
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
+        accessPolicy={accessPolicy}
         assetSources={assetSources}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
@@ -347,6 +355,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
