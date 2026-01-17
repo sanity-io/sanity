@@ -1,22 +1,8 @@
+import {BlueprintsDestroyCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --project-id   Project associated with the Stack
-  --stack-id     Stack ID to destroy (defaults to current Stack)
-  --force, -f    Force destroy without confirmation
-  --no-wait      Do not wait for destroy to complete
-
-Examples:
-  # Destroy the current deployment
-  sanity blueprints destroy
-
-  # Force destroy without confirmation
-  sanity blueprints destroy --force
-
-  # Destroy without waiting for completion
-  sanity blueprints destroy --no-wait
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsDestroyFlags {
   'force'?: boolean
@@ -37,10 +23,7 @@ const defaultFlags: BlueprintsDestroyFlags = {
 const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
   name: 'destroy',
   group: 'blueprints',
-  helpText,
-  signature: '[--project-id <value> --stack-id <value> --force] [--no-wait]',
-  description:
-    'Destroy a Blueprint Stack deployment and its resources (will not delete local files)',
+  ...transformHelpText(BlueprintsDestroyCommand, 'sanity', 'blueprints destroy'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -58,7 +41,7 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 

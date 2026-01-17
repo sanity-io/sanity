@@ -1,19 +1,8 @@
+import {BlueprintsConfigCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --edit, -e           Modify the configuration interactively, or directly when combined with ID flags.
-  --project-id <id>    Directly set the Project ID in the configuration. Requires --edit flag
-  --stack-id <id>      Directly set the Stack ID in the configuration. Requires --edit flag
-  --verbose            Output verbose logs
-
-Examples:
-  # View current configuration
-  sanity blueprints config
-
-  # Edit configuration
-  sanity blueprints config --edit
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsConfigFlags {
   'edit'?: boolean
@@ -34,9 +23,7 @@ const defaultFlags: BlueprintsConfigFlags = {
 const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   name: 'config',
   group: 'blueprints',
-  helpText,
-  signature: '[--edit] [--project-id <id>] [--stack-id <id>] [--verbose]',
-  description: 'View or edit local Blueprints configuration',
+  ...transformHelpText(BlueprintsConfigCommand, 'sanity', 'blueprints config'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -55,7 +42,7 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
     })
 

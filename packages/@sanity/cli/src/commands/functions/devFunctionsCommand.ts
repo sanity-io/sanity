@@ -1,30 +1,18 @@
+import {FunctionsDevCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
 import open from 'open'
 
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --port <port> Port to start emulator on
-  --open Open dev server in a new browser tab
-
-Examples
-  # Start dev server on default port
-  sanity functions dev
-
-  # Start dev server on specific host
-  sanity functions dev --host 0.0.0.0
-
-  # Start dev server on specific port
-  sanity functions dev --port 3333
-
-  # Start dev server and open a new browser tab
-  sanity functions dev --open
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface FunctionsDevFlags {
   open?: boolean
   host?: string
+  h?: string
   port?: number
+  p?: number
+  timeout?: number
+  t?: number
 }
 
 const defaultFlags: FunctionsDevFlags = {
@@ -36,9 +24,7 @@ const defaultFlags: FunctionsDevFlags = {
 const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
   name: 'dev',
   group: 'functions',
-  helpText,
-  signature: '[--host <host> --port <port> --open]',
-  description: 'Start the Sanity Function emulator',
+  ...transformHelpText(FunctionsDevCommand, 'sanity', 'functions dev'),
   async action(args, context) {
     const {apiClient, output} = context
     const flags = {...defaultFlags, ...args.extOptions}
@@ -54,24 +40,28 @@ const devFunctionsCommand: CliCommandDefinition<FunctionsDevFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 
     if (!cmdConfig.ok) throw new Error(cmdConfig.error)
 
+    const resolvedHost = flags.h ?? flags.host
+    const resolvedPort = flags.p ?? flags.port
+
     const {success, error} = await functionDevCore({
       ...cmdConfig.value,
       flags: {
-        host: flags.host,
-        port: flags.port,
+        host: resolvedHost,
+        port: resolvedPort,
+        timeout: flags.t ?? flags.timeout,
       },
     })
 
     if (!success) throw new Error(error)
 
     if (shouldOpen) {
-      await open(`http://${flags.host}:${flags.port}`)
+      await open(`http://${resolvedHost}:${resolvedPort}`)
     }
   },
 }

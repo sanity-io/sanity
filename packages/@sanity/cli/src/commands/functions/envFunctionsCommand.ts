@@ -1,3 +1,5 @@
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
@@ -65,7 +67,7 @@ const envFunctionsCommand: CliCommandDefinition<FunctionsEnvFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 
