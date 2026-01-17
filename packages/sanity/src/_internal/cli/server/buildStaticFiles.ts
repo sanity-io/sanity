@@ -3,11 +3,16 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {type CliCommandContext, type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as serverDebug} from './debug'
-import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
+import {
+  extendViteConfigWithUserConfig,
+  finalizeViteConfig,
+  getViteConfig,
+  type ViteOptions,
+} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 import {generateWebManifest} from './webManifest'
 
@@ -39,6 +44,12 @@ export interface StaticBuildOptions {
   reactCompiler: ReactCompilerConfig | undefined
   entry?: string
   isApp?: boolean
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
+
+  /** Telemetry logger */
+  telemetry?: CliCommandContext['telemetry']
 }
 
 export async function buildStaticFiles(
@@ -55,6 +66,8 @@ export async function buildStaticFiles(
     reactCompiler,
     entry,
     isApp,
+    schemaExtraction,
+    telemetry,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -69,17 +82,21 @@ export async function buildStaticFiles(
 
   debug('Resolving vite config')
   const mode = 'production'
-  let viteConfig = await getViteConfig({
-    cwd,
-    basePath,
-    outputDir,
-    minify,
-    sourceMap,
-    mode,
-    importMap,
-    reactCompiler,
-    isApp,
-  })
+  let viteConfig = await getViteConfig(
+    {
+      cwd,
+      basePath,
+      outputDir,
+      minify,
+      sourceMap,
+      mode,
+      importMap,
+      reactCompiler,
+      isApp,
+      schemaExtraction,
+    },
+    {telemetry},
+  )
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {

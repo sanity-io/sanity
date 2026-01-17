@@ -1,9 +1,15 @@
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {type CliCommandContext, type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
 import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
+
+export interface SchemaExtractionOptions {
+  enabled: boolean
+  outputPath?: string
+  workspaceName?: string
+}
 
 export interface DevServerOptions {
   cwd: string
@@ -19,6 +25,12 @@ export interface DevServerOptions {
   vite?: UserViteConfig
   entry?: string
   isApp?: boolean
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
+
+  /** Telemetry logger */
+  telemetry?: CliCommandContext['telemetry']
 }
 
 export interface DevServer {
@@ -37,6 +49,8 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactCompiler,
     entry,
     isApp,
+    schemaExtraction,
+    telemetry,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -45,14 +59,18 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   debug('Resolving vite config')
   const mode = 'development'
 
-  let viteConfig = await getViteConfig({
-    basePath,
-    mode: 'development',
-    server: {port: httpPort, host: httpHost},
-    cwd,
-    reactCompiler,
-    isApp,
-  })
+  let viteConfig = await getViteConfig(
+    {
+      basePath,
+      mode: 'development',
+      server: {port: httpPort, host: httpHost},
+      cwd,
+      reactCompiler,
+      isApp,
+      schemaExtraction,
+    },
+    {telemetry},
+  )
 
   // Extend Vite configuration with user-provided config
   if (extendViteConfig) {

@@ -238,6 +238,8 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      schemaExtraction: cliConfig?.schemaExtraction,
+      telemetry: context.telemetry,
     })
 
     trace.log({
