@@ -66,16 +66,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
     onClose()
   }, [onClose])
 
-  if (!iframeUrl) {
-    // If we can't construct the URL (missing libraryId or assetId), just close
-    console.warn('Cannot open asset in source: missing libraryId or asset source id', {
-      libraryId: mediaLibraryIds?.libraryId,
-      sourceAssetId,
-    })
-    onClose()
-    return null
-  }
-
   return (
     <AppDialog
       header={dialogHeaderTitle}
