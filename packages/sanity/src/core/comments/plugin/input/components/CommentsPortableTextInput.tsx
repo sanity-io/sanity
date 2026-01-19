@@ -3,6 +3,7 @@
 import {
   type EditorChange,
   type EditorSelection,
+  type PortableTextBlock,
   PortableTextEditor,
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
@@ -108,6 +109,12 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+  const [fragment, setFragment] = useState<PortableTextBlock[] | null>(null)
+
+  const getFragment = useCallback(() => {
+    if (!editorRef.current) return EMPTY_ARRAY
+    return PortableTextEditor.getFragment(editorRef.current)
+  }, [])
 
   const handleSetCurrentSelectionRect = useCallback(() => {
     const rect = getSelectionBoundingRect()
@@ -121,6 +128,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     setNextCommentValue(null)
     setCanSubmit(false)
     setAuthoringDecorationElement(null)
+    setFragment(null)
   }, [])
 
   // Set the next comment selection to the current selection so that we can
@@ -132,9 +140,10 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       handleOpenDialog('pte')
       return
     }
-
+    const currentFragment = getFragment() || null
+    setFragment(currentFragment)
     setNextCommentSelection(currentSelection)
-  }, [currentSelection, handleOpenDialog, mode])
+  }, [currentSelection, getFragment, handleOpenDialog, mode])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -148,21 +157,15 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       .map((c) => c.parentComment)
   }, [comments.data.open, stringFieldPath])
 
-  const getFragment = useCallback(() => {
-    if (!editorRef.current) return EMPTY_ARRAY
-    return PortableTextEditor.getFragment(editorRef.current)
-  }, [])
-
   const handleSubmit = useCallback(() => {
     if (!nextCommentSelection || !editorRef.current) return
 
-    const fragment = getFragment() || EMPTY_ARRAY
     const editorValue = PortableTextEditor.getValue(editorRef.current)
 
     if (!editorValue) return
 
     const textSelection = buildTextSelectionFromFragment({
-      fragment,
+      fragment: fragment || EMPTY_ARRAY,
       selection: nextCommentSelection,
       value: editorValue,
     })
@@ -202,7 +205,6 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     resetStates()
   }, [
     nextCommentSelection,
-    getFragment,
     operation,
     stringFieldPath,
     nextCommentValue,
@@ -212,6 +214,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     scrollToGroup,
     resetStates,
     setStatus,
+    fragment,
   ])
 
   const handleDecoratorClick = useCallback(
@@ -238,8 +241,8 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     (selection: EditorSelection | null) => {
       const isRangeSelected = selection?.anchor.offset !== selection?.focus.offset
 
-      const fragment = getFragment()
-      const isValidSelection = fragment?.every(isPortableTextTextBlock)
+      const selectedFragment = getFragment()
+      const isValidSelection = selectedFragment?.every(isPortableTextTextBlock)
 
       if (!isValidSelection || !isRangeSelected) {
         setCanSubmit(false)
