@@ -276,7 +276,7 @@
     "vite": "catalog:",
     "web-vitals": "^5.1.0",
     "which": "^5.0.0",
-    "xstate": "^5.25.0",
+    "xstate": "^5.25.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
