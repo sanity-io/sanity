@@ -61,6 +61,7 @@ jobs:
         shardTotal: [2]
     steps:
       - uses: actions/checkout@v6
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
       - uses: ./.github/actions/setup
         if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
