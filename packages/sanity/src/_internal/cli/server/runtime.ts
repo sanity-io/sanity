@@ -15,6 +15,14 @@ import {getSanityStudioConfigPath} from './sanityConfig'
 
 const debug = serverDebug.extend('runtime')
 
+/**
+ * Converts path separators to forward slashes for ESM imports.
+ * @internal
+ */
+export function toForwardSlashes(filePath: string): string {
+  return filePath.replace(/\\/g, '/')
+}
+
 export interface RuntimeOptions {
   cwd: string
   reactStrictMode: boolean
@@ -50,7 +58,7 @@ export async function writeSanityRuntime({
         await renderDocument({
           studioRootPath: cwd,
           props: {
-            entryPath: `/${path.relative(cwd, path.join(runtimeDir, 'app.js'))}`,
+            entryPath: `/${toForwardSlashes(path.relative(cwd, path.join(runtimeDir, 'app.js')))}`,
             basePath: basePath || '/',
           },
           isApp,
@@ -74,10 +82,14 @@ export async function writeSanityRuntime({
   let relativeConfigLocation: string | null = null
   if (!isApp) {
     const studioConfigPath = await getSanityStudioConfigPath(cwd)
-    relativeConfigLocation = studioConfigPath ? path.relative(runtimeDir, studioConfigPath) : null
+    relativeConfigLocation = studioConfigPath
+      ? toForwardSlashes(path.relative(runtimeDir, studioConfigPath))
+      : null
   }
 
-  const relativeEntry = cwd ? path.resolve(cwd, entry || './src/App') : entry
+  const relativeEntry = toForwardSlashes(
+    path.relative(runtimeDir, path.resolve(cwd, entry || './src/App')),
+  )
   const appJsContent = getEntryModule({
     reactStrictMode,
     relativeConfigLocation,
