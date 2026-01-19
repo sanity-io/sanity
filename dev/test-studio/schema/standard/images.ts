@@ -232,5 +232,13 @@ export default defineType({
         },
       },
     },
+    {
+      name: 'multiSelectGallery',
+      title: 'Multi-select image gallery (array of images)',
+      type: 'array',
+      of: [{type: 'image'}],
+      description:
+        'Test for #4483: When selecting images from asset browser, you can select multiple images at once. First image updates current field, additional images are inserted as new array items.',
+    },
   ],
 })

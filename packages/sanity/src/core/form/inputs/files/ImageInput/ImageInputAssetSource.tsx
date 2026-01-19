@@ -11,11 +11,13 @@ function ImageInputAssetSourceComponent(
     handleAssetSourceClosed: () => void
     handleSelectAssetFromSource: (assetFromSource: AssetFromSource[]) => void
     uploader?: AssetSourceUploader
+    isArrayContext?: boolean
   },
 ) {
   const {
     handleAssetSourceClosed,
     handleSelectAssetFromSource,
+    isArrayContext,
     isUploading,
     observeAsset,
     schemaType,
@@ -23,6 +25,7 @@ function ImageInputAssetSourceComponent(
     uploader,
     value,
   } = props
+  const selectionType = isArrayContext ? 'multiple' : 'single'
   const accept = useMemo(() => get(schemaType, 'options.accept', 'image/*'), [schemaType])
 
   if (!selectedAssetSource) {
@@ -43,7 +46,7 @@ function ImageInputAssetSourceComponent(
             onSelect={handleSelectAssetFromSource}
             schemaType={schemaType}
             selectedAssets={[imageAsset]}
-            selectionType="single"
+            selectionType={selectionType}
             uploader={uploader}
           />
         )}
@@ -60,7 +63,7 @@ function ImageInputAssetSourceComponent(
       onSelect={handleSelectAssetFromSource}
       schemaType={schemaType}
       selectedAssets={[]}
-      selectionType="single"
+      selectionType={selectionType}
       uploader={uploader}
     />
   )

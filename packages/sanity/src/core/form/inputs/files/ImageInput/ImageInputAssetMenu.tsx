@@ -27,10 +27,12 @@ function ImageInputAssetMenuComponent(
   > & {
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFile: (assetSource: AssetSource, file: File) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
+    /** Enable multi-file selection in file picker dialog */
+    multiple?: boolean
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
     setMenuButtonElement: (el: HTMLButtonElement | null) => void
     setMenuOpen: (isOpen: boolean) => void
@@ -41,11 +43,12 @@ function ImageInputAssetMenuComponent(
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFile,
+    onSelectFiles,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
+    multiple,
     observeAsset,
     readOnly,
     schemaType,
@@ -107,9 +110,10 @@ function ImageInputAssetMenuComponent(
       directUploads={directUploads}
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
-      onSelectFile={onSelectFile}
+      onSelectFiles={onSelectFiles}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
+      multiple={multiple}
       observeAsset={observeAsset}
       readOnly={readOnly}
       reference={asset}
@@ -134,8 +138,10 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     browseMenuItem: ReactNode
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFile: (assetSource: AssetSource, file: File) => void
+    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
     isMenuOpen: boolean
+    /** Enable multi-file selection in file picker dialog */
+    multiple?: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
@@ -151,9 +157,10 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFile,
+    onSelectFiles,
     imageUrlBuilder,
     isMenuOpen,
+    multiple,
     observeAsset,
     readOnly,
     reference,
@@ -171,12 +178,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const asset = useObservable(observable)
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
-  // TODO: fix this in same style as FileInput
+  // Pass all files to the parent handler which will handle multi-file uploads
   const handleSelectFilesFromAssetSource = useCallback(
     (assetSource: AssetSource, files: File[]) => {
-      onSelectFile(assetSource, files[0])
+      onSelectFiles(assetSource, files)
     },
-    [onSelectFile],
+    [onSelectFiles],
   )
 
   const handleSelectFilesFromAssetSourceSingle = useCallback(
@@ -212,6 +219,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           onSelect={handleSelectFilesFromAssetSourceSingle}
           accept={accept}
           data-asset-source-name={assetSourcesWithUpload[0].name}
+          multiple={multiple}
           text={t('inputs.files.common.actions-menu.upload.label')}
           data-testid="file-input-upload-button"
           disabled={readOnly || directUploads === false}
@@ -224,6 +232,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           accept={accept}
           assetSources={assetSourcesWithUpload}
           directUploads={directUploads}
+          multiple={multiple}
           onSelectFiles={handleSelectFilesFromAssetSource}
           readOnly={readOnly}
           renderAsMenuGroup

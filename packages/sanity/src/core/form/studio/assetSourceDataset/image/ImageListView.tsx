@@ -12,6 +12,10 @@ interface ImageListViewProps {
   onItemClick: (event: MouseEvent) => void
   onItemKeyPress: (event: KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
+  /** Whether multi-select mode is enabled */
+  isMultiSelect?: boolean
+  /** Set of selected asset IDs in multi-select mode */
+  selectedIds?: Set<string>
 }
 
 const ThumbGrid = styled(Grid)`
@@ -19,20 +23,37 @@ const ThumbGrid = styled(Grid)`
 `
 
 export function ImageListView(props: ImageListViewProps) {
-  const {isLoading, assets, selectedAssets, onItemClick, onItemKeyPress, onDeleteFinished} = props
+  const {
+    isLoading,
+    assets,
+    selectedAssets,
+    onItemClick,
+    onItemKeyPress,
+    onDeleteFinished,
+    isMultiSelect = false,
+    selectedIds,
+  } = props
   return (
     <Box padding={4}>
       <ThumbGrid gap={2}>
-        {assets.map((asset) => (
-          <AssetThumb
-            key={asset._id}
-            asset={asset}
-            isSelected={selectedAssets.some((selected) => selected._id === asset._id)}
-            onClick={onItemClick}
-            onKeyPress={onItemKeyPress}
-            onDeleteFinished={onDeleteFinished}
-          />
-        ))}
+        {assets.map((asset) => {
+          // In multi-select mode, use selectedIds; otherwise use selectedAssets
+          const isSelected = isMultiSelect
+            ? (selectedIds?.has(asset._id) ?? false)
+            : selectedAssets.some((selected) => selected._id === asset._id)
+
+          return (
+            <AssetThumb
+              key={asset._id}
+              asset={asset}
+              isSelected={isSelected}
+              onClick={onItemClick}
+              onKeyPress={onItemKeyPress}
+              onDeleteFinished={onDeleteFinished}
+              isMultiSelect={isMultiSelect}
+            />
+          )
+        })}
       </ThumbGrid>
       {isLoading && assets.length === 0 && (
         <Flex justify="center">

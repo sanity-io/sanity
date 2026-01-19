@@ -43,6 +43,7 @@ export async function renderImageInput(options: {
       client,
       t: (key: string, values?: Record<string, string>) => key,
       imageUrlBuilder,
+      isUploading: false,
       observeAsset,
       resolveUploader,
       schemaType: schemaType as ImageSchemaType,

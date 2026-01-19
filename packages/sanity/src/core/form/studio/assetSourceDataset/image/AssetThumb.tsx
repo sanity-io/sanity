@@ -3,6 +3,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   Card,
+  Checkbox,
   useToast,
 } from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -24,6 +25,8 @@ interface AssetProps {
   onClick?: (event: React.MouseEvent) => void
   onKeyPress?: (event: React.KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
+  /** Whether multi-select mode is enabled - shows checkbox indicator */
+  isMultiSelect?: boolean
 }
 
 // Get pixel density of the current device
@@ -85,11 +88,19 @@ const MenuContainer = styled.div`
   }
 `
 
+// Style for the checkbox container in multi-select mode
+const checkboxContainerStyle: React.CSSProperties = {
+  position: 'absolute',
+  zIndex: 3,
+  top: 6,
+  left: 6,
+}
+
 export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>(undefined)
-  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected} = props
+  const {asset, onClick, onKeyPress, onDeleteFinished, isSelected, isMultiSelect = false} = props
   const [showUsageDialog, setShowUsageDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -221,6 +232,12 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
           {isDeleting && <LoadingBlock />}
         </Container>
       </Button>
+      {/* Checkbox indicator for multi-select mode */}
+      {isMultiSelect && (
+        <div style={checkboxContainerStyle}>
+          <Checkbox checked={isSelected} readOnly style={{pointerEvents: 'none'}} />
+        </div>
+      )}
       <MenuContainer>
         <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
       </MenuContainer>

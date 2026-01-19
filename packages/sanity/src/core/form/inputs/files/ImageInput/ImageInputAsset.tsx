@@ -1,7 +1,7 @@
 import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
 import {Box} from '@sanity/ui'
-import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
+import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo, useRef} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types'
@@ -16,7 +16,7 @@ function ImageInputAssetComponent(props: {
   directUploads: boolean
   elementProps: BaseImageInputProps['elementProps']
   handleClearUploadState: () => void
-  onSelectFile: (assetSource: AssetSource, file: File) => void
+  onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
@@ -31,7 +31,7 @@ function ImageInputAssetComponent(props: {
   const {
     elementProps,
     handleClearUploadState,
-    onSelectFile,
+    onSelectFiles,
     inputProps,
     isStale,
     readOnly,
@@ -50,11 +50,50 @@ function ImageInputAssetComponent(props: {
     return {'--image-width': width, '--image-height': height} as CSSProperties
   }, [value])
 
+  // Track files dropped via drag-drop to batch them for multi-file upload
+  // UploadTargetCard calls onSelectFile once per file, so we batch them
+  const pendingFilesRef = useRef<{assetSource: AssetSource | null; files: File[]}>({
+    assetSource: null,
+    files: [],
+  })
+  const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Flush pending files to the onSelectFiles handler
+  const flushPendingFiles = useCallback(() => {
+    if (pendingFilesRef.current.files.length > 0 && pendingFilesRef.current.assetSource) {
+      onSelectFiles(pendingFilesRef.current.assetSource, pendingFilesRef.current.files)
+      pendingFilesRef.current = {assetSource: null, files: []}
+    }
+  }, [onSelectFiles])
+
+  // Handle individual file selections from UploadTargetCard (called once per file on drag-drop)
+  // We batch them together and call onSelectFiles with all files at once
   const handleSelectFile = useCallback(
     ({assetSource, file}: InputOnSelectFileFunctionProps) => {
-      onSelectFile(assetSource, file)
+      // Clear any pending flush
+      if (flushTimeoutRef.current) {
+        clearTimeout(flushTimeoutRef.current)
+      }
+
+      // If this is a new batch (different asset source), flush the old one first
+      if (
+        pendingFilesRef.current.assetSource &&
+        pendingFilesRef.current.assetSource !== assetSource
+      ) {
+        flushPendingFiles()
+      }
+
+      // Add to pending batch
+      pendingFilesRef.current.assetSource = assetSource
+      pendingFilesRef.current.files.push(file)
+
+      // Schedule flush after a short delay to collect all files from the same drop.
+      // UploadTargetCard fires onSelectFile once per file during drag-drop (not batched),
+      // so we use a 50ms window to collect all files before processing them together.
+      // This allows multi-file drag-drop to work correctly with sibling insertion.
+      flushTimeoutRef.current = setTimeout(flushPendingFiles, 50)
     },
-    [onSelectFile],
+    [flushPendingFiles],
   )
 
   const handleFileTargetFocus = useCallback(
