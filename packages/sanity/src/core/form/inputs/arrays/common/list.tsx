@@ -206,10 +206,14 @@ export const Item = forwardRef(function Item(
   props: ItemProps & ComponentProps<typeof Card>,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {sortable, ...rest} = props
+  const {sortable, disableTransition, ...rest} = props
   return (
     <SortableItemIdContext.Provider value={props.id}>
-      {sortable ? <SortableListItem ref={ref} {...rest} /> : <ListItem ref={ref} {...rest} />}
+      {sortable ? (
+        <SortableListItem ref={ref} disableTransition={disableTransition} {...rest} />
+      ) : (
+        <ListItem ref={ref} {...rest} />
+      )}
     </SortableItemIdContext.Provider>
   )
 })
