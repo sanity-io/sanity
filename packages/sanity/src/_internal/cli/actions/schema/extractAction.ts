@@ -1,53 +1,76 @@
-import {writeFile} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
+import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {type SchemaValidationProblemGroup} from '@sanity/types'
-import readPkgUp from 'read-pkg-up'
-import {SchemaError as CoreSchemaError} from 'sanity'
+import {mean, once} from 'lodash-es'
 
-import {
-  type ExtractSchemaWorkerData,
-  type ExtractSchemaWorkerResult,
-} from '../../threads/extractSchema'
-import {getStudioWorkspaces} from '../../util/getStudioWorkspaces'
-import {SchemaExtractedTrace} from './extractSchema.telemetry'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
+import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
 import {formatSchemaValidation} from './formatSchemaValidation'
+import {
+  DEFAULT_WATCH_PATTERNS,
+  extractSchemaToFile,
+  SchemaExtractionError,
+  startSchemaWatcher,
+} from './schemaExtractorApi'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-
-interface ExtractFlags {
+export interface ExtractFlags {
   'workspace'?: string
   'path'?: string
   'enforce-required-fields'?: boolean
   'format'?: 'groq-type-nodes' | string
+  'watch'?: boolean
+  'watch-patterns'?: string | string[]
 }
-
-export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => string
 
 export default async function extractAction(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output, telemetry}: CliCommandContext,
+  context: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const formatFlag = flags.format || 'groq-type-nodes'
-  const enforceRequiredFields = flags['enforce-required-fields'] || false
 
-  const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
-  if (!rootPkgPath) {
-    throw new Error('Could not find root directory for `sanity` package')
+  if (flags.watch) {
+    return runWatchMode(args, context)
   }
 
-  const workerPath = join(
-    dirname(rootPkgPath),
-    'lib',
-    '_internal',
-    'cli',
-    'threads',
-    'extractSchema.cjs',
-  )
+  return runSingleExtraction(args, context)
+}
+
+export function getExtractOptions(
+  flags: ExtractFlags,
+  config: CliCommandContext['cliConfig'],
+  workDir: string,
+) {
+  const schemaExtraction = config?.schemaExtraction
+
+  return {
+    workspace: flags.workspace ?? schemaExtraction?.workspace,
+    format: flags.format ?? 'groq-type-nodes',
+    enforceRequiredFields:
+      flags['enforce-required-fields'] ?? schemaExtraction?.enforceRequiredFields ?? false,
+    outputPath: flags.path ?? schemaExtraction?.path ?? join(workDir, 'schema.json'),
+    watchPatterns: flags['watch-patterns']
+      ? Array.isArray(flags['watch-patterns'])
+        ? flags['watch-patterns']
+        : [flags['watch-patterns']]
+      : (schemaExtraction?.watchPatterns ?? []),
+  }
+}
+
+/**
+ * Runs a single extraction with spinner and telemetry (original behavior).
+ */
+async function runSingleExtraction(
+  args: CliCommandArguments<ExtractFlags>,
+  context: CliCommandContext,
+): Promise<void> {
+  const flags = args.extOptions
+  const {workDir, output, telemetry, cliConfig} = context
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    workspace: workspaceName,
+  } = getExtractOptions(flags, cliConfig, workDir)
 
   const spinner = output
     .spinner({})
@@ -60,20 +83,13 @@ export default async function extractAction(
   const trace = telemetry.trace(SchemaExtractedTrace)
   trace.start()
 
-  const worker = new Worker(workerPath, {
-    workerData: {
-      workDir,
-      workspaceName: flags.workspace,
-      enforceRequiredFields,
-      format: formatFlag,
-    } satisfies ExtractSchemaWorkerData,
-    env: process.env,
-  })
-
   try {
-    const {schema} = await new Promise<ExtractSchemaWorkerResult>((resolve, reject) => {
-      worker.addListener('message', resolve)
-      worker.addListener('error', reject)
+    const schema = await extractSchemaToFile({
+      workDir,
+      outputPath,
+      workspaceName,
+      enforceRequiredFields,
+      format,
     })
 
     trace.log({
@@ -81,21 +97,15 @@ export default async function extractAction(
       schemaDocumentTypesCount: schema.filter((type) => type.type === 'document').length,
       schemaTypesCount: schema.filter((type) => type.type === 'type').length,
       enforceRequiredFields,
-      schemaFormat: formatFlag,
+      schemaFormat: format,
     })
-
-    const path = flags.path || join(process.cwd(), 'schema.json')
-
-    spinner.text = `Writing schema to ${path}`
-
-    await writeFile(path, `${JSON.stringify(schema, null, 2)}\n`)
 
     trace.complete()
 
     spinner.succeed(
       enforceRequiredFields
-        ? `Extracted schema to ${path} with enforced required fields`
-        : `Extracted schema to ${path}`,
+        ? `Extracted schema to ${outputPath} with enforced required fields`
+        : `Extracted schema to ${outputPath}`,
     )
   } catch (err) {
     trace.error(err)
@@ -105,78 +115,109 @@ export default async function extractAction(
         : 'Failed to extract schema',
     )
 
-    if (isSchemaError(err)) {
-      try {
-        // Re-resolve config in-process to surface validation details
-        await getStudioWorkspaces({basePath: workDir})
-      } catch (innerErr) {
-        const validation = extractValidationFromCoreSchemaError(innerErr)
-        if (validation && validation.length > 0) {
-          output.print('')
-          output.print(formatSchemaValidation(validation))
-        }
-        throw err
-      }
+    // Display validation errors if available
+    if (err instanceof SchemaExtractionError && err.validation && err.validation.length > 0) {
+      output.print('')
+      output.print(formatSchemaValidation(err.validation))
     }
+
     throw err
   }
 }
 
 /**
- * Type guard to check if an item conforms to the SchemaValidationProblemGroup shape.
+ * Runs schema extraction in watch mode, re-extracting on file changes.
  */
-function isValidationProblemGroup(item: unknown): item is SchemaValidationProblemGroup {
-  if (typeof item !== 'object' || item === null) {
-    return false
-  }
-  const group = item as Record<string, unknown>
-  return Array.isArray(group.path) && Array.isArray(group.problems)
-}
+async function runWatchMode(
+  args: CliCommandArguments<ExtractFlags>,
+  context: CliCommandContext,
+): Promise<void> {
+  const flags = args.extOptions
 
-/**
- * Extracts the `_validation` array from a CoreSchemaError's internal schema object.
- *
- * CoreSchemaError stores the compiled schema (which includes validation results) on
- * `error.schema._validation`. This function safely navigates that structure and validates
- * it conforms to the expected `SchemaValidationProblemGroup[]` shape before returning.
- */
-function extractValidationFromCoreSchemaError(
-  error: unknown,
-): SchemaValidationProblemGroup[] | null {
-  if (!(error instanceof CoreSchemaError)) {
-    return null
+  // Keep the start time + some simple stats for extractions as they happen
+  const startTime = Date.now()
+  const stats: {successfulDurations: number[]; failedCount: number} = {
+    successfulDurations: [],
+    failedCount: 0,
   }
 
-  const schema = error.schema as unknown as Record<string, unknown> | null | undefined
-  if (!schema || typeof schema !== 'object') {
-    return null
+  const {workDir, output, telemetry, cliConfig} = context
+  const options = getExtractOptions(flags, cliConfig, workDir)
+  const {
+    format,
+    enforceRequiredFields,
+    outputPath,
+    watchPatterns: additionalPatterns,
+    workspace: workspaceName,
+  } = options
+  const watchPatterns = [...DEFAULT_WATCH_PATTERNS, ...additionalPatterns]
+
+  const trace = telemetry.trace(SchemaExtractionWatchModeTrace)
+  trace.start()
+
+  // Print watch mode header and patterns at the very beginning
+  output.print('Schema extraction watch mode')
+  output.print('')
+  output.print('Watching for changes in:')
+  for (const pattern of watchPatterns) {
+    output.print(`  - ${pattern}`)
   }
+  output.print('')
 
-  const validation = schema._validation
-  if (!Array.isArray(validation)) {
-    return null
-  }
+  output.print('Running initial extraction...')
 
-  if (!validation.every(isValidationProblemGroup)) {
-    return null
-  }
+  // Start the watcher (includes initial extraction)
+  const {stop} = await startSchemaWatcher({
+    workDir,
+    outputPath,
+    output,
+    workspaceName,
+    enforceRequiredFields,
+    format,
+    patterns: watchPatterns,
+    onExtraction: ({success, duration}) => {
+      if (success) {
+        stats.successfulDurations.push(duration)
+      } else {
+        stats.failedCount++
+      }
+    },
+  })
 
-  return validation
-}
+  trace.log({
+    step: 'started',
+    enforceRequiredFields,
+    schemaFormat: format,
+  })
 
-/**
- * Type guard for SchemaError. Checks both `name` and `message` properties because
- * errors from worker threads lose their prototype chain during serialization,
- * and may only preserve the error name in the message string.
- */
-function isSchemaError(err: unknown): err is Error & {name: 'SchemaError'} {
-  if (typeof err !== 'object' || err === null) {
-    return false
-  }
+  output.print('')
+  output.print('Watching for changes... (Ctrl+C to stop)')
 
-  const errorLike = err as {name?: unknown; message?: unknown}
-  const hasSchemaErrorName = errorLike.name === 'SchemaError'
-  const hasSchemaErrorMessage = errorLike.message === 'SchemaError'
+  const {resolve, promise} = promiseWithResolvers<void>()
 
-  return hasSchemaErrorName || hasSchemaErrorMessage
+  /**
+   * Handle graceful shutdown. Wrapped in once to prevent it being called twice by the
+   * SIGINT/SIGTERM callbacks, causing double trace logs etc..
+   */
+  const cleanup = once(() => {
+    trace.log({
+      step: 'stopped',
+      watcherDuration: Date.now() - startTime,
+      averageExtractionDuration: mean(stats.successfulDurations),
+      extractionSuccessfulCount: stats.successfulDurations.length,
+      extractionFailedCount: stats.failedCount,
+    })
+    trace.complete()
+
+    output.print('')
+    output.print('Stopping watch mode...')
+    void stop()
+    resolve()
+  })
+
+  process.on('SIGINT', cleanup)
+  process.on('SIGTERM', cleanup)
+
+  // Keep process alive
+  await promise
 }

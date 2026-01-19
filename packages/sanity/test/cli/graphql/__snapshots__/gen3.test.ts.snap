@@ -46617,4 +46617,3 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
   ],
 }
 `;
-
