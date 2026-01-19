@@ -96,17 +96,14 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex width="full" gap={3} align="center">
-            <Flex width="full" gap={2} justify="flex-start" align="center">
-              <Button
-                onClick={onSelectNewAsset}
-                text={selectNewAssetButtonLabel}
-                size="large"
-                tone="neutral"
-              />
-            </Flex>
-            <Box flex={1} />
-            <Flex width="full" gap={2} justify="flex-end" align="center">
+          <Flex width="full" gap={3} align="center" justify="space-between">
+            <Button
+              onClick={onSelectNewAsset}
+              text={selectNewAssetButtonLabel}
+              size="large"
+              tone="neutral"
+            />
+            <Flex gap={2} align="center">
               <Button
                 mode="bleed"
                 onClick={handleClose}
