@@ -6,6 +6,7 @@ import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
+import {ScheduledDraftWarningCell} from './columnCells/ScheduledDraftWarningCell'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
@@ -45,6 +46,13 @@ export const scheduledDraftsOverviewColumnDefs: (
         </Flex>
       ),
       cell: ScheduledDraftMetadataCell,
+    },
+    {
+      id: 'warning',
+      sorting: false,
+      width: 40,
+      header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+      cell: ScheduledDraftWarningCell,
     },
   ]
 }
