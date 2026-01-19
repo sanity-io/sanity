@@ -166,6 +166,7 @@
     "@portabletext/block-tools": "^5.0.3",
     "@portabletext/editor": "^5.0.4",
     "@portabletext/patches": "^2.0.4",
+    "@portabletext/plugin-input-rule": "^2.0.14",
     "@portabletext/plugin-markdown-shortcuts": "^6.0.4",
     "@portabletext/plugin-one-line": "^5.0.4",
     "@portabletext/plugin-paste-link": "^2.0.4",

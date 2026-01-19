@@ -1,7 +1,12 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-type ReleaseFormFields = Pick<EditableReleaseDocument['metadata'], 'title' | 'description'>
+import {type ReleaseDescription} from '../types/releaseDescription'
+
+type ReleaseFormFields = {
+  title: string
+  description: ReleaseDescription
+}
 
 interface UseReleaseFormOptimisticUpdatingOptions {
   /** The external value from props/server */
