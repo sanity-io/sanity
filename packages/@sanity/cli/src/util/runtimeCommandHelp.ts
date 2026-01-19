@@ -29,7 +29,7 @@ function transformHelpLine(line: string): string {
   if (OCLIF_HEADERS.includes(cleanLine)) {
     return `${cleanLine.toLowerCase()}:`
   }
-  return stripAnsi(line)
+  return cleanLine
 }
 
 /**
