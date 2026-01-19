@@ -24,6 +24,9 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         })
         expect(result.code).toBe(0)
 
+        // Verify schema extraction enabled message is printed when configured
+        expect(result.stdout).toContain('Building with schema extraction enabled')
+
         const files = await readdir(path.join(studioPath, 'out', 'static'))
         const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
         const cssPath = files.find((file) => file.endsWith('.css'))

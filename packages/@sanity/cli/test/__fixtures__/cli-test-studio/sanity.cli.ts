@@ -7,4 +7,5 @@ export default defineCliConfig({
   },
   project: {basePath: '/config-base-path'},
   graphql: [{playground: false}],
+  schemaExtraction: {enabled: true},
 })

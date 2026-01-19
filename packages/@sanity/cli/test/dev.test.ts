@@ -28,6 +28,10 @@ describeCliTest('CLI: `sanity dev`', () => {
         basePath,
         expectedTitle: 'Sanity Studio',
         expectedFiles,
+        expectedOutput: ({stdout}) => {
+          // Verify schema extraction enabled message is printed when configured
+          expect(stdout).toContain('Running dev server with schema extraction enabled')
+        },
       })
 
       expect(startHtml).toContain('id="sanity"')
