@@ -201,9 +201,9 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     if (!openInSourceResult || !asset) return
 
     const {source, result} = openInSourceResult
-    if (result && typeof result === 'object' && result.type === 'url') {
+    if (result.type === 'url') {
       window.open(result.url, result.target || '_blank')
-    } else if (result && typeof result === 'object' && result.type === 'component') {
+    } else if (result.type === 'component') {
       onOpenInSource?.(source, asset)
     }
   }, [asset, onOpenInSource, openInSourceResult])
