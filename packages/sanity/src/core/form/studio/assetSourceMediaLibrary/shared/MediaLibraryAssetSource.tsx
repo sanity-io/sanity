@@ -78,12 +78,9 @@ const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceCompone
             dialogHeaderTitle={t('asset-sources.media-library.open-in-source-dialog.title')}
             selectNewAssetButtonLabel={
               schemaType?.title
-                ? t(
-                    'asset-sources.media-library.open-in-source-dialog.button.select-new-asset',
-                    {
-                      targetTitle: schemaType.title,
-                    },
-                  )
+                ? t('asset-sources.media-library.open-in-source-dialog.button.select-new-asset', {
+                    targetTitle: schemaType.title,
+                  })
                 : t(
                     'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback',
                   )
