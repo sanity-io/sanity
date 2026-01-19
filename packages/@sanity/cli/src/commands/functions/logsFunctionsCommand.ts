@@ -1,41 +1,22 @@
+import {FunctionsLogsCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Arguments
-  <name> The name of the Function to retrieve logs for
-
-Options
-  --limit <limit> The number of log entries to retrieve [default 50]
-  --json          If set return json
-  --utc           Use UTC dates in logs
-  --delete        Delete all logs for the Function
-  --force         Force delete all logs for the Function
-  --watch         Watch for new logs (streaming mode)
-
-Examples
-  # Retrieve logs for Sanity Function
-  sanity functions logs echo
-
-  # Retrieve the last two log entries for Sanity Function
-  sanity functions logs echo --limit 2
-
-  # Retrieve logs for Sanity Function in json format
-  sanity functions logs echo --json
-
-  # Delete all logs for Sanity Function
-  sanity functions logs echo --delete
-
-  # Watch for new logs (streaming mode)
-  sanity functions logs echo --watch
-`
+import {createErrorLogger, transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface FunctionsLogsFlags {
   limit?: number
+  l?: number
   json?: boolean
+  j?: boolean
   utc?: boolean
+  u?: boolean
   delete?: boolean
+  d?: boolean
   force?: boolean
-  watch?: boolean // undocumented for now
+  f?: boolean
+  watch?: boolean
+  w?: boolean
 }
 
 const defaultFlags = {
@@ -47,12 +28,12 @@ const defaultFlags = {
   watch: false,
 }
 
+const transformedHelp = transformHelpText(FunctionsLogsCommand, 'sanity', 'functions logs')
+
 const logsFunctionsCommand: CliCommandDefinition<FunctionsLogsFlags> = {
   name: 'logs',
   group: 'functions',
-  helpText,
-  signature: '<name> [--limit <number>] [--json] [--utc] [--delete [--force]] [--watch]',
-  description: 'Retrieve or delete logs for a Sanity Function',
+  ...transformedHelp,
   async action(args, context) {
     const {apiClient, output} = context
     const [name] = args.argsWithoutOptions
@@ -75,7 +56,7 @@ const logsFunctionsCommand: CliCommandDefinition<FunctionsLogsFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 
@@ -83,8 +64,17 @@ const logsFunctionsCommand: CliCommandDefinition<FunctionsLogsFlags> = {
 
     const {success, error} = await functionLogsCore({
       ...cmdConfig.value,
+      helpText: transformedHelp.helpText,
+      error: createErrorLogger(output),
       args: {name},
-      flags,
+      flags: {
+        limit: flags.l ?? flags.limit,
+        json: flags.j ?? flags.json,
+        utc: flags.u ?? flags.utc,
+        delete: flags.d ?? flags.delete,
+        force: flags.f ?? flags.force,
+        watch: flags.w ?? flags.watch,
+      },
     })
 
     if (!success) throw new Error(error)

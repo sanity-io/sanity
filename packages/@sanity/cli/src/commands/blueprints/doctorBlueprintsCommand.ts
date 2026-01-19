@@ -1,36 +1,26 @@
+import {BlueprintsDoctorCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --verbose  Provide detailed information about issues
-  --fix      Interactively update the Blueprint configuration to fix issues
-
-Examples:
-  # Check the health of the current Blueprint project
-  sanity blueprints doctor --verbose
-
-  # Fix issues in the current Blueprint project
-  sanity blueprints doctor --fix
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsDoctorFlags {
-  // path?: string // available in the future
+  path?: string
   fix?: boolean
+  json?: boolean
   verbose?: boolean
 }
 
 const defaultFlags: BlueprintsDoctorFlags = {
-  // path: undefined,
   fix: false,
+  json: false,
   verbose: false,
 }
 
 const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
   name: 'doctor',
   group: 'blueprints',
-  helpText,
-  signature: '[--verbose] [--fix]',
-  description: 'Diagnose potential issues with Blueprint configuration',
+  ...transformHelpText(BlueprintsDoctorCommand, 'sanity', 'blueprints doctor'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -47,7 +37,7 @@ const doctorBlueprintsCommand: CliCommandDefinition<BlueprintsDoctorFlags> = {
 
     const {success, error} = await blueprintDoctorCore({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
       flags,
     })
