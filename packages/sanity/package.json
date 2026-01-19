@@ -228,7 +228,7 @@
     "lodash-es": "^4.17.22",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
-    "motion": "^12.25.0",
+    "motion": "^12.26.2",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
     "node-html-parser": "^6.1.13",
