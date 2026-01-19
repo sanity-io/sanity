@@ -147,6 +147,7 @@
     "@portabletext/block-tools": "^5.0.0",
     "@portabletext/editor": "^4.2.2",
     "@portabletext/patches": "^2.0.4",
+    "@portabletext/plugin-input-rule": "^2.0.14",
     "@portabletext/plugin-markdown-shortcuts": "^5.0.12",
     "@portabletext/plugin-one-line": "^4.0.12",
     "@portabletext/plugin-typography": "^5.0.12",

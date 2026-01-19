@@ -86,7 +86,7 @@ export const getReleaseDefaults: () => EditableReleaseDocument = () => ({
   _id: createReleaseId(),
   metadata: {
     title: '',
-    description: '',
+    description: [], // Empty PTE array for new releases
     releaseType: DEFAULT_RELEASE_TYPE,
     cardinality: 'many',
   },
