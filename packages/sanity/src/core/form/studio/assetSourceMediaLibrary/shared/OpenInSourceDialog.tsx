@@ -61,10 +61,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
 
   const {setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
 
-  const handleClose = useCallback(() => {
-    onClose()
-  }, [onClose])
-
   // sourceAssetId is required to construct a valid iframe URL
   if (!sourceAssetId) {
     console.warn('Cannot open asset in source: missing asset source id', {
@@ -77,8 +73,8 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
     <AppDialog
       header={dialogHeaderTitle}
       id="media-library-plugin-dialog-open-in-source"
-      onClose={handleClose}
-      onClickOutside={handleClose}
+      onClose={onClose}
+      onClickOutside={onClose}
       open
       data-testid="media-library-plugin-dialog-open-in-source"
       width={3}
@@ -103,12 +99,12 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             <Flex gap={2} align="center">
               <Button
                 mode="bleed"
-                onClick={handleClose}
+                onClick={onClose}
                 text={t('asset-source.dialog.button.cancel')}
                 size="large"
               />
               <Button
-                onClick={handleClose}
+                onClick={onClose}
                 text={t('asset-sources.media-library.open-in-source-dialog.button.done')}
                 size="large"
                 tone="primary"
