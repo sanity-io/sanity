@@ -216,7 +216,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
 
-  /** Select new asset button text */
+  /** Done button text */
   'asset-sources.media-library.open-in-source-dialog.button.done': 'Done',
 
   /** Select new asset button text with target title */
