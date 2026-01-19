@@ -19,7 +19,7 @@ export interface CreateSanityMediaLibrarySourceProps {
 
 /**
  * Check if this asset source can open an asset in source.
- * Returns \{ type: 'component' \} if the asset was created from the Media Library.
+ * Returns `{ type: 'component' }` if the asset was created from the Media Library.
  */
 function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
   // Check if the asset's source name matches this asset source
