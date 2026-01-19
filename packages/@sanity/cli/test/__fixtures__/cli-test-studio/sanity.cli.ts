@@ -16,4 +16,5 @@ export default defineCliConfig({
         },
       }
     : {}),
+  schemaExtraction: {enabled: true},
 })
