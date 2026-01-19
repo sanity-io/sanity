@@ -102,7 +102,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
                 onClick={onSelectNewAsset}
                 text={selectNewAssetButtonLabel}
                 size="large"
-                tone="primary"
+                tone="neutral"
               />
             </Flex>
             <Box flex={1} />
