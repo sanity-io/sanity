@@ -1947,7 +1947,7 @@ importers:
         version: 5.1.2(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@xstate/react':
         specifier: ^6.0.0
-        version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.0)
+        version: 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -2195,8 +2195,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       xstate:
-        specifier: ^5.25.0
-        version: 5.25.0
+        specifier: ^5.25.1
+        version: 5.25.1
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -13036,6 +13036,9 @@ packages:
   xstate@5.25.0:
     resolution: {integrity: sha512-yyWzfhVRoTHNLjLoMmdwZGagAYfmnzpm9gPjlX2MhJZsDojXGqRxODDOi4BsgGRKD46NZRAdcLp6CKOyvQS0Bw==}
 
+  xstate@5.25.1:
+    resolution: {integrity: sha512-oyvsNH5pF2qkHmiHEMdWqc3OjDtoZOH2MTAI35r01f/ZQWOD+VLOiYqo65UgQET0XMA5s9eRm8fnsIo+82biEw==}
+
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -15772,9 +15775,9 @@ snapshots:
   '@portabletext/plugin-input-rule@2.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
       '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.0)
+      '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       react: 19.2.3
-      xstate: 5.25.0
+      xstate: 5.25.1
     transitivePeerDependencies:
       - '@types/react'
 
@@ -16310,19 +16313,19 @@ snapshots:
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.25.0
+      xstate: 5.25.1
 
   '@sanity/comlink@3.1.1':
     dependencies:
       rxjs: 7.8.2
       uuid: 11.1.0
-      xstate: 5.25.0
+      xstate: 5.25.1
 
   '@sanity/comlink@4.0.1':
     dependencies:
       rxjs: 7.8.2
       uuid: 13.0.0
-      xstate: 5.25.0
+      xstate: 5.25.1
 
   '@sanity/core-loader@2.0.5(@sanity/types@packages+@sanity+types)(typescript@5.9.3)':
     dependencies:
@@ -18239,6 +18242,16 @@ snapshots:
       use-sync-external-store: 1.6.0(react@19.2.3)
     optionalDependencies:
       xstate: 5.25.0
+    transitivePeerDependencies:
+      - '@types/react'
+
+  '@xstate/react@6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)':
+    dependencies:
+      react: 19.2.3
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.2.7)(react@19.2.3)
+      use-sync-external-store: 1.6.0(react@19.2.3)
+    optionalDependencies:
+      xstate: 5.25.1
     transitivePeerDependencies:
       - '@types/react'
 
@@ -25332,6 +25345,8 @@ snapshots:
   xmlchars@2.2.0: {}
 
   xstate@5.25.0: {}
+
+  xstate@5.25.1: {}
 
   xtend@4.0.2: {}
 
