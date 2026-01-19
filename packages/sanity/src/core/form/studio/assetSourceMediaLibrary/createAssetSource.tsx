@@ -24,7 +24,7 @@ export interface CreateSanityMediaLibrarySourceProps {
 function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
   // Check if the asset's source name matches this asset source
   if (asset.source?.name === sourceName) {
-    return {type: 'component' as const}
+    return {type: 'component'}
   }
   return false
 }
