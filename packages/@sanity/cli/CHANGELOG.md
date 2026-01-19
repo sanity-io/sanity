@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
+
+### Features
+
+* **cli:** allow configuring schemaExtraction in sanity.cli.ts ([#11824](https://github.com/sanity-io/sanity/issues/11824)) ([6fd624b](https://github.com/sanity-io/sanity/commit/6fd624bc580db4886fa23a087774034fc8f49bd5)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
 
 **Note:** Version bump only for package @sanity/cli

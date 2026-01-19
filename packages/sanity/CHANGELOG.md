@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
+
+### Features
+
+* **cli:** allow configuring schemaExtraction in sanity.cli.ts ([#11824](https://github.com/sanity-io/sanity/issues/11824)) ([6fd624b](https://github.com/sanity-io/sanity/commit/6fd624bc580db4886fa23a087774034fc8f49bd5)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **cli:** watch mode for schema extraction ([#11748](https://github.com/sanity-io/sanity/issues/11748)) ([459e8ca](https://github.com/sanity-io/sanity/commit/459e8ca4ec3b1814a897bd2092273d9f3ef0db6a)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **sanity:** add Vite plugin for automatic schema extraction ([#11760](https://github.com/sanity-io/sanity/issues/11760)) ([e0f78da](https://github.com/sanity-io/sanity/commit/e0f78dacbbaf9a6df10941ae821ef1ebe84e56f4)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Bug Fixes
+
+* **cli:** upgrade `@sanity/export` to v6.0.3 ([#11862](https://github.com/sanity-io/sanity/issues/11862)) ([85b2f91](https://github.com/sanity-io/sanity/commit/85b2f91b6a39fe621ded3ec1b17a1fa41a7e40a0)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **core:** enable autofocus on reference input ([#11853](https://github.com/sanity-io/sanity/issues/11853)) ([753fce6](https://github.com/sanity-io/sanity/commit/753fce6e04796b80adc85fdeb7ca4ddc50ab51a6)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** reverts use `<Link>` for workspace switching ([#11844](https://github.com/sanity-io/sanity/issues/11844)) ([#11859](https://github.com/sanity-io/sanity/issues/11859)) ([f87a5eb](https://github.com/sanity-io/sanity/commit/f87a5ebc4d01f6e934dbbee8895079768359e74f)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use `<Link>` for workspace switching ([#11844](https://github.com/sanity-io/sanity/issues/11844)) ([c89364c](https://github.com/sanity-io/sanity/commit/c89364ca06fe84eba1134043cf27bbcfc410ec16)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency @sanity/export to ^6.0.5 ([#11863](https://github.com/sanity-io/sanity/issues/11863)) ([489ff2b](https://github.com/sanity-io/sanity/commit/489ff2b21b6031b0daa71aad94989beb4ed1f2bb)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/import to ^4.1.0 ([#11865](https://github.com/sanity-io/sanity/issues/11865)) ([c59cb53](https://github.com/sanity-io/sanity/commit/c59cb53a9a65878b4f2d22671086e4037296b6d3)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* issue where padding bottom was too close to dialog, fixes [#11849](https://github.com/sanity-io/sanity/issues/11849) ([#11852](https://github.com/sanity-io/sanity/issues/11852)) ([e4e9c54](https://github.com/sanity-io/sanity/commit/e4e9c54721dcfcd1768ab3f3a55b9d8cf6a4402e)) by RitaDias (rita@sanity.io)
+* missed scheduled draft ([#11860](https://github.com/sanity-io/sanity/issues/11860)) ([56c9ab0](https://github.com/sanity-io/sanity/commit/56c9ab039db83a55a177877f13b531e8c1314dd3)) by Jordan Lawrence (jordanl17@me.com)
+* prevent disableTransition prop from leaking to DOM ([#11775](https://github.com/sanity-io/sanity/issues/11775)) ([bd6774b](https://github.com/sanity-io/sanity/commit/bd6774b4198f3450c2fb54ee4355619ee8dd43b1)) by Eoin Falconer (eoin.falc@gmail.com)
+
 ## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
 
 ### Features
