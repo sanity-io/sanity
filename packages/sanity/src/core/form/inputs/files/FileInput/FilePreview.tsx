@@ -9,7 +9,7 @@ import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
-import {findOpenInSourceResult} from '../common/openInSource'
+import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
@@ -247,13 +247,7 @@ function FilePreviewContent({
         downloadUrl={downloadUrl}
         copyUrl={copyUrl}
         openInSource={openInSourceResult ? handleOpenInSource : undefined}
-        openInSourceName={
-          openInSourceResult
-            ? (openInSourceResult.source.i18nKey
-                ? t(openInSourceResult.source.i18nKey)
-                : openInSourceResult.source.title) || openInSourceResult.source.name
-            : undefined
-        }
+        openInSourceName={getOpenInSourceName(openInSourceResult, t)}
         readOnly={readOnly}
       />
     </FileActionsMenu>

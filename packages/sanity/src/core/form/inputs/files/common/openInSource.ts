@@ -28,3 +28,21 @@ export function findOpenInSourceResult(
   }
   return null
 }
+
+/**
+ * Get the display name for an asset source from an OpenInSourceResult.
+ * Uses i18n translation if available, falls back to title, then to name.
+ *
+ * @param openInSourceResult - The result from findOpenInSourceResult
+ * @param t - Translation function from useTranslation()
+ * @returns The display name, or undefined if openInSourceResult is null
+ */
+export function getOpenInSourceName(
+  openInSourceResult: OpenInSourceResult,
+  t: (key: string) => string,
+): string | undefined {
+  if (!openInSourceResult) return undefined
+
+  const {source} = openInSourceResult
+  return (source.i18nKey ? t(source.i18nKey) : source.title) || source.name
+}

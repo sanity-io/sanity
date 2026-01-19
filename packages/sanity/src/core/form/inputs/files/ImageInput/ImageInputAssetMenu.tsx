@@ -10,7 +10,7 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
-import {findOpenInSourceResult} from '../common/openInSource'
+import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
@@ -268,13 +268,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
         onReset={handleRemoveButtonClick}
         downloadUrl={downloadUrl}
         openInSource={openInSourceResult ? handleOpenInSource : undefined}
-        openInSourceName={
-          openInSourceResult
-            ? (openInSourceResult.source.i18nKey
-                ? t(openInSourceResult.source.i18nKey)
-                : openInSourceResult.source.title) || openInSourceResult.source.name
-            : undefined
-        }
+        openInSourceName={getOpenInSourceName(openInSourceResult, t)}
         copyUrl={copyUrl}
         readOnly={readOnly}
       />
