@@ -219,7 +219,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Select new asset button text */
   'asset-sources.media-library.open-in-source-dialog.button.done': 'Done',
 
-  /** Select new asset button text */
+  /** Select new asset button text with target title */
   'asset-sources.media-library.open-in-source-dialog.button.select-new-asset':
     'Select new asset for “{{targetTitle}}”',
   'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback':
