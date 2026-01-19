@@ -20,16 +20,18 @@ jobs:
 
       - name: Check if only examples files changed
         id: check
-        uses: ./.github/actions/check-examples-only
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
 
       - name: Add examples label
-        if: steps.check.outputs.examples_only == 'true'
+        if: steps.check.outputs.path_only == 'true'
         run: gh pr edit ${{ github.event.pull_request.number }} --add-label "examples"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Remove examples label
-        if: steps.check.outputs.examples_only != 'true'
+        if: steps.check.outputs.path_only != 'true'
         run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "examples" || true
         env:
           GITHUB_TOKEN: ${{ github.token }}

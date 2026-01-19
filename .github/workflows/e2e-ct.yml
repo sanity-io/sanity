@@ -15,7 +15,8 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-8core
     outputs:
-      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
+      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      cli_only: ${{ steps.check_cli.outputs.path_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -25,14 +26,22 @@ jobs:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - name: Check if only CLI files changed
+        id: check_cli
+        uses: ./.github/actions/check-path-only
+        with:
+          path: packages/@sanity/cli/
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
 
       - name: Build packages
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         # This warms up the turborepo remote cache
         run: pnpm build --output-logs=full --log-order=grouped
 
@@ -53,17 +62,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
       - name: Store Playwright's Version
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -72,30 +81,30 @@ jobs:
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        if: needs.install.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build packages
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Run end-to-end tests
-        if: needs.install.outputs.examples_only != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         env:
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v6
-        if: always() && needs.install.outputs.examples_only != 'true'
+        if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: ${{ github.workspace }}/packages/sanity/blob-report
           retention-days: 30
 
   merge-reports:
-    if: always() && needs.install.outputs.examples_only != 'true'
+    if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
     needs: [install, playwright-ct-test]
     runs-on: ubuntu-8core
     steps:
