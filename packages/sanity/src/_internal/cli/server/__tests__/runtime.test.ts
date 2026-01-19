@@ -33,12 +33,17 @@ describe('Windows path normalization for ESM imports', () => {
 
   it('converts backslashes to forward slashes for JavaScript imports', () => {
     // Test with actual Windows path.relative() output
-    const windowsPath = win32.relative('C:\\project\\.sanity\\runtime', 'C:\\project\\sanity.config.ts')
+    const windowsPath = win32.relative(
+      'C:\\project\\.sanity\\runtime',
+      'C:\\project\\sanity.config.ts',
+    )
     expect(windowsPath).toBe('..\\..\\sanity.config.ts') // Windows uses backslashes
     expect(toForwardSlashes(windowsPath)).toBe('../../sanity.config.ts') // Converts to forward slashes
 
     // Test with mixed separators and absolute paths
-    expect(toForwardSlashes('C:\\Users\\test/project\\src/App.tsx')).toBe('C:/Users/test/project/src/App.tsx')
+    expect(toForwardSlashes('C:\\Users\\test/project\\src/App.tsx')).toBe(
+      'C:/Users/test/project/src/App.tsx',
+    )
   })
 
   it('generates valid studio config imports with forward slashes', async () => {
