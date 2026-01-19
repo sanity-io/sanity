@@ -1868,8 +1868,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       '@sanity/import':
-        specifier: ^4.0.4
-        version: 4.0.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
+        specifier: ^4.1.0
+        version: 4.1.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/insert-menu':
         specifier: ^3.0.3
         version: 3.0.3(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@sanity/types@packages+@sanity+types)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -5348,9 +5348,6 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
 
-  '@sanity/generate-help-url@3.0.1':
-    resolution: {integrity: sha512-bKqCEqFP7qXpNcHxJZnXFLrti8/HYQhhJtMRYFSNJ8bkUXCuUmhHKckzoyiH1n1WAZpI2Y05z2h5yZWbi3gThQ==}
-
   '@sanity/generate-help-url@4.0.0':
     resolution: {integrity: sha512-Ooa4xkLT3TLaX+mw/13fq3IeGdnAkx4rbpVASvRVixzBBvvcL6jPqj50fjlCd+EhgB5GRXBCNNAy/hWXwjZEUA==}
 
@@ -5380,8 +5377,8 @@ packages:
     resolution: {integrity: sha512-JnwFIHATLXHGVTCKmVwV0xy3xKwGlgVfeUB9cWxu72xJZMsQUyFgGiTz4zD9gRXuncAndkmtzHeIG+2vhKgxHA==}
     engines: {node: '>=20.19.0'}
 
-  '@sanity/import@4.0.4':
-    resolution: {integrity: sha512-0kk3yGQ643DgxwWkNYvzS0RPuqcrygnRinvbQQ97ioIUpTayFzSqBkga5QKUUWf8dHvSAODFKogpujtcQTW4BA==}
+  '@sanity/import@4.1.0':
+    resolution: {integrity: sha512-CvEy2EgxKwMI6qL/NiRvc/5NDHO6M28jHpeFMQVITMCYaiKRbuaEmHoRMgIroCDE+MgFxQ3MgLK0kCV4SE/4RA==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -16359,8 +16356,6 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@sanity/generate-help-url@3.0.1': {}
-
   '@sanity/generate-help-url@4.0.0': {}
 
   '@sanity/google-maps-input@4.2.1(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(sanity@packages+sanity)':
@@ -16392,13 +16387,13 @@ snapshots:
     dependencies:
       '@sanity/signed-urls': 2.0.1
 
-  '@sanity/import@4.0.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)':
+  '@sanity/import@4.1.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.36
       '@sanity/asset-utils': 2.3.0
       '@sanity/cli-core': 0.1.0-alpha.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
-      '@sanity/generate-help-url': 3.0.1
+      '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
       debug: 4.4.3(supports-color@8.1.1)
       get-it: 8.7.0(debug@4.4.3)
