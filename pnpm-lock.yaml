@@ -96,14 +96,14 @@ importers:
   .:
     devDependencies:
       '@lerna-lite/cli':
-        specifier: ^4.10.5
-        version: 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        specifier: ^4.11.0
+        version: 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/list':
-        specifier: ^4.10.5
-        version: 4.10.5(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        specifier: ^4.11.0
+        version: 4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/publish':
-        specifier: ^4.10.5
-        version: 4.10.5(@lerna-lite/list@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+        specifier: ^4.11.0
+        version: 4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
@@ -4300,8 +4300,8 @@ packages:
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
 
-  '@lerna-lite/cli@4.10.5':
-    resolution: {integrity: sha512-yxvZrFA4j8zt4UtUEuk5Y46PeBWSZYTCo6D2I+z9B1Eg/YKZtmE3Ew7y+uhrZDBqYa58N8Si1GI0NJUOdl8NDw==}
+  '@lerna-lite/cli@4.11.0':
+    resolution: {integrity: sha512-OrEgVeA2MpqgnYcXmz/BtFOhhg9uZGktPPdAPF2YEpC87GRkVqY599FnytVGD4z7GAogLbifvPMIozqWGkPFRQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
     hasBin: true
     peerDependencies:
@@ -4325,32 +4325,32 @@ packages:
       '@lerna-lite/watch':
         optional: true
 
-  '@lerna-lite/core@4.10.5':
-    resolution: {integrity: sha512-B6x6TSeUINI8oqty81MunYfRTWUs7Z7yBIir1xQzHXLMy3XeKXcEBmqXJi9WXxqUPFNlRDhrZHMdMsapaY3ZVg==}
+  '@lerna-lite/core@4.11.0':
+    resolution: {integrity: sha512-rLbjf9plYMomnNN1zVnFJGLWRHSBicSDrou5huwBATc8Lu0jTqxHv+SbteO/ORcUAmXX+wV9tNwCM7bKSoVgfg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/init@4.10.5':
-    resolution: {integrity: sha512-ckt9p3ZFPKUFBFZa1/t7H95O2BeTTGLPdIWUneAUbYSF6SY4pVDSOPmON2zxO2d66VYwBrYW4vRN+DjrmsYciw==}
+  '@lerna-lite/init@4.11.0':
+    resolution: {integrity: sha512-CH4Pu2PMbLH6UT/uDod1zRrL/4HYjsCPaRtttufm8iWQjCjvxqsc9oA/3Cvq7wgbEQ3eqbTwZSm9er3d8DoP5g==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/list@4.10.5':
-    resolution: {integrity: sha512-wrfWgjKNkgp3o6EqsSenK+AM8JniEDxgFEDSF2w7EcIDl/KHj7zjqrU93xXfNFm1mG5fU5O9eYTAMRU1VSsSNA==}
+  '@lerna-lite/list@4.11.0':
+    resolution: {integrity: sha512-pQ4DAWinihWxhav/oN1vEmuyTW256NYo3ba/UPwlQZBtD7prJX8x3gp6cx2PkDYu3w0tqxmOuclYu7sUlsbQZQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/listable@4.10.5':
-    resolution: {integrity: sha512-IBqfgDhb4E39O6rc46uoqvw39X3fZ8wNlptSQ3nLA3zKJ9ncjGEloKePCRuI2WIhuj/6fmJkVGHf861upwffOg==}
+  '@lerna-lite/listable@4.11.0':
+    resolution: {integrity: sha512-IYVDiAK2zpN254I3Qexg2GaHWWy8qjcbmSooKUIA0OIGIMHCu5SYq0rCnMWH8HVfcNdJlHknTgwHvC79xwyW4A==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/npmlog@4.10.4':
-    resolution: {integrity: sha512-KjBmvn+ZN2GIGzJNzrdWp9Jx4smgeRgIxWqc3Zj0NXXmqAVCJB/DKKM/oDa0BusGjMhNOC19dnQgeQWBibxU9Q==}
+  '@lerna-lite/npmlog@4.11.0':
+    resolution: {integrity: sha512-9jKM3gUCpg/3ZEhjetv4fDMUNqfqq8jiqUYrP9mp49mhDjrP9rRsSNteoz+57jT1lgJ7MNRhKgG7l+ObnAjXnQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/publish@4.10.5':
-    resolution: {integrity: sha512-Iy5Df19GCxIl5JhXubfX8oo0A8/oTkfNdSDnSDbOUupK0DA+YDk3JS5g6j/Bg3SIsFIfo/XdRXKOZVxb4Tsu6w==}
+  '@lerna-lite/publish@4.11.0':
+    resolution: {integrity: sha512-kO+jxrrirhj1oQNeHOXXKnmpO8+9g6llBLTiLwQ2sOps6B2Xd8akRxnqvJAs78lZ/jNRzlHHnk2NCP6ChzoRfw==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/version@4.10.5':
-    resolution: {integrity: sha512-rb0ZmaunEofKUG3dvAIjh8HWukNv8u8Q/sCkvA41HnXAVBdafme2+wTXutPH0TSJe4FN6rC934Otc3mZ/LA1OA==}
+  '@lerna-lite/version@4.11.0':
+    resolution: {integrity: sha512-UCnkn+eMgEl5MYe4yVweVKDxOb9l4OduOuEmQL2QZjTbbPJLhP5VgKEJZYDGb6nh2KD5C+bUyc53aUHULPFAmA==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@lezer/common@1.5.0':
@@ -10666,6 +10666,10 @@ packages:
     resolution: {integrity: sha512-RhBdVhSwJb7Ocn3e8ULk4NMwBEuOxe+1zcgphUy9c2e5aR/xbEsdVXxHJ3lynw6Qiqu7OINEyHlZkiblEpaq7w==}
     engines: {node: '>=20'}
 
+  p-queue@9.1.0:
+    resolution: {integrity: sha512-O/ZPaXuQV29uSLbxWBGGZO1mCQXV2BLIwUr59JUU9SoH76mnYvtms7aafH/isNSNGwuEfP6W/4xD0/TJXxrizw==}
+    engines: {node: '>=20'}
+
   p-reduce@3.0.0:
     resolution: {integrity: sha512-xsrIUgI0Kn6iyDYm9StOpOeK29XM1aboGji26+QEortiFST1hGZaUQOLhtEbqHErPpGW/aSz6allwK2qcptp0Q==}
     engines: {node: '>=12'}
@@ -15200,31 +15204,31 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna-lite/cli@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/cli@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/init': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.4
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/init': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.11.0
       dedent: 1.7.1(babel-plugin-macros@3.1.0)
       dotenv: 17.2.3
       import-local: 3.2.0
       load-json-file: 7.0.1
       yargs: 18.0.0
     optionalDependencies:
-      '@lerna-lite/list': 4.10.5(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/publish': 4.10.5(@lerna-lite/list@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
-      '@lerna-lite/version': 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/list': 4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/publish': 4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/version': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/core@4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/core@4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
       '@inquirer/expand': 4.0.23(@types/node@24.10.4)
       '@inquirer/input': 4.3.1(@types/node@24.10.4)
       '@inquirer/select': 4.4.2(@types/node@24.10.4)
-      '@lerna-lite/npmlog': 4.10.4
+      '@lerna-lite/npmlog': 4.11.0
       '@npmcli/run-script': 10.0.3
       ci-info: 4.3.1
       dedent: 1.7.1(babel-plugin-macros@3.1.0)
@@ -15236,7 +15240,7 @@ snapshots:
       load-json-file: 7.0.1
       npm-package-arg: 13.0.2
       p-map: 7.0.4
-      p-queue: 9.0.1
+      p-queue: 9.1.0
       semver: 7.7.3
       slash: 5.1.0
       tinyglobby: 0.2.15
@@ -15251,9 +15255,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/init@4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/init@4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       fs-extra: 11.3.3
       p-map: 7.0.4
       write-json-file: 7.0.0
@@ -15262,11 +15266,11 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/list@4.10.5(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/list@4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/listable': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/listable': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - '@lerna-lite/exec'
       - '@lerna-lite/publish'
@@ -15277,9 +15281,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/listable@4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/listable@4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       columnify: 1.6.0
       tinyrainbow: 3.0.3
     transitivePeerDependencies:
@@ -15287,7 +15291,7 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/npmlog@4.10.4':
+  '@lerna-lite/npmlog@4.11.0':
     dependencies:
       aproba: 2.1.0
       fast-string-width: 3.0.2
@@ -15297,12 +15301,12 @@ snapshots:
       tinyrainbow: 3.0.3
       wide-align: 1.1.5
 
-  '@lerna-lite/publish@4.10.5(@lerna-lite/list@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/publish@4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
-      '@lerna-lite/cli': 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.4
-      '@lerna-lite/version': 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.11.0
+      '@lerna-lite/version': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@npmcli/arborist': 9.1.9
       '@npmcli/package-json': 7.0.4
       byte-size: 9.0.1
@@ -15335,12 +15339,12 @@ snapshots:
       - conventional-commits-filter
       - supports-color
 
-  '@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
       '@conventional-changelog/git-client': 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
-      '@lerna-lite/cli': 4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@lerna-lite/version@4.10.5(@lerna-lite/list@4.10.5)(@lerna-lite/publish@4.10.5)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/core': 4.10.5(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/npmlog': 4.10.4
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/npmlog': 4.11.0
       '@octokit/plugin-enterprise-rest': 6.0.1
       '@octokit/rest': 22.0.1
       conventional-changelog: 7.1.1(conventional-commits-filter@5.0.0)
@@ -17355,7 +17359,7 @@ snapshots:
 
   '@testing-library/dom@10.4.1':
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.28.6
       '@babel/runtime': 7.28.4
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
@@ -22866,6 +22870,11 @@ snapshots:
   p-pipe@4.0.0: {}
 
   p-queue@9.0.1:
+    dependencies:
+      eventemitter3: 5.0.1
+      p-timeout: 7.0.1
+
+  p-queue@9.1.0:
     dependencies:
       eventemitter3: 5.0.1
       p-timeout: 7.0.1
