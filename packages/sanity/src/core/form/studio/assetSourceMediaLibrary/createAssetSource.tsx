@@ -1,5 +1,10 @@
 import {DocumentIcon, ImageIcon} from '@sanity/icons'
-import {type Asset, type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
+import {
+  type Asset,
+  type AssetSource,
+  type AssetSourceComponentProps,
+  type AssetSourceOpenInSourceResult,
+} from '@sanity/types'
 
 import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
 import {MediaLibraryUploader} from './uploader'
@@ -16,7 +21,7 @@ export interface CreateSanityMediaLibrarySourceProps {
  * Check if this asset source can open an asset in source.
  * Returns \{ type: 'component' \} if the asset was created from the Media Library.
  */
-function openInSource(asset: Asset) {
+function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
   // Check if the asset's source name matches this asset source
   if (asset.source?.name === sourceName) {
     return {type: 'component' as const}
