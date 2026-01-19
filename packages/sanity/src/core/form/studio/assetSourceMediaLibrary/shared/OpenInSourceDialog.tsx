@@ -6,7 +6,6 @@ import {type ReactNode, useCallback, useMemo} from 'react'
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
-import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
 import {usePluginFrameUrl} from '../hooks/usePluginFrameUrl'
 import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
@@ -30,7 +29,6 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   const theme = useTheme()
   const {t} = useTranslation()
   const {dark} = theme.sanity.color
-  const mediaLibraryIds = useMediaLibraryIds()
   const mediaLibraryConfig = useSanityMediaLibraryConfig()
   const appHost = mediaLibraryConfig.__internal.hosts.app
   const authType = useAuthType()
@@ -48,6 +46,7 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
     }),
     [dark, authType],
   )
+
   const iframeUrl = usePluginFrameUrl(`/assets/${sourceAssetId}`, params)
 
   const handlePluginMessage = useCallback(
@@ -65,6 +64,14 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
   const handleClose = useCallback(() => {
     onClose()
   }, [onClose])
+
+  // sourceAssetId is required to construct a valid iframe URL
+  if (!sourceAssetId) {
+    console.warn('Cannot open asset in source: missing asset source id', {
+      asset,
+    })
+    return null
+  }
 
   return (
     <AppDialog
