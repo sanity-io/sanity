@@ -34,9 +34,6 @@ export interface StartDevServerCommandFlags {
   'load-in-dashboard'?: boolean
   'auto-updates'?: boolean
   'force'?: boolean
-  'extract-schema'?: boolean
-  'schema-path'?: string
-  'schema-workspace'?: string
 }
 
 const debug = debugIt.extend('dev')
@@ -212,7 +209,7 @@ export default async function startSanityDevServer(
     }
   }
 
-  if (flags.extractSchema) {
+  if (cliConfig?.schemaExtraction?.enabled) {
     output.print(`${logSymbols.info} Running dev server with schema extraction enabled`)
   }
 

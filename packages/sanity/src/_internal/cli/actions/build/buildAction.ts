@@ -158,6 +158,10 @@ export default async function buildSanityStudio(
     }
   }
 
+  if (cliConfig?.schemaExtraction?.enabled) {
+    output.print(`${logSymbols.info} Building with schema extraction enabled`)
+  }
+
   const envVarKeys = getSanityEnvVars()
   if (envVarKeys.length > 0) {
     output.print(
