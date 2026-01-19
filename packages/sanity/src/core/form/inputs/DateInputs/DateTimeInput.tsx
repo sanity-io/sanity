@@ -46,7 +46,7 @@ export function sanitizeTimeZoneKeyId(id: string): string {
           return `key-${segment._key}`
         }
         if (typeof segment === 'number') {
-          return `idx-${segment}`
+          return `idx_${segment}`
         }
         return segment
       })

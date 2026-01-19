@@ -118,8 +118,28 @@ export default defineType({
               name: 'date',
               type: 'datetime',
               title: 'A datetime field with custom date format',
+              options: {
+                allowTimeZoneSwitch: true,
+                displayTimeZone: 'Europe/Oslo',
+              },
             },
           ],
+        },
+      ],
+    },
+    {
+      name: 'datetimesDirectlyInArray',
+      type: 'array',
+      title: 'Datetimes directly in array (for SAPP-3018 testing)',
+      description:
+        'Tests timezone persistence for datetime fields directly in arrays without wrapper objects',
+      of: [
+        {
+          type: 'datetime',
+          options: {
+            displayTimeZone: 'Europe/Oslo',
+            allowTimeZoneSwitch: true,
+          },
         },
       ],
     },
