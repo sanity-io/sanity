@@ -18,7 +18,8 @@ import {
 } from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {capitalize, get} from 'lodash-es'
-import {type ComponentType} from 'react'
+import {type ComponentType, isValidElement} from 'react'
+import {isValidElementType} from 'react-is'
 
 import {CustomIcon} from './CustomIcon'
 import {
@@ -202,13 +203,27 @@ const listStyleIcons: Record<string, ComponentType> = {
   bullet: UlistIcon,
 }
 
+const ActionIcon = ({action}: {action: PTEToolbarAction}) => {
+  const Icon = action.icon
+
+  if (isValidElementType(Icon)) return <Icon />
+  if (isValidElement(Icon)) return Icon
+
+  // Fallback for any other ReactNode types
+  return null
+}
+
 export function getActionIcon(action: PTEToolbarAction, active: boolean) {
   if (action.icon) {
     if (typeof action.icon === 'string') {
       return <CustomIcon active={active} icon={action.icon} />
     }
 
-    return action.icon
+    return (
+      <span data-sanity-icon style={{display: 'contents'}}>
+        <ActionIcon action={action} />
+      </span>
+    )
   }
 
   if (action.type === 'annotation') {
