@@ -114,4 +114,6 @@ export const EXTERNAL_PLUGIN_INPUT_TYPES = [
   'markdownTest',
   'muxVideoPost',
   'internationalizedArrayTest',
+  'documentI18nTest',
+  'translation.metadata',
 ]
