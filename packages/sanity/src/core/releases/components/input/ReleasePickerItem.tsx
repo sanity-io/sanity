@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {type JSX} from 'react'
 import {styled} from 'styled-components'
 
-import {ReleaseAvatar} from '../ReleaseAvatar'
 import {getReleaseTone} from '../../util/getReleaseTone'
+import {ReleaseAvatar} from '../ReleaseAvatar'
 
 const ItemButton = styled.button`
   all: unset;
@@ -19,21 +20,18 @@ const ItemButton = styled.button`
 
 interface ReleasePickerItemProps {
   release: ReleaseDocument
-  releaseId: string
   onSelect: () => void
 }
 
-export function ReleasePickerItem(props: ReleasePickerItemProps) {
-  const {release, releaseId, onSelect} = props
+export function ReleasePickerItem(props: ReleasePickerItemProps): JSX.Element {
+  const {release, onSelect} = props
   const tone = getReleaseTone(release)
 
   return (
     <ItemButton onClick={onSelect}>
       <Flex align="center" gap={2}>
-        <ReleaseAvatar tone={tone} size={0} />
-        <Text size={1}>
-          {release.metadata.title || 'Untitled Release'}
-        </Text>
+        <ReleaseAvatar tone={tone} fontSize={0} padding={1} />
+        <Text size={1}>{release.metadata.title || 'Untitled Release'}</Text>
       </Flex>
     </ItemButton>
   )

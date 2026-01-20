@@ -1,13 +1,20 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Card, Text} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {type JSX, useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 
-import {CommandList, type CommandListHandle} from '../../../components/commandList/CommandList'
+import {CommandList} from '../../../components/commandList/CommandList'
+import {useTranslation} from '../../../i18n'
+import {releasesLocaleNamespace} from '../../i18n'
 import {useAllReleases} from '../../store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleasePickerItem} from './ReleasePickerItem'
 
-const ARCHIVED_RELEASE_STATES = ['archived', 'published']
+function isActiveRelease(release: ReleaseDocument): boolean {
+  return (
+    release.state === 'active' || release.state === 'scheduling' || release.state === 'scheduled'
+  )
+}
 const ITEM_HEIGHT = 33
 const MAX_ITEMS = 7
 
@@ -23,27 +30,18 @@ interface ReleasePickerMenuProps {
   onSelect: (releaseId: string) => void
 }
 
-export function ReleasePickerMenu(props: ReleasePickerMenuProps) {
+export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
   const {onSelect} = props
+  const {t} = useTranslation(releasesLocaleNamespace)
   const {data: releases, loading, error} = useAllReleases()
-  const commandListRef = useRef<CommandListHandle>(null)
+  const commandListRef = useRef(null)
 
-  // Filter to active releases only (exclude archived/published)
-  const activeReleases = useMemo(
-    () => releases.filter((r) => !ARCHIVED_RELEASE_STATES.includes(r.state)),
-    [releases],
-  )
+  const activeReleases = useMemo(() => releases.filter(isActiveRelease), [releases])
 
   const renderItem = useCallback(
-    (release) => {
+    (release: ReleaseDocument) => {
       const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
-      return (
-        <ReleasePickerItem
-          release={release}
-          releaseId={releaseId}
-          onSelect={() => onSelect(releaseId)}
-        />
-      )
+      return <ReleasePickerItem release={release} onSelect={() => onSelect(releaseId)} />
     },
     [onSelect],
   )
@@ -52,7 +50,7 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps) {
     return (
       <Card padding={3} shadow={2} radius={2}>
         <Text size={1} muted>
-          Loading releases...
+          {t('release-picker.loading')}
         </Text>
       </Card>
     )
@@ -60,10 +58,8 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps) {
 
   if (error) {
     return (
-      <Card padding={3} shadow={2} radius={2}>
-        <Text size={1} tone="critical">
-          Failed to load releases
-        </Text>
+      <Card padding={3} shadow={2} radius={2} tone="critical">
+        <Text size={1}>{t('release-picker.error')}</Text>
       </Card>
     )
   }
@@ -72,7 +68,7 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps) {
     return (
       <Card padding={3} shadow={2} radius={2}>
         <Text size={1} muted>
-          No active releases available
+          {t('release-picker.empty')}
         </Text>
       </Card>
     )
@@ -82,7 +78,7 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps) {
     <MenuCard shadow={2} radius={2}>
       <CommandList
         activeItemDataAttr="data-hovered"
-        ariaLabel="Select a release to link"
+        ariaLabel={t('release-picker.aria-label')}
         fixedHeight
         itemHeight={ITEM_HEIGHT}
         items={activeReleases}
