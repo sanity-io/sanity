@@ -4,11 +4,13 @@ import QuickLRU from 'quick-lru'
 
 import {makeMediaLibraryRef, type MediaLibraryRef} from './refs'
 
+type AccessPolicyResult = 'public' | 'private' | undefined
+
 const POLICY_CACHE_MAX_SIZE = 2000
 const POLICY_CACHE_MAX_AGE = 1000 * 60 * 5 // 5 minutes
 
-const loaders = new Map<string, DataLoader<string, string | undefined>>()
-const policyCache = new QuickLRU<string, string | undefined>({
+const loaders = new Map<string, DataLoader<string, AccessPolicyResult>>()
+const policyCache = new QuickLRU<string, AccessPolicyResult>({
   maxAge: POLICY_CACHE_MAX_AGE,
   maxSize: POLICY_CACHE_MAX_SIZE,
 })
@@ -21,7 +23,7 @@ async function fetchAccessPoliciesBatch(params: {
   assetIds: readonly string[]
   client: SanityClient
   libraryId: string
-}): Promise<(string | undefined)[]> {
+}): Promise<AccessPolicyResult[]> {
   const {assetIds, client, libraryId} = params
 
   if (assetIds.length === 0) {
@@ -29,7 +31,7 @@ async function fetchAccessPoliciesBatch(params: {
   }
 
   try {
-    const results = await client.fetch<{_id: string; cdnAccessPolicy?: string}[]>(
+    const results = await client.fetch<{_id: string; cdnAccessPolicy?: AccessPolicyResult}[]>(
       `*[_id in $ids]{_id, cdnAccessPolicy}`,
       {ids: assetIds},
     )
@@ -58,15 +60,26 @@ async function fetchAccessPoliciesBatch(params: {
   }
 }
 
-function normalizeMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
-  const currentResource = client.config()['~experimental_resource']
+/**
+ * Creates a Media Library-specific client with an explicitly configured API
+ * host that includes the project ID in the subdomain. This is to satisfy CORS
+ * requirements when performing CDN access policy checks, as browser requests
+ * will fail against the global host because it does not include CORS headers.
+ */
+function createMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
+  const {apiHost: base, projectId: subdomain} = client.config()
 
-  if (currentResource?.id === libraryId && currentResource?.type === 'media-library') {
-    return client
+  if (!subdomain) {
+    throw new Error('Cannot create Media Library client: missing projectId in client config')
   }
 
+  const baseUrl = new URL(base)
+  baseUrl.hostname = `${subdomain}.${baseUrl.hostname}`
+  const apiHost = baseUrl.toString()
+
   return client.withConfig({
-    '~experimental_resource': {
+    apiHost,
+    resource: {
       id: libraryId,
       type: 'media-library',
     },
@@ -83,16 +96,16 @@ function normalizeMediaLibraryClient(client: SanityClient, libraryId: string): S
 function resolveAssetPolicyLoader(
   client: SanityClient,
   libraryId: string,
-): DataLoader<string, string | undefined> {
+): DataLoader<string, AccessPolicyResult> {
   const existingLoader = loaders.get(libraryId)
 
   if (existingLoader) {
     return existingLoader
   }
 
-  const mediaLibraryClient = normalizeMediaLibraryClient(client, libraryId)
+  const mediaLibraryClient = createMediaLibraryClient(client, libraryId)
 
-  const loader = new DataLoader<string, string | undefined>(
+  const loader = new DataLoader<string, AccessPolicyResult>(
     (assetIds) =>
       fetchAccessPoliciesBatch({
         assetIds,
@@ -115,7 +128,7 @@ function resolveAssetPolicyLoader(
 export function enqueueAssetAccessPolicyFetch(
   assetRef: MediaLibraryRef,
   client?: SanityClient,
-): Promise<string | undefined> {
+): Promise<AccessPolicyResult> {
   const [, libraryId, assetId] = assetRef.split(':', 3)
 
   if (!libraryId || !assetId || !client) {
