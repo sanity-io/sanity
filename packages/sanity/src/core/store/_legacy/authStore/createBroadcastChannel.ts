@@ -5,7 +5,7 @@ import {isNonNullable} from '../../../util'
 import * as storage from './storage'
 
 export interface BroadcastChannel<T> {
-  messages: Observable<T>
+  messages: Observable<T | null>
   broadcast: (message: T) => void
 }
 

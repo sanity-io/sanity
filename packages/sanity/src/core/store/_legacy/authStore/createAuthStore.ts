@@ -176,6 +176,10 @@ export function _createAuthStore({
   // const firstMessage = messages.pipe(first())
 
   const token$ = messages.pipe(
+    map((message) => ({
+      token: message?.token || null,
+      callbackHandled: message?.callbackHandled ?? false,
+    })),
     startWith(
       isCookielessCompatibleLoginMethod(loginMethod)
         ? {token: getToken(projectId), callbackHandled: false}
