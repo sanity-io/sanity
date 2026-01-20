@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import getPort from 'get-port'
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
@@ -9,11 +10,12 @@ import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environmen
 describeCliTest('CLI: `sanity preview`', () => {
   describe.each(studioNames)('%s', (name) => {
     testConcurrent('preview (no basepath)', async () => {
+      const port = await getPort()
       const {html: previewHtml} = await testServerCommand({
         command: 'preview',
-        args: ['--port', '3330', '../../static'],
+        args: ['--port', `${port}`, '../../static'],
         basePath: '/',
-        port: 3330,
+        port,
         cwd: path.join(studiosPath, name),
         expectedTitle: 'Sanity Static',
         expectedOutput: ({stderr}) => {
@@ -24,17 +26,18 @@ describeCliTest('CLI: `sanity preview`', () => {
     })
 
     testConcurrent('preview (infers basepath)', async () => {
+      const port = await getPort()
       const {html: previewHtml} = await testServerCommand({
         command: 'preview',
-        args: ['--port', '3456', '../../static-basepath'],
+        args: ['--port', `${port}`, '../../static-basepath'],
         basePath: '/some-base-path',
-        port: 3456,
+        port,
         cwd: path.join(studiosPath, name),
         expectedTitle: 'Sanity Static, Base Pathed',
         expectedOutput: ({stdout}) => {
           expect(stdout).toContain('Using resolved base path from static build')
           expect(stdout).toContain('/some-base-path')
-          expect(stdout).toContain(':3456/some-base-path')
+          expect(stdout).toContain(`${port}/some-base-path`)
         },
       })
 
@@ -42,11 +45,12 @@ describeCliTest('CLI: `sanity preview`', () => {
     })
 
     testConcurrent('preview (root basepath)', async () => {
+      const port = await getPort()
       const {html: previewHtml} = await testServerCommand({
         command: 'preview',
-        args: ['--port', '3457', '../../static-root-basepath'],
+        args: ['--port', `${port}`, '../../static-root-basepath'],
         basePath: '/',
-        port: 3457,
+        port,
         cwd: path.join(studiosPath, name),
         expectedTitle: 'Sanity Static',
       })
@@ -54,11 +58,12 @@ describeCliTest('CLI: `sanity preview`', () => {
     })
 
     testConcurrent('start (preview alias)', async () => {
+      const port = await getPort()
       const {html: previewHtml} = await testServerCommand({
         command: 'start',
-        args: ['--port', '3331', '../../static'],
+        args: ['--port', `${port}`, '../../static'],
         basePath: '/',
-        port: 3331,
+        port,
         cwd: path.join(studiosPath, name),
         expectedTitle: 'Sanity Static',
       })
