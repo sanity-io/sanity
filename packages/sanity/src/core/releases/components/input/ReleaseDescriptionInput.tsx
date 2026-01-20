@@ -11,9 +11,9 @@ import {
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {BoldIcon, ItalicIcon, LinkIcon, UnderlineIcon} from '@sanity/icons'
-import {type Path, type PortableTextBlock} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Flex} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {randomKey} from '@sanity/util/content'
 import {type JSX, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -25,7 +25,7 @@ import {type ReleaseDescription} from '../../types/releaseDescription'
 import {normalizeDescriptionToPTE} from '../../util/descriptionConversion'
 import {AutoLinkPlugin} from './AutoLinkPlugin'
 import {ReleaseReferenceChip} from './ReleaseReferenceChip'
-import {ReleasePickerDropdown} from './ReleasePickerDropdown'
+import {ReleaseLinkMenuButton} from './ReleaseLinkMenuButton'
 
 interface ReleaseDescriptionInputProps {
   value: ReleaseDescription | undefined | null
@@ -60,15 +60,7 @@ const TOOLBAR_BUTTONS = [
   {action: 'linkRelease', icon: LinkIcon, title: 'Link Release'},
 ] as const
 
-function Toolbar({
-  readOnly,
-  showReleasePicker,
-  onToggleReleasePicker,
-}: {
-  readOnly: boolean
-  showReleasePicker: boolean
-  onToggleReleasePicker: () => void
-}): JSX.Element | null {
+function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
@@ -101,15 +93,9 @@ function Toolbar({
             )
           } else if (button.action === 'linkRelease') {
             return (
-              <Button
+              <ReleaseLinkMenuButton
                 key={button.action}
-                mode="bleed"
-                icon={button.icon}
-                onClick={onToggleReleasePicker}
-                title={button.title}
-                fontSize={1}
-                padding={2}
-                selected={showReleasePicker}
+                selected={false}
               />
             )
           }
@@ -137,58 +123,9 @@ function EditorContent({
   }) => JSX.Element
   renderChild: RenderChildFunction
 }): JSX.Element {
-  const editor = usePortableTextEditor()
-  const selection = usePortableTextEditorSelection()
-
-  // State for release picker dropdown
-  const [showReleasePicker, setShowReleasePicker] = useState(false)
-  const [insertPosition, setInsertPosition] = useState<{path: Path; offset: number} | null>(null)
-
-  // Handle Link Release button click
-  const handleToggleReleasePicker = useCallback(() => {
-    if (showReleasePicker) {
-      // Close if already open
-      setShowReleasePicker(false)
-      setInsertPosition(null)
-    } else if (selection) {
-      // Editor focused: show dropdown immediately
-      setInsertPosition(selection.focus)
-      setShowReleasePicker(true)
-    } else {
-      // Not focused: flag to show on next focus
-      setShowReleasePicker(true)
-    }
-  }, [showReleasePicker, selection])
-
-  // Effect: Set position when editor gets focus after button click
-  useEffect(() => {
-    if (showReleasePicker && !insertPosition && selection) {
-      setInsertPosition(selection.focus)
-    }
-  }, [showReleasePicker, insertPosition, selection])
-
-  // Handle dropdown close
-  const handleCloseReleasePicker = useCallback(() => {
-    setShowReleasePicker(false)
-    setInsertPosition(null)
-  }, [])
-
   return (
     <>
-      <Box style={{position: 'relative'}}>
-        <Toolbar
-          readOnly={readOnly}
-          showReleasePicker={showReleasePicker}
-          onToggleReleasePicker={handleToggleReleasePicker}
-        />
-        {showReleasePicker && insertPosition && (
-          <ReleasePickerDropdown
-            editor={editor}
-            insertPosition={insertPosition}
-            onClose={handleCloseReleasePicker}
-          />
-        )}
-      </Box>
+      <Toolbar readOnly={readOnly} />
       <StyledEditable
         renderPlaceholder={() => (placeholder ? <span>{placeholder}</span> : null)}
         renderDecorator={renderDecorator}
