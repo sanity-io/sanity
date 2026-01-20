@@ -207,12 +207,11 @@ const ActionIcon = ({action}: {action: PTEToolbarAction}) => {
   if (isValidElement(icon)) {
     return icon
   }
-  // At this point, icon should be a ComponentType
-  // ReactNode can be strings, numbers, etc., but for custom toolbar icons
-  // we expect only ReactElements or ComponentTypes
+  // At this point, icon could be a ComponentType or other ReactNode types
+  // (strings, numbers, etc.)
   if (typeof icon === 'function') {
-    const IconComponent = icon as ComponentType
-    return <IconComponent />
+    const Icon = icon
+    return <Icon />
   }
   // Fallback for any other ReactNode types
   return null
