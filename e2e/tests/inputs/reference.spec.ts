@@ -42,9 +42,11 @@ withDefaultClient((context) => {
 
     // Select the first document in the list.
     await expect(page.getByTestId('autocomplete')).toBeVisible()
+    // Click to focus and ensure the popover opens reliably
+    await page.getByTestId('autocomplete').click()
     await page.getByTestId('autocomplete').fill('Author A')
 
-    // Open the Author reference input.
+    // Wait for the Author reference popover to appear.
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
@@ -65,9 +67,11 @@ withDefaultClient((context) => {
     await page.getByRole('menuitem').getByText('Replace').click()
     // Select the first document in the list.
     await expect(page.getByTestId('autocomplete')).toBeVisible()
+    // Click to focus and ensure the popover opens reliably
+    await page.getByTestId('autocomplete').click()
     await page.getByTestId('autocomplete').fill('Author B')
 
-    // Open the Author reference input.
+    // Wait for the Author reference popover to appear.
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 

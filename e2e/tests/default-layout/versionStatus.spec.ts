@@ -6,7 +6,15 @@ test.describe('auto-updating studio behavior', () => {
   test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({
     page,
     baseURL,
+    browserName,
   }) => {
+    // Skip Firefox - import maps must be present in HTML before any module scripts are parsed,
+    // and Firefox has stricter timing around when dynamically injected import maps take effect.
+    // The addInitScript approach works in Chromium but not reliably in Firefox.
+    test.skip(
+      browserName === 'firefox',
+      'Firefox has timing issues with dynamically injected import maps',
+    )
     test.slow()
 
     // Set up route interception BEFORE navigating so all requests are caught
