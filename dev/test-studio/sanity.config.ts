@@ -1,6 +1,7 @@
 import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
+import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
@@ -195,6 +196,15 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
         ],
         defaultLanguages: ['en'],
         fieldTypes: ['string'],
+      }),
+      documentInternationalization({
+        supportedLanguages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+          {id: 'es', title: 'Spanish'},
+          {id: 'de', title: 'German'},
+        ],
+        schemaTypes: ['documentI18nTest'],
       }),
     ],
   })()
