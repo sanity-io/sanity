@@ -606,7 +606,7 @@ importers:
         version: 3.7.4(react@19.2.3)
       '@sanity/image-url':
         specifier: ^2.0.2
-        version: 2.0.2
+        version: 2.0.3
       '@sanity/logos':
         specifier: ^2.2.2
         version: 2.2.2(react@19.2.3)
@@ -5373,10 +5373,6 @@ packages:
     resolution: {integrity: sha512-pYRhti+lDi22it+npWXkEGuYyzbXJLF+d0TYLiyWbKu46JHhYhTDKkp6zmGu4YKF5cXUjT6pnUjFsaf2vlB9nQ==}
     engines: {node: '>=10.0.0'}
 
-  '@sanity/image-url@2.0.2':
-    resolution: {integrity: sha512-JnwFIHATLXHGVTCKmVwV0xy3xKwGlgVfeUB9cWxu72xJZMsQUyFgGiTz4zD9gRXuncAndkmtzHeIG+2vhKgxHA==}
-    engines: {node: '>=20.19.0'}
-
   '@sanity/image-url@2.0.3':
     resolution: {integrity: sha512-A/vOugFw/ROGgSeSGB6nimO0c35x9KztatOPIIVlhkL+zsOfP7khigCbdJup2FSv6C03FX2XaUAhXojCxANl2Q==}
     engines: {node: '>=20.19.0'}
@@ -5509,9 +5505,6 @@ packages:
   '@sanity/sdk@2.5.0':
     resolution: {integrity: sha512-ytqPSOQaT5Tnr1777xW7xBDtvv1b6wyac/pz7eo499SQ9ixUmeSrHJs6hvt4D/Hj5DIahViSYcqLbdww0IOD0g==}
     engines: {node: '>=20.19'}
-
-  '@sanity/signed-urls@2.0.1':
-    resolution: {integrity: sha512-/u++FnDbaXDWHiHxG1Q4rbGsKRPf6lmTKsXeZ3bbbty/kNHDhVRUA5mRA+TtXlbPrse4ksv3a2vAerKNUNDZOw==}
 
   '@sanity/signed-urls@2.0.2':
     resolution: {integrity: sha512-w/Aq0JDYI44WC5w8mzJBAjCem8qlGrxGTzvNbUWwBfys6kSL+TZBSypV5waCc35XRgt0X5zdYZMJOrshcjJLFw==}
@@ -16390,10 +16383,6 @@ snapshots:
 
   '@sanity/image-url@1.2.0': {}
 
-  '@sanity/image-url@2.0.2':
-    dependencies:
-      '@sanity/signed-urls': 2.0.1
-
   '@sanity/image-url@2.0.3':
     dependencies:
       '@sanity/signed-urls': 2.0.2
@@ -16783,11 +16772,6 @@ snapshots:
       - react
       - supports-color
       - use-sync-external-store
-
-  '@sanity/signed-urls@2.0.1':
-    dependencies:
-      '@noble/ed25519': 3.0.0
-      '@noble/hashes': 2.0.1
 
   '@sanity/signed-urls@2.0.2':
     dependencies:
