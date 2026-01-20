@@ -1,6 +1,6 @@
 import {type ImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 
-import {type AssetAccessPolicy} from './types'
+import {type AssetAccessPolicy} from '../types'
 import {useImageObjectUrl} from './useImageObjectUrl'
 
 interface UseImageUrlParameters<T extends SanityImageSource | undefined> {

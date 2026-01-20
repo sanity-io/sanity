@@ -25,12 +25,6 @@ export type FileInfo = {
  * @hidden
  * @beta
  */
-export type AssetAccessPolicy = 'checking' | 'private' | 'public' | 'unknown'
-
-/**
- * @hidden
- * @beta
- */
 export interface BaseImageInputValue extends Partial<BaseImage> {
   _upload?: UploadState
 }

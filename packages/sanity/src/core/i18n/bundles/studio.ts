@@ -742,6 +742,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.file.upload-failed.title': 'Upload failed',
+  /** Private access policy badge label */
+  'inputs.files.common.access-policy.private.label': 'Private asset',
+  /** Private access policy badge tooltip */
+  'inputs.files.common.access-policy.private.tooltip': 'CDN access limited to signed URLs',
   /** Clear field */
   'inputs.files.common.actions-menu.clear-field.label': 'Clear field',
   /** Copy URL */
@@ -812,6 +816,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
   /** This field is read only */
   'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  /** Image could not be loaded due to possible access restrictions */
+  'inputs.image.error.possible-access-restriction':
+    'Could not load image. This may be due to access restrictions.',
   /** Unknown member kind: `{{kind}}` */
   'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** Edit hotspot and crop */
