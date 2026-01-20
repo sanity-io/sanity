@@ -128,7 +128,6 @@ export function TitleDescriptionForm({
           onFocus={createFocusHandler('description')}
           onBlur={handleBlur}
           placeholder={t('release.form.placeholder-describe-release')}
-          autoFocus={!localData.title}
           disabled={disabled}
           readOnly={!isReleaseOpen}
         />

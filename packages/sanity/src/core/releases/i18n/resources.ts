@@ -501,6 +501,25 @@ const releasesLocaleStrings = {
 
   /** Toast error message when bulk scheduling of active drafts fails */
   'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
+
+  /** Text label for the link release toolbar button */
+  'toolbar.link-release.text': 'Link Release',
+  /** Tooltip text for the link release toolbar button */
+  'toolbar.link-release.tooltip': 'Link Release',
+
+  /** Loading state text for the release picker menu */
+  'release-picker.loading': 'Loading releases...',
+  /** Error state text for the release picker menu */
+  'release-picker.error': 'Failed to load releases',
+  /** Empty state text for the release picker menu */
+  'release-picker.empty': 'No active releases available',
+  /** Aria label for the release picker command list */
+  'release-picker.aria-label': 'Select a release to link',
+
+  /** Text shown when a release reference is unavailable */
+  'release-reference.unavailable': 'release unavailable',
+  /** Title template for a clickable release chip */
+  'release-reference.title': 'Click to open {{title}} in new tab',
 }
 
 /**

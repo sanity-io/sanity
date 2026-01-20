@@ -10,22 +10,24 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
-import {BoldIcon, ItalicIcon, LinkIcon, UnderlineIcon} from '@sanity/icons'
+import {BoldIcon, CalendarIcon, ItalicIcon, UnderlineIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Button, Card, Flex} from '@sanity/ui'
-import {useState} from 'react'
+import {Box, Card, Flex} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {randomKey} from '@sanity/util/content'
-import {type JSX, useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
+import {type JSX, useCallback, useMemo, useState} from 'react'
+import {css, styled} from 'styled-components'
 
-import {useModifierKey} from '../../../hooks'
+import {Button} from '../../../../ui-components'
 import {UpdateReadOnlyPlugin} from '../../../form/inputs/PortableText/PortableTextInput'
+import {useModifierKey} from '../../../hooks'
 import {releaseDescriptionSchema} from '../../schema/releaseDescriptionSchema'
 import {type ReleaseDescription} from '../../types/releaseDescription'
 import {normalizeDescriptionToPTE} from '../../util/descriptionConversion'
 import {AutoLinkPlugin} from './AutoLinkPlugin'
-import {ReleaseReferenceChip} from './ReleaseReferenceChip'
 import {ReleaseLinkMenuButton} from './ReleaseLinkMenuButton'
+import {ReleaseReferenceChip} from './ReleaseReferenceChip'
 
 interface ReleaseDescriptionInputProps {
   value: ReleaseDescription | undefined | null
@@ -37,6 +39,8 @@ interface ReleaseDescriptionInputProps {
   placeholder?: string
 }
 
+const EDITOR_PADDING = 12
+
 const StyledCard = styled(Card)`
   [data-text-overflow] {
     text-overflow: ellipsis;
@@ -46,18 +50,31 @@ const StyledCard = styled(Card)`
 const StyledEditable = styled(PortableTextEditable)`
   outline: none;
   min-height: 60px;
-  padding: 12px;
+  padding: ${EDITOR_PADDING}px;
 
   &[data-read-only='true'] {
     cursor: default;
   }
 `
 
+const PlaceholderWrapper = styled.span((props) => {
+  const {color, font} = getTheme_v2(props.theme)
+  return css`
+    color: ${color.input.default.enabled.placeholder};
+    font-family: ${font.text.family};
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    padding-left: ${EDITOR_PADDING}px;
+  `
+})
+
 const TOOLBAR_BUTTONS = [
   {mark: 'strong', icon: BoldIcon, title: 'Bold (Cmd+B)'},
   {mark: 'em', icon: ItalicIcon, title: 'Italic (Cmd+I)'},
   {mark: 'underline', icon: UnderlineIcon, title: 'Underline (Cmd+U)'},
-  {action: 'linkRelease', icon: LinkIcon, title: 'Link Release'},
+  {action: 'linkRelease', icon: CalendarIcon, title: 'Link Release'},
 ] as const
 
 function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
@@ -85,21 +102,15 @@ function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
                 mode="bleed"
                 icon={button.icon}
                 onClick={() => handleToggleMark(button.mark)}
-                title={button.title}
-                fontSize={1}
-                padding={2}
-                selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
-              />
-            )
-          } else if (button.action === 'linkRelease') {
-            return (
-              <ReleaseLinkMenuButton
-                key={button.action}
-                selected={false}
+                tooltipProps={{content: button.title}}
+                selected={
+                  selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false
+                }
               />
             )
           }
-          return null
+
+          return <ReleaseLinkMenuButton key={button.action} selected={false} />
         })}
       </Flex>
     </Box>
@@ -127,7 +138,9 @@ function EditorContent({
     <>
       <Toolbar readOnly={readOnly} />
       <StyledEditable
-        renderPlaceholder={() => (placeholder ? <span>{placeholder}</span> : null)}
+        renderPlaceholder={() =>
+          placeholder ? <PlaceholderWrapper>{placeholder}</PlaceholderWrapper> : null
+        }
         renderDecorator={renderDecorator}
         renderAnnotation={renderAnnotation}
         renderChild={renderChild}
@@ -141,7 +154,7 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   const {value, onChange, onFocus, onBlur, readOnly, disabled, placeholder} = props
   const isReadOnly = readOnly ?? disabled ?? false
   const {isPressed: isModifierPressed, onMouseEnter, onMouseLeave} = useModifierKey()
-  const pteValue = useMemo(() => normalizeDescriptionToPTE(value ?? ''), [value])
+  const pteValue = useMemo(() => normalizeDescriptionToPTE(value ?? undefined), [value])
 
   const [initialConfig] = useState<EditorConfig>(() => ({
     initialValue: pteValue,
@@ -159,8 +172,14 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
         case 'blurred':
           onBlur?.()
           break
-        case 'mutation':
-          onChange((event.value ?? []) as PortableTextBlock[])
+        case 'mutation': {
+          const mutationValue = event.value ?? []
+          if (Array.isArray(mutationValue)) {
+            onChange(mutationValue as PortableTextBlock[])
+          }
+          break
+        }
+        default:
           break
       }
     },
@@ -204,8 +223,12 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleClick}
-          style={{textDecoration: 'underline', color: 'var(--card-link-color)', cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text'}}
-          title={isReadOnly ? annotation.href : `${annotation.href} (Cmd+Click to open)`}
+          style={{
+            textDecoration: 'underline',
+            color: 'var(--card-link-color)',
+            cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text',
+          }}
+          title={annotation.href}
         >
           {children}
         </a>
@@ -214,23 +237,26 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
     [isReadOnly, isModifierPressed],
   )
 
-  const renderChild: RenderChildFunction = useCallback(
-    (childProps: BlockChildRenderProps) => {
-      const {children, value, selected} = childProps
+  const renderChild: RenderChildFunction = useCallback((childProps: BlockChildRenderProps) => {
+    const {children, value: childValue, selected} = childProps
 
-      // Check if this is a release reference inline object
-      if (value._type === 'releaseReference' && 'releaseId' in value) {
-        return <ReleaseReferenceChip releaseId={value.releaseId as string} selected={selected} />
-      }
+    // Check if this is a release reference inline object
+    if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
+      return <ReleaseReferenceChip releaseId={childValue.releaseId as string} selected={selected} />
+    }
 
-      // Default: render children as-is (spans, text nodes, etc.)
-      return children
-    },
-    [],
-  )
+    // Default: render children as-is (spans, text nodes, etc.)
+    return children
+  }, [])
 
   return (
-    <StyledCard border radius={2} tone="default" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <StyledCard
+      border
+      radius={2}
+      tone="default"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <EditorProvider initialConfig={initialConfig}>
         <EventListenerPlugin on={handleEditorEvent} />
         <UpdateReadOnlyPlugin readOnly={isReadOnly} />

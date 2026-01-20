@@ -1,27 +1,44 @@
-import {PortableTextEditor, usePortableTextEditor, usePortableTextEditorSelection} from '@portabletext/editor'
-import {LinkIcon} from '@sanity/icons'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@portabletext/editor'
+import {CalendarIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
-import {Button, Popover} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {type JSX, useCallback, useEffect, useRef, useState} from 'react'
 
+import {Button, Popover} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {releasesLocaleNamespace} from '../../i18n'
 import {ReleasePickerMenu} from './ReleasePickerMenu'
+
+type InsertPosition = {path: Path; offset: number}
 
 /**
  * Calculate the end position of the document for inserting content
  */
-function getEndPosition(editor: PortableTextEditor): {path: Path; offset: number} | null {
+function getEndPosition(editor: PortableTextEditor): InsertPosition | null {
   const value = PortableTextEditor.getValue(editor)
-  const lastBlock = value.slice(-1)[0]
+  if (!value) return null
 
-  if (!lastBlock || !lastBlock.children) return null
+  const lastBlock = value.at(-1)
+  if (!lastBlock || !lastBlock.children || !Array.isArray(lastBlock.children)) {
+    return null
+  }
 
-  const lastChild = lastBlock.children.slice(-1)[0]
+  const lastChild = lastBlock.children.at(-1)
   if (!lastChild) return null
+
+  const offset =
+    '_type' in lastChild && lastChild._type === 'span' && 'text' in lastChild
+      ? (lastChild.text?.length ?? 0)
+      : 0
 
   return {
     path: [{_key: lastBlock._key}, 'children', {_key: lastChild._key}],
-    offset: lastChild.text?.length || 0,
+    offset,
   }
 }
 
@@ -29,102 +46,102 @@ interface ReleaseLinkMenuButtonProps {
   selected: boolean
 }
 
-export function ReleaseLinkMenuButton(props: ReleaseLinkMenuButtonProps) {
+export function ReleaseLinkMenuButton(props: ReleaseLinkMenuButtonProps): JSX.Element {
   const {selected} = props
+  const {t} = useTranslation(releasesLocaleNamespace)
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const [open, setOpen] = useState(false)
-  const [insertPosition, setInsertPosition] = useState<{path: Path; offset: number} | null>(null)
+  const [insertPosition, setInsertPosition] = useState<InsertPosition | null>(null)
   const pendingOpen = useRef(false)
+  const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  const handleOpen = useCallback(() => {
-    // eslint-disable-next-line no-console
-    console.log('Opening menu, selection:', selection)
+  const handleClose = useCallback(() => {
+    setOpen(false)
+    setInsertPosition(null)
+  }, [])
+
+  useClickOutsideEvent(handleClose, () => [popoverRef.current, buttonRef.current])
+
+  const handleToggle = useCallback(() => {
+    if (open) {
+      handleClose()
+      return
+    }
 
     if (selection) {
-      // Editor is focused: capture position and open
       setInsertPosition(selection.focus)
       setOpen(true)
     } else {
-      // Editor not focused: focus it first
       pendingOpen.current = true
       PortableTextEditor.focus(editor)
     }
-  }, [editor, selection])
+  }, [editor, selection, open, handleClose])
 
-  // Effect: Open menu after editor is focused
   useEffect(() => {
     if (pendingOpen.current && selection) {
-      // Editor was just focused for the first time - insert at end
       const endPos = getEndPosition(editor)
-      setInsertPosition(endPos || selection.focus) // Fallback to selection.focus if can't find end
+      setInsertPosition(endPos ?? selection.focus)
       setOpen(true)
       pendingOpen.current = false
     }
   }, [selection, editor])
 
-  const handleClose = useCallback(() => {
-    // eslint-disable-next-line no-console
-    console.log('Closing menu')
-    setOpen(false)
-    setInsertPosition(null)
-  }, [])
-
   const handleSelect = useCallback(
     (releaseId: string) => {
-      if (!insertPosition) return
+      if (insertPosition === null) return
 
-      // Set cursor position
       PortableTextEditor.select(editor, {anchor: insertPosition, focus: insertPosition})
 
-      // Find schema type for releaseReference
       const schemaType = editor.schemaTypes.inlineObjects.find(
         (type) => type.name === 'releaseReference',
       )
 
-      if (!schemaType) {
-        // eslint-disable-next-line no-console
+      if (schemaType === undefined) {
         console.error('Schema type "releaseReference" not found')
         handleClose()
         return
       }
 
-      // Insert release reference as inline object
-      PortableTextEditor.insertChild(editor, schemaType, {
-        _type: 'releaseReference',
-        _key: randomKey(12),
-        releaseId,
-      })
+      try {
+        PortableTextEditor.insertChild(editor, schemaType, {
+          _type: 'releaseReference',
+          _key: randomKey(12),
+          releaseId,
+        })
 
-      // Insert space after for easier typing
-      PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {
-        _type: 'span',
-        text: ' ',
-      })
+        PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {
+          _type: 'span',
+          text: ' ',
+        })
 
-      // Focus editor and close menu
-      PortableTextEditor.focus(editor)
-      handleClose()
+        PortableTextEditor.focus(editor)
+        handleClose()
+      } catch (error) {
+        console.error('Failed to insert release reference', error)
+        handleClose()
+      }
     },
     [editor, insertPosition, handleClose],
   )
 
   return (
     <Popover
+      ref={popoverRef}
       content={<ReleasePickerMenu onSelect={handleSelect} />}
       open={open}
       portal
       placement="bottom-start"
-      onClickOutside={handleClose}
     >
       <Button
+        ref={buttonRef}
         mode="bleed"
-        icon={LinkIcon}
-        title="Link Release"
-        fontSize={1}
-        padding={2}
+        icon={CalendarIcon}
+        text={t('toolbar.link-release.text')}
+        tooltipProps={{content: t('toolbar.link-release.tooltip')}}
         selected={selected || open}
-        onClick={handleOpen}
+        onClick={handleToggle}
       />
     </Popover>
   )
