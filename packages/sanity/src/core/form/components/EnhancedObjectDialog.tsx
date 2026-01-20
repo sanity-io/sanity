@@ -152,13 +152,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   )
 
   const handleClose = useCallback(() => {
-    // close() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
-    telemetry.log(NestedDialogClosed, {
+    /*telemetry.log(NestedDialogClosed, {
       path: pathToString([]),
-    })
+    })*/
     onClose?.()
-    close()
-  }, [close, onClose, telemetry])
+  }, [onClose])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
