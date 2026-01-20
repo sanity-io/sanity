@@ -55,20 +55,22 @@ jobs:
 
       - name: Check if only examples files changed
         if: steps.check_release.outputs.skip != 'true'
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
 
       - uses: ./.github/actions/setup
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         with:
           node-version: ${{ matrix.node }}
 
       - name: Build CLI
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
-        if: steps.check_release.outputs.skip != 'true' && steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         id: test
         run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:
