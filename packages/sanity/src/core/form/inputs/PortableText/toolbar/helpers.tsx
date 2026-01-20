@@ -203,8 +203,13 @@ const listStyleIcons: Record<string, ComponentType> = {
 }
 
 const ActionIcon = ({action}: {action: PTEToolbarAction}) => {
-  const Icon = action.icon
-  return isValidElement(Icon) ? Icon : <Icon />
+  const icon = action.icon
+  if (isValidElement(icon)) {
+    return icon
+  }
+  // At this point, icon must be a ComponentType
+  const IconComponent = icon as ComponentType
+  return <IconComponent />
 }
 
 export function getActionIcon(action: PTEToolbarAction, active: boolean) {
