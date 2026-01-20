@@ -135,7 +135,7 @@
     "prettier-plugin-packagejson": "^2.5.20",
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
-    "turbo": "^2.7.3",
+    "turbo": "^2.7.5",
     "typescript": "catalog:",
     "vercel": "^48.12.1",
     "vitest": "catalog:"
