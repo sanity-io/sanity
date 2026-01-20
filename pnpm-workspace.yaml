@@ -16,7 +16,7 @@ catalog:
   '@sanity/client': ^7.14.0
   '@sanity/migrate': ^5.2.2
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.3.2
+  '@sanity/pkg-utils': ^10.3.3
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
