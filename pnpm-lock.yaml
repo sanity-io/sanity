@@ -82,7 +82,7 @@ catalogs:
       specifier: 5.9.3
       version: 5.9.3
     vite:
-      specifier: ^7.2.7
+      specifier: ^7.3.1
       version: 7.3.1
 
 overrides:
