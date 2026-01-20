@@ -1,0 +1,31 @@
+name: Auto-Label PR Based on Path Changes
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    name: Auto-label PR based on file changes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Label examples-only PRs
+        uses: ./.github/actions/label-path-only
+        with:
+          path: examples/
+          label: examples
+
+      - name: Label codegen-only PRs
+        uses: ./.github/actions/label-path-only
+        with:
+          path: packages/@sanity/codegen/
+          label: Typegen
