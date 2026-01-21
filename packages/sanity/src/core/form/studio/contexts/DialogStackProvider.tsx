@@ -31,15 +31,7 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     setStack((prev) => prev.map((entry) => (entry.id === id ? {...entry, path} : entry)))
   }, [])
 
-  const value = useMemo(
-    () => ({stack, push, remove, update, close}),
-    [
-	stack,
-	push,
-	remove,
-	update
-],
-  )
+  const value = useMemo(() => ({stack, push, remove, update}), [stack, push, remove, update])
 
   return <DialogStackContext.Provider value={value}>{children}</DialogStackContext.Provider>
 }
