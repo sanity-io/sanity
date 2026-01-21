@@ -67,7 +67,6 @@ jobs:
             ARGS="$ARGS --changed origin/${{ github.base_ref }}"
           fi
 
-          # Add coverage collection for Node 20
           if [ "${{ matrix.node }}" == "20" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
