@@ -155,6 +155,42 @@ describe('runMigrationCommand', () => {
       )
     })
 
+    it('throws an error when dataset is the placeholder value and --dataset flag or config is not provided', async () => {
+      // Config has the placeholder dataset value which should be treated as no dataset
+      mockContext.apiClient = vi.fn().mockReturnValue({
+        config: vi.fn().mockReturnValue({
+          projectId: 'test-project',
+          dataset: '~dummy-placeholder-dataset-',
+          apiHost: 'https://api.sanity.io',
+          token: 'test-token',
+        }),
+      })
+
+      const args: CliCommandArguments = {
+        argsWithoutOptions: ['test-migration'],
+        argv: ['migration', 'run', 'test-migration'],
+        extOptions: {},
+        groupOrCommand: 'migration',
+        coreOptions: {},
+        extraArguments: [],
+      }
+
+      const {resolveMigrationScript, isLoadableMigrationScript} =
+        await import('../utils/resolveMigrationScript')
+      vi.mocked(resolveMigrationScript).mockReturnValue([
+        {
+          absolutePath: '/fake/work/dir/migrations/test-migration.ts',
+          relativePath: 'test-migration.ts',
+          mod: {default: {documentTypes: ['*']}},
+        },
+      ] as any)
+      vi.mocked(isLoadableMigrationScript).mockReturnValue(true)
+
+      await expect(runMigrationCommand.action(args, mockContext)).rejects.toThrow(
+        'sanity.cli.js does not contain a dataset name ("api.dataset") and no --dataset option was provided.',
+      )
+    })
+
     it('does not throw dataset validation error when dataset is configured in config', async () => {
       // Config has dataset configured
       mockContext.apiClient = vi.fn().mockReturnValue({
