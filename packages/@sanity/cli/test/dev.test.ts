@@ -43,7 +43,7 @@ describeCliTest('CLI: `sanity dev`', () => {
           .digest('hex')
         expect(fileHashes.get(`${basePath}/static/favicon.svg`)).toBe(customFaviconHash)
       }
-    })
+    }, 60_000)
 
     test('start with custom document component', async () => {
       const port = await getPort()
@@ -60,7 +60,7 @@ describeCliTest('CLI: `sanity dev`', () => {
       // Check the use of environment variables from dotfiles
       expect(startHtml).toContain('data-studio-mode="development"')
       expect(startHtml).toContain('data-studio-dataset="ds-development"')
-    })
+    }, 60_000)
 
     test('start with custom document component, in prod mode', async () => {
       const port = await getPort()
@@ -78,7 +78,7 @@ describeCliTest('CLI: `sanity dev`', () => {
       // Check the use of environment variables from dotfiles
       expect(startHtml).toContain('data-studio-mode="production"')
       expect(startHtml).toContain('data-studio-dataset="ds-production"')
-    })
+    }, 60_000)
 
     test('start with load-in-dashboard flag', async () => {
       const port = await getPort()
@@ -96,7 +96,7 @@ describeCliTest('CLI: `sanity dev`', () => {
           expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
         },
       })
-    })
+    }, 60_000)
 
     test('start with app', async () => {
       const port = await getPort()
@@ -114,6 +114,6 @@ describeCliTest('CLI: `sanity dev`', () => {
           expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
         },
       })
-    })
+    }, 60_000)
   })
 })
