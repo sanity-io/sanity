@@ -104,6 +104,7 @@
         ]
       }
     ],
+    "oxc/no-barrel-file": "error",
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
     "react/jsx-key": "error",
