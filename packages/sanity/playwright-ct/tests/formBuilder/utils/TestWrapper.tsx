@@ -20,9 +20,11 @@ import {styled} from 'styled-components'
 
 import {AssetLimitUpsellProvider} from '../../../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../../../src/core/perspective/PerspectiveProvider'
-import {route} from '../../../../src/router'
+import {route} from '../../../../src/router/route'
 import {RouterProvider} from '../../../../src/router/RouterProvider'
-import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components/pane'
+import {Pane} from '../../../../src/structure/components/pane/Pane'
+import {PaneContent} from '../../../../src/structure/components/pane/PaneContent'
+import {PaneLayout} from '../../../../src/structure/components/pane/PaneLayout'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
