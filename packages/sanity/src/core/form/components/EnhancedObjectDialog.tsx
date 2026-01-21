@@ -90,7 +90,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack, close} = useDialogStack({
+  const {dialogId, isTop, stack} = useDialogStack({
     path: currentPath,
   })
 
@@ -139,22 +139,16 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           if (newLastStackPath.length > 1) {
             onPathOpen(newLastStackPath)
           } else {
-            telemetry.log(NestedDialogClosed, {
-              path: pathToString([]),
-            })
+            telemetry.log(NestedDialogClosed)
             onClose?.()
-            close()
           }
         }
       }
     },
-    [isTop, stack, onPathOpen, onClose, close, telemetry],
+    [isTop, stack, onPathOpen, onClose, telemetry],
   )
 
   const handleClose = useCallback(() => {
-    /*telemetry.log(NestedDialogClosed, {
-      path: pathToString([]),
-    })*/
     onClose?.()
   }, [onClose])
 

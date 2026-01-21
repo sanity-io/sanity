@@ -18,9 +18,9 @@ export const NestedDialogOpened = defineEvent<NestedDialogOpenedInfo>({
 })
 
 /** When a nested dialog is successfully closed */
-export const NestedDialogClosed = defineEvent<NestedDialogOpenedInfo>({
+export const NestedDialogClosed = defineEvent({
   name: 'Nested Dialog Closed',
-  version: 1,
+  version: 2,
   description: 'User closed a nested dialog',
 })
 
