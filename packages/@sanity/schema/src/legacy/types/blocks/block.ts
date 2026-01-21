@@ -5,9 +5,9 @@ import {OWN_PROPS_NAME} from '../constants'
 import {hiddenGetter, lazyGetter} from '../utils'
 import {
   BLOCK_STYLES,
+  DEFAULT_ANNOTATIONS,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
-  DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
@@ -138,8 +138,6 @@ function createListItemField(lists: any) {
     },
   }
 }
-
-const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createChildrenField(marks: any, of = []) {
   return {

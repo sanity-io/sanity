@@ -4,3 +4,4 @@ export default DeprecatedDefaultSchema
 export const Schema = NamedSchema
 export {Rule} from '../legacy/Rule'
 export {type SchemaValidationResult} from '../sanity/typedefs'
+export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '../legacy/types/blocks/defaults'
