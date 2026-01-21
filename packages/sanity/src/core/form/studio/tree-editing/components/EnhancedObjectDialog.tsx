@@ -202,9 +202,7 @@ export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JS
     // Cancel any debounced state building when closing the dialog.
     debouncedBuildTreeEditingState.cancel()
 
-    telemetry.log(NestedDialogClosed, {
-      path: pathToString(treeState.relativePath),
-    })
+    telemetry.log(NestedDialogClosed)
 
     // Reset the `openPath`
     onPathOpen(EMPTY_ARRAY)
