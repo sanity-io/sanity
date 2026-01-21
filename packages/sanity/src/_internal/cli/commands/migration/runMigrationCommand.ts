@@ -179,6 +179,12 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       )
     }
 
+    if (!dataset && !projectConfig.dataset) {
+      throw new Error(
+        'sanity.cli.js does not contain a dataset ("api.dataset") and no --dataset option was provided.',
+      )
+    }
+
     const apiConfig = {
       dataset: dataset ?? projectConfig.dataset!,
       projectId: project ?? projectConfig.projectId!,
