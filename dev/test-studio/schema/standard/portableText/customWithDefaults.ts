@@ -1,5 +1,11 @@
 import {HighlightIcon} from '@sanity/icons'
-import {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS, defineArrayMember, defineField, defineType} from 'sanity'
+import {
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_DECORATORS,
+  defineArrayMember,
+  defineField,
+  defineType,
+} from 'sanity'
 
 /**
  * Example schema demonstrating how to extend Portable Text with custom
