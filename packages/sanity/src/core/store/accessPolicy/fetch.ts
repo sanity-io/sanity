@@ -13,6 +13,10 @@ const policyCache = new QuickLRU<string, string | undefined>({
   maxSize: POLICY_CACHE_MAX_SIZE,
 })
 
+interface DocResponse {
+  documents: {_id: string; cdnAccessPolicy?: string}[]
+}
+
 /**
  * Batch fetch asset access policies from the Media Library API and populate the
  * cache.
@@ -29,12 +33,14 @@ async function fetchAccessPoliciesBatch(params: {
   }
 
   try {
-    const results = await client.fetch<{_id: string; cdnAccessPolicy?: string}[]>(
-      `*[_id in $ids]{_id, cdnAccessPolicy}`,
-      {ids: assetIds},
-    )
+    const response = await client.request<DocResponse>({
+      method: 'GET',
+      url: `/media-libraries/${libraryId}/doc/${assetIds.join(',')}`,
+    })
 
-    const policyById = Object.fromEntries(results.map((doc) => [doc._id, doc.cdnAccessPolicy]))
+    const policyById = Object.fromEntries(
+      response.documents.map((doc) => [doc._id, doc.cdnAccessPolicy]),
+    )
 
     return assetIds.map((assetId) => {
       const policy = policyById[assetId]
@@ -58,21 +64,6 @@ async function fetchAccessPoliciesBatch(params: {
   }
 }
 
-function normalizeMediaLibraryClient(client: SanityClient, libraryId: string): SanityClient {
-  const currentResource = client.config()['~experimental_resource']
-
-  if (currentResource?.id === libraryId && currentResource?.type === 'media-library') {
-    return client
-  }
-
-  return client.withConfig({
-    '~experimental_resource': {
-      id: libraryId,
-      type: 'media-library',
-    },
-  })
-}
-
 /**
  * Resolve (or create) the DataLoader responsible for fetching asset access
  * policies from a given Media Library.
@@ -90,13 +81,11 @@ function resolveAssetPolicyLoader(
     return existingLoader
   }
 
-  const mediaLibraryClient = normalizeMediaLibraryClient(client, libraryId)
-
   const loader = new DataLoader<string, string | undefined>(
     (assetIds) =>
       fetchAccessPoliciesBatch({
         assetIds,
-        client: mediaLibraryClient,
+        client,
         libraryId,
       }),
     {cache: false}, // only batch per tick, rely on QuickLRU for caching
