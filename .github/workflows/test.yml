@@ -69,6 +69,8 @@ jobs:
 
           # Add coverage collection for Node 20
           if [ "${{ matrix.node }}" == "20" ]; then
+            # We only gather coverage from a single Node version.
+            # We pass in `--reporter=default --reporter=blob` so that we can combine the results from all shards.
             ARGS="$ARGS --coverage --reporter=default --reporter=blob"
           fi
           pnpm test:vitest $ARGS
