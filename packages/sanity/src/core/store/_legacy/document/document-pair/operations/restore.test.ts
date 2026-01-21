@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type DocumentRevision} from '../../../history'
+import type {DocumentRevision} from '../../../history/createHistoryStore'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {restore} from './restore'
 import {type OperationArgs} from './types'

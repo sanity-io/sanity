@@ -3,7 +3,7 @@ import {type ImageUrlBuilder, type SanityImageSource} from '@sanity/image-url'
 import {memo} from 'react'
 import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ImagePreview} from './ImagePreview'
 import {type BaseImageInputValue} from './types'
 import {useImageUrl} from './useImageUrl'

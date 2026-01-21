@@ -16,16 +16,17 @@ import {
 import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'
+import {PaneHeader} from '../../../../components/pane/PaneHeader'
+import {PaneHeaderActionButton} from '../../../../components/pane/PaneHeaderActionButton'
 import {
-  PaneContextMenuButton,
-  PaneHeader,
-  PaneHeaderActionButton,
   RenderActionCollectionState,
   type ResolvedAction,
-  usePane,
-  usePaneRouter,
-} from '../../../../components'
+} from '../../../../components/RenderActionCollectionState'
+import {usePane} from '../../../../components/pane/usePane'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {type _PaneMenuNode} from '../../../../components/pane/types'
 import {useHistoryRestoreAction} from '../../../../documentActions/HistoryRestoreAction'
 import {structureLocaleNamespace} from '../../../../i18n'

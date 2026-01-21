@@ -16,18 +16,17 @@ import {debounce, isEqual} from 'lodash-es'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps, useFieldActions} from '../../../../form'
-import {useCurrentUser} from '../../../../store'
+import type {PortableTextInputProps} from '../../../../form/types/inputProps'
+import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
-import {CommentInlineHighlightSpan} from '../../../components'
+import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
 import {isTextSelectionComment} from '../../../helpers'
-import {
-  useComments,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
-} from '../../../hooks'
+import {useComments} from '../../../hooks/useComments'
+import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {
   type CommentDocument,
   type CommentMessage,
@@ -35,11 +34,9 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../../types'
-import {
-  buildCommentRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
-} from '../../../utils'
+import {buildCommentRangeDecorations} from '../../../utils/inline-comments/buildCommentRangeDecorations'
+import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+import {buildTextSelectionFromFragment} from '../../../utils/inline-comments/buildTextSelectionFromFragment'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'

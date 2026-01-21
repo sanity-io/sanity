@@ -3,9 +3,9 @@ import {type Dispatch, type SetStateAction, useMemo} from 'react'
 import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {PaneFooter} from '../../../components'
+import {PaneFooter} from '../../../components/pane/PaneFooter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
-import {DocumentStatusBar} from '../statusBar'
+import {DocumentStatusBar} from '../statusBar/DocumentStatusBar'
 import {useDocumentPane} from '../useDocumentPane'
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [

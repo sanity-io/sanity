@@ -9,7 +9,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type UserColor} from '../../user-color'
+import type {UserColor} from '../../user-color/types'
 
 /** @internal */
 export type FieldPreviewComponent<T = any> = ComponentType<{

@@ -6,7 +6,7 @@ import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {LoadingBlock} from '../components/loadingBlock'
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
@@ -18,7 +18,7 @@ import {
   useActiveToolLayoutComponent,
   useLayoutComponent,
   useNavbarComponent,
-} from './studio-components-hooks'
+} from './studio-components-hooks/componentHooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
 

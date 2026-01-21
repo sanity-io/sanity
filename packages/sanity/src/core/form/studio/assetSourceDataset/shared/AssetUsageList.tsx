@@ -3,8 +3,9 @@ import {Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {useSchema} from '../../../../hooks'
-import {Translate, useTranslation} from '../../../../i18n'
+import {useSchema} from '../../../../hooks/useSchema'
+import {Translate} from '../../../../i18n/Translate'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Preview} from '../../../../preview/components/Preview'
 
 export const AssetUsageList = ({

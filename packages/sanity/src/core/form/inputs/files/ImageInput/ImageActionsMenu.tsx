@@ -3,9 +3,11 @@ import {Inline, Menu, Skeleton, useClickOutsideEvent, useGlobalKeyDown} from '@s
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
+import {Button} from '../../../../../ui-components/button/Button'
+import {Popover} from '../../../../../ui-components/popover/Popover'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;

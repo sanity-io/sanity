@@ -13,7 +13,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {DocumentPaneProvider} from '../panes'
+import {DocumentPaneProvider} from '../panes/document/DocumentPaneProviderWrapper'
 import {StructureToolProvider} from '../StructureToolProvider'
 import {type DocumentPaneNode} from '../types'
 

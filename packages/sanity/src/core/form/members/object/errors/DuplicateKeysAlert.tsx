@@ -1,13 +1,15 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
-import {Translate, useTranslation} from '../../../../i18n'
+import {Translate} from '../../../../i18n/Translate'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
-import {FormField} from '../../../components/formField'
-import {PatchEvent, set} from '../../../patch'
+import {FormField} from '../../../components/formField/FormField'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {set} from '../../../patch/patch'
 import {type DuplicateKeysError} from '../../../store/types/memberErrors'
 
 interface Props {

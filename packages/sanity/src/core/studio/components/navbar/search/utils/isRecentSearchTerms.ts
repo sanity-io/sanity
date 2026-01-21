@@ -1,4 +1,4 @@
-import {type SearchTerms} from '../../../../../search'
+import type {SearchTerms} from '../../../../../search/common/types'
 import {type RecentSearch} from '../datastores/recentSearches'
 
 export function isRecentSearchTerms(terms: SearchTerms | RecentSearch): terms is RecentSearch {

@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
-import {getReleaseIdFromReleaseDocumentId} from '../releases'
+import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {useWorkspace} from '../studio/workspace'

@@ -7,11 +7,12 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-} from '../studio'
+} from '../studio/upsell/__telemetry__/upsell.telemetry'
 import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'
-import {useClient, useProjectId} from './'
+import {useClient} from './useClient'
+import {useProjectId} from './useProjectId'
 
 interface UpsellDataProps {
   dataUri: string

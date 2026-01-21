@@ -7,7 +7,7 @@ import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
 
-import {buildStaticFiles} from '../../server'
+import {buildStaticFiles} from '../../server/buildStaticFiles'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'

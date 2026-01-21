@@ -1,12 +1,12 @@
 import {isArraySchemaType, isObjectSchemaType, isPrimitiveSchemaType} from '@sanity/types'
 
-import {
-  type ArrayOfObjectsFormNode,
-  type ArrayOfPrimitivesFormNode,
-  type FieldMember,
-  type ObjectFormNode,
-  type PrimitiveFormNode,
-} from '../../../store'
+import type {
+  ArrayOfObjectsFormNode,
+  ArrayOfPrimitivesFormNode,
+  ObjectFormNode,
+  PrimitiveFormNode,
+} from '../../../store/types/nodes'
+import type {FieldMember} from '../../../store/types/members'
 
 export function isMemberObject(member: FieldMember): member is FieldMember<ObjectFormNode> {
   return isObjectSchemaType(member.field.schemaType)

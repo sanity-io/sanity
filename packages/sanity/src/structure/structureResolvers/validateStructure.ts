@@ -1,6 +1,6 @@
 import {isRecord} from 'sanity'
 
-import {SerializeError} from '../structureBuilder'
+import {SerializeError} from '../structureBuilder/SerializeError'
 import {type UnresolvedPaneNode} from '../types'
 import {leven} from './leven'
 

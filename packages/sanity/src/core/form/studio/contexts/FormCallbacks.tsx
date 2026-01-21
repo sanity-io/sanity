@@ -3,8 +3,9 @@ import {type Path} from '@sanity/types'
 import {memo, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
 
-import {type OnPathFocusPayload} from '../..'
-import {type FormPatch, type PatchEvent} from '../../patch'
+import type {OnPathFocusPayload} from '../../types/inputProps'
+import type {FormPatch} from '../../patch/types'
+import type {PatchEvent} from '../../patch/PatchEvent'
 
 /** @internal */
 export interface FormCallbacksValue {

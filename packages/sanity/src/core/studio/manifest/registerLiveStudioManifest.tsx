@@ -2,7 +2,7 @@ import {type RootTheme} from '@sanity/ui/theme'
 import {firstValueFrom} from 'rxjs'
 
 import {type Source, type WorkspaceSummary} from '../../config/types'
-import {type UserApplication} from '../../store/userApplications'
+import type {UserApplication} from '../../store/userApplications/userApplicationCache'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SANITY_VERSION} from '../../version'
 import {resolveIcon} from './icon'

@@ -1,12 +1,12 @@
 import {Preview} from '../../preview/components/Preview'
-import {
-  type RenderAnnotationCallback,
-  type RenderBlockCallback,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderItemCallback,
-  type RenderPreviewCallback,
-} from '../types'
+import type {
+  RenderAnnotationCallback,
+  RenderBlockCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderItemCallback,
+  RenderPreviewCallback,
+} from '../types/renderCallback'
 import {
   defaultResolveAnnotationComponent,
   defaultResolveBlockComponent,

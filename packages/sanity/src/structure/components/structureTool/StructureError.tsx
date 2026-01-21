@@ -5,10 +5,10 @@ import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
-import {SerializeError} from '../../structureBuilder'
-import {PaneResolutionError} from '../../structureResolvers'
+import {SerializeError} from '../../structureBuilder/SerializeError'
+import {PaneResolutionError} from '../../structureResolvers/PaneResolutionError'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {

@@ -6,8 +6,9 @@ import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} f
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
-import {Button, type PopoverProps} from '../../../../../../ui-components'
-import {PresenceOverlay} from '../../../../../presence'
+import {Button} from '../../../../../../ui-components/button/Button'
+import type {PopoverProps} from '../../../../../../ui-components/popover/Popover'
+import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'

@@ -8,7 +8,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 import {useDocumentTitle} from './useDocumentTitle'

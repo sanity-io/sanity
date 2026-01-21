@@ -1,6 +1,6 @@
 import {range} from 'lodash-es'
 
-import {type StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n'
+import type {StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n/types'
 
 export const MONTH_NAME_KEYS: StudioLocaleResourceKeys[] = [
   'calendar.month-names.january',

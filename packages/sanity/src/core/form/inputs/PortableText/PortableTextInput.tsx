@@ -28,18 +28,19 @@ import {
 } from 'react'
 
 import {usePerspective} from '../../../perspective/usePerspective'
-import {EMPTY_ARRAY} from '../../../util'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
-import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {SANITY_PATCH_TYPE} from '../../patch/patch'
+import type {ArrayOfObjectsItemMember} from '../../store/types/members'
+import type {ObjectFormNode} from '../../store/types/nodes'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type PortableTextInputProps} from '../../types'
+import type {PortableTextInputProps} from '../../types/inputProps'
 import {Compositor} from './Compositor'
-import {useFullscreenPTE} from './contexts/fullscreen'
+import {useFullscreenPTE} from './contexts/fullscreen/useFullscreenPTE'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {
@@ -52,7 +53,7 @@ import {PortableTextEditorPlugins} from './object/Plugins'
 import {
   type PresenceCursorDecorationsHookProps,
   usePresenceCursorDecorations,
-} from './presence-cursors'
+} from './presence-cursors/usePresenceCursorDecorations'
 import {usePatches} from './usePatches'
 
 function keyGenerator() {

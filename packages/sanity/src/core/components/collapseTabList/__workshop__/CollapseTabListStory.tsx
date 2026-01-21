@@ -3,8 +3,8 @@ import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useState} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {CollapseTabList} from '..'
+import {Button} from '../../../../ui-components/button/Button'
+import {CollapseTabList} from '../CollapseTabList'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 

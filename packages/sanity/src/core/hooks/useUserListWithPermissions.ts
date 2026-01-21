@@ -5,13 +5,10 @@ import {sortBy} from 'lodash-es'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
-import {
-  type DocumentValuePermission,
-  grantsPermissionOn,
-  type ProjectData,
-  useProjectStore,
-  useUserStore,
-} from '../store'
+import type {DocumentValuePermission} from '../store/_legacy/grants/types'
+import {grantsPermissionOn} from '../store/_legacy/grants/grantsStore'
+import type {ProjectData} from '../store/_legacy/project/types'
+import {useProjectStore, useUserStore} from '../store/_legacy/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 

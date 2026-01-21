@@ -1,4 +1,4 @@
-import {type LocaleSource} from '../i18n'
+import type {LocaleSource} from '../i18n/types'
 
 declare module '@sanity/types' {
   /**

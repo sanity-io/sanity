@@ -1,8 +1,8 @@
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
 
-import {Button} from '../button'
-import {Tooltip} from '../tooltip'
+import {Button} from '../button/Button'
+import {Tooltip} from '../tooltip/Tooltip'
 
 export default function TooltipStory() {
   const text = useString('Tooltip content', 'Tooltip content', 'Props') || ''

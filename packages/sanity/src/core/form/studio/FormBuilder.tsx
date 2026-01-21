@@ -6,11 +6,11 @@ import {
 } from '@sanity/types'
 import {useCallback, useMemo, useRef} from 'react'
 
-import {type DocumentFieldAction} from '../../config'
+import type {DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
-import {type FormNodePresence} from '../../presence'
-import {PreviewLoader} from '../../preview'
-import {EMPTY_ARRAY} from '../../util'
+import type {FormNodePresence} from '../../presence/types'
+import {PreviewLoader} from '../../preview/components/PreviewLoader'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {
@@ -21,27 +21,25 @@ import {
   useInputComponent,
   useItemComponent,
   usePreviewComponent,
-} from '../form-components-hooks'
-import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen'
-import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
-import {type StateTree} from '../store'
+} from '../form-components-hooks/componentHooks'
+import {FullscreenPTEProvider} from '../inputs/PortableText/contexts/fullscreen/FullscreenPTEProvider'
+import type {FormPatch} from '../patch/types'
+import type {PatchChannel} from '../patch/PatchChannel'
+import {PatchEvent} from '../patch/PatchEvent'
+import type {StateTree} from '../store/types/state'
 import {prepareDiffProps} from '../store/formState'
 import {type ObjectFormNode} from '../store/types/nodes'
-import {
-  type BlockAnnotationProps,
-  type BlockProps,
-  type FieldProps,
-  type FormDocumentValue,
-  type InputProps,
-  type ItemProps,
-  type ObjectInputProps,
-  type RenderPreviewCallbackProps,
-} from '../types'
+import type {BlockAnnotationProps, BlockProps} from '../types/blockProps'
+import type {FieldProps} from '../types/fieldProps'
+import type {FormDocumentValue} from '../types/formDocumentValue'
+import type {InputProps, ObjectInputProps} from '../types/inputProps'
+import type {ItemProps} from '../types/itemProps'
+import type {RenderPreviewCallbackProps} from '../types/renderCallback'
 import {DialogStackProvider} from './contexts/DialogStackProvider'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
-import {EnhancedObjectDialogProvider} from './tree-editing'
+import {EnhancedObjectDialogProvider} from './tree-editing/context/enabled/EnhancedObjectDialogProvider'
 
 /**
  * @alpha

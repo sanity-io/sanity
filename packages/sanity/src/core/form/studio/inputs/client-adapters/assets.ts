@@ -4,9 +4,9 @@ import {Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap} from 'rxjs/operators'
 
 import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
-import {type DocumentPreviewStore} from '../../../../preview'
+import type {DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type UploadOptions} from '../../uploads/types'
-import {withMaxConcurrency} from '../../utils'
+import {withMaxConcurrency} from '../../utils/withMaxConcurrency'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

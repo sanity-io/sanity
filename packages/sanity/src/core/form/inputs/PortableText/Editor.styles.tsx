@@ -4,8 +4,9 @@ import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
+import {ScrollContainer} from '../../../components/scroll/scrollContainer'
+import {createListName} from './text/helpers'
+import {TEXT_LEVELS} from './text/constants'
 
 export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {

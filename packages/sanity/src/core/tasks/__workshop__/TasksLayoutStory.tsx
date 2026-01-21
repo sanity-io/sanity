@@ -1,8 +1,11 @@
 import {useState} from 'react'
 
-import {AddonDatasetProvider} from '../../studio'
-import {TaskSidebarContent, TasksSidebarHeader} from '../components'
-import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../context'
+import {AddonDatasetProvider} from '../../studio/addonDataset/AddonDatasetProvider'
+import {TaskSidebarContent} from '../components/sidebar/TasksSidebarContent'
+import {TasksSidebarHeader} from '../components/sidebar/TasksSidebarHeader'
+import type {SidebarTabsIds} from '../context/navigation/types'
+import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
+import {TasksProvider} from '../context/tasks/TasksProvider'
 
 function noop(id: string) {
   return null

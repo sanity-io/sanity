@@ -3,8 +3,9 @@ import {type CrossDatasetReferenceValue} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 type Props = {
   value?: CrossDatasetReferenceValue

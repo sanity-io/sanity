@@ -1,7 +1,7 @@
 import {fromEvent, merge, type Observable, of, Subject} from 'rxjs'
 import {filter, map, shareReplay} from 'rxjs/operators'
 
-import {isNonNullable} from '../../../util'
+import {isNonNullable} from '../../../util/isNonNullable'
 import * as storage from './storage'
 
 export interface BroadcastChannel<T> {

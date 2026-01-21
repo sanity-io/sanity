@@ -2,7 +2,8 @@ import {LaunchIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../i18n'
 
 const FEEDBACK_FORM_LINK = 'https://snty.link/tasks-feedback'

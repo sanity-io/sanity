@@ -9,7 +9,9 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {PaneContent, PaneItem, usePaneLayout} from '../../components'
+import {PaneContent} from '../../components/pane/PaneContent'
+import {PaneItem} from '../../components/paneItem/PaneItem'
+import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
 
 interface ListPaneContentProps {

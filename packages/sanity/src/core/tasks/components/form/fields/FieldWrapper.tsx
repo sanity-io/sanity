@@ -2,7 +2,7 @@
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
-import {type StringFieldProps} from '../../../../form'
+import type {StringFieldProps} from '../../../../form/types/fieldProps'
 
 /**
  * @internal

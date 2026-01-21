@@ -60,8 +60,9 @@ import type {
 /* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
 
-import {type PreviewProps} from '../../components'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import type {PreviewProps} from '../../components/previews/types'
+import type {CrossDatasetReferenceInputProps} from '../studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+import type {ReferenceInputProps} from '../studio/inputs/reference/StudioReferenceInput'
 import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,

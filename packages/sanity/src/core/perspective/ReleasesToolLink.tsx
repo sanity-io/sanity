@@ -7,7 +7,7 @@ import {useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
-import {useTranslation} from '../i18n'
+import {useTranslation} from '../i18n/hooks/useTranslation'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'

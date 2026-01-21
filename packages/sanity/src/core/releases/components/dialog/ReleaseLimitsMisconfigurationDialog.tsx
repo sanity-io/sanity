@@ -1,8 +1,8 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Dialog} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Dialog} from '../../../../ui-components/dialog/Dialog'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 interface ReleaseLimitsMisconfigurationDialogProps {
   onClose: () => void

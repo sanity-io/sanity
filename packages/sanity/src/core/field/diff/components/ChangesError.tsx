@@ -1,6 +1,7 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {MissingSinceDocumentError} from '../../../store/events/getDocumentChanges'
 
 /**

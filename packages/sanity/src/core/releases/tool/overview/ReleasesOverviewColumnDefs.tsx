@@ -5,7 +5,7 @@ import {type TFunction} from 'i18next'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
-import {RelativeTime} from '../../../components'
+import {RelativeTime} from '../../../components/RelativeTime'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'

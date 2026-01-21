@@ -2,7 +2,7 @@ import {renderHook} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {useFeatureEnabled} from '../../hooks'
+import {useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useClient} from '../../hooks/useClient'
 import {useWorkspace} from '../../studio/workspace'
 import {cachedUsedScheduledPublishing} from '../tool/contexts/useHasUsedScheduledPublishing'

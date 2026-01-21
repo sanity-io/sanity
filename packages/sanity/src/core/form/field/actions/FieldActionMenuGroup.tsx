@@ -1,8 +1,8 @@
 import {Box, Text} from '@sanity/ui'
 
-import {MenuGroup, type MenuGroupProps} from '../../../../ui-components'
-import {type DocumentFieldActionGroup} from '../../../config'
-import {useI18nText} from '../../../i18n'
+import {MenuGroup, type MenuGroupProps} from '../../../../ui-components/menuGroup/MenuGroup'
+import type {DocumentFieldActionGroup} from '../../../config/document/fieldActions/types'
+import {useI18nText} from '../../../i18n/hooks/useI18nText'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 
 const POPOVER_PROPS: MenuGroupProps['popover'] = {

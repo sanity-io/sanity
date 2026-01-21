@@ -1,7 +1,7 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {type GlobalDocumentReferenceValue} from '@sanity/types'
 
-import {type BaseImageInputValue} from '../../form/inputs/files/ImageInput'
+import type {BaseImageInputValue} from '../../form/inputs/files/ImageInput/ImageInput'
 
 interface MediaLibraryImageValue extends BaseImageInputValue {
   media?: GlobalDocumentReferenceValue

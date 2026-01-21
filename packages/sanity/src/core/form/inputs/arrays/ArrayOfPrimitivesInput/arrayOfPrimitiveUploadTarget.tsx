@@ -18,15 +18,15 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {withFocusRing} from '../../../components/withFocusRing'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {withFocusRing} from '../../../components/withFocusRing/withFocusRing'
 import {
   type FileLike,
   type ResolvedUploader,
   type UploaderResolver,
 } from '../../../studio/uploads/types'
-import {type UploadEvent} from '../../../types'
-import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
+import type {UploadEvent} from '../../../types/event'
+import {type FileInfo, fileTarget} from '../../files/common/fileTarget/fileTarget'
 
 export interface UploadTargetProps {
   types: SchemaType[]

@@ -3,8 +3,8 @@ import {Card, Code, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useNumber, useString} from '@sanity/ui-workshop'
 import {useCallback, useMemo, useState} from 'react'
 
-import {type FormNodePresence} from '../../../../presence'
-import {useCurrentUser} from '../../../../store'
+import type {FormNodePresence} from '../../../../presence/types'
+import {useCurrentUser} from '../../../../store/user/hooks'
 
 const DEBUG = false
 const noop = () => undefined

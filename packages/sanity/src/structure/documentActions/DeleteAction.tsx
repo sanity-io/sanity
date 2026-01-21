@@ -12,7 +12,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {ConfirmDeleteDialog} from '../components'
+import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog/index'
 import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_TITLE_KEY = {

@@ -1,7 +1,7 @@
 import {type InitialValueResolverContext} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {resolveInitialValue} from '../'
+import {resolveInitialValue} from '../resolve'
 import {defaultTemplatesForSchema} from '../prepare'
 import {resolveValue} from '../resolve'
 import {schema} from './schema'

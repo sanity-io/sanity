@@ -1,8 +1,5 @@
-import {
-  type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesInputProps,
-  isArrayOfObjectsInputProps,
-} from '../../../types'
+import type {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
+import {isArrayOfObjectsInputProps} from '../../../types/asserters'
 import {ArrayOfObjectOptionsInput} from './ArrayOfObjectOptionsInput'
 import {ArrayOfPrimitiveOptionsInput} from './ArrayOfPrimitiveOptionsInput'
 

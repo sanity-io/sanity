@@ -1,9 +1,9 @@
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
 
-import {Button} from '../button'
-import {Tooltip} from '../tooltip'
-import {TooltipDelayGroupProvider} from '../tooltipDelayGroupProvider'
+import {Button} from '../button/Button'
+import {Tooltip} from '../tooltip/Tooltip'
+import {TooltipDelayGroupProvider} from '../tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export default function TooltipDelayGroupProviderStory() {
   const text = useString('Tooltip content', 'Tooltip content', 'Props') || ''

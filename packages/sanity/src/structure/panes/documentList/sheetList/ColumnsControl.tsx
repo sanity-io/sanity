@@ -6,7 +6,8 @@ import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {type SanityDocument, useTranslation} from 'sanity'
 
-import {Button, MenuButton} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {

@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useTemplatePermissions} from '../../../../store'
+import {useTemplatePermissions} from '../../../../store/_legacy/grants/templatePermissions'
 import {useSource} from '../../../source'
 import {type NewDocumentOption} from './types'
 

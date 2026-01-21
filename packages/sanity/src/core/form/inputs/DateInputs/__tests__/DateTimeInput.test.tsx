@@ -3,10 +3,10 @@ import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, test, vi} from 'vitest'
 
-import {renderStringInput} from '../../../../../../test/form'
+import {renderStringInput} from '../../../../../../test/form/renderStringInput'
 import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
-import {type StringInputProps} from '../../../types'
+import type {StringInputProps} from '../../../types/inputProps'
 import {DateTimeInput, sanitizeTimeZoneKeyId} from '../DateTimeInput'
 import {
   mockUseTimeZoneDefault,

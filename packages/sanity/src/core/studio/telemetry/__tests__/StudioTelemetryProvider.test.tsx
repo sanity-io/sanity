@@ -28,7 +28,7 @@ vi.mock('../PerformanceTelemetry', () => ({
 import {createBatchedStore, createSessionId} from '@sanity/telemetry'
 import {useRouterState} from 'sanity/router'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'

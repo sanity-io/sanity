@@ -6,7 +6,7 @@ import {expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../../config'
+import {defineConfig} from '../../../../../config/defineConfig'
 import {useDocumentType} from '../useDocumentType'
 
 function createWrapperComponent(client: SanityClient) {

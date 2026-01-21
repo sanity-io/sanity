@@ -1,4 +1,4 @@
-import {type StringInputProps} from '../../types'
+import type {StringInputProps} from '../../types/inputProps'
 import {StringInputBasic} from './StringInputBasic/StringInputBasic'
 import {StringInputPortableText} from './StringInputPortableText/StringInputPortableText'
 

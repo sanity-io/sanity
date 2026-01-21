@@ -2,7 +2,7 @@ import {from, lastValueFrom, map, merge, throwError, timer} from 'rxjs'
 import {concatMap, mergeMap, toArray} from 'rxjs/operators'
 import {expect, test} from 'vitest'
 
-import {type MutationPayload} from '../../buffered-doc'
+import type {MutationPayload} from '../../buffered-doc/types'
 import {type ListenerEvent} from '../../getPairListener'
 import {type MutationEvent} from '../../types'
 import {

@@ -1,7 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {AlertStrip} from '../../components/AlertStrip'
 
 /**

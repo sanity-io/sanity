@@ -4,7 +4,9 @@ import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
+import {createSWR} from '../util/rxSwr'
+import {getDraftId, getPublishedId, getVersionId} from '../util/draftUtils'
+import {isRecord} from '../util/isRecord'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,

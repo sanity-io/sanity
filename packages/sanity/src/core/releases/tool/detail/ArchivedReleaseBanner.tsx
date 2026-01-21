@@ -6,7 +6,8 @@ import {useMemo} from 'react'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'
-import {Translate, useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {releasesLocaleNamespace} from '../../i18n'
 

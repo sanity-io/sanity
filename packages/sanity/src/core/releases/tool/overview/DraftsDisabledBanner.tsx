@@ -2,8 +2,9 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {isCardinalityOneRelease, type ReleaseDocument} from '../../..'
-import {useTranslation} from '../../../i18n'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import type {ReleaseDocument} from '@sanity/client'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 
 interface DraftsDisabledBannerProps {
