@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {ComposeSparklesIcon, LockIcon} from '@sanity/icons'
+import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
 import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
@@ -17,9 +17,10 @@ import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {useSingleDocRelease} from '../../../singleDocRelease/context/SingleDocReleaseProvider'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
-import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Chip} from '../Chip'
@@ -118,6 +119,7 @@ export const VersionChip = memo(function VersionChip(props: {
   const {createVersion} = useVersionOperations()
   const toast = useToast()
   const {t} = useTranslation()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
   const close = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
@@ -179,12 +181,28 @@ export const VersionChip = memo(function VersionChip(props: {
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
   const isScheduledDraft = release && isVersion && isCardinalityOneRelease(release)
+
+  const handleEditScheduleComplete = useCallback(() => {
+    if (!release) return
+    onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(release._id))
+  }, [release, onSetScheduledDraftPerspective])
+
   const scheduledDraftMenuActions = useScheduledDraftMenuActions({
     release,
     documentType,
     documentId,
     disabled: contextMenuDisabled,
+    onActionComplete: handleEditScheduleComplete,
   })
+
+  const isPaused = isPausedCardinalityOneRelease(release)
+
+  const rightIcon = useMemo(() => {
+    if (isLinked) return <ComposeSparklesIcon />
+    if (isPaused) return <UnlockIcon />
+    if (locked) return <LockIcon />
+    return undefined
+  }, [isLinked, isPaused, locked])
 
   return (
     <>
@@ -201,7 +219,7 @@ export const VersionChip = memo(function VersionChip(props: {
             tone={tone}
             onContextMenu={contextMenuHandler}
             icon={<ReleaseAvatarIcon tone={tone} />}
-            iconRight={isLinked ? <ComposeSparklesIcon /> : locked && <LockIcon />}
+            iconRight={rightIcon}
             text={text}
           />
         </span>

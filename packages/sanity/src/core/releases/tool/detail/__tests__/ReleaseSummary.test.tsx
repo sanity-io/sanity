@@ -70,6 +70,26 @@ vi.mock('../../components/ReleaseDocumentPreview', () => ({
 
 vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
+// Mock the preview streams to prevent RxJS unsubscription errors during test cleanup.
+// These streams use fromEvent(window, ...) which can cause errors when unsubscribing
+// after the test environment has been modified.
+vi.mock('../../../../preview/streams/scroll', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {scroll$: EMPTY}
+})
+vi.mock('../../../../preview/streams/resize', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {resize$: EMPTY}
+})
+vi.mock('../../../../preview/streams/orientationChange', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {orientationChange$: EMPTY}
+})
+vi.mock('../../../../preview/streams/visibilityChange', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {visibilityChange$: EMPTY}
+})
+
 const releaseDocuments = [
   {
     ...documentsInRelease,
@@ -125,12 +145,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
       router={route.create('/', [route.create('/:releaseId'), route.intents('/intents')])}
     >
       <ScrollContainer>
-        <ReleaseSummary
-          scrollContainerRef={{current: null}}
-          documents={releaseDocuments}
-          release={activeASAPRelease}
-          {...props}
-        />
+        <ReleaseSummary documents={releaseDocuments} release={activeASAPRelease} {...props} />
       </ScrollContainer>
     </RouterProvider>,
     {

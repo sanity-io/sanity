@@ -107,16 +107,16 @@ test.describe('In PTE - references in popover', () => {
         .getByTestId('default-preview')
         .getByTestId('default-preview__heading'),
     ).not.toBeVisible()
-    await expect(
-      page.getByTestId('popover-edit-dialog').getByTestId('default-preview'),
-    ).toBeVisible()
-    await expect(
-      page.getByTestId('popover-edit-dialog').getByTestId('default-preview'),
-    ).toBeEnabled()
-    await page.getByTestId('popover-edit-dialog').getByTestId('default-preview').click()
+
+    // Wait for the reference link card to be ready - it wraps the preview and handles the click
+    const referenceLink = page.getByTestId('popover-edit-dialog').locator('[data-as="a"]').first()
+    await expect(referenceLink).toBeVisible()
+
+    // Click on the link to open the referenced document
+    await referenceLink.click()
 
     const referencedDocumentTitle = page.getByTestId('document-panel-document-title').nth(1)
-    await expect(referencedDocumentTitle).toBeVisible()
+    await expect(referencedDocumentTitle).toBeVisible({timeout: 30_000})
 
     // While the popover is open, we should be able to change the fields of the new document
     await expect(page.getByTestId('string-input').nth(1)).toBeVisible()

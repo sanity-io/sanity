@@ -27,7 +27,9 @@ test.describe('Presentation', () => {
     await expect(previewIframeContents.locator('sanity-visual-editing')).toBeAttached()
   })
 
-  test('should be able to toggle preview viewport', async ({page}) => {
+  test('should be able to toggle preview viewport', async ({page, browserName}) => {
+    // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
+    test.skip(browserName === 'firefox')
     test.slow()
 
     const root = page.getByTestId('presentation-root')

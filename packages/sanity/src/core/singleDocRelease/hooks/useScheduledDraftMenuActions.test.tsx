@@ -45,6 +45,7 @@ const mockOperations = {
   rescheduleScheduledDraft: vi.fn(),
   deleteScheduledDraft: vi.fn(),
   createScheduledDraft: vi.fn(),
+  pauseScheduledDraft: vi.fn(),
 }
 
 // Mock toast push function
@@ -259,31 +260,24 @@ describe('useScheduledDraftMenuActions', () => {
   })
 
   describe('edit schedule action', () => {
-    it('should open dialog and call operation on success', async () => {
+    it('should call pauseScheduledDraft operation on success', async () => {
       render(
         <TestProvider>
           <TestComponent options={{release: scheduledRelease}} />
         </TestProvider>,
       )
 
-      // Click menu item to open dialog
+      // Click menu item to trigger pause operation
       await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
-      expect(screen.getByTestId('schedule-draft-dialog')).toBeInTheDocument()
-
-      // Confirm action
-      await userEvent.click(screen.getByTestId('confirm-reschedule'))
 
       await waitFor(() => {
-        expect(mockOperations.rescheduleScheduledDraft).toHaveBeenCalledWith(
-          scheduledRelease,
-          new Date('2024-12-31T10:00:00Z'),
-        )
+        expect(mockOperations.pauseScheduledDraft).toHaveBeenCalledWith(scheduledRelease)
       })
     })
 
     it('should show error toast when operation fails', async () => {
-      const error = new Error('Reschedule failed')
-      mockOperations.rescheduleScheduledDraft.mockRejectedValueOnce(error)
+      const error = new Error('Pause failed')
+      mockOperations.pauseScheduledDraft.mockRejectedValueOnce(error)
 
       render(
         <TestProvider>
@@ -292,7 +286,6 @@ describe('useScheduledDraftMenuActions', () => {
       )
 
       await userEvent.click(screen.getByTestId('edit-schedule-menu-item'))
-      await userEvent.click(screen.getByTestId('confirm-reschedule'))
 
       await waitFor(() => {
         expect(mockToastPush).toHaveBeenCalledWith(

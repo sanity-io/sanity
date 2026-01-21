@@ -40,20 +40,22 @@ jobs:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         with:
           node-version: ${{ matrix.node }}
 
       - name: Build packages
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Test
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         id: test
         run: |
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
@@ -67,7 +69,7 @@ jobs:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples_only.outputs.examples_only != 'true' }}
+        if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples.outputs.path_only != 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
@@ -89,14 +91,16 @@ jobs:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
 
       - name: "Download coverage artifacts"
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         uses: actions/download-artifact@v7
         with:
           path: .vitest-reports
@@ -104,10 +108,10 @@ jobs:
           merge-multiple: true
 
       - name: Merged report
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         run: |
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2

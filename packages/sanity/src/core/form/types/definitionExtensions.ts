@@ -9,6 +9,8 @@ import {
 import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../components'
+import {type FieldsetRenderMembersCallback} from '../store/types/members'
+import {type ObjectRenderMembersCallback} from '../store/types/nodes'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
   type BlockAnnotationProps,
@@ -499,6 +501,78 @@ declare module '@sanity/types' {
      * @beta
      */
     components?: ObjectComponents
+    /**
+     * Callback that allows developers to customize the members of the object input.
+     * It can be used to add decoration members to the object input, instead of using empty fields.
+     * For example:
+     * ```ts
+     * import { Decoration } from './Decoration'
+     *
+     * renderMembers: (members) => {
+     *   return [
+     *     ...members,
+     *     {
+     *       key: 'decoration',
+     *       kind: 'decoration',
+     *       component: Decoration,
+     *     },
+     *   ]
+     * ```
+     *
+     * @hidden
+     * @beta
+     */
+    renderMembers?: ObjectRenderMembersCallback
+  }
+
+  export interface FieldsetDefinition {
+    /**
+     * Callback that allows developers to customize the members present in the fieldset.
+     * It can be used to add decoration members to the fieldset, instead of using empty fields.
+     * For example:
+     * ```ts
+     * import { Decoration } from './Decoration'
+     *
+     * renderMembers: (members) => {
+     *   return [
+     *     ...members,
+     *     {
+     *       key: 'decoration',
+     *       kind: 'decoration',
+     *       component: Decoration,
+     *     },
+     *   ]
+     * ```
+     *
+     * @hidden
+     * @beta
+     */
+    renderMembers?: FieldsetRenderMembersCallback
+  }
+
+  export interface MultiFieldSet {
+    /**
+     * Callback that allows developers to customize the members present in the fieldset.
+     * It can be used to add decoration members to the fieldset, instead of using empty fields.
+     * For example:
+     * ```ts
+     * import { Decoration } from './Decoration'
+     *
+     * renderMembers: (members) => {
+     *   return [
+     *     ...members,
+     *     {
+     *       key: 'decoration',
+     *       kind: 'decoration',
+     *       component: Decoration,
+     *     },
+     *   ]
+     * ```
+     *
+     * @hidden
+     * @beta
+     */
+    renderMembers?: FieldsetRenderMembersCallback
   }
 
   export interface ReferenceDefinition {

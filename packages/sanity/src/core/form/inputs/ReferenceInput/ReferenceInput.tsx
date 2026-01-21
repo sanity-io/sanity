@@ -343,6 +343,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
           <AutocompleteContainer ref={setAutocompletePopoverReferenceElement}>
             <ReferenceAutocomplete
               {...elementProps}
+              path={path}
               onFocus={handleFocus}
               onBlur={handleBlur}
               data-testid="autocomplete"

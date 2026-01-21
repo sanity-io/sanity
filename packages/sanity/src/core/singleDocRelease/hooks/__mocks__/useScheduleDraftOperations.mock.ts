@@ -10,6 +10,7 @@ export const scheduleDraftOperationsMock: Mocked<ScheduleDraftOperationsValue> =
   publishScheduledDraft: vi.fn(),
   deleteScheduledDraft: vi.fn(),
   rescheduleScheduledDraft: vi.fn(),
+  pauseScheduledDraft: vi.fn(),
 }
 
 export const useScheduleDraftOperationsMockReturn = scheduleDraftOperationsMock

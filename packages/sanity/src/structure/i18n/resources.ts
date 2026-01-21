@@ -140,6 +140,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The warning displayed when editing a document that has an obsolete draft because the draft model is not switched on */
   'banners.obsolete-draft.draft-model-inactive.text':
     'The workspace does not have drafts enabled, but a draft version of this document exists.',
+  /** The text content for the paused scheduled draft banner */
+  'banners.paused-scheduled-draft.text':
+    'Schedule paused while editing. Press Schedule to reactivate or pick a new date.',
   /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permission to publish this document.',

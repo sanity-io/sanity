@@ -18,6 +18,7 @@ import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
+import {decorations} from './debug/decorations'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -83,6 +84,7 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
 import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
@@ -211,6 +213,7 @@ export function createSchemaTypes(projectId: string) {
     dateValidation,
     deprecatedDocument,
     deprecatedFields,
+    decorations,
     documentActions,
     empty,
     experiment,
@@ -292,6 +295,7 @@ export function createSchemaTypes(projectId: string) {
     markdown,
     mux,
     internationalizedArray,
+    documentInternationalizationTest,
     // Other documents
     author,
     book,

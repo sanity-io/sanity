@@ -43,6 +43,7 @@ export const DEBUG_INPUT_TYPES = [
   'actionsTest',
   'allFieldsGroupHidden',
   'allNativeInputComponents',
+  'decorations',
   'collapsibleObjects',
   'commentsDebug',
   'conditionalFieldsTest',
@@ -114,4 +115,6 @@ export const EXTERNAL_PLUGIN_INPUT_TYPES = [
   'markdownTest',
   'muxVideoPost',
   'internationalizedArrayTest',
+  'documentI18nTest',
+  'translation.metadata',
 ]

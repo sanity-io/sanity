@@ -23,30 +23,34 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-8core
     outputs:
-      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
+      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      cli_only: ${{ steps.check_cli.outputs.path_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    strategy:
-      fail-fast: false
-      matrix:
-        # Be sure to update all instances in this file and `pr-cleanup.yml` if updated, as well as github required checks
-        project: [chromium, firefox]
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - name: Check if only CLI files changed
+        id: check_cli
+        uses: ./.github/actions/check-path-only
+        with:
+          path: packages/@sanity/cli/
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
 
       - name: Add PR Comment placeholder for e2e Preview Environment
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples_only.outputs.examples_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -56,7 +60,7 @@ jobs:
 
       - name: Add PR Comment placeholder for e2e report
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' && steps.check_examples_only.outputs.examples_only != 'true' }}
+        if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
         with:
           comment-tag: "playwright-e2e-report"
           message: |
@@ -65,7 +69,7 @@ jobs:
             Waiting for E2E tests to finish…
 
       - name: Store Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -73,7 +77,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -81,11 +85,10 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.check_examples_only.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
   dataset-setup:
-    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     runs-on: ubuntu-8core
     needs: [install]
@@ -94,18 +97,21 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v6
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
       - uses: ./.github/actions/setup
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
       - name: Echo Vercel preview URL
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         run: echo ${{ github.event.deployment_status.target_url }}
 
       - name: Build CLI
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         # This warms up the turborepo remote cache
         run: pnpm build:cli --output-logs=full --log-order=grouped
 
       - name: dataset setup on PR (chromium)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
@@ -116,7 +122,7 @@ jobs:
           pnpm e2e:setup
 
       - name: dataset setup on PR (firefox)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         env:
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
@@ -127,7 +133,6 @@ jobs:
           pnpm e2e:setup
       # TODO: Add a dataset setup for main for each project [chromium, firefox]
   deploy-preview:
-    if: needs.install.outputs.examples_only != 'true'
     runs-on: ubuntu-8core
     needs: [install]
     env:
@@ -137,16 +142,19 @@ jobs:
       preview_url: ${{ steps.deploy.outputs.DEPLOY_URL }}
     steps:
       - uses: actions/checkout@v6
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
       - uses: ./.github/actions/setup
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
       - name: Pull Vercel Environment Information
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
         run: pnpm vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on PR
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
@@ -158,7 +166,7 @@ jobs:
         run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Build Project Artifacts on main
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_E2E_STUDIO_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_E2E_STUDIO_PROJECT_ID }}
@@ -171,6 +179,7 @@ jobs:
         run: pnpm vercel build --token=${{ secrets.VERCEL_E2E_STUDIO_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: deploy
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
@@ -188,6 +197,7 @@ jobs:
           -m githubCommitAuthorLogin="${{ github.event.sender.login || github.actor }}" | tail -n 1)" >> $GITHUB_OUTPUT
 
       - name: Echo the preview URL
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         run: |
           if [ -z "${{ steps.deploy.outputs.DEPLOY_URL }}" ]; then
            echo "::error::Preview URL was not found. Deployment may have failed."
@@ -197,7 +207,7 @@ jobs:
 
       - name: Add PR Comment with preview URL
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         with:
           comment-tag: "e2e-preview-url"
           message: |
@@ -223,10 +233,9 @@ jobs:
             </details>
 
   playwright-test:
-    if: needs.install.outputs.examples_only != 'true'
     timeout-minutes: 30
     runs-on: ubuntu-8core
-    needs: [deploy-preview, dataset-setup]
+    needs: [install, deploy-preview, dataset-setup]
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -242,11 +251,15 @@ jobs:
         shardTotal: [4]
     steps:
       - uses: actions/checkout@v6
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
       - name: Echo the base URL
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         run: echo "$SANITY_E2E_BASE_URL"
       - uses: ./.github/actions/setup
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
       - name: Store Playwright's Version
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -254,6 +267,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache/restore@v5
         with:
@@ -261,11 +275,11 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Run E2E tests on main
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
@@ -280,7 +294,7 @@ jobs:
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
-        if: ${{ github.event_name == 'pull_request' }}
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         env:
           # Missing in docs but in use
           # here https://github.com/microsoft/playwright/blob/main/packages/playwright/src/reporters/blob.ts#L108
@@ -294,7 +308,7 @@ jobs:
         run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v6
-        if: always()
+        if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         with:
           name: playwright-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: |
@@ -303,7 +317,7 @@ jobs:
           retention-days: 30
 
   merge-reports:
-    if: always() && needs.install.outputs.examples_only != 'true'
+    if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
     needs: [install, playwright-test]
     runs-on: ubuntu-8core
     steps:

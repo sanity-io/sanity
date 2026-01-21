@@ -7,6 +7,7 @@ import {
   isDraftId,
   isGoingToUnpublish,
   isNewDocument,
+  isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
@@ -16,6 +17,7 @@ import {
   type ReleaseDocument,
   ScrollContainer,
   useFilteredReleases,
+  usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -43,6 +45,7 @@ import {CreateLinkedBanner} from './banners/CreateLinkedBanner'
 import {DocumentNotInReleaseBanner} from './banners/DocumentNotInReleaseBanner'
 import {ObsoleteDraftBanner} from './banners/ObsoleteDraftBanner'
 import {OpenReleaseToEditBanner} from './banners/OpenReleaseToEditBanner'
+import {PausedScheduledDraftBanner} from './banners/PausedScheduledDraftBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
@@ -180,6 +183,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     documentId,
   })
 
+  const {isPaused: isPausedDraft} = usePausedScheduledDraft()
+
   // eslint-disable-next-line complexity
   const banners = useMemo(() => {
     if (params?.historyVersion) {
@@ -218,12 +223,25 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
+    if (isPausedDraft && displayed?._id) {
+      return <PausedScheduledDraftBanner />
+    }
+
     if (documentInScheduledRelease) {
       return <ScheduledReleaseBanner currentRelease={selectedPerspective as ReleaseDocument} />
     }
 
-    const scheduledCardinalityOneRelease = filteredReleases.currentReleases.find(
-      (release) => isCardinalityOneRelease(release) && isReleaseScheduledOrScheduling(release),
+    const allFilteredReleases = [
+      ...filteredReleases.currentReleases,
+      ...filteredReleases.notCurrentReleases,
+    ]
+    // if the scheduled draft is paused then it will be available in notCurrentReleases
+    // otherwise a locked-in scheduled draft will be available in currentReleases
+    // so must look across both to find the scheduled draft release
+    const scheduledCardinalityOneRelease = allFilteredReleases.find(
+      (release) =>
+        isCardinalityOneRelease(release) &&
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
     )
     const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
 
@@ -327,6 +345,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     schemaType,
     filteredReleases,
     workspace,
+    isPausedDraft,
   ])
   const portalElements = useMemo(
     () => ({documentScrollElement: documentScrollElement}),

@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 
 import {
-  expectCreatedStatus,
+  expectCreatedOrEditedStatus,
   expectPublishedStatus,
   expectUnpublishedStatus,
 } from '../../helpers/documentStatusAssertions'
@@ -24,8 +24,8 @@ test(`should be able to unpublish a published document`, async ({page, createDra
 
   await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
-  // Wait for the document to finish saving
-  await expectCreatedStatus(documentStatus)
+  // Wait for the document to finish saving (may show Created or Edited depending on timing)
+  await expectCreatedOrEditedStatus(documentStatus)
 
   // Wait for the document to be published.
   await publishButton.click()

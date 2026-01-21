@@ -1,26 +1,8 @@
+import {BlueprintsInitCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Arguments
-  [dir]  Path to initialize the Blueprint in
-
-Options
-  --blueprint-type, --type <json>    Blueprint manifest type to use for the Blueprint (json|js|ts)
-  --project-id <id>                  Sanity Project ID to use for the Blueprint
-  --stack-id <id>                    Existing Stack ID to use for the Blueprint
-  --stack-name <id>                  Name to use for a NEW Stack
-  --verbose                          Verbose output
-
-Examples:
-  # Create a new Blueprint project in the current directory
-  sanity blueprints init
-
-  # Create a new Blueprint project in a specific directory
-  sanity blueprints init my-sanity-project --type json
-
-  # Create a new Blueprint project in a specific directory with an example
-  sanity blueprints init --example example-name
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsInitFlags {
   'example'?: string
@@ -45,9 +27,7 @@ const defaultFlags: BlueprintsInitFlags = {
 const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   name: 'init',
   group: 'blueprints',
-  helpText,
-  signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
-  description: 'Initialize a new Blueprint',
+  ...transformHelpText(BlueprintsInitCommand, 'sanity', 'blueprints init'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -82,7 +62,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
 
     const {success, error} = await blueprintInitCore({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
       args: {
         dir: dir ?? flags.dir,
