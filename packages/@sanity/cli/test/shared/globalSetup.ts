@@ -243,7 +243,7 @@ export async function teardown(): Promise<void> {
   await deleteGraphQLAPIs(args.graphqlDataset)
   await deleteDatasets(args)
 
-  await rm(baseTestPath, {recursive: true, force: true})
+  await rm(baseTestPath, {recursive: true, force: true, maxRetries: 2})
 
   // Very hacky, but good enough for now:
   // Force a cleanup of dangling entities left over from previous test runs
