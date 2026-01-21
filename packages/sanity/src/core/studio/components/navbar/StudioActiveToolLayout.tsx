@@ -1,4 +1,4 @@
-import {type Tool} from '../../../config'
+import type {Tool} from '../../../config/types'
 
 interface StudioActiveToolLayoutProps {
   activeTool: Tool

@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
-import {type UserApplicationCache} from '../../../store/userApplications'
+import type {UserApplicationCache} from '../../../store/userApplications/userApplicationCache'
 import {findUserApplication} from '../liveUserApplication'
 
 // Mock window.location with origin and pathname

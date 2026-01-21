@@ -1,8 +1,9 @@
 import {useMemo} from 'react'
 
-import {useClient} from '../../hooks'
-import {useDocumentPreviewStore, useResourceCache} from '../../store'
-import {useWorkspace} from '../../studio'
+import {useClient} from '../../hooks/useClient'
+import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
+import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
+import {useWorkspace} from '../../studio/workspace'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 import {createReleaseStore} from './createReleaseStore'
 import {type ReleaseStore} from './types'

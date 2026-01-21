@@ -1,7 +1,7 @@
 import {type PreviewValue} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type DocumentAvailability} from '../../../preview'
+import type {DocumentAvailability} from '../../../preview/types'
 
 /** @internal */
 export interface GlobalDocumentReferenceInfo {

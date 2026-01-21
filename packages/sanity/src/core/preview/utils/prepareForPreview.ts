@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash-es'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
 import {type PreviewableType} from '../types'
 import {keysOf} from './keysOf'

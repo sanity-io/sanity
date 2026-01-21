@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 import {type SearchPath, type SearchSpec} from './types'
 
 interface SearchWeightEntry {

@@ -1,7 +1,7 @@
 import {Box, Grid, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../../../i18n/hooks/useTranslation'
 import {CalendarDay} from './CalendarDay'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'

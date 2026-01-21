@@ -1,4 +1,4 @@
-import {definePlugin} from '../config'
+import {definePlugin} from '../config/definePlugin'
 import {CreateIntegrationWrapper} from './components/CreateIntegrationWrapper'
 import {createUsEnglishLocaleBundle} from './i18n'
 

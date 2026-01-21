@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {MenuItem} from '../../../../../ui-components'
+import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 
 // TODO: re-enable locale selection once schema localization is available

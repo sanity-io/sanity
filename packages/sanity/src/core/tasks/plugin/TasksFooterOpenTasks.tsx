@@ -3,9 +3,10 @@ import {Badge, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {Button} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {useTasks, useTasksNavigation} from '../context'
+import {Button} from '../../../ui-components/button/Button'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useTasks} from '../context/tasks/useTasks'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../i18n'
 
 const ButtonContainer = styled.div`

@@ -4,8 +4,8 @@ import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 
 import {PaneLayout} from '../../PaneLayout'
 import {panes} from './config'
-import {DocumentPane} from './DocumentPane'
-import {ListPane} from './ListPane'
+import {DocumentPane} from './DocumentPane/DocumentPane'
+import {ListPane} from './ListPane/ListPane'
 import {Navbar} from './Navbar'
 
 export function SplitPanesStory() {

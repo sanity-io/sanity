@@ -1,7 +1,7 @@
 import {TextInput} from '@sanity/ui'
 import {useEffect, useImperativeHandle, useRef} from 'react'
 
-import {type NumberInputProps} from '../../types'
+import type {NumberInputProps} from '../../types/inputProps'
 import {getValidationRule} from '../../utils/getValidationRule'
 
 function getScrollableParent(node: EventTarget) {

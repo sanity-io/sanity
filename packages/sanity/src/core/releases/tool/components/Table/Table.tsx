@@ -11,7 +11,7 @@ import {
   useRef,
 } from 'react'
 
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'

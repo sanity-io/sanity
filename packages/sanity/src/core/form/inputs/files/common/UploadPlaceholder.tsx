@@ -4,14 +4,14 @@ import {Flex, useElementSize} from '@sanity/ui'
 import {get} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useSource} from '../../../../../core/studio'
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
+import {useSource} from '../../../../studio/source'
+import {useClient} from '../../../../hooks/useClient'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
-} from '../../../studio/assetSourceDataset'
+} from '../../../studio/assetSourceDataset/createAssetSource'
 import {type FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'

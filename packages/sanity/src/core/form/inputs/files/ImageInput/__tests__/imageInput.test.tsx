@@ -5,7 +5,7 @@ import {type ConditionalPropertyCallbackContext, defineField, defineType} from '
 import {screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
-import {renderImageInput} from '../../../../../../../test/form'
+import {renderImageInput} from '../../../../../../../test/form/renderImageInput'
 // import {UploadOptions} from '../../../../studio/uploads/types'
 // import {ImageUrlBuilder} from '../../types'
 import {BaseImageInput} from '../ImageInput'

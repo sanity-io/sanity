@@ -9,8 +9,9 @@ import {
 } from '@tanstack/react-virtual'
 import {useCallback, useRef} from 'react'
 
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjectsItem'
+import type {ArrayOfObjectsInputProps} from '../../../../types/inputProps'
+import type {ObjectItem} from '../../../../types/itemProps'
 import {Item, List} from '../../common/list'
 import {ErrorItem} from './ErrorItem'
 import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'

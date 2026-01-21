@@ -9,7 +9,7 @@ import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
 
-import {renderStringInput} from '../../../../../../test/form'
+import {renderStringInput} from '../../../../../../test/form/renderStringInput'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {type TimeZoneScopeType} from '../../../../hooks/useTimeZone'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'

@@ -3,7 +3,7 @@ import {type AssetSource} from '@sanity/types'
 import {Box, Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
 import {UploadTargetCard} from '../common/uploadTarget/UploadTargetCard'

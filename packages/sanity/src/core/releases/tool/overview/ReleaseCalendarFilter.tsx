@@ -3,7 +3,7 @@ import {format} from 'date-fns'
 import {AnimatePresence, motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {
   CalendarDay,
   type CalendarDayProps,

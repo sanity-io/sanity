@@ -4,7 +4,7 @@ import {type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {defaultTheme, type StudioTheme} from '../theme'
-import {useActiveWorkspace} from './activeWorkspaceMatcher'
+import {useActiveWorkspace} from './activeWorkspaceMatcher/useActiveWorkspace'
 
 interface StudioThemeProviderProps {
   children: ReactNode

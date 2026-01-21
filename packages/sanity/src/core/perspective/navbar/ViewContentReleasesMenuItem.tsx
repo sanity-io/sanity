@@ -12,7 +12,7 @@ import {IntentLink, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {SCHEDULES_TOOL_NAME} from '../../schedules/plugin'

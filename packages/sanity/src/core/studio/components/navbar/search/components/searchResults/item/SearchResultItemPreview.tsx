@@ -4,18 +4,17 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 
-import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
-import {DocumentStatus} from '../../../../../../../components/documentStatus'
-import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
+import type {GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
+import {DocumentStatus} from '../../../../../../../components/documentStatus/DocumentStatus'
+import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentStatusIndicator'
 import {type PerspectiveStack} from '../../../../../../../perspective/types'
-import {DocumentPreviewPresence} from '../../../../../../../presence'
-import {
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  SanityDefaultPreview,
-} from '../../../../../../../preview'
-import {useDocumentVersionInfo} from '../../../../../../../releases'
-import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
+import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/getPreviewValueWithFallback'
+import {SanityDefaultPreview} from '../../../../../../../preview/components/SanityDefaultPreview'
+import {useDocumentVersionInfo} from '../../../../../../../releases/store/useDocumentVersionInfo'
+import type {DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
+import {useDocumentPreviewStore} from '../../../../../../../store/_legacy/datastores'
 
 interface SearchResultItemPreviewProps {
   documentId: string

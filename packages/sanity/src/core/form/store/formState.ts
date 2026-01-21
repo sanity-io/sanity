@@ -26,18 +26,15 @@ import {castArray, isEqual as _isEqual} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'
-import {type FormNodePresence} from '../../presence'
-import {EMPTY_ARRAY, EMPTY_OBJECT, isRecord} from '../../util'
+import type {FormNodePresence} from '../../presence/types'
+import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../util/empty'
+import {isRecord} from '../../util/isRecord'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
-import {
-  type FieldSetMember,
-  type HiddenField,
-  type ObjectArrayFormNode,
-  type PrimitiveFormNode,
-  type ProvenanceDiffAnnotation,
-  type StateTree,
-} from './types'
+import type {FieldSetMember} from './types/members'
+import type {HiddenField, ObjectArrayFormNode, PrimitiveFormNode} from './types/nodes'
+import type {ProvenanceDiffAnnotation} from './types/diff'
+import type {StateTree} from './types/state'
 import {type FormFieldGroup} from './types/fieldGroup'
 import {type FieldError} from './types/memberErrors'
 import {

@@ -3,7 +3,7 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {ContextMenuButton} from 'sanity'
 
-import {Button} from '../../../../../../ui-components'
+import {Button} from '../../../../../../ui-components/button/Button'
 import {Pane} from '../../../Pane'
 import {PaneContent} from '../../../PaneContent'
 import {PaneHeader} from '../../../PaneHeader'

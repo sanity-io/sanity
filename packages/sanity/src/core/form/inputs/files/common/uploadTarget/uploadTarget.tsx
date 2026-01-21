@@ -16,13 +16,14 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
-import {useTranslation} from '../../../../../i18n'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {_isType} from '../../../../../util/schemaUtils'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
-import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
+import type {InputOnSelectFileFunctionProps} from '../../../../types/inputProps'
+import type {UploadEvent} from '../../../../types/event'
 import {useFormBuilder} from '../../../../useFormBuilder'
 import {DropMessage} from '../DropMessage'
-import {type FileInfo, fileTarget} from '../fileTarget'
+import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
 

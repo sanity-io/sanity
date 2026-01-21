@@ -2,7 +2,7 @@ import {Card, Stack, Text, TextArea} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../ui-components/button/Button'
 import {runTest} from './typer'
 
 const HIGHLIGHT_CLASSNAME = 'js-highlight-selected-input'

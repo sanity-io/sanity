@@ -1,5 +1,5 @@
-import {ConfirmPopover} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {ConfirmPopover} from '../../../../ui-components/confirmPopover/ConfirmPopover'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 
 interface RevertChangesConfirmDialogProps {
   open: boolean

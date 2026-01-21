@@ -2,8 +2,8 @@ import {ElementQuery, Select, TabList} from '@sanity/ui'
 import {type ChangeEvent, memo, useCallback} from 'react'
 import {styled} from 'styled-components'
 
-import {useTranslation} from '../../../../i18n'
-import {type FormFieldGroup} from '../../../store'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import type {FormFieldGroup} from '../../../store/types/fieldGroup'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {

@@ -4,7 +4,8 @@ import {
 } from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../../i18n'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
 import {type GlobalDocumentReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'

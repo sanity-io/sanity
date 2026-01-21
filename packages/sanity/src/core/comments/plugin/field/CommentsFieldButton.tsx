@@ -11,11 +11,17 @@ import {
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Button, Popover, Tooltip} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import type {UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {Translate} from '../../../i18n/Translate'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
-import {CommentInput, type CommentInputHandle} from '../../components'
+import {
+  CommentInput,
+  type CommentInputHandle,
+} from '../../components/pte/comment-input/CommentInput'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'

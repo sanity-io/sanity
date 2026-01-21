@@ -1,7 +1,8 @@
 import {ControlsIcon} from '@sanity/icons'
 import {Flex, Inline, Text} from '@sanity/ui'
 
-import {Translate, useTranslation} from '../../../../../i18n'
+import {Translate} from '../../../../../i18n/Translate'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 
 export function Instructions() {
   const {t} = useTranslation()

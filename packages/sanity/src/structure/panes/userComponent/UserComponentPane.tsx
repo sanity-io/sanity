@@ -2,7 +2,7 @@ import {isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
 import {useI18nText} from 'sanity'
 
-import {Pane} from '../../components'
+import {Pane} from '../../components/pane/Pane'
 import {type StructureToolPaneActionHandler} from '../../types'
 import {type BaseStructureToolPaneProps} from '../types'
 import {UserComponentPaneContent} from './UserComponentPaneContent'

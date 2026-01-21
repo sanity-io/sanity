@@ -1,4 +1,4 @@
-import {type ObjectInputProps} from '../../form'
+import type {ObjectInputProps} from '../../form/types/inputProps'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 
 export function TasksDocumentInputLayout(props: ObjectInputProps) {

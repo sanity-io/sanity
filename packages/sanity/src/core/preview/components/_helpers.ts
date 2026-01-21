@@ -1,7 +1,7 @@
 import {type Observable, of} from 'rxjs'
 import {distinctUntilChanged, filter, switchMap, tap} from 'rxjs/operators'
 
-import {isNonNullable} from '../../util'
+import {isNonNullable} from '../../util/isNonNullable'
 
 /**
  * Will track a memo of the value as long as the isActive$ stream emits true,

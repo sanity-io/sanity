@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '@sanity/cli'
 
-import {type PreviewServerOptions, startPreviewServer} from '../../server'
+import {type PreviewServerOptions, startPreviewServer} from '../../server/previewServer'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 
 export interface StartPreviewServerCommandFlags {

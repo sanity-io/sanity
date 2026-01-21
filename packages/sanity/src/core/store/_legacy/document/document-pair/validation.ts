@@ -5,11 +5,14 @@ import {asyncScheduler, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
-import {type SourceClientOptions} from '../../../../config'
-import {type LocaleSource} from '../../../../i18n'
-import {type DraftsModelDocumentAvailability} from '../../../../preview'
+import type {SourceClientOptions} from '../../../../config/types'
+import type {LocaleSource} from '../../../../i18n/types'
+import type {DraftsModelDocumentAvailability} from '../../../../preview/types'
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
-import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
+import {
+  validateDocumentWithReferences,
+  type ValidationStatus,
+} from '../../../../validation/validateDocumentWithReferences'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'

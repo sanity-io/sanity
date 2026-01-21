@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 
-import {type TreeEditingState} from '../../utils'
+import type {TreeEditingState} from '../../utils/build-tree-editing-state/buildTreeEditingState'
 import {DialogBreadcrumbs} from '../breadcrumbs/DialogBreadcrumbs'
 
 interface NestedDialogHeaderProps {

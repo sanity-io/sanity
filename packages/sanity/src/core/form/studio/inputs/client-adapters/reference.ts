@@ -3,8 +3,9 @@ import {type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {type DocumentPreviewStore, getPreviewStateObservable} from '../../../../preview'
-import {getIdPair} from '../../../../util'
+import type {DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {getPreviewStateObservable} from '../../../../preview/utils/getPreviewStateObservable'
+import {getIdPair} from '../../../../util/draftUtils'
 import {type ReferenceInfo} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {

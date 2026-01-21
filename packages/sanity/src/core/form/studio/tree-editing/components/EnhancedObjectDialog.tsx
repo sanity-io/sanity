@@ -7,11 +7,11 @@ import {debounce, isEqual} from 'lodash-es'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Dialog} from '../../../../../ui-components'
+import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
 import {VirtualizerScrollInstanceProvider} from '../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen'
+import {useFullscreenPTE} from '../../../inputs/PortableText/contexts/fullscreen/useFullscreenPTE'
 import {type InputProps, type ObjectInputProps} from '../../../types/inputProps'
 import {NestedDialogClosed, NestedDialogOpened} from '../__telemetry__/nestedObjects.telemetry'
 import {
@@ -19,7 +19,7 @@ import {
   type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
   type TreeEditingState,
-} from '../utils'
+} from '../utils/build-tree-editing-state/buildTreeEditingState'
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
 import {NestedDialogHeader} from './header/NestedDialogHeader'

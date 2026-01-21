@@ -8,9 +8,10 @@ import {
 } from '@sanity/ui'
 import {useCallback} from 'react'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useTasksEnabled, useTasksNavigation} from '../../context'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'

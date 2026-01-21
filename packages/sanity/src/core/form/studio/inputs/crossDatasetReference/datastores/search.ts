@@ -6,8 +6,8 @@ import {
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {createSearch} from '../../../../../search'
-import {collate} from '../../../../../util'
+import {createSearch} from '../../../../../search/search'
+import {collate} from '../../../../../util/draftUtils'
 
 interface SearchHit {
   id: string

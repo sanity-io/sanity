@@ -1,4 +1,4 @@
-import {type InitialValueTemplateItem} from '../../../../templates'
+import type {InitialValueTemplateItem} from '../../../../templates/types'
 
 export interface NewDocumentOption extends Omit<InitialValueTemplateItem, 'title'> {
   hasPermission: boolean

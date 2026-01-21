@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type FormPatch} from '../../patch'
+import type {FormPatch} from '../../patch/types'
 
 /**
  *

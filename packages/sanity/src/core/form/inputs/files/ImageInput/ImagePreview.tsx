@@ -1,7 +1,7 @@
 import {type Card, type CardTone} from '@sanity/ui'
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
 interface Props {

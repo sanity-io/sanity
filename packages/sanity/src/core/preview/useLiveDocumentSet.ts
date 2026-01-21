@@ -5,7 +5,7 @@ import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 
-import {useDocumentPreviewStore} from '../store'
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
 
 const INITIAL_VALUE = {loading: true, documents: []}
 

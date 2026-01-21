@@ -9,14 +9,14 @@ import {describe, expect, it, vi} from 'vitest'
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {type FormBuilderContextValue} from '../../../FormBuilderContext'
-import {PatchEvent, set} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {PatchEvent} from '../../../patch/PatchEvent'
+import {set} from '../../../patch/patch'
+import type {FieldMember} from '../../../store/types/members'
+import {defaultRenderField, defaultRenderInput} from '../../../studio/defaults'
 import {
-  defaultRenderField,
-  defaultRenderInput,
   FormCallbacksProvider,
   type FormCallbacksValue,
-} from '../../../studio'
+} from '../../../studio/contexts/FormCallbacks'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {PrimitiveField} from './PrimitiveField'
 

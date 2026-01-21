@@ -1,6 +1,6 @@
 import {TextInput} from '@sanity/ui'
 
-import {type StringInputProps} from '../types'
+import type {StringInputProps} from '../types/inputProps'
 import {getValidationRule} from '../utils/getValidationRule'
 
 /**

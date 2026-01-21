@@ -1,12 +1,12 @@
-import {type ArrayOfObjectsMember} from '../../store'
-import {
-  type RenderAnnotationCallback,
-  type RenderArrayOfObjectsItemCallback,
-  type RenderBlockCallback,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderPreviewCallback,
-} from '../../types'
+import type {ArrayOfObjectsMember} from '../../store/types/members'
+import type {
+  RenderAnnotationCallback,
+  RenderArrayOfObjectsItemCallback,
+  RenderBlockCallback,
+  RenderFieldCallback,
+  RenderInputCallback,
+  RenderPreviewCallback,
+} from '../../types/renderCallback'
 import {ArrayOfObjectsInputMember} from './ArrayOfObjectsInputMember'
 
 /** @internal */

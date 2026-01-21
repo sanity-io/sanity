@@ -2,7 +2,7 @@ import {type AssetSourceComponentAction, type FileAsset} from '@sanity/types'
 import {get} from 'lodash-es'
 import {useCallback, useMemo} from 'react'
 
-import {useTranslation} from '../../../../i18n'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'

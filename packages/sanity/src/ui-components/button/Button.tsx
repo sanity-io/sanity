@@ -4,7 +4,7 @@ import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 type BaseButtonProps = Pick<
   UIButtonProps,

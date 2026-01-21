@@ -9,9 +9,14 @@ import {
   useSource,
 } from 'sanity'
 
-import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
-import {useHistoryRestoreAction} from '../../../documentActions'
+import {Button} from '../../../../ui-components/button/Button'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {
+  RenderActionCollectionState,
+  type ResolvedAction,
+} from '../../../components/RenderActionCollectionState'
+import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {useHistoryRestoreAction} from '../../../documentActions/HistoryRestoreAction'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'

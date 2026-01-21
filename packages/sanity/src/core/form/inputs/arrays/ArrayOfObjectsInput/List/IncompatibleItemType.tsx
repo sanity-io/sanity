@@ -4,8 +4,9 @@ import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../../../ui-components'
-import {Translate, useTranslation} from '../../../../../i18n'
+import {Popover} from '../../../../../../ui-components/popover/Popover'
+import {Translate} from '../../../../../i18n/Translate'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 
 const PopoverCard = styled(Card)`
   max-width: ${({theme}: {theme: Theme}) => theme.sanity.container[1]}px;

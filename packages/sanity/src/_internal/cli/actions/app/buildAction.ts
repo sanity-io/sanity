@@ -8,7 +8,7 @@ import logSymbols from 'log-symbols'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 
-import {buildStaticFiles} from '../../server'
+import {buildStaticFiles} from '../../server/buildStaticFiles'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
 import {getAppId} from '../../util/getAppId'

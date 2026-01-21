@@ -2,7 +2,7 @@ import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {useTranslation} from '../../i18n'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, getVersionId} from '../../util/draftUtils'
 import {useDocumentVersionInfo} from '../store/useDocumentVersionInfo'

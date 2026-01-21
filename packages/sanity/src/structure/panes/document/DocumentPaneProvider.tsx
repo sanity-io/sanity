@@ -40,12 +40,16 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
-import {usePaneRouter} from '../../components'
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {
+  DocumentURLCopied,
+  InlineChangesSwitchedOff,
+  InlineChangesSwitchedOn,
+} from './__telemetry__/documentPanes.telemetry'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {

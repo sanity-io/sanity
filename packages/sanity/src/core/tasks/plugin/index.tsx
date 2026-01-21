@@ -1,5 +1,5 @@
-import {definePlugin} from '../../config'
-import {type ObjectInputProps} from '../../form'
+import {definePlugin} from '../../config/definePlugin'
+import type {ObjectInputProps} from '../../form/types/inputProps'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'

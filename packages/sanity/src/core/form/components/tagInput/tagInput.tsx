@@ -15,8 +15,8 @@ import {
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
+import {Button} from '../../../../ui-components/button/Button'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 

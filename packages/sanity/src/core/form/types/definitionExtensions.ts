@@ -8,10 +8,11 @@ import {
 } from '@sanity/types'
 import {type ComponentType} from 'react'
 
-import {type PreviewProps} from '../../components'
+import type {PreviewProps} from '../../components/previews/types'
 import {type FieldsetRenderMembersCallback} from '../store/types/members'
 import {type ObjectRenderMembersCallback} from '../store/types/nodes'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import type {CrossDatasetReferenceInputProps} from '../studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+import type {ReferenceInputProps} from '../studio/inputs/reference/StudioReferenceInput'
 import {
   type BlockAnnotationProps,
   type BlockDecoratorProps,

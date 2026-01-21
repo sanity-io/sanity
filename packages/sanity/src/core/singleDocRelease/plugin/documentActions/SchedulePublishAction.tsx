@@ -8,8 +8,8 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {useValidationStatus} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
+import {useValidationStatus} from '../../../hooks/useValidationStatus'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'

@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {type Observable, of} from 'rxjs'
 
-import {type LoadableState, useLoadable} from '../../../../util'
+import {type LoadableState, useLoadable} from '../../../../util/useLoadable'
 import {useDocumentPreviewStore} from '../../datastores'
 
 /** @internal */

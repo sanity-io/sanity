@@ -15,7 +15,7 @@ import {
 import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {useWorkspace} from '../workspace'

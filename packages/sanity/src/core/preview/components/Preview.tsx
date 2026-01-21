@@ -1,7 +1,7 @@
-import {usePreviewComponent} from '../../form/form-components-hooks'
-import {type RenderPreviewCallbackProps} from '../../form/types'
+import {usePreviewComponent} from '../../form/form-components-hooks/componentHooks'
+import type {RenderPreviewCallbackProps} from '../../form/types/renderCallback'
 import {type PerspectiveStack} from '../../perspective/types'
-import {PreviewLoader} from '../index'
+import {PreviewLoader} from './PreviewLoader'
 
 /**
  * @internal

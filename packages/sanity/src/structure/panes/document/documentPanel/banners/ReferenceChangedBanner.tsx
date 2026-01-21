@@ -14,7 +14,7 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {usePaneRouter} from '../../../../components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type RouterPaneGroup} from '../../../../types'
 import {Banner} from './Banner'

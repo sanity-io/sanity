@@ -3,7 +3,7 @@ import {type Theme} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type BlockDecoratorProps} from '../../../types'
+import type {BlockDecoratorProps} from '../../../types/blockProps'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
 const Root = styled.span(({theme}: {theme: Theme}) => {
