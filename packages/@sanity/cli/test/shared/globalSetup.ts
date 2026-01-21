@@ -237,17 +237,19 @@ export async function teardown(): Promise<void> {
     return
   }
 
-  const args = getTestRunArgs()
-  await deleteCorsOrigins(args.corsOrigin)
-  await deleteAliases(args.alias)
-  await deleteGraphQLAPIs(args.graphqlDataset)
-  await deleteDatasets(args)
+  try {
+    const args = getTestRunArgs()
+    await deleteCorsOrigins(args.corsOrigin)
+    await deleteAliases(args.alias)
+    await deleteGraphQLAPIs(args.graphqlDataset)
+    await deleteDatasets(args)
 
-  await rm(baseTestPath, {recursive: true, force: true, maxRetries: 2})
-
-  // Very hacky, but good enough for now:
-  // Force a cleanup of dangling entities left over from previous test runs
-  await cleanupDangling()
+    await rm(baseTestPath, {recursive: true, force: true, maxRetries: 2})
+  } finally {
+    // Very hacky, but good enough for now:
+    // Force a cleanup of dangling entities left over from previous test runs
+    await cleanupDangling()
+  }
 }
 
 function getErrorWarner(entity: string, id: string) {
