@@ -17,6 +17,8 @@ import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'
@@ -72,6 +74,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
+
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isStale, setIsStale] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -311,7 +315,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   return (
     <>
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field') {
           return (
             <MemberField
@@ -345,7 +349,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
-
+        if (member.kind === 'decoration') {
+          return <MemberDecoration key={member.key} member={member} />
+        }
         return (
           <Fragment
             key={

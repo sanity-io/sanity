@@ -43,6 +43,7 @@ import {type FieldError} from './types/memberErrors'
 import {
   type ArrayOfObjectsMember,
   type ArrayOfPrimitivesMember,
+  type DecorationMember,
   type FieldMember,
   type ObjectMember,
 } from './types/members'
@@ -955,6 +956,7 @@ export function createPrepareFormState({
             key: `fieldset-${fieldSet.name}`,
             _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
             groups: fieldSet.group ? castArray(fieldSet.group) : [],
+            renderMembers: fieldSet.renderMembers,
             fieldSet: {
               path: pathFor(props.path.concat(fieldSet.name)),
               name: fieldSet.name,
@@ -984,7 +986,10 @@ export function createPrepareFormState({
       .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
     const visibleMembers = members.filter(
-      (member): member is ObjectMember => member.kind !== 'hidden',
+      (member): member is Exclude<ObjectMember, DecorationMember> =>
+        member.kind !== 'hidden' &&
+        // Decoration members are added in the ObjectInput component, they won't be added here.
+        member.kind !== 'decoration',
     )
 
     // Return null here only when enableHiddenCheck, or we end up with array members that have 'item: null' when they
@@ -1012,7 +1017,9 @@ export function createPrepareFormState({
               member.groups.includes(group.name) ||
               member.fieldSet.members.some(
                 (fieldsetMember) =>
-                  fieldsetMember.kind !== 'error' && fieldsetMember.groups.includes(group.name),
+                  fieldsetMember.kind !== 'decoration' &&
+                  fieldsetMember.kind !== 'error' &&
+                  fieldsetMember.groups.includes(group.name),
               )
             )
           })

@@ -4,7 +4,7 @@ import {type ConditionalProperty, type DeprecatedProperty, type I18nTextRecord} 
 import {type ObjectOptions} from './object'
 
 /** @public */
-export type FieldsetDefinition = {
+export interface FieldsetDefinition {
   name: string
   title?: string
   description?: string

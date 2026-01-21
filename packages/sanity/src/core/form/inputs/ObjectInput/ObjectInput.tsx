@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ObjectInputMembers} from '../../members'
+import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
@@ -42,6 +43,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
     value,
     onPathFocus,
   } = props
+
+  const renderedMembers = useRenderMembers(schemaType, members)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
   const {columns} = schemaType.options || {}
@@ -88,7 +91,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const renderObjectMembers = useCallback(
     () => (
       <ObjectInputMembers
-        members={members}
+        members={renderedMembers}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderField={renderField}
@@ -99,7 +102,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       />
     ),
     [
-      members,
+      renderedMembers,
       renderAnnotation,
       renderBlock,
       renderField,
