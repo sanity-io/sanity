@@ -1,8 +1,7 @@
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
-// Define __DEV__ global before importing the module
-;(globalThis as any).__DEV__ = true
+import runMigrationCommand from '../runMigrationCommand'
 
 // Mock all dependencies before importing the module under test
 vi.mock('@sanity/migrate', () => ({
@@ -46,7 +45,10 @@ vi.mock('../../debug', () => ({
   debug: vi.fn(),
 }))
 
-import runMigrationCommand from '../runMigrationCommand'
+beforeAll(() => {
+  // Define __DEV__ global before tests run
+  ;(globalThis as any).__DEV__ = true
+})
 
 describe('runMigrationCommand', () => {
   let mockContext: CliCommandContext
