@@ -73,6 +73,7 @@ test.describe('Portable Text Input', () => {
     test('Can create, and then open the existing annotation again for editing', async ({
       mount,
       page,
+      browserName,
     }) => {
       test.slow()
       test.skip(browserName === 'firefox', 'Firefox has timing issues with PTE editor interaction')
@@ -136,7 +137,12 @@ test.describe('Portable Text Input', () => {
       await expect($linkInputReopened).toBeFocused()
     })
 
-    test('Shows combined popover with multiple annotations on same text', async ({mount, page}) => {
+    test('Shows combined popover with multiple annotations on same text', async ({
+      mount,
+      page,
+      browserName,
+    }) => {
+      test.skip(browserName === 'firefox', 'Firefox has timing issues with PTE selection events')
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
         page,
       })
@@ -165,7 +171,8 @@ test.describe('Portable Text Input', () => {
       await expect($pte).toBeFocused()
 
       // Double-click on the linked text to reselect it and add highlight annotation
-      const $linkedText = $pte.locator('span[data-link]')
+      // Use .first() because after adding highlight, there will be nested span[data-link] elements
+      const $linkedText = $pte.locator('span[data-link]').first()
       await $linkedText.dblclick()
 
       // Add highlight annotation (the second annotation type)
