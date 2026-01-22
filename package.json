@@ -107,7 +107,7 @@
   "devDependencies": {
     "@lerna-lite/cli": "^4.11.0",
     "@lerna-lite/list": "^4.11.0",
-    "@lerna-lite/publish": "^4.11.0",
+    "@lerna-lite/publish": "^4.11.1",
     "@repo/bundle-manager": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
