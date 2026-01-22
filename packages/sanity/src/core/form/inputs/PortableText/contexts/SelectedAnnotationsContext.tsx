@@ -1,35 +1,18 @@
-import {type ObjectSchemaType} from '@sanity/types'
-import {createContext, type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {
+  type AnnotationEntry,
+  SelectedAnnotationsContext,
+  type SelectedAnnotationsContextValue,
+} from 'sanity/_singletons'
+
+// Re-export types for convenience
+export type {AnnotationEntry, SelectedAnnotationsContextValue}
 
 /**
- * Represents a single annotation that is currently selected/active
+ * Provider for tracking selected annotations in the Portable Text editor.
+ * Enables CombinedAnnotationPopover to show all active annotations in a single popover.
+ * @internal
  */
-export interface AnnotationEntry {
-  /** Unique key for this annotation instance */
-  key: string
-  /** Display title (from schema or i18n) */
-  title: string
-  /** Schema type for this annotation */
-  schemaType: ObjectSchemaType
-  /** Callback to open the annotation editor */
-  onOpen: () => void
-  /** Callback to remove the annotation */
-  onRemove: () => void
-  /** Reference element for this annotation (for positioning) */
-  referenceElement: HTMLElement | null
-}
-
-interface SelectedAnnotationsContextValue {
-  /** Register an annotation as selected */
-  register: (entry: AnnotationEntry) => void
-  /** Unregister an annotation (no longer selected) */
-  unregister: (key: string) => void
-  /** All currently selected annotations */
-  annotations: AnnotationEntry[]
-}
-
-const SelectedAnnotationsContext = createContext<SelectedAnnotationsContextValue | null>(null)
-
 export function SelectedAnnotationsProvider({children}: {children: ReactNode}): ReactNode {
   const [annotationsMap, setAnnotationsMap] = useState<Map<string, AnnotationEntry>>(new Map())
 
@@ -66,6 +49,7 @@ export function SelectedAnnotationsProvider({children}: {children: ReactNode}): 
 /**
  * Hook to access the selected annotations context
  * @throws if used outside of SelectedAnnotationsProvider
+ * @internal
  */
 export function useSelectedAnnotations(): SelectedAnnotationsContextValue {
   const context = useContext(SelectedAnnotationsContext)
