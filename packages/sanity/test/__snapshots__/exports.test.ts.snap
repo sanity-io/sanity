@@ -938,7 +938,7 @@ exports[`exports snapshot 1`] = `
     "createStructureBuilder": "function",
     "defaultInitialValueTemplateItems": "function",
     "defaultIntentChecker": "function",
-    "defineIncomingReferenceField": "function",
+    "defineIncomingReferenceDecoration": "function",
     "documentFromEditor": "function",
     "documentFromEditorWithInitialValue": "function",
     "form": "function",

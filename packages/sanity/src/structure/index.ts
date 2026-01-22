@@ -8,9 +8,9 @@ export type {
   ReferenceChildLinkProps,
 } from './components'
 export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
-export {defineIncomingReferenceField} from './components/incomingReferencesInput/defineIncomingReferenceField'
-export {isIncomingReferenceCreation} from './components/incomingReferencesInput/isIncomingReferenceCreation'
-export {type IncomingReferenceAction} from './components/incomingReferencesInput/types'
+export {defineIncomingReferenceDecoration} from './components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
+export {isIncomingReferenceCreation} from './components/incomingReferencesDecoration/isIncomingReferenceCreation'
+export {type IncomingReferenceAction} from './components/incomingReferencesDecoration/types'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'

@@ -173,6 +173,7 @@ export function AddIncomingReference({
           placeholder={t('incoming-references-input.type-to-search')}
           onQueryChange={handleQueryChange}
           filterOption={NO_FILTER}
+          path={[]}
           // @ts-expect-error - Types are not derived correctly
           renderOption={renderOption}
           openButton={{onClick: handleAutocompleteOpenButtonClick}}

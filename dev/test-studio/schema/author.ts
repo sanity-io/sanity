@@ -1,7 +1,7 @@
 import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
-import {defineIncomingReferenceField, isIncomingReferenceCreation} from 'sanity/structure'
+import {defineIncomingReferenceDecoration, isIncomingReferenceCreation} from 'sanity/structure'
 
 import {AudienceSelectInput} from '../components/AudienceSelectInput'
 import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
@@ -75,6 +75,49 @@ export default defineType({
   title: 'Author',
   icon,
   description: 'This represents an author',
+  renderMembers: (members) => {
+    return [
+      ...members,
+      defineIncomingReferenceDecoration({
+        name: 'incomingReferencesSameRole',
+        // title: 'Incoming references with the same role',
+        description: 'This are other authors with the same role as this one',
+        filter: (context) => {
+          return {
+            filter: `role == $role`,
+            filterParams: {role: context.document?.role || ''},
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [{type: 'author'}],
+      }),
+      defineIncomingReferenceDecoration({
+        name: 'booksCreated',
+        // title: 'Books created by this author',
+        onLinkDocument: (document, reference) => {
+          return {
+            ...document,
+            author: reference,
+          }
+        },
+        actions: [RemoveReferenceAction],
+        types: [
+          {type: 'book'},
+          {
+            type: 'book',
+            dataset: 'test-us',
+            title: 'Book in test-us dataset',
+            studioUrl: ({id, type}) => {
+              return type ? `/us/intent/edit/id=${id};type=${type}` : null
+            },
+            preview: {
+              select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
+            },
+          },
+        ],
+      }),
+    ]
+  },
   preview: {
     select: {
       title: 'name',
@@ -100,57 +143,11 @@ export default defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
+      description: 'This is the name of the author',
       options: {
         search: {weight: 100},
       },
       validation: (rule: StringRule) => rule.required(),
-    }),
-    defineIncomingReferenceField({
-      name: 'incomingReferencesDesigner',
-      title: 'Incoming references with the same role',
-      options: {
-        onLinkDocument: (document, reference) => {
-          return {
-            ...document,
-            bestFriend: reference,
-          }
-        },
-        filter: (context) => {
-          return {
-            filter: `role == $role`,
-            filterParams: {role: (context.document.role as string) || ''},
-          }
-        },
-        actions: [RemoveReferenceAction],
-        types: [{type: 'author'}],
-      },
-    }),
-    defineIncomingReferenceField({
-      name: 'booksCreated',
-      title: 'Books created by this author',
-      options: {
-        onLinkDocument: (document, reference) => {
-          return {
-            ...document,
-            author: reference,
-          }
-        },
-        actions: [RemoveReferenceAction],
-        types: [
-          {type: 'book'},
-          {
-            type: 'book',
-            dataset: 'test-us',
-            title: 'Book in test-us dataset',
-            studioUrl: ({id, type}) => {
-              return type ? `/us/intent/edit/id=${id};type=${type}` : null
-            },
-            preview: {
-              select: {title: 'title', media: 'coverImage', subtitle: 'publicationYear'},
-            },
-          },
-        ],
-      },
     }),
     {
       name: 'bestFriend',

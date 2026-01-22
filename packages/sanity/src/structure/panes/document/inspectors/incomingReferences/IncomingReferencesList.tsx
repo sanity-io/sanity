@@ -13,12 +13,12 @@ import {
   useTranslation,
 } from 'sanity'
 
-import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
+import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
   type CrossDatasetIncomingReferenceDocument,
   getCrossDatasetIncomingReferences,
-} from '../../../../components/incomingReferencesInput/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
-import {getIncomingReferences} from '../../../../components/incomingReferencesInput/getIncomingReferences'
+} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
+import {getIncomingReferences} from '../../../../components/incomingReferencesDecoration/getIncomingReferences'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
@@ -77,7 +77,7 @@ export function IncomingReferencesList() {
         map(({documents}) => {
           const documentsByType = documents.reduce(
             (acc, doc) => {
-              const type = doc.type as string
+              const type = doc.type
               // If the type exists add the document to it.
               if (acc[type]) acc[type].push(doc)
               // else, create the type with the document.

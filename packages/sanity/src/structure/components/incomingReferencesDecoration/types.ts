@@ -73,7 +73,7 @@ export function isCrossDatasetIncomingReference(
 }
 
 export type IncomingReferencesFilterResolver = (context: {
-  document: SanityDocument
+  document: SanityDocument | undefined
   getClient: (options: {apiVersion: string}) => SanityClient
 }) =>
   | string
@@ -81,6 +81,9 @@ export type IncomingReferencesFilterResolver = (context: {
   | Promise<{filter: string; filterParams?: Record<string, string>}>
 
 export type IncomingReferencesOptions = {
+  name: string
+  title?: string
+  description?: string
   /**
    * The type of the incoming references.
    */
