@@ -7,6 +7,11 @@ import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {
+  annotationCustomTypeTest,
+  ctaType,
+  tooltipAnnotationType,
+} from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
@@ -202,6 +207,9 @@ export function createSchemaTypes(projectId: string) {
 
     // Test documents for debugging
     actions,
+    annotationCustomTypeTest,
+    ctaType,
+    tooltipAnnotationType,
     button,
     collapsibleObjects,
     commentsDebug,
