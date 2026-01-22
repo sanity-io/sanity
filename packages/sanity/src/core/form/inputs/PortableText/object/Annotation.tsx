@@ -23,14 +23,12 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {type AnnotationEntry, useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {Root, TooltipBox} from './Annotation.styles'
-import {useSelectedAnnotations, type AnnotationEntry} from '../contexts/SelectedAnnotationsContext'
-/** @deprecated Use CombinedAnnotationPopover instead */
-import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
   children: React.JSX.Element
