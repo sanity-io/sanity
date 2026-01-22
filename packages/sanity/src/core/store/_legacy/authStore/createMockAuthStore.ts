@@ -18,6 +18,6 @@ export interface MockAuthStoreOptions {
  */
 export function createMockAuthStore({client, currentUser = null}: MockAuthStoreOptions): AuthStore {
   return {
-    state: of({authenticated: true, client, currentUser, callbackHandled: false}),
+    state: of({authenticated: true, client, currentUser}),
   }
 }
