@@ -1,3 +1,11 @@
+/**
+ * @deprecated This component is deprecated and will be removed in a future version.
+ * Use CombinedAnnotationPopover instead, which renders all active annotations
+ * in a single popover with rows for each annotation type.
+ *
+ * This component is kept for backwards compatibility with custom renderAnnotation
+ * implementations that may still rely on it.
+ */
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'

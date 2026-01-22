@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {type ComponentType, useCallback, useMemo, useState} from 'react'
+import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -27,6 +27,8 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {Root, TooltipBox} from './Annotation.styles'
+import {useSelectedAnnotations, type AnnotationEntry} from '../contexts/SelectedAnnotationsContext'
+/** @deprecated Use CombinedAnnotationPopover instead */
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 
 interface AnnotationProps {
@@ -256,14 +258,43 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
     selected,
     textElement,
     validation,
+    value,
   } = props
   const isLink = schemaType.name === 'link'
   const hasError = validation.some((v) => v.level === 'error')
   const hasWarning = validation.some((v) => v.level === 'warning')
   const hasMarkers = markers.length > 0
-  const isReady = Boolean(children)
 
   const {t} = useTranslation()
+
+  // Get context for registering this annotation
+  const {register, unregister} = useSelectedAnnotations()
+
+  // Create stable annotation entry
+  const annotationEntry = useMemo(
+    (): AnnotationEntry => ({
+      key: value._key,
+      title: schemaType.i18nTitleKey
+        ? t(schemaType.i18nTitleKey)
+        : schemaType.title || schemaType.name,
+      schemaType,
+      onOpen,
+      onRemove,
+      referenceElement,
+    }),
+    [value._key, schemaType, t, onOpen, onRemove, referenceElement],
+  )
+
+  // Register/unregister based on selection state
+  useEffect(() => {
+    // Only register if text is selected AND annotation is not already open for editing
+    if (selected && !open) {
+      register(annotationEntry)
+      return () => unregister(annotationEntry.key)
+    }
+    // Ensure we unregister if we were registered but conditions changed
+    return () => unregister(annotationEntry.key)
+  }, [selected, open, annotationEntry, register, unregister])
 
   const toneKey = useMemo(() => {
     if (hasError) {
@@ -291,22 +322,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
       onClick={readOnly ? onOpen : undefined}
     >
       {textElement}
-      {isReady && (
-        <AnnotationToolbarPopover
-          annotationOpen={open}
-          floatingBoundary={floatingBoundary}
-          onOpenAnnotation={onOpen}
-          onRemoveAnnotation={onRemove}
-          referenceBoundary={referenceBoundary}
-          referenceElement={referenceElement}
-          annotationTextSelected={selected}
-          title={
-            schemaType.i18nTitleKey
-              ? t(schemaType.i18nTitleKey)
-              : schemaType.title || schemaType.name
-          }
-        />
-      )}
+      {/* Individual popover removed - now using CombinedAnnotationPopover at Compositor level */}
     </Root>
   )
 }
