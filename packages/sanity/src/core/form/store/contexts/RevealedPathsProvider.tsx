@@ -79,14 +79,20 @@ export function RevealedPathsProvider({
   return <RevealedPathsContext.Provider value={value}>{children}</RevealedPathsContext.Provider>
 }
 
+// Default no-op context value for when used outside RevealedPathsProvider
+const DEFAULT_REVEALED_PATHS_VALUE: RevealedPathsContextValue = {
+  revealedPaths: new Set<string>(),
+  revealPath: () => {},
+  isPathRevealed: () => false,
+  clearRevealedPaths: () => {},
+}
+
 /**
  * Hook to access revealed paths context.
- * @throws if used outside of RevealedPathsProvider
+ * Returns a safe no-op default when used outside of RevealedPathsProvider,
+ * allowing useDocumentForm to work in contexts like TasksFormBuilder and DiffViewPane.
  */
 export function useRevealedPaths(): RevealedPathsContextValue {
   const context = useContext(RevealedPathsContext)
-  if (!context) {
-    throw new Error('useRevealedPaths must be used within a RevealedPathsProvider')
-  }
-  return context
+  return context ?? DEFAULT_REVEALED_PATHS_VALUE
 }
