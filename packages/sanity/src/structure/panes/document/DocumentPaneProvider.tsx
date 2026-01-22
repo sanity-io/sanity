@@ -40,6 +40,7 @@ import {
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
