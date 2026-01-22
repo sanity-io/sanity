@@ -48,7 +48,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
-import {type DocumentPaneContextValue} from './DocumentPaneContext'
+import {type DocumentPaneContextValue, type PathOpenOptions} from './DocumentPaneContext'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
@@ -344,9 +344,9 @@ function DocumentPaneProviderInner(props: DocumentPaneProviderProps) {
   )
 
   const handlePathOpen = useCallback(
-    (path: Path) => {
-      // Update internal open path
-      onPathOpen(path)
+    (path: Path, pathOpenOptions?: PathOpenOptions) => {
+      // Update internal open path, passing options (e.g., revealHidden for validation navigation)
+      onPathOpen(path, pathOpenOptions)
 
       if (enhancedObjectDialogEnabled) {
         /**
