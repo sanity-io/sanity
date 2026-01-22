@@ -19,19 +19,21 @@ export const RemoveReferenceAction: IncomingReferenceAction = ({document, getCli
             setDialogOpen(false)
           },
           onConfirm: async () => {
+            const draftId = getDraftId(document._id)
+
             if (document._type === 'author') {
-              await client.createOrReplace({
-                ...document,
-                _id: getDraftId(document._id),
-                bestFriend: undefined,
-              })
+              await client
+                .transaction()
+                .createIfNotExists({...document, _id: draftId})
+                .patch(draftId, (patch) => patch.unset(['bestFriend']))
+                .commit()
             }
             if (document._type === 'book') {
-              await client.createOrReplace({
-                ...document,
-                _id: getDraftId(document._id),
-                author: undefined,
-              })
+              await client
+                .transaction()
+                .createIfNotExists({...document, _id: draftId})
+                .patch(draftId, (patch) => patch.unset(['author']))
+                .commit()
             }
           },
         }
