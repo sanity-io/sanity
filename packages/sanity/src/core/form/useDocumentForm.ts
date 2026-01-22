@@ -64,6 +64,7 @@ import {
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {useRevealedPaths} from './store/contexts/RevealedPathsProvider'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
 interface DocumentFormOptions {
@@ -198,6 +199,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
+
+  // Get revealed paths for hidden field navigation
+  const {revealedPaths, revealPath} = useRevealedPaths()
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -487,6 +491,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
+    revealedPaths,
   })!
 
   const formStateRef = useRef(formState)
@@ -497,6 +502,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useComlinkViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
+    // Reveal hidden fields along this path so they become visible
+    revealPath(path)
+
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {

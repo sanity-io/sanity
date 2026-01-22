@@ -38,6 +38,7 @@ export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstr
   readOnly?: boolean
   changesOpen?: boolean
   displayInlineChanges?: boolean
+  revealedPaths?: Set<string>
 }
 
 /** @internal */
@@ -60,6 +61,7 @@ export function useFormState<
   perspective,
   hasUpstreamVersion,
   displayInlineChanges,
+  revealedPaths,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -113,6 +115,7 @@ export function useFormState<
         currentUser,
         documentValue: documentValue,
         schemaType,
+        revealedPaths,
       }),
       readOnly: prepareReadOnlyState({
         currentUser,
@@ -128,6 +131,7 @@ export function useFormState<
     schemaType,
     prepareReadOnlyState,
     inputReadOnly,
+    revealedPaths,
   ])
 
   // if a version is going to be unpublished, we don't want to show the validation errors
