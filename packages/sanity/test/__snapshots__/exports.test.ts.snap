@@ -63,6 +63,8 @@ exports[`exports snapshot 1`] = `
     "CorsOriginError": "function",
     "CrossDatasetReferenceInput": "function",
     "DECISION_PARAMETERS_SCHEMA": "symbol",
+    "DEFAULT_ANNOTATIONS": "object",
+    "DEFAULT_DECORATORS": "object",
     "DEFAULT_MAX_RECURSION_DEPTH": "number",
     "DEFAULT_STUDIO_CLIENT_OPTIONS": "object",
     "DRAFTS_FOLDER": "string",

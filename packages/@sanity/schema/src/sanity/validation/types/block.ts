@@ -21,7 +21,7 @@ const allowedKeys = [
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
-const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
+const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component', 'i18nTitleKey']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
 const supportedBuiltInObjectTypes = [
   'file',

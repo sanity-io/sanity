@@ -120,6 +120,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import {customPlugins} from './standard/portableText/customPlugins'
+import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -188,6 +189,7 @@ export function createSchemaTypes(projectId: string) {
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,
+    ptCustomWithDefaultsType,
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
