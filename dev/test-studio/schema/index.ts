@@ -51,6 +51,7 @@ import {
 import focus from './debug/focus'
 import {formInputDebug} from './debug/formInputDebug'
 import gallery from './debug/gallery'
+import {hiddenFieldValidationTypes} from './debug/hiddenFieldValidation'
 import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
@@ -229,6 +230,7 @@ export function createSchemaTypes(projectId: string) {
     experiment,
     fieldActionsTest,
     fieldComponentsTest,
+    ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
 
