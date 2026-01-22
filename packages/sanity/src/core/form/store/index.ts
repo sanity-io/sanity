@@ -1,5 +1,6 @@
 export {resolveConditionalProperty} from './conditional-property'
 export {ALL_FIELDS_GROUP} from './constants'
+export * from './contexts/RevealedPathsProvider'
 export * from './stateTreeHelper'
 export * from './types'
 export * from './useFormState'

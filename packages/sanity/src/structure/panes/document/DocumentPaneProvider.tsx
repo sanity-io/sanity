@@ -24,6 +24,7 @@ import {
   type PartialContext,
   pathToString,
   type ReleaseDocument,
+  RevealedPathsProvider,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -39,8 +40,6 @@ import {
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
-
-import {RevealedPathsProvider} from '../../../core/form/store/contexts/RevealedPathsProvider'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
