@@ -19,7 +19,7 @@ export function IncomingReferencesDecoration(
     actions,
     filter,
     filterParams,
-    name: fieldName,
+    name,
     creationAllowed = true,
     types,
     title,
@@ -32,7 +32,7 @@ export function IncomingReferencesDecoration(
         <Stack space={3}>
           <Flex align="center" paddingY={1}>
             <Text as="label" weight="medium" size={1}>
-              {title || startCase(fieldName)}
+              {title || startCase(name)}
             </Text>
           </Flex>
 
@@ -44,7 +44,7 @@ export function IncomingReferencesDecoration(
         </Stack>
       </Box>
       <IncomingReferencesList
-        fieldName={fieldName}
+        name={name}
         types={types}
         onLinkDocument={onLinkDocument}
         actions={actions}

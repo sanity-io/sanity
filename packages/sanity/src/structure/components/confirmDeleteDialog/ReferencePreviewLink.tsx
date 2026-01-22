@@ -17,7 +17,7 @@ const EMPTY_ARRAY: [] = []
 interface ReferencePreviewLinkProps {
   onClick?: () => void
   type: SchemaType & {icon?: any}
-  value: SanityDocument
+  value: SanityDocument | {_id: string; _type: string}
 }
 
 export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {

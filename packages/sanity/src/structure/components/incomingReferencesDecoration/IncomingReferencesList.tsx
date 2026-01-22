@@ -7,18 +7,15 @@ import {CrossDatasetIncomingReferenceType} from './CrossDatasetIncomingReference
 import {IncomingReferencesType} from './IncomingReferencesType'
 import {type IncomingReferencesOptions, isCrossDatasetIncomingReference} from './types'
 
-interface IncomingReferencesListProps extends IncomingReferencesOptions {
-  fieldName: string
-}
 export function IncomingReferencesList({
   types,
   onLinkDocument,
   actions,
   filter,
   filterParams,
-  fieldName,
+  name,
   creationAllowed,
-}: IncomingReferencesListProps) {
+}: IncomingReferencesOptions) {
   const {documentId, documentType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -55,7 +52,7 @@ export function IncomingReferencesList({
             onLinkDocument={onLinkDocument}
             actions={actions}
             shouldRenderTitle={types.length > 1}
-            fieldName={fieldName}
+            fieldName={name}
             creationAllowed={creationAllowed}
             filter={filter}
             filterParams={filterParams}
