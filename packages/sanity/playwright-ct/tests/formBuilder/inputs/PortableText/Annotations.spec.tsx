@@ -143,11 +143,9 @@ test.describe('Portable Text Input', () => {
 
       await insertPortableText('Text with multiple annotations.', $pte)
 
-      // Select "multiple" word
-      await page.keyboard.press('ArrowLeft')
-      for (let i = 0; i < 12; i++) {
-        await page.keyboard.press('Shift+ArrowLeft')
-      }
+      // Double-click on "annotations" to select it
+      const $text = $pte.getByText('annotations')
+      await $text.dblclick()
 
       // Add link annotation
       await page.getByRole('button', {name: 'Link'}).click()
@@ -164,13 +162,9 @@ test.describe('Portable Text Input', () => {
       // Expect the editor to have focus after closing the popover
       await expect($pte).toBeFocused()
 
-      // Reselect the same text and add highlight annotation
-      // First, position cursor at end of "annotations"
-      await page.keyboard.press('End')
-      await page.keyboard.press('ArrowLeft') // before period
-      for (let i = 0; i < 12; i++) {
-        await page.keyboard.press('Shift+ArrowLeft')
-      }
+      // Double-click on the linked text to reselect it and add highlight annotation
+      const $linkedText = $pte.locator('span[data-link]')
+      await $linkedText.dblclick()
 
       // Add highlight annotation (the second annotation type)
       await page.getByRole('button', {name: 'Highlight'}).click()
@@ -182,6 +176,9 @@ test.describe('Portable Text Input', () => {
 
       // Expect the editor to have focus after closing the popover
       await expect($pte).toBeFocused()
+
+      // Double-click again to select the annotated text and trigger the popover
+      await $linkedText.dblclick()
 
       // Assertion: the combined annotation toolbar popover should be visible
       const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
