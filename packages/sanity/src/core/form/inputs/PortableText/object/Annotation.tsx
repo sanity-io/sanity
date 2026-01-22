@@ -322,7 +322,6 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
       onClick={readOnly ? onOpen : undefined}
     >
       {textElement}
-      {/* Individual popover removed - now using CombinedAnnotationPopover at Compositor level */}
     </Root>
   )
 }
