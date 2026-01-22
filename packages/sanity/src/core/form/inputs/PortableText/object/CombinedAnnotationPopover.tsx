@@ -134,8 +134,8 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       floatingBoundary={floatingBoundary}
       constrainSize
       content={
-        <Box padding={1} data-testid="combined-annotation-toolbar-popover">
-          {annotations.map((annotation) => (
+        <Box padding={1} data-testid="annotation-toolbar-popover">
+          {annotations.map((annotation, index) => (
             <Flex key={annotation.key} gap={1} align="center">
               <Box padding={2} flex={1}>
                 <Text weight="medium" size={1}>
@@ -144,7 +144,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
               </Box>
               <Button
                 aria-label={t('inputs.portable-text.action.edit-annotation-aria-label')}
-                data-testid={`edit-annotation-button-${annotation.key}`}
+                data-testid={
+                  index === 0 ? 'edit-annotation-button' : `edit-annotation-button-${index}`
+                }
                 icon={EditIcon}
                 mode="bleed"
                 onClick={() => {
@@ -159,7 +161,9 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
               />
               <Button
                 aria-label={t('inputs.portable-text.action.remove-annotation-aria-label')}
-                data-testid={`remove-annotation-button-${annotation.key}`}
+                data-testid={
+                  index === 0 ? 'remove-annotation-button' : `remove-annotation-button-${index}`
+                }
                 icon={TrashIcon}
                 mode="bleed"
                 onClick={() => {
