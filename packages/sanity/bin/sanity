@@ -19,6 +19,7 @@
 import {readFile, open} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {dirname, resolve} from 'node:path'
+import {pathToFileURL} from 'node:url'
 import execa from 'execa'
 
 const require = createRequire(import.meta.url)
@@ -54,7 +55,7 @@ async function runSanityCli() {
   // prevent needing to spawn a new process
   if (await isNodeScript(bin)) {
     if (type === 'module') {
-      await import(bin)
+      await import(pathToFileURL(bin).href)
     } else {
       require(bin)
     }
