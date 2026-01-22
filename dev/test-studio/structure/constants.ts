@@ -63,6 +63,7 @@ export const DEBUG_INPUT_TYPES = [
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
   'focusTest',
+  'hiddenFieldValidationTest',
   'patchOnMountDebug',
   'formInputDebug',
   'initialValuesTest',
