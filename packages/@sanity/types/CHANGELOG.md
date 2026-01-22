@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* add "Open in Source" functionality for assets ([#11826](https://github.com/sanity-io/sanity/issues/11826)) ([eaa8f24](https://github.com/sanity-io/sanity/commit/eaa8f24571dfb2ed9b5f8a402e019c3225df1510)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **core:** add `renderMembers` function to objects and fieldsets ([#11205](https://github.com/sanity-io/sanity/issues/11205)) ([452d356](https://github.com/sanity-io/sanity/commit/452d3560c978ac8566848bbc2ce09a5c2cb0e383)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 **Note:** Version bump only for package @sanity/types

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* **codegen:** type utilities for generated types ([#11733](https://github.com/sanity-io/sanity/issues/11733)) ([682b253](https://github.com/sanity-io/sanity/commit/682b253b5bdb4656ae72ade9e97e3be0d7b2bd15)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Bug Fixes
+
+* **deps:** Update babel monorepo to ^7.28.6 ([#11876](https://github.com/sanity-io/sanity/issues/11876)) ([c86d4fb](https://github.com/sanity-io/sanity/commit/c86d4fb25421e864811dd09eae520d7d7d54a50f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 **Note:** Version bump only for package @sanity/codegen

@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* **core:** add `renderMembers` function to objects and fieldsets ([#11205](https://github.com/sanity-io/sanity/issues/11205)) ([452d356](https://github.com/sanity-io/sanity/commit/452d3560c978ac8566848bbc2ce09a5c2cb0e383)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **schema:** export DEFAULT_ANNOTATIONS and DEFAULT_DECORATORS ([#11916](https://github.com/sanity-io/sanity/issues/11916)) ([55cdb56](https://github.com/sanity-io/sanity/commit/55cdb56d5f55a6c21a38bd44ec45e69637bbffc6)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* allow custom object types as portable text annotations ([#11893](https://github.com/sanity-io/sanity/issues/11893)) ([968005f](https://github.com/sanity-io/sanity/commit/968005f6f1fad512269c3b18787a9e0f25d76ea7)) by RitaDias (rita@sanity.io)
+* **core:** allows setting timezone to dates arrays ([#11866](https://github.com/sanity-io/sanity/issues/11866)) ([85bd87b](https://github.com/sanity-io/sanity/commit/85bd87b36f68b125a5fd6cbe1181f257318a4af8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** deprecated label and validation icons overlap ([#11887](https://github.com/sanity-io/sanity/issues/11887)) ([b172d83](https://github.com/sanity-io/sanity/commit/b172d832c7dc01f2fa94a2dd60696ff0b98a9abb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** show timezone button when `allowTimeZoneSwitch` is true ([#11861](https://github.com/sanity-io/sanity/issues/11861)) ([25ee194](https://github.com/sanity-io/sanity/commit/25ee19461bb5c43ce9970ac5d34cd197ceb7e259)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#11868](https://github.com/sanity-io/sanity/issues/11868)) ([c95b22a](https://github.com/sanity-io/sanity/commit/c95b22a25b97b8e28af8caa378113873dae92042)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 **Note:** Version bump only for package sanity-test-studio
