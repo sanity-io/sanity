@@ -89,7 +89,7 @@ export function IncomingReferencesType({
       setIsAdding(false)
       setNewReferenceId(documentId)
       const liveEdit = Boolean(schemaType?.liveEdit)
-      const document = await client.fetch(`*[_id == "${documentId}"][0]`)
+      const document = await client.fetch('*[_id == $id][0]', {id: documentId})
 
       const linkedDocument = onLinkDocument?.(document, {
         _type: 'reference',
@@ -118,7 +118,7 @@ export function IncomingReferencesType({
 
   useEffect(() => {
     if (documents.length > 0 && newReferenceId) {
-      // new reference is now part of the documents, we need to remove it form the newReferenceId state
+      // new reference is now part of the documents, we need to remove it from the newReferenceId state
       const isAdded = documents.find(
         (document) => getPublishedId(document._id) === getPublishedId(newReferenceId),
       )
@@ -128,7 +128,7 @@ export function IncomingReferencesType({
 
   if (!schemaType) return null
   if (loading) {
-    return <LoadingBlock showText title={'Loading documents'} />
+    return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
   }
   return (
     <Stack space={2} marginBottom={2}>

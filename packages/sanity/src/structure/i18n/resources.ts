@@ -464,6 +464,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'incoming-references-input.type-to-search': 'Type to search',
   /** The text for the loading state in the incoming references input */
   'incoming-references-input.types-loading': 'Loading documents...',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading-cross-dataset': 'Loading cross dataset documents...',
   /** The text for the no references defined in the incoming references input */
   'incoming-references-input.types-not-defined':
     'No incoming references defined for this type, see the docs for more information.',

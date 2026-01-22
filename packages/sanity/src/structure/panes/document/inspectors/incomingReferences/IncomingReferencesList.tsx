@@ -98,7 +98,7 @@ export function IncomingReferencesList() {
   return (
     <>
       {references?.loading ? (
-        <LoadingBlock showText title={'Loading documents'} />
+        <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
       ) : (
         references?.list.map(({type, documents}) => {
           return (
@@ -128,7 +128,7 @@ export function IncomingReferencesList() {
         })
       )}
       {crossDatasetRefs?.loading ? (
-        <LoadingBlock showText title={'Loading cross dataset documents'} />
+        <LoadingBlock showText title={t('incoming-references-input.types-loading-cross-dataset')} />
       ) : (
         crossDatasetRefs?.list.map(({type, documents}) => {
           return (

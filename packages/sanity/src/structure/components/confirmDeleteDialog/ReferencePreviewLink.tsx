@@ -31,7 +31,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
     function LinkComponent(linkProps: {children: ReactNode}) {
       return (
         <ReferenceChildLink
-          documentId={getPublishedId(value?._id)}
+          documentId={value?._id}
           documentType={type?.name}
           parentRefPath={EMPTY_ARRAY}
           {...linkProps}
