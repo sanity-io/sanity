@@ -40,6 +40,7 @@ import {
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
+import {RevealedPathsProvider} from '../../../core/form/store/contexts/RevealedPathsProvider'
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
@@ -683,7 +684,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <RevealedPathsProvider documentId={documentId}>
+      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    </RevealedPathsProvider>
   )
 }
 

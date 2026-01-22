@@ -1,5 +1,6 @@
 import {type CurrentUser, isKeyedObject, type Path, type SchemaType} from '@sanity/types'
 
+import {pathToString} from '../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {MAX_FIELD_DEPTH} from '../constants'
 import {type StateTree} from '../types/state'
@@ -20,6 +21,8 @@ interface ResolveCallbackStateOptions {
   schemaType: SchemaType
   level: number
   path: Path
+  revealedPaths?: Set<string>
+  currentPath: Path
 }
 
 function resolveCallbackState({
@@ -31,6 +34,8 @@ function resolveCallbackState({
   level,
   property,
   path,
+  revealedPaths,
+  currentPath,
 }: ResolveCallbackStateOptions): StateTree<boolean> | undefined {
   const context: ConditionalPropertyCallbackContext = {
     value,
@@ -39,7 +44,16 @@ function resolveCallbackState({
     currentUser,
     path,
   }
-  const selfValue = resolveConditionalProperty(schemaType[property], context)
+  let selfValue = resolveConditionalProperty(schemaType[property], context)
+
+  // Override hidden to false if this path is revealed
+  // Only applies to 'hidden' property, not 'readOnly'
+  if (property === 'hidden' && selfValue && revealedPaths && currentPath.length > 0) {
+    const pathStr = pathToString(currentPath)
+    if (revealedPaths.has(pathStr)) {
+      selfValue = false // Override: reveal this hidden field
+    }
+  }
 
   // we don't have to calculate the children if the current value is true
   // because readOnly and hidden inherit. If the parent is readOnly or hidden
@@ -68,6 +82,8 @@ function resolveCallbackState({
           level: level + 1,
           property,
           path: [...path, fieldset.field.name],
+          revealedPaths,
+          currentPath: [...currentPath, fieldset.field.name],
         })
         if (!childResult) continue
 
@@ -92,6 +108,8 @@ function resolveCallbackState({
           level: level + 1,
           property,
           path: [...path, field.name],
+          revealedPaths,
+          currentPath: [...currentPath, field.name],
         })
         if (!childResult) continue
 
@@ -125,6 +143,8 @@ function resolveCallbackState({
           schemaType: itemType,
           property,
           path: [...path, {_key: item._key}],
+          revealedPaths,
+          currentPath: [...currentPath, {_key: item._key}],
         })
         if (!childResult) continue
 
@@ -145,6 +165,7 @@ export type ResolveRootCallbackStateOptions<TProperty extends 'hidden' | 'readOn
   documentValue: unknown
   currentUser: Omit<CurrentUser, 'role'> | null
   schemaType: SchemaType
+  revealedPaths?: Set<string>
 } & {[K in TProperty]?: boolean}
 
 export type RootCallbackResolver<TProperty extends 'hidden' | 'readOnly'> = (
@@ -161,12 +182,14 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
     currentUser,
     documentValue,
     schemaType,
+    revealedPaths,
     ...options
   }: ResolveRootCallbackStateOptions<TProperty>) {
     const hash = {
       currentUser: getId(currentUser),
       schemaType: getId(schemaType),
       document: getId(documentValue),
+      revealedPaths: revealedPaths ? Array.from(revealedPaths).sort().join(',') : '',
     }
     const serializedHash = JSON.stringify(hash)
 
@@ -189,6 +212,8 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
         value: documentValue,
         property,
         path: [],
+        revealedPaths,
+        currentPath: [],
       }),
     )
 
