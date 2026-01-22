@@ -723,6 +723,7 @@ exports[`exports snapshot 1`] = `
     "PortableTextMarkersContext": "object",
     "PortableTextMemberItemElementRefsContext": "object",
     "PortableTextMemberItemsContext": "object",
+    "PortableTextMemberSchemaTypesContext": "object",
     "PresenceContext": "object",
     "PresenceTrackerContextGetSnapshot": "object",
     "PresenceTrackerContextStore": "object",

@@ -1,4 +1,3 @@
-import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
@@ -10,6 +9,7 @@ import {type ComponentType, useMemo} from 'react'
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>
@@ -31,8 +31,8 @@ const markdownConfig: MarkdownConfig = {
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
-  const editor = usePortableTextEditor()
-  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({

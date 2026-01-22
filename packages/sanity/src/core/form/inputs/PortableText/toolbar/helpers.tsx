@@ -1,8 +1,5 @@
-import {
-  type HotkeyOptions,
-  PortableTextEditor,
-  type PortableTextMemberSchemaTypes,
-} from '@portabletext/editor'
+import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
+import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {
   BlockElementIcon,
   BoldIcon,
@@ -30,12 +27,12 @@ import {
 
 function getPTEFormatActions(
   editor: PortableTextEditor,
+  schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
   hotkeyOpts: HotkeyOptions,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
-  const types = editor.schemaTypes
-  return types.decorators.map((decorator) => {
+  return schemaTypes.decorators.map((decorator) => {
     const shortCutKey = Object.keys(hotkeyOpts.marks || {}).find(
       (key) => hotkeyOpts.marks?.[key] === decorator.value,
     )
@@ -62,11 +59,11 @@ function getPTEFormatActions(
 
 function getPTEListActions(
   editor: PortableTextEditor,
+  schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
-  const types = editor.schemaTypes
-  return types.lists.map((listItem) => {
+  return schemaTypes.lists.map((listItem) => {
     return {
       type: 'listStyle',
       key: listItem.value,
@@ -91,14 +88,14 @@ function getAnnotationIcon(type: ObjectSchemaType): ComponentType | string | und
 
 function getPTEAnnotationActions(
   editor: PortableTextEditor,
+  schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
   onInsert: (type: ObjectSchemaType) => void,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
-  const types = editor.schemaTypes
   const focusChild = PortableTextEditor.focusChild(editor)
   const hasText = focusChild && focusChild.text
-  return types.annotations.map((aType) => {
+  return schemaTypes.annotations.map((aType) => {
     return {
       type: 'annotation',
       disabled: !hasText || disabled,
@@ -123,15 +120,22 @@ function getPTEAnnotationActions(
  */
 export function getPTEToolbarActionGroups(
   editor: PortableTextEditor,
-  disabled: boolean,
-  onInsertAnnotation: (type: ObjectSchemaType) => void,
-  hotkeyOpts: HotkeyOptions,
-  t?: (key: string) => string,
+  options: {
+    schemaTypes: PortableTextMemberSchemaTypes
+    disabled: boolean
+    onInsertAnnotation: (type: ObjectSchemaType) => void
+    hotkeyOpts: HotkeyOptions
+    t?: (key: string) => string
+  },
 ): PTEToolbarActionGroup[] {
+  const {schemaTypes, disabled, onInsertAnnotation, hotkeyOpts, t} = options
   return [
-    {name: 'format', actions: getPTEFormatActions(editor, disabled, hotkeyOpts, t)},
-    {name: 'list', actions: getPTEListActions(editor, disabled, t)},
-    {name: 'annotation', actions: getPTEAnnotationActions(editor, disabled, onInsertAnnotation, t)},
+    {name: 'format', actions: getPTEFormatActions(editor, schemaTypes, disabled, hotkeyOpts, t)},
+    {name: 'list', actions: getPTEListActions(editor, schemaTypes, disabled, t)},
+    {
+      name: 'annotation',
+      actions: getPTEAnnotationActions(editor, schemaTypes, disabled, onInsertAnnotation, t),
+    },
   ]
 }
 

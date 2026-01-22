@@ -42,6 +42,7 @@ import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
+import {PortableTextMemberSchemaTypesProvider} from './contexts/PortableTextMemberSchemaTypes'
 import {
   type PortableTextOptimisticDiffApi,
   useOptimisticPortableTextDiff,
@@ -342,46 +343,48 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     <Box>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
-        <PortableTextMarkersProvider markers={markers}>
-          <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
-            <EditorProvider
-              initialConfig={{
-                initialValue: value,
-                readOnly: readOnly || !ready,
-                keyGenerator,
-                schema: schemaType,
-              }}
-            >
-              <EditorChangePlugin
-                onChange={handleEditorChange}
-                onOptimisticChange={onOptimisticChange}
-              />
-              <EditorRefPlugin ref={editorRef} />
-              <PatchesPlugin path={path} />
-              <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
-              <UpdateValuePlugin value={value} />
-              <PortableTextEditorPlugins schemaType={schemaType} />
-              <Compositor
-                {...props}
-                elementRef={elementRef}
-                hasFocusWithin={hasFocusWithin}
-                hotkeys={hotkeys}
-                isActive={isActive}
-                isFullscreen={isFullscreen}
-                onActivate={handleActivate}
-                onItemRemove={onItemRemove}
-                onCopy={onCopy}
-                onInsert={onInsert}
-                onPaste={onPaste}
-                onToggleFullscreen={handleToggleFullscreen}
-                rangeDecorations={rangeDecorations}
-                readOnly={readOnly || !ready}
-                renderBlockActions={renderBlockActions}
-                renderCustomMarkers={renderCustomMarkers}
-              />
-            </EditorProvider>
-          </PortableTextMemberItemsProvider>
-        </PortableTextMarkersProvider>
+        <PortableTextMemberSchemaTypesProvider schemaType={schemaType}>
+          <PortableTextMarkersProvider markers={markers}>
+            <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+              <EditorProvider
+                initialConfig={{
+                  initialValue: value,
+                  readOnly: readOnly || !ready,
+                  keyGenerator,
+                  schema: schemaType,
+                }}
+              >
+                <EditorChangePlugin
+                  onChange={handleEditorChange}
+                  onOptimisticChange={onOptimisticChange}
+                />
+                <EditorRefPlugin ref={editorRef} />
+                <PatchesPlugin path={path} />
+                <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
+                <UpdateValuePlugin value={value} />
+                <PortableTextEditorPlugins schemaType={schemaType} />
+                <Compositor
+                  {...props}
+                  elementRef={elementRef}
+                  hasFocusWithin={hasFocusWithin}
+                  hotkeys={hotkeys}
+                  isActive={isActive}
+                  isFullscreen={isFullscreen}
+                  onActivate={handleActivate}
+                  onItemRemove={onItemRemove}
+                  onCopy={onCopy}
+                  onInsert={onInsert}
+                  onPaste={onPaste}
+                  onToggleFullscreen={handleToggleFullscreen}
+                  rangeDecorations={rangeDecorations}
+                  readOnly={readOnly || !ready}
+                  renderBlockActions={renderBlockActions}
+                  renderCustomMarkers={renderCustomMarkers}
+                />
+              </EditorProvider>
+            </PortableTextMemberItemsProvider>
+          </PortableTextMarkersProvider>
+        </PortableTextMemberSchemaTypesProvider>
       )}
     </Box>
   )

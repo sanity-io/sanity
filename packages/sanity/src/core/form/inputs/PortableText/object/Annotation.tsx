@@ -22,6 +22,7 @@ import {
 import {useFormBuilder} from '../../../useFormBuilder'
 import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -81,6 +82,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
   } = props
   const {Markers = DefaultMarkers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const markDefPath: Path = useMemo(
     () => path.slice(0, path.length - 2).concat(['markDefs', {_key: value._key}]),
     [path, value._key],
@@ -162,7 +164,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       onPathFocus,
       onRemove,
       open: isOpen,
-      parentSchemaType: editor.schemaTypes.block,
+      parentSchemaType: schemaTypes.block,
       path: nodePath,
       presence: rootPresence,
       readOnly: Boolean(readOnly),
@@ -181,7 +183,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       value,
     }),
     [
-      editor.schemaTypes.block,
+      schemaTypes.block,
       editorNodeFocused,
       floatingBoundary,
       focused,
