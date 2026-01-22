@@ -9,6 +9,7 @@ import {debounceTime, map} from 'rxjs/operators'
 import {
   type DocumentAvailability,
   getPublishedId,
+  isSystemBundle,
   useDocumentPreviewStore,
   usePerspective,
   useTranslation,
@@ -79,7 +80,7 @@ export const ReferenceChangedBanner = memo(() => {
           publishedId,
           (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
           {
-            version: selectedPerspectiveName,
+            version: isSystemBundle(selectedPerspectiveName) ? undefined : selectedPerspectiveName,
           },
         )
         .pipe(
