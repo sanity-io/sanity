@@ -201,7 +201,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Get revealed paths for hidden field navigation
-  const {revealedPaths, revealPath} = useRevealedPaths()
+  const {revealedPaths, revealPath, clearRevealedPaths} = useRevealedPaths()
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -429,7 +429,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
   })
-  const handleChange = (event: PatchEvent) => patchRef.current(event)
+  const handleChange = (event: PatchEvent) => {
+    // Clear revealed paths when user edits the document
+    // This ensures hidden fields go back to being hidden after the user makes changes
+    clearRevealedPaths()
+    patchRef.current(event)
+  }
 
   useInsertionEffect(() => {
     // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
