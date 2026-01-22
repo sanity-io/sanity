@@ -15,8 +15,11 @@ import {Popover} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {formatBytes} from '../../common/helper'
+import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
+import {type AssetAccessPolicy} from '../types'
 
 type Props = {
+  accessPolicy?: AssetAccessPolicy
   children: ReactNode
   size: number
   originalFilename: string
@@ -30,6 +33,7 @@ type Props = {
 
 export function FileActionsMenu(props: Props) {
   const {
+    accessPolicy,
     originalFilename,
     size,
     children,
@@ -123,7 +127,8 @@ export function FileActionsMenu(props: Props) {
       </Card>
 
       <Box padding={2}>
-        <Flex justify="center">
+        <Flex justify="center" gap={2}>
+          {accessPolicy === 'private' && <AccessPolicyBadge />}
           {/* Using a customized Popover instead of MenuButton because a MenuButton will close on click
      and break replacing an uploaded file. */}
           <Popover

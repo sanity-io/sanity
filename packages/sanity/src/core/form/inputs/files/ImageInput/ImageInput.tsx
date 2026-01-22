@@ -35,6 +35,7 @@ import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
+import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
 import {ImageInputAssetSource} from './ImageInputAssetSource'
@@ -345,9 +346,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [accessPolicy, handleOpenDialog, imageUrlBuilder, readOnly, value])
 
+  const renderAssetAccessPolicy = useCallback(() => {
+    return <ImageAccessPolicy accessPolicy={accessPolicy} />
+  }, [accessPolicy])
+
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
+        accessPolicy={accessPolicy}
         assetSources={assetSources}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
@@ -368,6 +374,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
@@ -436,6 +443,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           isStale={isStale}
           onSelectFile={handleSelectFileToUpload}
           readOnly={readOnly}
+          renderAssetAccessPolicy={renderAssetAccessPolicy}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
           renderUploadPlaceholder={renderUploadPlaceholder}
@@ -455,6 +463,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       handleSelectFileToUpload,
       isStale,
       readOnly,
+      renderAssetAccessPolicy,
       renderAssetMenu,
       renderPreview,
       renderUploadPlaceholder,

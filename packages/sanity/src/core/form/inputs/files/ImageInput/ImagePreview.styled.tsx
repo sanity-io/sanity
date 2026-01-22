@@ -36,3 +36,11 @@ export const FlexOverlay = styled(Flex)`
   bottom: 0;
   right: 0;
 `
+
+export const ErrorIconWrapper = styled.div`
+  align-items: center;
+  color: var(--card-icon-color);
+  display: flex;
+  font-size: 1.5em;
+  justify-content: center;
+`

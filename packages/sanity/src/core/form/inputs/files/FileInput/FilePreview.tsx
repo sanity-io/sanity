@@ -11,12 +11,14 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
+import {type AssetAccessPolicy} from '../types'
 import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'
 
 export function FilePreview(props: FileAssetProps) {
   const {
+    accessPolicy,
     assetSources,
     clearField,
     directUploads,
@@ -161,6 +163,7 @@ export function FilePreview(props: FileAssetProps) {
     >
       {(fileAsset: FileAsset) => (
         <FilePreviewContent
+          accessPolicy={accessPolicy}
           assetSources={assetSources}
           browseMenuItem={browseMenuItem}
           clearField={clearField}
@@ -179,6 +182,7 @@ export function FilePreview(props: FileAssetProps) {
 }
 
 function FilePreviewContent({
+  accessPolicy,
   assetSources,
   browseMenuItem,
   clearField,
@@ -191,6 +195,7 @@ function FilePreviewContent({
   uploadMenuItem,
   value,
 }: {
+  accessPolicy?: AssetAccessPolicy
   assetSources: AssetSource[]
   browseMenuItem: ReactNode
   clearField: () => void
@@ -204,12 +209,17 @@ function FilePreviewContent({
   value: FileAssetProps['value']
 }) {
   const {t} = useTranslation()
-  const {originalFilename, extension, url, size} = fileAsset
+  const {_id, originalFilename, extension, url, size} = fileAsset
   const filename = originalFilename || `download.${extension}`
   let copyUrl: string | undefined
   let downloadUrl: string | undefined
 
-  if (isFileSource(value)) {
+  if (
+    isFileSource(value) &&
+    // @todo Temporary check to prevent showing download and copy links for
+    // private assets until support is added
+    accessPolicy !== 'private'
+  ) {
     downloadUrl = `${url}?dl`
     copyUrl = url
   }
@@ -233,6 +243,7 @@ function FilePreviewContent({
 
   return (
     <FileActionsMenu
+      accessPolicy={accessPolicy}
       size={size}
       originalFilename={filename}
       muted={!readOnly}

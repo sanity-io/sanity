@@ -6,9 +6,11 @@ import {
 } from '@sanity/types'
 
 import {type FileInfo} from '../common/styles'
+import {type AssetAccessPolicy} from '../types'
 import {type BaseFileInputProps} from './FileInput'
 
 export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'> {
+  accessPolicy?: AssetAccessPolicy
   browseButtonElementRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]

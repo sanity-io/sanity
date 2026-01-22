@@ -31,6 +31,7 @@ import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {type FileInfo} from '../common/styles'
+import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
 import {FileAssetSource} from './FileInputAssetSource'
 
@@ -260,6 +261,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
     [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t],
   )
 
+  const accessPolicy = useAccessPolicy({
+    client,
+    source: value,
+  })
+
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
@@ -276,6 +282,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     return (
       <FileAssetComponent
         {...props}
+        accessPolicy={accessPolicy}
         browseButtonElementRef={browseButtonElementRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
@@ -297,6 +304,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
       />
     )
   }, [
+    accessPolicy,
     handleCancelUpload,
     handleClearField,
     handleClearUploadStatus,
