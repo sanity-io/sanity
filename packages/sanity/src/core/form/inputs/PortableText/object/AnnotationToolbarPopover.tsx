@@ -5,10 +5,16 @@ import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {useAnnotationPopoverStack} from '../contexts/AnnotationPopoverStackContext'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
+/** Height of each popover row in pixels, used for stacking offset */
+const POPOVER_HEIGHT = 40
+
 interface AnnotationToolbarPopoverProps {
+  /** Unique key for this annotation (used for stacking) */
+  annotationKey: string
   annotationOpen: boolean
   annotationTextSelected: boolean
   floatingBoundary: HTMLElement | null
@@ -21,6 +27,7 @@ interface AnnotationToolbarPopoverProps {
 
 export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps): ReactNode {
   const {
+    annotationKey,
     annotationOpen,
     annotationTextSelected,
     floatingBoundary,
@@ -41,17 +48,45 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps): 
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
   const editor = usePortableTextEditor()
 
+  // Get stack context for positioning
+  const {register, unregister, getIndex} = useAnnotationPopoverStack()
+
+  // Register/unregister with stack context based on popover visibility
+  useEffect(() => {
+    if (popoverOpen) {
+      register(annotationKey)
+      return () => unregister(annotationKey)
+    }
+    return undefined
+  }, [popoverOpen, annotationKey, register, unregister])
+
+  // Get the current stack index for vertical offset
+  const stackIndex = popoverOpen ? getIndex(annotationKey) : 0
+
   // This is a "virtual element" (supported by Popper.js)
+  // Modified to include vertical offset based on stack index
   const cursorElement = useMemo(() => {
     if (!cursorRect) {
       return null
     }
+    // Apply vertical offset to prevent overlapping
+    const offset = stackIndex * POPOVER_HEIGHT
     return {
       getBoundingClientRect: () => {
-        return cursorRect
+        return {
+          top: cursorRect.top - offset,
+          bottom: cursorRect.bottom - offset,
+          left: cursorRect.left,
+          right: cursorRect.right,
+          width: cursorRect.width,
+          height: cursorRect.height,
+          x: cursorRect.x,
+          y: cursorRect.y - offset,
+          toJSON: () => cursorRect.toJSON(),
+        }
       },
     }
-  }, [cursorRect]) as HTMLElement
+  }, [cursorRect, stackIndex]) as HTMLElement
 
   const handleClosePopover = useCallback(() => {
     PortableTextEditor.focus(editor)

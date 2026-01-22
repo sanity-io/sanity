@@ -293,6 +293,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
       {textElement}
       {isReady && (
         <AnnotationToolbarPopover
+          annotationKey={value._key}
           annotationOpen={open}
           floatingBoundary={floatingBoundary}
           onOpenAnnotation={onOpen}
