@@ -256,6 +256,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps): React.J
     selected,
     textElement,
     validation,
+    value,
   } = props
   const isLink = schemaType.name === 'link'
   const hasError = validation.some((v) => v.level === 'error')
