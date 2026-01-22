@@ -20,6 +20,7 @@ import {isValidElementType} from 'react-is'
 
 import {Tooltip} from '../../../ui-components'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -61,8 +62,10 @@ function SanityDefaultMedia({
     return builder.image(val).withOptions({width, height, fit, dpr}).url() || ''
   }
 
-  const {url, isLoading} = useImageUrl({
-    client,
+  const accessPolicy = useAccessPolicy({client, source: imageSource})
+
+  const {isLoading, url} = useImageUrl({
+    accessPolicy,
     imageSource,
     imageUrlBuilder,
     transform,
