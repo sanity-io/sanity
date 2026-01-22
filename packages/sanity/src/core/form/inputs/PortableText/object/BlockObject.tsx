@@ -41,6 +41,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -118,6 +119,7 @@ export function BlockObject(props: BlockObjectProps) {
 
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
@@ -189,7 +191,7 @@ export function BlockObject(props: BlockObjectProps) {
   }, [isFullscreen, renderBlockActions])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
-  const parentSchemaType = editor.schemaTypes.portableText
+  const parentSchemaType = schemaTypes.portableText
   const hasMarkers = Boolean(markers.length > 0)
 
   const presence = useChildPresence(path, true)

@@ -1825,6 +1825,9 @@ importers:
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.3)
+      '@portabletext/sanity-bridge':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@portabletext/toolkit':
         specifier: ^5.0.1
         version: 5.0.1

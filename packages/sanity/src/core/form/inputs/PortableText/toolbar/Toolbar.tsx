@@ -14,6 +14,7 @@ import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
@@ -164,6 +165,7 @@ const InnerToolbar = memo(function InnerToolbar({
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
   const disabled = readOnly || !selection
@@ -239,11 +241,11 @@ export function Toolbar(props: ToolbarProps) {
     disabled: true,
   })
 
-  const blockStyles = useMemo(() => getBlockStyles(editor.schemaTypes), [editor])
+  const blockStyles = useMemo(() => getBlockStyles(schemaTypes), [schemaTypes])
 
   const insertMenuItems = useMemo(
-    () => getInsertMenuItems(editor.schemaTypes, disabled, handleInsertBlock, handleInsertInline),
-    [disabled, editor, handleInsertBlock, handleInsertInline],
+    () => getInsertMenuItems(schemaTypes, disabled, handleInsertBlock, handleInsertInline),
+    [disabled, schemaTypes, handleInsertBlock, handleInsertInline],
   )
 
   return (
