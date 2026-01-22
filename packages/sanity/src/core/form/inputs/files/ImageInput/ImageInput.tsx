@@ -353,6 +353,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
+        accessPolicy={accessPolicy}
         assetSources={assetSources}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
@@ -373,6 +374,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,

@@ -209,12 +209,17 @@ function FilePreviewContent({
   value: FileAssetProps['value']
 }) {
   const {t} = useTranslation()
-  const {originalFilename, extension, url, size} = fileAsset
+  const {_id, originalFilename, extension, url, size} = fileAsset
   const filename = originalFilename || `download.${extension}`
   let copyUrl: string | undefined
   let downloadUrl: string | undefined
 
-  if (isFileSource(value)) {
+  if (
+    isFileSource(value) &&
+    // @todo Temporary check to prevent showing download and copy links for
+    // private assets until support is added
+    accessPolicy !== 'private'
+  ) {
     downloadUrl = `${url}?dl`
     copyUrl = url
   }
