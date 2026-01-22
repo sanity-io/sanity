@@ -272,7 +272,7 @@ describe('patch', () => {
 
       expect(draftMutate).toHaveBeenNthCalledWith(1, [
         {
-          createIfNotExists: {
+          create: {
             _id: 'drafts.my-id',
             _type: 'example',
             newValue: 'hey',
@@ -334,7 +334,7 @@ describe('patch', () => {
 
       expect(draftMutate).toHaveBeenNthCalledWith(1, [
         {
-          createIfNotExists: {
+          create: {
             _id: 'drafts.my-id',
             _type: 'example',
           },
