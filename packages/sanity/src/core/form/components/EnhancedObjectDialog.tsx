@@ -148,13 +148,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         }
       }
     },
-    [
-	isTop,
-	stack,
-	onPathOpen,
-	onClose,
-	telemetry
-],
+    [isTop, stack, onPathOpen, onClose, telemetry],
   )
 
   const handleClose = useCallback(() => {
