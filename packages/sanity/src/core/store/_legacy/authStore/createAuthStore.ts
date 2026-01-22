@@ -158,14 +158,10 @@ export function _createAuthStore({
   loginMethod = 'dual',
   ...providerOptions
 }: AuthStoreOptions): AuthStore {
-  // This broadcast channel receives token and callbackHandled state.
-  // A new client will be created when the token changes. The callbackHandled flag
-  // tracks whether handleCallbackUrl has completed, preventing redirects before
-  // session ID exchange is complete (preventing Safari ITP infinite loop issue).
-  const {broadcast, messages} = createBroadcastChannel<{
-    token: string | null
-    callbackHandled: boolean
-  }>(`dual_mode_auth_${projectId}`)
+  // this broadcast channel receives either a token as a `string` or `null`.
+  // a new client will be created from it, otherwise, it'll only trigger a retry
+  // for cookie-based auth
+  const {broadcast, messages} = createBroadcastChannel<string | null>(`dual_mode_auth_${projectId}`)
 
   const clientFactory = clientFactoryOption ?? createSanityClient
 
@@ -176,15 +172,7 @@ export function _createAuthStore({
   // const firstMessage = messages.pipe(first())
 
   const token$ = messages.pipe(
-    map((message) => ({
-      token: message?.token || null,
-      callbackHandled: message?.callbackHandled ?? false,
-    })),
-    startWith(
-      isCookielessCompatibleLoginMethod(loginMethod)
-        ? {token: getToken(projectId), callbackHandled: false}
-        : {token: null, callbackHandled: false},
-    ),
+    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
   )
 
   // Allow configuration of `apiHost` through source configuration
@@ -200,34 +188,29 @@ export function _createAuthStore({
   const state$ = token$.pipe(
     // // see above
     // debounce(() => firstMessage),
-    map(({token, callbackHandled}) => {
-      return {
-        client: clientFactory({
-          projectId,
-          dataset,
-          apiVersion: '2021-06-07',
-          useCdn: false,
-          ...(token ? {token} : {withCredentials: true}),
-          perspective: 'raw',
-          requestTagPrefix: 'sanity.studio',
-          ignoreBrowserTokenWarning: true,
-          allowReconfigure: false,
-          headers: DEFAULT_STUDIO_CLIENT_HEADERS,
-          ...hostOptions,
-        }),
-        callbackHandled,
-      }
-    }),
-    switchMap(({client, callbackHandled}) =>
+    map((token) =>
+      clientFactory({
+        projectId,
+        dataset,
+        apiVersion: '2021-06-07',
+        useCdn: false,
+        ...(token ? {token} : {withCredentials: true}),
+        perspective: 'raw',
+        requestTagPrefix: 'sanity.studio',
+        ignoreBrowserTokenWarning: true,
+        allowReconfigure: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
+        ...hostOptions,
+      }),
+    ),
+    switchMap((client) =>
       defer(async (): Promise<AuthState> => {
-        const currentUser = await getCurrentUser(client, (message) =>
-          broadcast({token: message, callbackHandled: false}),
-        )
+        const currentUser = await getCurrentUser(client, broadcast)
+
         return {
           currentUser,
           client,
           authenticated: !!currentUser,
-          callbackHandled,
         }
       }),
     ),
@@ -239,23 +222,13 @@ export function _createAuthStore({
     shareReplay(1),
   )
 
-  let sessionIdFound = false
   async function handleCallbackUrl() {
     const sessionId = getSessionId()
 
-    const handleCallbackUrlBroadcast = (token: string | null) =>
-      broadcast({token, callbackHandled: true})
-
     if (!sessionId) {
-      // Only broadcast the token if we haven't found the session ID yet
-      // in some cases this will be called multiple times before the session ID has time to be validated
-      // we don't want to broadcast while the session ID is being validated
-      if (!sessionIdFound) {
-        handleCallbackUrlBroadcast(loginMethod === 'cookie' ? null : getToken(projectId))
-      }
+      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
       return
     }
-    sessionIdFound = true
 
     const requestClient = clientFactory({
       projectId,
@@ -271,21 +244,21 @@ export function _createAuthStore({
     let currentUser
     if (loginMethod === 'dual' || loginMethod === 'cookie') {
       // try to get the current user by using the cookie credentials
-      currentUser = await getCurrentUser(requestClient, handleCallbackUrlBroadcast)
+      currentUser = await getCurrentUser(requestClient, broadcast)
     }
 
     // If we have a user, or token authentication is explicitly disallowed (`cookie` mode),
     // then we don't need/want to fetch a token
     if (currentUser || loginMethod === 'cookie') {
       // if that worked, then we don't need to fetch a token
-      handleCallbackUrlBroadcast(null)
+      broadcast(null)
       return
     }
 
     // If we allow using token authentication, we should try to trade the session ID
     // for a token and store it locally for subsequent use
     const token = await tradeSessionForToken(requestClient, sessionId)
-    handleCallbackUrlBroadcast(token ?? null)
+    broadcast(token ?? null)
   }
 
   async function tradeSessionForToken(client: SanityClient, sessionId: string): Promise<string> {
@@ -315,20 +288,18 @@ export function _createAuthStore({
 
     clearToken(projectId)
     await requestClient.request<void>({uri: '/auth/logout', method: 'POST'})
-    broadcast({token: null, callbackHandled: true})
-    sessionIdFound = false
+    broadcast(null)
   }
 
   const LoginComponent = createLoginComponent({
     ...providerOptions,
-    state$,
     getClient: () => state$.pipe(map((state) => state.client)),
     loginMethod,
   })
 
   return {
     handleCallbackUrl,
-    token: token$.pipe(map(({token}) => token)),
+    token: token$,
     state: state$,
     LoginComponent,
     logout,
