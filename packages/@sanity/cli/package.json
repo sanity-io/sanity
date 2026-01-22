@@ -107,6 +107,7 @@
     "dotenv-expand": "^9.0.0",
     "eslint": "catalog:",
     "execa": "^2.1.0",
+    "get-port": "^7.1.0",
     "git-user-info": "^2.0.3",
     "globals": "catalog:",
     "inquirer": "^6.5.2",

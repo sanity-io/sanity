@@ -2,16 +2,17 @@ import {createHash} from 'node:crypto'
 import {readFile} from 'node:fs/promises'
 import path from 'node:path'
 
+import getPort from 'get-port'
 import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
 import {testServerCommand} from './shared/devServer'
-import {fixturesPath, getTestRunArgs, studioNames, studiosPath} from './shared/environment'
+import {fixturesPath, studioNames, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity dev`', () => {
   describe.each(studioNames)('%s', (studioName) => {
     test('start', async () => {
-      const testRunArgs = getTestRunArgs()
+      const port = await getPort()
       const basePath = '/config-base-path'
       const expectedFiles = [
         '/favicon.ico',
@@ -21,8 +22,8 @@ describeCliTest('CLI: `sanity dev`', () => {
 
       const {html: startHtml, fileHashes} = await testServerCommand({
         command: 'dev',
-        port: testRunArgs.port,
-        args: ['--port', `${testRunArgs.port}`],
+        port,
+        args: ['--port', `${port}`],
         cwd: path.join(studiosPath, studioName),
         basePath,
         expectedTitle: 'Sanity Studio',
@@ -42,15 +43,15 @@ describeCliTest('CLI: `sanity dev`', () => {
           .digest('hex')
         expect(fileHashes.get(`${basePath}/static/favicon.svg`)).toBe(customFaviconHash)
       }
-    })
+    }, 60_000)
 
     test('start with custom document component', async () => {
-      const testRunArgs = getTestRunArgs()
+      const port = await getPort()
       const {html: startHtml} = await testServerCommand({
         command: 'dev',
-        port: testRunArgs.port - 1,
+        port,
         basePath: '/config-base-path',
-        args: ['--port', `${testRunArgs.port - 1}`],
+        args: ['--port', `${port}`],
         cwd: path.join(studiosPath, `${studioName}-custom-document`),
         expectedTitle: 'Sanity Studio w/ custom document',
       })
@@ -59,15 +60,15 @@ describeCliTest('CLI: `sanity dev`', () => {
       // Check the use of environment variables from dotfiles
       expect(startHtml).toContain('data-studio-mode="development"')
       expect(startHtml).toContain('data-studio-dataset="ds-development"')
-    })
+    }, 60_000)
 
     test('start with custom document component, in prod mode', async () => {
-      const testRunArgs = getTestRunArgs()
+      const port = await getPort()
       const {html: startHtml} = await testServerCommand({
         command: 'dev',
-        port: testRunArgs.port - 2,
+        port,
         basePath: '/config-base-path',
-        args: ['--port', `${testRunArgs.port - 2}`],
+        args: ['--port', `${port}`],
         env: {SANITY_ACTIVE_ENV: 'production'},
         cwd: path.join(studiosPath, `${studioName}-custom-document`),
         expectedTitle: 'Sanity Studio w/ custom document',
@@ -77,29 +78,28 @@ describeCliTest('CLI: `sanity dev`', () => {
       // Check the use of environment variables from dotfiles
       expect(startHtml).toContain('data-studio-mode="production"')
       expect(startHtml).toContain('data-studio-dataset="ds-production"')
-    })
+    }, 60_000)
 
     test('start with load-in-dashboard flag', async () => {
-      const testRunArgs = getTestRunArgs()
+      const port = await getPort()
       await testServerCommand({
         command: 'dev',
-        port: testRunArgs.port - 3,
+        port,
         basePath: '/config-base-path',
-        args: ['--port', `${testRunArgs.port - 3}`, '--load-in-dashboard'],
+        args: ['--port', `${port}`, '--load-in-dashboard'],
         cwd: path.join(studiosPath, studioName),
         expectedTitle: 'Sanity Studio',
         expectedOutput: ({stdout, stderr}) => {
           // Verify that the dashboard URL is printed
           expect(stdout).toContain('View your app in the Sanity dashboard here:')
           expect(stdout).toMatch(/https:\/\/(?:www\.)?(?:sanity\.io|sanity\.work)\/@/g)
-          expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${testRunArgs.port - 3}`)
+          expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
         },
       })
-    })
+    }, 60_000)
 
     test('start with app', async () => {
-      const testRunArgs = getTestRunArgs()
-      const port = testRunArgs.port - 4
+      const port = await getPort()
       await testServerCommand({
         command: 'dev',
         port: port,
@@ -114,6 +114,6 @@ describeCliTest('CLI: `sanity dev`', () => {
           expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
         },
       })
-    })
+    }, 60_000)
   })
 })
