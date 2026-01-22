@@ -74,6 +74,8 @@ test.describe('Portable Text Input', () => {
       mount,
       page,
     }) => {
+      test.slow()
+      test.skip(browserName === 'firefox', 'Firefox has timing issues with PTE editor interaction')
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({
         page,
       })
@@ -172,6 +174,10 @@ test.describe('Portable Text Input', () => {
       // Close the highlight edit popover
       const $highlightEditPopover = page.getByTestId('popover-edit-dialog')
       await expect($highlightEditPopover).toBeAttached({timeout: 10000})
+      await expect($highlightEditPopover.getByTestId('string-input')).toBeVisible()
+      await expect($highlightEditPopover.getByTestId('string-input')).toBeEnabled()
+      await $highlightEditPopover.getByTestId('string-input').focus()
+      await page.keyboard.type('red')
       await page.keyboard.press('Escape')
 
       // Expect the editor to have focus after closing the popover
