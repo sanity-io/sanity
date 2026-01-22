@@ -39,7 +39,7 @@ export function ValidationInspector(props: DocumentInspectorProps) {
 
   const handleOpen = useCallback(
     (path: Path) => {
-      onPathOpen(path)
+      onPathOpen(path, {revealHidden: true})
       onFocus(path)
     },
     [onFocus, onPathOpen],

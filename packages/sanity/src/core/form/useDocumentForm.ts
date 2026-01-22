@@ -501,9 +501,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   useComlinkViewHistory({editState})
 
-  const handleSetOpenPath = (path: Path) => {
-    // Reveal hidden fields along this path so they become visible
-    revealPath(path)
+  const handleSetOpenPath = (path: Path, pathOpenOptions?: {revealHidden?: boolean}) => {
+    // Only reveal hidden fields when explicitly requested (e.g., from validation error click)
+    if (pathOpenOptions?.revealHidden) {
+      revealPath(path)
+    }
 
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
