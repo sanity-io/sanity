@@ -753,6 +753,7 @@ exports[`exports snapshot 1`] = `
     "SchedulesContext": "object",
     "ScrollContext": "object",
     "SearchContext": "object",
+    "SelectedAnnotationsContext": "object",
     "SingleDocReleaseContext": "object",
     "SingleDocReleaseEnabledContext": "object",
     "SingleDocReleaseUpsellContext": "object",
