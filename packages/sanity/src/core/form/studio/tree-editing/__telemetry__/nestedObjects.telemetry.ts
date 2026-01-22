@@ -40,6 +40,19 @@ export const NavigatedToNestedObjectViaBreadcrumb = defineEvent<NestedDialogOpen
   description: 'User navigated to a nested object via a breadcrumb',
 })
 
+export const NavigatedToNestedObjectViaCloseButton = defineEvent({
+  name: 'Navigated to Nested Object via Close Button',
+  version: 1,
+  description:
+    'User navigated to a nested object via closing the top most dialog via the close button',
+})
+
+export const navigatedToNestedObjectViaKeyboardShortcut = defineEvent({
+  name: 'Navigated to Nested Object via Keyboard Shortcut',
+  version: 1,
+  description: 'User navigated to a nested object via a keyboard shortcut',
+})
+
 export const CreatedNewObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
   name: 'Created New Object in Array List',
   version: 1,
