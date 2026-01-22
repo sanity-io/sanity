@@ -64,8 +64,21 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line max-statements
 export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+  const {pane} = props
+  const documentId = getPublishedId(pane.options.id)
+
+  // RevealedPathsProvider must wrap the inner component so useRevealedPaths()
+  // in useDocumentForm() gets the real context, not the no-op default
+  return (
+    <RevealedPathsProvider documentId={documentId}>
+      <DocumentPaneProviderInner {...props} />
+    </RevealedPathsProvider>
+  )
+}
+
+// eslint-disable-next-line max-statements
+function DocumentPaneProviderInner(props: DocumentPaneProviderProps) {
   const {
     children,
     index,
@@ -684,9 +697,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
-    <RevealedPathsProvider documentId={documentId}>
-      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
-    </RevealedPathsProvider>
+    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
 }
 
