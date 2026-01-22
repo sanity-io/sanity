@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {getPublishedId, pathToString, type SanityDocument, useSchema, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'

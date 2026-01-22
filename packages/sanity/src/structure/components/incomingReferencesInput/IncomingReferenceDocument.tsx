@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {motion, type Variants} from 'framer-motion'
+import {motion, type Variants} from 'motion/react'
 import {useCallback, useState} from 'react'
 import {
   getPublishedId,
