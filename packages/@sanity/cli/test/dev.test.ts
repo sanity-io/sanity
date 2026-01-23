@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto'
-import {readFile} from 'node:fs/promises'
+import {readFile, stat} from 'node:fs/promises'
 import path from 'node:path'
 
 import getPort from 'get-port'
@@ -29,8 +29,10 @@ describeCliTest('CLI: `sanity dev`', () => {
         expectedTitle: 'Sanity Studio',
         expectedFiles,
         expectedOutput: ({stdout}) => {
-          // Verify schema extraction enabled message is printed when configured
-          expect(stdout).toContain('Running dev server with schema extraction enabled')
+          expect(stdout).toContain('running at http://localhost')
+
+          // Verify schema extraction message is _not_ printed when not enabled
+          expect(stdout).not.toContain('Running dev server with schema extraction enabled')
         },
       })
 
@@ -118,6 +120,33 @@ describeCliTest('CLI: `sanity dev`', () => {
           expect(stdout).toContain(`http%3A%2F%2Flocalhost%3A${port}`)
         },
       })
+    }, 60_000)
+
+    test('start with schema extraction', async () => {
+      const port = await getPort()
+      const randomSchemaName = `${Math.random().toString(30).slice(2)}.json`
+
+      await testServerCommand({
+        command: 'dev',
+        port,
+        args: ['--port', `${port}`],
+        cwd: path.join(studiosPath, studioName),
+        env: {
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION: '1',
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION_PATH: randomSchemaName,
+        },
+        basePath: '/config-base-path',
+        expectedTitle: 'Sanity Studio',
+        expectedOutput: ({stdout, stderr}) => {
+          // Verify schema extraction message is _not_ printed when not enabled
+          expect(stdout).toContain('Running dev server with schema extraction enabled')
+
+          expect(stdout + stderr).toContain(`Extracted schema to ${randomSchemaName}`)
+        },
+      })
+
+      // Assert that the
+      await expect(stat(path.join(studiosPath, studioName, randomSchemaName))).resolves.toBeTruthy()
     }, 60_000)
   })
 })

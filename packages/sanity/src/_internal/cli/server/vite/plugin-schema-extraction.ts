@@ -124,7 +124,7 @@ export interface SchemaExtractionPluginOptions {
 export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}) {
   const {
     workDir: workDirOption,
-    outputPath: outputPathOption,
+    outputPath: outputPathOption = 'schema.json',
     output = console,
     workspaceName,
     additionalPatterns = [],
@@ -180,7 +180,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         // TODO: Remove when we have better control over progress reporting in build
         output.log('')
       }
-      output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
+      output.log(logSymbols.success, `Extracted schema to ${outputPathOption}`)
 
       // add stats for the successful extraction run to use later for telemetry
       stats.successfulDurations.push(Date.now() - extractionStartTime)
@@ -220,9 +220,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       // Resolve workDir from option or Vite's project root
       resolvedWorkDir = workDirOption ?? config.root
 
-      if (!outputPathOption) {
-        resolvedOutputPath = path.join(resolvedWorkDir, 'schema.json')
-      } else if (isAbsolute(outputPathOption)) {
+      if (isAbsolute(outputPathOption)) {
         resolvedOutputPath = outputPathOption
       } else {
         resolvedOutputPath = path.join(resolvedWorkDir, outputPathOption)
