@@ -157,6 +157,7 @@ function resolveReadOnlyAncestor({
       parent: null,
       document: value as ConditionalPropertyCallbackContext['document'],
       currentUser,
+      path: currentPath,
     })
   })
 
@@ -231,6 +232,7 @@ export async function transferValue({
     parent: null,
     document: targetRootValue as ConditionalPropertyCallbackContext['document'],
     currentUser,
+    path: targetRootPath,
   })
   const targetSchemaTypeAtPathReadOnly = resolveConditionalProperty(
     targetSchemaTypeAtPath.readOnly,
@@ -239,6 +241,7 @@ export async function transferValue({
       parent: null,
       document: targetRootValue as ConditionalPropertyCallbackContext['document'],
       currentUser,
+      path: targetPath,
     },
   )
 
