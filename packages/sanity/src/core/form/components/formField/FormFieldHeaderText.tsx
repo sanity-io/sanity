@@ -133,7 +133,9 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                   >
                     <Flex align="center" gap={2}>
                       {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
-                      {onHideRevealed && <CloseIcon style={{fontSize: '1em'}} />}
+                      {onHideRevealed && (
+                        <CloseIcon style={{fontSize: '1em', marginRight: '2px'}} />
+                      )}
                     </Flex>
                   </Badge>
                 </Tooltip>

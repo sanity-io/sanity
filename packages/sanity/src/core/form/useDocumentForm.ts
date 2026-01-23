@@ -201,7 +201,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Get revealed paths for hidden field navigation
-  const {revealedPaths, revealPath, clearRevealedPaths} = useRevealedPaths()
+  const {revealedPaths, revealPath} = useRevealedPaths()
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -430,9 +430,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     )
   })
   const handleChange = (event: PatchEvent) => {
-    // Clear revealed paths when user edits the document
-    // This ensures hidden fields go back to being hidden after the user makes changes
-    clearRevealedPaths()
+    // Note: We do NOT clear revealed paths on edit - user must click the × button
+    // or change templates to hide revealed fields again
     patchRef.current(event)
   }
 
