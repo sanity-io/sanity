@@ -435,16 +435,16 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     // If editing a non-revealed field (e.g., a "selectedTemplate" field that controls visibility),
     // we should clear the revealed paths. But if editing within a revealed field, we don't clear.
     if (revealedPaths.size > 0) {
-      const patchAffectsNonRevealedPath = event.patches.some((patch) => {
-        if (!patch.path || patch.path.length === 0) {
+      const patchAffectsNonRevealedPath = event.patches.some((p) => {
+        if (!p.path || p.path.length === 0) {
           return false // Root-level patches don't count
         }
-        const patchPathStr = pathToString(patch.path)
+        const patchPathStr = pathToString(p.path)
 
         // Check if this patch path is a revealed path or a descendant of one
         for (const revealedPath of revealedPaths) {
           // Patch is to the revealed path itself, or a descendant of it
-          if (patchPathStr === revealedPath || patchPathStr.startsWith(revealedPath + '.')) {
+          if (patchPathStr === revealedPath || patchPathStr.startsWith(`${revealedPath}.`)) {
             return false // This patch is within a revealed path - don't trigger clear
           }
         }

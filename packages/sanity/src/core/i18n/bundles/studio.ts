@@ -573,13 +573,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
+  /** Tooltip for button to hide a revealed field again */
+  'form.field.hide-revealed-tooltip': 'Hide field',
   /** Label for badge shown when a hidden field is temporarily revealed due to validation error */
   'form.field.revealed-label': 'Hidden',
   /** Tooltip explaining why a hidden field is being shown */
   'form.field.revealed-tooltip':
     'This field is normally hidden but is shown because of a validation error',
-  /** Tooltip for button to hide a revealed field again */
-  'form.field.hide-revealed-tooltip': 'Hide field',
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
   /** Accessibility label for the icon that indicates the field has a validation error */

@@ -134,7 +134,7 @@ export function RevealedPathsProvider({
       // Remove the path itself and all descendants
       // A descendant path starts with the same prefix
       for (const existingPath of prev) {
-        if (existingPath === pathStr || existingPath.startsWith(pathStr + '.')) {
+        if (existingPath === pathStr || existingPath.startsWith(`${pathStr}.`)) {
           next.delete(existingPath)
         }
       }
@@ -146,7 +146,7 @@ export function RevealedPathsProvider({
     setRevealRoots((prev) => {
       const next = new Set(prev)
       for (const existingPath of prev) {
-        if (existingPath === pathStr || existingPath.startsWith(pathStr + '.')) {
+        if (existingPath === pathStr || existingPath.startsWith(`${pathStr}.`)) {
           next.delete(existingPath)
         }
       }
