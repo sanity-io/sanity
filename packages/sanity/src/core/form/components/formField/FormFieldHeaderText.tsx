@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Button, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
@@ -92,9 +92,24 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           <LabelSuffix align="center">
             {isRevealed && (
               <Flex align="center" marginLeft={2} gap={1}>
-                <Badge data-testid={`revealed-badge-${title}`} tone="primary">
-                  {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
-                </Badge>
+                <Tooltip
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>
+                        {t('form.field.revealed-tooltip', {
+                          defaultValue:
+                            'This field is normally hidden but is shown because of a validation error',
+                        })}
+                      </Text>
+                    </Box>
+                  }
+                  placement="top"
+                  portal
+                >
+                  <Badge data-testid={`revealed-badge-${title}`} tone="caution">
+                    {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                  </Badge>
+                </Tooltip>
                 {onHideRevealed && (
                   <Button
                     data-testid={`hide-revealed-${title}`}
@@ -102,7 +117,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                     mode="bleed"
                     onClick={onHideRevealed}
                     padding={1}
-                    tone="primary"
+                    tone="caution"
                     title={t('form.field.hide-revealed-tooltip', {defaultValue: 'Hide field'})}
                   />
                 )}
