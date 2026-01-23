@@ -1,5 +1,6 @@
+import {CloseIcon} from '@sanity/icons'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Box, Button, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -66,6 +67,11 @@ export interface FormFieldSetProps {
    * @internal
    */
   isRevealed?: boolean
+  /**
+   * Callback to hide the revealed field again
+   * @internal
+   */
+  onHideRevealed?: () => void
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
@@ -150,6 +156,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     inputId,
     deprecated,
     isRevealed,
+    onHideRevealed,
     ...restProps
   } = props
 
@@ -216,11 +223,22 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                 />
               )}
               {isRevealed && (
-                <Box marginLeft={2}>
+                <Flex align="center" marginLeft={2} gap={1}>
                   <Badge data-testid={`revealed-badge-${title}`} tone="primary">
                     {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
                   </Badge>
-                </Box>
+                  {onHideRevealed && (
+                    <Button
+                      data-testid={`hide-revealed-${title}`}
+                      icon={CloseIcon}
+                      mode="bleed"
+                      onClick={onHideRevealed}
+                      padding={1}
+                      tone="primary"
+                      title={t('form.field.hide-revealed-tooltip', {defaultValue: 'Hide field'})}
+                    />
+                  )}
+                </Flex>
               )}
               {deprecated && (
                 <Box marginLeft={2}>
