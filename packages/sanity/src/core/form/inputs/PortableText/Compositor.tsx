@@ -21,11 +21,13 @@ import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
+import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
+import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
@@ -514,32 +516,38 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-        <ChangeIndicator
-          disabled={isFullscreen}
-          hasFocus={Boolean(focused)}
-          isChanged={changed}
-          path={path}
-        >
-          <Root
-            data-focused={editorFocused ? '' : undefined}
-            data-read-only={readOnly ? '' : undefined}
+    <SelectedAnnotationsProvider>
+      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+          <ChangeIndicator
+            disabled={isFullscreen}
+            hasFocus={Boolean(focused)}
+            isChanged={changed}
+            path={path}
           >
-            <Box data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                <AnnotationObjectEditModal
-                  focused={focused}
-                  onItemClose={onItemClose}
-                  referenceBoundary={scrollElement}
-                />
-              </Portal>
-            </Box>
-            <div data-border="" />
-          </Root>
-        </ChangeIndicator>
-      </ActivateOnFocus>
-    </PortalProvider>
+            <Root
+              data-focused={editorFocused ? '' : undefined}
+              data-read-only={readOnly ? '' : undefined}
+            >
+              <Box data-wrapper="" ref={setWrapperElement}>
+                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                  <AnnotationObjectEditModal
+                    focused={focused}
+                    onItemClose={onItemClose}
+                    referenceBoundary={scrollElement}
+                  />
+                  <CombinedAnnotationPopover
+                    floatingBoundary={boundaryElement}
+                    referenceBoundary={scrollElement}
+                  />
+                </Portal>
+              </Box>
+              <div data-border="" />
+            </Root>
+          </ChangeIndicator>
+        </ActivateOnFocus>
+      </PortalProvider>
+    </SelectedAnnotationsProvider>
   )
 }
