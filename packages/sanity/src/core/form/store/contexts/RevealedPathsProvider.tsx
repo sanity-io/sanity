@@ -8,38 +8,37 @@ interface RevealedPathsProviderProps {
   children: ReactNode
   /** Document ID - when this changes, revealed paths are automatically cleared */
   documentId?: string
-  /** Template name - when this changes, revealed paths are automatically cleared */
-  templateName?: string
 }
 
+/**
+ * Provider component for tracking revealed paths (paths that should ignore hidden property).
+ * Used when navigating to validation errors on hidden fields.
+ * @internal
+ */
 export function RevealedPathsProvider({
   children,
   documentId,
-  templateName,
 }: RevealedPathsProviderProps): ReactNode {
   const [revealedPaths, setRevealedPaths] = useState<Set<string>>(new Set())
   // Track which paths are the "root" of a reveal tree - these get the close button
   const [revealRoots, setRevealRoots] = useState<Set<string>>(new Set())
 
-  // Track previous values to detect actual changes (not just initial mount)
+  // Track previous document ID to detect document changes (not just initial mount)
   const prevDocumentIdRef = useRef(documentId)
-  const prevTemplateNameRef = useRef(templateName)
 
-  // Clear revealed paths when document or template changes (but not on initial mount)
+  // Clear revealed paths when document changes (but not on initial mount)
   useEffect(() => {
     const documentIdChanged = prevDocumentIdRef.current !== documentId
-    const templateNameChanged = prevTemplateNameRef.current !== templateName
 
-    // Update refs
+    // Update ref
     prevDocumentIdRef.current = documentId
-    prevTemplateNameRef.current = templateName
 
     // Only clear if there was an actual change (not initial mount)
-    if (documentIdChanged || templateNameChanged) {
+    if (documentIdChanged) {
       setRevealedPaths(new Set())
       setRevealRoots(new Set())
     }
-  }, [documentId, templateName])
+  }, [documentId])
 
   const revealPath = useCallback((path: Path) => {
     const pathStr = pathToString(path)
@@ -182,6 +181,7 @@ const DEFAULT_REVEALED_PATHS_VALUE: RevealedPathsContextValue = {
  * Hook to access revealed paths context.
  * Returns a safe no-op default when used outside of RevealedPathsProvider,
  * allowing useDocumentForm to work in contexts like TasksFormBuilder and DiffViewPane.
+ * @internal
  */
 export function useRevealedPaths(): RevealedPathsContextValue {
   const context = useContext(RevealedPathsContext)
