@@ -9,6 +9,7 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsc --noEmit",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy",
     "dev": "sanity dev",

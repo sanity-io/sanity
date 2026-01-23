@@ -9,6 +9,7 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsc --noEmit",
     "deploy": "sanity deploy",
     "dev": "sanity dev",
     "start": "sanity start"
