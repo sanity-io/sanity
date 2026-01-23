@@ -225,7 +225,7 @@ function HumanizedList(props: {values: string[]}) {
   const parts = listFormat.formatToParts(props.values)
   return (
     <Fragment>
-      {parts.map((segment) =>
+      {parts.map((segment: {type: string; value: string}) =>
         segment.type === 'element' ? (
           <code key={segment.value}>{segment.value}</code>
         ) : (
