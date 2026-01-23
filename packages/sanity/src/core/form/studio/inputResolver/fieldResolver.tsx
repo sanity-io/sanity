@@ -9,6 +9,7 @@ import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
+import {pathToString} from '../../../field/paths/helpers'
 import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
@@ -92,9 +93,11 @@ function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
-  const isRevealed = isPathRevealed(field.path)
-  const showCloseButton = isRevealRoot(field.path)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  const pathStr = pathToString(field.path)
+  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
+  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
+  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
@@ -154,9 +157,11 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
-  const isRevealed = isPathRevealed(field.path)
-  const showCloseButton = isRevealRoot(field.path)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  const pathStr = pathToString(field.path)
+  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
+  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
+  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
@@ -226,9 +231,11 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
-  const isRevealed = isPathRevealed(field.path)
-  const showCloseButton = isRevealRoot(field.path)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  const pathStr = pathToString(field.path)
+  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
+  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
+  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),

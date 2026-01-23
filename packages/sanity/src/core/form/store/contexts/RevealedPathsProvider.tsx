@@ -22,6 +22,8 @@ export function RevealedPathsProvider({
   const [revealedPaths, setRevealedPaths] = useState<Set<string>>(new Set())
   // Track which paths are the "root" of a reveal tree - these get the close button
   const [revealRoots, setRevealRoots] = useState<Set<string>>(new Set())
+  // Track which paths are naturally hidden (by schema, ignoring reveals)
+  const [naturallyHiddenPaths, setNaturallyHiddenPaths] = useState<Set<string>>(new Set())
 
   // Track previous document ID to detect document changes (not just initial mount)
   const prevDocumentIdRef = useRef(documentId)
@@ -155,13 +157,23 @@ export function RevealedPathsProvider({
   const value: RevealedPathsContextValue = useMemo(
     () => ({
       revealedPaths,
+      naturallyHiddenPaths,
+      setNaturallyHiddenPaths,
       revealPath,
       isPathRevealed,
       isRevealRoot,
       clearRevealedPaths,
       hideRevealedPath,
     }),
-    [revealedPaths, revealPath, isPathRevealed, isRevealRoot, clearRevealedPaths, hideRevealedPath],
+    [
+      revealedPaths,
+      naturallyHiddenPaths,
+      revealPath,
+      isPathRevealed,
+      isRevealRoot,
+      clearRevealedPaths,
+      hideRevealedPath,
+    ],
   )
 
   return <RevealedPathsContext.Provider value={value}>{children}</RevealedPathsContext.Provider>
@@ -170,6 +182,8 @@ export function RevealedPathsProvider({
 // Default no-op context value for when used outside RevealedPathsProvider
 const DEFAULT_REVEALED_PATHS_VALUE: RevealedPathsContextValue = {
   revealedPaths: new Set<string>(),
+  naturallyHiddenPaths: new Set<string>(),
+  setNaturallyHiddenPaths: () => {},
   revealPath: () => {},
   isPathRevealed: () => false,
   isRevealRoot: () => false,
