@@ -1,9 +1,14 @@
+import type * as NodeWorkerThreads from 'node:worker_threads'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
+import {
+  type DeployStudioWorkerResult,
+  type DeployStudioWorkerSuccess,
+} from '../../../threads/generateStudioManifest'
 import buildSanityStudio from '../../build/buildAction'
 import deployStudioAction, {type DeployStudioActionFlags} from '../deployAction'
 import * as _helpers from '../helpers'
@@ -14,6 +19,36 @@ vi.mock('tar-fs')
 vi.mock('node:zlib')
 vi.mock('../helpers')
 vi.mock('../../build/buildAction')
+vi.mock('../../schema/deploySchemasAction', () => ({
+  deploySchemasAction: vi.fn().mockResolvedValue(undefined),
+}))
+vi.mock('../../schema/utils/mainfestExtractor', () => ({
+  createManifestExtractor: vi.fn(() => vi.fn()),
+}))
+vi.mock('../../../util/extractClientConfig', () => ({
+  extractClientConfig: vi.fn(() => ({projectId: 'test-project', dataset: 'test-dataset'})),
+}))
+
+// Mock Worker class - defined inside factory to avoid hoisting issues
+const mockWorkerOnce = vi.fn()
+const mockWorkerTerminate = vi.fn().mockResolvedValue(0)
+
+vi.mock('node:worker_threads', async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeWorkerThreads>()
+  return {
+    ...actual,
+    Worker: class MockWorker {
+      once = mockWorkerOnce
+      terminate = mockWorkerTerminate
+    },
+  }
+})
+
+vi.mock('read-pkg-up', () => ({
+  default: {
+    sync: vi.fn(() => ({path: '/fake/path/package.json'})),
+  },
+}))
 
 const helpers = vi.mocked(_helpers)
 const buildSanityStudioMock = vi.mocked(buildSanityStudio)
@@ -41,6 +76,21 @@ describe('deployStudioAction', () => {
     type: 'studio',
   }
 
+  const mockWorkerSuccessResult: DeployStudioWorkerSuccess = {
+    type: 'success',
+    studioManifest: {
+      bundleVersion: 'vX',
+      workspaces: [
+        {
+          name: 'default',
+          projectId: 'example',
+          dataset: 'production',
+          schemaDescriptorId: 'schema-123',
+        },
+      ],
+    },
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -50,12 +100,22 @@ describe('deployStudioAction', () => {
       fail: vi.fn(() => spinnerInstance),
     }
 
+    // Setup worker mock to simulate successful message response
+    mockWorkerOnce.mockImplementation(
+      (event: string, callback: (result: DeployStudioWorkerResult) => void) => {
+        if (event === 'message') {
+          // Simulate async worker response using Promise to ensure it runs after all listeners are registered
+          void Promise.resolve().then(() => callback(mockWorkerSuccessResult))
+        }
+      },
+    )
+
     mockContext = {
       apiClient: vi.fn().mockReturnValue({
         withConfig: vi.fn().mockReturnThis(),
       }),
       workDir: '/fake/work/dir',
-      chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str)},
+      chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str), gray: vi.fn((str) => str)},
       output: {
         error: vi.fn((str) => str),
         print: vi.fn(),
@@ -117,6 +177,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      manifest: mockWorkerSuccessResult.studioManifest,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
@@ -173,6 +234,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
+      manifest: mockWorkerSuccessResult.studioManifest,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
