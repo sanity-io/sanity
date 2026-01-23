@@ -32,6 +32,7 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
     parentTest: 'hello',
     siblingProp: true,
   },
+  path: [],
 }
 
 afterEach(() => {
@@ -199,6 +200,7 @@ describe('Conditional property resolver', () => {
           document: dummyDocument,
           value: dummyDocument.venue.address,
           parent: dummyDocument.venue,
+          path: ['venue', 'address'],
           checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
         }),
       {wrapper: TestWrapper},
