@@ -8,8 +8,30 @@ test.describe('Hidden Field Validation Badge', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
       // Create a new document with the hiddenFieldValidationTest type
       await createDraftDocument('/content/input-debug;hiddenFieldValidationTest')
+
+      await expect(page.locator('label').filter({hasText: 'Template A'})).toBeVisible({
+        timeout: 5000,
+      })
+      await page.locator('label').filter({hasText: 'Template A'}).click()
+
+      await expect(
+        page.getByTestId('field-templateA.metadata.author').getByTestId('string-input'),
+      ).toBeVisible({timeout: 5000})
+      await expect(
+        page.getByTestId('field-templateA.metadata.author').getByTestId('string-input'),
+      ).toBeEnabled({timeout: 5000})
+      await page
+        .getByTestId('field-templateA.metadata.author')
+        .getByTestId('string-input')
+        .fill('Test Author')
+
+      // This should trigger the valitioan error
+
+      await expect(page.locator('label').filter({hasText: 'None'})).toBeVisible({timeout: 5000})
+      await page.locator('label').filter({hasText: 'None'}).click()
 
       // The default template is 'none', so templateA fields should be hidden
       // But validation errors still exist on required fields in templateA
@@ -49,6 +71,7 @@ test.describe('Hidden Field Validation Badge', () => {
       page,
       createDraftDocument,
     }) => {
+      test.slow()
       // Create a new document with the hiddenFieldValidationTest type
       await createDraftDocument('/content/input-debug;hiddenFieldValidationTest')
 
@@ -57,6 +80,19 @@ test.describe('Hidden Field Validation Badge', () => {
       const templateARadio = page.getByRole('radio', {name: 'Template A'})
       await expect(templateARadio).toBeVisible({timeout: 5000})
       await templateARadio.click()
+
+      await expect(
+        page.getByTestId('field-templateA.metadata.author').getByTestId('string-input'),
+      ).toBeVisible({timeout: 5000})
+      await expect(
+        page.getByTestId('field-templateA.metadata.author').getByTestId('string-input'),
+      ).toBeEnabled({timeout: 5000})
+      await page
+        .getByTestId('field-templateA.metadata.author')
+        .getByTestId('string-input')
+        .fill('Test Author')
+
+      // This should trigger the valitioan error
 
       // Wait for the Template A fieldset to become visible (it's now not hidden)
       const templateAFieldset = page.getByTestId('field-templateA')
