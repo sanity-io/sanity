@@ -299,7 +299,6 @@ exports[`exports snapshot 1`] = `
     "defineSearchOperator": "function",
     "defineType": "function",
     "diffMatchPatch": "function",
-    "diffResolver": "function",
     "documentFieldActionsReducer": "function",
     "documentIdEquals": "function",
     "editState": "function",
