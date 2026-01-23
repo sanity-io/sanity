@@ -21,7 +21,7 @@
     "src"
   ],
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/bundle-manager/tsconfig.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsc --project packages/@repo/bundle-manager/tsconfig.json)",
     "lint": "eslint .",
     "test": "vitest run"
   },
