@@ -15,7 +15,7 @@ export class ViteDevServerStoppedError extends Error {
     this.ViteDevServerStoppedError = true
   }
 }
-// @ts-expect-error -- import.meta.hot types from vite/client not always available in monorepo type checking
+// @ts-expect-error import.meta.hot from vite/client types not resolved when tsconfig runs from monorepo root
 const serverHot = import.meta.hot
 const isViteServer = (hot: unknown): hot is ViteHotContext => Boolean(hot)
 
