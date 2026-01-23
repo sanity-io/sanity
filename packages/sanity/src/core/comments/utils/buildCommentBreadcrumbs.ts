@@ -90,6 +90,7 @@ export function buildCommentBreadcrumbs(
       currentUser,
       parent: parentValue,
       value: currentValue,
+      path: currentPath,
     }
 
     // If the field is a key segment and the parent value is an array, we'll

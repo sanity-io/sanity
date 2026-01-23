@@ -52,6 +52,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
     value: undefined,
     checkProperty: schemaType.readOnly,
     checkPropertyKey: 'readOnly',
+    path,
   })
 
   if (schemaType.jsonType !== 'object') {
