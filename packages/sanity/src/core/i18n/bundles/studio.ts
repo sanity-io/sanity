@@ -216,6 +216,18 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.media-library.file.title': 'Media Library',
   'asset-sources.media-library.image.title': 'Media Library',
 
+  /** Done button text */
+  'asset-sources.media-library.open-in-source-dialog.button.done': 'Done',
+
+  /** Select new asset button text with target title */
+  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset':
+    'Select new asset for “{{targetTitle}}”',
+  'asset-sources.media-library.open-in-source-dialog.button.select-new-asset-fallback':
+    'Select new asset',
+
+  /** Title for the open in source dialog */
+  'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
+
   /** Info messages for the Media Library Asset Source  */
   'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
   'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
@@ -730,6 +742,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.file.upload-failed.title': 'Upload failed',
+  /** Private access policy badge label */
+  'inputs.files.common.access-policy.private.label': 'Private asset',
+  /** Private access policy badge tooltip */
+  'inputs.files.common.access-policy.private.tooltip': 'CDN access limited to signed URLs',
   /** Clear field */
   'inputs.files.common.actions-menu.clear-field.label': 'Clear field',
   /** Copy URL */
@@ -738,6 +754,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.files.common.actions-menu.download.label': 'Download',
   /** The URL is copied to the clipboard */
   'inputs.files.common.actions-menu.notification.url-copied': 'The URL is copied to the clipboard',
+  /** Open in source */
+  'inputs.files.common.actions-menu.open-in-source.label': 'Open in {{sourceName}}',
   /** Replace */
   'inputs.files.common.actions-menu.replace.label': 'Replace',
   /** Upload */
@@ -798,6 +816,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
   /** This field is read only */
   'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  /** Image could not be loaded due to possible access restrictions */
+  'inputs.image.error.possible-access-restriction':
+    'Could not load image. This may be due to access restrictions.',
   /** Unknown member kind: `{{kind}}` */
   'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** Edit hotspot and crop */
@@ -1364,6 +1385,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message title for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.success.title':
     'Successfully reverted from setting to unpublish on release.',
+  /** Action message for scheduling a paused draft */
+  'release.action.schedule-publish': 'Schedule publish',
   /** Error message for when a version is set to be unpublished */
   'release.action.unpublish-version.failure': 'Failed to set version to be unpublished on release',
   /** Action message for when a version is set to be unpublished successfully */
@@ -1496,6 +1519,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * @deprecated – no longer needed
    * */
   'release.toast.not-found-release.title': "The '{{title}}' release could not be found",
+  /** Error toast for pausing a scheduled draft */
+  'release.toast.pause-scheduled-draft.error':
+    'Failed to pause the scheduled draft document <strong>{{title}}</strong>: {{error}}',
   /** Error toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.error':
     'Failed to publish the scheduled draft document <strong>{{title}}</strong>: {{error}}',
@@ -1516,6 +1542,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been rescheduled.',
+  /** Error toast for scheduling a paused draft */
+  'release.toast.schedule-publish.error': 'Failed to schedule draft: {{error}}',
+  /** Success toast for scheduling a paused draft */
+  'release.toast.schedule-publish.success': 'Scheduled draft successfully',
   /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
    * @deprecated – no longer needed
    * */

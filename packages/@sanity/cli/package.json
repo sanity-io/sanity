@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "5.2.0",
+  "version": "5.6.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -27,6 +27,7 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -53,11 +54,11 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/parser": "^7.28.5",
-    "@babel/traverse": "^7.28.5",
+    "@babel/parser": "^7.28.6",
+    "@babel/traverse": "^7.28.6",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "workspace:*",
-    "@sanity/runtime-cli": "^12.3.0",
+    "@sanity/runtime-cli": "^13.0.3",
     "@sanity/telemetry": "^0.8.0",
     "@sanity/template-validator": "^2.4.3",
     "@sanity/worker-channels": "^1.1.0",
@@ -79,7 +80,7 @@
     "@repo/tsconfig": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.28.0",
@@ -106,6 +107,7 @@
     "dotenv-expand": "^9.0.0",
     "eslint": "catalog:",
     "execa": "^2.1.0",
+    "get-port": "^7.1.0",
     "git-user-info": "^2.0.3",
     "globals": "catalog:",
     "inquirer": "^6.5.2",
@@ -140,5 +142,11 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

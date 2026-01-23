@@ -21,7 +21,7 @@ const allowedKeys = [
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
 const allowedStyleKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
-const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
+const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component', 'i18nTitleKey']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
 const supportedBuiltInObjectTypes = [
   'file',
@@ -281,7 +281,13 @@ function validateAnnotations(annotations: any, visitorContext: any, problems: an
 
     const {_problems} = visitorContext.visit(annotation, visitorContext)
     const targetType = annotation.type && visitorContext.getType(annotation.type)
-    if (targetType && !isJSONTypeOf(targetType, 'object', visitorContext)) {
+
+    // Only validate if targetType is actually resolved (not just a placeholder).
+    // During schema traversal, custom types start as empty placeholder objects {}
+    // that get filled in later. We can identify a resolved type by the presence
+    // of 'jsonType' or 'type' properties.
+    const isResolvedType = targetType && ('jsonType' in targetType || 'type' in targetType)
+    if (isResolvedType && !isJSONTypeOf(targetType, 'object', visitorContext)) {
       _problems.push(
         error(
           `Annotation cannot have type "${annotation.type}" - annotation types must inherit from object`,

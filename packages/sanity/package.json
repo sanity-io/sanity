@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "5.2.0",
+  "version": "5.6.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "sanity",
@@ -25,46 +25,57 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./_internal": {
       "source": "./src/_exports/_internal.ts",
+      "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
+      "monorepo": "./src/_exports/_singletons.ts",
       "default": "./lib/_singletons.js"
     },
     "./_createContext": {
       "source": "./src/_exports/_createContext.ts",
+      "monorepo": "./src/_exports/_createContext.ts",
       "default": "./lib/_createContext.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
+      "monorepo": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
     },
     "./desk": {
       "source": "./src/_exports/desk.ts",
+      "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
     "./presentation": {
       "source": "./src/_exports/presentation.ts",
+      "monorepo": "./src/_exports/presentation.ts",
       "default": "./lib/presentation.js"
     },
     "./router": {
       "source": "./src/_exports/router.ts",
+      "monorepo": "./src/_exports/router.ts",
       "default": "./lib/router.js"
     },
     "./structure": {
       "source": "./src/_exports/structure.ts",
+      "monorepo": "./src/_exports/structure.ts",
       "default": "./lib/structure.js"
     },
     "./media-library": {
       "source": "./src/_exports/media-library.ts",
+      "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
     },
     "./migrate": {
       "source": "./src/_exports/migrate.ts",
+      "monorepo": "./src/_exports/migrate.ts",
       "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
@@ -115,7 +126,7 @@
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
-    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
     "lint": "eslint .",
@@ -134,13 +145,14 @@
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.10.2",
     "@portabletext/block-tools": "^5.0.0",
-    "@portabletext/editor": "^4.2.2",
+    "@portabletext/editor": "^4.3.1",
     "@portabletext/patches": "^2.0.4",
-    "@portabletext/plugin-markdown-shortcuts": "^5.0.12",
-    "@portabletext/plugin-one-line": "^4.0.12",
-    "@portabletext/plugin-typography": "^5.0.12",
+    "@portabletext/plugin-markdown-shortcuts": "^5.0.16",
+    "@portabletext/plugin-one-line": "^4.0.16",
+    "@portabletext/plugin-typography": "^5.0.16",
     "@portabletext/react": "^6.0.2",
     "@portabletext/to-html": "^5.0.1",
+    "@portabletext/sanity-bridge": "^2.0.0",
     "@portabletext/toolkit": "^5.0.1",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
@@ -153,15 +165,15 @@
     "@sanity/diff-match-patch": "^3.2.0",
     "@sanity/diff-patch": "^5.0.0",
     "@sanity/eventsource": "^5.0.2",
-    "@sanity/export": "^6.0.2",
+    "@sanity/export": "^6.0.5",
     "@sanity/icons": "^3.7.4",
     "@sanity/id-utils": "^1.0.0",
-    "@sanity/image-url": "^2.0.2",
-    "@sanity/import": "^4.0.3",
+    "@sanity/image-url": "^2.0.3",
+    "@sanity/import": "^4.1.0",
     "@sanity/insert-menu": "^3.0.3",
     "@sanity/logos": "^2.2.2",
-    "@sanity/media-library-types": "^1.1.0",
-    "@sanity/message-protocol": "^0.18.0",
+    "@sanity/media-library-types": "^1.2.0",
+    "@sanity/message-protocol": "^0.19.0",
     "@sanity/migrate": "catalog:",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.0.1",
@@ -185,7 +197,6 @@
     "@vitejs/plugin-react": "catalog:",
     "@xstate/react": "^6.0.0",
     "archiver": "^7.0.1",
-    "arrify": "^2.0.1",
     "async-mutex": "^0.5.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.6.0",
@@ -219,8 +230,7 @@
     "lodash-es": "^4.17.22",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
-    "module-alias": "^2.2.3",
-    "motion": "^12.25.0",
+    "motion": "^12.26.2",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
     "node-html-parser": "^6.1.13",
@@ -230,6 +240,7 @@
     "p-map": "^7.0.0",
     "path-to-regexp": "^6.3.0",
     "peek-stream": "^1.1.3",
+    "picomatch": "^4.0.3",
     "pirates": "^4.0.7",
     "player.style": "^0.1.9",
     "pluralize-esm": "^9.0.5",
@@ -247,7 +258,6 @@
     "read-pkg-up": "^7.0.1",
     "refractor": "^5.0.0",
     "resolve-from": "^5.0.0",
-    "resolve.exports": "^2.0.3",
     "rimraf": "^5.0.10",
     "rxjs": "^7.8.2",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
@@ -266,14 +276,14 @@
     "use-sync-external-store": "^1.6.0",
     "uuid": "^11.1.0",
     "vite": "catalog:",
+    "web-vitals": "^5.1.0",
     "which": "^5.0.0",
-    "xstate": "^5.25.0",
+    "xstate": "^5.25.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@playwright/experimental-ct-react": "catalog:",
     "@playwright/test": "catalog:",
-    "@repo/dev-aliases": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.bundle": "workspace:*",
     "@repo/package.config": "workspace:*",
@@ -282,7 +292,7 @@
     "@sanity/codegen": "workspace:*",
     "@sanity/descriptors": "^1.3.0",
     "@sanity/eslint-config-i18n": "catalog:",
-    "@sanity/generate-help-url": "^3.0.1",
+    "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.4",
@@ -297,8 +307,8 @@
     "@types/jsdom": "27.0.0",
     "@types/lodash-es": "^4.17.12",
     "@types/log-symbols": "^2.0.0",
-    "@types/module-alias": "^2.0.4",
     "@types/node": "catalog:",
+    "@types/picomatch": "^4.0.2",
     "@types/raf": "^3.4.3",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -319,6 +329,7 @@
     "rxjs-etc": "^10.6.2",
     "styled-components": "catalog:",
     "swr": "2.2.5",
+    "tsx": "^4.21.0",
     "vitest": "catalog:",
     "vitest-package-exports": "^1.1.2"
   },
@@ -329,5 +340,21 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./_singletons": "./lib/_singletons.js",
+      "./_createContext": "./lib/_createContext.js",
+      "./cli": "./lib/cli.js",
+      "./desk": "./lib/desk.js",
+      "./presentation": "./lib/presentation.js",
+      "./router": "./lib/router.js",
+      "./structure": "./lib/structure.js",
+      "./media-library": "./lib/media-library.js",
+      "./migrate": "./lib/migrate.js",
+      "./package.json": "./package.json"
+    }
   }
 }

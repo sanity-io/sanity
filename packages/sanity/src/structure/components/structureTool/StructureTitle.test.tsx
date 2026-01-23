@@ -170,6 +170,11 @@ describe('StructureTitle', () => {
         }),
       }) as unknown as SANITY.Schema
 
+    beforeEach(() => {
+      document.title = 'Sanity Studio'
+      vi.clearAllMocks()
+    })
+
     it('should not update the when the document is still loading', async () => {
       const useEditStateMock = () => ({
         ...editState,
@@ -180,9 +185,9 @@ describe('StructureTitle', () => {
       })
 
       const useValuePreviewMock = () => valuePreview
-      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -202,9 +207,9 @@ describe('StructureTitle', () => {
         release: undefined,
       })
       const useValuePreviewMock = () => valuePreview
-      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -224,9 +229,9 @@ describe('StructureTitle', () => {
         release: undefined,
       })
       const useValuePreviewMock = () => valuePreview
-      vi.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      vi.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)

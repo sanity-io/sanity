@@ -11,6 +11,7 @@ import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {
   BlockQuote,
   Heading1,
@@ -73,6 +74,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 ): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const focusBlock = useFocusBlock()
   const {t} = useTranslation()
 
@@ -83,8 +85,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     referenceBoundary: boundaryElement,
   }
 
-  const _disabled =
-    disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
+  const _disabled = disabled || (focusBlock ? schemaTypes.block.name !== focusBlock._type : false)
 
   // @todo: Explain what this does
   const activeKeys = useActiveStyleKeys({items: itemsProp})

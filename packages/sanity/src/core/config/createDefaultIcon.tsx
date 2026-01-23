@@ -30,14 +30,14 @@ function DefaultIcon({title, subtitle}: {title: string; subtitle: string}): Reac
   const letters = title
     // split by whitespace
     .split(/\s/g)
-    // replace all non-word characters with empty string
-    .map((word) => word.replace(/\\W/g, ''))
+    // replace all non-word characters with empty string (Unicode-aware)
+    .map((word) => word.replace(/[^\p{L}\p{N}]/gu, ''))
     // remove empty strings
     .filter(Boolean)
     // take the first two words
     .slice(0, 2)
-    // grab the first letter and make it upper case
-    .map((i) => i.charAt(0).toUpperCase())
+    // grab the first character (Unicode-aware to handle emojis/surrogate pairs correctly)
+    .map((i) => [...i][0]?.toUpperCase() ?? '')
 
   const darkened = darken(color, 0.4)
   const lightened = lighten(color, 0.4)

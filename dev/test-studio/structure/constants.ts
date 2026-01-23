@@ -20,6 +20,7 @@ export const STANDARD_INPUT_TYPES = [
 export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'pt_allTheBellsAndWhistles',
   'pt_customMarkersTest',
+  'pt_customWithDefaults',
   'blocksTest',
   // 'richTextObject',
   'customPlugins',
@@ -43,6 +44,7 @@ export const DEBUG_INPUT_TYPES = [
   'actionsTest',
   'allFieldsGroupHidden',
   'allNativeInputComponents',
+  'decorations',
   'collapsibleObjects',
   'commentsDebug',
   'conditionalFieldsTest',
@@ -96,6 +98,7 @@ export const DEBUG_INPUT_TYPES = [
   'validationTest',
   'virtualizationDebug',
   'virtualizationInObject',
+  'annotationCustomTypeTest',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest', 'commentsCI']
@@ -114,4 +117,6 @@ export const EXTERNAL_PLUGIN_INPUT_TYPES = [
   'markdownTest',
   'muxVideoPost',
   'internationalizedArrayTest',
+  'documentI18nTest',
+  'translation.metadata',
 ]

@@ -222,7 +222,7 @@ describe('blueprints commands with mocked cores', () => {
         bin: 'sanity',
         log: expect.any(Function),
         token,
-        flags: {verbose: true, fix: false},
+        flags: {verbose: true, fix: false, json: false},
       })
     })
   })

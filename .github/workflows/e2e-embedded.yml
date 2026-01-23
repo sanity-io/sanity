@@ -13,7 +13,8 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     outputs:
-      examples_only: ${{ steps.check_examples_only.outputs.examples_only }}
+      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      cli_only: ${{ steps.check_cli.outputs.path_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -27,14 +28,22 @@ jobs:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        uses: ./.github/actions/check-examples-only
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - name: Check if only CLI files changed
+        id: check_cli
+        uses: ./.github/actions/check-path-only
+        with:
+          path: packages/@sanity/cli/
 
       - uses: ./.github/actions/setup
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
 
       - name: Store Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
@@ -42,7 +51,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v5
         with:
@@ -50,11 +59,11 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
 
       - name: Install Playwright Browsers
-        if: steps.check_examples_only.outputs.examples_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
   test:
-    if: needs.install.outputs.examples_only != 'true'
+    if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
     timeout-minutes: 30
     needs: [install]
     runs-on: ubuntu-latest

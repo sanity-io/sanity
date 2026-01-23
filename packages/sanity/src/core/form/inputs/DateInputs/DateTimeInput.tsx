@@ -46,7 +46,7 @@ export function sanitizeTimeZoneKeyId(id: string): string {
           return `key-${segment._key}`
         }
         if (typeof segment === 'number') {
-          return `idx-${segment}`
+          return `idx_${segment}`
         }
         return segment
       })
@@ -235,7 +235,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   validation={validation}
                   title={schemaType.title}
                   suffix={
-                    displayTimeZone && (
+                    // Check raw schema options for allowTimeZoneSwitch since the parsed value
+                    // defaults to true - we only want to show the button when explicitly configured
+                    (displayTimeZone || schemaType.options?.allowTimeZoneSwitch === true) && (
                       <TimeZoneButtonElementQuery>
                         <TimeZoneButton
                           tooltipContent={

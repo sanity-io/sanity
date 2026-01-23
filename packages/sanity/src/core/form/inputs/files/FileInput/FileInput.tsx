@@ -17,6 +17,8 @@ import {useTranslation} from '../../../../i18n'
 import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/AssetLimitUpsellProvider'
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader} from '../../../studio/uploads/resolveUploader'
@@ -29,6 +31,7 @@ import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type ObjectInputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {type FileInfo} from '../common/styles'
+import {useAccessPolicy} from '../ImageInput/useAccessPolicy'
 import {FileAsset as FileAssetComponent} from './FileAsset'
 import {FileAssetSource} from './FileInputAssetSource'
 
@@ -72,6 +75,8 @@ export function BaseFileInput(props: BaseFileInputProps) {
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
+
   const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
   const [isStale, setIsStale] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -79,6 +84,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
   const browseButtonElementRef = useRef<HTMLButtonElement>(null)
+
+  // State for "open in source" component mode
+  const [openInSourceAsset, setOpenInSourceAsset] = useState<FileAsset | null>(null)
 
   const [assetSourceUploader, setAssetSourceUploader] = useState<{
     unsubscribe: () => void
@@ -173,11 +181,17 @@ export function BaseFileInput(props: BaseFileInputProps) {
         resolveUploader,
         uploadWith: uploadExternalFileToDataset,
       })
+      setOpenInSourceAsset(null)
       setSelectedAssetSource(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, schemaType, uploadExternalFileToDataset],
   )
+
+  const handleOpenInSource = useCallback((assetSource: AssetSource, asset: FileAsset) => {
+    setSelectedAssetSource(assetSource)
+    setOpenInSourceAsset(asset)
+  }, [])
 
   const handleSelectFilesToUpload = useCallback(
     (assetSource: AssetSource, files: File[]) => {
@@ -247,6 +261,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
     [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t],
   )
 
+  const accessPolicy = useAccessPolicy({
+    client,
+    source: value,
+  })
+
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
   useEffect(() => {
     return () => {
@@ -263,6 +282,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
     return (
       <FileAssetComponent
         {...props}
+        accessPolicy={accessPolicy}
         browseButtonElementRef={browseButtonElementRef}
         clearField={handleClearField}
         hoveringFiles={hoveringFiles}
@@ -271,6 +291,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
         isUploading={isUploading}
         onCancelUpload={handleCancelUpload}
         onClearUploadStatus={handleClearUploadStatus}
+        onOpenInSource={handleOpenInSource}
         onSelectAssets={handleSelectAssets}
         onSelectFiles={handleSelectFilesToUpload}
         onStale={handleStaleUpload}
@@ -283,9 +304,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
       />
     )
   }, [
+    accessPolicy,
     handleCancelUpload,
     handleClearField,
     handleClearUploadStatus,
+    handleOpenInSource,
     handleSelectAssets,
     handleSelectFilesToUpload,
     handleStaleUpload,
@@ -300,7 +323,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
 
   return (
     <>
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field') {
           return (
             <MemberField
@@ -334,7 +357,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
         }
-
+        if (member.kind === 'decoration') {
+          return <MemberDecoration key={member.key} member={member} />
+        }
         return (
           <Fragment
             key={
@@ -362,8 +387,11 @@ export function BaseFileInput(props: BaseFileInputProps) {
           onStale={handleStaleUpload}
           onSelectAssets={handleSelectAssets}
           onSelectFiles={handleSelectFilesToUpload}
+          openInSourceAsset={openInSourceAsset}
+          onOpenInSource={handleOpenInSource}
           selectedAssetSource={selectedAssetSource}
           setBrowseButtonElement={setBrowseButtonElement}
+          setOpenInSourceAsset={setOpenInSourceAsset}
           setHoveringFiles={setHoveringFiles}
           setIsBrowseMenuOpen={setIsBrowseMenuOpen}
           setIsUploading={setIsUploading}

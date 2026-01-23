@@ -203,7 +203,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
-    if (releaseId) {
+    // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
+    // System bundles are handled by subsequent conditions below
+    if (releaseId && !isSystemBundle(releaseId)) {
       // in cases where the current version is going to be unpublished, we need to show the published document
       // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
       if (editState.version && isGoingToUnpublish(editState.version)) {

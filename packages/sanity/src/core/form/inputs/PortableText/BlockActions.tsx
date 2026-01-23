@@ -9,6 +9,7 @@ import {
   type RenderBlockActionsProps,
 } from '../../types/_transitional'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 
 interface BlockActionsProps {
   block: PortableTextBlock
@@ -23,8 +24,12 @@ const Root = styled.div`
 
 export function BlockActions(props: BlockActionsProps) {
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const {block, onChange, renderBlockActions} = props
-  const decoratorValues = useMemo(() => editor.schemaTypes.decorators.map((d) => d.value), [editor])
+  const decoratorValues = useMemo(
+    () => schemaTypes.decorators.map((d) => d.value),
+    [schemaTypes.decorators],
+  )
 
   const blockActions = useMemo(() => {
     if (renderBlockActions) {

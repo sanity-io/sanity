@@ -8,9 +8,13 @@ import {Translate, useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ConfirmScheduledDraftsDialog} from './ConfirmScheduledDraftsDialog'
+import {type Mode} from './queryParamUtils'
 
 interface ConfirmActiveScheduledDraftsBannerProps {
   releases: ReleaseDocument[]
+  releaseGroupMode: Mode
+  hasDateFilter: boolean
+  onNavigateToPaused: () => void
 }
 
 /**
@@ -18,6 +22,9 @@ interface ConfirmActiveScheduledDraftsBannerProps {
  */
 export function ConfirmActiveScheduledDraftsBanner({
   releases,
+  releaseGroupMode,
+  hasDateFilter,
+  onNavigateToPaused,
 }: ConfirmActiveScheduledDraftsBannerProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -28,17 +35,24 @@ export function ConfirmActiveScheduledDraftsBanner({
     [releases],
   )
 
-  const handleOpenDialog = useCallback(() => {
-    setIsDialogOpen(true)
-  }, [])
+  const shouldOpenDialog = releaseGroupMode === 'paused' && !hasDateFilter
 
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false)
   }, [])
 
+  const handleClick = useCallback(
+    () => (shouldOpenDialog ? setIsDialogOpen(true) : onNavigateToPaused()),
+    [shouldOpenDialog, onNavigateToPaused],
+  )
+
   if (activeScheduledDrafts.length === 0) {
     return null
   }
+
+  const buttonText = shouldOpenDialog
+    ? t('banner.confirm-active-scheduled-drafts.button-paused')
+    : t('banner.confirm-active-scheduled-drafts.button')
 
   return (
     <>
@@ -58,12 +72,7 @@ export function ConfirmActiveScheduledDraftsBanner({
               </Text>
             </Flex>
             <Flex flex="none">
-              <Button
-                text={t('banner.confirm-active-scheduled-drafts.button')}
-                mode="bleed"
-                tone="caution"
-                onClick={handleOpenDialog}
-              />
+              <Button text={buttonText} mode="bleed" tone="caution" onClick={handleClick} />
             </Flex>
           </Flex>
         </Card>

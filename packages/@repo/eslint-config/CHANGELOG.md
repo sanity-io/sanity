@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
+
+### Bug Fixes
+
+* **deps:** Update linters ([#11836](https://github.com/sanity-io/sanity/issues/11836)) ([1291698](https://github.com/sanity-io/sanity/commit/129169868d55217252c047fbe6b09dfda9d116ff)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+**Note:** Version bump only for package @repo/eslint-config
+
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+### Bug Fixes
+
+* **deps:** Update linters ([#11769](https://github.com/sanity-io/sanity/issues/11769)) ([c9adfbc](https://github.com/sanity-io/sanity/commit/c9adfbc259d22a42743638dcfa2dec0be8fa8a49)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 **Note:** Version bump only for package @repo/eslint-config

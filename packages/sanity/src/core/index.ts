@@ -96,3 +96,4 @@ export {getDocumentIdForCanvasLink} from './canvas/utils/getDocumentIdForCanvasL
 export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
 export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'
+export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'

@@ -33,8 +33,15 @@ test.describe('inputs: text', () => {
     const field = page.getByTestId('field-simple').getByRole('textbox')
     const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
 
+    // Ensure the field is ready before filling
+    await expect(field).toBeVisible()
+    await expect(field).toBeEnabled()
+
     // Enter initial text and wait for the mutate call to be sent
+    // Click to focus first, then fill, then blur to ensure change events fire in Firefox
+    await field.click()
     await field.fill(kanji)
+    await field.blur()
     await expect.poll(getRemoteValue, {timeout: 30_000}).toBe(kanji)
 
     // Expect the document to now have the base value

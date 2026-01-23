@@ -7,7 +7,6 @@ import {
   type OnCopyFn,
   type OnPasteFn,
   type RangeDecoration,
-  usePortableTextEditor,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
@@ -21,6 +20,7 @@ import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
@@ -85,7 +85,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     value,
   } = props
 
-  const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
 
   const boundaryElement = useBoundaryElement().element
@@ -117,14 +117,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const renderTextBlock = useCallback(
     (blockProps: EditorBlockRenderProps) => {
-      const {
-        children,
-        focused: blockFocused,
-        path: blockPath,
-        selected,
-        schemaType: blockSchemaType,
-        value: block,
-      } = blockProps
+      const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
       return (
         <TextBlock
           floatingBoundary={boundaryElement}
@@ -146,7 +139,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
           renderBlock={renderBlock}
-          schemaType={blockSchemaType}
+          schemaType={schemaTypes.block}
           selected={selected}
           setElementRef={setElementRef}
           value={block as PortableTextTextBlock}
@@ -173,6 +166,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      schemaTypes.block,
       scrollElement,
       setElementRef,
     ],
@@ -187,6 +181,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: blockSchemaType,
         value: blockValue,
       } = blockProps
+      const sanitySchemaType = schemaTypes.blockObjects.find(
+        (type) => type.name === blockSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(
+          `Could not find Sanity schema type for block object: ${blockSchemaType.name}`,
+        )
+      }
       return (
         <BlockObject
           floatingBoundary={boundaryElement}
@@ -209,7 +212,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={blockSchemaType}
+          schemaType={sanitySchemaType}
           selected={blockSelected}
           setElementRef={setElementRef}
           value={blockValue}
@@ -219,6 +222,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       boundaryElement,
       scrollElement,
+      schemaTypes.blockObjects,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -243,13 +247,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorRenderBlock = useCallback(
     (blockProps: EditorBlockRenderProps) => {
       const {value: block} = blockProps
-      const isTextBlock = block._type === editor.schemaTypes.block.name
+      const isTextBlock = block._type === schemaTypes.block.name
       if (isTextBlock) {
         return renderTextBlock(blockProps)
       }
       return renderObjectBlock(blockProps)
     },
-    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock],
+    [schemaTypes.block.name, renderObjectBlock, renderTextBlock],
   )
 
   // This is the function that is sent to PortableTextEditor's renderChild callback
@@ -263,9 +267,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: childSchemaType,
         value: child,
       } = childProps
-      const isSpan = child._type === editor.schemaTypes.span.name
+      const isSpan = child._type === schemaTypes.span.name
       if (isSpan) {
         return children
+      }
+      const sanitySchemaType = schemaTypes.inlineObjects.find(
+        (type) => type.name === childSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(
+          `Could not find Sanity schema type for inline object: ${childSchemaType.name}`,
+        )
       }
       return (
         <InlineObject
@@ -286,7 +299,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={childSchemaType}
+          schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
           value={child}
@@ -294,7 +307,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      editor.schemaTypes.span.name,
+      schemaTypes.span.name,
+      schemaTypes.inlineObjects,
       boundaryElement,
       onItemClose,
       onItemOpen,
@@ -324,6 +338,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: aSchemaType,
         value: aValue,
       } = annotationProps
+      const sanitySchemaType = schemaTypes.annotations.find(
+        (type) => type.name === aSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+      }
       return (
         <Annotation
           editorNodeFocused={editorNodeFocused}
@@ -343,7 +364,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={aSchemaType}
+          schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
           value={aValue}
@@ -353,6 +374,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
+      schemaTypes.annotations,
       boundaryElement,
       scrollElement,
       focused,
@@ -399,7 +421,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     return undefined
   })
 
-  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+  const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
   const editorNode = useMemo(
     () => (
@@ -409,7 +431,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         onUpload={onUpload}
         pasteTarget={wrapperElement || undefined}
         tabIndex={-1}
-        types={editor.schemaTypes.portableText.of}
+        types={schemaTypes.portableText.of}
       >
         <StringDiffContainer>
           <Editor
@@ -445,7 +467,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       onSelectFile,
       onUpload,
       wrapperElement,
-      editor.schemaTypes.portableText.of,
+      schemaTypes.portableText.of,
       ariaDescribedBy,
       elementRef,
       initialSelection,

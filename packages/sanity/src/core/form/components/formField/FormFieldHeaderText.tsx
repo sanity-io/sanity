@@ -11,9 +11,11 @@ import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 const LabelSuffix = styled(Flex)`
   /*
    * Prevent the block size of appended elements (such as the deprecated field badge) affecting
-   * the intrinsic block size of the label.
+   * the intrinsic block size of the label, while still allowing the inline size (width) to
+   * expand naturally to fit its content.
    */
-  contain: size;
+  height: 0;
+  overflow: visible;
 `
 
 /** @internal */

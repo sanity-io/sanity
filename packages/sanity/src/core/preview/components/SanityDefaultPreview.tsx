@@ -1,12 +1,12 @@
-import {isImageSource} from '@sanity/asset-utils'
+import {isImageSource, isSanityImageUrl, parseImageAssetUrl} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon, WarningOutlineIcon} from '@sanity/icons'
 import {
   createImageUrlBuilder,
   type ImageUrlBuilder,
   type SanityImageSource,
 } from '@sanity/image-url'
-import {Skeleton} from '@sanity/ui'
+import {Card, Flex, Skeleton} from '@sanity/ui'
 import {
   type ComponentType,
   type ElementType,
@@ -15,11 +15,13 @@ import {
   type ReactNode,
   useCallback,
   useMemo,
+  useState,
 } from 'react'
 import {isValidElementType} from 'react-is'
 
 import {Tooltip} from '../../../ui-components'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
 import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -61,20 +63,40 @@ function SanityDefaultMedia({
     return builder.image(val).withOptions({width, height, fit, dpr}).url() || ''
   }
 
-  const {url, isLoading} = useImageUrl({
-    client,
+  const accessPolicy = useAccessPolicy({client, source: imageSource})
+
+  const {isLoading, url} = useImageUrl({
+    accessPolicy,
     imageSource,
     imageUrlBuilder,
     transform,
   })
 
+  const [hasImageError, setHasImageError] = useState(false)
+  const handleError = () => setHasImageError(true)
+
   if (isLoading) {
     return <Skeleton animated style={{width: '100%', height: '100%'}} />
+  }
+
+  // Show a warning if we have a media library asset that we couldn't check
+  // the access policy for (e.g., cookie auth) and the image failed to load
+  const showAccessWarning = accessPolicy === 'unknown' && hasImageError
+
+  if (showAccessWarning) {
+    return (
+      <Card tone="critical" style={{width: '100%', height: '100%'}}>
+        <Flex justify="center" align="center" style={{width: '100%', height: '100%'}}>
+          <WarningOutlineIcon />
+        </Flex>
+      </Card>
+    )
   }
 
   return (
     <img
       alt={typeof title === 'string' ? title : undefined}
+      onError={handleError}
       referrerPolicy="strict-origin-when-cross-origin"
       src={url}
     />
@@ -97,14 +119,21 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   // for the rendering of the media (dimensions)
   const renderMedia = useCallback(
     (options: {dimensions: PreviewMediaDimensions}) => {
-      // Will only enter this code path if it's compatible
-      const imageSource = mediaProp as SanityImageSource
+      let imageSource = mediaProp
+
+      // If this is a string and a valid Sanity Image URL, parse it so that we can
+      // pass it as a valid asset ID to the image builder
+      if (isString(imageSource) && isSanityImageUrl(imageSource)) {
+        const {assetId} = parseImageAssetUrl(imageSource)
+
+        imageSource = assetId
+      }
 
       return (
         <SanityDefaultMedia
           client={client}
           dimensions={options.dimensions}
-          imageSource={imageSource}
+          imageSource={imageSource as SanityImageSource}
           imageUrlBuilder={imageBuilder}
           title={title}
         />
@@ -123,16 +152,23 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return false
     }
 
+    // If this is a string and a valid Sanity Image URL, pass it to the renderMedia function early
+    // If we don't do this check early, then isValidElementType will return true for strings and create an
+    // exception when used inside the BlockImagePreview
+    if (isString(mediaProp) && isSanityImageUrl(mediaProp)) {
+      return renderMedia
+    }
+
+    if (isImageSource(mediaProp)) {
+      return renderMedia
+    }
+
     if (isValidElementType(mediaProp)) {
       return mediaProp
     }
 
     if (isValidElement(mediaProp)) {
       return mediaProp
-    }
-
-    if (isImageSource(mediaProp)) {
-      return renderMedia
     }
 
     // Handle image urls

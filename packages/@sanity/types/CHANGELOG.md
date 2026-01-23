@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* add "Open in Source" functionality for assets ([#11826](https://github.com/sanity-io/sanity/issues/11826)) ([eaa8f24](https://github.com/sanity-io/sanity/commit/eaa8f24571dfb2ed9b5f8a402e019c3225df1510)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **core:** add `renderMembers` function to objects and fieldsets ([#11205](https://github.com/sanity-io/sanity/issues/11205)) ([452d356](https://github.com/sanity-io/sanity/commit/452d3560c978ac8566848bbc2ce09a5c2cb0e383)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
+
+**Note:** Version bump only for package @sanity/types
+
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+**Note:** Version bump only for package @sanity/types
+
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+**Note:** Version bump only for package @sanity/types
+
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+### Features
+
+* add thumbhash supoort for media-library ([76cda08](https://github.com/sanity-io/sanity/commit/76cda086e3138af4a28cda127260f0b530d9c3dc)) by Dan Groves (dan.groves@sanity.io)
+* enable private asset selection from media library ([#11756](https://github.com/sanity-io/sanity/issues/11756)) ([38a9241](https://github.com/sanity-io/sanity/commit/38a92411651da35566021383b48345479fc62051)) by Rupert Dunk (rupert@rupertdunk.com)
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 ### Bug Fixes

@@ -7,7 +7,11 @@
 import {readdirSync, readFileSync} from 'node:fs'
 import {join} from 'node:path'
 
-import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+import {
+  defineBlueprint,
+  defineDocumentFunction,
+  defineMediaLibraryAssetFunction,
+} from '@sanity/blueprints'
 
 function loadFunctionResources() {
   const functionsDir = './functions'
@@ -27,8 +31,14 @@ function loadFunctionResources() {
           continue
         }
 
-        // @ts-expect-error - TODO: fix this
-        resources.push(defineDocumentFunction(packageJson.blueprintResourceItem))
+        const resourceItem = packageJson.blueprintResourceItem
+        if (resourceItem.type && resourceItem.type === 'sanity.function.media-library.asset') {
+          // @ts-expect-error - TODO: fix this
+          resources.push(defineMediaLibraryAssetFunction(resourceItem))
+        } else {
+          // @ts-expect-error - TODO: fix this
+          resources.push(defineDocumentFunction(resourceItem))
+        }
       } catch (error) {
         console.warn(`Failed to load blueprint resource from ${folder}:`, error.message)
       }

@@ -1,4 +1,7 @@
 import {
+  type BlockDecoratorRenderProps,
+  type BlockListItemRenderProps,
+  type BlockStyleRenderProps,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
@@ -9,9 +12,6 @@ import {
   type RenderAnnotationFunction,
   type RenderBlockFunction,
   type RenderChildFunction,
-  type RenderDecoratorFunction,
-  type RenderListItemFunction,
-  type RenderStyleFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -23,6 +23,7 @@ import {css, styled} from 'styled-components'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useFormBuilder} from '../../useFormBuilder'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
@@ -68,17 +69,6 @@ interface EditorProps {
   ariaDescribedBy: string | undefined
 }
 
-const renderDecorator: RenderDecoratorFunction = (props) => {
-  return <Decorator {...props} />
-}
-
-const renderStyle: RenderStyleFunction = (props) => {
-  return <Style {...props} />
-}
-
-const renderListItem: RenderListItemFunction = (props) => {
-  return <ListItem {...props} />
-}
 /**
  * @internal
  */
@@ -136,6 +126,45 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+
+  const renderDecorator = useCallback(
+    (decoratorProps: BlockDecoratorRenderProps) => {
+      const sanitySchemaType = schemaTypes.decorators.find(
+        (type) => type.value === decoratorProps.value,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for decorator: ${decoratorProps.value}`)
+      }
+      return <Decorator {...decoratorProps} schemaType={sanitySchemaType} />
+    },
+    [schemaTypes.decorators],
+  )
+
+  const renderStyle = useCallback(
+    (styleProps: BlockStyleRenderProps) => {
+      const sanitySchemaType = schemaTypes.styles.find((type) => type.value === styleProps.value)
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for style: ${styleProps.value}`)
+      }
+      return <Style {...styleProps} schemaType={sanitySchemaType} />
+    },
+    [schemaTypes.styles],
+  )
+
+  const renderListItem = useCallback(
+    (listItemProps: BlockListItemRenderProps) => {
+      const sanitySchemaType = schemaTypes.lists.find((type) => type.value === listItemProps.value)
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for list item: ${listItemProps.value}`)
+      }
+      return <ListItem {...listItemProps} schemaType={sanitySchemaType} />
+    },
+    [schemaTypes.lists],
+  )
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
@@ -172,7 +201,10 @@ export function Editor(props: EditorProps): ReactNode {
     renderAnnotation,
     renderBlock,
     renderChild,
+    renderDecorator,
+    renderListItem,
     renderPlaceholder,
+    renderStyle,
     scrollSelectionIntoView,
     spellCheck,
   ])

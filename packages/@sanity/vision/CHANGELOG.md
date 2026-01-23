@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Bug Fixes
+
+* **deps:** Update CodeMirror ([#11881](https://github.com/sanity-io/sanity/issues/11881)) ([ac97e5c](https://github.com/sanity-io/sanity/commit/ac97e5c98d45111af3d61155cf185e003c7a179a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [5.4.0](https://github.com/sanity-io/sanity/compare/v5.3.1...v5.4.0) (2026-01-15)
+
+### Bug Fixes
+
+* **vision:** allow custom domains for saved query recall ([#11821](https://github.com/sanity-io/sanity/issues/11821)) ([dbf74ce](https://github.com/sanity-io/sanity/commit/dbf74ce69a60343f1cbae8217dbde75be21bd5f3)) by Eoin Falconer (eoin.falc@gmail.com)
+
+## [5.3.1](https://github.com/sanity-io/sanity/compare/v5.3.0...v5.3.1) (2026-01-14)
+
+**Note:** Version bump only for package @sanity/vision
+
+## [5.3.0](https://github.com/sanity-io/sanity/compare/v5.2.0...v5.3.0) (2026-01-13)
+
+**Note:** Version bump only for package @sanity/vision
+
 ## [5.2.0](https://github.com/sanity-io/sanity/compare/v5.1.0...v5.2.0) (2026-01-07)
 
 ### Bug Fixes

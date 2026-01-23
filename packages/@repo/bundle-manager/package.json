@@ -1,6 +1,6 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "5.2.0",
+  "version": "5.6.0",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",
@@ -8,11 +8,7 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "import": "./src/index.ts",
-      "default": "./src/index.ts"
-    },
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
   "main": "./src/index.ts",

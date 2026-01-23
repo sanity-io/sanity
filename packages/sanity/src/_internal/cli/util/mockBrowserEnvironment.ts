@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import {createRequire, register} from 'node:module'
 import {pathToFileURL} from 'node:url'
 
@@ -7,8 +8,8 @@ import jsdomGlobal from 'jsdom-global'
 import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
 
-import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
-import {setupImportErrorHandler} from './importErrorHandler'
+import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables.ts'
+import {setupImportErrorHandler} from './importErrorHandler.ts'
 
 const require = createRequire(import.meta.url)
 

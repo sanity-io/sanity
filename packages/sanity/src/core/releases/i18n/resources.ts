@@ -12,6 +12,8 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
+  /** Action text for showing the paused scheduled drafts */
+  'action.paused': 'Paused',
   /** Action text for staging a new revert release */
   'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
@@ -188,6 +190,8 @@ const releasesLocaleStrings = {
   'failed-schedule-title': 'Failed to schedule',
   /** Tooltip text for releases that have passed their intended publish date */
   'passed-intended-publish-date': 'This release has passed its intended publish date',
+  /** Tooltip text for scheduled drafts that have passed their intended publish date */
+  'passed-intended-publish-date-draft': 'This draft has passed its intended publish date',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',
@@ -219,6 +223,8 @@ const releasesLocaleStrings = {
 
   /** Text for when no archived releases are found */
   'no-archived-release': 'No archived releases',
+  /** Tooltip text when there are no paused scheduled drafts */
+  'no-paused-release': 'No paused scheduled drafts',
   /** Text for when no releases are found */
   'no-releases': 'No Releases',
   /** Text for when a release is not found */
@@ -409,6 +415,8 @@ const releasesLocaleStrings = {
   'table-header.scheduled-draft.published-at': 'Published at',
   /** Header for the scheduled drafts document table in the release tool - scheduled for */
   'table-header.scheduled-for': 'Scheduled for',
+  /** Header for the paused scheduled drafts table - intended for */
+  'table-header.intended-for': 'Intended for',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
   /** Header for the  document table in the release tool - release title */
@@ -486,13 +494,15 @@ const releasesLocaleStrings = {
   'banner.confirm-active-scheduled-drafts_other':
     'There are {{count}} Scheduled Drafts that require scheduling confirmation',
   /** Button text for confirming scheduling of active drafts */
-  'banner.confirm-active-scheduled-drafts.button': 'Confirm scheduling',
+  'banner.confirm-active-scheduled-drafts.button': 'Resume scheduling',
+  /** Button text when confirming schedules from paused mode */
+  'banner.confirm-active-scheduled-drafts.button-paused': 'Resume all schedules',
 
   /** Dialog title for confirming active scheduled drafts */
-  'confirm-active-scheduled-drafts-dialog.title': 'Confirm Scheduled Drafts',
+  'confirm-active-scheduled-drafts-dialog.title': 'Resume Scheduled Drafts',
   /** Dialog description for confirming active scheduled drafts */
   'confirm-active-scheduled-drafts-dialog.description':
-    'These drafts require confirmation to schedule their publishing.',
+    'Schedule all paused Scheduled Drafts for their intended publish dates',
   /** Dialog warning when some scheduled drafts have past dates */
   'confirm-active-scheduled-drafts-dialog.past-dates-warning':
     'Some of these Scheduled Drafts are scheduled for past dates. Confirming schedules will immediately publish those versions of documents.',

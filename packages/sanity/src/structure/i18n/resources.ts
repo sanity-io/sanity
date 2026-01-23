@@ -14,6 +14,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
     "This document doesn't yet exist or is already deleted",
+  /** Tooltip when action button is disabled because the document exists in scheduled releases */
+  'action.delete.disabled.scheduled-release':
+    'This document cannot be deleted as it exists within scheduled releases',
   /** Label for the "Delete" document action button */
   'action.delete.label': 'Delete',
   /** Label for the "Delete" document action while the document is being deleted */
@@ -137,6 +140,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The warning displayed when editing a document that has an obsolete draft because the draft model is not switched on */
   'banners.obsolete-draft.draft-model-inactive.text':
     'The workspace does not have drafts enabled, but a draft version of this document exists.',
+  /** The text content for the paused scheduled draft banner */
+  'banners.paused-scheduled-draft.text':
+    'Schedule paused while editing. Press Schedule to reactivate or pick a new date.',
   /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permission to publish this document.',

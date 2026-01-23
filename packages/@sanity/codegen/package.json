@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "5.2.0",
+  "version": "5.6.0",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -26,6 +26,7 @@
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
@@ -46,14 +47,14 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@babel/core": "^7.28.5",
-    "@babel/generator": "^7.28.5",
-    "@babel/preset-env": "^7.28.5",
+    "@babel/core": "^7.28.6",
+    "@babel/generator": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
-    "@babel/register": "^7.28.3",
-    "@babel/traverse": "^7.28.5",
-    "@babel/types": "^7.28.5",
+    "@babel/register": "^7.28.6",
+    "@babel/traverse": "^7.28.6",
+    "@babel/types": "^7.28.6",
     "@sanity/worker-channels": "^1.1.0",
     "debug": "^4.4.3",
     "globby": "^11.1.0",
@@ -85,6 +86,9 @@
     "node": ">=20.19 <22 || >=22.12"
   },
   "publishConfig": {
-    "access": "public"
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
   }
 }

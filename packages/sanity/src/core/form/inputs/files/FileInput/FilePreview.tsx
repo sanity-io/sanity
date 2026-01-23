@@ -1,6 +1,6 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
-import {type AssetSource} from '@sanity/types'
+import {type AssetSource, type FileAsset} from '@sanity/types'
 import {get, startCase} from 'lodash-es'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
@@ -9,18 +9,22 @@ import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
+import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
+import {type AssetAccessPolicy} from '../types'
 import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'
 
 export function FilePreview(props: FileAssetProps) {
   const {
+    accessPolicy,
     assetSources,
     clearField,
     directUploads,
-    onSelectFiles,
     observeAsset,
+    onOpenInSource,
+    onSelectFiles,
     readOnly,
     schemaType,
     setBrowseButtonElement,
@@ -157,36 +161,106 @@ export function FilePreview(props: FileAssetProps) {
       observeAsset={observeAsset}
       waitPlaceholder={<FileSkeleton />}
     >
-      {({originalFilename, extension, url, size}) => {
-        const filename = originalFilename || `download.${extension}`
-        let copyUrl: string | undefined
-        let downloadUrl: string | undefined
-
-        if (isFileSource(value)) {
-          downloadUrl = `${url}?dl`
-          copyUrl = url
-        }
-
-        return (
-          <FileActionsMenu
-            size={size}
-            originalFilename={filename}
-            muted={!readOnly}
-            onMenuOpen={setIsMenuOpen}
-            isMenuOpen={isMenuOpen}
-            setMenuButtonElement={setBrowseButtonElement}
-          >
-            <ActionsMenu
-              browse={browseMenuItem}
-              upload={uploadMenuItem}
-              onReset={clearField}
-              downloadUrl={downloadUrl}
-              copyUrl={copyUrl}
-              readOnly={readOnly}
-            />
-          </FileActionsMenu>
-        )
-      }}
+      {(fileAsset: FileAsset) => (
+        <FilePreviewContent
+          accessPolicy={accessPolicy}
+          assetSources={assetSources}
+          browseMenuItem={browseMenuItem}
+          clearField={clearField}
+          fileAsset={fileAsset}
+          isMenuOpen={isMenuOpen}
+          onOpenInSource={onOpenInSource}
+          readOnly={readOnly}
+          setIsMenuOpen={setIsMenuOpen}
+          setBrowseButtonElement={setBrowseButtonElement}
+          uploadMenuItem={uploadMenuItem}
+          value={value}
+        />
+      )}
     </WithReferencedAsset>
+  )
+}
+
+function FilePreviewContent({
+  accessPolicy,
+  assetSources,
+  browseMenuItem,
+  clearField,
+  fileAsset,
+  isMenuOpen,
+  onOpenInSource,
+  readOnly,
+  setIsMenuOpen,
+  setBrowseButtonElement,
+  uploadMenuItem,
+  value,
+}: {
+  accessPolicy?: AssetAccessPolicy
+  assetSources: AssetSource[]
+  browseMenuItem: ReactNode
+  clearField: () => void
+  fileAsset: FileAsset
+  isMenuOpen: boolean
+  onOpenInSource: (assetSource: AssetSource, asset: FileAsset) => void
+  readOnly?: boolean
+  setIsMenuOpen: (isOpen: boolean) => void
+  setBrowseButtonElement: (element: HTMLButtonElement | null) => void
+  uploadMenuItem: ReactNode
+  value: FileAssetProps['value']
+}) {
+  const {t} = useTranslation()
+  const {_id, originalFilename, extension, url, size} = fileAsset
+  const filename = originalFilename || `download.${extension}`
+  let copyUrl: string | undefined
+  let downloadUrl: string | undefined
+
+  if (
+    isFileSource(value) &&
+    // @todo Temporary check to prevent showing download and copy links for
+    // private assets until support is added
+    accessPolicy !== 'private'
+  ) {
+    downloadUrl = `${url}?dl`
+    copyUrl = url
+  }
+
+  // Find the first asset source that can handle opening this asset in source
+  const openInSourceResult = useMemo(
+    () => findOpenInSourceResult(fileAsset, assetSources),
+    [fileAsset, assetSources],
+  )
+
+  const handleOpenInSource = useCallback(() => {
+    if (!openInSourceResult) return
+
+    const {source, result} = openInSourceResult
+    if (result.type === 'url') {
+      window.open(result.url, result.target || '_blank')
+    } else if (result.type === 'component') {
+      onOpenInSource?.(source, fileAsset)
+    }
+  }, [fileAsset, onOpenInSource, openInSourceResult])
+
+  return (
+    <FileActionsMenu
+      accessPolicy={accessPolicy}
+      size={size}
+      originalFilename={filename}
+      muted={!readOnly}
+      onMenuOpen={setIsMenuOpen}
+      isMenuOpen={isMenuOpen}
+      setMenuButtonElement={setBrowseButtonElement}
+    >
+      <ActionsMenu
+        browse={browseMenuItem}
+        upload={uploadMenuItem}
+        onReset={clearField}
+        downloadUrl={downloadUrl}
+        copyUrl={copyUrl}
+        openInSource={openInSourceResult ? handleOpenInSource : undefined}
+        openInSourceName={getOpenInSourceName(openInSourceResult, t)}
+        readOnly={readOnly}
+      />
+    </FileActionsMenu>
   )
 }

@@ -3,6 +3,7 @@ import {
   type AssetFromSource,
   type AssetSource,
   type AssetSourceUploader,
+  type ImageAsset,
   type UploadState,
 } from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
@@ -24,6 +25,8 @@ import {useAssetLimitsUpsellContext} from '../../../../limits/context/assets/Ass
 import {isAssetLimitError} from '../../../../limits/context/assets/isAssetLimitError'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {MemberDecoration} from '../../../members/object/MemberDecoration'
+import {useRenderMembers} from '../../../members/object/useRenderMembers'
 import {PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
@@ -32,6 +35,7 @@ import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
+import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
 import {ImageInputAssetSource} from './ImageInputAssetSource'
@@ -41,6 +45,7 @@ import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
+import {useAccessPolicy} from './useAccessPolicy'
 
 export {BaseImageInputProps, BaseImageInputValue}
 
@@ -72,6 +77,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   } = props
   const {push} = useToast()
   const {t} = useTranslation()
+  const renderedMembers = useRenderMembers(schemaType, members)
 
   const [selectedAssetSource, setSelectedAssetSource] = useState<AssetSource | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -82,6 +88,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   const [menuButtonElement, setMenuButtonElement] = useState<HTMLButtonElement | null>(null)
   const [isMenuOpen, setMenuOpen] = useState(false)
   const {handleOpenDialog: handleAssetLimitUpsellDialog} = useAssetLimitsUpsellContext()
+
+  // State for "open in source" component mode
+  const [openInSourceAsset, setOpenInSourceAsset] = useState<ImageAsset | null>(null)
 
   const uploadSubscription = useRef<null | Subscription>(null)
 
@@ -201,6 +210,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       })
 
       setSelectedAssetSource(null)
+      setOpenInSourceAsset(null)
       setIsUploading(false) // This function is also called on after a successful upload completion though an asset source, so reset that state here.
     },
     [onChange, resolveUploader, schemaType, uploadWith],
@@ -303,12 +313,23 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     setSelectedAssetSource(source)
   }, [])
 
+  const handleOpenInSource = useCallback((assetSource: AssetSource, asset: ImageAsset) => {
+    setSelectedAssetSource(assetSource)
+    setOpenInSourceAsset(asset)
+  }, [])
+
   const handleAssetSourceClosed = useCallback(() => {
     setSelectedAssetSource(null)
+    setOpenInSourceAsset(null)
 
     // Set focus on menu button in `ImageActionsMenu` when closing the dialog
     menuButtonElement?.focus()
   }, [menuButtonElement])
+
+  const accessPolicy = useAccessPolicy({
+    client,
+    source: value,
+  })
 
   const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
@@ -316,18 +337,23 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     }
     return (
       <ImageInputPreview
-        client={client}
+        accessPolicy={accessPolicy}
         handleOpenDialog={handleOpenDialog}
         imageUrlBuilder={imageUrlBuilder}
         readOnly={readOnly}
         value={value}
       />
     )
-  }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
+  }, [accessPolicy, handleOpenDialog, imageUrlBuilder, readOnly, value])
+
+  const renderAssetAccessPolicy = useCallback(() => {
+    return <ImageAccessPolicy accessPolicy={accessPolicy} />
+  }, [accessPolicy])
 
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
+        accessPolicy={accessPolicy}
         assetSources={assetSources}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
@@ -338,6 +364,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         isImageToolEnabled={isImageToolEnabled()}
         isMenuOpen={isMenuOpen}
         observeAsset={observeAsset}
+        onOpenInSource={handleOpenInSource}
         readOnly={readOnly}
         schemaType={schemaType}
         setHotspotButtonElement={setHotspotButtonElement}
@@ -347,9 +374,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
+    handleOpenInSource,
     handleRemoveButtonClick,
     handleSelectFileToUpload,
     handleSelectImageFromAssetSource,
@@ -414,6 +443,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           isStale={isStale}
           onSelectFile={handleSelectFileToUpload}
           readOnly={readOnly}
+          renderAssetAccessPolicy={renderAssetAccessPolicy}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
           renderUploadPlaceholder={renderUploadPlaceholder}
@@ -433,6 +463,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       handleSelectFileToUpload,
       isStale,
       readOnly,
+      renderAssetAccessPolicy,
       renderAssetMenu,
       renderPreview,
       renderUploadPlaceholder,
@@ -462,8 +493,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         handleSelectAssetFromSource={handleSelectAssetFromSource}
         isUploading={isUploading}
         observeAsset={observeAsset}
+        openInSourceAsset={openInSourceAsset}
         schemaType={schemaType}
         selectedAssetSource={selectedAssetSource}
+        setOpenInSourceAsset={setOpenInSourceAsset}
         uploader={assetSourceUploader?.uploader}
         value={value}
       />
@@ -474,6 +507,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectAssetFromSource,
     isUploading,
     observeAsset,
+    openInSourceAsset,
     schemaType,
     selectedAssetSource,
     value,
@@ -491,7 +525,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   return (
     // The Stack space should match the space in ObjectInput
     <Stack space={5} data-testid="image-input">
-      {members.map((member) => {
+      {renderedMembers.map((member) => {
         if (member.kind === 'field' && (member.name === 'crop' || member.name === 'hotspot')) {
           // we're rendering these separately
           return null
@@ -530,6 +564,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         }
         if (member.kind === 'error') {
           return <MemberFieldError key={member.key} member={member} />
+        }
+        if (member.kind === 'decoration') {
+          return <MemberDecoration key={member.key} member={member} />
         }
 
         return (
