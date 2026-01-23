@@ -151,7 +151,7 @@ const RadioSelect = forwardRef(function RadioSelect(
 
   return (
     <Card border paddingY={2} paddingX={3} radius={2}>
-      <Flex align={isHorizontal ? 'center' : 'flex-start'} gap={3} justify="space-between">
+      <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
         <Layout space={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
@@ -171,9 +171,9 @@ const RadioSelect = forwardRef(function RadioSelect(
         {showClearButton && (
           <Button
             icon={ResetIcon}
-            text={t('inputs.select.action.clear')}
             onClick={handleClear}
-            mode="ghost"
+            tooltipProps={{content: t('inputs.select.action.clear')}}
+            mode="bleed"
           />
         )}
       </Flex>
@@ -199,12 +199,12 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
   const handleChange = useCallback(() => {
     onChange(item)
   }, [item, onChange])
-
+  const checked = value === item
   return (
     <Flex as="label" align="center">
       <Radio
         ref={ref}
-        checked={value === item}
+        checked={checked}
         onChange={handleChange}
         onFocus={onFocus}
         readOnly={readOnly}
@@ -213,7 +213,7 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       />
 
       <Box marginLeft={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight={checked ? 'medium' : 'regular'}>
           {item.title}
         </Text>
       </Box>
