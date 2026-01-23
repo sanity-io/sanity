@@ -91,8 +91,9 @@ export function VisionGuiHeader({
       } else {
         // Fallback for older browsers or non-secure contexts
         el.select()
-        // Note: execCommand is deprecated but kept as fallback for older browsers
-        // @ts-expect-error - execCommand is deprecated but still needed as fallback
+        // TypeScript/oxlint flag execCommand as deprecated, but it's intentionally kept as a
+        // fallback for older browsers and non-secure contexts where Clipboard API isn't available
+        // @ts-expect-error - execCommand is deprecated but still needed for browser compatibility
         document.execCommand('copy')
       }
     } catch {
