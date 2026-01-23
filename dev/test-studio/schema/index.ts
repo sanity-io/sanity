@@ -18,6 +18,9 @@ import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetRef
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
+import conditionalFieldsWithPath, {
+  conditionallyHiddenField,
+} from './debug/conditionalFieldsWithPath'
 import customInputs from './debug/customInputs'
 import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
@@ -216,6 +219,8 @@ export function createSchemaTypes(projectId: string) {
     collapsibleObjects,
     commentsDebug,
     conditionalFields,
+    conditionalFieldsWithPath,
+    conditionallyHiddenField,
     customInputs,
     customInputsWithPatches,
     customNumber,
