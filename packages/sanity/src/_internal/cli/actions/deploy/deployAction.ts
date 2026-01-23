@@ -1,10 +1,19 @@
 /* eslint-disable max-statements */
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
 import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {minutesToMilliseconds} from 'date-fns'
+import readPkgUp from 'read-pkg-up'
 import tar from 'tar-fs'
 
+import {
+  type DeployStudioWorkerResult,
+  type DeployStudioWorkerSuccess,
+} from '../../threads/generateStudioManifest'
+import {extractClientConfig} from '../../util/extractClientConfig'
 import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
@@ -125,6 +134,33 @@ export default async function deployStudioAction(
     {...context, manifestExtractor: createManifestExtractor(context)},
   )
 
+  spinner = output.spinner('Generating studio manifest').start()
+
+  const clientConfig = extractClientConfig(client)
+
+  const {studioManifest} = await runGenerateStudioManifestWorker(
+    workDir,
+    clientConfig,
+    installedSanityVersion,
+    spinner,
+  )
+
+  spinner.succeed('Generated studio manifest')
+
+  if (flags.verbose) {
+    if (studioManifest) {
+      for (const workspace of studioManifest.workspaces) {
+        output.print(
+          chalk.gray(
+            `↳ projectId: ${workspace.projectId}, dataset: ${workspace.dataset}, schemaDescriptorId: ${workspace.schemaDescriptorId}`,
+          ),
+        )
+      }
+    } else {
+      output.print(chalk.gray(`↳ No workspaces found`))
+    }
+  }
+
   // Ensure that the directory exists, is a directory and seems to have valid content
   spinner = output.spinner('Verifying local content').start()
   try {
@@ -149,6 +185,7 @@ export default async function deployStudioAction(
       version: installedSanityVersion,
       isAutoUpdating,
       tarball,
+      manifest: studioManifest ?? undefined,
     })
 
     spinner.succeed()
@@ -174,5 +211,85 @@ export default defineCliConfig({
     spinner.fail()
     debug('Error deploying studio', err)
     throw err
+  }
+}
+
+const DEPLOY_WORKER_TIMEOUT_MS = minutesToMilliseconds(5)
+const DEPLOY_WORKER_TIMEOUT_HUMAN = '5 minutes'
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * Runs the deploy studio worker to process workspaces.
+ * The worker loads Workspace[] once and performs all workspace-dependent operations.
+ * If the worker fails, the spinner is failed and the error is rethrown.
+ */
+async function runGenerateStudioManifestWorker(
+  workDir: string,
+  clientConfig: ReturnType<typeof extractClientConfig>,
+  sanityVersion: string,
+  spinner: ReturnType<CliCommandContext['output']['spinner']>,
+): Promise<DeployStudioWorkerSuccess> {
+  const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
+  if (!rootPkgPath) {
+    throw new Error('Could not find root directory for `sanity` package')
+  }
+
+  const workerPath = path.join(
+    path.dirname(rootPkgPath),
+    'lib',
+    '_internal',
+    'cli',
+    'threads',
+    'generateStudioManifest.cjs',
+  )
+
+  const worker = new Worker(workerPath, {
+    workerData: {
+      workDir,
+      clientConfig,
+      sanityVersion,
+    },
+    env: process.env,
+  })
+
+  let timedOut = false
+  const timeoutId = setTimeout(() => {
+    timedOut = true
+    void worker.terminate()
+  }, DEPLOY_WORKER_TIMEOUT_MS)
+
+  try {
+    const result = await new Promise<DeployStudioWorkerResult>((resolve, reject) => {
+      // Use `once` for automatic listener cleanup after first invocation
+      worker.once('message', (message: DeployStudioWorkerResult) => {
+        resolve(message)
+      })
+      worker.once('error', reject)
+      worker.once('exit', (exitCode) => {
+        // Only reject if we haven't already resolved via message
+        // Non-zero exit without a message indicates an unexpected failure
+        if (exitCode !== 0) {
+          const error = timedOut
+            ? new Error(`Deploy worker was aborted after ${DEPLOY_WORKER_TIMEOUT_HUMAN}`)
+            : new Error(`Deploy worker exited with code ${exitCode}`)
+          reject(error)
+        }
+      })
+    })
+
+    // Handle structured error responses from the worker
+    if (result.type === 'error') {
+      throw new Error(result.message)
+    }
+
+    return result
+  } catch (err) {
+    spinner.fail()
+    debug('Failed to process studio configuration', err)
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+    // Ensure worker is terminated for cleanup (no-op if already terminated)
+    await worker.terminate()
   }
 }

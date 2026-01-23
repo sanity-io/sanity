@@ -479,6 +479,8 @@ export interface CreateDeploymentOptions {
   isAutoUpdating: boolean
   tarball: Gzip
   isSdkApp?: boolean
+  /** StudioManifest to include in the deployment */
+  manifest?: object
 }
 
 export async function createDeployment({
@@ -488,10 +490,16 @@ export async function createDeployment({
   isAutoUpdating,
   version,
   isSdkApp,
+  manifest,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
   formData.append('version', version)
+  // manifest must come before tarball - fastify-multipart's req.file() only captures
+  // fields that appear before the file stream in multipart form data
+  if (manifest) {
+    formData.append('manifest', JSON.stringify(manifest))
+  }
   formData.append('tarball', tarball, {contentType: 'application/gzip', filename: 'app.tar.gz'})
 
   return client.request({
