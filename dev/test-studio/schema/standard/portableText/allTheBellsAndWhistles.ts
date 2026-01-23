@@ -1,4 +1,11 @@
-import {BellIcon, ColorWheelIcon, DocumentPdfIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {
+  BellIcon,
+  ColorWheelIcon,
+  DocumentPdfIcon,
+  ImageIcon,
+  InfoOutlineIcon,
+  LinkIcon,
+} from '@sanity/icons'
 import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
@@ -143,6 +150,23 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               name: 'inlineReference',
               title: 'Inline reference',
               to: [{type: 'book'}],
+            }),
+            defineField({
+              type: 'object',
+              name: 'inlineIcon',
+              icon: LinkIcon,
+              fields: [
+                defineField({
+                  type: 'string',
+                  name: 'iconName',
+                  title: 'Icon',
+                }),
+                defineField({
+                  type: 'string',
+                  name: 'iconColor',
+                  title: 'Icon Color',
+                }),
+              ],
             }),
           ],
         }),
