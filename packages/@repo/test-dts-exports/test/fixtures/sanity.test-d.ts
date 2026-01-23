@@ -389,7 +389,6 @@ import type {
   DiffInspectWrapperProps,
   diffMatchPatch,
   DiffProps,
-  diffResolver,
   DiffString,
   DiffStringSegment,
   DiffTooltip,
@@ -2835,9 +2834,6 @@ describe('sanity', () => {
   })
   test('DiffProps', () => {
     expectTypeOf<DiffProps<any>>().not.toBeNever()
-  })
-  test('diffResolver', () => {
-    expectTypeOf<typeof diffResolver>().not.toBeNever()
   })
   test('DiffString', () => {
     expectTypeOf<typeof DiffString>().toBeFunction()
