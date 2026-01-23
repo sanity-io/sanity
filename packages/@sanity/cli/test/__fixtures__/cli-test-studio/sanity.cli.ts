@@ -16,5 +16,12 @@ export default defineCliConfig({
         },
       }
     : {}),
-  schemaExtraction: {enabled: true},
+  ...(process.env.SANITY_CLI_TEST_SCHEMA_EXTRACTION === '1'
+    ? {
+        schemaExtraction: {
+          enabled: true,
+          path: process.env.SANITY_CLI_TEST_SCHEMA_EXTRACTION_PATH || 'schema.json',
+        },
+      }
+    : {}),
 })
