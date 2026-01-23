@@ -15,6 +15,7 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
+import {pathToString} from '../field/paths/helpers'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
@@ -64,7 +65,6 @@ import {
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
-import {pathToString} from '../field/paths/helpers'
 import {useRevealedPaths} from './store/contexts/RevealedPathsProvider'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
@@ -120,7 +120,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   onChange: (event: PatchEvent) => void
-  onPathOpen: (path: Path) => void
+  onPathOpen: (path: Path, options?: {revealHidden?: boolean}) => void
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
