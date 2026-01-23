@@ -1,4 +1,4 @@
-// @ts-expect-error -- Type declaration exists in typings/ but not always resolved in monorepo type checking
+// @ts-expect-error Type declaration exists but tsconfig from monorepo root doesn't always resolve package-level typings
 import exif from 'exif-component'
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'

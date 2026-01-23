@@ -1,4 +1,3 @@
-// @ts-expect-error -- Type declaration exists in typings/ but not always resolved in monorepo type checking
 import humanizeList from 'humanize-list'
 import {isPlainObject, omit} from 'lodash-es'
 
