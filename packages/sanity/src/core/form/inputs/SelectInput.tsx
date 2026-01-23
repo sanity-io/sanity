@@ -145,11 +145,14 @@ const RadioSelect = forwardRef(function RadioSelect(
     onChange(null)
   }, [onChange])
 
-  const Layout = direction === 'horizontal' ? Inline : Stack
+  const isHorizontal = direction === 'horizontal'
+  const Layout = isHorizontal ? Inline : Stack
+  const showClearButton = !readOnly && value
+
   return (
-    <Card border padding={3} radius={2}>
-      <Stack space={3}>
-        <Layout space={3} role="group">
+    <Card border paddingY={2} paddingX={3} radius={2}>
+      <Flex align={isHorizontal ? 'center' : 'flex-start'} gap={3} justify="space-between">
+        <Layout space={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
@@ -165,17 +168,15 @@ const RadioSelect = forwardRef(function RadioSelect(
             />
           ))}
         </Layout>
-        {!readOnly && value && (
-          <Box>
-            <Button
-              icon={ResetIcon}
-              text={t('inputs.reference.action.clear')}
-              onClick={handleClear}
-              mode="ghost"
-            />
-          </Box>
+        {showClearButton && (
+          <Button
+            icon={ResetIcon}
+            text={t('inputs.reference.action.clear')}
+            onClick={handleClear}
+            mode="ghost"
+          />
         )}
-      </Stack>
+      </Flex>
     </Card>
   )
 })
