@@ -222,6 +222,18 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                   title={title}
                 />
               )}
+              {deprecated && (
+                <Box marginLeft={2}>
+                  <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                    {t('form.field.deprecated-label')}
+                  </Badge>
+                </Box>
+              )}
+              {hasValidationMarkers && (
+                <Box marginLeft={2}>
+                  <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+                </Box>
+              )}
               {isRevealed && (
                 <Box marginLeft={2}>
                   <Tooltip
@@ -244,24 +256,12 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                       onClick={onHideRevealed}
                       style={onHideRevealed ? {cursor: 'pointer'} : undefined}
                     >
-                      <Flex align="center" gap={1}>
+                      <Flex align="center" gap={2}>
                         {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
-                        {onHideRevealed && <CloseIcon style={{fontSize: '0.75em'}} />}
+                        {onHideRevealed && <CloseIcon style={{fontSize: '1em'}} />}
                       </Flex>
                     </Badge>
                   </Tooltip>
-                </Box>
-              )}
-              {deprecated && (
-                <Box marginLeft={2}>
-                  <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-                    {t('form.field.deprecated-label')}
-                  </Badge>
-                </Box>
-              )}
-              {hasValidationMarkers && (
-                <Box marginLeft={2}>
-                  <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
                 </Box>
               )}
             </Flex>

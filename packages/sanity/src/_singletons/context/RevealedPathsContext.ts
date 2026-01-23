@@ -13,6 +13,8 @@ export interface RevealedPathsContextValue {
   revealPath: (path: Path) => void
   /** Check if a path (or any of its ancestors) is revealed */
   isPathRevealed: (path: Path) => boolean
+  /** Check if this path is the root of a reveal tree (directly revealed, not via ancestor) */
+  isRevealRoot: (path: Path) => boolean
   /** Clear all revealed paths */
   clearRevealedPaths: () => void
   /** Hide a specific revealed path (and its descendants) */

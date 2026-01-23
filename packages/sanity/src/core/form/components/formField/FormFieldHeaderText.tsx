@@ -90,6 +90,25 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
         {(deprecated || hasValidations || isRevealed) && (
           <LabelSuffix align="center">
+            {deprecated && (
+              <Box marginLeft={2}>
+                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                  {t('form.field.deprecated-label')}
+                </Badge>
+              </Box>
+            )}
+
+            {hasValidations && (
+              <Box marginLeft={2}>
+                <FormFieldValidationStatus
+                  data-testid={`input-validation-icon-error`}
+                  fontSize={1}
+                  placement="top"
+                  validation={validation}
+                />
+              </Box>
+            )}
+
             {isRevealed && (
               <Box marginLeft={2}>
                 <Tooltip
@@ -112,31 +131,12 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                     onClick={onHideRevealed}
                     style={onHideRevealed ? {cursor: 'pointer'} : undefined}
                   >
-                    <Flex align="center" gap={1}>
+                    <Flex align="center" gap={2}>
                       {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
-                      {onHideRevealed && <CloseIcon style={{fontSize: '0.75em'}} />}
+                      {onHideRevealed && <CloseIcon style={{fontSize: '1em'}} />}
                     </Flex>
                   </Badge>
                 </Tooltip>
-              </Box>
-            )}
-
-            {deprecated && (
-              <Box marginLeft={2}>
-                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-                  {t('form.field.deprecated-label')}
-                </Badge>
-              </Box>
-            )}
-
-            {hasValidations && (
-              <Box marginLeft={2}>
-                <FormFieldValidationStatus
-                  data-testid={`input-validation-icon-error`}
-                  fontSize={1}
-                  placement="top"
-                  validation={validation}
-                />
               </Box>
             )}
           </LabelSuffix>
