@@ -9,6 +9,10 @@ import {createContext} from 'sanity/_createContext'
 export interface RevealedPathsContextValue {
   /** Set of path strings that should be revealed (hidden property ignored) */
   revealedPaths: Set<string>
+  /** Set of path strings that are naturally hidden (by schema, ignoring reveals) */
+  naturallyHiddenPaths: Set<string>
+  /** Update the set of naturally hidden paths (called from useFormState) */
+  setNaturallyHiddenPaths: (paths: Set<string>) => void
   /** Reveal a path and all its ancestors */
   revealPath: (path: Path) => void
   /** Check if a path (or any of its ancestors) is revealed */

@@ -4,7 +4,7 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -12,9 +12,42 @@ import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
 import {useCurrentUser} from '../../store'
 import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
+import {useRevealedPaths} from './contexts/RevealedPathsProvider'
 import {createPrepareFormState} from './formState'
 import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
 import {immutableReconcile} from './utils/immutableReconcile'
+
+/**
+ * Extract all paths that have `value: true` from a StateTree<boolean>
+ */
+function extractHiddenPaths(
+  tree: StateTree<boolean> | undefined,
+  prefix: string = '',
+): Set<string> {
+  const result = new Set<string>()
+  if (!tree) return result
+
+  // If this node has value: true, add the path
+  if (tree.value === true && prefix) {
+    result.add(prefix)
+  }
+
+  // Recurse into children
+  if (tree.children) {
+    for (const [key, child] of Object.entries(tree.children)) {
+      // Skip fieldset and group keys
+      if (key.startsWith('fieldset:') || key.startsWith('group:')) continue
+
+      const childPath = prefix ? `${prefix}.${key}` : key
+      const childPaths = extractHiddenPaths(child, childPath)
+      for (const p of childPaths) {
+        result.add(p)
+      }
+    }
+  }
+
+  return result
+}
 
 /** @internal */
 export type FormState<
@@ -108,6 +141,26 @@ export function useFormState<
     () => reconcileCollapsedFieldsets(collapsedFieldSets),
     [collapsedFieldSets, reconcileCollapsedFieldsets],
   )
+
+  // Get the context to update naturally hidden paths
+  const {setNaturallyHiddenPaths} = useRevealedPaths()
+
+  // Compute raw hidden state (without reveal overrides) to track which paths are naturally hidden
+  const [prepareRawHiddenState] = useState(() => createCallbackResolver({property: 'hidden'}))
+  const rawHidden = useMemo(() => {
+    return prepareRawHiddenState({
+      currentUser,
+      documentValue: documentValue,
+      schemaType,
+      // No revealedPaths - compute raw hidden state
+    })
+  }, [prepareRawHiddenState, currentUser, documentValue, schemaType])
+
+  // Update naturally hidden paths in context when raw hidden state changes
+  useEffect(() => {
+    const hiddenPaths = extractHiddenPaths(rawHidden)
+    setNaturallyHiddenPaths(hiddenPaths)
+  }, [rawHidden, setNaturallyHiddenPaths])
 
   const {hidden, readOnly} = useMemo(() => {
     return {
