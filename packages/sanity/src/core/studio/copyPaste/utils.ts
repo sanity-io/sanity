@@ -175,7 +175,7 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * Convert Portable Text value to semantic HTML for clipboard using @portabletext/to-html
+ * Convert Portable Text value to semantic HTML for clipboard using \@portabletext/to-html
  */
 function transformValueToHtml(value: unknown): string {
   if (!value) return ''
