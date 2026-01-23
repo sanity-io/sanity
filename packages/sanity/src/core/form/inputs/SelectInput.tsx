@@ -171,7 +171,7 @@ const RadioSelect = forwardRef(function RadioSelect(
         {showClearButton && (
           <Button
             icon={ResetIcon}
-            text={t('inputs.reference.action.clear')}
+            text={t('inputs.select.action.clear')}
             onClick={handleClear}
             mode="ghost"
           />
