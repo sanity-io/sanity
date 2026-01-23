@@ -62,9 +62,8 @@ function SpotifyEmbedPreview(props: PreviewProps) {
       src={`https://open.spotify.com/${embedType}/${params.type}/${params.id}`}
       width="300"
       height="380"
-      frameBorder="0"
       allow="encrypted-media"
-      style={{width: '100%', verticalAlign: 'top'}}
+      style={{width: '100%', verticalAlign: 'top', border: '0'}}
     />
   )
 }

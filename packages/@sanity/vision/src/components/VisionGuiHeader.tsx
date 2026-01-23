@@ -80,13 +80,21 @@ export function VisionGuiHeader({
   const pinnedPerspective = usePerspective()
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
-  const handleCopyUrl = useCallback(() => {
+  const handleCopyUrl = useCallback(async () => {
     const el = operationUrlElement.current
     if (!el) return
 
     try {
-      el.select()
-      document.execCommand('copy')
+      // Use modern Clipboard API if available, fallback to execCommand
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(el.value)
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        el.select()
+        // Note: execCommand is deprecated but kept as fallback for older browsers
+        // @ts-expect-error - execCommand is deprecated but still needed as fallback
+        document.execCommand('copy')
+      }
     } catch {
       console.error('Unable to copy to clipboard :(')
     }

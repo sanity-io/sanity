@@ -640,7 +640,7 @@ function isAltKey(event: KeyboardEvent): boolean {
 
 // @TODO reconcile with core utils
 const IS_MAC =
-  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent)
 const MODIFIERS: Record<string, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'> = {
   alt: 'altKey',
   ctrl: 'ctrlKey',

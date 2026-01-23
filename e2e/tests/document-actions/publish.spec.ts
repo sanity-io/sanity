@@ -29,7 +29,7 @@ test(`document panel displays correct title for published document`, async ({
   await expect(page.getByTestId('document-status-bar-hotkeys')).toBeVisible()
   const hotkeys = page.getByTestId('document-status-bar-hotkeys')
 
-  const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform || ''))
+  const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || ''))
   await expect(hotkeys).toHaveText(isMac ? 'CtrlOptionP' : 'CtrlAltP')
 
   // Wait for the document to be published.

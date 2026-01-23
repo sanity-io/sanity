@@ -1,7 +1,7 @@
 import {studioTheme} from '@sanity/ui'
 
 const IS_MAC =
-  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent)
 
 // Enable debug mode when the current URL contains the below fragment.
 // Must be prefixed with `_debug_`

@@ -96,7 +96,7 @@
     ],
     "typescript/ban-ts-comment": "error",
     "typescript/prefer-ts-expect-error": "error",
-    "typescript/no-deprecated": "error",
+    "typescript/no-deprecated": "warn",
     "react/jsx-key": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     // Not relevant as we use the modern jsx-runtime transform

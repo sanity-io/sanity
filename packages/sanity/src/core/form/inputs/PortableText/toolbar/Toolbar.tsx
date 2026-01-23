@@ -60,7 +60,7 @@ const FullscreenButtonBox = styled(Box)`
 const SLOW_INITIAL_VALUE_LIMIT = 300
 
 const IS_MAC =
-  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent)
 
 const InnerToolbar = memo(function InnerToolbar({
   actionGroups,

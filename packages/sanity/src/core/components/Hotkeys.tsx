@@ -35,9 +35,9 @@ export function Hotkeys({makePlatformAware = true, keys: hotKeys = [], ...props}
  * @internal
  */
 const IS_APPLE_DEVICE =
-  typeof navigator === 'undefined' || typeof navigator.platform !== 'string'
+  typeof navigator === 'undefined' || typeof navigator.userAgent !== 'string'
     ? false
-    : /Mac|iPod|iPhone|iPad/.test(navigator.platform || '')
+    : /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || '')
 
 /**
  * Given key 'Alt', or 'Option' (case-insensitive), return the platform-appropriate key name
