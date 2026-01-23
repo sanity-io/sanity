@@ -82,7 +82,7 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
-import {uploadSchema} from './uploadSchema'
+import {uploadSchema} from '../studio/manifest/uploadSchema'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
