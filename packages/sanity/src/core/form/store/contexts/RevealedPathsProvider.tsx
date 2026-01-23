@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {RevealedPathsContext, type RevealedPathsContextValue} from 'sanity/_singletons'
 
 import {pathToString} from '../../../field/paths/helpers'
@@ -21,10 +21,24 @@ export function RevealedPathsProvider({
   // Track which paths are the "root" of a reveal tree - these get the close button
   const [revealRoots, setRevealRoots] = useState<Set<string>>(new Set())
 
-  // Clear revealed paths when document or template changes
+  // Track previous values to detect actual changes (not just initial mount)
+  const prevDocumentIdRef = useRef(documentId)
+  const prevTemplateNameRef = useRef(templateName)
+
+  // Clear revealed paths when document or template changes (but not on initial mount)
   useEffect(() => {
-    setRevealedPaths(new Set())
-    setRevealRoots(new Set())
+    const documentIdChanged = prevDocumentIdRef.current !== documentId
+    const templateNameChanged = prevTemplateNameRef.current !== templateName
+
+    // Update refs
+    prevDocumentIdRef.current = documentId
+    prevTemplateNameRef.current = templateName
+
+    // Only clear if there was an actual change (not initial mount)
+    if (documentIdChanged || templateNameChanged) {
+      setRevealedPaths(new Set())
+      setRevealRoots(new Set())
+    }
   }, [documentId, templateName])
 
   const revealPath = useCallback((path: Path) => {
