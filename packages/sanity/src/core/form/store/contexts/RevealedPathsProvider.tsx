@@ -8,21 +8,24 @@ interface RevealedPathsProviderProps {
   children: ReactNode
   /** Document ID - when this changes, revealed paths are automatically cleared */
   documentId?: string
+  /** Template name - when this changes, revealed paths are automatically cleared */
+  templateName?: string
 }
 
 export function RevealedPathsProvider({
   children,
   documentId,
+  templateName,
 }: RevealedPathsProviderProps): ReactNode {
   const [revealedPaths, setRevealedPaths] = useState<Set<string>>(new Set())
   // Track which paths are the "root" of a reveal tree - these get the close button
   const [revealRoots, setRevealRoots] = useState<Set<string>>(new Set())
 
-  // Clear revealed paths when document changes
+  // Clear revealed paths when document or template changes
   useEffect(() => {
     setRevealedPaths(new Set())
     setRevealRoots(new Set())
-  }, [documentId])
+  }, [documentId, templateName])
 
   const revealPath = useCallback((path: Path) => {
     const pathStr = pathToString(path)

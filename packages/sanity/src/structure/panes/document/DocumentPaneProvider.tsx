@@ -67,11 +67,12 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const {pane} = props
   const documentId = getPublishedId(pane.options.id)
+  const templateName = pane.options.template
 
   // RevealedPathsProvider must wrap the inner component so useRevealedPaths()
   // in useDocumentForm() gets the real context, not the no-op default
   return (
-    <RevealedPathsProvider documentId={documentId}>
+    <RevealedPathsProvider documentId={documentId} templateName={templateName}>
       <DocumentPaneProviderInner {...props} />
     </RevealedPathsProvider>
   )
