@@ -71,9 +71,30 @@ export function RevealedPathsProvider({
     setRevealedPaths(new Set())
   }, [])
 
+  const hideRevealedPath = useCallback((path: Path) => {
+    setRevealedPaths((prev) => {
+      const pathStr = pathToString(path)
+      if (!prev.has(pathStr)) {
+        return prev // Path not revealed, no change needed
+      }
+
+      const next = new Set(prev)
+
+      // Remove the path itself and all descendants
+      // A descendant path starts with the same prefix
+      for (const existingPath of prev) {
+        if (existingPath === pathStr || existingPath.startsWith(pathStr + '.')) {
+          next.delete(existingPath)
+        }
+      }
+
+      return next
+    })
+  }, [])
+
   const value: RevealedPathsContextValue = useMemo(
-    () => ({revealedPaths, revealPath, isPathRevealed, clearRevealedPaths}),
-    [revealedPaths, revealPath, isPathRevealed, clearRevealedPaths],
+    () => ({revealedPaths, revealPath, isPathRevealed, clearRevealedPaths, hideRevealedPath}),
+    [revealedPaths, revealPath, isPathRevealed, clearRevealedPaths, hideRevealedPath],
   )
 
   return <RevealedPathsContext.Provider value={value}>{children}</RevealedPathsContext.Provider>
@@ -85,6 +106,7 @@ const DEFAULT_REVEALED_PATHS_VALUE: RevealedPathsContextValue = {
   revealPath: () => {},
   isPathRevealed: () => false,
   clearRevealedPaths: () => {},
+  hideRevealedPath: () => {},
 }
 
 /**

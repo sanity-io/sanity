@@ -92,8 +92,13 @@ function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, clearRevealedPaths} = useRevealedPaths()
+  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+
+  const handleHideRevealed = useMemo(
+    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
+    [isRevealed, hideRevealedPath, field.path],
+  )
 
   return (
     <>
@@ -128,7 +133,7 @@ function PrimitiveField(field: FieldProps) {
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
             isRevealed={isRevealed}
-            onHideRevealed={isRevealed ? clearRevealedPaths : undefined}
+            onHideRevealed={handleHideRevealed}
           >
             <ChangeIndicator
               hasFocus={focused}
@@ -148,8 +153,13 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, clearRevealedPaths} = useRevealedPaths()
+  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+
+  const handleHideRevealed = useMemo(
+    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
+    [isRevealed, hideRevealedPath, field.path],
+  )
 
   const disableActions = field.schemaType.options?.disableActions || EMPTY_ARRAY
 
@@ -201,7 +211,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           isRevealed={isRevealed}
-          onHideRevealed={isRevealed ? clearRevealedPaths : undefined}
+          onHideRevealed={handleHideRevealed}
         >
           {field.children}
         </FormFieldSet>
@@ -214,8 +224,13 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, clearRevealedPaths} = useRevealedPaths()
+  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+
+  const handleHideRevealed = useMemo(
+    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
+    [isRevealed, hideRevealedPath, field.path],
+  )
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
   const hotspotField = field.inputProps.members.find(
@@ -255,7 +270,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           isRevealed={isRevealed}
-          onHideRevealed={isRevealed ? clearRevealedPaths : undefined}
+          onHideRevealed={handleHideRevealed}
         >
           {field.children}
         </FormFieldSet>
