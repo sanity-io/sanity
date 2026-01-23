@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* add "Open in Source" functionality for assets ([#11826](https://github.com/sanity-io/sanity/issues/11826)) ([eaa8f24](https://github.com/sanity-io/sanity/commit/eaa8f24571dfb2ed9b5f8a402e019c3225df1510)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* add private asset indicator and improve access policy error handling ([#11898](https://github.com/sanity-io/sanity/issues/11898)) ([e07b43c](https://github.com/sanity-io/sanity/commit/e07b43c679695438dd814fda64e286bde9dabbb8)) by Rupert Dunk (rupert@rupertdunk.com)
+* **core:** add `renderMembers` function to objects and fieldsets ([#11205](https://github.com/sanity-io/sanity/issues/11205)) ([452d356](https://github.com/sanity-io/sanity/commit/452d3560c978ac8566848bbc2ce09a5c2cb0e383)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **schema:** export DEFAULT_ANNOTATIONS and DEFAULT_DECORATORS ([#11916](https://github.com/sanity-io/sanity/issues/11916)) ([55cdb56](https://github.com/sanity-io/sanity/commit/55cdb56d5f55a6c21a38bd44ec45e69637bbffc6)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* **cli:** normalize path separators for cross-platform compatibility ([#11874](https://github.com/sanity-io/sanity/issues/11874)) ([4af3ead](https://github.com/sanity-io/sanity/commit/4af3ead9281096ec32a6f9b03f88769eb58e9fcf)) by Jordan Lawrence (jordanl17@me.com)
+* **comments:** store fragment selection when user opens comment input popover ([#11873](https://github.com/sanity-io/sanity/issues/11873)) ([bee339e](https://github.com/sanity-io/sanity/commit/bee339e296824539eabd018ee25511fcfc0ad313)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** allows setting timezone to dates arrays ([#11866](https://github.com/sanity-io/sanity/issues/11866)) ([85bd87b](https://github.com/sanity-io/sanity/commit/85bd87b36f68b125a5fd6cbe1181f257318a4af8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** deprecated label and validation icons overlap ([#11887](https://github.com/sanity-io/sanity/issues/11887)) ([b172d83](https://github.com/sanity-io/sanity/commit/b172d832c7dc01f2fa94a2dd60696ff0b98a9abb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** ensure PTE custom toolbar icons use correct color token ([#11899](https://github.com/sanity-io/sanity/issues/11899)) ([c46592c](https://github.com/sanity-io/sanity/commit/c46592cbd4db3ab1a9e3b8d1e8964ed76ce9744e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** handle null token in auth store ([#11888](https://github.com/sanity-io/sanity/issues/11888)) ([4a1b7fb](https://github.com/sanity-io/sanity/commit/4a1b7fbf278b6ac4762be989066b9295d434d252)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** infinite redirects when trying to log in via SSO ([#11825](https://github.com/sanity-io/sanity/issues/11825)) ([ccbf72c](https://github.com/sanity-io/sanity/commit/ccbf72c79bc6cf13b708c3b3965a95540b5473c7)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** remove dependency on PTE-exported Sanity types ([#11920](https://github.com/sanity-io/sanity/issues/11920)) ([7a74337](https://github.com/sanity-io/sanity/commit/7a74337c9dcefa57023777cff13570c81330c991)) by Christian Grøngaard (christian.groengaard@sanity.io)
+* **core:** show timezone button when `allowTimeZoneSwitch` is true ([#11861](https://github.com/sanity-io/sanity/issues/11861)) ([25ee194](https://github.com/sanity-io/sanity/commit/25ee19461bb5c43ce9970ac5d34cd197ceb7e259)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** split creation event from mutation when editing drafts ([#11379](https://github.com/sanity-io/sanity/issues/11379)) ([bd3ebc3](https://github.com/sanity-io/sanity/commit/bd3ebc3bb27a59062576a8350b88d968f8bab177)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** update dependency motion to ^12.26.2 ([#11882](https://github.com/sanity-io/sanity/issues/11882)) ([8ee723c](https://github.com/sanity-io/sanity/commit/8ee723cc1f3c470cad143f441342c01a4c49ddbd)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency xstate to ^5.25.1 ([#11877](https://github.com/sanity-io/sanity/issues/11877)) ([977742e](https://github.com/sanity-io/sanity/commit/977742eba84c7beeecfa2c89fcf0c06c3d59aa08)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11868](https://github.com/sanity-io/sanity/issues/11868)) ([c95b22a](https://github.com/sanity-io/sanity/commit/c95b22a25b97b8e28af8caa378113873dae92042)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11912](https://github.com/sanity-io/sanity/issues/11912)) ([9c14402](https://github.com/sanity-io/sanity/commit/9c14402a54b45d51cfe016654a3f67d2adb9440a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* fixes issue with loading esm cli bin ([#11919](https://github.com/sanity-io/sanity/issues/11919)) ([ed4bb07](https://github.com/sanity-io/sanity/commit/ed4bb078514ff915ff23724e90d47d9a3e9efe65)) by Binoy Patel (me@binoy.io)
+* prevent published from being treated as a release ([#11871](https://github.com/sanity-io/sanity/issues/11871)) ([536f75b](https://github.com/sanity-io/sanity/commit/536f75bcc128b1f950c97e96408e0bfdb52d30af)) by Jordan Lawrence (jordanl17@me.com)
+* **pte:** widen annotation popover default width ([#11807](https://github.com/sanity-io/sanity/issues/11807)) ([e8c84fa](https://github.com/sanity-io/sanity/commit/e8c84faad9bed0fc0afdc8627807be393db10970)) by Eoin Falconer (eoin.falc@gmail.com)
+* resolve private asset cors issues, skip access policy checks for unsupported auth modes ([#11901](https://github.com/sanity-io/sanity/issues/11901)) ([e60346d](https://github.com/sanity-io/sanity/commit/e60346d9681840081b68a03fe18ce34d8e3a737a)) by Rupert Dunk (rupert@rupertdunk.com)
+* **structure:** omit system bundles from versions in reference banner ([#11911](https://github.com/sanity-io/sanity/issues/11911)) ([a71e88e](https://github.com/sanity-io/sanity/commit/a71e88e4cad2ff43eb5acb40ab5bf68972b193ba)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **studio:** handle emoji characters in workspace icon generation ([a6077fa](https://github.com/sanity-io/sanity/commit/a6077fab4288181d84cecbe6a83e996cc34c7ed4)) by Dain Cilke (dain.cilke@gmail.com)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 ### Features

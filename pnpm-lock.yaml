@@ -97,13 +97,13 @@ importers:
     devDependencies:
       '@lerna-lite/cli':
         specifier: ^4.11.0
-        version: 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        version: 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/list':
         specifier: ^4.11.0
-        version: 4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+        version: 4.11.0(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/publish':
-        specifier: ^4.11.0
-        version: 4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+        specifier: ^4.11.1
+        version: 4.11.1(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
@@ -569,11 +569,11 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@portabletext/editor':
-        specifier: ^4.3.0
-        version: 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+        specifier: ^4.3.1
+        version: 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@portabletext/plugin-character-pair-decorator':
-        specifier: ^5.0.15
-        version: 5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.16
+        version: 5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.3)
@@ -1739,7 +1739,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       sanity:
-        specifier: ^5.5.0
+        specifier: ^5.6.0
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'
@@ -1808,20 +1808,20 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@portabletext/editor':
-        specifier: ^4.3.0
-        version: 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+        specifier: ^4.3.1
+        version: 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@portabletext/patches':
         specifier: ^2.0.4
         version: 2.0.4
       '@portabletext/plugin-markdown-shortcuts':
-        specifier: ^5.0.15
-        version: 5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.16
+        version: 5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/plugin-one-line':
-        specifier: ^4.0.15
-        version: 4.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
+        specifier: ^4.0.16
+        version: 4.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
       '@portabletext/plugin-typography':
-        specifier: ^5.0.15
-        version: 5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.16
+        version: 5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.3)
@@ -4285,12 +4285,12 @@ packages:
     resolution: {integrity: sha512-9jKM3gUCpg/3ZEhjetv4fDMUNqfqq8jiqUYrP9mp49mhDjrP9rRsSNteoz+57jT1lgJ7MNRhKgG7l+ObnAjXnQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/publish@4.11.0':
-    resolution: {integrity: sha512-kO+jxrrirhj1oQNeHOXXKnmpO8+9g6llBLTiLwQ2sOps6B2Xd8akRxnqvJAs78lZ/jNRzlHHnk2NCP6ChzoRfw==}
+  '@lerna-lite/publish@4.11.1':
+    resolution: {integrity: sha512-3g2YVyYr1clcDOukllL7CZ5lGdyYjMTaqn3rGlf5+KWk0rA0YDWtHQNLpnHxzCva3NGh+vbFzddHFPQde+kl8A==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  '@lerna-lite/version@4.11.0':
-    resolution: {integrity: sha512-UCnkn+eMgEl5MYe4yVweVKDxOb9l4OduOuEmQL2QZjTbbPJLhP5VgKEJZYDGb6nh2KD5C+bUyc53aUHULPFAmA==}
+  '@lerna-lite/version@4.11.1':
+    resolution: {integrity: sha512-3Y81WR+oh6mJgN0DHlU7wxvnIf6Ei3hYVYpAiN6xvJ2dcAe1opO75+VO1ZIT6MzEB1eEwpsuxOnk2UylcYDVfg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
   '@lezer/common@1.5.0':
@@ -4711,8 +4711,8 @@ packages:
     resolution: {integrity: sha512-rwwMLq8tvfFuf0rzct52wAg7x478U/FwZ+Lnd+/HgsreV50L2VPZdypljkFaVGwuArrJo99XaPh8n6iOk9lX4A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/editor@4.3.0':
-    resolution: {integrity: sha512-sdjhztiANG7vSLgHT/H28EpWad3b6vy05oCOvm8nTUskSUfBmZOpRZxiGfYNGdX1+QQG8Y2Ydq/Q6hoDyqgq5Q==}
+  '@portabletext/editor@4.3.1':
+    resolution: {integrity: sha512-nUa6xOW7SEYWgFJXM63stEdvROdqa+gtzOBFcHo4SO8ciWwy80/1nD9oYhLvAdEK23/tRpiXiVM8IAqctYq9Lg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/sanity-bridge': ^2.0.0
@@ -4731,39 +4731,39 @@ packages:
     resolution: {integrity: sha512-dz2tR921LMvz3tAlfAB5ehJhztGCERFs0j5jEha2Vkq9UAs9iuCxNGlf7C3d2f9pGGBpxOF4WBZgpZNjB84vrQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/plugin-character-pair-decorator@5.0.15':
-    resolution: {integrity: sha512-uWMBb1okywEUYNFW8vDDyV0PRxzcjdPR5DnpgqYoNw7sOx8NXT2EELTLpxGK4fqd/lVtVRxJhATGHSwjZOoM9w==}
+  '@portabletext/plugin-character-pair-decorator@5.0.16':
+    resolution: {integrity: sha512-NI1r1ouNGRaFeyNoFk2PQcKmeQr7kUcjf4NeWSfFDHeQTiilk2hO+17Gt9kpkqwxwbNxP/bkahppY9yUMfy0Aw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.0
+      '@portabletext/editor': ^4.3.1
       react: ^19.2
 
-  '@portabletext/plugin-input-rule@2.0.15':
-    resolution: {integrity: sha512-pSnkvtzgtAMUbdVmLF8KZ5nNc4A5HUoZTmiUAJjVITVIODeY6j6JD8DehsS593WVM7Qh9krFuKEpOFR0rxc8/A==}
+  '@portabletext/plugin-input-rule@2.0.16':
+    resolution: {integrity: sha512-CE2lqjg2X2KgKVCrlJRmqIpw5zT/Nnd1n+CPfOORInzrzVu+7jdn9IklIPPNdmcvdXPYu+hkTA5a1izef5klZg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.0
+      '@portabletext/editor': ^4.3.1
       react: ^19.2
 
-  '@portabletext/plugin-markdown-shortcuts@5.0.15':
-    resolution: {integrity: sha512-03K9A/Qn1I14MgbZRo9O5MVmNBurhAyOnf7w++G1G1hdvRsuFz0+II6n8RtSzL1lawgQyzvGcFwy1egsEenQcQ==}
+  '@portabletext/plugin-markdown-shortcuts@5.0.16':
+    resolution: {integrity: sha512-ZDnZuh6wN5SjPzxum7A8oQ9o1xOyJyuUdh5nULhqCznUDyyTDgKBvOLaDdXD7T6CWzFivaFKzwfIbi3LbI2zCw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.0
+      '@portabletext/editor': ^4.3.1
       react: ^19.2
 
-  '@portabletext/plugin-one-line@4.0.15':
-    resolution: {integrity: sha512-jkwvP53gAIEPCKHeqE5pLClepBNdWFueB6CWfvYkQM6NCoLPckF4GYOg7cXhW6rSjm5tS8aCifyomP6NlcBQNA==}
+  '@portabletext/plugin-one-line@4.0.16':
+    resolution: {integrity: sha512-1rMdMm2ktJ83BIG1e708cva3SIybaX+YxBbfjwg1BhNdc3H23cKDVZ47wdnAL+9B/YgVdF4gvj/owvd7vMkW5Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.0
+      '@portabletext/editor': ^4.3.1
       react: ^19.2
 
-  '@portabletext/plugin-typography@5.0.15':
-    resolution: {integrity: sha512-QdSwFwAH33oNJrusQSjrgPmEUEsgdafoKceCKjBcMlvDo+8zkHcL4PnICe7IlPWl+PcGxXlfJxlHWThenJQRdA==}
+  '@portabletext/plugin-typography@5.0.16':
+    resolution: {integrity: sha512-qaQN3sRAvax348eahVPtzr6js/0Hc6iUwsIwApAnGMadJ69dlQRGPUIL83ejqJ0vyy0s0LrObrT6xgWlNHl8WA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.0
+      '@portabletext/editor': ^4.3.1
       react: ^19.2
 
   '@portabletext/react@6.0.2':
@@ -12141,8 +12141,8 @@ packages:
     engines: {node: '>=10'}
     deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
 
-  tar@7.5.2:
-    resolution: {integrity: sha512-7NyxrTE4Anh8km8iEy7o0QYPs+0JKBTj5ZaqHg6B39erLg0qYXN3BijtShwbsNSvQ+LN75+KV+C4QR/f6Gwnpg==}
+  tar@7.5.3:
+    resolution: {integrity: sha512-ENg5JUHUm2rDD7IvKNFGzyElLXNjachNLp6RaGf4+JOgxXHkqA+gq81ZAMCUmtMtqBsoU62lcp6S27g1LCYGGQ==}
     engines: {node: '>=18'}
     deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
 
@@ -14964,7 +14964,7 @@ snapshots:
 
   '@juggle/resize-observer@3.4.0': {}
 
-  '@lerna-lite/cli@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/cli@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
       '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/init': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
@@ -14975,9 +14975,9 @@ snapshots:
       load-json-file: 7.0.1
       yargs: 18.0.0
     optionalDependencies:
-      '@lerna-lite/list': 4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
-      '@lerna-lite/publish': 4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
-      '@lerna-lite/version': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/list': 4.11.0(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/publish': 4.11.1(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/version': 4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -15026,9 +15026,9 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  '@lerna-lite/list@4.11.0(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
+  '@lerna-lite/list@4.11.0(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)':
     dependencies:
-      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/listable': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
@@ -15061,12 +15061,12 @@ snapshots:
       tinyrainbow: 3.0.3
       wide-align: 1.1.5
 
-  '@lerna-lite/publish@4.11.0(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/publish@4.11.1(@lerna-lite/list@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
-      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.11.0
-      '@lerna-lite/version': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
+      '@lerna-lite/version': 4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)
       '@npmcli/arborist': 9.1.9
       '@npmcli/package-json': 7.0.4
       byte-size: 9.0.1
@@ -15085,7 +15085,7 @@ snapshots:
       pacote: 21.0.4
       semver: 7.7.3
       ssri: 13.0.0
-      tar: 7.5.2
+      tar: 7.5.3
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
     transitivePeerDependencies:
@@ -15099,10 +15099,10 @@ snapshots:
       - conventional-commits-filter
       - supports-color
 
-  '@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
+  '@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0)':
     dependencies:
       '@conventional-changelog/git-client': 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
-      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@lerna-lite/version@4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.0)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
+      '@lerna-lite/cli': 4.11.0(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@lerna-lite/version@4.11.1(@lerna-lite/list@4.11.0)(@lerna-lite/publish@4.11.1)(@types/node@24.10.4)(babel-plugin-macros@3.1.0)(conventional-commits-filter@5.0.0))(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/core': 4.11.0(@types/node@24.10.4)(babel-plugin-macros@3.1.0)
       '@lerna-lite/npmlog': 4.11.0
       '@octokit/plugin-enterprise-rest': 6.0.1
@@ -15200,7 +15200,7 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 8.1.0
       semver: 7.7.3
-      tar: 7.5.2
+      tar: 7.5.3
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -15723,7 +15723,7 @@ snapshots:
       '@portabletext/schema': 2.1.1
       '@sanity/types': link:packages/@sanity/types
 
-  '@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)':
+  '@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 5.0.0
       '@portabletext/keyboard-shortcuts': 2.1.2
@@ -15759,9 +15759,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-character-pair-decorator@5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       react: 19.2.3
       remeda: 2.32.0
@@ -15769,33 +15769,33 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@2.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-input-rule@2.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       react: 19.2.3
       xstate: 5.25.1
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-markdown-shortcuts@5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@portabletext/plugin-character-pair-decorator': 5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
-      '@portabletext/plugin-input-rule': 2.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/editor': 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/plugin-character-pair-decorator': 5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/plugin-input-rule': 2.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       react: 19.2.3
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@4.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
+  '@portabletext/plugin-one-line@4.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       react: 19.2.3
 
-  '@portabletext/plugin-typography@5.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-typography@5.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@portabletext/plugin-input-rule': 2.0.15(@portabletext/editor@4.3.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/editor': 4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/plugin-input-rule': 2.0.16(@portabletext/editor@4.3.1(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       react: 19.2.3
     transitivePeerDependencies:
       - '@types/react'
@@ -22310,7 +22310,7 @@ snapshots:
       nopt: 9.0.0
       proc-log: 6.1.0
       semver: 7.7.3
-      tar: 7.5.2
+      tar: 7.5.3
       tinyglobby: 0.2.15
       which: 6.0.0
     transitivePeerDependencies:
@@ -22683,7 +22683,7 @@ snapshots:
       promise-retry: 2.0.1
       sigstore: 4.0.0
       ssri: 13.0.0
-      tar: 7.5.2
+      tar: 7.5.3
     transitivePeerDependencies:
       - supports-color
 
@@ -24418,7 +24418,7 @@ snapshots:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
-  tar@7.5.2:
+  tar@7.5.3:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

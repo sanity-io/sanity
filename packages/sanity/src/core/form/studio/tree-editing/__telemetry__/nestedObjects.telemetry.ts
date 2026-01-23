@@ -58,12 +58,6 @@ export const CreateAppendedObject = defineEvent<NestedDialogOpenedInfo & NestedO
   description: 'User created an appended object in an array list',
 })
 
-export const EditedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
-  name: 'Edited Object in Array List',
-  version: 1,
-  description: 'User edited a object in an array list',
-})
-
 export const RemovedObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({
   name: 'Removed Object in Array List',
   version: 1,

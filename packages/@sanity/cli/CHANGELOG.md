@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Bug Fixes
+
+* **deps:** Update babel monorepo to ^7.28.6 ([#11876](https://github.com/sanity-io/sanity/issues/11876)) ([c86d4fb](https://github.com/sanity-io/sanity/commit/c86d4fb25421e864811dd09eae520d7d7d54a50f)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **test:** symlink in monorepo deps after installing ([#11905](https://github.com/sanity-io/sanity/issues/11905)) ([2b9d06b](https://github.com/sanity-io/sanity/commit/2b9d06bb967b1250a7ed6dab6a81a02c1f713c84)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 ### Features

@@ -17,7 +17,6 @@ import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/
 import {
   CreateAppendedObject,
   CreatePrependedObject,
-  EditedObject,
   NavigatedToViaArrayList,
   RemovedObject,
 } from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
@@ -225,25 +224,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
-      telemetry.log(EditedObject, {
-        path: pathToString(member.item.path),
-        origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
-      })
-
       onChange(
         PatchEvent.from(event)
           .prepend(setIfMissing(createProtoValue(member.item.schemaType)))
           .prefixAll({_key: member.key}),
       )
     },
-    [
-      enhancedObjectDialogEnabled,
-      onChange,
-      member.item.schemaType,
-      member.item.path,
-      member.key,
-      telemetry,
-    ],
+    [onChange, member.item.schemaType, member.key],
   )
   const handleCollapse = useCallback(() => {
     onSetPathCollapsed(member.item.path, true)
