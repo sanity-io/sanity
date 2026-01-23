@@ -61,6 +61,11 @@ export interface FormFieldSetProps {
   validation?: FormNodeValidation[]
   inputId: string
   deprecated?: DeprecatedProperty
+  /**
+   * Whether this field is temporarily revealed (hidden field shown due to validation navigation)
+   * @internal
+   */
+  isRevealed?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
@@ -144,6 +149,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     validation = EMPTY_ARRAY,
     inputId,
     deprecated,
+    isRevealed,
     ...restProps
   } = props
 
@@ -208,6 +214,13 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                   onClick={collapsible ? handleToggle : undefined}
                   title={title}
                 />
+              )}
+              {isRevealed && (
+                <Box marginLeft={2}>
+                  <Badge data-testid={`revealed-badge-${title}`} tone="primary">
+                    {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                  </Badge>
+                </Box>
               )}
               {deprecated && (
                 <Box marginLeft={2}>

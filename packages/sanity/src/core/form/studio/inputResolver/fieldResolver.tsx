@@ -13,7 +13,7 @@ import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
-import {type FieldMember} from '../../store'
+import {type FieldMember, useRevealedPaths} from '../../store'
 import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
 import {getTypeChain} from './helpers'
 
@@ -92,6 +92,8 @@ function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed} = useRevealedPaths()
+  const isRevealed = isPathRevealed(field.path)
 
   return (
     <>
@@ -125,6 +127,7 @@ function PrimitiveField(field: FieldProps) {
             title={field.title}
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
+            isRevealed={isRevealed}
           >
             <ChangeIndicator
               hasFocus={focused}
@@ -144,6 +147,8 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed} = useRevealedPaths()
+  const isRevealed = isPathRevealed(field.path)
 
   const disableActions = field.schemaType.options?.disableActions || EMPTY_ARRAY
 
@@ -194,6 +199,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          isRevealed={isRevealed}
         >
           {field.children}
         </FormFieldSet>
@@ -206,6 +212,8 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed} = useRevealedPaths()
+  const isRevealed = isPathRevealed(field.path)
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
   const hotspotField = field.inputProps.members.find(
@@ -244,6 +252,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          isRevealed={isRevealed}
         >
           {field.children}
         </FormFieldSet>

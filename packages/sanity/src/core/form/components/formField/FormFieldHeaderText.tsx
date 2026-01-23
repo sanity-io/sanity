@@ -37,6 +37,11 @@ export interface FormFieldHeaderTextProps {
    * Additional content to be rendered alongside the title
    */
   suffix?: ReactNode
+  /**
+   * Whether this field is temporarily revealed (hidden field shown due to validation navigation)
+   * @internal
+   */
+  isRevealed?: boolean
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -45,7 +50,15 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
+  const {
+    description,
+    inputId,
+    title,
+    deprecated,
+    validation = EMPTY_ARRAY,
+    suffix,
+    isRevealed,
+  } = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
 
@@ -68,8 +81,16 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           </Box>
         )}
 
-        {(deprecated || hasValidations) && (
+        {(deprecated || hasValidations || isRevealed) && (
           <LabelSuffix align="center">
+            {isRevealed && (
+              <Box marginLeft={2}>
+                <Badge data-testid={`revealed-badge-${title}`} tone="primary">
+                  {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                </Badge>
+              </Box>
+            )}
+
             {deprecated && (
               <Box marginLeft={2}>
                 <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
