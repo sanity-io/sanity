@@ -92,12 +92,13 @@ function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
+  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+  const showCloseButton = isRevealRoot(field.path)
 
   const handleHideRevealed = useMemo(
-    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
-    [isRevealed, hideRevealedPath, field.path],
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
   )
 
   return (
@@ -153,12 +154,13 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
+  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+  const showCloseButton = isRevealRoot(field.path)
 
   const handleHideRevealed = useMemo(
-    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
-    [isRevealed, hideRevealedPath, field.path],
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
   )
 
   const disableActions = field.schemaType.options?.disableActions || EMPTY_ARRAY
@@ -224,12 +226,13 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
-  const {isPathRevealed, hideRevealedPath} = useRevealedPaths()
+  const {isPathRevealed, isRevealRoot, hideRevealedPath} = useRevealedPaths()
   const isRevealed = isPathRevealed(field.path)
+  const showCloseButton = isRevealRoot(field.path)
 
   const handleHideRevealed = useMemo(
-    () => (isRevealed ? () => hideRevealedPath(field.path) : undefined),
-    [isRevealed, hideRevealedPath, field.path],
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
   )
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence

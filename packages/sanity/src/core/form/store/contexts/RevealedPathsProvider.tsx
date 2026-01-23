@@ -15,16 +15,20 @@ export function RevealedPathsProvider({
   documentId,
 }: RevealedPathsProviderProps): ReactNode {
   const [revealedPaths, setRevealedPaths] = useState<Set<string>>(new Set())
+  // Track which paths are the "root" of a reveal tree - these get the close button
+  const [revealRoots, setRevealRoots] = useState<Set<string>>(new Set())
 
   // Clear revealed paths when document changes
   useEffect(() => {
     setRevealedPaths(new Set())
+    setRevealRoots(new Set())
   }, [documentId])
 
   const revealPath = useCallback((path: Path) => {
+    const pathStr = pathToString(path)
+
     setRevealedPaths((prev) => {
       // Check if path is already revealed to avoid unnecessary state updates
-      const pathStr = pathToString(path)
       if (prev.has(pathStr)) {
         return prev // No change needed
       }
@@ -41,6 +45,18 @@ export function RevealedPathsProvider({
         next.add(pathToString(ancestorPath))
       }
 
+      return next
+    })
+
+    // Mark the first hidden ancestor as the root (where the close button should appear)
+    // The actual root will be determined by the caller - we mark the target path as root
+    // since it's the one that was directly requested to be revealed
+    setRevealRoots((prev) => {
+      if (prev.has(pathStr)) {
+        return prev
+      }
+      const next = new Set(prev)
+      next.add(pathStr)
       return next
     })
   }, [])
@@ -69,11 +85,37 @@ export function RevealedPathsProvider({
 
   const clearRevealedPaths = useCallback(() => {
     setRevealedPaths(new Set())
+    setRevealRoots(new Set())
   }, [])
 
-  const hideRevealedPath = useCallback((path: Path) => {
-    setRevealedPaths((prev) => {
+  // Check if this path is a reveal root (where the close button should appear)
+  // A reveal root is a path that was directly revealed AND has no revealed ancestor
+  const isRevealRoot = useCallback(
+    (path: Path): boolean => {
       const pathStr = pathToString(path)
+
+      // Must be in the reveal roots set
+      if (!revealRoots.has(pathStr)) {
+        return false
+      }
+
+      // Check if any ancestor is also revealed - if so, this is not the root
+      for (let i = 1; i < path.length; i++) {
+        const ancestorPath = path.slice(0, i)
+        if (revealedPaths.has(pathToString(ancestorPath))) {
+          return false // An ancestor is revealed, so this is not the topmost
+        }
+      }
+
+      return true
+    },
+    [revealRoots, revealedPaths],
+  )
+
+  const hideRevealedPath = useCallback((path: Path) => {
+    const pathStr = pathToString(path)
+
+    setRevealedPaths((prev) => {
       if (!prev.has(pathStr)) {
         return prev // Path not revealed, no change needed
       }
@@ -90,11 +132,29 @@ export function RevealedPathsProvider({
 
       return next
     })
+
+    // Also remove from reveal roots
+    setRevealRoots((prev) => {
+      const next = new Set(prev)
+      for (const existingPath of prev) {
+        if (existingPath === pathStr || existingPath.startsWith(pathStr + '.')) {
+          next.delete(existingPath)
+        }
+      }
+      return next
+    })
   }, [])
 
   const value: RevealedPathsContextValue = useMemo(
-    () => ({revealedPaths, revealPath, isPathRevealed, clearRevealedPaths, hideRevealedPath}),
-    [revealedPaths, revealPath, isPathRevealed, clearRevealedPaths, hideRevealedPath],
+    () => ({
+      revealedPaths,
+      revealPath,
+      isPathRevealed,
+      isRevealRoot,
+      clearRevealedPaths,
+      hideRevealedPath,
+    }),
+    [revealedPaths, revealPath, isPathRevealed, isRevealRoot, clearRevealedPaths, hideRevealedPath],
   )
 
   return <RevealedPathsContext.Provider value={value}>{children}</RevealedPathsContext.Provider>
@@ -105,6 +165,7 @@ const DEFAULT_REVEALED_PATHS_VALUE: RevealedPathsContextValue = {
   revealedPaths: new Set<string>(),
   revealPath: () => {},
   isPathRevealed: () => false,
+  isRevealRoot: () => false,
   clearRevealedPaths: () => {},
   hideRevealedPath: () => {},
 }
