@@ -1,4 +1,4 @@
-import path from 'node:path'
+import path, {isAbsolute} from 'node:path'
 
 import {type CliCommandContext} from '@sanity/cli'
 import {debounce, mean, once} from 'lodash-es'
@@ -219,7 +219,14 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     configResolved(config) {
       // Resolve workDir from option or Vite's project root
       resolvedWorkDir = workDirOption ?? config.root
-      resolvedOutputPath = outputPathOption ?? path.join(resolvedWorkDir, 'schema.json')
+
+      if (!outputPathOption) {
+        resolvedOutputPath = path.join(resolvedWorkDir, 'schema.json')
+      } else if (isAbsolute(outputPathOption)) {
+        resolvedOutputPath = outputPathOption
+      } else {
+        resolvedOutputPath = path.join(resolvedWorkDir, outputPathOption)
+      }
     },
 
     configureServer(server) {
