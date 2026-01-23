@@ -1,9 +1,9 @@
-import {CloseIcon} from '@sanity/icons'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
@@ -133,9 +133,6 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                   >
                     <Flex align="center" gap={2}>
                       {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
-                      {onHideRevealed && (
-                        <CloseIcon style={{fontSize: '1em', marginRight: '4px'}} />
-                      )}
                     </Flex>
                   </Badge>
                 </Tooltip>
