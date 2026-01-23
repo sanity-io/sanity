@@ -5,39 +5,12 @@ import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SANITY_VERSION} from '../../version'
+import {generateStudioManifest} from './generateStudioManifest'
 import {resolveIcon} from './icon'
 
 const buildId: string | undefined =
   // @ts-expect-error: __SANITY_BUILD_TIMESTAMP__ is a global env variable set by the vite config
   typeof __SANITY_BUILD_TIMESTAMP__ === 'undefined' ? undefined : `${__SANITY_BUILD_TIMESTAMP__}`
-
-/**
- * Workspace configuration for the Studio manifest.
- * @internal
- */
-interface WorkspaceManifest {
-  name: string
-  projectId: string
-  dataset: string
-  schemaDescriptorId: string
-  basePath?: string
-  title?: string
-  subtitle?: string
-  icon?: string
-  mediaLibraryId?: string
-  apiHost?: string
-}
-
-/**
- * Studio configuration manifest that gets registered with the Content Operating System.
- * @internal
- */
-interface StudioManifest {
-  version?: string
-  buildId?: string
-  bundleVersion?: string
-  workspaces: WorkspaceManifest[]
-}
 
 /**
  * Resolves the Source from a WorkspaceSummary by subscribing to the source observable.
@@ -58,57 +31,6 @@ async function resolveSource(workspace: WorkspaceSummary): Promise<Source | unde
 async function resolveSchemaDescriptorId(workspace: WorkspaceSummary): Promise<string | undefined> {
   const source = await resolveSource(workspace)
   return await source?.__internal?.schemaDescriptorId
-}
-
-/**
- * Generates the workspace configuration for the manifest.
- */
-async function generateWorkspaceManifest(
-  workspace: WorkspaceSummary,
-  theme: RootTheme,
-): Promise<WorkspaceManifest | null> {
-  const schemaDescriptorId = await resolveSchemaDescriptorId(workspace)
-
-  // schemaDescriptorId is required for the manifest
-  if (!schemaDescriptorId) {
-    return null
-  }
-
-  return {
-    name: workspace.name,
-    projectId: workspace.projectId,
-    dataset: workspace.dataset,
-    schemaDescriptorId,
-    basePath: workspace.basePath || undefined,
-    title: workspace.title || undefined,
-    subtitle: workspace.subtitle || undefined,
-    icon: resolveIcon({
-      icon: workspace.icon,
-      title: workspace.title || workspace.name,
-      subtitle: workspace.subtitle,
-      theme,
-    }),
-    mediaLibraryId: workspace.mediaLibrary?.enabled ? workspace.mediaLibrary.libraryId : undefined,
-  }
-}
-
-/**
- * Generates the complete Studio manifest configuration.
- */
-async function generateStudioManifest(
-  workspaces: WorkspaceSummary[],
-  theme: RootTheme,
-): Promise<StudioManifest> {
-  const workspaceManifests = await Promise.all(
-    workspaces.map((workspace) => generateWorkspaceManifest(workspace, theme)),
-  )
-
-  return {
-    buildId,
-    bundleVersion: SANITY_VERSION,
-    // Filter out null entries (workspaces without schemaDescriptorId)
-    workspaces: workspaceManifests.filter((config): config is WorkspaceManifest => config !== null),
-  }
 }
 
 /**
@@ -134,7 +56,19 @@ export async function registerStudioManifest(
     return
   }
 
-  const liveManifest = await generateStudioManifest(workspaces, theme)
+  const liveManifest = await generateStudioManifest({
+    workspaces,
+    resolveSchemaDescriptorId,
+    resolveIcon: (ws) =>
+      resolveIcon({
+        icon: ws.icon,
+        title: ws.title || ws.name,
+        subtitle: ws.subtitle,
+        theme,
+      }),
+    bundleVersion: SANITY_VERSION,
+    buildId,
+  })
 
   // Skip registering if the manifest does not have any valid workspaces
   if (liveManifest.workspaces.length === 0) {
