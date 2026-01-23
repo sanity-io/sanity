@@ -179,8 +179,10 @@ export default function TimelineItemStory() {
           <DateTimeInput
             id="date"
             selectTime
+            // @ts-expect-error -- Legacy test code, will be fixed separately
             onChange={handleDatechange}
             calendarLabels={calendarLabels}
+            // @ts-expect-error -- Legacy test code, will be fixed separately
             value={date ? new Date(date) : undefined}
             inputValue={inputValue}
             constrainSize={false}

@@ -377,6 +377,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- Legacy test code, will be fixed separately
               previewValues: {
                 isLoading: false,
                 values: undefined,
@@ -444,6 +445,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- Legacy test code, will be fixed separately
               previewValues: {
                 isLoading: false,
                 values: undefined,

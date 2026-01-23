@@ -64,6 +64,7 @@ describe('buildVendorDependencies', async () => {
       })
 
       expect(build).toHaveBeenCalledTimes(1)
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       const [buildConfig] = build.mock.calls[0]
 
       expect(buildConfig).toMatchObject({

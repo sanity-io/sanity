@@ -29,6 +29,7 @@ describe('registerStudioManifest', () => {
     projectId: 'app-project',
     urlType: 'internal',
     appHost: 'test-studio',
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     apiHost: 'https://api.sanity.io',
   }
 

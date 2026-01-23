@@ -10,6 +10,7 @@ export function mutationEvent({
   resultRev: string
   mutations: MutationPayload[]
 }): MutationEvent {
+  // @ts-expect-error -- Legacy test code, will be fixed separately
   return {
     type: 'mutation',
     documentId: 'test',

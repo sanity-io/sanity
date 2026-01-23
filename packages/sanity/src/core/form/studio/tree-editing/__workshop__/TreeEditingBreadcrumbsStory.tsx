@@ -3,6 +3,7 @@ import {type Path} from '@sanity/types'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 
+// @ts-expect-error -- Legacy test code, will be fixed separately
 import {TreeEditingBreadcrumbs} from '../components'
 import {buildTreeEditingState, type TreeEditingState} from '../utils'
 

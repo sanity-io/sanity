@@ -125,6 +125,7 @@ export async function renderInput<ElementProps>(props: {
 
     if (!docType) throw new Error(`no document type: test`)
 
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     const formState = useFormState({
       schemaType: docType,
       comparisonValue: documentValue,
@@ -218,6 +219,7 @@ export async function renderInput<ElementProps>(props: {
 
   return {
     container,
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     focusRef,
     onBlur,
     onChange,

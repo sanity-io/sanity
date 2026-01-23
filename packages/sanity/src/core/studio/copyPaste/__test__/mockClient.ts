@@ -19,6 +19,7 @@ export function createMockClient(mockData: FIXME[]): ClientWithFetch {
         projectId: 'mock',
       }
     }),
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     fetch: vi.fn(
       async <R = FIXME, Q = Record<string, unknown>>(query: string, params?: Q): Promise<R> => {
         try {

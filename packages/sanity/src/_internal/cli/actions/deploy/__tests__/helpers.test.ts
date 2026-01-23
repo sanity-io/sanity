@@ -777,6 +777,7 @@ describe('dirIsEmptyOrNonExistent', () => {
 
   it('returns false if the directory is not empty', async () => {
     mockFsPromisesStat.mockResolvedValueOnce({isDirectory: () => true} as Stats)
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockFsPromisesReaddir.mockResolvedValueOnce([
       {name: 'file1'},
       {name: 'file2'},

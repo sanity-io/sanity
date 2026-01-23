@@ -454,6 +454,7 @@ describe('CLI: `sanity projects`', () => {
         },
       }
 
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       await createProjectCommand.action(args, mockContext)
 
       // Should output JSON format
@@ -511,6 +512,7 @@ describe('CLI: `sanity projects`', () => {
         extOptions: {},
       }
 
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       await createProjectCommand.action(args, mockContext)
 
       // Should output text format

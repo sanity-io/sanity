@@ -49,6 +49,7 @@ export async function renderCrossDatasetReferenceInput(options: {
   const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 

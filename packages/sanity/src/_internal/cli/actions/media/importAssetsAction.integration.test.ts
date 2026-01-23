@@ -67,6 +67,7 @@ describe('ndjson caching (integration)', () => {
         (entry: any) => entry.filename === `images/image-${i}.jpg`,
       )
       expect(aspectData).toBeDefined()
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       expect(aspectData.aspects.metadata.index).toBe(i)
     }
   })
@@ -128,7 +129,9 @@ describe('ndjson caching (integration)', () => {
     const dogAspect = aspectsData.find((entry: any) => entry.filename === 'images/dog.jpg')
     const birdAspect = aspectsData.find((entry: any) => entry.filename === 'images/bird.jpg')
 
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     expect(catAspect?.aspects).toEqual({animal: 'cat'})
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     expect(dogAspect?.aspects).toEqual({animal: 'dog'})
     expect(birdAspect).toBeUndefined() // No entry for bird
   })

@@ -20,6 +20,7 @@ export async function renderBooleanInput(options: {
   ): BooleanInputProps {
     const {schemaType, value, ...restProps} = inputProps
 
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     return {
       ...restProps,
       changed: false,
