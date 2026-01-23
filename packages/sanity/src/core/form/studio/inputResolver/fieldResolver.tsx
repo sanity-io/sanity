@@ -3,6 +3,7 @@ import {
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
   isReferenceSchemaType,
+  type Path,
   type SchemaType,
 } from '@sanity/types'
 import {type ComponentType, useMemo, useState} from 'react'
@@ -19,6 +20,24 @@ import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../.
 import {getTypeChain} from './helpers'
 
 const EMPTY_ARRAY: never[] = []
+
+/**
+ * Check if a path or any of its ancestors is in the naturally hidden paths set.
+ * This is needed because a nested field (e.g., 'parent.child') may not be directly
+ * hidden, but its parent ('parent') might be. In that case, the nested field is
+ * implicitly hidden and should show the "Hidden" badge when revealed.
+ */
+function isPathOrAncestorHidden(path: Path, naturallyHiddenPaths: Set<string>): boolean {
+  // Check each prefix of the path, from shortest to longest
+  for (let i = 1; i <= path.length; i++) {
+    const ancestorPath = path.slice(0, i)
+    const ancestorPathStr = pathToString(ancestorPath)
+    if (naturallyHiddenPaths.has(ancestorPathStr)) {
+      return true
+    }
+  }
+  return false
+}
 
 function BooleanField(field: FieldProps) {
   const documentId = usePublishedId()
@@ -94,10 +113,10 @@ function PrimitiveField(field: FieldProps) {
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
   const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
-  const pathStr = pathToString(field.path)
-  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
-  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
-  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
@@ -158,10 +177,10 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
   const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
-  const pathStr = pathToString(field.path)
-  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
-  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
-  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
@@ -232,10 +251,10 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
   const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
-  const pathStr = pathToString(field.path)
-  // Only show the badge if the path is revealed AND it's naturally hidden (by schema)
-  const isRevealed = isPathRevealed(field.path) && naturallyHiddenPaths.has(pathStr)
-  const showCloseButton = isRevealRoot(field.path) && naturallyHiddenPaths.has(pathStr)
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
 
   const handleHideRevealed = useMemo(
     () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
