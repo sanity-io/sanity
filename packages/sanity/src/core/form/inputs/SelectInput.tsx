@@ -1,3 +1,4 @@
+import {ResetIcon} from '@sanity/icons'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash-es'
@@ -11,7 +12,9 @@ import {
   useMemo,
 } from 'react'
 
+import {Button} from '../../../ui-components'
 import {ChangeIndicator} from '../../changeIndicators'
+import {useTranslation} from '../../i18n'
 import {PatchEvent, set, unset} from '../patch'
 import {type StringInputProps} from '../types'
 
@@ -136,26 +139,43 @@ const RadioSelect = forwardRef(function RadioSelect(
   ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
+  const {t} = useTranslation()
+
+  const handleClear = useCallback(() => {
+    onChange(null)
+  }, [onChange])
 
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
     <Card border padding={3} radius={2}>
-      <Layout space={3} role="group">
-        {items.map((item, index) => (
-          <RadioSelectItem
-            // oxlint-disable-next-line no-array-index-key
-            key={index}
-            customValidity={customValidity}
-            inputId={inputId}
-            item={item}
-            onChange={onChange}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            ref={index === 0 ? ref : null}
-            value={value}
-          />
-        ))}
-      </Layout>
+      <Stack space={3}>
+        <Layout space={3} role="group">
+          {items.map((item, index) => (
+            <RadioSelectItem
+              // oxlint-disable-next-line no-array-index-key
+              key={index}
+              customValidity={customValidity}
+              inputId={inputId}
+              item={item}
+              onChange={onChange}
+              onFocus={onFocus}
+              readOnly={readOnly}
+              ref={index === 0 ? ref : null}
+              value={value}
+            />
+          ))}
+        </Layout>
+        {!readOnly && value && (
+          <Box>
+            <Button
+              icon={ResetIcon}
+              text={t('inputs.reference.action.clear')}
+              onClick={handleClear}
+              mode="ghost"
+            />
+          </Box>
+        )}
+      </Stack>
     </Card>
   )
 })
