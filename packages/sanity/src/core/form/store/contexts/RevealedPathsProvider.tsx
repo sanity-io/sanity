@@ -48,15 +48,18 @@ export function RevealedPathsProvider({
       return next
     })
 
-    // Mark the first hidden ancestor as the root (where the close button should appear)
-    // The actual root will be determined by the caller - we mark the target path as root
-    // since it's the one that was directly requested to be revealed
+    // Mark the topmost ancestor as the root (where the close button should appear)
+    // This is the first element of the path, which is the topmost revealed field
     setRevealRoots((prev) => {
-      if (prev.has(pathStr)) {
+      // The topmost path is the first element
+      const topmostPath = path.slice(0, 1)
+      const topmostPathStr = pathToString(topmostPath)
+
+      if (prev.has(topmostPathStr)) {
         return prev
       }
       const next = new Set(prev)
-      next.add(pathStr)
+      next.add(topmostPathStr)
       return next
     })
   }, [])
@@ -89,27 +92,15 @@ export function RevealedPathsProvider({
   }, [])
 
   // Check if this path is a reveal root (where the close button should appear)
-  // A reveal root is a path that was directly revealed AND has no revealed ancestor
+  // A reveal root is the topmost path of a reveal tree
   const isRevealRoot = useCallback(
     (path: Path): boolean => {
       const pathStr = pathToString(path)
-
-      // Must be in the reveal roots set
-      if (!revealRoots.has(pathStr)) {
-        return false
-      }
-
-      // Check if any ancestor is also revealed - if so, this is not the root
-      for (let i = 1; i < path.length; i++) {
-        const ancestorPath = path.slice(0, i)
-        if (revealedPaths.has(pathToString(ancestorPath))) {
-          return false // An ancestor is revealed, so this is not the topmost
-        }
-      }
-
-      return true
+      // Simply check if this path is in the reveal roots set
+      // (we now add the topmost path to revealRoots when revealing)
+      return revealRoots.has(pathStr)
     },
-    [revealRoots, revealedPaths],
+    [revealRoots],
   )
 
   const hideRevealedPath = useCallback((path: Path) => {
