@@ -8,11 +8,11 @@ import debugit from 'debug'
 import {max, sum} from 'lodash-es'
 import {firstValueFrom} from 'rxjs'
 
-import {isDev} from '../environment'
-import {getFeatures} from '../hooks/useFeatureEnabled'
-import {DESCRIPTOR_CONVERTER} from '../schema'
+import {isDev} from '../../environment'
+import {getFeatures} from '../../hooks/useFeatureEnabled'
+import {DESCRIPTOR_CONVERTER} from '../../schema'
 
-const debug = debugit('sanity:config')
+const debug = debugit('sanity:manifest')
 
 const DISABLE_TOGGLE = 'toggle.schema.upload-pause.disable'
 
@@ -47,6 +47,7 @@ type ClaimResponse = {
 
 /**
  * Uploads the schema to Content Lake, returning a schema descriptor ID.
+ * @internal
  */
 export async function uploadSchema(
   schema: Schema,
