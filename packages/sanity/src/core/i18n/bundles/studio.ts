@@ -1198,6 +1198,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.strength-mismatch.title': 'Reference strength mismatch',
   /** Label for button that triggers the action that weakens a reference on strength mismatch */
   'inputs.reference.strength-mismatch.weaken-button-label': 'Convert to weak reference',
+  /** Label for action to clear the current value of the select field */
+  'inputs.select.action.clear': 'Clear',
   /** Action message for generating the slug */
   'inputs.slug.action.generate': 'Generate',
   /** Loading message for when the input is actively generating a slug */
