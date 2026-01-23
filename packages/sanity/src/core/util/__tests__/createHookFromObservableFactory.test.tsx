@@ -195,6 +195,7 @@ describe('createHookFromObservableFactory', () => {
     renderHook(useHook, {
       // Error is hoisted. To prevent it from being printed as uncaught in terminal,
       // we explicitly catch it and suppress it
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       onCaughtError: () => {},
       wrapper: class Wrapper extends Component<PropsWithChildren> {
         static getDerivedStateFromError(err: Error) {

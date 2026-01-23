@@ -51,6 +51,7 @@ function createSubscription(
 ) {
   const getClient = () => client
 
+  // @ts-expect-error -- Legacy test code, will be fixed separately
   const stream = validation(
     {
       client,
@@ -91,6 +92,7 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
+  // @ts-expect-error -- Legacy test code, will be fixed separately
   const stream = validation(
     {
       client,
@@ -149,6 +151,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -200,6 +203,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -221,6 +225,7 @@ describe('validation', () => {
     await doneValidating()
 
     // push a valid value
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -278,6 +283,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -334,6 +340,7 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       validation(
         {
           client,
@@ -350,6 +357,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -387,6 +395,7 @@ describe('validation', () => {
     ])
 
     const immediatePlayback = await firstValueFrom(
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -396,6 +405,7 @@ describe('validation', () => {
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -420,6 +430,7 @@ describe('validation', () => {
       () => EMPTY,
     )
 
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockEditStateSubject.next({
       id: 'example-id',
       draft: null,

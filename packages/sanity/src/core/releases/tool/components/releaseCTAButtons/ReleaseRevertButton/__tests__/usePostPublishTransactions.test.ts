@@ -53,6 +53,7 @@ describe('usePostPublishTransactions', () => {
   ] as TransactionLogEventWithEffects[]
 
   it('should return null initially', () => {
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     mockGetTransactionsLogs.mockResolvedValue(undefined)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))

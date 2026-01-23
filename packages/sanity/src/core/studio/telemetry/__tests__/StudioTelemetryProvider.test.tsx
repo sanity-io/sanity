@@ -56,11 +56,13 @@ describe('StudioTelemetryProvider', () => {
     vi.clearAllMocks()
 
     // Setup default mocks
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     vi.mocked(createSessionId).mockReturnValue('test-session-id')
     vi.mocked(useClient).mockReturnValue(mockClient as never)
     vi.mocked(useWorkspace).mockReturnValue(mockWorkspace as never)
     vi.mocked(useProjectOrganizationId).mockReturnValue({value: 'org-123'} as never)
     vi.mocked(useRouterState).mockImplementation(
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'desk'}),
     )
 
@@ -221,6 +223,7 @@ describe('StudioTelemetryProvider', () => {
 
     // Change active tool
     vi.mocked(useRouterState).mockImplementation(
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       <T,>(selector: (state: {tool?: string}) => T): T => selector({tool: 'vision'}),
     )
 

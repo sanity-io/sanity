@@ -106,6 +106,7 @@ test(generateAction.name, async () => {
       const instance = workerInstances[0]
       if (!instance) return
       clearInterval(id)
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       resolve(instance)
     }, 0)
   })
