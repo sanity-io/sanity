@@ -300,7 +300,9 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       trace?.start()
 
       try {
+        const start = Date.now()
         const schema = await extractSchema()
+        console.error(`✓ Extract schema (${Date.now() - start}ms)`)
 
         trace?.log({
           schemaAllTypesCount: schema.length,
