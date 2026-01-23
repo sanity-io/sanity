@@ -64,6 +64,7 @@ import {
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {pathToString} from '../field/paths/helpers'
 import {useRevealedPaths} from './store/contexts/RevealedPathsProvider'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
@@ -201,7 +202,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   useReconnectingToast(connectionState === 'reconnecting')
 
   // Get revealed paths for hidden field navigation
-  const {revealedPaths, revealPath} = useRevealedPaths()
+  const {revealedPaths, revealPath, clearRevealedPaths} = useRevealedPaths()
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -430,8 +431,35 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     )
   })
   const handleChange = (event: PatchEvent) => {
-    // Note: We do NOT clear revealed paths on edit - user must click the × button
-    // or change templates to hide revealed fields again
+    // Check if any patch affects a path that is NOT a revealed path or its descendant
+    // If editing a non-revealed field (e.g., a "selectedTemplate" field that controls visibility),
+    // we should clear the revealed paths. But if editing within a revealed field, we don't clear.
+    if (revealedPaths.size > 0) {
+      const patchAffectsNonRevealedPath = event.patches.some((patch) => {
+        if (!patch.path || patch.path.length === 0) {
+          return false // Root-level patches don't count
+        }
+        const patchPathStr = pathToString(patch.path)
+
+        // Check if this patch path is a revealed path or a descendant of one
+        for (const revealedPath of revealedPaths) {
+          // Patch is to the revealed path itself, or a descendant of it
+          if (patchPathStr === revealedPath || patchPathStr.startsWith(revealedPath + '.')) {
+            return false // This patch is within a revealed path - don't trigger clear
+          }
+        }
+
+        // Patch is to a path that is NOT within any revealed path
+        return true
+      })
+
+      if (patchAffectsNonRevealedPath) {
+        // User is editing a field that's not part of the revealed paths
+        // This likely means they're changing something that affects visibility (like selectedTemplate)
+        clearRevealedPaths()
+      }
+    }
+
     patchRef.current(event)
   }
 
