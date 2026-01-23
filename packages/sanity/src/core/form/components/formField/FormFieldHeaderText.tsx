@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Button, Flex, Stack, Text, Tooltip} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text, Tooltip} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
@@ -91,7 +91,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         {(deprecated || hasValidations || isRevealed) && (
           <LabelSuffix align="center">
             {isRevealed && (
-              <Flex align="center" marginLeft={2} gap={1}>
+              <Box marginLeft={2}>
                 <Tooltip
                   content={
                     <Box padding={2}>
@@ -106,22 +106,19 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                   placement="top"
                   portal
                 >
-                  <Badge data-testid={`revealed-badge-${title}`} tone="caution">
-                    {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                  <Badge
+                    data-testid={`revealed-badge-${title}`}
+                    tone="caution"
+                    onClick={onHideRevealed}
+                    style={onHideRevealed ? {cursor: 'pointer'} : undefined}
+                  >
+                    <Flex align="center" gap={1}>
+                      {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                      {onHideRevealed && <CloseIcon style={{fontSize: '0.75em'}} />}
+                    </Flex>
                   </Badge>
                 </Tooltip>
-                {onHideRevealed && (
-                  <Button
-                    data-testid={`hide-revealed-${title}`}
-                    icon={CloseIcon}
-                    mode="bleed"
-                    onClick={onHideRevealed}
-                    padding={1}
-                    tone="caution"
-                    title={t('form.field.hide-revealed-tooltip', {defaultValue: 'Hide field'})}
-                  />
-                )}
-              </Flex>
+              </Box>
             )}
 
             {deprecated && (

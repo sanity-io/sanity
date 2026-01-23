@@ -15,6 +15,8 @@ export interface RevealedPathsContextValue {
   isPathRevealed: (path: Path) => boolean
   /** Clear all revealed paths */
   clearRevealedPaths: () => void
+  /** Hide a specific revealed path (and its descendants) */
+  hideRevealedPath: (path: Path) => void
 }
 
 /**
