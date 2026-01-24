@@ -121,6 +121,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       debugSecrets(),
       presentationTool({
+        editOverlayDefault: 'disabled',
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
         previewUrl: '/preview/index.html',
         resolve: {

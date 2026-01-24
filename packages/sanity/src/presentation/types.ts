@@ -381,6 +381,7 @@ export type DocumentResolver =
  */
 export interface PresentationPluginOptions {
   devMode?: boolean | (() => boolean)
+  editOverlayDefault?: 'enabled' | 'disabled'
   icon?: ComponentType
   name?: string
   title?: string

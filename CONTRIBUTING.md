@@ -6,7 +6,7 @@ Contributions are always welcome, no matter how large or small.
 
 ## Getting started
 
-Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md).
+Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/main/CODE_OF_CONDUCT.md).
 
 Then make sure you have _Node.js version 18 or newer_. We currently use [pnpm](https://pnpm.io/installation) as our package manager, so make sure you have that installed as well.
 

@@ -149,7 +149,11 @@ export default function PresentationTool(props: {
     })
   const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
 
-  const presentationRef = useActorRef(presentationMachine)
+  const initialOverlaysEnabled = tool.options?.editOverlayDefault === 'disabled' ? false : true
+
+  const presentationRef = useActorRef(presentationMachine, {
+    input: {visualEditingOverlaysEnabled: initialOverlaysEnabled},
+  })
 
   const viewport = useMemo(() => (params.viewport ? 'mobile' : 'desktop'), [params.viewport])
 
