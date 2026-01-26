@@ -44,7 +44,7 @@ import {getIdPair} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
 import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
-import {isEmptyValue} from './utils'
+import {isEmptyValue, isPortableTextPreserveEmptyField} from './utils'
 
 export interface TransferValueError {
   level: 'warning' | 'error'
@@ -767,8 +767,18 @@ async function collateObjectValue({
         continue
       }
 
+      // For portable text fields like marks/markDefs, preserve empty arrays
+      // These fields are semantically meaningful even when empty
+      // We validate the schema context to ensure we only preserve these fields
+      // when they're actually in a Portable Text context (block or span)
+      const isSourceEmptyArray = Array.isArray(genericValue) && genericValue.length === 0
+      const shouldPreserveEmptyArray =
+        isSourceEmptyArray && isPortableTextPreserveEmptyField(member, targetSchemaType)
+
       if (!isEmptyValue(collated.targetValue)) {
         targetValue[member.name] = collated.targetValue
+      } else if (shouldPreserveEmptyArray) {
+        targetValue[member.name] = []
       }
     }
   }

@@ -1,4 +1,10 @@
-import {type Path} from '@sanity/types'
+import {
+  isBlockSchemaType,
+  isSpanSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
 
 import {isString} from '../../util/isString'
 import {type SanityClipboardItem} from './types'
@@ -163,6 +169,30 @@ export function isEmptyValue(value: unknown): boolean {
   if (value === null || value === undefined) return true
   if (Array.isArray(value) && value.length === 0) return true
   return false
+}
+
+/**
+ * Field names in Portable Text that should preserve empty arrays.
+ * These fields are semantically meaningful even when empty:
+ * - `marks`: Array of mark keys on spans (empty means no formatting)
+ * - `markDefs`: Array of mark definitions on blocks (empty means no annotations defined)
+ */
+const PORTABLE_TEXT_PRESERVE_EMPTY_FIELDS = new Set(['marks', 'markDefs'])
+
+/**
+ * Checks if a field name is a Portable Text field that should preserve
+ * empty arrays during copy/paste operations.
+ *
+ */
+export function isPortableTextPreserveEmptyField(
+  member: ObjectField,
+  targetSchemaType: ObjectSchemaType,
+): boolean {
+  return (
+    PORTABLE_TEXT_PRESERVE_EMPTY_FIELDS.has(member.name) &&
+    ((member.name === 'markDefs' && isBlockSchemaType(targetSchemaType)) ||
+      (member.name === 'marks' && isSpanSchemaType(targetSchemaType)))
+  )
 }
 
 export function isNativeEditableElement(el: EventTarget): boolean {
