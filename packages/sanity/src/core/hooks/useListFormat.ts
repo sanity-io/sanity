@@ -15,7 +15,7 @@ export interface UseListFormatOptions {
    * - `disjunction` (read: "or")
    * - `unit` (just a list)
    */
-  // @ts-expect-error Intl.ListFormat is an ES2021 feature not yet fully defined in TypeScript lib definitions
+  // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
   type?: Intl.ListFormatType | undefined
 
   /**
@@ -25,7 +25,7 @@ export interface UseListFormatOptions {
    * - `short`: "a, b & c"
    * - `narrow`: `a, b, c`
    */
-  // @ts-expect-error Intl.ListFormat is an ES2021 feature not yet fully defined in TypeScript lib definitions
+  // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
   style?: Intl.ListFormatStyle | undefined
 }
 
@@ -37,7 +37,7 @@ export interface UseListFormatOptions {
  * @returns Instance of `Intl.ListFormat`
  * @public
  */
-// @ts-expect-error Intl.ListFormat is an ES2021 feature not yet fully defined in TypeScript lib definitions
+// @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
 export function useListFormat(options: UseListFormatOptions = {}): Intl.ListFormat {
   /*
    * Certain components using this hook (such as the <Translate/> in toasts)
