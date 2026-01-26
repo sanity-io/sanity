@@ -33,6 +33,7 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
+import {resolveTypeName} from '@sanity/util/content'
 import {last} from 'lodash-es'
 
 import {getValueAtPath} from '../../field/paths/helpers'
@@ -459,7 +460,8 @@ async function collateObjectValue({
     }
   }
   const targetValue = {
-    _type: targetSchemaType.name,
+    // Only set _type if the source value had one (preserves anonymous objects)
+    ...(isTypedObject(sourceValue) ? {_type: targetSchemaType.name} : {}),
     ...(sourceValue && typeof sourceValue === 'object' && '_key' in sourceValue
       ? {_key: keyGenerator()}
       : {}),
@@ -814,6 +816,21 @@ async function collateObjectValue({
   }
 }
 
+/**
+ * Finds the matching schema type for an array item.
+ * Handles anonymous objects (items without _type) by resolving the type name of the item.
+ */
+function findMatchingArrayMemberType(
+  item: TypedObject,
+  targetSchemaType: ArraySchemaType,
+): ObjectSchemaType | undefined {
+  const itemTypeName = resolveTypeName(item)
+
+  return targetSchemaType.of.find((type) => type.name === itemTypeName) as
+    | ObjectSchemaType
+    | undefined
+}
+
 async function collateArrayValue({
   sourceValue,
   targetSchemaType,
@@ -899,11 +916,12 @@ async function collateArrayValue({
   // Object array
   if (isArrayOfObjectsMember) {
     const value = sourceValue as TypedObject[]
-    const transferredItems = value.filter((item) =>
-      targetSchemaType.of.some((type) => type.name === item._type),
+
+    const transferredItems = value.filter(
+      (item) => findMatchingArrayMemberType(item, targetSchemaType) !== undefined,
     )
     const nonTransferredItems = value.filter(
-      (item) => !targetSchemaType.of.some((type) => type.name === item._type),
+      (item) => findMatchingArrayMemberType(item, targetSchemaType) === undefined,
     )
 
     if (transferredItems.length === 0) {
@@ -913,9 +931,7 @@ async function collateArrayValue({
         transferredItems.map((item) =>
           collateObjectValue({
             sourceValue: item,
-            targetSchemaType: targetSchemaType.of.find(
-              (type) => type.name === item._type,
-            )! as ObjectSchemaType,
+            targetSchemaType: findMatchingArrayMemberType(item, targetSchemaType)!,
             targetPath: [],
             targetRootValue,
             targetRootPath,
@@ -939,7 +955,7 @@ async function collateArrayValue({
           i18n: {
             key: 'copy-paste.on-paste.validation.array-value-incompatible.description',
             args: {
-              type: item._type || typeof item,
+              type: resolveTypeName(item),
             },
           },
         })

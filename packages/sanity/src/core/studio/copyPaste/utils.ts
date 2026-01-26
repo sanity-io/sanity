@@ -161,6 +161,13 @@ export function transformValueToText(value: unknown): string {
 
 export function isEmptyValue(value: unknown): boolean {
   if (value === null || value === undefined) return true
+  if (typeof value === 'object') {
+    const keys = Object.keys(value)
+    // An object is effectively empty if it only has `_key` (no content at all)
+    if (keys.length === 1 && keys[0] === '_key') {
+      return true
+    }
+  }
   if (Array.isArray(value) && value.length === 0) return true
   return false
 }
