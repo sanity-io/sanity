@@ -41,7 +41,7 @@ async function main({
 }: TypegenGenerateTypesWorkerData) {
   const report = WorkerChannelReporter.from<TypegenWorkerChannel>(parentPort)
 
-  const fullPath = path.join(workDir, schemaPath)
+  const fullPath = path.isAbsolute(schemaPath) ? schemaPath : path.join(workDir, schemaPath)
 
   try {
     const schemaStats = await stat(fullPath)
