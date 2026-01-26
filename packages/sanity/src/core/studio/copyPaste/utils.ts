@@ -172,14 +172,6 @@ export function isEmptyValue(value: unknown): boolean {
 }
 
 /**
- * Field names in Portable Text that should preserve empty arrays.
- * These fields are semantically meaningful even when empty:
- * - `marks`: Array of mark keys on spans (empty means no formatting)
- * - `markDefs`: Array of mark definitions on blocks (empty means no annotations defined)
- */
-const PORTABLE_TEXT_PRESERVE_EMPTY_FIELDS = new Set(['marks', 'markDefs'])
-
-/**
  * Checks if a field name is a Portable Text field that should preserve
  * empty arrays during copy/paste operations.
  *
@@ -189,9 +181,8 @@ export function isPortableTextPreserveEmptyField(
   targetSchemaType: ObjectSchemaType,
 ): boolean {
   return (
-    PORTABLE_TEXT_PRESERVE_EMPTY_FIELDS.has(member.name) &&
-    ((member.name === 'markDefs' && isBlockSchemaType(targetSchemaType)) ||
-      (member.name === 'marks' && isSpanSchemaType(targetSchemaType)))
+    (member.name === 'markDefs' && isBlockSchemaType(targetSchemaType)) ||
+    (member.name === 'marks' && isSpanSchemaType(targetSchemaType))
   )
 }
 
