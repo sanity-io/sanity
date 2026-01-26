@@ -2564,6 +2564,36 @@ exports[`Extract schema test > Can not extract global document references at the
 exports[`Extract schema test > Extracts schema general 1`] = `
 [
   {
+    "name": "media",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "globalDocumentReference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
     "name": "sanity.imageAsset.reference",
     "type": "type",
     "value": {
@@ -2671,7 +2701,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "type": "unknown",
+                        "attributes": {
+                          "_ref": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "globalDocumentReference",
+                            },
+                          },
+                          "_weak": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
@@ -3498,7 +3551,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
           "optional": true,
           "type": "objectAttribute",
           "value": {
-            "type": "unknown",
+            "attributes": {
+              "_ref": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "globalDocumentReference",
+                },
+              },
+              "_weak": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean",
+                },
+              },
+            },
+            "type": "object",
           },
         },
       },
@@ -4442,7 +4518,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                                   "optional": true,
                                   "type": "objectAttribute",
                                   "value": {
-                                    "type": "unknown",
+                                    "attributes": {
+                                      "_ref": {
+                                        "optional": true,
+                                        "type": "objectAttribute",
+                                        "value": {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "_type": {
+                                        "type": "objectAttribute",
+                                        "value": {
+                                          "type": "string",
+                                          "value": "globalDocumentReference",
+                                        },
+                                      },
+                                      "_weak": {
+                                        "optional": true,
+                                        "type": "objectAttribute",
+                                        "value": {
+                                          "type": "boolean",
+                                        },
+                                      },
+                                    },
+                                    "type": "object",
                                   },
                                 },
                               },
@@ -4642,7 +4741,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "type": "unknown",
+                        "attributes": {
+                          "_ref": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "globalDocumentReference",
+                            },
+                          },
+                          "_weak": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
@@ -5194,7 +5316,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "type": "unknown",
+                        "attributes": {
+                          "_ref": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "globalDocumentReference",
+                            },
+                          },
+                          "_weak": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
@@ -5776,7 +5921,30 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                       "optional": true,
                       "type": "objectAttribute",
                       "value": {
-                        "type": "unknown",
+                        "attributes": {
+                          "_ref": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "globalDocumentReference",
+                            },
+                          },
+                          "_weak": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "type": "object",
                       },
                     },
                   },
@@ -6147,7 +6315,8 @@ exports[`Extract schema test > Extracts schema general 1`] = `
               "optional": true,
               "type": "objectAttribute",
               "value": {
-                "type": "unknown",
+                "name": "media",
+                "type": "inline",
               },
             },
           },
@@ -6862,7 +7031,30 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": true,
             "type": "objectAttribute",
             "value": {
-              "type": "unknown",
+              "attributes": {
+                "_ref": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "globalDocumentReference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "type": "object",
             },
           },
         },
@@ -6909,7 +7101,30 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": true,
             "type": "objectAttribute",
             "value": {
-              "type": "unknown",
+              "attributes": {
+                "_ref": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "globalDocumentReference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "type": "object",
             },
           },
         },
@@ -6957,7 +7172,30 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
               "optional": true,
               "type": "objectAttribute",
               "value": {
-                "type": "unknown",
+                "attributes": {
+                  "_ref": {
+                    "optional": true,
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                  "_type": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                      "value": "globalDocumentReference",
+                    },
+                  },
+                  "_weak": {
+                    "optional": true,
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "boolean",
+                    },
+                  },
+                },
+                "type": "object",
               },
             },
           },
@@ -7017,7 +7255,30 @@ exports[`Extract schema test > enforceRequiredFields handles \`assetRequired\` 1
             "optional": true,
             "type": "objectAttribute",
             "value": {
-              "type": "unknown",
+              "attributes": {
+                "_ref": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "globalDocumentReference",
+                  },
+                },
+                "_weak": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "type": "object",
             },
           },
         },
@@ -7262,81 +7523,6 @@ exports[`Extract schema test > inline reference types works 1`] = `
 exports[`Extract schema test > will extract global document reference types 1`] = `
 [
   {
-    "attributes": {
-      "_createdAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-        },
-      },
-      "_id": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-        },
-      },
-      "_rev": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-        },
-      },
-      "_type": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-          "value": "validDocument",
-        },
-      },
-      "_updatedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string",
-        },
-      },
-      "author": {
-        "optional": true,
-        "type": "objectAttribute",
-        "value": {
-          "attributes": {
-            "_ref": {
-              "optional": true,
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-              },
-            },
-            "_type": {
-              "type": "objectAttribute",
-              "value": {
-                "type": "string",
-                "value": "globalDocumentSubtype",
-              },
-            },
-            "_weak": {
-              "optional": true,
-              "type": "objectAttribute",
-              "value": {
-                "type": "boolean",
-              },
-            },
-          },
-          "type": "object",
-        },
-      },
-      "book": {
-        "optional": true,
-        "type": "objectAttribute",
-        "value": {
-          "name": "book",
-          "type": "inline",
-        },
-      },
-    },
-    "name": "validDocument",
-    "type": "document",
-  },
-  {
     "name": "book",
     "type": "type",
     "value": {
@@ -7388,6 +7574,59 @@ exports[`Extract schema test > will extract global document reference types 1`] 
       },
       "type": "object",
     },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "globalDocumentSubtype",
+          "type": "inline",
+        },
+      },
+      "book": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "book",
+          "type": "inline",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
   },
 ]
 `;

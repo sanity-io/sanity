@@ -227,8 +227,9 @@ describe('Extract schema test', () => {
 
     const extracted = extractSchema(schema)
 
-    expect(extracted.length).toBe(29)
+    expect(extracted.length).toBe(30)
     expect(extracted.map((v) => v.name)).toStrictEqual([
+      'media',
       'sanity.imageAsset.reference',
       'author.reference',
       'deep',
@@ -989,7 +990,11 @@ describe('Extract schema test', () => {
     )
 
     const extracted = extractSchema(schema)
-    expect(extracted.map((v) => v.name)).toStrictEqual(['book', 'validDocument'])
+    expect(extracted.map((v) => v.name)).toStrictEqual([
+      'book',
+      'globalDocumentSubtype',
+      'validDocument',
+    ])
     const validDocument = extracted.find((type) => type.name === 'validDocument')
     expect(validDocument).toBeDefined()
     assert(validDocument !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
