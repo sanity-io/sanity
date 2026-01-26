@@ -18,9 +18,9 @@ export const NestedDialogOpened = defineEvent<NestedDialogOpenedInfo>({
 })
 
 /** When a nested dialog is successfully closed */
-export const NestedDialogClosed = defineEvent<NestedDialogOpenedInfo>({
+export const NestedDialogClosed = defineEvent({
   name: 'Nested Dialog Closed',
-  version: 1,
+  version: 2,
   description: 'User closed a nested dialog',
 })
 
@@ -38,6 +38,19 @@ export const NavigatedToNestedObjectViaBreadcrumb = defineEvent<NestedDialogOpen
   name: 'Navigated to Nested Object via Breadcrumb',
   version: 1,
   description: 'User navigated to a nested object via a breadcrumb',
+})
+
+export const NavigatedToNestedObjectViaCloseButton = defineEvent({
+  name: 'Navigated to Nested Object via Close Button',
+  version: 1,
+  description:
+    'User navigated to a nested object via closing the top most dialog via the close button',
+})
+
+export const navigatedToNestedObjectViaKeyboardShortcut = defineEvent({
+  name: 'Navigated to Nested Object via Keyboard Shortcut',
+  version: 1,
+  description: 'User navigated to a nested object via a keyboard shortcut',
 })
 
 export const CreatedNewObject = defineEvent<NestedDialogOpenedInfo & NestedObjectInfoOrigin>({

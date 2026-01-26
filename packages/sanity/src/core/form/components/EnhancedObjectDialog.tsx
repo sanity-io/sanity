@@ -12,6 +12,8 @@ import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {
+  NavigatedToNestedObjectViaCloseButton,
+  navigatedToNestedObjectViaKeyboardShortcut,
   NestedDialogClosed,
   NestedDialogOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
@@ -90,7 +92,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack, close} = useDialogStack({
+  const {dialogId, isTop, stack} = useDialogStack({
     path: currentPath,
   })
 
@@ -137,28 +139,29 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           const newLastStackPath = lastStackPath.slice(0, -1)
 
           if (newLastStackPath.length > 1) {
+            telemetry.log(navigatedToNestedObjectViaKeyboardShortcut)
             onPathOpen(newLastStackPath)
           } else {
-            telemetry.log(NestedDialogClosed, {
-              path: pathToString([]),
-            })
+            telemetry.log(NestedDialogClosed)
             onClose?.()
-            close()
           }
         }
       }
     },
-    [isTop, stack, onPathOpen, onClose, close, telemetry],
+    [isTop, stack, onPathOpen, onClose, telemetry],
   )
 
   const handleClose = useCallback(() => {
-    // close() handles all navigation (setting openPath to fullscreen PTE or EMPTY_ARRAY)
-    telemetry.log(NestedDialogClosed, {
-      path: pathToString([]),
-    })
+    // This means that we are closing the dialog and are not at the root level
+    // Which means we will open the parent dialog
+    if (stack.length >= 2) {
+      telemetry.log(NavigatedToNestedObjectViaCloseButton)
+    } else {
+      telemetry.log(NestedDialogClosed)
+    }
+
     onClose?.()
-    close()
-  }, [close, onClose, telemetry])
+  }, [onClose, stack, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
