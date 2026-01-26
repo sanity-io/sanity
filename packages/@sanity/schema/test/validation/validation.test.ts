@@ -252,7 +252,8 @@ describe('Validation test', () => {
       expect(testDocument._problems).toHaveLength(0)
 
       // Check the block field has no errors
-      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const isBodyField = (f: any) => f.name === 'body'
+      const bodyField = testDocument.fields.find(isBodyField)
       expect(bodyField._problems).toHaveLength(0)
 
       // Check the block type has no errors
@@ -301,7 +302,8 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const testDocument = validation.get('testDocument')
-      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const isBodyField = (f: any) => f.name === 'body'
+      const bodyField = testDocument.fields.find(isBodyField)
       const blockType = bodyField.of[0]
 
       // Both annotations should have no errors
@@ -343,7 +345,8 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const testDocument = validation.get('testDocument')
-      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const isBodyField = (f: any) => f.name === 'body'
+      const bodyField = testDocument.fields.find(isBodyField)
       const blockType = bodyField.of[0]
 
       expect(blockType.marks.annotations[0]._problems).toHaveLength(0)
@@ -383,12 +386,14 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const testDocument = validation.get('testDocument')
-      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const isBodyField = (f: any) => f.name === 'body'
+      const bodyField = testDocument.fields.find(isBodyField)
       const blockType = bodyField.of[0]
       const annotation = blockType.marks.annotations[0]
 
       // Should have an error because annotations must inherit from object
-      const errors = annotation._problems.filter((p: any) => p.severity === 'error')
+      const isError = (p: any) => p.severity === 'error'
+      const errors = annotation._problems.filter(isError)
       expect(errors.length).toBeGreaterThan(0)
       expect(errors[0].message).toContain('annotation types must inherit from object')
     })
@@ -432,7 +437,8 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const testDocument = validation.get('testDocument')
-      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const isBodyField = (f: any) => f.name === 'body'
+      const bodyField = testDocument.fields.find(isBodyField)
       const blockType = bodyField.of[0]
 
       // Both should work without errors
@@ -456,7 +462,8 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const myDocument = validation.get('myDocument')
-      const parentNodeField = myDocument.fields.find((f: any) => f.name === 'parentNode')
+      const isParentNodeField = (f: any) => f.name === 'parentNode'
+      const parentNodeField = myDocument.fields.find(isParentNodeField)
 
       expect(parentNodeField._problems).toHaveLength(1)
       expect(parentNodeField._problems[0]).toMatchObject({
@@ -478,7 +485,8 @@ describe('Validation test', () => {
 
       const validation = validateSchema(schemaDef)
       const myObject = validation.get('myObject')
-      const childrenField = myObject.fields.find((f: any) => f.name === 'children')
+      const isChildrenField = (f: any) => f.name === 'children'
+      const childrenField = myObject.fields.find(isChildrenField)
 
       expect(childrenField._problems).toHaveLength(1)
       expect(childrenField._problems[0]).toMatchObject({
