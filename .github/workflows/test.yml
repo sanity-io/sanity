@@ -63,7 +63,7 @@ jobs:
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
 
           # Add --changed for PRs (unless 'full-test-suite' label is present)
-          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ !contains(github.event.pull_request.labels.*.name, 'full-test-suite') }}" == "true" ]; then
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ contains(github.event.pull_request.labels.*.name, 'full-test-suite') }}" != "true" ]; then
             ARGS="$ARGS --changed origin/${{ github.base_ref }}"
           fi
 
