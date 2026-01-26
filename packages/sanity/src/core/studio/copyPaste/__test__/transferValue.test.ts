@@ -1171,6 +1171,110 @@ describe('transferValue', () => {
       expect(transferValueResult?.errors).toEqual([])
       expect(transferValueResult?.targetValue).toEqual(expectedOutput)
     })
+
+    test('can copy array of anonymous objects (objects without _type)', async () => {
+      // Anonymous objects don't have a _type property - this is the case when
+      // array members are defined inline without a name
+      const sourceValue = [
+        {
+          _key: 'f37ded611b8c',
+          first: 'Hello',
+          second: 'World',
+        },
+      ]
+      const expectedOutput = [
+        {
+          _key: expect.any(String),
+          first: 'Hello',
+          second: 'World',
+        },
+      ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('editor')!, [
+        'arrayWithAnonymousObject',
+      ])!
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('editor')!, [
+          'arrayWithAnonymousObject',
+        ])!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+    })
+    test('can copy array of anonymous and named objects mixed (objects without _type)', async () => {
+      // Anonymous objects don't have a _type property - this is the case when
+      // array members are defined inline without a name
+      const sourceValue = [
+        {
+          _key: 'f37ded611b8c',
+          first: 'Hello',
+          second: 'World',
+        },
+      ]
+      const expectedOutput = [
+        {
+          _key: expect.any(String),
+          first: 'Hello',
+          second: 'World',
+        },
+      ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('editor')!, [
+        'arrayWithAnonymousAndNamedObject',
+      ])!
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('editor')!, [
+          'arrayWithAnonymousAndNamedObject',
+        ])!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+    })
+    test('filters out empty objects when no properties match between anonymous objects', async () => {
+      // When copying between arrays with different anonymous object structures,
+      // if no properties match, the resulting object would only have _key.
+      // We should filter these out as they are effectively empty.
+      const sourceValue = [
+        {
+          _key: 'f37ded611b8c',
+          title: 'Hello', // 'title' doesn't exist in target schema
+        },
+      ]
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('editor')!, [
+        // arrayWithAnonymousObject has 'first' and 'second' fields, no 'title' field, so it shouldn't be possible to copy anything
+        'arrayWithAnonymousObject',
+      ])!
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('editor')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('editor')!, [
+          'arrayWithAnonymousObject',
+        ])!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+      expect(transferValueResult?.errors).toEqual([])
+      // Empty objects (with only _key) should be filtered out, resulting in empty array
+      expect(transferValueResult?.targetValue).toEqual([])
+    })
   })
 
   describe('numbers', () => {
