@@ -1,9 +1,14 @@
 import {
-  type EditorChange,
+  type EditorEmittedEvent,
+  EditorProvider,
   keyGenerator,
   PortableTextEditor,
   type RenderBlockFunction,
+  useEditor,
+  usePortableTextEditor,
 } from '@portabletext/editor'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import {
@@ -13,6 +18,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -25,6 +31,20 @@ import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
+
+/**
+ * `EditorProvider` doesn't have a `ref` prop. This plugin takes care of
+ * imperatively forwarding the ref.
+ */
+const EditorRefPlugin = forwardRef<PortableTextEditor | null>(function EditorRefPlugin(_, ref) {
+  const portableTextEditor = usePortableTextEditor()
+  const portableTextEditorRef = useRef(portableTextEditor)
+
+  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+
+  return null
+})
+EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 const EMPTY_ARRAY: [] = []
 
@@ -125,26 +145,25 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       setEditorInstanceKey(keyGenerator())
     }, [])
 
-    const handleChange = useCallback(
-      (change: EditorChange) => {
+    const handleEvent = useCallback(
+      (event: EditorEmittedEvent) => {
         // Focus the editor when ready if focusOnMount is true
-        if (change.type === 'ready') {
+        if (event.type === 'ready') {
           if (focusOnMount) {
             requestFocus()
           }
         }
-        if (change.type === 'focus') {
+        if (event.type === 'focused') {
           setFocused(true)
         }
 
-        if (change.type === 'blur') {
+        if (event.type === 'blurred') {
           setFocused(false)
         }
 
         // Update the comment value whenever the comment is edited by the user.
-        if (change.type === 'patch' && editorRef.current) {
-          const editorStateValue = PortableTextEditor.getValue(editorRef.current)
-          onChange(editorStateValue || EMPTY_ARRAY)
+        if (event.type === 'mutation') {
+          onChange(event.value || EMPTY_ARRAY)
         }
       },
       [focusOnMount, onChange, requestFocus],
@@ -222,14 +241,19 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
         )}
 
         <Stack ref={editorContainerRef} data-testid="comment-input" onFocus={handleFocus}>
-          <PortableTextEditor
+          <EditorProvider
             key={editorInstanceKey}
-            onChange={handleChange}
-            readOnly={readOnly}
-            ref={editorRef}
-            schemaType={editorSchemaType}
-            value={value || EMPTY_ARRAY}
+            initialConfig={{
+              schema: editorSchemaType,
+              initialValue: value || EMPTY_ARRAY,
+              readOnly,
+            }}
           >
+            <EditorRefPlugin ref={editorRef} />
+            <EventListenerPlugin on={handleEvent} />
+            <OneLinePlugin />
+            <UpdateReadOnlyPlugin readOnly={readOnly ?? false} />
+            <UpdateValuePlugin value={value ?? undefined} />
             <CommentInputProvider
               expandOnFocus={expandOnFocus}
               focused={focused}
@@ -258,9 +282,43 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
               {focusLock && <div ref={postDivRef} tabIndex={0} />}
             </CommentInputProvider>
-          </PortableTextEditor>
+          </EditorProvider>
         </Stack>
       </>
     )
   },
 )
+
+/**
+ * `EditorProvider` doesn't have a `readOnly` prop. This plugin listens for the
+ * prop change and sends an `update readOnly` event to the editor.
+ */
+function UpdateReadOnlyPlugin(props: {readOnly: boolean}) {
+  const editor = useEditor()
+
+  useEffect(() => {
+    editor.send({
+      type: 'update readOnly',
+      readOnly: props.readOnly,
+    })
+  }, [editor, props.readOnly])
+
+  return null
+}
+
+/**
+ * `EditorProvider` doesn't have a `value` prop. This plugin listens for the
+ * prop change and sends an `update value` event to the editor.
+ */
+function UpdateValuePlugin(props: {value: Array<PortableTextBlock> | undefined}) {
+  const editor = useEditor()
+
+  useEffect(() => {
+    editor.send({
+      type: 'update value',
+      value: props.value,
+    })
+  }, [editor, props.value])
+
+  return null
+}
