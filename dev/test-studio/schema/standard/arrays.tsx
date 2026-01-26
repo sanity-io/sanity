@@ -170,6 +170,36 @@ export default defineType({
       ],
     },
     {
+      name: 'arrayOfDescriptionObjects',
+      description:
+        'This array contains objects with a `description` field, to test copying between unnamed arrays',
+      type: 'array',
+      of: [
+        {
+          title: 'Has description',
+          type: 'object',
+          fields: [{name: 'description', title: 'Description', type: 'string'}],
+        },
+      ],
+    },
+    {
+      name: 'namedAndAnonymousObjects',
+      type: 'array',
+      of: [
+        {
+          title: 'Named object',
+          type: 'object',
+          name: 'namedObject',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          title: 'Anonymous object',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
+        },
+      ],
+    },
+    {
       name: 'arrayWithNoTitle',
       title: 'Array with no title',
       type: 'array',

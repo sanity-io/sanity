@@ -50,6 +50,9 @@ jspm_packages
 /.vscode
 !/.vscode/extensions.json
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Environment files
 # ignore all .env files
 *.local

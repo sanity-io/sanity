@@ -52,7 +52,8 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
   const commentInputTextBox = commentInput.locator('div[role="textbox"]')
   await commentInputTextBox.fill('This is a comment')
   const sendButton = commentInput.getByTestId('comment-input-send-button')
-  await sendButton.click({delay: 1000})
+  await expect(sendButton).toBeEnabled(WAIT_OPTIONS)
+  await sendButton.click()
 
   // 7. Verify the comment has been successfully added by checking for the presence of the
   //    comment decorator with the correct content.
