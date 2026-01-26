@@ -272,7 +272,16 @@ export function BaseFileInput(props: BaseFileInputProps) {
         }
       }
     },
-    [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t, uploadExternalFileToDataset],
+    [
+      assetSourceUploader,
+      handleAssetLimitUpsellDialog,
+      onChange,
+      push,
+      resolveUploader,
+      schemaType,
+      t,
+      uploadExternalFileToDataset,
+    ],
   )
 
   const accessPolicy = useAccessPolicy({
