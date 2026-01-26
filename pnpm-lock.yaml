@@ -16,8 +16,8 @@ catalogs:
       specifier: ^7.14.1
       version: 7.14.1
     '@sanity/codegen':
-      specifier: ^5.4.0
-      version: 5.4.0
+      specifier: ^5.6.0
+      version: 5.6.0
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
@@ -1039,7 +1039,7 @@ importers:
         version: 7.14.1(debug@4.4.3)
       '@sanity/codegen':
         specifier: 'catalog:'
-        version: 5.4.0
+        version: 5.6.0
       '@sanity/runtime-cli':
         specifier: ^13.0.3
         version: 13.0.3(@types/node@24.10.4)(debug@4.4.3)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -5193,8 +5193,8 @@ packages:
       sanity: ^5
       styled-components: ^6.1
 
-  '@sanity/codegen@5.4.0':
-    resolution: {integrity: sha512-C7HP3X20NjISSSb3ML2X/UTf3SExttSJRzu0U4l5Hm48AoiO/62ZRuSUmpGjnyN9bX9ozIzH9nqJUdylWr7JVQ==}
+  '@sanity/codegen@5.6.0':
+    resolution: {integrity: sha512-o66wdsYNjJVGk33rIsEIwCGjVHjpqGgZkdVvJcXVW1ErUhSetCUH1+TIcT9+EpXQg0Jp2VL4mmEzAciiLPHcqg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
   '@sanity/color-input@6.0.3':
@@ -8781,10 +8781,6 @@ packages:
   groq@3.99.0:
     resolution: {integrity: sha512-ZwKAWzvVCw51yjmIf5484KgsAzZAlGTM4uy9lki4PjAYxcEME2Xf93d31LhHzgUAr2JI79H+cNKoRjDHdv1BXQ==}
     engines: {node: '>=18'}
-
-  groq@5.4.0:
-    resolution: {integrity: sha512-XrqvE7n/a62zxi6rbaqVcPMyStJ1IlDBK+eaxzThaovqjOUviazlCl/9WFuryPxenEkX8GYaw9FvE1orZErGig==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
 
   gtoken@7.1.0:
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==}
@@ -16206,7 +16202,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@5.4.0':
+  '@sanity/codegen@5.6.0':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/generator': 7.28.6
@@ -16219,7 +16215,7 @@ snapshots:
       '@sanity/worker-channels': 1.1.0
       debug: 4.4.3(supports-color@8.1.1)
       globby: 11.1.0
-      groq: 5.4.0
+      groq: link:packages/groq
       groq-js: 1.25.0
       json5: 2.2.3
       reselect: 5.1.1
@@ -20838,8 +20834,6 @@ snapshots:
   groq@3.88.1-typegen-experimental.0: {}
 
   groq@3.99.0: {}
-
-  groq@5.4.0: {}
 
   gtoken@7.1.0(encoding@0.1.13):
     dependencies:
