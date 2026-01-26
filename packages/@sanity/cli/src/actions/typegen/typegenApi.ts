@@ -6,13 +6,15 @@ import {Worker} from 'node:worker_threads'
 import {type TypeGenConfig} from '@sanity/codegen'
 import {WorkerChannelReceiver} from '@sanity/worker-channels'
 import {type FSWatcher} from 'chokidar'
+import {mean} from 'lodash-es'
 
-import {type CliOutputter} from '../../types'
+import {type CliCommandContext, type CliOutputter} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
 import {
   type TypegenGenerateTypesWorkerData,
   type TypegenWorkerChannel,
 } from '../../workers/typegenGenerate'
+import {TypegenWatchModeTrace} from './generate.telemetry'
 import {createTypegenWatcher} from './watchTypegen'
 
 const generatedFileWarning = `/**
@@ -164,6 +166,8 @@ export interface TypegenWatcherOptions {
   debounceMs?: number
   /** Optional callback function for listening in on the type generation */
   onGeneration?: (result: OnGenerationCallbackData) => void
+  /** Optional telemetry logger for tracking watch mode usage */
+  telemetryLogger?: CliCommandContext['telemetry']
 }
 
 /** Result from starting a typegen watcher */
@@ -183,7 +187,7 @@ export interface TypegenWatcherResult {
 export async function startTypegenWatcher(
   options: TypegenWatcherOptions,
 ): Promise<TypegenWatcherResult> {
-  const {workDir, config, output, onGeneration} = options
+  const {workDir, config, output, onGeneration, telemetryLogger} = options
 
   const outputPath = isAbsolute(config.generates)
     ? config.generates
@@ -192,10 +196,22 @@ export async function startTypegenWatcher(
   // Build query patterns from config.path
   const queryPatterns = Array.isArray(config.path) ? config.path : [config.path]
 
+  // Start telemetry trace for watch mode
+  const trace = telemetryLogger?.trace(TypegenWatchModeTrace)
+  trace?.start()
+  trace?.log({step: 'started'})
+
+  // Track stats for telemetry
+  const startTime = Date.now()
+  const stats: {successfulDurations: number[]; failedCount: number} = {
+    successfulDurations: [],
+    failedCount: 0,
+  }
+
   // Helper to run generation with spinner and error display
   const runGeneration = async (spinnerText: string, successText: string): Promise<boolean> => {
     const spinner = output.spinner({}).start(spinnerText)
-    const startTime = Date.now()
+    const generationStartTime = Date.now()
 
     try {
       const result = await generateTypesToFile(
@@ -210,7 +226,9 @@ export async function startTypegenWatcher(
         output,
       )
 
-      onGeneration?.({success: true, duration: Date.now() - startTime})
+      const duration = Date.now() - generationStartTime
+      stats.successfulDurations.push(duration)
+      onGeneration?.({success: true, duration})
 
       if (result.filesWithErrors > 0) {
         spinner.warn(
@@ -221,7 +239,9 @@ export async function startTypegenWatcher(
       }
       return true
     } catch (err) {
-      onGeneration?.({success: false, duration: Date.now() - startTime})
+      const duration = Date.now() - generationStartTime
+      stats.failedCount++
+      onGeneration?.({success: false, duration})
       spinner.fail(`Generation failed: ${err instanceof Error ? err.message : String(err)}`)
       return false
     }
@@ -245,6 +265,17 @@ export async function startTypegenWatcher(
   })
 
   const stop = async () => {
+    // Log stopped event before closing the watcher
+    if (trace) {
+      trace.log({
+        step: 'stopped',
+        watcherDuration: Date.now() - startTime,
+        generationSuccessfulCount: stats.successfulDurations.length,
+        generationFailedCount: stats.failedCount,
+        averageGenerationDuration: mean(stats.successfulDurations) || 0,
+      })
+      trace.complete()
+    }
     await watcher.close()
   }
 
