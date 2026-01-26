@@ -1,73 +1,74 @@
 # Config
 
-The configuration system for Sanity Studio. This module provides the foundation for defining and resolving studio configuration, plugins, and workspace settings.
+Configuration system for Sanity Studio. This module provides the APIs for defining studio configurations, plugins, and workspace settings.
+
+## Purpose
+
+The config module is the foundation for customizing Sanity Studio. It handles:
+
+- **Studio configuration** - Define project settings, datasets, schema, plugins, and tools
+- **Plugin system** - Create reusable configuration bundles that can be shared across projects
+- **Configuration resolution** - Merge and flatten nested plugin configurations into a final resolved config
+- **Type definitions** - Comprehensive TypeScript types for all configuration options (1300+ lines in `types.ts`)
+
+The configuration system uses a compositional approach where plugins can extend any aspect of the studio, and nested plugins are flattened into a single resolved configuration at runtime.
 
 ## Key Exports
 
-- `defineConfig` - Define a Sanity Studio configuration
-- `definePlugin` - Create reusable plugins with optional configuration options
-- `resolveConfig` - Resolve and merge configuration from plugins and user config
-- `flattenConfig` - Flatten nested plugin configurations into a single config object
-- `resolveSchemaTypes` - Resolve schema types from configuration
+- `defineConfig` - Main function to define a studio configuration
+- `definePlugin` - Create reusable plugins that extend studio functionality
+- `resolveConfig` - Resolve and flatten nested configurations
+- `flattenConfig` - Flatten plugin configurations into a single config object
 - `ConfigPropertyError` - Error class for configuration property issues
 - `ConfigResolutionError` - Error class for configuration resolution failures
-- `SchemaError` - Error class for schema-related issues
+- `SchemaError` - Error class for schema-related configuration errors
 
-### Document Configuration
+## Key Files
 
-- `defineDocumentAction` - Define custom document actions (publish, delete, etc.)
-- `defineDocumentBadge` - Define custom document badges
-- `defineDocumentInspector` - Define custom document inspectors
+- `types.ts` - Core TypeScript types for all configuration options (~1300 lines)
+- `defineConfig.ts` - The `defineConfig` helper function
+- `definePlugin.ts` - The `definePlugin` helper function with validation
+- `resolveConfig.ts` - Logic to resolve workspace configurations
+- `configPropertyReducers.ts` - Reducers for merging configuration properties (~720 lines)
+- `flattenConfig.ts` - Utilities for flattening nested plugin configs
 
-### Asset Sources
+### Subdirectories
 
-- `createSanityMediaLibraryFileSource` - Create a file asset source using Sanity Media Library
-- `createSanityMediaLibraryImageSource` - Create an image asset source using Sanity Media Library
+- `document/` - Document-level configuration (actions, badges, inspectors)
+- `form/` - Form configuration types
+- `studio/` - Studio-level configuration types
+- `auth/` - Authentication configuration types
+- `releases/` - Content release action configuration
 
-## Usage
+## Usage Example
 
-### Defining a Studio Configuration
+```typescript
+import {defineConfig, definePlugin} from 'sanity'
 
-```ts
-import {defineConfig} from 'sanity'
+// Define a plugin
+const myPlugin = definePlugin({
+  name: 'my-plugin',
+  schema: {
+    types: [/* custom schema types */],
+  },
+  document: {
+    actions: (prev) => [...prev, myCustomAction],
+  },
+})
 
+// Define studio configuration
 export default defineConfig({
   projectId: 'your-project-id',
   dataset: 'production',
+  plugins: [myPlugin()],
   schema: {
     types: [/* your schema types */],
   },
-  plugins: [/* your plugins */],
 })
 ```
 
-### Creating a Plugin
+## Related Modules
 
-```ts
-import {definePlugin} from 'sanity'
-
-export const myPlugin = definePlugin<{optionalSetting?: boolean}>((options) => ({
-  name: 'my-plugin',
-  // Plugin configuration...
-}))
-
-// Usage in config:
-defineConfig({
-  plugins: [myPlugin({optionalSetting: true})],
-})
-```
-
-## Internal Dependencies
-
-- `../form/studio/assetSourceMediaLibrary` - Asset source implementations
-- `../util` - Utility functions
-
-## Architecture
-
-The configuration system follows a layered resolution approach:
-
-1. User config is defined via `defineConfig`
-2. Plugins are defined via `definePlugin` and added to the config
-3. `flattenConfig` merges all plugin configs recursively
-4. `resolveConfig` produces the final resolved configuration
-5. Config property reducers merge arrays/objects from multiple sources
+- [`../studio`](../studio/) - Studio components that consume the resolved configuration
+- [`../form`](../form/) - Form system configured via form options
+- [`../store`](../store/) - Data stores initialized from configuration

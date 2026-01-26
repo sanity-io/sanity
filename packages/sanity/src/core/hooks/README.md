@@ -1,155 +1,144 @@
 # Hooks
 
-A collection of React hooks for Sanity Studio. These hooks provide access to studio context, document operations, formatting utilities, and various studio features.
+React hooks for Sanity Studio functionality. This module provides the primary API for plugin and component authors to interact with Sanity's features.
+
+## Purpose
+
+The hooks module exposes React hooks that provide access to Sanity Studio's core functionality:
+
+- **Data access** - Get schema, client, project info, and document data
+- **Document operations** - Perform publish, unpublish, delete, and other document actions
+- **State subscriptions** - Subscribe to connection state, sync state, and validation
+- **Formatting utilities** - Internationalized date, number, time, and duration formatting
+- **UI utilities** - Toast notifications, dialog management, clipboard operations
+
+These hooks are the **recommended API** for plugin authors and custom component developers. They abstract away the underlying store complexity and provide a clean, React-friendly interface.
 
 ## Key Exports
 
-### Client & Configuration
-
-- `useClient` - Access the Sanity client with configurable API version
-- `useSchema` - Access the current workspace schema
-- `useProjectId` - Get the current project ID
-- `useDataset` - Get the current dataset name
+### Data Access
+- `useClient` - Get configured Sanity client instance
+- `useSchema` - Access the compiled schema
+- `useDataset` - Get current dataset name
+- `useProjectId` - Get current project ID
 - `useTemplates` - Access document templates
-- `useTools` - Access registered studio tools
+- `useTools` - Get configured studio tools
 
 ### Document Operations
-
-- `useDocumentOperation` - Execute document operations (publish, delete, duplicate, etc.)
-- `useDocumentOperationEvent` - Subscribe to document operation events
+- `useDocumentOperation` - Get document operations (publish, patch, delete, etc.)
+- `useDocumentOperationEvent` - Subscribe to operation events
 - `useEditState` - Get document edit state (draft, published, liveEdit)
-- `useValidationStatus` - Get document validation status
-- `useSyncState` - Get document synchronization state
-- `useConnectionState` - Monitor real-time connection status
+- `useValidationStatus` - Get validation markers for a document
+- `useSyncState` - Check if document is synced with server
+- `useConnectionState` - Monitor connection to Sanity backend
+
+### Presence & Collaboration
 - `useReferringDocuments` - Find documents that reference a given document
 
-### Formatting & Localization
+### Formatting (i18n)
+- `useDateTimeFormat` - Localized date/time formatting
+- `useNumberFormat` - Localized number formatting
+- `useListFormat` - Localized list formatting (e.g., "A, B, and C")
+- `useRelativeTime` - Relative time strings (e.g., "2 hours ago")
+- `useTimeAgo` - Time ago formatting
+- `useFormattedDuration` - Duration formatting
+- `useUnitFormatter` - Unit formatting (bytes, etc.)
 
-- `useDateTimeFormat` - Format dates and times with Intl.DateTimeFormat
-- `useNumberFormat` - Format numbers with Intl.NumberFormat
-- `useListFormat` - Format lists with Intl.ListFormat
-- `useRelativeTime` - Display relative time (e.g., "2 hours ago")
-- `useTimeAgo` - Human-readable time differences
-- `useFormattedDuration` - Format durations
-- `useUnitFormatter` - Format values with units
-
-### Releases & Perspectives
-
-- `useFilteredReleases` - Get filtered release bundles
-- `useReviewChanges` - Access review changes panel state
-
-### UI & Features
-
-- `useDialogStack` - Manage dialog stacking behavior
+### UI Utilities
 - `useConditionalToast` - Show toasts based on conditions
-- `useReconnectingToast` - Display reconnection notifications
-- `useGlobalCopyPasteElementHandler` - Handle global copy/paste
-- `useFeatureEnabled` - Check if a feature flag is enabled
+- `useReconnectingToast` - Show reconnection status toast
+- `useDialogStack` - Manage dialog stacking
+- `useReviewChanges` - Toggle review changes panel
 
-### User & Permissions
+## Key Files
 
-- `useUserListWithPermissions` - Get users with their permissions
-- `useManageFavorite` - Manage favorite documents
+- `useClient.ts` - Sanity client access with API version configuration
+- `useSchema.ts` - Schema access hook
+- `useDocumentOperation.ts` - Document operation hooks
+- `useEditState.ts` - Document editing state
+- `useValidationStatus.ts` - Validation status subscription
+- `useConnectionState.ts` - Connection state monitoring
+- `useRelativeTime.ts` - Relative time formatting (~200 lines)
+- `useFormattedDuration.ts` - Duration formatting (~170 lines)
 
-### Studio URLs
+## Usage Example
 
-- `useStudioUrl` - Generate studio URLs for documents
+```typescript
+import {
+  useClient,
+  useSchema,
+  useDocumentOperation,
+  useValidationStatus,
+  useDateTimeFormat,
+} from 'sanity'
 
-## Usage
-
-### Accessing the Sanity Client
-
-```ts
-import {useClient} from 'sanity'
-
-function MyComponent() {
-  // Get client with specific API version
+function MyDocumentActions({documentId, documentType}) {
+  // Get the Sanity client
   const client = useClient({apiVersion: '2024-01-01'})
-  
-  // Use for queries
-  const data = await client.fetch('*[_type == "post"]')
-}
-```
 
-### Document Operations
+  // Access schema information
+  const schema = useSchema()
+  const docSchema = schema.get(documentType)
 
-```ts
-import {useDocumentOperation} from 'sanity'
+  // Get document operations
+  const {publish, patch} = useDocumentOperation(documentId, documentType)
 
-function PublishButton({id, type}) {
-  const {publish} = useDocumentOperation(id, type)
-  
-  return (
-    <button 
-      onClick={() => publish.execute()}
-      disabled={publish.disabled}
-    >
-      Publish
-    </button>
-  )
-}
-```
+  // Subscribe to validation
+  const {validation, isValidating} = useValidationStatus(documentId, documentType)
 
-### Formatting Dates
-
-```ts
-import {useDateTimeFormat} from 'sanity'
-
-function FormattedDate({date}) {
-  const formatDate = useDateTimeFormat({
+  // Format dates
+  const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  
-  return <span>{formatDate(new Date(date))}</span>
-}
-```
 
-### Checking Validation Status
+  const handlePublish = () => {
+    if (validation.length === 0) {
+      publish.execute()
+    }
+  }
 
-```ts
-import {useValidationStatus} from 'sanity'
-
-function ValidationIndicator({documentId, documentType}) {
-  const {isValidating, validation} = useValidationStatus(documentId, documentType)
-  
-  const hasErrors = validation.some(v => v.level === 'error')
-  
-  return hasErrors ? <ErrorIcon /> : <ValidIcon />
-}
-```
-
-### Finding References
-
-```ts
-import {useReferringDocuments} from 'sanity'
-
-function ReferencesList({documentId}) {
-  const {isLoading, referringDocuments} = useReferringDocuments(documentId)
-  
-  if (isLoading) return <Spinner />
-  
   return (
-    <ul>
-      {referringDocuments.map(doc => (
-        <li key={doc._id}>{doc._type}</li>
-      ))}
-    </ul>
+    <div>
+      <p>Schema: {docSchema?.title}</p>
+      <p>Validation errors: {validation.length}</p>
+      <button onClick={handlePublish} disabled={isValidating}>
+        Publish
+      </button>
+    </div>
   )
 }
 ```
 
-## Internal Dependencies
+## Hook Patterns
 
-- `../studio` - Studio context and source access
-- `../store` - Data stores for documents and users
-- `../config` - Configuration types
-- `../releases` - Release management
-- `../i18n` - Internationalization
+### Client Configuration
 
-## Guidelines
+Always specify an API version when using `useClient`:
 
-- Most hooks require being used within a Sanity Studio context
-- Use the `apiVersion` option with `useClient` to ensure API compatibility
-- Document operation hooks handle optimistic updates automatically
-- Formatting hooks respect the user's locale settings
+```typescript
+// ✅ Good - explicit API version
+const client = useClient({apiVersion: '2024-01-01'})
+
+// ❌ Avoid - no API version
+const client = useClient()
+```
+
+### Memoization
+
+Hooks like `useDocumentOperation` return stable references, so you can use them directly in effects:
+
+```typescript
+const {publish} = useDocumentOperation(documentId, documentType)
+
+useEffect(() => {
+  // publish reference is stable
+}, [publish])
+```
+
+## Related Modules
+
+- [`../store`](../store/) - Underlying stores that hooks wrap
+- [`../form`](../form/) - Form hooks for editing
+- [`../studio`](../studio/) - Studio-level hooks
+- [`../config`](../config/) - Configuration accessed via hooks

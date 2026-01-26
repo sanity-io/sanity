@@ -1,125 +1,127 @@
 # Store
 
-The state management layer for Sanity Studio. This module provides data stores for documents, users, presence, history, and other core studio functionality. It handles real-time synchronization, caching, and subscription management.
+State management and data stores for Sanity Studio. This module provides reactive data stores using RxJS for documents, users, presence, history, and more.
+
+## Purpose
+
+The store module centralizes all data fetching and state management in Sanity Studio:
+
+- **Document store** - Real-time document subscriptions, mutations, and sync state
+- **User store** - User information and authentication state
+- **Presence store** - Real-time presence of other users editing documents
+- **History store** - Document revision history and timeline
+- **Grants store** - Permission checking for documents and actions
+- **Key-value store** - Persistent local storage with server sync
+- **Events store** - Document change events and transaction history
+
+All stores use **RxJS observables** for reactive state management, allowing components to subscribe to data streams and automatically update when data changes. This pattern enables real-time collaboration features and efficient caching.
 
 ## Key Exports
 
-### Legacy Data Stores
+- `useDocumentStore` - Access the document store for subscriptions and mutations
+- `useUserStore` - Access user information
+- `usePresenceStore` - Track who's editing what
+- `useHistoryStore` - Access document revision history
+- `useGrantsStore` - Check permissions
+- `useCurrentUser` - Get the currently authenticated user
+- `useConnectionState` - Monitor connection status to Sanity backend
 
-From `_legacy/`:
+## Key Files
 
-- `useDocumentStore` - Hook to access the document store for CRUD operations
-- `useUserStore` - Hook to access user information store
-- `useGrantsStore` - Hook for permission/grants management
-- `useHistoryStore` - Hook for document history/revisions
-- `usePresenceStore` - Hook for real-time presence tracking
-- `useProjectStore` - Hook for project-level data
-- `useConnectionStatusStore` - Hook for monitoring connection state
-- `useDocumentPreviewStore` - Hook for document preview subscriptions
-- `DocumentStore` - Core document operations store type
-- `createDocumentStore` - Factory to create a document store instance
+- `_legacy/datastores.ts` - Factory hooks for creating/accessing stores (~355 lines)
+- `_legacy/types.ts` - Shared type definitions
+- `events/` - Document event tracking and change calculation
 
-### Events Store
+### Subdirectories
 
-From `events/`:
+- `_legacy/` - Core store implementations (document, grants, history, presence, user, project)
+- `events/` - Document events, diffs, and transaction history
+- `key-value/` - Local storage with server-side key-value sync
+- `comlink/` - Cross-frame communication store
+- `renderingContext/` - UI rendering context management
+- `accessPolicy/` - Access policy fetching
+- `translog/` - Transaction log utilities
+- `user/` - User-related hooks
+- `userApplications/` - User application caching
 
-- `useEventsStore` - Hook for document events and transaction history
-- `createEventsStore` - Factory to create events store
-- Event types for tracking document changes and transactions
+## Architecture
 
-### User Store
+```
+┌─────────────────────────────────────────────────────┐
+│                  React Components                    │
+│           (useDocumentStore, usePresence, etc.)     │
+└─────────────────────┬───────────────────────────────┘
+                      │ subscribe
+┌─────────────────────▼───────────────────────────────┐
+│                 RxJS Observables                     │
+│        (document$, presence$, history$, etc.)       │
+└─────────────────────┬───────────────────────────────┘
+                      │ fetch/listen
+┌─────────────────────▼───────────────────────────────┐
+│                  Sanity Client                       │
+│           (HTTP API, Real-time listeners)           │
+└─────────────────────────────────────────────────────┘
+```
 
-From `user/`:
+## Usage Example
 
-- `useCurrentUser` - Hook to get the current authenticated user
-
-## Usage
-
-### Accessing Documents
-
-```ts
-import {useDocumentStore} from 'sanity'
+```typescript
+import {useDocumentStore, useCurrentUser, usePresenceStore} from 'sanity'
 import {useObservable} from 'react-rx'
 
 function MyComponent({documentId}) {
   const documentStore = useDocumentStore()
-  
+  const presenceStore = usePresenceStore()
+  const currentUser = useCurrentUser()
+
+  // Subscribe to document changes
   const document = useObservable(
     documentStore.listenQuery(
       '*[_id == $id][0]',
-      {id: documentId}
+      {id: documentId},
+      {}
     )
   )
-  
-  return <div>{document?.title}</div>
+
+  // Subscribe to presence on this document
+  const presence = useObservable(
+    presenceStore.documentPresence(documentId)
+  )
+
+  return (
+    <div>
+      <h1>{document?.title}</h1>
+      <p>Editing: {presence?.map(p => p.user.displayName).join(', ')}</p>
+    </div>
+  )
 }
 ```
 
-### Checking Connection Status
+## RxJS Pattern
 
-```ts
-import {useConnectionStatusStore} from 'sanity'
+Stores follow a consistent pattern:
 
-function ConnectionIndicator() {
-  const connectionStore = useConnectionStatusStore()
-  const status = useObservable(connectionStore.connectionStatus$)
-  
-  return <span>{status}</span>
-}
+1. **Create store** - Factory function creates store with client dependencies
+2. **Expose observables** - Store exposes RxJS observables for data streams
+3. **Cache with ResourceCache** - Stores are cached and reused across components
+4. **Subscribe in components** - Use `useObservable` from `react-rx` to subscribe
+
+```typescript
+// Store creation pattern (from datastores.ts)
+const documentStore = resourceCache.get({
+  namespace: 'documentStore',
+  dependencies: [client],
+}) || createDocumentStore({client})
+
+resourceCache.set({
+  namespace: 'documentStore',
+  dependencies: [client],
+  value: documentStore,
+})
 ```
 
-### Working with Document History
+## Related Modules
 
-```ts
-import {useHistoryStore} from 'sanity'
-
-function HistoryPanel({documentId}) {
-  const historyStore = useHistoryStore()
-  
-  // Access document revisions and history timeline
-}
-```
-
-### Tracking User Presence
-
-```ts
-import {usePresenceStore} from 'sanity'
-
-function PresenceIndicator({documentId}) {
-  const presenceStore = usePresenceStore()
-  
-  // Track who else is viewing/editing the document
-}
-```
-
-## Internal Dependencies
-
-- `../preview` - Document preview store integration
-- `../hooks` - React hooks (`useClient`, `useSchema`, etc.)
-- `../studio` - Studio source and workspace access
-- `../studioClient` - Sanity client configuration
-
-## Architecture
-
-The store module uses a resource cache pattern to ensure stores are singleton instances per workspace. Stores are created lazily and cached based on their dependencies.
-
-### Subdirectories
-
-- `_legacy/` - Core data stores (document, user, grants, history, presence, project)
-- `events/` - Document event tracking and transaction history
-- `key-value/` - Key-value storage utilities (localStorage with SWR)
-- `comlink/` - Communication link store for iframe/worker communication
-- `renderingContext/` - UI rendering context management
-- `translog/` - Transaction log utilities
-- `user/` - User-related hooks and stores
-- `userApplications/` - User application cache
-- `accessPolicy/` - Access policy fetching and management
-
-### Store Pattern
-
-Each store typically follows this pattern:
-
-1. `create*Store()` - Factory function to create store instance
-2. `use*Store()` - React hook to access the store (with caching)
-3. Observable streams for reactive data access
-4. Methods for querying and mutating data
+- [`../hooks`](../hooks/) - Higher-level hooks that wrap store functionality
+- [`../form`](../form/) - Form system uses document store for persistence
+- [`../studio`](../studio/) - Studio components consume store data

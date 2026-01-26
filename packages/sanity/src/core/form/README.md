@@ -1,122 +1,110 @@
 # Form
 
-The form building system for Sanity Studio. This module provides components, hooks, and utilities for rendering and managing document editing forms, including input components, field rendering, and patch handling.
+Form rendering and document editing system for Sanity Studio. This module provides the complete form builder architecture for editing structured content.
+
+## Purpose
+
+The form module handles all aspects of document editing in Sanity Studio:
+
+- **Form state management** - Track document values, focus, validation, and field state
+- **Input components** - Render appropriate inputs for each schema field type
+- **Patch system** - Generate and apply document mutations as granular patches
+- **Form builder context** - Provide rendering callbacks and configuration to nested components
+- **Custom input support** - Allow plugins to provide custom input components
+
+The form builder uses a recursive rendering approach where each field delegates to the appropriate input component based on schema type. The `FormBuilderContext` provides render callbacks that can be customized at any level.
 
 ## Key Exports
 
-### Context & Hooks
+- `FormBuilderContext` / `FormBuilderContextValue` - React context providing form configuration
+- `useDocumentForm` - Main hook for document editing (focus, patches, validation, presence)
+- `useFormBuilder` - Access the form builder context
+- `useFormState` - Compute form state from document value and schema
+- `PatchEvent` - Class for creating patch events
+- `set`, `unset`, `insert`, `setIfMissing` - Patch helper functions
 
-- `FormBuilderContext` - React context providing form builder configuration
-- `useFormBuilder` - Hook to access form builder context
-- `useDocumentForm` - Hook for managing document form state and operations
-- `useDidUpdate` - Hook for tracking value changes
+## Key Files
 
-### Components
+- `FormBuilderContext.ts` - Context definition for form builder configuration
+- `useDocumentForm.ts` - Primary hook for document editing (~600 lines)
+- `useFormBuilder.ts` - Hook to access form builder context
 
-- Form field components for various input types
-- Member rendering components for arrays and objects
-- Custom input components
+### Subdirectories
 
-### Patch System
+- `inputs/` - Input components for different field types (string, number, array, object, etc.)
+- `members/` - Components for rendering object members and array items
+- `patch/` - Patch creation and application utilities
+- `store/` - Form state computation and management (~1500 lines in `formState.ts`)
+- `studio/` - Studio-specific form integration
+- `types/` - TypeScript type definitions for form props and callbacks
+- `components/` - Shared form UI components
+- `field/` - Field-level utilities and hooks
+- `utils/` - Helper functions for paths, mutations, and validation
 
-- `PatchEvent` - Event class representing document patches
-- `PatchChannel` - Channel for patch communication
-- `set`, `unset`, `insert`, `setIfMissing` - Patch operation creators
-- `applyPatch` - Apply patches to documents
+## Architecture
 
-### Form State
+```
+┌─────────────────────────────────────────────────────┐
+│                  useDocumentForm                     │
+│  (orchestrates editing: focus, patches, presence)   │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│               FormBuilderContext                     │
+│  (render callbacks, asset sources, patch channel)   │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│                  Form State                          │
+│  (computed from value + schema + validation)        │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              Input Components                        │
+│  (render UI, emit PatchEvents on change)            │
+└─────────────────────────────────────────────────────┘
+```
 
-- `useFormState` - Hook for managing form state
-- `FormFieldGroup` - Field grouping utilities
-- `StateTree` - State management for collapsed/expanded states
+## Usage Example
 
-### Types
+```typescript
+import {useDocumentForm, PatchEvent, set} from 'sanity'
 
-- `InputProps` - Props for input components
-- `FieldProps` - Props for field components
-- `ItemProps` - Props for array/object item components
-- `ObjectInputProps`, `ArrayInputProps`, `StringInputProps`, etc.
-
-## Usage
-
-### Using the Document Form Hook
-
-```ts
-import {useDocumentForm} from 'sanity'
-
+// In a custom document view
 function MyDocumentEditor({documentId, documentType}) {
   const {
     value,
-    validation,
     onChange,
+    focusPath,
+    onFocus,
+    validation,
     ready,
   } = useDocumentForm({
     documentId,
     documentType,
   })
 
-  // Render your form...
-}
-```
+  // Handle a field change
+  const handleTitleChange = (newTitle: string) => {
+    onChange(PatchEvent.from(set(newTitle, ['title'])))
+  }
 
-### Creating Patch Events
+  if (!ready) return <div>Loading...</div>
 
-```ts
-import {PatchEvent, set, unset} from 'sanity'
-
-// Set a value
-const setPatch = PatchEvent.from(set('new value', ['fieldName']))
-
-// Unset a value
-const unsetPatch = PatchEvent.from(unset(['fieldName']))
-
-// Apply to form
-onChange(setPatch)
-```
-
-### Custom Input Components
-
-```ts
-import {type StringInputProps} from 'sanity'
-
-function MyCustomStringInput(props: StringInputProps) {
-  const {value, onChange, elementProps} = props
-  
   return (
-    <input
-      {...elementProps}
-      value={value || ''}
-      onChange={(e) => onChange(PatchEvent.from(set(e.target.value)))}
-    />
+    <div>
+      <input
+        value={value?.title || ''}
+        onChange={(e) => handleTitleChange(e.target.value)}
+      />
+    </div>
   )
 }
 ```
 
-## Internal Dependencies
+## Related Modules
 
-- `../config` - Configuration types for form settings
-- `../studio` - Studio context and source access
-- `../validation` - Document validation integration
-- `../hooks` - Shared React hooks
-
-## Architecture
-
-The form system is structured around:
-
-1. **FormBuilderContext** - Provides rendering callbacks and configuration
-2. **Patch System** - Handles document mutations through immutable patches
-3. **Form State** - Manages expanded/collapsed states and focus
-4. **Input Components** - Renders appropriate inputs based on schema types
-5. **Member Rendering** - Handles arrays, objects, and nested structures
-
-### Subdirectories
-
-- `components/` - Reusable form components
-- `hooks/` - Form-specific React hooks
-- `inputs/` - Input components for different schema types
-- `members/` - Array and object member renderers
-- `patch/` - Patch creation and application utilities
-- `store/` - Form state management
-- `studio/` - Studio integration components
-- `types/` - TypeScript type definitions
-- `utils/` - Helper functions
+- [`../config`](../config/) - Form configuration options
+- [`../store`](../store/) - Document store that persists form changes
+- [`../hooks`](../hooks/) - Hooks like `useDocumentOperation` for saving
+- [`../inputs`](../inputs/) - Additional input component implementations
