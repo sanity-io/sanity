@@ -111,6 +111,7 @@ export default function PresentationTool(props: {
   const {navigate: routerNavigate, state: routerState} = useRouter() as RouterContextValue & {
     state: PresentationStateParams
   }
+  // oxlint-disable-next-line typescript/no-deprecated -- useUnique will be migrated in a separate PR
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
 
   const canSharePreviewAccess = useSelector(
@@ -639,8 +640,11 @@ function isAltKey(event: KeyboardEvent): boolean {
 }
 
 // @TODO reconcile with core utils
+// navigator.platform is deprecated but remains the most reliable way to detect Mac
+// oxlint-disable typescript/no-deprecated
 const IS_MAC =
-  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.userAgent)
+  typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
+// oxlint-enable typescript/no-deprecated
 const MODIFIERS: Record<string, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'> = {
   alt: 'altKey',
   ctrl: 'ctrlKey',
