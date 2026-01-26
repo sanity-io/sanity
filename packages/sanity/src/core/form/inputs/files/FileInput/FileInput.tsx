@@ -277,7 +277,6 @@ export function BaseFileInput(props: BaseFileInputProps) {
       handleAssetLimitUpsellDialog,
       onChange,
       push,
-      resolveUploader,
       schemaType,
       t,
       uploadExternalFileToDataset,
