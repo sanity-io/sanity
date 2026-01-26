@@ -674,7 +674,7 @@ export const searchStrategyReducer = ({
       // The strategy has been explicitly defined.
       if (typeof strategy !== 'undefined') {
         if (!isSearchStrategy(strategy)) {
-          // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
+          // @ts-expect-error -- Intl.ListFormat types not fully available in all TypeScript contexts
           const listFormatter = new Intl.ListFormat('en-US', {type: 'disjunction'})
           const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
           const received =

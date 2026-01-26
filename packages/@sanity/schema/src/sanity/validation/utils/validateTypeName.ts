@@ -1,4 +1,4 @@
-// @ts-expect-error Type declaration exists but tsconfig from monorepo root doesn't always resolve package-level typings
+// @ts-expect-error -- Type declaration in typings/ not resolved when type checking from monorepo root
 import humanize from 'humanize-list'
 import leven from 'leven'
 
