@@ -270,9 +270,9 @@ export default function CommentInlineHighlightDebugStory() {
 
   const buildRangeDecorationsCallbackEvent = useEffectEvent(() => buildRangeDecorationsCallback())
   useEffect(() => {
+    const next = buildRangeDecorationsCallbackEvent()
     startTransition(() =>
       setRangeDecorations((prev) => {
-        const next = buildRangeDecorationsCallbackEvent()
         if (
           !isEqual(
             prev.map((d) => d.payload),
@@ -284,7 +284,7 @@ export default function CommentInlineHighlightDebugStory() {
         return prev
       }),
     )
-  }, [])
+  }, [comments])
 
   const handleAddComment = () => {
     if (!editorRef.current) return
