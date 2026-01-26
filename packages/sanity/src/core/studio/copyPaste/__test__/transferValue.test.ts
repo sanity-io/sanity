@@ -749,9 +749,11 @@ describe('transferValue', () => {
             {
               _key: expect.any(String),
               _type: 'span',
+              marks: [], // Empty marks are now preserved
               text: 'dsafadsfds',
             },
           ],
+          markDefs: [], // Empty markDefs are now preserved
           style: 'normal',
         },
         {
@@ -1948,6 +1950,173 @@ describe('transferValue', () => {
       expect(transferValueResult.errors[0].i18n.key).toEqual(
         'copy-paste.on-paste.validation.read-only-target.description',
       )
+    })
+  })
+  describe('portable text', () => {
+    test('marks and markDefs are preserved when copying portable text blocks with empty arrays', async () => {
+      // This test verifies that empty `marks` and `markDefs` arrays are NOT stripped
+      // when copying/pasting portable text blocks. These fields are semantically
+      // meaningful in PTE and should be preserved even when empty.
+      const sourceValue = [
+        {
+          _key: '192f33d8f7e9',
+          _type: 'block',
+          children: [
+            {
+              _key: '8341382dd845',
+              _type: 'span',
+              marks: [],
+              text: 'hello world',
+            },
+          ],
+          markDefs: [],
+          style: 'normal',
+        },
+      ]
+
+      const expectedOutput = [
+        {
+          _key: expect.any(String),
+          _type: 'block',
+          children: [
+            {
+              _key: expect.any(String),
+              _type: 'span',
+              marks: [], // This should be preserved, not stripped
+              text: 'hello world',
+            },
+          ],
+          markDefs: [], // This should be preserved, not stripped
+          style: 'normal',
+        },
+      ]
+
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
+        'content',
+      ])!
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('pte_customMarkers')!,
+        targetRootSchemaType: resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
+          'content',
+        ])!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+
+      expect(transferValueResult?.errors).toEqual([])
+      expect(transferValueResult?.targetValue).toEqual(expectedOutput)
+    })
+
+    test('marks and markDefs are preserved when copying PTE blocks with non-empty marks', async () => {
+      // This test verifies that when some blocks have marks and some don't,
+      // the empty marks arrays are still preserved
+      const sourceValue = [
+        {
+          _key: 'block1',
+          _type: 'block',
+          children: [
+            {
+              _key: 'span1',
+              _type: 'span',
+              marks: [], // Empty marks should be preserved
+              text: 'plain text',
+            },
+          ],
+          markDefs: [], // Empty markDefs should be preserved
+          style: 'normal',
+        },
+        {
+          _key: 'block2',
+          _type: 'block',
+          children: [
+            {
+              _key: 'span2',
+              _type: 'span',
+              marks: ['link1'],
+              text: 'linked text',
+            },
+          ],
+          markDefs: [{_key: 'link1', _type: 'hyperlink', href: 'https://example.com'}],
+          style: 'normal',
+        },
+      ]
+
+      const sourceRootSchemaType = resolveSchemaTypeForPath(schema.get('pte_customMarkers')!, [
+        'content',
+      ])!
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('pte_customMarkers')!,
+        targetRootSchemaType: sourceRootSchemaType,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+
+      expect(transferValueResult?.errors).toEqual([])
+
+      const result = transferValueResult?.targetValue as Array<{
+        children: Array<{marks?: string[]}>
+        markDefs?: unknown[]
+      }>
+
+      // First block should have empty marks and markDefs preserved
+      expect(result[0].children[0].marks).toEqual([])
+      expect(result[0].markDefs).toEqual([])
+
+      // Second block should have the marks and markDefs with updated keys
+      expect(result[1].children[0].marks).toHaveLength(1)
+      expect(result[1].markDefs).toHaveLength(1)
+    })
+
+    test('empty marks and markDefs are NOT preserved on non-PTE objects with same field names', async () => {
+      // This test verifies that we only preserve empty marks/markDefs in actual
+      // Portable Text contexts (block/span), not in regular objects that happen
+      // to have fields with the same names
+      const sourceValue = {
+        _type: 'nonPteWithMarksFields',
+        _id: 'test-doc',
+        title: 'Test Document',
+        marks: [], // Should be stripped (not a PTE span)
+        markDefs: [], // Should be stripped (not a PTE block)
+      }
+
+      const transferValueResult = await transferValue({
+        sourceRootSchemaType: schema.get('nonPteWithMarksFields')!,
+        sourcePath: [],
+        sourceValue,
+        targetDocumentSchemaType: schema.get('nonPteWithMarksFields')!,
+        targetRootSchemaType: schema.get('nonPteWithMarksFields')!,
+        targetPath: [],
+        targetRootValue: {},
+        targetRootPath: [],
+        currentUser,
+      })
+
+      expect(transferValueResult?.errors).toEqual([])
+
+      const result = transferValueResult?.targetValue as {
+        _type: string
+        title: string
+        marks?: string[]
+        markDefs?: string[]
+      }
+
+      // Empty marks and markDefs should NOT be preserved in non-PTE context
+      expect(result._type).toEqual('nonPteWithMarksFields')
+      expect(result.title).toEqual('Test Document')
+      expect(result.marks).toBeUndefined()
+      expect(result.markDefs).toBeUndefined()
     })
   })
 })

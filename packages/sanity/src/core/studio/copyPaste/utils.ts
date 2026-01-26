@@ -1,4 +1,10 @@
-import {type Path} from '@sanity/types'
+import {
+  isBlockSchemaType,
+  isSpanSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
 
 import {isString} from '../../util/isString'
 import {type SanityClipboardItem} from './types'
@@ -170,6 +176,21 @@ export function isEmptyValue(value: unknown): boolean {
   }
   if (Array.isArray(value) && value.length === 0) return true
   return false
+}
+
+/**
+ * Checks if a field name is a Portable Text field that should preserve
+ * empty arrays during copy/paste operations.
+ *
+ */
+export function isPortableTextPreserveEmptyField(
+  member: ObjectField,
+  targetSchemaType: ObjectSchemaType,
+): boolean {
+  return (
+    (member.name === 'markDefs' && isBlockSchemaType(targetSchemaType)) ||
+    (member.name === 'marks' && isSpanSchemaType(targetSchemaType))
+  )
 }
 
 export function isNativeEditableElement(el: EventTarget): boolean {
