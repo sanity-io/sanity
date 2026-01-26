@@ -138,6 +138,7 @@
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
+    "typedoc": "^0.28.16",
     "typescript": "catalog:",
     "vercel": "^48.12.1",
     "vitest": "catalog:"
