@@ -1,3 +1,4 @@
+// @ts-expect-error Type declaration exists but tsconfig from monorepo root doesn't always resolve package-level typings
 import humanizeList from 'humanize-list'
 import {flatten, partition} from 'lodash-es'
 

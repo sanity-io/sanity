@@ -1,4 +1,4 @@
-// @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
+// @ts-expect-error -- Intl.ListFormat types not fully available in all TypeScript contexts
 type AnyIntlOptions = Intl.DateTimeFormat | Intl.ListFormatOptions | Intl.NumberFormatOptions
 
 /**
@@ -11,7 +11,7 @@ type AnyIntlOptions = Intl.DateTimeFormat | Intl.ListFormatOptions | Intl.Number
 export const intlCache = (() => {
   const caches = {
     dateTimeFormat: createCache<Intl.DateTimeFormat>(),
-    // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
+    // @ts-expect-error -- Intl.ListFormat types not fully available in all TypeScript contexts
     listFormat: createCache<Intl.ListFormat>(),
     numberFormat: createCache<Intl.NumberFormat>(),
     relativeTimeFormat: createCache<Intl.RelativeTimeFormat>(),
@@ -29,7 +29,7 @@ export const intlCache = (() => {
     return instance
   }
 
-  // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
+  // @ts-expect-error -- Intl.ListFormat types not fully available in all TypeScript contexts
   function listFormat(locale: string, options: Intl.ListFormatOptions) {
     const key = getCacheId(locale, options)
     let instance = caches.listFormat[key]
@@ -37,7 +37,7 @@ export const intlCache = (() => {
       return instance
     }
 
-    // @ts-expect-error Intl.ListFormat is ES2021 but not fully in TS lib definitions
+    // @ts-expect-error -- Intl.ListFormat types not fully available in all TypeScript contexts
     instance = new Intl.ListFormat(locale, options)
     caches.listFormat[key] = instance
     return instance
