@@ -60,6 +60,8 @@ test.describe('Comments', () => {
       await page.keyboard.press('Enter')
       await insertPortableText('This is a comment!', $editable)
       await expect($editable).toHaveText('This is a comment!')
+      const $sendButton = page.getByTestId('comment-input-send-button')
+      await expect($sendButton).toBeEnabled()
       await page.keyboard.press('Enter')
       await submitted
     })
