@@ -189,7 +189,7 @@ export function validateDocument({
       schema: workspace.schema,
       getDocumentExists:
         options.getDocumentExists ||
-        createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
+        createBatchedGetDocumentExists(getClient({apiVersion: 'v2025-02-19'})),
       environment,
     }),
   )
