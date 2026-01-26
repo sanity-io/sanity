@@ -569,11 +569,11 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@portabletext/editor':
-        specifier: ^4.3.3
-        version: 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+        specifier: ^4.3.4
+        version: 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@portabletext/plugin-character-pair-decorator':
-        specifier: ^5.0.18
-        version: 5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.19
+        version: 5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.3)
@@ -1808,20 +1808,20 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@portabletext/editor':
-        specifier: ^4.3.3
-        version: 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+        specifier: ^4.3.4
+        version: 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@portabletext/patches':
         specifier: ^2.0.4
         version: 2.0.4
       '@portabletext/plugin-markdown-shortcuts':
-        specifier: ^5.0.18
-        version: 5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.19
+        version: 5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/plugin-one-line':
-        specifier: ^4.0.18
-        version: 4.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
+        specifier: ^4.0.19
+        version: 4.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)
       '@portabletext/plugin-typography':
-        specifier: ^5.0.18
-        version: 5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+        specifier: ^5.0.19
+        version: 5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.3)
@@ -4711,8 +4711,8 @@ packages:
     resolution: {integrity: sha512-rwwMLq8tvfFuf0rzct52wAg7x478U/FwZ+Lnd+/HgsreV50L2VPZdypljkFaVGwuArrJo99XaPh8n6iOk9lX4A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/editor@4.3.3':
-    resolution: {integrity: sha512-MK98ylbMGMfQbcwIjD3LnjuQ9i5iN9LdseBLHZ3KHQbBHlZjdFZQ1kkP8NeD/0KtJgLYkDVX0HCYTwRDwCRAPg==}
+  '@portabletext/editor@4.3.4':
+    resolution: {integrity: sha512-ZQfhQ6mr0OBFpo/o9s4ByP8HjXzQB9Bn4QsNt/NGIYhYOpqc6ecGSk04q+/NLg60x2aoEYQqE6PH/PzCtiVY4Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/sanity-bridge': ^2.0.0
@@ -4731,39 +4731,39 @@ packages:
     resolution: {integrity: sha512-dz2tR921LMvz3tAlfAB5ehJhztGCERFs0j5jEha2Vkq9UAs9iuCxNGlf7C3d2f9pGGBpxOF4WBZgpZNjB84vrQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/plugin-character-pair-decorator@5.0.18':
-    resolution: {integrity: sha512-Id9ALHq2kYUxDIXN6Ol3q1uf/H3REqNmgAYCgvIpxqKBu2AY31omL/yhxydbCcgn7z9KVPixBTAfcSjfJF+oiQ==}
+  '@portabletext/plugin-character-pair-decorator@5.0.19':
+    resolution: {integrity: sha512-0aKxt4hiL1VORbz1stw7igPyO4ckuJXla2nf1c+BipfOmZ+8HLroKbobP0wD5Y/Szotj9TRhc4z9XLutn0qydQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.3
+      '@portabletext/editor': ^4.3.4
       react: ^19.2
 
-  '@portabletext/plugin-input-rule@2.0.18':
-    resolution: {integrity: sha512-AhTChH7jIcv1gfhPj7Stj27WpX44xiCdNPDykgBOt6FH+I4FhgXkv8R2tw1o7Rh7ogu0HbjUiurKz7z72R995Q==}
+  '@portabletext/plugin-input-rule@2.0.19':
+    resolution: {integrity: sha512-oFVm6kK39z0s80tREQeHM1mvNoPXaCo16iOL0Qy7VnvR1H7MenA830wqDCnwQzat4C/sjuNwhl7EaMEJFVtqYw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.3
+      '@portabletext/editor': ^4.3.4
       react: ^19.2
 
-  '@portabletext/plugin-markdown-shortcuts@5.0.18':
-    resolution: {integrity: sha512-wy1/UAXeD/1VRhrPvvMiX1FLGaSyTzbPODmNTWsle+pD0IkBjJhYCxtpEFW7coJ9MckEb9calrNVIE0TlDSNng==}
+  '@portabletext/plugin-markdown-shortcuts@5.0.19':
+    resolution: {integrity: sha512-JgP4F2o7bl1ilQPlhfhpk2gHf719jiC1Dt3/0Rb1YHQIkoAD1PVZUS6T++f6mmoeQWwBMOk8NSYg7nopSEbd9A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.3
+      '@portabletext/editor': ^4.3.4
       react: ^19.2
 
-  '@portabletext/plugin-one-line@4.0.18':
-    resolution: {integrity: sha512-cNZK6XX9LcJT0zDXuzcDZpcW/wEgH2rDyOHbO5p3x7GWeWW/FCS3H+BlDvjaSImGn5eq4zsTrVBEI72xOQ3yvQ==}
+  '@portabletext/plugin-one-line@4.0.19':
+    resolution: {integrity: sha512-KcUYvuGPKmuAeb87yqBq57UFmfrzy5VYc9NOuuEuFTDkiB/05WbP43aox4PNm+pj3vJdFqB14+tu4eNoumhK5Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.3
+      '@portabletext/editor': ^4.3.4
       react: ^19.2
 
-  '@portabletext/plugin-typography@5.0.18':
-    resolution: {integrity: sha512-J1t69gYqdr65cu6Z1AnvdiBn29XhZ77UDosUan6iFwxqhNCJ4vppZh0IYos+Wgq7lJ0idHnvybqKPreLcuD7IQ==}
+  '@portabletext/plugin-typography@5.0.19':
+    resolution: {integrity: sha512-5KEX0O9hJ/5+/giSP0H3hUaFoZ0tm6K/ed24wgYOuo97HD7+F7bQ2i3FsxZuCdE2uh6J/hfoc+wXpI14xo99Sg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.3
+      '@portabletext/editor': ^4.3.4
       react: ^19.2
 
   '@portabletext/react@6.0.2':
@@ -15723,7 +15723,7 @@ snapshots:
       '@portabletext/schema': 2.1.1
       '@sanity/types': link:packages/@sanity/types
 
-  '@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)':
+  '@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 5.0.0
       '@portabletext/keyboard-shortcuts': 2.1.2
@@ -15759,9 +15759,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-character-pair-decorator@5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       react: 19.2.3
       remeda: 2.32.0
@@ -15769,33 +15769,33 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@2.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-input-rule@2.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.7)(react@19.2.3)(xstate@5.25.1)
       react: 19.2.3
       xstate: 5.25.1
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-markdown-shortcuts@5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@portabletext/plugin-character-pair-decorator': 5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
-      '@portabletext/plugin-input-rule': 2.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/editor': 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/plugin-character-pair-decorator': 5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/plugin-input-rule': 2.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       react: 19.2.3
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@4.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
+  '@portabletext/plugin-one-line@4.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/editor': 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
       react: 19.2.3
 
-  '@portabletext/plugin-typography@5.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
+  '@portabletext/plugin-typography@5.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)':
     dependencies:
-      '@portabletext/editor': 4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
-      '@portabletext/plugin-input-rule': 2.0.18(@portabletext/editor@4.3.3(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
+      '@portabletext/editor': 4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)
+      '@portabletext/plugin-input-rule': 2.0.19(@portabletext/editor@4.3.4(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2))(@types/react@19.2.7)(react@19.2.3)
       react: 19.2.3
     transitivePeerDependencies:
       - '@types/react'
