@@ -30,7 +30,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   ...transformHelpText(BlueprintsInitCommand, 'sanity', 'blueprints init'),
 
   async action(args, context) {
-    const {apiClient, output} = context
+    const {apiClient, cliConfig, output} = context
     const flags = {...defaultFlags, ...args.extOptions}
 
     const [dir] = args.argsWithoutOptions
@@ -64,6 +64,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
       bin: 'sanity',
       log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
+      knownProjectId: cliConfig?.api?.projectId,
       args: {
         dir: dir ?? flags.dir,
       },
