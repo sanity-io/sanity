@@ -290,7 +290,6 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/codegen": "workspace:*",
     "@sanity/descriptors": "^1.3.0",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",

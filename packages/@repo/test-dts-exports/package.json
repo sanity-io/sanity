@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
-    "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",
