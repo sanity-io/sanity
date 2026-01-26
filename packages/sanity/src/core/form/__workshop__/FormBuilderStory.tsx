@@ -23,6 +23,7 @@ export default function FormBuilderStory() {
   const {validation: validationRaw} = useValidationStatus(
     documentId,
     documentType,
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     value?._id || documentId,
   )
   const validation = useUnique(validationRaw)

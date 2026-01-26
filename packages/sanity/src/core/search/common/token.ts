@@ -30,7 +30,7 @@ export function prefixLast(query: string): string {
   const tokens = (query.match(TOKEN_REGEX) ?? []).map((token) => token.trim())
 
   const finalIncrementalTokenIndex = tokens.findLastIndex(
-    (token) => !isNegationToken(token) && !isExactMatchToken(token),
+    (token: string) => !isNegationToken(token) && !isExactMatchToken(token),
   )
 
   const finalIncrementalToken = tokens[finalIncrementalTokenIndex]

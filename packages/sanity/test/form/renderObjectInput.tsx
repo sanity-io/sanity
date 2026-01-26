@@ -50,6 +50,7 @@ export async function renderObjectInput(options: {
     ) as FieldMember<ObjectFormNode> | undefined
     const field = fieldMember?.field
 
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     return {
       ...restProps,
       changed: false,

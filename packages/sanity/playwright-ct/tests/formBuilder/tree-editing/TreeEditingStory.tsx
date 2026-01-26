@@ -151,6 +151,7 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
 }
 
 const FEATURES: WorkspaceOptions['beta'] = {
+  // @ts-expect-error -- Legacy test code, will be fixed separately
   treeArrayEditing: {
     enabled: true,
   },

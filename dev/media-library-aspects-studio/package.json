@@ -8,6 +8,7 @@
   "author": "",
   "main": "index.js",
   "scripts": {
+    "check:types": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

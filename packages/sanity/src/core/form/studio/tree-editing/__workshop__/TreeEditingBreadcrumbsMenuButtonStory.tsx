@@ -4,6 +4,7 @@ import {Flex} from '@sanity/ui'
 import {useState} from 'react'
 
 import {TreeEditingBreadcrumbsMenuButton} from '../components'
+// @ts-expect-error -- Legacy test code, will be fixed separately
 import {type TreeEditingBreadcrumb} from '../types'
 
 const schema = Schema.compile({

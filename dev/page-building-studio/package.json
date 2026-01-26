@@ -6,6 +6,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build --source-maps",
+    "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --source-maps",
     "lint": "eslint .",

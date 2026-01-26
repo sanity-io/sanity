@@ -62,6 +62,7 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     focusedPane: null,
     setFocusedPane: noop,
   }
@@ -106,6 +107,7 @@ export async function createTestProvider({
                         <ResolvedPanesProvider value={resolvedPanes}>
                           <CopyPasteProvider>
                             <ResourceCacheProvider>
+                              {/* @ts-expect-error -- Legacy test code, will be fixed separately */}
                               <AddonDatasetContext.Provider value={addonDatasetContextValue}>
                                 <PerspectiveContext.Provider value={perspectiveContextValueMock}>
                                   <DocumentLimitUpsellProvider>

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc && vite build",
+    "check:types": "tsc --noEmit",
     "dev": "vite",
     "preview": "vite preview --port 5173",
     "start": "pnpm --filter e2e-embedded-studio-vite preview",

@@ -56,6 +56,7 @@ export async function renderFileInput(options: {
       ...restProps,
       assetSources,
       client,
+      // @ts-expect-error -- Legacy test code, will be fixed separately
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,

@@ -9,6 +9,7 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "sanity build",
+    "check:types": "tsc --noEmit",
     "dev": "sanity dev --port 3339",
     "lint": "eslint .",
     "preview": "sanity preview --port 3339",
