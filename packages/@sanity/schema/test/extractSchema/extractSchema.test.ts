@@ -1208,3 +1208,81 @@ test('reference regression: references pointing to hoisted type', () => {
   assert(postType.attributes.authorRef.value.type === 'inline') // this is a workaround for TS
   expect(postType.attributes.authorRef.value.name).toEqual('author.reference')
 })
+
+test('anonymous objects in arrays should not have _type, named objects should', () => {
+  const schema = createSchema(
+    {
+      name: 'test',
+      types: [
+        defineType({
+          title: 'Document with mixed array',
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              title: 'Mixed array',
+              name: 'mixedArray',
+              type: 'array',
+              of: [
+                // Named object - should have _type
+                {
+                  type: 'object',
+                  name: 'namedObject',
+                  title: 'Named Object',
+                  fields: [{name: 'title', type: 'string'}],
+                },
+                // Anonymous object - should NOT have _type
+                {
+                  type: 'object',
+                  title: 'Anonymous Object',
+                  // No 'name' property = anonymous
+                  fields: [{name: 'description', type: 'string'}],
+                },
+              ],
+            },
+          ],
+        }),
+      ],
+    },
+    true,
+  )
+
+  const extracted = extractSchema(schema)
+  const testDocument = extracted.find((type) => type.name === 'testDocument')
+  expect(testDocument).toBeDefined()
+  assert(testDocument !== undefined)
+  assert(testDocument.type === 'document')
+
+  // mixedArray should be an array
+  expect(testDocument.attributes.mixedArray.value.type).toEqual('array')
+  assert(testDocument.attributes.mixedArray.value.type === 'array')
+
+  // The array's 'of' should be a union of the two object types
+  expect(testDocument.attributes.mixedArray.value.of.type).toEqual('union')
+  assert(testDocument.attributes.mixedArray.value.of.type === 'union')
+
+  const unionElements = testDocument.attributes.mixedArray.value.of.of
+  expect(unionElements.length).toBe(2)
+
+  // Find the named and anonymous objects in the union
+  const namedObjectType = unionElements.find(
+    (el: any) => el.type === 'object' && el.attributes._type?.value?.value === 'namedObject',
+  )
+  const anonymousObjectType = unionElements.find(
+    (el: any) => el.type === 'object' && !el.attributes._type,
+  )
+
+  // Named object should have _type attribute
+  expect(namedObjectType).toBeDefined()
+  expect(namedObjectType.attributes._type).toBeDefined()
+  expect(namedObjectType.attributes._type.value.value).toEqual('namedObject')
+  expect(namedObjectType.attributes.title).toBeDefined()
+
+  // Anonymous object should NOT have _type attribute
+  expect(anonymousObjectType).toBeDefined()
+  expect(anonymousObjectType.attributes._type).toBeUndefined()
+  expect(anonymousObjectType.attributes.description).toBeDefined()
+
+  // Snapshot for regression detection
+  expect(extracted).toMatchSnapshot()
+})

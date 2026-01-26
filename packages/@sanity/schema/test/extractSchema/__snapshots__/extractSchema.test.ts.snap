@@ -7340,6 +7340,113 @@ exports[`Extract schema test > will ignore global document reference types at th
 ]
 `;
 
+exports[`anonymous objects in arrays should not have _type, named objects should 1`] = `
+[
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "testDocument",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "mixedArray": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": {
+            "of": [
+              {
+                "attributes": {
+                  "_type": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                      "value": "namedObject",
+                    },
+                  },
+                  "title": {
+                    "optional": true,
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                },
+                "rest": {
+                  "attributes": {
+                    "_key": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "type": "object",
+                },
+                "type": "object",
+              },
+              {
+                "attributes": {
+                  "description": {
+                    "optional": true,
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                },
+                "rest": {
+                  "attributes": {
+                    "_key": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "type": "object",
+                },
+                "type": "object",
+              },
+            ],
+            "type": "union",
+          },
+          "type": "array",
+        },
+      },
+    },
+    "name": "testDocument",
+    "type": "document",
+  },
+]
+`;
+
 exports[`inline regression: inline type that references other inline type 1`] = `
 [
   {

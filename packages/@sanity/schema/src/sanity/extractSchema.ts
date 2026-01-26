@@ -337,7 +337,21 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode
     }
 
-    if (schemaType.type?.name !== 'document' && schemaType.name !== 'object') {
+    // Only add _type for named objects (not anonymous inline objects)
+    // Anonymous objects are those where:
+    // 1. The base type is 'object' (schemaType.type?.name === 'object')
+    // 2. No explicit 'name' was provided in the schema definition
+    // We check _internal_ownProps to see if 'name' was explicitly defined
+    const ownProps = (schemaType as {_internal_ownProps?: Record<string, unknown>})
+      ._internal_ownProps
+    const isBaseObjectType = schemaType.type?.name === 'object'
+    const hasExplicitName = ownProps && 'name' in ownProps
+    const isAnonymousObject = isBaseObjectType && !hasExplicitName
+    if (
+      schemaType.type?.name !== 'document' &&
+      schemaType.name !== 'object' &&
+      !isAnonymousObject
+    ) {
       attributes._type = {
         type: 'objectAttribute',
         value: {
