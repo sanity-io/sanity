@@ -390,7 +390,7 @@ export interface CliConfig {
     /**
      * Enable schema extraction as part of sanity dev and sanity build
      */
-    enabled?: true
+    enabled?: boolean
 
     /**
      * Output path for the extracted schema file.
