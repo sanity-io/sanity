@@ -299,9 +299,29 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           })
           console.error(err)
         }
+      } else {
+        const uploader = resolveUploader(schemaType, file)
+        if (uploader) {
+          uploadWith(uploader, file)
+        } else {
+          push({
+            status: 'error',
+            description: t('inputs.image.upload-error.description'),
+            title: t('inputs.image.upload-error.title'),
+          })
+        }
       }
     },
-    [handleAssetLimitUpsellDialog, assetSourceUploader, onChange, push, schemaType, t],
+    [
+      handleAssetLimitUpsellDialog,
+      assetSourceUploader,
+      onChange,
+      push,
+      schemaType,
+      t,
+      resolveUploader,
+      uploadWith,
+    ],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
