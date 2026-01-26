@@ -251,9 +251,29 @@ export function BaseFileInput(props: BaseFileInputProps) {
           })
           console.error(err)
         }
+      } else {
+        const uploader = resolveUploader(schemaType, files[0])
+        if (uploader) {
+          uploadExternalFileToDataset(uploader, files[0])
+        } else {
+          push({
+            status: 'error',
+            description: t('inputs.file.upload-failed.description'),
+            title: t('inputs.file.upload-failed.title'),
+          })
+        }
       }
     },
-    [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t],
+    [
+      assetSourceUploader,
+      handleAssetLimitUpsellDialog,
+      onChange,
+      push,
+      schemaType,
+      t,
+      resolveUploader,
+      uploadExternalFileToDataset,
+    ],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
