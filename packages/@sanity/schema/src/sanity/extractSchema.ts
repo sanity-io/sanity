@@ -28,6 +28,8 @@ import {
   type UnknownTypeNode,
 } from 'groq-js'
 
+import {isAnonymousObject} from './isAnonymousObject'
+
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
     type: 'objectAttribute',
@@ -558,23 +560,6 @@ function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
 }
 function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
   return isType(typeDef, 'number')
-}
-
-/**
- * Checks if an object type is anonymous (has no explicit `name` property in the schema definition).
- * Anonymous objects are inline object definitions without a `name`, e.g.:
- *   { type: 'object', fields: [...] }  // anonymous - no name
- * vs named objects:
- *   { type: 'object', name: 'myType', fields: [...] }  // named
- *
- * We check `_internal_ownProps` to see if `name` was explicitly provided in the original
- * schema definition, not just inherited from the base type.
- */
-function isAnonymousObject(schemaType: SanitySchemaType): boolean {
-  const ownProps = (schemaType as {_internal_ownProps?: Record<string, unknown>})._internal_ownProps
-  const isBaseObjectType = schemaType.type?.name === 'object'
-  const hasExplicitName = ownProps && 'name' in ownProps
-  return isBaseObjectType && !hasExplicitName
 }
 
 function createStringTypeNodeDefintion(
