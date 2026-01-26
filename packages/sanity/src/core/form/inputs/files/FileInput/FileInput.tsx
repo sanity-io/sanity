@@ -264,16 +264,7 @@ export function BaseFileInput(props: BaseFileInputProps) {
         }
       }
     },
-    [
-      assetSourceUploader,
-      handleAssetLimitUpsellDialog,
-      onChange,
-      push,
-      schemaType,
-      t,
-      resolveUploader,
-      uploadExternalFileToDataset,
-    ],
+    [assetSourceUploader, handleAssetLimitUpsellDialog, onChange, push, schemaType, t, uploadExternalFileToDataset],
   )
 
   // Abort asset source uploads and unsubscribe from the uploader is the component unmounts
