@@ -222,7 +222,7 @@ const releasesLocaleStrings = {
   'menu.group.when-releasing': 'When releasing',
 
   /** Text for when no archived releases are found */
-  'no-archived-release': 'No archived releases',
+  'no-archived-release': 'bananas',
   /** Tooltip text when there are no paused scheduled drafts */
   'no-paused-release': 'No paused scheduled drafts',
   /** Text for when no releases are found */
