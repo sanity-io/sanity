@@ -76,6 +76,39 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
 - [Rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text).
 
+## Repository Structure
+
+| Path | Description |
+|------|-------------|
+| `packages/sanity/` | Main Sanity Studio package - UI, forms, real-time editing |
+| `packages/@sanity/cli/` | CLI tool (`sanity` command) |
+| `packages/@sanity/types/` | TypeScript type definitions |
+| `packages/@sanity/schema/` | Schema compilation and validation |
+| `packages/groq/` | GROQ query language |
+| `dev/test-studio/` | Development studio for testing changes |
+| `e2e/` | End-to-end Playwright tests |
+| `examples/` | Example studio configurations |
+
+### For Contributors
+
+- **Quick start**: `pnpm install && pnpm build && pnpm dev`
+- **Run tests**: `pnpm test`
+- **Lint & format**: `pnpm lint:fix`
+- See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guidelines
+- See [AGENTS.md](./AGENTS.md) for AI agent guidelines
+
+### Key Entry Points
+
+If you're looking to understand or modify specific functionality:
+
+| Functionality | Location |
+|--------------|----------|
+| Studio configuration | `packages/sanity/src/core/config/` |
+| Document editing forms | `packages/sanity/src/core/form/` |
+| React hooks API | `packages/sanity/src/core/hooks/` |
+| Schema types | `packages/@sanity/types/src/schema/` |
+| CLI commands | `packages/@sanity/cli/src/commands/` |
+
 ## Stay up to date
 
 - Follow us on [X](https://x.com/sanity_io)
