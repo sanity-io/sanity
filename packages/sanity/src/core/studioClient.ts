@@ -13,7 +13,7 @@ import {SANITY_VERSION} from './version'
  * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  apiVersion: '2025-02-19',
+  apiVersion: 'v2025-02-19',
 }
 
 /**
