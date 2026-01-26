@@ -39,7 +39,7 @@ export async function listSpecs(
 
     const results = await response.json()
     return Array.isArray(results?.specs) ? results.specs : []
-  } catch (error) {
+  } catch {
     context.output.error('The OpenAPI service is currently unavailable. Please try again later.')
     process.exit(1)
     return [] // satisfy TypeScript, though this line is unreachable

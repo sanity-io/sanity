@@ -9,6 +9,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from '../../types'
+import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 import {MemberFieldSet} from './MemberFieldset'
@@ -37,6 +38,10 @@ export const ObjectInputMember = memo(function ObjectInputMember(props: ObjectIn
     renderItem,
     renderPreview,
   } = props
+
+  if (member.kind === 'decoration') {
+    return <MemberDecoration key={member.key} member={member} />
+  }
 
   if (member.kind === 'field') {
     return (

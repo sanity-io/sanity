@@ -4312,6 +4312,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -4366,6 +4371,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -4407,6 +4417,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -9151,6 +9165,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -9205,6 +9224,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": undefined,
           "type": "SanityImagePaletteCustomFilterSuffix",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataCustomFilterSuffix",
@@ -9246,6 +9270,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -9678,7 +9706,7 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -14328,6 +14356,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -14382,6 +14415,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -14423,6 +14461,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -20078,7 +20120,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -24728,6 +24770,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -24782,6 +24829,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -24823,6 +24875,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -30478,7 +30534,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -34790,6 +34846,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -34844,6 +34905,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -34885,6 +34951,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -35317,7 +35387,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -39629,6 +39699,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -39683,6 +39758,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -39724,6 +39804,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -40156,7 +40240,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -42723,6 +42807,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -42777,6 +42866,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -42818,6 +42912,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -43331,7 +43429,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -45898,6 +45996,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -45952,6 +46055,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -45993,6 +46101,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",

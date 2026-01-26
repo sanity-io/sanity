@@ -9,7 +9,7 @@ export function useEditState(
   publishedDocId: string,
   docTypeName: string,
   priority: 'default' | 'low' = 'default',
-  version?: string | undefined,
+  version?: string,
 ): EditStateFor {
   if (version === 'published' || version === 'draft') {
     throw new Error('Version cannot be published or draft')

@@ -105,7 +105,7 @@ export async function testServerCommand({
               setTimeout(rejectTimeout, 500, new Error('Timed out trying to connect')),
             ),
           ])
-        } catch (err) {
+        } catch {
           if (Date.now() - startedAt > outputTimeout) {
             reject(new Error('Timed out waiting for server to get online'))
             return

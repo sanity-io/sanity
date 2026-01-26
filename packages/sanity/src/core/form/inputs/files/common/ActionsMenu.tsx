@@ -1,4 +1,4 @@
-import {CopyIcon, DownloadIcon, ResetIcon} from '@sanity/icons'
+import {CopyIcon, DownloadIcon, LaunchIcon, ResetIcon} from '@sanity/icons'
 import {MenuDivider, useToast} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
 
@@ -11,17 +11,20 @@ interface Props {
   onReset: MouseEventHandler<HTMLDivElement>
   downloadUrl?: string
   copyUrl?: string
+  openInSource?: () => void
+  openInSourceName?: string
   upload: ReactNode
 }
 
 export function ActionsMenu(props: Props) {
-  const {onReset, readOnly, browse, downloadUrl, copyUrl, upload} = props
+  const {onReset, readOnly, browse, downloadUrl, copyUrl, openInSource, openInSourceName, upload} =
+    props
 
   const {push: pushToast} = useToast()
   const {t} = useTranslation()
 
   const handleCopyURL = useCallback(() => {
-    navigator.clipboard.writeText(copyUrl || '')
+    void navigator.clipboard.writeText(copyUrl || '')
     pushToast({
       closable: true,
       status: 'success',
@@ -35,7 +38,7 @@ export function ActionsMenu(props: Props) {
       {upload && browse && <MenuDivider />}
       {browse}
 
-      {(downloadUrl || copyUrl) && <MenuDivider />}
+      {(downloadUrl || copyUrl || openInSource) && <MenuDivider />}
       {downloadUrl && (
         <MenuItem
           as="a"
@@ -49,6 +52,16 @@ export function ActionsMenu(props: Props) {
           icon={CopyIcon}
           text={t('inputs.files.common.actions-menu.copy-url.label')}
           onClick={handleCopyURL}
+        />
+      )}
+
+      {openInSource && (
+        <MenuItem
+          icon={LaunchIcon}
+          text={t('inputs.files.common.actions-menu.open-in-source.label', {
+            sourceName: openInSourceName || 'source',
+          })}
+          onClick={openInSource}
         />
       )}
 

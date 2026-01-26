@@ -1,13 +1,13 @@
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map} from 'rxjs'
 
 import {type Previewable} from '../../../../preview/types'
 import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {flattenItems} from '../components/search/utils'
-import {type TreeEditingMenuItem} from '../types'
+import {type DialogItem} from '../types'
 
-export interface SearchableTreeEditingMenuItem extends TreeEditingMenuItem {
+export interface SearchableTreeEditingMenuItem extends DialogItem {
   title: string | undefined
   children?: SearchableTreeEditingMenuItem[]
 }
@@ -15,8 +15,10 @@ export interface SearchableTreeEditingMenuItem extends TreeEditingMenuItem {
 /**
  * A hook that takes a list of items and returns a flat list of
  * items that are searchable by adding the title to the item.
+ *
+ * We are not using this right now but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
  */
-export function useSearchableList(items: TreeEditingMenuItem[]): SearchableTreeEditingMenuItem[] {
+export function useSearchableList(items: DialogItem[]): SearchableTreeEditingMenuItem[] {
   const [searchableList, setSearchableList] = useState<SearchableTreeEditingMenuItem[]>([])
   const {observeForPreview} = useDocumentPreviewStore()
 

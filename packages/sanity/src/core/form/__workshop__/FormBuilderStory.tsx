@@ -19,8 +19,12 @@ export default function FormBuilderStory() {
   const schemaType = schema.get(documentType)
   const editState = useEditState(documentId, documentType)
   const {patch}: any = useDocumentOperation(documentId, documentType)
-  const value = editState.draft || editState.published
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType)
+  const value = editState?.draft || editState?.published
+  const {validation: validationRaw} = useValidationStatus(
+    documentId,
+    documentType,
+    value?._id || documentId,
+  )
   const validation = useUnique(validationRaw)
   const [focusPath, setFocusPath] = useState<Path>([])
   const presence = useMemo(() => [], [])

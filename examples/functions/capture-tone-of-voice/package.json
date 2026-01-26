@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "^7.14.1",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
@@ -14,9 +14,10 @@
     "timeout": 60,
     "event": {
       "on": [
-        "publish"
+        "create",
+        "update"
       ],
-      "filter": "_type == 'post'",
+      "filter": "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
       "projection": "{_id}"
     }
   },

@@ -1,100 +1,11 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {Text, useToast} from '@sanity/ui'
-import {type ReactNode, useEffect, useMemo} from 'react'
-import {RawPerspectiveContext} from 'sanity/_singletons'
+import {type ReactNode, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {useTranslation} from '../i18n/hooks/useTranslation'
-import {Translate} from '../i18n/Translate'
-import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {useArchivedReleases} from '../releases/store/useArchivedReleases'
-import {LATEST, PUBLISHED} from '../releases/util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isPublishedPerspective} from '../releases/util/util'
+import {PUBLISHED} from '../releases/util/const'
 import {useWorkspace} from '../studio/workspace'
-import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
-import {getSelectedPerspective} from './getSelectedPerspective'
 import {PerspectiveProvider} from './PerspectiveProvider'
-import {type RawPerspectiveContextValue, type ReleaseId, type TargetPerspective} from './types'
-import {usePerspective} from './usePerspective'
-import {useSetPerspective} from './useSetPerspective'
-
-const getToastTitleAndDescription = (
-  archived?: ReleaseDocument,
-): {title: string; description?: string} => {
-  if (!archived) return {title: 'release.toast.not-found-release.title'}
-
-  if (archived.state === 'published')
-    return {
-      title: 'release.toast.published-release.title',
-      description: 'release.toast.published-release.description',
-    }
-
-  return {
-    title: 'release.toast.archived-release.title',
-    description: 'release.toast.archived-release.description',
-  }
-}
-
-const ResetPerspectiveHandler = () => {
-  const toast = useToast()
-  const {t} = useTranslation()
-  const {data: releases, loading: releasesLoading} = useActiveReleases()
-  const {data: archivedReleases} = useArchivedReleases()
-  const {selectedPerspectiveName} = usePerspective()
-  const setPerspective = useSetPerspective()
-
-  useEffect(() => {
-    // clear the perspective param when it is not an active release
-    if (
-      releasesLoading ||
-      !selectedPerspectiveName ||
-      isPublishedPerspective(selectedPerspectiveName)
-    )
-      return
-    const isCurrentPerspectiveValid = releases.some(
-      (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
-    )
-    if (!isCurrentPerspectiveValid) {
-      setPerspective(LATEST)
-      const archived = archivedReleases.find(
-        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedPerspectiveName,
-      )
-
-      const {title, description} = getToastTitleAndDescription(archived)
-
-      toast.push({
-        id: `bundle-deleted-toast-${selectedPerspectiveName}`,
-        status: 'warning',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey={title}
-              values={{title: archived?.metadata?.title || selectedPerspectiveName}}
-            />
-          </Text>
-        ),
-        description: description && (
-          <Text muted size={1}>
-            <Translate t={t} i18nKey={description} />
-          </Text>
-        ),
-        duration: 10000,
-      })
-    }
-  }, [
-    archivedReleases,
-    selectedPerspectiveName,
-    releases,
-    releasesLoading,
-    setPerspective,
-    toast,
-    t,
-  ])
-  return null
-}
+import {type ReleaseId} from './types'
 
 /**
  * This component is not meant to be exported by `sanity`, it's meant only for internal use from the `<StudioProvider>` file.
@@ -105,7 +16,6 @@ const ResetPerspectiveHandler = () => {
  */
 export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   const router = useRouter()
-  const {data: releases} = useActiveReleases()
 
   const {
     document: {
@@ -127,32 +37,12 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     [router.stickyParams.excludedPerspectives],
   )
 
-  // Calculate raw perspective values
-  const selectedPerspective: TargetPerspective = useMemo(
-    () => getSelectedPerspective(selectedPerspectiveName, releases),
-    [selectedPerspectiveName, releases],
-  )
-
-  const rawValue: RawPerspectiveContextValue = useMemo(
-    () => ({
-      selectedPerspective,
-      selectedPerspectiveName,
-      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
-        ? undefined
-        : selectedPerspectiveName,
-    }),
-    [selectedPerspective, selectedPerspectiveName],
-  )
-
   return (
-    <RawPerspectiveContext.Provider value={rawValue}>
-      <PerspectiveProvider
-        selectedPerspectiveName={selectedPerspectiveName}
-        excludedPerspectives={excludedPerspectives}
-      >
-        {children}
-        <ResetPerspectiveHandler />
-      </PerspectiveProvider>
-    </RawPerspectiveContext.Provider>
+    <PerspectiveProvider
+      selectedPerspectiveName={selectedPerspectiveName}
+      excludedPerspectives={excludedPerspectives}
+    >
+      {children}
+    </PerspectiveProvider>
   )
 }

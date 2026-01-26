@@ -6,7 +6,6 @@ import {from} from 'rxjs'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../studio/workspace'
-import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseMetadata} from '../hooks/useCreateReleaseMetadata'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {useReleaseOperations} from '../store/useReleaseOperations'
@@ -19,7 +18,6 @@ interface Props {
 
 export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) => {
   const {t} = useTranslation()
-  const {mode: planQuotaMode} = useReleasesUpsell()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
   const createReleaseMetadata = useCreateReleaseMetadata()
@@ -63,12 +61,11 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
     )
   }
 
-  if (!hasCreatePermission || planQuotaMode === 'disabled') {
+  if (!hasCreatePermission) {
     return (
       <MenuItem
         {...menuItemProps}
         tooltipProps={{
-          disabled: hasCreatePermission === true,
           content: t('release.action.permission.error'),
         }}
         disabled

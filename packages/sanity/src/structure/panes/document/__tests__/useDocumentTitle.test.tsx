@@ -1,10 +1,5 @@
 import {renderHook, waitFor} from '@testing-library/react'
-import {
-  defineConfig,
-  prepareForPreview,
-  type SanityClient,
-  unstable_useValuePreview as useValuePreview,
-} from 'sanity'
+import {defineConfig, prepareForPreview, type SanityClient, useValuePreview} from 'sanity'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -17,13 +12,15 @@ import {useDocumentTitle} from '../useDocumentTitle'
 // Mock the useDocumentPane hook
 vi.mock('../useDocumentPane')
 
-// Mock the useValuePreview and useTranslation hooks
+// Mock the useValuePreview, useTranslation, and usePerspective hooks
 vi.mock('sanity', async (importOriginal) => {
   const original = (await importOriginal()) as any
+  const {usePerspectiveMockReturn} = await import('../../../__mocks__/usePerspective.mock')
   return {
     ...original,
-    unstable_useValuePreview: vi.fn(),
+    useValuePreview: vi.fn(),
     prepareForPreview: vi.fn(),
+    usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
 

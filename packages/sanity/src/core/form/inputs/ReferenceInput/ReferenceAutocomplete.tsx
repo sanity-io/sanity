@@ -1,4 +1,6 @@
+import {type Path} from '@sanity/types'
 import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
   type ForwardedRef,
@@ -6,11 +8,13 @@ import {
   type Ref,
   type RefObject,
   useCallback,
+  useState,
 } from 'react'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {useFormBuilder} from '../..'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -27,13 +31,24 @@ const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
+    path: Path
     referenceElement: HTMLDivElement | null
     searchString?: string
     portalRef?: RefObject<HTMLDivElement | null>
   },
   ref: ForwardedRef<HTMLInputElement>,
 ) {
-  const {searchString, loading, portalRef, referenceElement, ...restProps} = props
+  const {focusPath} = useFormBuilder()
+  const {searchString, loading, portalRef, referenceElement, path, ...restProps} = props
+
+  /**
+   * Path here is the path of the reference input, not including the _ref segment, that is why we use the
+   * startsWith function to validate the autoFocus condition.
+   *
+   * If the focusPath is either `[field]` or `[field, _ref]` we want to autoFocus the input.
+   */
+  const [autoFocus] = useState(() => (PathUtils.startsWith(path, focusPath) ? true : false))
+
   const {t} = useTranslation()
   const hasResults = props.options && props.options.length > 0
   const renderPopover = useCallback(
@@ -89,5 +104,13 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     ),
     [hasResults, t, searchString, loading, portalRef, referenceElement],
   )
-  return <Autocomplete {...restProps} loading={loading} ref={ref} renderPopover={renderPopover} />
+  return (
+    <Autocomplete
+      {...restProps}
+      loading={loading}
+      ref={ref}
+      renderPopover={renderPopover}
+      autoFocus={autoFocus}
+    />
+  )
 })

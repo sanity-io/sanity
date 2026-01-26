@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {capitalize, uniq} from 'lodash'
+import {capitalize, uniq} from 'lodash-es'
 import {useCallback, useId, useMemo} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
@@ -80,7 +80,11 @@ export function SearchFilterStringListInput({
         const prevValue = acc[prevIndex]
         acc[prevIndex] = {
           ...acc[prevIndex],
-          title: uniq([...prevValue.title, val.title]).sort(),
+          title: uniq([...prevValue.title, val.title]).sort((a, b) =>
+            typeof a === 'string' && typeof b === 'string'
+              ? a.localeCompare(b)
+              : Number(a) - Number(b),
+          ),
         }
       } else {
         acc.push({

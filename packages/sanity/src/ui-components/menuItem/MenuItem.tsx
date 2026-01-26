@@ -8,24 +8,12 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {
-  forwardRef,
-  type HTMLProps,
-  isValidElement,
-  type ReactNode,
-  type Ref,
-  useCallback,
-  useMemo,
-} from 'react'
+import {forwardRef, type HTMLProps, isValidElement, type ReactNode, type Ref, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '..'
-import {
-  ConditionalWrapper,
-  type ConditionalWrapperRenderWrapperCallback,
-} from '../conditionalWrapper'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
@@ -125,11 +113,7 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack
-            flex={1}
-            space={__unstable_subtitle ? 1 : 2}
-            paddingLeft={__unstable_subtitle ? 1 : 0}
-          >
+          <Stack flex={1} space={__unstable_subtitle ? 1 : 2}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
@@ -172,32 +156,29 @@ export const MenuItem = forwardRef(function MenuItem(
     IconRight,
   ])
 
-  const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
-    (children) => {
-      return (
-        <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
-          {/* This div is needed to make the tooltip work in disabled menu items */}
-          <div>{children}</div>
-        </Tooltip>
-      )
-    },
-    [tooltipProps],
+  const children = (
+    <UIMenuItem
+      disabled={disabled}
+      paddingLeft={preview ? 1 : 3}
+      paddingRight={3}
+      paddingY={preview ? 1 : 3}
+      ref={ref}
+      {...rest}
+    >
+      {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
+        ? renderMenuItem(menuItemContent)
+        : menuItemContent}
+    </UIMenuItem>
   )
 
-  return (
-    <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
-      <UIMenuItem
-        disabled={disabled}
-        paddingLeft={preview ? 1 : 3}
-        paddingRight={3}
-        paddingY={preview ? 1 : 3}
-        ref={ref}
-        {...rest}
-      >
-        {typeof childrenProp === 'undefined' && typeof renderMenuItem === 'function'
-          ? renderMenuItem(menuItemContent)
-          : menuItemContent}
-      </UIMenuItem>
-    </ConditionalWrapper>
-  )
+  if (tooltipProps) {
+    return (
+      <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
+        {/* This div is needed to make the tooltip work in disabled menu items */}
+        <div>{children}</div>
+      </Tooltip>
+    )
+  }
+
+  return children
 })

@@ -18,6 +18,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
   const [addonDatasetClient, setAddonDatasetClient] = useState<SanityClient | null>(null)
   const [isCreatingDataset, setIsCreatingDataset] = useState<boolean>(false)
   const [ready, setReady] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
     const res = await originalClient.request({
@@ -61,12 +62,13 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
         setIsCreatingDataset(false)
         return client
       }
-    } catch (_) {
+    } catch {
       // If the dataset does not exist we will get an error, but we can ignore
       // it since we will create the dataset in the next step.
     }
 
-    try {
+    // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+    const run = async () => {
       // 1. Create the addon dataset
       const res = await originalClient.request({
         uri: `/comments/${dataset}/setup`,
@@ -89,11 +91,10 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
 
       // 4. Return the client so that the caller can use it to execute operations
       return client
-    } catch (err) {
-      throw err
-    } finally {
-      setIsCreatingDataset(false)
     }
+    return run().finally(() => {
+      setIsCreatingDataset(false)
+    })
   }, [dataset, getAddonDatasetName, handleCreateClient, originalClient])
 
   useEffect(() => {
@@ -110,7 +111,7 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
       .catch((err) => {
         // If the addon dataset does not exist or we don't have permission to access it,
         // We can ignore this error.
-        // TODO: Surface error to the user when they try to use the comments feature.
+        setError(err)
       })
       .finally(() => {
         setReady(true)
@@ -123,8 +124,9 @@ function AddonDatasetProviderInner(props: AddonDatasetSetupProviderProps) {
       createAddonDataset: handleCreateAddonDataset,
       isCreatingDataset,
       ready,
+      error,
     }),
-    [addonDatasetClient, handleCreateAddonDataset, isCreatingDataset, ready],
+    [addonDatasetClient, error, handleCreateAddonDataset, isCreatingDataset, ready],
   )
 
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>

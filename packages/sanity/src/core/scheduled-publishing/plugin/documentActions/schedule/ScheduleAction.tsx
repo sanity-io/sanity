@@ -42,11 +42,12 @@ const debug = debugWithName('ScheduleAction')
  * empty dependency arrays.
  */
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /**
  * @deprecated we will be dropping support for scheduled publishing on a future major version
  * @beta
  */
-export const ScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
+export const useScheduleAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const {draft, id, liveEdit, onComplete, published, type} = props
   const timeZoneScope = SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE
 
@@ -100,8 +101,8 @@ export const ScheduleAction: DocumentActionComponent = (props: DocumentActionPro
     }
 
     // Create schedule then close dialog
-    createSchedule({date: formData.date, documentId: id}).then(onComplete)
-  }, [onComplete, createSchedule, id, formData?.date])
+    void createSchedule({date: formData.date, documentId: id}).then(onComplete)
+  }, [onComplete, createSchedule, id, formData])
 
   const title = hasExistingSchedules ? 'Edit Schedule' : 'Schedule'
 
@@ -173,4 +174,5 @@ export const ScheduleAction: DocumentActionComponent = (props: DocumentActionPro
   }
 }
 
-ScheduleAction.action = 'schedule'
+useScheduleAction.action = 'schedule'
+useScheduleAction.displayName = 'ScheduleAction'

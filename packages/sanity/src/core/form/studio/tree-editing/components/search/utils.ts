@@ -1,22 +1,19 @@
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 
-import {type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {type SearchableTreeEditingMenuItem} from './types'
 
 /**
  * Flattens a list of items and their children into a single list.
  */
-export function flattenItems(items: TreeEditingMenuItem[]): TreeEditingMenuItem[] {
-  const result: TreeEditingMenuItem[] = items.reduce(
-    (acc: TreeEditingMenuItem[], item: TreeEditingMenuItem) => {
-      if (item?.children) {
-        return [...acc, item, ...flattenItems(item.children)]
-      }
+export function flattenItems(items: DialogItem[]): DialogItem[] {
+  const result: DialogItem[] = items.reduce((acc: DialogItem[], item: DialogItem) => {
+    if (item?.children) {
+      return [...acc, item, ...flattenItems(item.children)]
+    }
 
-      return [...acc, item]
-    },
-    [],
-  )
+    return [...acc, item]
+  }, [])
 
   // Remove the children property from the items
   // as we only want to return the items themselves
@@ -30,7 +27,7 @@ export function flattenItems(items: TreeEditingMenuItem[]): TreeEditingMenuItem[
 export function treeEditingSearch(
   items: SearchableTreeEditingMenuItem[],
   query: string,
-): TreeEditingMenuItem[] {
+): DialogItem[] {
   // Flatten the items list so we can search through all items and their children
   const flattenItemsList = flattenItems(items) as SearchableTreeEditingMenuItem[]
 

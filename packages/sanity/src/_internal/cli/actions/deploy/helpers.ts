@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {PassThrough} from 'node:stream'
+import {fileURLToPath} from 'node:url'
 import {type Gzip} from 'node:zlib'
 
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
@@ -11,19 +12,11 @@ import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
 import {determineIsApp} from '../../util/determineIsApp'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const debug = debugIt.extend('deploy')
-
-// TODO: replace with `Promise.withResolvers()` once it lands in node
-function promiseWithResolvers<T>() {
-  let resolve!: (t: T) => void
-  let reject!: (err: unknown) => void
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res
-    reject = rej
-  })
-  return {promise, resolve, reject}
-}
 
 export interface ActiveDeployment {
   deployedAt: string
@@ -54,26 +47,33 @@ export interface GetUserApplicationsOptions {
   organizationId?: string
 }
 
-export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
+export interface GetUserApplicationOptions {
+  client: SanityClient
   appHost?: string
   appId?: string
+  isSdkApp?: boolean
 }
 export async function getUserApplication({
   client,
   appHost,
   appId,
+  isSdkApp,
 }: GetUserApplicationOptions): Promise<UserApplication | null> {
-  let query
-  let uri = '/user-applications'
-  if (appId) {
-    uri = `/user-applications/${appId}`
-  } else if (appHost) {
-    query = {appHost}
-  } else {
-    query = {default: 'true'}
+  let query: undefined | Record<string, string>
+
+  const uri = appId ? `/user-applications/${appId}` : '/user-applications'
+
+  if (isSdkApp) {
+    query = {appType: 'coreApp'}
+  } else if (!appId) {
+    // either request the app by host or get the default app
+    query = appHost ? {appHost} : {default: 'true'}
   }
   try {
-    return await client.request({uri, query})
+    return await client.request({
+      uri,
+      query,
+    })
   } catch (e) {
     if (e?.statusCode === 404) {
       return null
@@ -411,7 +411,7 @@ async function getOrCreateStudioFromConfig({
     spinner.fail()
     // if the name is taken, it should return a 409 so we relay to the user
     if ([402, 409].includes(e?.statusCode)) {
-      throw new Error(e?.response?.body?.message || 'Bad request') // just in case
+      throw new Error(e?.response?.body?.message || 'Bad request', {cause: e}) // just in case
     }
     debug('Error creating user application from config', e)
     // otherwise, it's a fatal error
@@ -427,13 +427,12 @@ async function getOrCreateAppFromConfig({
   appId,
 }: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
-  const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
       appId,
       appHost,
-      organizationId: organizationId || undefined,
+      isSdkApp: determineIsApp(cliConfig),
     })
     spinner.succeed()
 
@@ -458,9 +457,9 @@ export async function getOrCreateUserApplicationFromConfig(
   options: UserApplicationConfigOptions,
 ): Promise<UserApplication> {
   const {context, appId, appHost} = options
-  const isApp = determineIsApp(context.cliConfig)
+  const isSdkApp = determineIsApp(context.cliConfig)
 
-  if (isApp) {
+  if (isSdkApp) {
     return getOrCreateAppFromConfig(options)
   }
 
@@ -479,7 +478,7 @@ export interface CreateDeploymentOptions {
   version: string
   isAutoUpdating: boolean
   tarball: Gzip
-  isApp?: boolean
+  isSdkApp?: boolean
 }
 
 export async function createDeployment({
@@ -488,7 +487,7 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-  isApp,
+  isSdkApp,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
@@ -500,7 +499,7 @@ export async function createDeployment({
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
-    query: isApp ? {appType: 'coreApp'} : {appType: 'studio'},
+    query: isSdkApp ? {appType: 'coreApp'} : {appType: 'studio'},
   })
 }
 

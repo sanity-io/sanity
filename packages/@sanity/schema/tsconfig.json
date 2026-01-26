@@ -1,10 +1,8 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["./example", "./src", "./test", "./typings", "./node_modules/@sanity/types/src"],
+  "include": ["./example", "./src", "./test", "./typings"],
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@sanity/types": ["./node_modules/@sanity/types/src"]
-    }
+    "customConditions": ["monorepo"]
   }
 }

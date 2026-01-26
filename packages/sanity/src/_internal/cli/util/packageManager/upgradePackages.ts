@@ -20,7 +20,7 @@ export async function upgradePackages(
     stdio: 'inherit',
   }
   const upgradePackageArgs = packages.map((pkg) => pkg.join('@'))
-  let result: ExecaReturnValue<string> | undefined
+  let result: ExecaReturnValue | undefined
   if (packageManager === 'npm') {
     const npmArgs = ['install', '--legacy-peer-deps', ...upgradePackageArgs]
     output.print(`Running 'npm ${npmArgs.join(' ')}'`)

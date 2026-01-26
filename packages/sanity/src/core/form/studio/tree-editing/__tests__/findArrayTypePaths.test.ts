@@ -173,11 +173,14 @@ describe('tree-editing: findArrayTypePaths', () => {
     expect(paths).toEqual([])
   })
 
-  test('should ignore block type arrays and primitive arrays', () => {
+  test('should find block type arrays and object arrays', () => {
     const objectWithPortableText = schema.get('testDocument').fields[2]
 
     const paths = findArrayTypePaths(objectWithPortableText.type.fields)
 
-    expect(paths).toEqual([['object2', 'objectArray']])
+    expect(paths).toEqual([
+      ['object2', 'pte'],
+      ['object2', 'objectArray'],
+    ])
   })
 })

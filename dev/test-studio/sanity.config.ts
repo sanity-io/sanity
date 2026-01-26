@@ -1,26 +1,17 @@
 import {assist} from '@sanity/assist'
 import {colorInput} from '@sanity/color-input'
+import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
+import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon} from '@sanity/icons'
-import {koKRLocale} from '@sanity/locale-ko-kr'
-import {nbNOLocale} from '@sanity/locale-nb-no'
-import {nnNOLocale} from '@sanity/locale-nn-no'
-import {ptPTLocale} from '@sanity/locale-pt-pt'
-import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
-import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
-import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {
-  defineConfig,
-  definePlugin,
-  QUOTA_EXCLUDED_RELEASES_ENABLED,
-  type WorkspaceOptions,
-} from 'sanity'
+import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -44,9 +35,8 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
-import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
 import {resolveDocumentActions as documentActions} from './documentActions'
-import {TestVersionAction} from './documentActions/actions/TestVersionAction'
+import {useTestVersionAction} from './documentActions/actions/TestVersionAction'
 import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
@@ -56,20 +46,14 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter'
 import {routerDebugTool} from './plugins/router-debug'
-import {ArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
-// eslint-disable-next-line import/extensions
-import {theme as tailwindTheme} from './sanity.theme.mjs'
+import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {googleTheme} from './themes/google'
-import {vercelTheme} from './themes/vercel'
 import {workshopTool} from './workshop'
-
-const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -99,12 +83,6 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
 
     i18n: {
       bundles: testStudioLocaleBundles,
-    },
-
-    beta: {
-      treeArrayEditing: {
-        enabled: true,
-      },
     },
 
     mediaLibrary: {
@@ -207,11 +185,27 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       imageHotspotArrayPlugin(),
       routerDebugTool(),
       errorReportingTestPlugin(),
-      tsdoc(),
       media(),
       markdownSchema(),
       wave(),
       autoCloseBrackets(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
+      documentInternationalization({
+        supportedLanguages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+          {id: 'es', title: 'Spanish'},
+          {id: 'de', title: 'German'},
+        ],
+        schemaTypes: ['documentI18nTest'],
+      }),
     ],
   })()
 }
@@ -237,7 +231,6 @@ const defaultWorkspace = defineConfig({
   scheduledPublishing: {
     enabled: true,
     inputDateTimeFormat: 'MM/dd/yy h:mm a',
-    showReleasesBanner: false,
   },
   tasks: {
     enabled: true,
@@ -245,14 +238,18 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [QUOTA_EXCLUDED_RELEASES_ENABLED]: true,
+  [DECISION_PARAMETERS_SCHEMA]: {
+    audiences: ['aud-a', 'aud-b', 'aud-c'],
+    locales: ['en-GB', 'en-US'],
+    ages: ['20-29', '30-39'],
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
-        return [TestVersionAction, ...prev]
+        return [useTestVersionAction, ...prev]
       }
       if (ctx.schemaType === 'author' && ctx.releaseId) {
-        return [...prev, TestVersionAction]
+        return [...prev, useTestVersionAction]
       }
       if (ctx.schemaType === 'playlist') {
         return prev.filter(({action}) => action === 'delete')
@@ -264,7 +261,7 @@ const defaultWorkspace = defineConfig({
   releases: {
     actions: (prev, ctx) => {
       if (ctx.release.state === 'active') {
-        return [...prev, ArchiveAndDeleteCustomAction]
+        return [...prev, useArchiveAndDeleteCustomAction]
       }
       return prev
     },
@@ -279,6 +276,17 @@ export default defineConfig([
     title: 'Test Studio (US)',
     dataset: 'test-us',
     basePath: '/us',
+  },
+  {
+    ...defaultWorkspace,
+    name: 'no-releases',
+    title: 'No releases',
+    dataset: 'no-releases',
+    basePath: '/no-releases',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
   },
   {
     ...defaultWorkspace,
@@ -313,18 +321,6 @@ export default defineConfig([
     unstable_tasks: {
       enabled: false,
     },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'tsdoc',
-    title: 'tsdoc',
-    projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-2',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tsdoc',
     mediaLibrary: {
       enabled: true,
     },
@@ -388,6 +384,25 @@ export default defineConfig([
     ...envConfig.staging,
     plugins: [sharedSettings({projectId: 'exx11uqh'})],
     basePath: '/staging',
+    auth: {
+      loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
+    },
+    mediaLibrary: {
+      enabled: true,
+    },
+  },
+  {
+    name: 'growth',
+    title: 'Growth (staging)',
+
+    projectId: 'qroupali',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: 'qroupali'})],
+    basePath: '/growth',
     auth: {
       loginMethod: 'token',
     },
@@ -464,48 +479,6 @@ export default defineConfig([
         toolMenu: CustomToolMenu,
       },
     },
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'google-theme',
-    title: 'Google Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/google',
-    theme: googleTheme,
-    icon: GoogleLogo,
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'vercel-theme',
-    title: 'Vercel Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/vercel',
-    theme: vercelTheme,
-    icon: VercelLogo,
-    mediaLibrary: {
-      enabled: true,
-    },
-  },
-  {
-    name: 'tailwind-theme',
-    title: 'Tailwind Colors',
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
-    ...envConfig.production,
-    plugins: [sharedSettings({projectId: 'ppsg7ml5'})],
-    basePath: '/tailwind',
-    theme: tailwindTheme,
-    icon: TailwindLogo,
     mediaLibrary: {
       enabled: true,
     },

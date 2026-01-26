@@ -7,7 +7,6 @@ import {
   type OnCopyFn,
   type OnPasteFn,
   type RangeDecoration,
-  usePortableTextEditor,
 } from '@portabletext/editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
@@ -16,17 +15,19 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {TreeEditingEnabledProvider} from '../../studio/tree-editing'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
-import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
-import {ExpandedLayer, Root} from './Compositor.styles'
+import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
+import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
+import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
+import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
@@ -68,6 +69,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemRemove,
     onPaste,
     onPathFocus,
+    onSelectFile,
     onToggleFullscreen,
     onUpload,
     path,
@@ -82,11 +84,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderInput,
     renderItem,
     renderPreview,
-    resolveUploader,
     value,
   } = props
 
-  const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
 
   const boundaryElement = useBoundaryElement().element
@@ -118,14 +119,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const renderTextBlock = useCallback(
     (blockProps: EditorBlockRenderProps) => {
-      const {
-        children,
-        focused: blockFocused,
-        path: blockPath,
-        selected,
-        schemaType: blockSchemaType,
-        value: block,
-      } = blockProps
+      const {children, focused: blockFocused, path: blockPath, selected, value: block} = blockProps
       return (
         <TextBlock
           floatingBoundary={boundaryElement}
@@ -147,7 +141,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderCustomMarkers={_renderCustomMarkers}
           renderPreview={renderPreview}
           renderBlock={renderBlock}
-          schemaType={blockSchemaType}
+          schemaType={schemaTypes.block}
           selected={selected}
           setElementRef={setElementRef}
           value={block as PortableTextTextBlock}
@@ -174,6 +168,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      schemaTypes.block,
       scrollElement,
       setElementRef,
     ],
@@ -188,6 +183,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: blockSchemaType,
         value: blockValue,
       } = blockProps
+      const sanitySchemaType = schemaTypes.blockObjects.find(
+        (type) => type.name === blockSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(
+          `Could not find Sanity schema type for block object: ${blockSchemaType.name}`,
+        )
+      }
       return (
         <BlockObject
           floatingBoundary={boundaryElement}
@@ -210,7 +214,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={blockSchemaType}
+          schemaType={sanitySchemaType}
           selected={blockSelected}
           setElementRef={setElementRef}
           value={blockValue}
@@ -220,6 +224,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       boundaryElement,
       scrollElement,
+      schemaTypes.blockObjects,
       isFullscreen,
       onItemClose,
       onItemOpen,
@@ -244,13 +249,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorRenderBlock = useCallback(
     (blockProps: EditorBlockRenderProps) => {
       const {value: block} = blockProps
-      const isTextBlock = block._type === editor.schemaTypes.block.name
+      const isTextBlock = block._type === schemaTypes.block.name
       if (isTextBlock) {
         return renderTextBlock(blockProps)
       }
       return renderObjectBlock(blockProps)
     },
-    [editor.schemaTypes.block.name, renderObjectBlock, renderTextBlock],
+    [schemaTypes.block.name, renderObjectBlock, renderTextBlock],
   )
 
   // This is the function that is sent to PortableTextEditor's renderChild callback
@@ -264,9 +269,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: childSchemaType,
         value: child,
       } = childProps
-      const isSpan = child._type === editor.schemaTypes.span.name
+      const isSpan = child._type === schemaTypes.span.name
       if (isSpan) {
         return children
+      }
+      const sanitySchemaType = schemaTypes.inlineObjects.find(
+        (type) => type.name === childSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(
+          `Could not find Sanity schema type for inline object: ${childSchemaType.name}`,
+        )
       }
       return (
         <InlineObject
@@ -287,7 +301,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={childSchemaType}
+          schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
           value={child}
@@ -295,7 +309,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      editor.schemaTypes.span.name,
+      schemaTypes.span.name,
+      schemaTypes.inlineObjects,
       boundaryElement,
       onItemClose,
       onItemOpen,
@@ -325,6 +340,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaType: aSchemaType,
         value: aValue,
       } = annotationProps
+      const sanitySchemaType = schemaTypes.annotations.find(
+        (type) => type.name === aSchemaType.name,
+      )
+      if (!sanitySchemaType) {
+        // This should never happen
+        throw new Error(`Could not find Sanity schema type for annotation: ${aSchemaType.name}`)
+      }
       return (
         <Annotation
           editorNodeFocused={editorNodeFocused}
@@ -344,7 +366,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           renderInput={renderInput}
           renderItem={renderItem}
           renderPreview={renderPreview}
-          schemaType={aSchemaType}
+          schemaType={sanitySchemaType}
           selected={selected}
           setElementRef={setElementRef}
           value={aValue}
@@ -354,6 +376,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
+      schemaTypes.annotations,
       boundaryElement,
       scrollElement,
       focused,
@@ -400,65 +423,70 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     return undefined
   })
 
-  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+  const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
   const editorNode = useMemo(
     () => (
       <UploadTargetCard
-        types={editor.schemaTypes.portableText.of}
-        resolveUploader={resolveUploader}
+        isReadOnly={readOnly}
+        onSelectFile={onSelectFile}
         onUpload={onUpload}
+        pasteTarget={wrapperElement || undefined}
         tabIndex={-1}
+        types={schemaTypes.portableText.of}
       >
-        <Editor
-          ariaDescribedBy={ariaDescribedBy}
-          elementRef={elementRef}
-          initialSelection={initialSelection}
-          hideToolbar={hideToolbar}
-          hotkeys={editorHotkeys}
-          isActive={isActive}
-          isFullscreen={isFullscreen}
-          isOneLine={isOneLineEditor}
-          onItemOpen={onItemOpen}
-          onCopy={onCopy}
-          onPaste={onPaste}
-          onToggleFullscreen={handleToggleFullscreen}
-          path={path}
-          rangeDecorations={rangeDecorations}
-          readOnly={readOnly}
-          renderAnnotation={editorRenderAnnotation}
-          renderBlock={editorRenderBlock}
-          renderChild={editorRenderChild}
-          setPortalElement={setPortalElement}
-          scrollElement={scrollElement}
-          setScrollElement={setScrollElement}
-        />
+        <StringDiffContainer>
+          <Editor
+            ariaDescribedBy={ariaDescribedBy}
+            elementRef={elementRef}
+            initialSelection={initialSelection}
+            hideToolbar={hideToolbar}
+            hotkeys={editorHotkeys}
+            isActive={isActive}
+            isFullscreen={isFullscreen}
+            isOneLine={isOneLineEditor}
+            onItemOpen={onItemOpen}
+            onCopy={onCopy}
+            onPaste={onPaste}
+            onToggleFullscreen={handleToggleFullscreen}
+            path={path}
+            rangeDecorations={rangeDecorations}
+            readOnly={readOnly}
+            renderAnnotation={editorRenderAnnotation}
+            renderBlock={editorRenderBlock}
+            renderChild={editorRenderChild}
+            setPortalElement={setPortalElement}
+            scrollElement={scrollElement}
+            setScrollElement={setScrollElement}
+          />
+        </StringDiffContainer>
       </UploadTargetCard>
     ),
 
     // Keep only stable ones here!
     [
+      readOnly,
+      onSelectFile,
+      onUpload,
+      wrapperElement,
+      schemaTypes.portableText.of,
       ariaDescribedBy,
-      editor.schemaTypes.portableText.of,
-      editorHotkeys,
-      editorRenderAnnotation,
-      editorRenderBlock,
-      editorRenderChild,
       elementRef,
-      handleToggleFullscreen,
-      hideToolbar,
       initialSelection,
+      hideToolbar,
+      editorHotkeys,
       isActive,
       isFullscreen,
       isOneLineEditor,
-      onCopy,
       onItemOpen,
+      onCopy,
       onPaste,
+      handleToggleFullscreen,
       path,
-      onUpload,
-      resolveUploader,
       rangeDecorations,
-      readOnly,
+      editorRenderAnnotation,
+      editorRenderBlock,
+      editorRenderChild,
       scrollElement,
     ],
   )
@@ -488,7 +516,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <TreeEditingEnabledProvider legacyEditing>
+    <SelectedAnnotationsProvider>
       <PortalProvider __unstable_elements={portalElements} element={portal.element}>
         <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
           <ChangeIndicator
@@ -509,6 +537,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                     onItemClose={onItemClose}
                     referenceBoundary={scrollElement}
                   />
+                  <CombinedAnnotationPopover
+                    floatingBoundary={boundaryElement}
+                    referenceBoundary={scrollElement}
+                  />
                 </Portal>
               </Box>
               <div data-border="" />
@@ -516,6 +548,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
           </ChangeIndicator>
         </ActivateOnFocus>
       </PortalProvider>
-    </TreeEditingEnabledProvider>
+    </SelectedAnnotationsProvider>
   )
 }

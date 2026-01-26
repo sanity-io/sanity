@@ -41,7 +41,7 @@ const NoopContainer = ({children, ...props}: PropsWithChildren) => (
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
-  const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
+  const {floatingBoundary, referenceBoundary, referenceElement, width = 2} = props
   return (
     <RootPopover
       content={<Content {...props} />}
@@ -141,6 +141,7 @@ function Content(props: PopoverEditDialogProps) {
                 mode="bleed"
                 onClick={handleClose}
                 tooltipProps={{content: 'Close'}}
+                data-testid="close-popover-edit-dialog-button"
               />
             </Flex>
           </ContentHeaderBox>

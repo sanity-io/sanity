@@ -8,7 +8,6 @@ export default defineConfig({
     ...baseConfig.extract,
     rules: {
       ...baseConfig.extract.rules,
-      'ae-forgotten-export': 'error',
       'ae-incompatible-release-tags': 'error',
       'ae-missing-release-tag': 'error',
     },

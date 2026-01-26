@@ -125,5 +125,3 @@ describe('alias type test', () => {
     })
   })
 })
-
-export {}

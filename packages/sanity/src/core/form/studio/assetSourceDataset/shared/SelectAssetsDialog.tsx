@@ -1,7 +1,7 @@
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {uniqueId} from 'lodash'
+import {uniqueId} from 'lodash-es'
 import {
   type ForwardedRef,
   forwardRef,
@@ -225,7 +225,7 @@ const SelectAssetsComponent = function SelectAssetsComponent(
       header={
         dialogHeaderTitle ||
         t('asset-source.dialog.default-title', {
-          context: assetType,
+          context: assetType === 'sanity.video' ? 'video' : assetType,
         })
       }
       id={_elementId}

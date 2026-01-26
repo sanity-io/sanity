@@ -14,9 +14,9 @@
     "timeout": 10,
     "event": {
       "on": [
-        "publish"
+        "create"
       ],
-      "filter": "_type == 'post'",
+      "filter": "_type == 'post' && defined(blueskyPost)",
       "projection": "{title, blueskyPost, slug}"
     },
     "env": {

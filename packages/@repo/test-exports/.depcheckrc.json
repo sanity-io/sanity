@@ -2,9 +2,7 @@
   "ignores": [
     "@repo/test-exports",
     "@sanity/cli",
-    "@sanity/codegen",
     "@sanity/diff",
-    "@sanity/migrate",
     "@sanity/mutator",
     "@sanity/schema",
     "@sanity/types",

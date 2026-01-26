@@ -1,8 +1,10 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
+import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {useCopyPaste} from '../../../../studio'
@@ -12,6 +14,13 @@ import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../p
 import {type ArrayOfObjectsItemMember} from '../../../store'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {
+  CreateAppendedObject,
+  CreatePrependedObject,
+  NavigatedToViaArrayList,
+  RemovedObject,
+} from '../../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {
   type ArrayInputCopyEvent,
   type ArrayInputInsertEvent,
@@ -78,6 +87,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const resolveInitialValue = useResolveInitialValueForType()
   const getFormValue = useGetFormValue()
   const {onCopy} = useCopyPaste()
+  const telemetry = useTelemetry()
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   useDidUpdate(member.item.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -86,8 +97,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   })
 
   const onRemove = useCallback(() => {
+    telemetry.log(RemovedObject, {
+      path: pathToString(member.item.path),
+      origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+    })
+
     onChange(PatchEvent.from([unset([{_key: member.key}])]))
-  }, [member.key, onChange])
+  }, [enhancedObjectDialogEnabled, member.item.path, member.key, onChange, telemetry])
 
   const handleOpenItem = useCallback(
     (path: Path) => {
@@ -97,6 +113,23 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     [onPathOpen, onSetPathCollapsed],
   )
   const toast = useToast()
+
+  const telemetryInsertSiblingsTelemetry = useCallback(
+    (event: Omit<ArrayInputInsertEvent<ObjectItem>, 'referenceItem'>) => {
+      if (event.position === 'before') {
+        telemetry.log(CreatePrependedObject, {
+          path: pathToString(member.item.path),
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+        })
+      } else {
+        telemetry.log(CreateAppendedObject, {
+          path: pathToString(member.item.path),
+          origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+        })
+      }
+    },
+    [enhancedObjectDialogEnabled, member.item.path, telemetry],
+  )
 
   // Note: this handles inserting *siblings*
   const handleInsert = useCallback(
@@ -119,6 +152,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       if (event.skipInitialValue) {
         if (shouldOpen) {
           handleOpenItem(itemPath)
+          telemetryInsertSiblingsTelemetry(event)
         }
       } else {
         resolveInitialArrayValues(itemsWithKeys, member.parentSchemaType, resolveInitialValue)
@@ -142,18 +176,20 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
             complete: () => {
               if (shouldOpen) {
                 handleOpenItem(itemPath)
+                telemetryInsertSiblingsTelemetry(event)
               }
             },
           })
       }
     },
     [
-      handleOpenItem,
-      member.item.path,
-      member.key,
-      member.parentSchemaType,
       onChange,
+      member.key,
+      member.item.path,
+      member.parentSchemaType,
       onPathFocus,
+      handleOpenItem,
+      telemetryInsertSiblingsTelemetry,
       resolveInitialValue,
       toast,
       t,
@@ -163,7 +199,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   const handleCopy = useCallback(
     (_: Omit<ArrayInputCopyEvent<ObjectItem>, 'referenceItem'>) => {
       const documentValue = getFormValue([]) as FormDocumentValue
-      onCopy(member.item.path, documentValue, {
+      void onCopy(member.item.path, documentValue, {
         context: {source: 'arrayItem'},
         patchType: 'append',
       })
@@ -239,8 +275,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   )
 
   const handleOpen = useCallback(() => {
+    telemetry.log(NavigatedToViaArrayList, {
+      path: pathToString(member.item.path),
+      origin: enhancedObjectDialogEnabled ? 'nested-object' : 'default',
+    })
+
     onPathOpen(member.item.path)
-  }, [onPathOpen, member.item.path])
+  }, [enhancedObjectDialogEnabled, onPathOpen, member.item.path, telemetry])
 
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
   const handleClose = useCallback(() => {
@@ -276,6 +317,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     return {
       changed: member.item.changed,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
       groups: member.item.groups,
@@ -304,10 +346,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       schemaType: member.item.schemaType,
       validation: member.item.validation,
       value: member.item.value,
+      compareValue: member.item.compareValue,
       elementProps: elementProps,
+      displayInlineChanges: member.item.displayInlineChanges ?? false,
     }
   }, [
     elementProps,
+    member.item.hasUpstreamVersion,
     handleChange,
     handleCloseField,
     handleCollapseField,
@@ -331,6 +376,8 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     member.item.schemaType,
     member.item.validation,
     member.item.value,
+    member.item.compareValue,
+    member.item.displayInlineChanges,
     renderAnnotation,
     renderBlock,
     renderField,
@@ -338,72 +385,6 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderInput,
     renderItem,
     renderPreview,
-  ])
-
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const itemProps = useMemo((): Omit<ObjectItemProps, 'renderDefault'> => {
-    return {
-      key: member.key,
-      index: member.index,
-      level: member.item.level,
-      value: member.item.value,
-      __unstable_computeDiff: member.item.__unstable_computeDiff,
-      title: member.item.schemaType.title,
-      description: member.item.schemaType.description,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      schemaType: member.item.schemaType,
-      parentSchemaType: member.parentSchemaType,
-      onInsert: handleInsert,
-      onCopy: handleCopy,
-      onRemove,
-      presence: member.item.presence,
-      validation: member.item.validation,
-      open: member.open,
-      onOpen: handleOpen,
-      onClose: handleClose,
-      onExpand: handleExpand,
-      onCollapse: handleCollapse,
-      readOnly: member.item.readOnly,
-      focused: member.item.focused,
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      inputId: member.item.id,
-      path: member.item.path,
-      children: renderedInput,
-      changed: member.item.changed,
-      inputProps,
-    }
-  }, [
-    member.key,
-    member.index,
-    member.item.level,
-    member.item.value,
-    member.item.__unstable_computeDiff,
-    member.item.schemaType,
-    member.item.presence,
-    member.item.validation,
-    member.item.readOnly,
-    member.item.focused,
-    member.item.id,
-    member.item.path,
-    member.item.changed,
-    member.collapsible,
-    member.collapsed,
-    member.parentSchemaType,
-    member.open,
-    handleInsert,
-    handleCopy,
-    onRemove,
-    handleOpen,
-    handleClose,
-    handleExpand,
-    handleCollapse,
-    handleFocus,
-    handleBlur,
-    renderedInput,
-    inputProps,
   ])
 
   return (
@@ -416,7 +397,60 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderItem(itemProps), [itemProps, renderItem])}
+      <RenderItem
+        key={member.key}
+        index={member.index}
+        level={member.item.level}
+        value={member.item.value}
+        compareValue={member.item.compareValue}
+        __unstable_computeDiff={member.item.__unstable_computeDiff}
+        hasUpstreamVersion={member.item.hasUpstreamVersion}
+        title={member.item.schemaType.title}
+        description={member.item.schemaType.description}
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        schemaType={member.item.schemaType}
+        parentSchemaType={member.parentSchemaType}
+        onInsert={handleInsert}
+        onCopy={handleCopy}
+        onRemove={onRemove}
+        presence={member.item.presence}
+        validation={member.item.validation}
+        open={member.open}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        onExpand={handleExpand}
+        onCollapse={handleCollapse}
+        readOnly={member.item.readOnly}
+        focused={member.item.focused}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        inputId={member.item.id}
+        path={member.item.path}
+        changed={member.item.changed}
+        inputProps={inputProps}
+        render={renderItem}
+      >
+        <RenderInput {...inputProps} render={renderInput} />
+      </RenderItem>
     </FormCallbacksProvider>
   )
+}
+
+// The RenderInput and RenderItem wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<ObjectInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderItem({
+  render,
+  ...props
+}: Omit<ObjectItemProps, 'renderDefault'> & {
+  render: RenderArrayOfObjectsItemCallback
+}) {
+  return render(props)
 }

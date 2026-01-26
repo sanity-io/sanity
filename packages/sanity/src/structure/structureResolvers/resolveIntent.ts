@@ -1,4 +1,4 @@
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {firstValueFrom, type Observable} from 'rxjs'
 
 import {type StructureContext} from '../structureBuilder'

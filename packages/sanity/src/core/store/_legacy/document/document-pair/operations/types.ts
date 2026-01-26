@@ -30,8 +30,8 @@ type Patch = any
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
   commit: Operation | GuardedOperation
-  delete: Operation<[], 'NOTHING_TO_DELETE' | 'NOT_READY'>
-  del: Operation<[], 'NOTHING_TO_DELETE'> | GuardedOperation
+  delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY'>
+  del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE'> | GuardedOperation
   publish:
     | Operation<[], 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'>
     | GuardedOperation

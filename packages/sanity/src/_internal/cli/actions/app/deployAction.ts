@@ -136,7 +136,7 @@ export default async function deployAppAction(
       version: installedSanityVersion,
       isAutoUpdating,
       tarball,
-      isApp: true,
+      isSdkApp: true,
     })
 
     spinner.succeed()

@@ -1,13 +1,13 @@
 import {type SanityDocument} from '@sanity/client'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {useId} from 'react'
 
 import {Dialog} from '../../../../ui-components'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {unstable_useValuePreview as useValuePreview} from '../../../preview/useValuePreview'
+import {useValuePreview} from '../../../preview/useValuePreview'
 import {canvasLocaleNamespace} from '../../i18n'
 
 const useDocumentTitle = ({document}: {document: SanityDocument}) => {

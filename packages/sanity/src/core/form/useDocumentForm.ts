@@ -9,16 +9,8 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {throttle} from 'lodash'
-import {
-  type RefObject,
-  useCallback,
-  useEffect,
-  useInsertionEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {throttle} from 'lodash-es'
+import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
@@ -45,21 +37,25 @@ import {
   type EditStateFor,
   type InitialValueState,
   type PermissionCheckResult,
+  selectUpstreamVersion,
   useDocumentValuePermissions,
   usePresenceStore,
 } from '../store'
 import {isNewDocument} from '../store/_legacy/document/isNewDocument'
+import {useWorkspace} from '../studio/workspace'
 import {
   EMPTY_ARRAY,
   getDraftId,
   getPublishedId,
   getVersionFromId,
   getVersionId,
+  isSystemBundle,
   useUnique,
 } from '../util'
 import {
   type FormState,
   getExpandOperations,
+  type NodeChronologyProps,
   type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
@@ -93,8 +89,9 @@ interface DocumentFormOptions {
    * used by the <DocumentPaneProvider > to display the history values.
    */
   getFormDocumentValue?: (value: SanityDocumentLike) => SanityDocumentLike
+  displayInlineChanges?: boolean
 }
-interface DocumentFormValue {
+interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   /**
    * `EditStateFor` for the displayed document.
    * */
@@ -147,11 +144,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     selectedPerspectiveName,
     readOnly: readOnlyProp,
     onFocusPath,
+    displayInlineChanges,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
+  const workspace = useWorkspace()
+
+  const enhancedObjectDialogEnabled = workspace.beta?.form?.enhancedObjectDialog?.enabled
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {
@@ -161,9 +162,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const publishedId = getPublishedId(documentId)
 
   const telemetry = useTelemetry()
-
-  const {validation: validationRaw} = useValidationStatus(documentId, documentType, releaseId)
-  const validation = useUnique(validationRaw)
 
   // if it only has versions then we need to make sure that whatever the first document that is allowed
   // is a version document, but also that it has the right order
@@ -179,30 +177,35 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       : undefined
 
   const activeDocumentReleaseId = useMemo(() => {
+    if (isSystemBundle(selectedPerspectiveName)) {
+      return undefined
+    }
     // if a document version exists with the selected release id, then it should use that
-    if (documentVersions.some((id) => getVersionFromId(id) === releaseId)) {
-      return releaseId
+    if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
+      return selectedPerspectiveName
     }
 
     // check if the selected version is the only version, if it isn't and it doesn't exist in the release
     // then it needs to use the documentVersions
-    if (releaseId && (!documentVersions || !onlyHasVersions)) {
-      return releaseId
+    if (selectedPerspectiveName && (!documentVersions.length || !onlyHasVersions)) {
+      return selectedPerspectiveName
     }
 
     return getVersionFromId(firstVersion ?? '')
-  }, [documentVersions, onlyHasVersions, releaseId, firstVersion])
+  }, [documentVersions, onlyHasVersions, selectedPerspectiveName, firstVersion])
 
   const editState = useEditState(documentId, documentType, 'default', activeDocumentReleaseId)
 
-  const connectionState = useConnectionState(documentId, documentType, releaseId)
+  const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
   const value: SanityDocumentLike = useMemo(() => {
     const baseValue = initialValue?.value || {_id: documentId, _type: documentType}
-    if (releaseId) {
+    // Only treat releaseId as an actual release/anonymous bundle if it's not a system bundle ('published' or 'drafts')
+    // System bundles are handled by subsequent conditions below
+    if (releaseId && !isSystemBundle(releaseId)) {
       // in cases where the current version is going to be unpublished, we need to show the published document
       // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
       if (editState.version && isGoingToUnpublish(editState.version)) {
@@ -220,8 +223,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
             {_id: documentId, _type: documentType})
       )
     }
-    // if no version is selected, but there is only version, it should default to the version it finds
-    if (!selectedPerspectiveName && onlyHasVersions) {
+    // we have either a selected perspective that's not a release,
+    // or no version is selected, but there are only versions,
+    // so it should default to the version it finds
+    if (selectedPerspectiveName || onlyHasVersions) {
       return editState.version || editState.draft || editState.published || baseValue
     }
     return editState?.draft || editState?.published || baseValue
@@ -232,11 +237,20 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.published,
     editState.version,
     initialValue,
-    liveEdit,
     releaseId,
+    liveEdit,
     selectedPerspectiveName,
     onlyHasVersions,
   ])
+
+  const {validation: validationRaw} = useValidationStatus(
+    value._id,
+    documentType,
+    // require referenced documents to be published unless the document is in a release
+    !releaseId,
+  )
+
+  const validation = useUnique(validationRaw)
 
   const {previousId: upstreamId} = useDocumentIdStack({
     strict: true,
@@ -276,30 +290,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
   const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
 
-  const handleOnSetCollapsedPath = useCallback((path: Path, collapsed: boolean) => {
+  const handleOnSetCollapsedPath = (path: Path, collapsed: boolean) => {
     onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
+  }
 
-  const handleOnSetCollapsedFieldSet = useCallback((path: Path, collapsed: boolean) => {
+  const handleOnSetCollapsedFieldSet = (path: Path, collapsed: boolean) => {
     onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
+  }
 
-  const handleSetActiveFieldGroup = useCallback(
-    (path: Path, groupName: string) =>
-      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    [],
-  )
+  const handleSetActiveFieldGroup = (path: Path, groupName: string) =>
+    onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName))
 
   const requiredPermission = value._createdAt ? 'update' : 'create'
-  const targetDocumentId = useMemo(() => {
-    if (releaseId) {
-      return getVersionId(publishedId, releaseId)
-    }
-
-    // in cases where there is a draft in a live edit, we need to use it so that it can be published
-    // in case if the user has permissions to do so otherwise just use the published id
-    return liveEdit ? editState?.draft?._id || publishedId : getDraftId(documentId)
-  }, [documentId, editState?.draft?._id, liveEdit, publishedId, releaseId])
+  const targetDocumentId = activeDocumentReleaseId
+    ? getVersionId(publishedId, activeDocumentReleaseId)
+    : // in cases where there is a draft in a live edit, we need to use it so that it can be published
+      // in case if the user has permissions to do so otherwise just use the published id
+      liveEdit
+      ? editState?.draft?._id || publishedId
+      : getDraftId(documentId)
   const docPermissionsInput = useMemo(() => {
     return {
       ...value,
@@ -328,13 +337,13 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         : false,
     [selectedPerspective],
   )
-  const {isLinked} = useCanvasCompanionDoc(value._id)
+  const {isLockedByCanvas} = useCanvasCompanionDoc(value._id)
 
   // eslint-disable-next-line complexity
   const readOnly = useMemo(() => {
     const hasNoPermission = !isPermissionsLoading && !permissions?.granted
-    const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
-    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
+    const updateActionDisabled = !isActionEnabled(schemaType, 'update')
+    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType, 'create')
     const reconnecting = connectionState === 'reconnecting'
     const isLocked = editState.transactionSyncLock?.enabled
     const willBeUnpublished = value ? isGoingToUnpublish(value) : false
@@ -377,7 +386,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
     const isReadOnly =
       !ready ||
-      isLinked ||
+      isLockedByCanvas ||
       hasNoPermission ||
       updateActionDisabled ||
       createActionDisabled ||
@@ -392,7 +401,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return Boolean(readOnlyProp)
   }, [
     isPermissionsLoading,
-    isLinked,
+    isLockedByCanvas,
     permissions?.granted,
     schemaType,
     isNonExistent,
@@ -409,14 +418,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     readOnlyProp,
   ])
 
-  const {patch} = useDocumentOperation(documentId, documentType, releaseId)
+  const {patch} = useDocumentOperation(documentId, documentType, activeDocumentReleaseId)
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
     throw new Error(
       'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
   })
-  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
+  const handleChange = (event: PatchEvent) => patchRef.current(event)
 
   useInsertionEffect(() => {
     // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
@@ -460,6 +469,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return value
   }, [getFormDocumentValue, value])
 
+  const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
@@ -474,6 +485,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     collapsedFieldSets,
     fieldGroupState,
     changesOpen,
+    hasUpstreamVersion,
+    displayInlineChanges,
   })!
 
   const formStateRef = useRef(formState)
@@ -483,89 +496,75 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   useComlinkViewHistory({editState})
 
-  const handleSetOpenPath = useCallback(
-    (path: Path) => {
-      const ops = getExpandOperations(formStateRef.current!, path)
-      ops.forEach((op) => {
-        if (op.type === 'expandPath') {
-          onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'expandFieldSet') {
-          onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'setSelectedGroup') {
-          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-        }
-      })
-      onSetOpenPath(path)
-    },
-    [formStateRef],
-  )
+  const handleSetOpenPath = (path: Path) => {
+    const ops = getExpandOperations(formStateRef.current, path)
+    ops.forEach((op) => {
+      if (op.type === 'expandPath') {
+        onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
+      }
+      if (op.type === 'expandFieldSet') {
+        onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
+      }
+      if (op.type === 'setSelectedGroup') {
+        onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
+      }
+    })
+    onSetOpenPath(path)
+  }
 
-  const updatePresence = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      presenceStore.setLocation([
-        {
-          type: 'document',
-          documentId: value._id,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-          selection: payload?.selection,
-        },
-      ])
-    },
-    [presenceStore, value._id],
-  )
+  const updatePresence = (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+    presenceStore.setLocation([
+      {
+        type: 'document',
+        documentId: value._id,
+        path: nextFocusPath,
+        lastActiveAt: new Date().toISOString(),
+        selection: payload?.selection,
+      },
+    ])
+  }
 
-  const updatePresenceThrottled = useMemo(
-    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
-    [updatePresence],
-  )
+  const updatePresenceThrottled = throttle(updatePresence, 1000, {leading: true, trailing: true})
   const focusPathRef = useRef<Path>([])
 
-  const handleFocus = useCallback(
-    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      const nextFocusPath = pathFor(_nextFocusPath)
-      if (nextFocusPath !== focusPathRef.current) {
-        setFocusPath(pathFor(nextFocusPath))
+  const handleFocus = (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+    const nextFocusPath = pathFor(_nextFocusPath)
+    if (nextFocusPath !== focusPathRef.current) {
+      setFocusPath(pathFor(nextFocusPath))
+
+      if (enhancedObjectDialogEnabled) {
         handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-      updatePresenceThrottled(nextFocusPath, payload)
-    },
-    [onFocusPath, setFocusPath, handleSetOpenPath, updatePresenceThrottled],
-  )
-
-  const handleBlur = useCallback(
-    (_blurredPath: Path) => {
-      setFocusPath(EMPTY_ARRAY)
-
-      if (focusPathRef.current !== EMPTY_ARRAY) {
-        focusPathRef.current = EMPTY_ARRAY
-        onFocusPath?.(EMPTY_ARRAY)
       }
 
-      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-      // user clicks outside a field without focusing another one
-    },
-    [onFocusPath, setFocusPath],
-  )
+      focusPathRef.current = nextFocusPath
+      onFocusPath?.(nextFocusPath)
+    }
+    updatePresenceThrottled(nextFocusPath, payload)
+  }
 
-  const handleProgrammaticFocus = useCallback(
-    (nextPath: Path) => {
-      // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
+  const handleBlur = (_blurredPath: Path) => {
+    setFocusPath(EMPTY_ARRAY)
 
-      if (!deepEquals(focusPathRef.current, nextPath)) {
-        setFocusPath(nextPath)
-        handleSetOpenPath(nextPath)
-        onFocusPath?.(nextPath)
+    if (focusPathRef.current !== EMPTY_ARRAY) {
+      focusPathRef.current = EMPTY_ARRAY
+      onFocusPath?.(EMPTY_ARRAY)
+    }
 
-        focusPathRef.current = nextPath
-      }
-    },
-    [onFocusPath, handleSetOpenPath],
-  )
+    // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
+    // user clicks outside a field without focusing another one
+  }
+
+  const handleProgrammaticFocus = (nextPath: Path) => {
+    // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
+
+    if (!deepEquals(focusPathRef.current, nextPath)) {
+      setFocusPath(nextPath)
+      handleSetOpenPath(nextPath)
+      onFocusPath?.(nextPath)
+
+      focusPathRef.current = nextPath
+    }
+  }
   return {
     editState,
     upstreamEditState,
@@ -578,6 +577,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     permissions,
     isPermissionsLoading,
     formStateRef,
+    hasUpstreamVersion,
 
     collapsedFieldSets,
     collapsedPaths,

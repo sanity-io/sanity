@@ -7,6 +7,11 @@ import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {
+  annotationCustomTypeTest,
+  ctaType,
+  tooltipAnnotationType,
+} from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
@@ -18,6 +23,7 @@ import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
+import {decorations} from './debug/decorations'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -83,6 +89,8 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
+import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
 import house from './house'
@@ -104,6 +112,7 @@ import globalDocumentReference, {
   createGlobalDocumentReferenceSubtype,
 } from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
+import {initialFullScreenPTEType} from './standard/initialFullScreenPTE'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
@@ -111,6 +120,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import {customPlugins} from './standard/portableText/customPlugins'
+import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -175,9 +185,11 @@ export function createSchemaTypes(projectId: string) {
     numbers,
     objects,
     ptAllTheBellsAndWhistlesType,
+    initialFullScreenPTEType,
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,
+    ptCustomWithDefaultsType,
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
@@ -197,6 +209,9 @@ export function createSchemaTypes(projectId: string) {
 
     // Test documents for debugging
     actions,
+    annotationCustomTypeTest,
+    ctaType,
+    tooltipAnnotationType,
     button,
     collapsibleObjects,
     commentsDebug,
@@ -208,6 +223,7 @@ export function createSchemaTypes(projectId: string) {
     dateValidation,
     deprecatedDocument,
     deprecatedFields,
+    decorations,
     documentActions,
     empty,
     experiment,
@@ -288,7 +304,8 @@ export function createSchemaTypes(projectId: string) {
     // Test documents with 3rd party plugin inputs
     markdown,
     mux,
-
+    internationalizedArray,
+    documentInternationalizationTest,
     // Other documents
     author,
     book,

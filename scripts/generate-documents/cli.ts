@@ -8,11 +8,13 @@ import {tap} from 'rxjs'
 
 import {run} from './run'
 import {book} from './templates/book'
+import {liveEdit} from './templates/liveEdit'
 import {species} from './templates/species'
 import {validation} from './templates/validation'
 
 const {values: args} = parseArgs({
   args: process.argv.slice(2),
+  allowNegative: true,
   options: {
     number: {
       type: 'string',
@@ -25,8 +27,12 @@ const {values: args} = parseArgs({
     bundle: {
       type: 'string',
     },
+    bundles: {
+      type: 'string',
+    },
     draft: {
       type: 'boolean',
+      default: true,
     },
     published: {
       type: 'boolean',
@@ -50,9 +56,10 @@ const {values: args} = parseArgs({
 })
 
 const templates = {
-  validation: validation,
-  book: book,
-  species: species,
+  validation,
+  book,
+  species,
+  liveEdit,
 }
 
 const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cwd(), process.argv[1])} --template <template> [arguments]
@@ -64,7 +71,7 @@ const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cw
       --amount, -n <int>: Number of documents to generate
       --draft: Generate draft documents
       --published: Generate published documents
-      --bundle <string>: Bundle to generate documents in
+      --bundle <string>[,<string>,...<stringN>]: Bundle(s) to generate documents in
       --size <bytes>: Size (in bytes) of the generated document (will be approximated)
       --concurrency, -c <int>: Number of concurrent requests
       --help, -h: Show this help message
@@ -73,7 +80,6 @@ const HELP_TEXT = `Usage: tsx --env-file=.env.local ./${path.relative(process.cw
     `
 
 if (args.help) {
-  // eslint-disable-next-line no-console
   console.log(HELP_TEXT)
   process.exit(0)
 }
@@ -103,8 +109,11 @@ const client = createClient({
 })
 
 run({
-  bundle: args.bundle,
-  draft: args.draft || true,
+  bundles: args.bundle
+    ?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
+  draft: args.draft,
   published: args.published,
   concurrency: args.concurrency ? Number(args.concurrency) : undefined,
   number: args.number ? Number(args.number) : undefined,
@@ -115,7 +124,6 @@ run({
   .pipe(
     tap({
       next: (doc) => {
-        // eslint-disable-next-line no-console
         console.log('Created', doc._id)
       },
       error: console.error,

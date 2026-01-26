@@ -1,14 +1,14 @@
 import {PanelLeftIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {memo, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {Resizable} from '../../../../../components/resizer/Resizable'
 import {useTranslation} from '../../../../../i18n'
-import {type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 import {TreeEditingSearch} from '../search'
 import {TreeEditingMenu} from '../tree-menu'
 import {FixedHeightFlex} from './styles'
@@ -32,7 +32,7 @@ const SearchStack = styled(Stack)`
 `
 
 interface TreeEditingLayoutSidebarProps {
-  items: TreeEditingMenuItem[]
+  items: DialogItem[]
   onOpenToggle: () => void
   onPathSelect: (path: Path) => void
   open: boolean
@@ -40,6 +40,10 @@ interface TreeEditingLayoutSidebarProps {
   title: string
 }
 
+/**
+ * This component is not currently used, but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
+ * For now I think it's best to keep it
+ */
 export const TreeEditingLayoutSidebar = memo(function TreeEditingLayoutSidebar(
   props: TreeEditingLayoutSidebarProps,
 ) {

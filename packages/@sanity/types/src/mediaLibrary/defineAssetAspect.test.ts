@@ -37,6 +37,7 @@ describe('defineAssetAspect', () => {
           "title": "Some Aspect",
           "type": "object",
         },
+        "public": undefined,
       }
     `)
   })
@@ -52,6 +53,23 @@ describe('defineAssetAspect', () => {
           type: 'string',
         }),
       ],
+    })
+
+    expect(aspect._id).toBe('someAspect')
+  })
+
+  it('can set public', () => {
+    const aspect = defineAssetAspect({
+      name: 'someAspect',
+      title: 'Some Aspect',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'test',
+          type: 'string',
+        }),
+      ],
+      public: true,
     })
 
     expect(aspect._id).toBe('someAspect')

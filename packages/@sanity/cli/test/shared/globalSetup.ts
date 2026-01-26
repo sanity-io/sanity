@@ -88,10 +88,13 @@ function prepareStudios() {
 
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
+      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: destinationPath,
+      })
       // We'll want to test the actual integration with the monorepo packages,
       // instead of the versions that is available on npm, so we'll symlink them before running npm install
       await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
-      await exec(pnpmPath, ['install', '--ignore-workspace'], {cwd: destinationPath})
 
       // Make a copy of the studio and include a custom document component, in order to see
       // that it resolves. We "cannot" use the same studio as it would _always_ use the
@@ -101,12 +104,13 @@ function prepareStudios() {
         `${customDocStudioPath}/components/EnvDocument.tsx`,
         `${customDocStudioPath}/_document.tsx`,
       )
+      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: customDocStudioPath,
+      })
       // We'll want to test the actual integration with the monorepo packages,
       // instead of the versions that is available on npm, so we'll symlink them before running npm install
       await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
-      await exec(pnpmPath, ['install', '--ignore-workspace'], {
-        cwd: customDocStudioPath,
-      })
     }),
   )
 }
@@ -233,17 +237,19 @@ export async function teardown(): Promise<void> {
     return
   }
 
-  const args = getTestRunArgs()
-  await deleteCorsOrigins(args.corsOrigin)
-  await deleteAliases(args.alias)
-  await deleteGraphQLAPIs(args.graphqlDataset)
-  await deleteDatasets(args)
+  try {
+    const args = getTestRunArgs()
+    await deleteCorsOrigins(args.corsOrigin)
+    await deleteAliases(args.alias)
+    await deleteGraphQLAPIs(args.graphqlDataset)
+    await deleteDatasets(args)
 
-  await rm(baseTestPath, {recursive: true, force: true})
-
-  // Very hacky, but good enough for now:
-  // Force a cleanup of dangling entities left over from previous test runs
-  await cleanupDangling()
+    await rm(baseTestPath, {recursive: true, force: true, maxRetries: 2})
+  } finally {
+    // Very hacky, but good enough for now:
+    // Force a cleanup of dangling entities left over from previous test runs
+    await cleanupDangling()
+  }
 }
 
 function getErrorWarner(entity: string, id: string) {

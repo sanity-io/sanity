@@ -1,5 +1,7 @@
 import {defineTrace} from '@sanity/telemetry'
 
+import {type EditorName} from '../actions/mcp/editorConfigs'
+
 interface StartStep {
   step: 'start'
   flags: Record<string, string | number | undefined | boolean>
@@ -73,6 +75,13 @@ interface SelectPackageManagerStep {
   selectedOption: string
 }
 
+interface MCPSetupStep {
+  step: 'mcpSetup'
+  detectedEditors: EditorName[]
+  configuredEditors: EditorName[]
+  skipped: boolean
+}
+
 type InitStepResult =
   | StartStep
   | LoginStep
@@ -87,6 +96,7 @@ type InitStepResult =
   | SelectTemplateStep
   | UseDefaultPlanCoupon
   | UseDefaultPlanId
+  | MCPSetupStep
 
 export const CLIInitStepCompleted = defineTrace<InitStepResult>({
   name: 'CLI Init Step Completed',

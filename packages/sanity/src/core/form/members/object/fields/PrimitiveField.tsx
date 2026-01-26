@@ -2,7 +2,7 @@ import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
+import {type FieldMember, type PrimitiveFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
@@ -21,7 +21,7 @@ import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInp
  * @internal
  */
 export function PrimitiveField(props: {
-  member: FieldMember
+  member: FieldMember<PrimitiveFormNode>
   renderInput: RenderInputCallback<PrimitiveInputProps>
   renderField: RenderFieldCallback<PrimitiveFieldProps>
 }) {
@@ -85,16 +85,6 @@ export function PrimitiveField(props: {
     [member.name, member.field.schemaType, onChange],
   )
 
-  const validationError =
-    useMemo(
-      () =>
-        member.field.validation
-          .filter((item) => item.level === 'error')
-          .map((item) => item.message)
-          .join('\n'),
-      [member.field.validation],
-    ) || undefined
-
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
       'onBlur': handleBlur,
@@ -124,12 +114,19 @@ export function PrimitiveField(props: {
   )
 
   const inputProps = useMemo((): Omit<PrimitiveInputProps, 'renderDefault'> => {
+    const validationError =
+      member.field.validation
+        .filter((item) => item.level === 'error')
+        .map((item) => item.message)
+        .join('\n') || undefined
     return {
       value: member.field.value as any,
+      compareValue: member.field.compareValue,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType as any,
       changed: member.field.changed,
+      hasUpstreamVersion: member.field.hasUpstreamVersion,
       id: member.field.id,
       path: member.field.path,
       focused: member.field.focused,
@@ -139,13 +136,17 @@ export function PrimitiveField(props: {
       presence: member.field.presence,
       validationError,
       elementProps,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
     }
   }, [
+    member.field.displayInlineChanges,
     member.field.value,
+    member.field.compareValue,
     member.field.__unstable_computeDiff,
     member.field.readOnly,
     member.field.schemaType,
     member.field.changed,
+    member.field.hasUpstreamVersion,
     member.field.id,
     member.field.path,
     member.field.focused,
@@ -153,45 +154,46 @@ export function PrimitiveField(props: {
     member.field.validation,
     member.field.presence,
     handleChange,
-    validationError,
     elementProps,
   ])
 
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
+  return (
+    <RenderField
+      actions={fieldActions}
+      changed={member.field.changed}
+      description={member.field.schemaType.description}
+      index={member.index}
+      inputId={member.field.id}
+      inputProps={inputProps as any}
+      level={member.field.level}
+      name={member.name}
+      path={member.field.path}
+      presence={member.field.presence}
+      schemaType={member.field.schemaType as any}
+      title={member.field.schemaType.title}
+      validation={member.field.validation}
+      value={member.field.value as any}
+      render={renderField}
+    >
+      <RenderInput {...inputProps} render={renderInput} />
+    </RenderField>
+  )
+}
 
-  const fieldProps = useMemo((): Omit<PrimitiveFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      changed: member.field.changed,
-      children: renderedInput,
-      description: member.field.schemaType.description,
-      index: member.index,
-      inputId: member.field.id,
-      inputProps: inputProps as any,
-      level: member.field.level,
-      name: member.name,
-      path: member.field.path,
-      presence: member.field.presence,
-      schemaType: member.field.schemaType as any,
-      title: member.field.schemaType.title,
-      validation: member.field.validation,
-      value: member.field.value as any,
-    }
-  }, [
-    fieldActions,
-    member.field.level,
-    member.field.value,
-    member.field.schemaType,
-    member.field.id,
-    member.field.path,
-    member.field.validation,
-    member.field.presence,
-    member.field.changed,
-    member.name,
-    member.index,
-    renderedInput,
-    inputProps,
-  ])
-
-  return <>{renderField(fieldProps)}</>
+// The RenderInput and RenderField wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<PrimitiveInputProps, 'renderDefault'> & {
+  render: RenderInputCallback<PrimitiveInputProps>
+}) {
+  return render(props)
+}
+function RenderField({
+  render,
+  ...props
+}: Omit<PrimitiveFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback<PrimitiveFieldProps>
+}) {
+  return render(props)
 }

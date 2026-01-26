@@ -1,5 +1,5 @@
 import {isArraySchemaType, type SchemaType} from '@sanity/types'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 
 export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)

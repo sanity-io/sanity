@@ -14,8 +14,10 @@ import {useGetI18nText, useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
 import {type CreateReferenceOption} from './types'
 
-interface Props
-  extends Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'width' | 'type' | 'ref'> {
+interface Props extends Omit<
+  HTMLProps<HTMLButtonElement>,
+  'as' | 'size' | 'width' | 'type' | 'ref'
+> {
   id: string
   createOptions: CreateReferenceOption[]
   menuRef?: RefObject<HTMLDivElement | null>
@@ -93,6 +95,7 @@ export function CreateButton(props: Props) {
                 />
               }
               portal
+              data-testid={`create-new-document-select-${createOption.title.toLowerCase().replaceAll(' ', '-')}-selectTypeMenuButton`}
             >
               {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
               <div>
@@ -101,6 +104,7 @@ export function CreateButton(props: Props) {
                   icon={createOption.icon}
                   text={getI18nText(createOption).title}
                   onClick={() => onCreate(createOption)}
+                  data-testid={`create-new-document-select-${createOption.title.toLowerCase().replaceAll(' ', '-')}-selectTypeMenuItem`}
                 />
               </div>
             </Tooltip>

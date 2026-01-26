@@ -122,5 +122,3 @@ describe('global document reference types', () => {
     const notAssignableToBoolean = referenceDef satisfies BooleanDefinition
   })
 })
-
-export {}

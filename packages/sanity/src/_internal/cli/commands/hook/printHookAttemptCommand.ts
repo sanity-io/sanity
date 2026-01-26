@@ -17,7 +17,7 @@ const printHookAttemptCommand: CliCommandDefinition = {
     try {
       attempt = await client.request<DeliveryAttempt>({uri: `/hooks/attempts/${attemptId}`})
     } catch (err) {
-      throw new Error(`Hook attempt retrieval failed:\n${err.message}`)
+      throw new Error(`Hook attempt retrieval failed:\n${err.message}`, {cause: err})
     }
 
     const {createdAt, resultCode, resultBody, failureReason, inProgress} = attempt

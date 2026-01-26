@@ -6,6 +6,7 @@ import {ImageFieldDiff} from '../../types/image/diff'
 import {NumberFieldDiff} from '../../types/number/diff'
 import {PTDiff} from '../../types/portableText/diff'
 import {ReferenceFieldDiff} from '../../types/reference/diff'
+import {SlugFieldDiff} from '../../types/slug/diff'
 import {StringFieldDiff} from '../../types/string/diff'
 
 export const defaultComponents: Record<
@@ -20,5 +21,6 @@ export const defaultComponents: Record<
   image: ImageFieldDiff,
   number: NumberFieldDiff,
   reference: ReferenceFieldDiff,
+  slug: SlugFieldDiff,
   string: StringFieldDiff,
 }

@@ -36,7 +36,7 @@ export function getAppId({cliConfig, output}: Options): string | undefined {
 Please update \`sanity.cli.ts\` or \`sanity.cli.js\` and move:
 ${chalk.red(`app: {id: "${appId}", ... }`)}
 to
-${chalk.green(`deployment: {appId: "${appId}", ... }}`)})
+${chalk.green(`deployment: {appId: "${appId}", ... }`)})
 `,
       ),
     )

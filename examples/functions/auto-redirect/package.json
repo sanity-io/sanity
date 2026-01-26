@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "^7.14.1",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
@@ -14,7 +14,7 @@
     "timeout": 30,
     "event": {
       "on": [
-        "publish"
+        "update"
       ],
       "filter": "delta::changedAny(slug.current)",
       "projection": "{'beforeSlug': before().slug.current, 'slug': after().slug.current}"

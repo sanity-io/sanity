@@ -666,5 +666,3 @@ describe('definitionExtensions', () => {
     })
   })
 })
-
-export {}

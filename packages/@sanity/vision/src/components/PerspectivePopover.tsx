@@ -80,7 +80,10 @@ export function PerspectivePopover() {
 
             <Card>
               <Text>
-                <PerspectivePopoverLink href="https://sanity.io/docs/perspectives" target="_blank">
+                <PerspectivePopoverLink
+                  href="https://www.sanity.io/docs/perspectives"
+                  target="_blank"
+                >
                   {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
               </Text>

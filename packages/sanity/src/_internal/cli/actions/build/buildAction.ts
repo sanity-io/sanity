@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import chalk from 'chalk'
-import {info, warning} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import semver from 'semver'
 import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
@@ -82,7 +82,7 @@ export default async function buildSanityStudio(
 
     autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies, {appId})
 
-    output.print(`${info} Building with auto-updates enabled`)
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
 
     // note: we want to show this warning only if running `sanity build`
     // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
@@ -110,7 +110,7 @@ export default async function buildSanityStudio(
         const choice = await prompt.single({
           type: 'list',
           message: chalk.yellow(
-            `${warning}\n\nDo you want to upgrade local versions before deploying?`,
+            `${logSymbols.warning}\n\nDo you want to upgrade local versions before deploying?`,
           ),
           choices: [
             {

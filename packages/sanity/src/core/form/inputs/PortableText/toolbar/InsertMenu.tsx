@@ -1,11 +1,12 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {upperFirst} from 'lodash'
+import {upperFirst} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
 
 import {type PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useFocusBlock} from './hooks'
 import {type BlockItem} from './types'
 
@@ -25,8 +26,9 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
   const {t} = useTranslation()
   const focusBlock = useFocusBlock()
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
 
-  const isVoidFocus = focusBlock && focusBlock._type !== editor.schemaTypes.block.name
+  const isVoidFocus = focusBlock && focusBlock._type !== schemaTypes.block.name
 
   const handleMenuClose = useCallback(() => {
     PortableTextEditor.focus(editor)
@@ -48,12 +50,9 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
             {typeName: title},
           )}
           mode="bleed"
-          disabled={
-            disabled || (isVoidFocus && item.inline === true) || Boolean(item.type.deprecated)
-          }
+          disabled={disabled || (isVoidFocus && item.inline) || Boolean(item.type.deprecated)}
           data-testid={`${item.type.name}-insert-menu-button`}
           icon={item.icon}
-          // eslint-disable-next-line react/jsx-handler-names
           onClick={item.handle}
           text={title}
           tooltipText={t(

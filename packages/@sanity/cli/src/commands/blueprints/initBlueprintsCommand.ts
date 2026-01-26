@@ -1,23 +1,8 @@
+import {BlueprintsInitCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Arguments
-  [dir]  Path to initialize the Blueprint in
-
-Options
-  --blueprint-type, --type <json>    Type of Blueprint to create
-  --project-id <id>                  Project ID to use
-
-Examples:
-  # Create a new Blueprint project in the current directory
-  sanity blueprints init
-
-  # Create a new Blueprint project in a specific directory
-  sanity blueprints init my-sanity-project --type json
-
-  # Create a new Blueprint project in a specific directory with an example
-  sanity blueprints init --example example-name
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsInitFlags {
   'example'?: string
@@ -32,6 +17,7 @@ export interface BlueprintsInitFlags {
   'stack'?: string
   'stack-name'?: string
   'name'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsInitFlags = {
@@ -41,9 +27,7 @@ const defaultFlags: BlueprintsInitFlags = {
 const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
   name: 'init',
   group: 'blueprints',
-  helpText,
-  signature: '[dir] [--blueprint-type <type>] [--project-id <id>]',
-  description: 'Initialize a new Blueprint manifest file',
+  ...transformHelpText(BlueprintsInitCommand, 'sanity', 'blueprints init'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -78,7 +62,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
 
     const {success, error} = await blueprintInitCore({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
       args: {
         dir: dir ?? flags.dir,
@@ -89,6 +73,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
         'stack-name': flags['stack-name'] ?? flags.name,
+        'verbose': flags.verbose,
       },
     })
 

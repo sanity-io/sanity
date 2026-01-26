@@ -114,6 +114,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
+        format: 'cjs',
       })
     }
 
@@ -178,15 +179,25 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       )
     }
 
+    const actualDataset =
+      dataset ||
+      (projectConfig.dataset === '~dummy-placeholder-dataset-' ? undefined : projectConfig.dataset)
+
+    if (!actualDataset) {
+      throw new Error(
+        'sanity.cli.js does not contain a dataset name ("api.dataset") and no --dataset option was provided.',
+      )
+    }
+
     const apiConfig = {
-      dataset: dataset ?? projectConfig.dataset!,
+      dataset: actualDataset,
       projectId: project ?? projectConfig.projectId!,
-      apiHost: projectConfig.apiHost!,
+      apiHost: projectConfig.apiHost,
       token: projectConfig.token!,
       apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const
     if (dry) {
-      dryRunHandler()
+      void dryRunHandler()
       return
     }
 

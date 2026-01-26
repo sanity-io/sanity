@@ -1,7 +1,7 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
-import {get, startCase} from 'lodash'
+import {get, startCase} from 'lodash-es'
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
@@ -10,7 +10,9 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
+import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
+import {type AssetAccessPolicy} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
 
@@ -25,28 +27,32 @@ function ImageInputAssetMenuComponent(
     | 'schemaType'
     | 'value'
   > & {
+    accessPolicy?: AssetAccessPolicy
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
+    onSelectFile: (assetSource: AssetSource, file: File) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
     setHotspotButtonElement: (el: HTMLButtonElement | null) => void
     setMenuButtonElement: (el: HTMLButtonElement | null) => void
     setMenuOpen: (isOpen: boolean) => void
+    onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
   },
 ) {
   const {
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFiles,
+    onSelectFile,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
     isMenuOpen,
     observeAsset,
+    onOpenInSource,
     readOnly,
     schemaType,
     setHotspotButtonElement,
@@ -102,15 +108,17 @@ function ImageInputAssetMenuComponent(
   return (
     <ImageInputAssetMenuWithReferenceAsset
       accept={accept}
+      accessPolicy={accessPolicy}
       assetSources={assetSources}
       browseMenuItem={browseMenuItem}
       directUploads={directUploads}
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
-      onSelectFiles={onSelectFiles}
+      onSelectFile={onSelectFile}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
+      onOpenInSource={onOpenInSource}
       readOnly={readOnly}
       reference={asset}
       schemaType={schemaType}
@@ -130,11 +138,13 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
   > & {
     accept: string
+    accessPolicy?: AssetAccessPolicy
     assetSources: AssetSource[]
     browseMenuItem: ReactNode
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
-    onSelectFiles: (assetSource: AssetSource, files: File[]) => void
+    onSelectFile: (assetSource: AssetSource, file: File) => void
+    onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
     reference: Reference
@@ -146,14 +156,16 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 ) {
   const {
     accept,
+    accessPolicy,
     assetSources,
     browseMenuItem,
     directUploads,
     handleOpenDialog,
     handleRemoveButtonClick,
-    onSelectFiles,
+    onSelectFile,
     imageUrlBuilder,
     isMenuOpen,
+    onOpenInSource,
     observeAsset,
     readOnly,
     reference,
@@ -171,12 +183,17 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const asset = useObservable(observable)
   const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
 
-  // TODO: fix this in same style as FileInput
+  // Find the first asset source that can handle opening this asset in source
+  const openInSourceResult = useMemo(
+    () => (asset ? findOpenInSourceResult(asset, assetSources) : null),
+    [asset, assetSources],
+  )
+
   const handleSelectFilesFromAssetSource = useCallback(
     (assetSource: AssetSource, files: File[]) => {
-      onSelectFiles(assetSource, files)
+      onSelectFile(assetSource, files[0])
     },
-    [onSelectFiles],
+    [onSelectFile],
   )
 
   const handleSelectFilesFromAssetSourceSingle = useCallback(
@@ -186,6 +203,17 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
   )
 
+  const handleOpenInSource = useCallback(() => {
+    if (!openInSourceResult || !asset) return
+
+    const {source, result} = openInSourceResult
+    if (result.type === 'url') {
+      window.open(result.url, result.target || '_blank')
+    } else if (result.type === 'component') {
+      onOpenInSource?.(source, asset)
+    }
+  }, [asset, onOpenInSource, openInSourceResult])
+
   if (!documentId || !asset) {
     return <ImageActionsMenuWaitPlaceholder />
   }
@@ -194,7 +222,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   let copyUrl: string | undefined
   let downloadUrl: string | undefined
 
-  if (isImageSource(value)) {
+  if (
+    isImageSource(value) &&
+    // @todo Temporary check to prevent showing download and copy links for
+    // private assets until support is added
+    accessPolicy !== 'private'
+  ) {
     const filename = originalFilename || `download.${extension}`
     downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
     copyUrl = imageUrlBuilder.image(_id).url()
@@ -245,6 +278,8 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
         browse={browseMenuItem}
         onReset={handleRemoveButtonClick}
         downloadUrl={downloadUrl}
+        openInSource={openInSourceResult ? handleOpenInSource : undefined}
+        openInSourceName={getOpenInSourceName(openInSourceResult, t)}
         copyUrl={copyUrl}
         readOnly={readOnly}
       />

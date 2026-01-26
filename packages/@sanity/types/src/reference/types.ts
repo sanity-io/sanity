@@ -1,4 +1,4 @@
-import {type ClientPerspective, type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type SanityClient, type StackablePerspective} from '@sanity/client'
 
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
@@ -30,7 +30,7 @@ export type ReferenceFilterSearchOptions = {
   tag?: string
   maxFieldDepth?: number
   strategy?: SearchStrategy
-  perspective?: ClientPerspective
+  perspective?: Exclude<ClientPerspective, 'raw' | 'previewDrafts'>
 }
 
 /** @public */
@@ -38,6 +38,7 @@ export interface ReferenceFilterResolverContext {
   document: SanityDocument
   parent?: Record<string, unknown> | Record<string, unknown>[]
   parentPath: Path
+  perspective: StackablePerspective[]
   getClient: (options: {apiVersion: string}) => SanityClient
 }
 

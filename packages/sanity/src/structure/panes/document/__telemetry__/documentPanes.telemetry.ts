@@ -8,3 +8,21 @@ export const DocumentURLCopied = defineEvent({
   version: 1,
   description: 'User copied document URL to clipboard',
 })
+
+/**
+ * @internal
+ */
+export const InlineChangesSwitchedOn = defineEvent({
+  name: 'InlineChangesSwitchedOn',
+  version: 1,
+  description: 'User switched on display of inline changes',
+})
+
+/**
+ * @internal
+ */
+export const InlineChangesSwitchedOff = defineEvent({
+  name: 'InlineChangesSwitchedOff',
+  version: 1,
+  description: 'User switched off display of inline changes',
+})

@@ -2,6 +2,10 @@ import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from 
 import {BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 import {determineIsApp} from '../../util/determineIsApp'
 
+import {createRequire} from 'node:module'
+
+const require = createRequire(import.meta.url)
+
 const helpText = `
 Options
   --source-maps Enable source maps for built bundles (increases size of bundle)

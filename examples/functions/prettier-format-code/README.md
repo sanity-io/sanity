@@ -19,14 +19,14 @@ This Sanity Function formats code blocks with [Prettier](https://prettier.io/) w
 
 - A Sanity project with Functions enabled
 - The [Code Input](https://www.sanity.io/plugins/code-input) plugin installed
-- A schema with a `article` document type containing:
+- A schema with a `post` document type containing:
   - A `content` field containing `code` blocks
   - These document types and field names can be configured in the `filter` and `projection` configuration
 - Node.js v22.x for local development
 
 ### Schema Requirements
 
-This function expects your schema to include a `article` document type with:
+This function expects your schema to include a `post` document type with:
 
 - A `content` array of `block` type fields
 - A `code` block field using the [Code Input](https://www.sanity.io/plugins/code-input) plugin
@@ -36,9 +36,9 @@ Example schema definition:
 ```ts
 import {defineType, defineArrayMember} from 'sanity'
 
-export const article = defineType({
-  name: 'article',
-  title: 'Article',
+export const post = defineType({
+  name: 'post',
+  title: 'Post',
   type: 'document',
   fields: [
     {
@@ -58,9 +58,9 @@ export const article = defineType({
 
 ## Usage Example
 
-When an `article` type document is published and code blocks have been modified, the function automatically:
+When a `post` type document is published and code blocks have been modified, the function automatically:
 
-1. **Triggers** on the publish event for `article` type documents
+1. **Triggers** on the publish event for `post` type documents
 2. **Checks** if the `content` field is defined and contains `code` blocks (using filter)
 3. **Formats** the `code` blocks with Prettier using the `language` value of the code block to determine the parser
 
@@ -97,8 +97,9 @@ export default defineBlueprint({
     defineDocumentFunction({
       name: 'prettier-format-code',
       event: {
-        on: ['publish'],
-        filter: '_type == "article" && delta::changedAny(content[_type == "code"])',
+        on: ['create', 'update'],
+        filter:
+          '_type == "post" && (delta::changedAny(content[_type == "code"]) || (delta::operation() == "create" && defined(content[_type == "code"])))',
         projection: '{_id, content}',
       },
     }),
@@ -139,7 +140,7 @@ Test with your own document data:
 ```bash
 npx sanity functions test prettier-format-code --data '{
   "_id": "505d8c4e-93b0-436d-8c34-ca0acf96a0b4",
-  "_type": "article",
+  "_type": "post",
   "content": [
     {
       "_key": "7343c346d8cd",
@@ -157,7 +158,7 @@ Capture a real document from your dataset:
 
 ```bash
 # Export a real document for testing
-npx sanity documents get "your-article-id" > document.json
+npx sanity documents get "your-post-id" > document.json
 
 # Test with the real document
 npx sanity functions test prettier-format-code --file document.json
@@ -194,14 +195,14 @@ This command will:
 
 - Package your function code
 - Upload it to Sanity's infrastructure
-- Configure the event triggers for article publications
+- Configure the event triggers for post publications
 - Make your prettier-format-code function live in production
 
 2. **Verify deployment**
 
 After deployment, you can verify your function is active by:
 
-- Publishing a new article and confirming code blocks are formatted
+- Publishing a new post and confirming code blocks are formatted
 - Monitoring function logs in the CLI
 
 ```bash

@@ -3,18 +3,20 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "^7.14.1",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
     "name": "first-published",
     "memory": 1,
     "timeout": 10,
-    "on": [
-      "publish"
-    ],
-    "filter": "_type == 'post' && !defined(firstPublished)",
-    "projection": "{_id}"
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'post' && !defined(firstPublished)",
+      "projection": "{_id}"
+    }
   },
   "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
 }

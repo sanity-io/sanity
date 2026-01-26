@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {asyncScheduler, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
@@ -8,6 +8,7 @@ import shallowEquals from 'shallow-equals'
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
+import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -36,9 +37,17 @@ export const validation = memoize(
     },
     {draftId, publishedId, versionId}: IdPair,
     typeName: string,
+    validationTarget: DocumentVariantType,
+    validatePublishedReferences: boolean,
   ): Observable<ValidationStatus> => {
     const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
-      map(({version, draft, published}) => version || draft || published),
+      map((state) => {
+        const {version, draft, published} = state
+
+        if (validationTarget === 'draft') return draft
+        if (validationTarget === 'version') return version
+        return published
+      }),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {
         if (prev?._rev === next?._rev) {
@@ -51,9 +60,16 @@ export const validation = memoize(
       shareLatestWithRefCount(),
     )
 
-    return validateDocumentWithReferences(ctx, document$)
+    return validateDocumentWithReferences(ctx, document$, validatePublishedReferences)
   },
-  (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName)
+  (ctx, idPair, typeName, validationTarget, validatePublishedReferences) => {
+    // Use the actual document ID being validated in the cache key for explicitness
+    const documentId =
+      validationTarget === 'draft'
+        ? idPair.draftId
+        : validationTarget === 'version'
+          ? idPair.versionId
+          : idPair.publishedId
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${validatePublishedReferences}`
   },
 )

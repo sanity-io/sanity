@@ -1,4 +1,5 @@
-import {act, fireEvent, render, screen, within} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {
   cloneElement,
   type FC,
@@ -69,6 +70,26 @@ vi.mock('../../components/ReleaseDocumentPreview', () => ({
 
 vi.mock('../../../../studio/components/navbar/search/components/SearchPopover')
 
+// Mock the preview streams to prevent RxJS unsubscription errors during test cleanup.
+// These streams use fromEvent(window, ...) which can cause errors when unsubscribing
+// after the test environment has been modified.
+vi.mock('../../../../preview/streams/scroll', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {scroll$: EMPTY}
+})
+vi.mock('../../../../preview/streams/resize', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {resize$: EMPTY}
+})
+vi.mock('../../../../preview/streams/orientationChange', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {orientationChange$: EMPTY}
+})
+vi.mock('../../../../preview/streams/visibilityChange', async () => {
+  const {EMPTY} = await import('rxjs')
+  return {visibilityChange$: EMPTY}
+})
+
 const releaseDocuments = [
   {
     ...documentsInRelease,
@@ -124,12 +145,7 @@ const renderTest = async (props: Partial<ReleaseSummaryProps>) => {
       router={route.create('/', [route.create('/:releaseId'), route.intents('/intents')])}
     >
       <ScrollContainer>
-        <ReleaseSummary
-          scrollContainerRef={{current: null}}
-          documents={releaseDocuments}
-          release={activeASAPRelease}
-          {...props}
-        />
+        <ReleaseSummary documents={releaseDocuments} release={activeASAPRelease} {...props} />
       </ScrollContainer>
     </RouterProvider>,
     {
@@ -142,34 +158,41 @@ describe('ReleaseSummary', () => {
   setupVirtualListEnv()
 
   describe('for an active release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'), {
+      // eslint-disable-next-line testing-library/prefer-find-by
+      await waitFor(() => screen.getByTestId('document-table-card'), {
         timeout: 5000,
         interval: 500,
       })
-    })
+    }
 
     it('shows list of all documents in release', async () => {
+      await prerenderTest()
+
       const documents = screen.getAllByTestId('table-row')
 
       expect(documents).toHaveLength(2)
     })
 
-    it('allows for document to be discarded', () => {
+    it('allows for document to be discarded', async () => {
+      await prerenderTest()
+
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      fireEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
-      fireEvent.click(screen.getByText('Discard version'))
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+      await userEvent.click(screen.getByText('Discard version'))
     })
 
-    it('allows for sorting of documents', () => {
+    it('allows for sorting of documents', async () => {
+      await prerenderTest()
+
       const [initialFirstDocument, initialSecondDocument] = screen.getAllByTestId('table-row')
 
       within(initialFirstDocument).getByText('First document')
       within(initialSecondDocument).getByText('Second document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedCreatedAscFirstDocument, sortedCreatedAscSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -177,7 +200,7 @@ describe('ReleaseSummary', () => {
       within(sortedCreatedAscFirstDocument).getByText('Second document')
       within(sortedCreatedAscSecondDocument).getByText('First document')
 
-      fireEvent.click(within(screen.getByRole('table')).getByText('Edited'))
+      await userEvent.click(within(screen.getByRole('table')).getByText('Edited'))
 
       const [sortedEditedDescFirstDocument, sortedEditedDescSecondDocument] =
         screen.getAllByTestId('table-row')
@@ -187,40 +210,42 @@ describe('ReleaseSummary', () => {
     })
 
     it('allows for searching documents', async () => {
-      await act(() => {
-        fireEvent.change(screen.getByPlaceholderText('Search documents'), {
-          target: {value: 'Second'},
-        })
-      })
+      await prerenderTest()
+
+      await userEvent.type(screen.getByPlaceholderText('Search documents'), 'Second')
 
       const [searchedFirstDocument] = screen.getAllByTestId('table-row')
 
       within(searchedFirstDocument).getByText('Second document')
     })
 
-    it('Allows for adding a document to an active release', () => {
+    it('Allows for adding a document to an active release', async () => {
+      await prerenderTest()
+
       screen.getByText('Add document')
     })
   })
 
   describe('for an archived release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({release: archivedScheduledRelease})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
-    })
+      await screen.findByTestId('document-table-card')
+    }
 
-    it('does not allow for adding documents', () => {
+    it('does not allow for adding documents', async () => {
+      await prerenderTest()
       expect(screen.queryByText('Add document')).toBeNull()
     })
   })
 
   describe('for a scheduled release', () => {
-    beforeEach(async () => {
+    const prerenderTest = async () => {
       await renderTest({release: scheduledRelease})
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
-    })
+      await screen.findByTestId('document-table-card')
+    }
 
-    it('does not allow for adding documents', () => {
+    it('does not allow for adding documents', async () => {
+      await prerenderTest()
       expect(screen.queryByText('Add document')).toBeNull()
     })
   })
@@ -240,7 +265,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
     })
 
     it('should show `change` if a document is published', async () => {
@@ -256,7 +281,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
@@ -277,7 +302,7 @@ describe('ReleaseSummary', () => {
           },
         ],
       })
-      await vi.waitFor(() => screen.getByTestId('document-table-card'))
+      await screen.findByTestId('document-table-card')
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 

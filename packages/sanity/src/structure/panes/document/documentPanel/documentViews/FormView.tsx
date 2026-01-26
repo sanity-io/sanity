@@ -1,5 +1,13 @@
 import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type FormEvent,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useState,
+} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -16,7 +24,6 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -55,6 +62,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetActiveFieldGroup,
     openPath,
     compareValue,
+    hasUpstreamVersion,
   } = useDocumentPane()
   const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
@@ -207,6 +215,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
                 perspective={selectedPerspective}
+                hasUpstreamVersion={hasUpstreamVersion}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

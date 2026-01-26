@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: studio
+  title: studio
+  description: Service automatically registered from sanity repository
+  annotations:
+    circleci.com/project-slug: github/sanity-io/sanity
+    github.com/project-slug: sanity-io/sanity
+    sentry.io/project-slug: studio
+    socket.dev/repo-slug: sanity-io/sanity
+  links:
+    - url: https://github.com/sanity-io/sanity
+      title: Source Code
+      icon: github
+spec:
+  type: service
+  owner: group:default/studio
+  lifecycle: production
+  system: system:default/frontend

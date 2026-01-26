@@ -1,16 +1,18 @@
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
 import {
   defineConfig,
   type SanityClient,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersions,
+  useValuePreview,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {
   mockUseDocumentTitle,
@@ -54,8 +56,9 @@ vi.mock('../../../../useDocumentTitle', () => ({
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
+    useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
-    usePerspective: vi.fn(() => ({perspective: undefined})),
+    usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
 
@@ -68,6 +71,7 @@ const mockUseDocumentVersions = useDocumentVersions as MockedFunction<typeof use
 
 describe('DocumentHeaderTitle', () => {
   const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+  const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>
   const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
   const defaultProps = {
     connectionState: 'connected',
@@ -100,8 +104,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return an empty fragment when connectionState is not "connected" and editState is empty', async () => {
@@ -111,8 +115,11 @@ describe('DocumentHeaderTitle', () => {
       editState: null,
     } as unknown as DocumentPaneContextValue)
 
-    const {container} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(container.firstChild).toBeNull())
+    const client = createMockSanityClient()
+    const wrapper = await createWrapperComponent(client as any)
+
+    const {container} = render(<DocumentHeaderTitle />, {wrapper})
+    await waitFor(() => expect(container.textContent).toBe(''))
   })
 
   it('should render the header title when connectionState is not "connected" and editState has values', async () => {
@@ -128,8 +135,11 @@ describe('DocumentHeaderTitle', () => {
       title: 'Test Value',
     })
 
-    const {getByText} = render(<DocumentHeaderTitle />)
-    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
+    const client = createMockSanityClient()
+    const wrapper = await createWrapperComponent(client as any)
+
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Test Title')
   })
 
   it('should return the title if it is provided', async () => {
@@ -141,8 +151,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Test Title')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Test Title')
   })
 
   it('should return "New {schemaType?.title || schemaType?.name}" if documentValue is not provided', async () => {
@@ -154,8 +164,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return the value.title if value is provided and no error occurred', async () => {
@@ -167,8 +177,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return "New Test Schema" if value is not provided and no error occurred', async () => {
@@ -177,8 +187,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 
   it('should return "Error: {error.message}" if an error occurred while getting the preview value', async () => {
@@ -195,8 +205,8 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('Error: Test Error')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('Error: Test Error')
   })
 
   it('should display the value returned by useValuePreview hook correctly when no error occurs', async () => {
@@ -208,7 +218,7 @@ describe('DocumentHeaderTitle', () => {
     const client = createMockSanityClient()
     const wrapper = await createWrapperComponent(client as any)
 
-    const {getByText} = render(<DocumentHeaderTitle />, {wrapper})
-    await waitFor(() => expect(getByText('New Test Schema')).toBeInTheDocument())
+    render(<DocumentHeaderTitle />, {wrapper})
+    await screen.findByText('New Test Schema')
   })
 })

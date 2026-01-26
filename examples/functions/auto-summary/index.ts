@@ -16,7 +16,7 @@ export const handler = documentEventHandler(async ({context, event}) => {
       instructionParams: {
         content: {
           type: 'field',
-          path: 'body',
+          path: 'content',
         },
       },
       instruction: `Based on the $content, write a summary no more than 250 words.`,

@@ -1,4 +1,4 @@
-import {identity, sortBy, values} from 'lodash'
+import {identity, sortBy, values} from 'lodash-es'
 
 import {escapeField, fieldNeedsEscape} from '../../util'
 import {INCLUDE_FIELDS_QUERY} from '../constants'

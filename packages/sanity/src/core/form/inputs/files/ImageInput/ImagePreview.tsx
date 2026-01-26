@@ -1,102 +1,84 @@
-import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Box, type Card, type CardTone, Heading, Text} from '@sanity/ui'
-import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {type Card, Text} from '@sanity/ui'
+import {type ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
+import {type AssetAccessPolicy} from '../types'
+import {ErrorIconWrapper, FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
 
-interface Props {
+interface ImagePreviewProps {
   alt: string
-  drag: boolean
-  isRejected: boolean
-  readOnly?: boolean | null
-  src: string
+  accessPolicy?: AssetAccessPolicy
+  src?: string
 }
 
-export function ImagePreview(props: ComponentProps<typeof Card> & Props) {
-  const {drag, readOnly, isRejected, src, ...rest} = props
+export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewProps) {
+  const {accessPolicy = 'public', src, ...rest} = props
   const [isLoaded, setLoaded] = useState(false)
-  const acceptTone = isRejected || readOnly ? 'critical' : 'primary'
-  const tone = drag ? acceptTone : 'default'
+  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
     /* set for when the src is being switched when the image input already had a image src
     - meaning it already had an asset */
     setLoaded(false)
+    setHasError(false)
   }, [src])
 
   const onLoadChange = useCallback(() => {
     setLoaded(true)
+    setHasError(false)
   }, [])
 
-  const {t} = useTranslation()
+  const onErrorChange = useCallback(() => {
+    setHasError(true)
+    setLoaded(false)
+  }, [])
+
+  const showAccessWarning = hasError && accessPolicy === 'unknown'
+  const showLoading = !isLoaded && !showAccessWarning
 
   return (
     <RatioBox {...rest} tone="transparent">
-      {!isLoaded && <OverlayComponent cardTone="transparent" content={<LoadingBlock showText />} />}
-      <img
-        src={src}
-        data-testid="hotspot-image-input"
-        alt={props.alt}
-        onLoad={onLoadChange}
-        referrerPolicy="strict-origin-when-cross-origin"
-      />
-      {drag && (
-        <OverlayComponent
-          cardTone={tone}
-          content={
-            <>
-              <Box marginBottom={3}>
-                <Heading>
-                  <HoverIcon isRejected={isRejected} readOnly={readOnly} />
-                </Heading>
-              </Box>
-              <Text size={1}>{t(getHoverTextTranslationKey({isRejected, readOnly}))}</Text>
-            </>
-          }
+      {showAccessWarning && <AccessWarningOverlay />}
+      {showLoading && <LoadingOverlay />}
+
+      {src && (
+        <img
+          src={src}
+          data-testid="hotspot-image-input"
+          alt={props.alt}
+          onLoad={onLoadChange}
+          onError={onErrorChange}
+          referrerPolicy="strict-origin-when-cross-origin"
         />
       )}
     </RatioBox>
   )
 }
 
-function HoverIcon({isRejected, readOnly}: {isRejected: boolean; readOnly?: boolean}) {
-  if (isRejected) {
-    return <AccessDeniedIcon />
-  }
-  if (readOnly) {
-    return <ReadOnlyIcon />
-  }
-  return <ImageIcon />
-}
-
-function getHoverTextTranslationKey({
-  isRejected,
-  readOnly,
-}: {
-  isRejected: boolean
-  readOnly?: boolean
-}) {
-  if (isRejected) {
-    return 'inputs.image.drag-overlay.cannot-upload-here'
-  }
-  return readOnly
-    ? 'inputs.image.drag-overlay.this-field-is-read-only'
-    : 'inputs.image.drag-overlay.drop-to-upload-image'
-}
-
-function OverlayComponent({
-  cardTone,
-  content,
-}: {
-  cardTone: Exclude<CardTone, 'inherit'>
-  content: ReactNode
-}) {
+function LoadingOverlay() {
   return (
-    <Overlay padding={3} tone={cardTone}>
+    <Overlay padding={3} tone="transparent">
       <FlexOverlay direction="column" align="center" justify="center">
-        {content}
+        <LoadingBlock showText />
+      </FlexOverlay>
+    </Overlay>
+  )
+}
+
+function AccessWarningOverlay() {
+  const {t} = useTranslation()
+
+  return (
+    <Overlay padding={3} tone="critical" border>
+      <FlexOverlay direction="column" align="center" justify="center" gap={2}>
+        <ErrorIconWrapper>
+          <WarningOutlineIcon />
+        </ErrorIconWrapper>
+        <Text muted size={1}>
+          {t('inputs.image.error.possible-access-restriction')}
+        </Text>
       </FlexOverlay>
     </Overlay>
   )

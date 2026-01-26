@@ -1,16 +1,8 @@
+import {BlueprintsLogsCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --watch, -w    Watch for new logs (streaming mode)
-
-Examples:
-  # Show logs for the current Stack
-  sanity blueprints logs
-
-  # Watch for new logs (streaming mode)
-  sanity blueprints logs --watch
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsLogsFlags {
   watch?: boolean
@@ -24,9 +16,7 @@ const defaultFlags: BlueprintsLogsFlags = {
 const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
   name: 'logs',
   group: 'blueprints',
-  helpText,
-  signature: '[--watch] [-w]',
-  description: 'Display logs for the current Blueprint Stack',
+  ...transformHelpText(BlueprintsLogsCommand, 'sanity', 'blueprints logs'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -44,7 +34,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 

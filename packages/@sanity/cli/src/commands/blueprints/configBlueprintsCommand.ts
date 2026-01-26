@@ -1,29 +1,10 @@
+import {BlueprintsConfigCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --edit, -e           Edit the configuration
-  --test, -t           Test the configuration
-  --project-id <id>    Project ID to use
-
-Examples:
-  # View current configuration
-  sanity blueprints config
-
-  # Edit configuration
-  sanity blueprints config --edit
-
-  # Test configuration
-  sanity blueprints config --test
-
-  # Edit and test configuration
-  sanity blueprints config -et
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsConfigFlags {
-  'test-config'?: boolean
-  'test'?: boolean
-  't'?: boolean
   'edit'?: boolean
   'e'?: boolean
   'project-id'?: string
@@ -32,6 +13,7 @@ export interface BlueprintsConfigFlags {
   'stack-id'?: string
   'stackId'?: string
   'stack'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsConfigFlags = {
@@ -41,9 +23,7 @@ const defaultFlags: BlueprintsConfigFlags = {
 const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
   name: 'config',
   group: 'blueprints',
-  helpText,
-  signature: '[--edit] [-e] [--test] [-t] [--project-id <id>]',
-  description: 'View or edit local Blueprints configuration',
+  ...transformHelpText(BlueprintsConfigCommand, 'sanity', 'blueprints config'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -62,7 +42,7 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
     })
 
@@ -74,8 +54,8 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
-        'test-config': flags['test-config'] ?? flags.test ?? flags.t,
         'edit': flags.edit ?? flags.e,
+        'verbose': flags.verbose,
       },
     })
 

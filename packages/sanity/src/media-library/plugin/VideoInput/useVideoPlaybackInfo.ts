@@ -1,12 +1,86 @@
-import {type Reference} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type Reference, type SanityDocument} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {from, of} from 'rxjs'
-import {catchError, map, startWith} from 'rxjs/operators'
+import {defer, from, type Observable, of, Subject, timer} from 'rxjs'
+import {
+  catchError,
+  map,
+  mergeMap,
+  retry as retryOperator,
+  startWith,
+  switchMap,
+  timeout,
+} from 'rxjs/operators'
 
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks/useClient'
 import {type VideoPlaybackInfo} from './types'
+
+const POLLING_DELAY = 2_000
+const POLLING_MAX_DURATION = 120_000
+
+class AssetProcessingError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'AssetProcessingError'
+  }
+}
+interface DocResponse {
+  documents: (SanityDocument & {state?: string})[]
+}
+
+function isPlaybackNotFoundError(error: unknown): boolean {
+  return (error as any)?.statusCode === 404
+}
+
+/**
+ * Polls the /doc endpoint for an asset until its state is "ready".
+ * Retries on "processing" state or if the doc is not found.
+ * Throws a fatal error for "failed" state or other errors.
+ * This is mainly used for video assets that might take a long time to process.
+ */
+function pollForReadyState(
+  client: SanityClient,
+  mediaLibraryId: string,
+  assetInstanceId: string,
+): Observable<SanityDocument & {state?: string}> {
+  return client.observable
+    .request<DocResponse>({
+      method: 'GET',
+      url: `/media-libraries/${mediaLibraryId}/doc/${assetInstanceId}`,
+    })
+    .pipe(
+      mergeMap((response) => {
+        const doc = response.documents?.[0]
+        if (!doc) {
+          throw new Error(`Asset document ${assetInstanceId} not found, retrying...`)
+        }
+        if (doc.state === 'ready') {
+          return of(doc)
+        }
+        if (doc.state === 'processing') {
+          throw new AssetProcessingError('Asset is processing')
+        }
+        throw new Error(`Asset state is not "ready": ${doc.state || 'unknown'}`)
+      }),
+      retryOperator({
+        delay: (pollError) => {
+          if (pollError instanceof AssetProcessingError) {
+            return timer(POLLING_DELAY)
+          }
+          throw pollError
+        },
+      }),
+      timeout(POLLING_MAX_DURATION),
+      catchError((err) => {
+        if (err.name === 'TimeoutError') {
+          throw new Error(`Asset ${assetInstanceId} was not ready processing after 2 minutes.`)
+        }
+        throw err
+      }),
+    )
+}
 
 /**
  * Parses the asset instance ID from a Media Library GDR
@@ -56,89 +130,86 @@ export type VideoPlaybackInfoLoadable =
   | {isLoading: false; result: undefined; error: Error; retry: () => void}
   | {isLoading: false; result: undefined; error: undefined; retry: () => void}
 
-// eslint-disable-next-line no-empty-function
-const noop = () => {}
-
-const INITIAL_LOADING_STATE: VideoPlaybackInfoLoadable = {
-  isLoading: true,
-  result: undefined,
-  error: undefined,
-  retry: noop,
-}
-
-const EMPTY_STATE: VideoPlaybackInfoLoadable = {
-  isLoading: false,
-  result: undefined,
-  error: undefined,
-  retry: noop,
-}
-
 export function useVideoPlaybackInfo(
   params: UseVideoPlaybackInfoParams | null,
 ): VideoPlaybackInfoLoadable {
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
-  const [retryAttempt, setRetryAttempt] = useState<number>(0)
+
+  const [retrySubject] = useState(() => new Subject<void>())
 
   const retry = useCallback(() => {
-    setRetryAttempt((current) => current + 1)
-  }, [])
+    retrySubject.next()
+  }, [retrySubject])
 
-  const mlClient = useMemo(() => {
+  const [initialState, playbackInfoObservable] = useMemo(() => {
+    const loadingState: VideoPlaybackInfoLoadable = {
+      isLoading: true,
+      result: undefined,
+      error: undefined,
+      retry,
+    }
+    const emptyState: VideoPlaybackInfoLoadable = {
+      isLoading: false,
+      result: undefined,
+      error: undefined,
+      retry,
+    }
+
     if (!params) {
-      return null
-    }
-    return client.withConfig({
-      apiVersion: DEFAULT_API_VERSION,
-      requestTagPrefix: 'sanity.studio.mediaLibrary.videoPlaybackInfo',
-    })
-  }, [client, params])
-
-  const playbackInfoObservable = useMemo(() => {
-    if (!params || !mlClient) {
-      return of(EMPTY_STATE)
+      return [emptyState, of(emptyState)]
     }
 
-    try {
-      const assetInstanceId = parseAssetInstanceId(params.assetRef._ref)
+    const {mediaLibraryId, assetRef} = params
 
-      return from(
-        mlClient.request<VideoPlaybackInfo>({
-          uri: `/media-libraries/${params.mediaLibraryId}/video/${assetInstanceId}/playback-info`,
-        }),
-      ).pipe(
-        map(
-          (result) =>
-            ({
+    const trigger$ = retrySubject.pipe(startWith(undefined))
+
+    const obs$ = trigger$.pipe(
+      switchMap(() =>
+        defer(() => {
+          const assetInstanceId = parseAssetInstanceId(assetRef._ref)
+          return from(
+            client.request<VideoPlaybackInfo>({
+              uri: `/media-libraries/${mediaLibraryId}/video/${assetInstanceId}/playback-info`,
+              tag: 'media-library.video-playback-info',
+            }),
+          )
+        }).pipe(
+          map(
+            (result) =>
+              ({
+                isLoading: false,
+                result,
+                error: undefined,
+                retry,
+              }) as const,
+          ),
+          retryOperator({
+            delay: (error) => {
+              if (!isPlaybackNotFoundError(error)) {
+                throw error
+              }
+
+              const assetInstanceId = parseAssetInstanceId(assetRef._ref)
+
+              return pollForReadyState(client, mediaLibraryId, assetInstanceId)
+            },
+          }),
+          catchError((err: Error) => {
+            console.error('Failed to fetch video playback info:', err)
+            return of({
               isLoading: false,
-              result,
-              error: undefined,
+              result: undefined,
+              error: err,
               retry,
-              retryAttempt,
-            }) as const,
+            } as const)
+          }),
+          startWith(loadingState),
         ),
-        startWith(INITIAL_LOADING_STATE),
-        catchError((err: Error) => {
-          console.error('Failed to fetch video playback info:', err)
-          return of({
-            isLoading: false,
-            result: undefined,
-            error: err,
-            retry,
-            retryAttempt,
-          } as const)
-        }),
-      )
-    } catch (err) {
-      console.error('Invalid asset reference:', err)
-      return of({
-        isLoading: false,
-        result: undefined,
-        error: err instanceof Error ? err : new Error('Invalid asset reference'),
-        retry,
-        retryAttempt,
-      } as const)
-    }
-  }, [params, mlClient, retry, retryAttempt])
+      ),
+    )
 
-  return useObservable(playbackInfoObservable, INITIAL_LOADING_STATE)
+    return [loadingState, obs$]
+  }, [params, client, retrySubject, retry])
+
+  return useObservable(playbackInfoObservable, initialState)
 }

@@ -1,8 +1,8 @@
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
-import {noop} from 'lodash'
+import {render, screen} from '@testing-library/react'
+import {noop} from 'lodash-es'
 import {forwardRef, useImperativeHandle} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
@@ -100,7 +100,7 @@ const DRAFT_PREVIEW = {title: 'Actor (draft)', description: ''}
 
 describe.skip('if schema type is a strong reference', () => {
   test('the UI does *NOT* show a warning if the draft exist and the reference value is weak and has a _strengthenOnPublish flag', () => {
-    const {getByTestId, queryByTestId} = render(
+    render(
       <ReferenceInfoTester
         value={{
           _type: 'reference',
@@ -120,11 +120,11 @@ describe.skip('if schema type is a strong reference', () => {
       />,
     )
 
-    expect(queryByTestId('alert-nonexistent-document')).toBe(null)
+    expect(screen.queryByTestId('alert-nonexistent-document')).toBe(null)
   })
 
   test('the UI shows a warning if the document is published and the value is is weak', () => {
-    const {getByTestId, queryByTestId} = render(
+    render(
       <ReferenceInfoTester
         value={{_type: 'reference', _weak: true, _ref: 'someActor'}}
         referenceInfo={{
@@ -139,13 +139,13 @@ describe.skip('if schema type is a strong reference', () => {
       />,
     )
 
-    expect(queryByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
+    expect(screen.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 })
 
 describe.skip('if schema type is a weak reference', () => {
   test('the UI indicates that the referenced document does not exist', () => {
-    const {getByTestId} = render(
+    render(
       <ReferenceInfoTester
         typeIsWeakRef
         value={{_type: 'reference', _weak: true, _ref: 'someActor'}}
@@ -161,11 +161,11 @@ describe.skip('if schema type is a weak reference', () => {
       />,
     )
 
-    expect(getByTestId('alert-nonexistent-document')).toBeInTheDocument()
+    expect(screen.getByTestId('alert-nonexistent-document')).toBeInTheDocument()
   })
 
   test('a warning is visible if the reference value is strong while the schema says it should be weak', () => {
-    const {getByTestId} = render(
+    render(
       <ReferenceInfoTester
         typeIsWeakRef
         value={{_type: 'reference', _ref: 'someActor'}}
@@ -181,6 +181,6 @@ describe.skip('if schema type is a weak reference', () => {
       />,
     )
 
-    expect(getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
+    expect(screen.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
 })

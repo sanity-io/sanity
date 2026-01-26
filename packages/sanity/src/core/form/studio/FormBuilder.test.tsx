@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {useMemo, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
@@ -13,7 +13,7 @@ import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
-import {useTreeEditingEnabled} from './tree-editing'
+import {useEnhancedObjectDialog} from './tree-editing'
 
 const schemaTypes = [
   defineType({
@@ -30,10 +30,10 @@ const schemaTypes = [
   }),
 ]
 
-vi.mock('./tree-editing/context/enabled/useTreeEditingEnabled')
+vi.mock('./tree-editing/context/enabled/useEnhancedObjectDialog')
 
 describe('FormBuilder', () => {
-  const mockedUseTreeEditingEnabled = useTreeEditingEnabled as Mock
+  const mockedUseEnhancedObjectDialog = useEnhancedObjectDialog as Mock
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -50,7 +50,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: false}))
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -131,7 +131,7 @@ describe('FormBuilder', () => {
       </TestProvider>,
     )
 
-    const titleField = await result.findByTestId('field-title')
+    const titleField = await screen.findByTestId('field-title')
 
     expect(removeClasses(titleField.outerHTML)).toMatchSnapshot()
   })
@@ -147,7 +147,7 @@ describe('FormBuilder', () => {
         schema: {types: schemaTypes},
       },
     })
-    mockedUseTreeEditingEnabled.mockImplementation(() => ({enabled: true}))
+    mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: true}))
 
     const focusPath: Path = []
     const openPath: Path = []
@@ -228,7 +228,7 @@ describe('FormBuilder', () => {
       </TestProvider>,
     )
 
-    const titleField = await result.findByTestId('field-title')
+    const titleField = await screen.findByTestId('field-title')
 
     expect(removeClasses(titleField.outerHTML)).toMatchSnapshot()
   })

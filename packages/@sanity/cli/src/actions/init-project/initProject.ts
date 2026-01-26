@@ -7,7 +7,7 @@ import {type Framework} from '@vercel/frameworks'
 import {type detectFrameworkRecord} from '@vercel/fs-detectors'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
-import {deburr, noop} from 'lodash'
+import {deburr, noop} from 'lodash-es'
 import pMap from 'p-map'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
@@ -37,6 +37,7 @@ import {
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
+import {fetchPostInitPrompt} from '../../util/fetchPostInitPrompt'
 import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDefaults'
 import {getProviderName} from '../../util/getProviderName'
 import {getUserConfig} from '../../util/getUserConfig'
@@ -49,6 +50,8 @@ import {
 } from '../../util/organizationUtils'
 import {checkIsRemoteTemplate, getGitHubRepoInfo, type RepoInfo} from '../../util/remoteTemplate'
 import {login, type LoginFlags} from '../login/login'
+import {type EditorName} from '../mcp/editorConfigs'
+import {setupMCP} from '../mcp/mcp'
 import {createProject} from '../project/createProject'
 import {bootstrapLocalTemplate} from './bootstrapLocalTemplate'
 import {bootstrapRemoteTemplate} from './bootstrapRemoteTemplate'
@@ -199,10 +202,12 @@ export default async function initSanity(
         if (useDefaultPlan) {
           print(`Using default plan.`)
         } else {
-          throw new Error(`Coupon "${intendedCoupon}" does not exist`)
+          throw new Error(`Coupon "${intendedCoupon}" does not exist`, {cause: err})
         }
       } else {
-        throw new Error(`Unable to validate coupon, please try again later:\n\n${err.message}`)
+        throw new Error(`Unable to validate coupon, please try again later:\n\n${err.message}`, {
+          cause: err,
+        })
       }
     }
   } else if (intendedPlan) {
@@ -228,10 +233,12 @@ export default async function initSanity(
         if (useDefaultPlan) {
           print(`Using default plan.`)
         } else {
-          throw new Error(`Plan id "${intendedPlan}" does not exist`)
+          throw new Error(`Plan id "${intendedPlan}" does not exist`, {cause: err})
         }
       } else {
-        throw new Error(`Unable to validate plan, please try again later:\n\n${err.message}`)
+        throw new Error(`Unable to validate plan, please try again later:\n\n${err.message}`, {
+          cause: err,
+        })
       }
     }
   }
@@ -393,11 +400,13 @@ export default async function initSanity(
   }
 
   let useTypeScript = flagOrDefault('typescript', true)
+  let mcpConfigured: EditorName[] = []
   if (initNext) {
     if (shouldPromptFor('typescript')) {
       useTypeScript = await promptForTypeScript(prompt)
     }
     trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
+
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
     let embeddedStudio = flagOrDefault('nextjs-embed-studio', true)
@@ -540,6 +549,19 @@ export default async function initSanity(
       }
     }
 
+    // Set up MCP integration
+    const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+    trace.log({
+      step: 'mcpSetup',
+      detectedEditors: mcpResult.detectedEditors,
+      configuredEditors: mcpResult.configuredEditors,
+      skipped: mcpResult.skipped,
+    })
+    if (mcpResult.error) {
+      trace.error(mcpResult.error)
+    }
+    mcpConfigured = mcpResult.configuredEditors
+
     const chosen = await resolvePackageManager(workDir)
     trace.log({step: 'selectPackageManager', selectedOption: chosen})
     const packages = ['@sanity/vision@4', 'sanity@4', '@sanity/image-url@1', 'styled-components@6']
@@ -576,6 +598,14 @@ export default async function initSanity(
     print(
       `\n${chalk.green('Success!')} Your Sanity configuration files has been added to this project`,
     )
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+      )
+    }
 
     return
   }
@@ -641,6 +671,19 @@ export default async function initSanity(
     }
   }
 
+  // Set up MCP integration
+  const mcpResult = await setupMCP(context, {mcp: cliFlags.mcp})
+  trace.log({
+    step: 'mcpSetup',
+    detectedEditors: mcpResult.detectedEditors,
+    configuredEditors: mcpResult.configuredEditors,
+    skipped: mcpResult.skipped,
+  })
+  if (mcpResult.error) {
+    trace.error(mcpResult.error)
+  }
+  mcpConfigured = mcpResult.configuredEditors
+
   // we enable auto-updates by default, but allow users to specify otherwise
   let autoUpdates = true
   if (typeof cliFlags['auto-updates'] === 'boolean') {
@@ -703,7 +746,7 @@ export default async function initSanity(
   const devCommand = devCommandMap[pkgManager]
 
   const isCurrentDir = outputPath === process.cwd()
-  const goToProjectDir = `(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
+  const goToProjectDir = `\n(${chalk.cyan(`cd ${outputPath}`)} to navigate to your new project directory)`
 
   if (isAppTemplate) {
     //output for custom apps here
@@ -714,23 +757,39 @@ export default async function initSanity(
     )
     print('\nGet started in `src/App.tsx`, or refer to our documentation for a walkthrough:')
     print(chalk.blue.underline('https://www.sanity.io/docs/app-sdk/sdk-configuration'))
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+      )
+    }
     print('\n')
     print(`Other helpful commands:`)
-    print(`npx sanity docs       to open the documentation in a browser`)
-    print(`npx sanity dev        to start the development server for your app`)
-    print(`npx sanity deploy     to deploy your app`)
+    print(`npx sanity docs browse     to open the documentation in a browser`)
+    print(`npx sanity dev             to start the development server for your app`)
+    print(`npx sanity deploy          to deploy your app`)
   } else {
     //output for Studios here
     print(`✅ ${chalk.green.bold('Success!')} Your Studio has been created.`)
     if (!isCurrentDir) print(goToProjectDir)
     print(
-      `Get started by running ${chalk.cyan(devCommand)} to launch your Studio’s development server`,
+      `\nGet started by running ${chalk.cyan(devCommand)} to launch your Studio's development server`,
     )
+    if (mcpConfigured && mcpConfigured.length > 0) {
+      const message = await getPostInitMCPPrompt(mcpConfigured)
+      print(`\n${message}`)
+      print(`\nLearn more: ${chalk.cyan('https://mcp.sanity.io')}`)
+      print(
+        `\nHave feedback? Tell us in the community: ${chalk.cyan('https://www.sanity.io/community/join')}`,
+      )
+    }
     print('\n')
     print(`Other helpful commands:`)
-    print(`npx sanity docs     to open the documentation in a browser`)
-    print(`npx sanity manage   to open the project settings in a browser`)
-    print(`npx sanity help     to explore the CLI manual`)
+    print(`npx sanity docs browse     to open the documentation in a browser`)
+    print(`npx sanity manage          to open the project settings in a browser`)
+    print(`npx sanity help            to explore the CLI manual`)
   }
 
   if (isFirstProject) {
@@ -828,6 +887,15 @@ export default async function initSanity(
     }
   }
 
+  async function getPostInitMCPPrompt(editorsNames: EditorName[]): Promise<string> {
+    const promptClient = apiClient({requireUser: false, requireProject: false})
+    return fetchPostInitPrompt({
+      client: promptClient,
+      editorNames: new Intl.ListFormat('en').format(editorsNames),
+      chalk,
+    })
+  }
+
   // eslint-disable-next-line complexity
   async function getOrCreateProject(): Promise<{
     projectId: string
@@ -855,7 +923,7 @@ export default async function initSanity(
           userAction: 'select',
         }
       }
-      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
+      throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`, {cause: err})
     }
 
     if (projects.length === 0 && unattended) {

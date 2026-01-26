@@ -1,4 +1,4 @@
-import {difference, intersection, isPlainObject, pick} from 'lodash'
+import {difference, intersection, isPlainObject, pick} from 'lodash-es'
 
 import {
   type InternalSearchParam,
@@ -26,7 +26,7 @@ function createMatchOk(
   node: RouterNode,
   matchedState: Record<string, string>,
   searchParams: InternalSearchParam[],
-  child?: MatchOk | undefined,
+  child?: MatchOk,
 ): MatchOk {
   return {type: 'ok', node, matchedState, searchParams, child}
 }

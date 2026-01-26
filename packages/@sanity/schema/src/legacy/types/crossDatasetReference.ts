@@ -1,5 +1,5 @@
 import arrify from 'arrify'
-import {capitalize, pick} from 'lodash'
+import {capitalize, pick} from 'lodash-es'
 
 import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
@@ -79,13 +79,7 @@ export const CrossDatasetReferenceType = {
     )
 
     lazyGetter(parsed, 'fields', () => {
-      return REFERENCE_FIELDS.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: createMemberType(type),
-        }
-      })
+      return REFERENCE_FIELDS.map((fieldDef) => createMemberType.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'to', () => {

@@ -1,19 +1,17 @@
-import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
-import {
-  BehaviorPlugin,
-  MarkdownPlugin,
-  type MarkdownPluginConfig,
-  OneLinePlugin,
-} from '@portabletext/editor/plugins'
+import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
 
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
-import {type PortableTextPluginsProps} from '../../../types/blockProps'
+import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
-const markdownConfig: MarkdownPluginConfig = {
+const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>
     schema.decorators.find((decorator) => decorator.name === 'strong')?.name,
   codeDecorator: ({schema}) =>
@@ -33,12 +31,24 @@ const markdownConfig: MarkdownPluginConfig = {
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
-  const editor = usePortableTextEditor()
-  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
-      plugins: {markdown: {config: markdownConfig}},
+      plugins: {
+        markdown: {
+          config: markdownConfig,
+        },
+        typography: {
+          guard: createDecoratorGuard({
+            decorators: ({context}) =>
+              context.schema.decorators.flatMap((decorator) =>
+                decorator.name === 'code' ? [] : [decorator.name],
+              ),
+          }),
+        },
+      },
       renderDefault: RenderDefault,
     }),
     [],
@@ -72,10 +82,50 @@ export const PortableTextEditorPlugins = (props: {
   )
 }
 
-export const DefaultPortableTextEditorPlugins = (
-  props: Omit<PortableTextPluginsProps, 'renderDefault'>,
-) => {
-  return <MarkdownPlugin config={props.plugins.markdown.config} />
+function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 'renderDefault'>) {
+  return (
+    <>
+      <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
+      <DefaultTypographyPlugin {...props.plugins.typography} />
+    </>
+  )
+}
+
+function DefaultMarkdownShortcutsPlugin(
+  incomingProps: PortableTextPluginsProps['plugins']['markdown'],
+) {
+  const props = incomingProps ?? {}
+
+  if (!props.config) {
+    const {enabled, config, ...markdownShortcutsPluginProps} = props
+
+    if (enabled === false) {
+      return null
+    }
+
+    return <MarkdownShortcutsPlugin {...markdownShortcutsPluginProps} />
+  }
+
+  const {orderedList, orderedListStyle, unorderedList, unorderedListStyle, ...restMarkdownConfig} =
+    props.config
+
+  return (
+    <MarkdownShortcutsPlugin
+      orderedList={orderedList ?? orderedListStyle}
+      unorderedList={unorderedList ?? unorderedListStyle}
+      {...restMarkdownConfig}
+    />
+  )
+}
+
+function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typography']) {
+  const {enabled, ...typographyPluginProps} = props ?? {}
+
+  if (enabled === false) {
+    return null
+  }
+
+  return <TypographyPlugin {...typographyPluginProps} />
 }
 
 export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
@@ -83,5 +133,6 @@ export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefau
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
   })
+  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
   return <RenderPlugins {...props} />
 }

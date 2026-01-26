@@ -81,8 +81,9 @@ npx sanity schema deploy
          memory: 2,
          timeout: 60,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post'",
+           on: ['create', 'update'],
+           filter:
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
            projection: '{_id}',
          },
        }),
@@ -169,8 +170,9 @@ export default defineBlueprint({
       memory: 2,
       timeout: 60,
       event: {
-        on: ['publish'],
-        filter: "_type == 'post'",
+        on: ['create', 'update'],
+        filter:
+          "_type == 'post' && defined(content) && (delta::changedAny(content) || delta::operation() == 'create')",
         projection: '{_id}',
       },
     }),
@@ -240,7 +242,7 @@ For more details, see the [official function deployment documentation](https://w
 
 When a document is created or updated, the function automatically:
 
-1. **Triggers** on the publish event for post documents
+1. **Triggers** on the publish event for post documents when the content field changes
 2. **Analyzes** the content in the `content` field using Sanity's AI
 3. **Generates** a tone of voice analysis
 4. **Writes** the tone analysis to the `toneOfVoice` field

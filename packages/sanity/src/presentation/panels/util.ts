@@ -160,7 +160,6 @@ export function validateWidths(
       }
 
       const width = Math.min(
-        // eslint-disable-next-line no-negated-condition
         maxWidth != null ? maxWidth : 100,
         Math.max(minWidth, widths[index] + remainingWidth),
       )

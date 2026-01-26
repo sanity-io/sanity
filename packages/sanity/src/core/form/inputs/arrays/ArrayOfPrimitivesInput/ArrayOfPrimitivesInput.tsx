@@ -1,5 +1,5 @@
 import {Card, Stack} from '@sanity/ui'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {PureComponent} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -8,8 +8,8 @@ import {type ArrayOfPrimitivesInputProps} from '../../../types'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {Item, List} from '../common/list'
-import {UploadTargetCard} from '../common/UploadTargetCard'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
+import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
 import {getEmptyValue} from './getEmptyValue'
 import {ItemRow} from './ItemRow'
 import {NoItemsPlaceholder} from './NoItemsPlaceholder'
@@ -140,9 +140,8 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
   renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
     const {schemaType} = this.props
-    const {key, ...rest} = props
     const sortable = schemaType.options?.sortable !== false
-    return <ItemRow key={key} {...rest} sortable={sortable} insertableTypes={schemaType.of} />
+    return <ItemRow {...props} sortable={sortable} insertableTypes={schemaType.of} />
   }
 
   render() {
@@ -236,6 +235,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
           readOnly={this.props.readOnly}
           schemaType={this.props.schemaType}
           value={this.props.value}
+          path={this.props.path}
         />
       </Stack>
     )

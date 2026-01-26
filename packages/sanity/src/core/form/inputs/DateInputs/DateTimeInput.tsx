@@ -1,3 +1,4 @@
+import {isKeySegment} from '@sanity/types'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
@@ -7,6 +8,7 @@ import {
   parse,
   type ParseResult,
 } from '@sanity/util/legacyDateFormat'
+import {fromString as pathFromString} from '@sanity/util/paths'
 import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -27,6 +29,33 @@ import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
+
+/**
+ * Sanitizes an input ID for use in timezone storage keys.
+ * The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
+ * This function parses the path string and converts it to a safe format using dots and "key-" prefix.
+ *
+ * @internal
+ */
+export function sanitizeTimeZoneKeyId(id: string): string {
+  try {
+    const segments = pathFromString(id)
+    return segments
+      .map((segment) => {
+        if (isKeySegment(segment)) {
+          return `key-${segment._key}`
+        }
+        if (typeof segment === 'number') {
+          return `idx_${segment}`
+        }
+        return segment
+      })
+      .join('.')
+  } catch {
+    // Fallback: if parsing fails, strip problematic characters
+    return id.replace(/[[\]="']/g, '-')
+  }
+}
 
 const Root = styled(Card)`
   line-height: 1;
@@ -146,7 +175,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
       type: 'input' as TimeZoneScopeType,
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
-      id: `${published}.${id}${allowTimeZoneSwitch ? '' : '.fixed'}`,
+      // sanitize the id to remove special characters that the backend key-value API rejects
+      id: `${published}.${sanitizeTimeZoneKeyId(id)}${allowTimeZoneSwitch ? '' : '.fixed'}`,
       relativeDate: value ? new Date(value) : undefined,
     }),
     [allowTimeZoneSwitch, displayTimeZone, id, published, value],
@@ -205,7 +235,9 @@ export function DateTimeInput(props: DateTimeInputProps) {
                   validation={validation}
                   title={schemaType.title}
                   suffix={
-                    displayTimeZone && (
+                    // Check raw schema options for allowTimeZoneSwitch since the parsed value
+                    // defaults to true - we only want to show the button when explicitly configured
+                    (displayTimeZone || schemaType.options?.allowTimeZoneSwitch === true) && (
                       <TimeZoneButtonElementQuery>
                         <TimeZoneButton
                           tooltipContent={

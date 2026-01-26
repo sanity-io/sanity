@@ -145,7 +145,7 @@ function AnnnotationWithDiff({
   }, [isEditing, myPath, onSetFocus, open])
 
   const handleOpenPopup = useCallback(
-    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

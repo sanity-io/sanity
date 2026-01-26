@@ -2,6 +2,7 @@ import {DotIcon} from '@sanity/icons'
 import {type BadgeTone, Box, Text} from '@sanity/ui'
 import {type CSSProperties} from 'react'
 
+/** @internal */
 export const ReleaseAvatarIcon = ({tone}: {tone: BadgeTone}) => {
   return (
     <DotIcon

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "4.9.0",
+  "version": "5.6.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -22,60 +22,52 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js",
+      "monorepo": "./src/_exports/index.ts",
       "default": "./lib/index.js"
     },
     "./fs": {
       "source": "./src/_exports/fs.ts",
-      "import": "./lib/fs.mjs",
-      "require": "./lib/fs.js",
+      "monorepo": "./src/_exports/fs.ts",
       "default": "./lib/fs.js"
     },
     "./client": {
       "source": "./src/_exports/client.ts",
-      "import": "./lib/client.mjs",
-      "require": "./lib/client.js",
+      "monorepo": "./src/_exports/client.ts",
       "default": "./lib/client.js"
     },
     "./concurrency-limiter": {
       "source": "./src/_exports/concurrency-limiter.ts",
-      "import": "./lib/concurrency-limiter.mjs",
-      "require": "./lib/concurrency-limiter.js",
+      "monorepo": "./src/_exports/concurrency-limiter.ts",
       "default": "./lib/concurrency-limiter.js"
     },
     "./content": {
       "source": "./src/_exports/content.ts",
-      "import": "./lib/content.mjs",
-      "require": "./lib/content.js",
+      "monorepo": "./src/_exports/content.ts",
       "default": "./lib/content.js"
     },
     "./createSafeJsonParser": {
       "source": "./src/_exports/createSafeJsonParser.ts",
-      "import": "./lib/createSafeJsonParser.mjs",
-      "require": "./lib/createSafeJsonParser.js",
+      "monorepo": "./src/_exports/createSafeJsonParser.ts",
+      "require": "./lib/createSafeJsonParser.cjs",
       "default": "./lib/createSafeJsonParser.js"
     },
     "./legacyDateFormat": {
       "source": "./src/_exports/legacyDateFormat.ts",
-      "import": "./lib/legacyDateFormat.mjs",
-      "require": "./lib/legacyDateFormat.js",
+      "monorepo": "./src/_exports/legacyDateFormat.ts",
       "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
       "source": "./src/_exports/paths.ts",
-      "import": "./lib/paths.mjs",
-      "require": "./lib/paths.js",
+      "monorepo": "./src/_exports/paths.ts",
       "default": "./lib/paths.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
-  "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -107,7 +99,7 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsc --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
+    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -117,20 +109,40 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "@date-fns/utc": "^2.1.1",
-    "@sanity/client": "^7.11.1",
+    "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.1.0",
-    "get-random-values-esm": "1.0.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
     "rimraf": "^5.0.10",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./fs": "./lib/fs.js",
+      "./client": "./lib/client.js",
+      "./concurrency-limiter": "./lib/concurrency-limiter.js",
+      "./content": "./lib/content.js",
+      "./createSafeJsonParser": {
+        "require": "./lib/createSafeJsonParser.cjs",
+        "default": "./lib/createSafeJsonParser.js"
+      },
+      "./legacyDateFormat": "./lib/legacyDateFormat.js",
+      "./paths": "./lib/paths.js",
+      "./package.json": "./package.json"
+    }
   }
 }

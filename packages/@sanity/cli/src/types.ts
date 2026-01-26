@@ -1,5 +1,7 @@
 import {type SanityClient} from '@sanity/client'
+import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
+import {type PluginOptions as ReactCompilerOptions} from 'babel-plugin-react-compiler'
 import type chalk from 'chalk'
 import {type Answers, type ChoiceCollection, type DistinctQuestion, type Separator} from 'inquirer'
 import {type Options, type Ora} from 'ora'
@@ -274,28 +276,9 @@ export interface GraphQLAPIConfig {
 }
 
 /**
- * Until these types are on npm: https://github.com/facebook/react/blob/0bc30748730063e561d87a24a4617526fdd38349/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L39-L122
  * @beta
  */
-export interface ReactCompilerConfig {
-  /**
-   * @see https://react.dev/learn/react-compiler#existing-projects
-   */
-  sources?: Array<string> | ((filename: string) => boolean) | null
-
-  /**
-   * The minimum major version of React that the compiler should emit code for. If the target is 19
-   * or higher, the compiler emits direct imports of React runtime APIs needed by the compiler. On
-   * versions prior to 19, an extra runtime package react-compiler-runtime is necessary to provide
-   * a userspace approximation of runtime APIs.
-   * @see https://react.dev/learn/react-compiler#using-react-compiler-with-react-17-or-18
-   */
-  target: '18' | '19'
-
-  panicThreshold?: 'ALL_ERRORS' | 'CRITICAL_ERRORS' | 'NONE'
-
-  compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all'
-}
+export type ReactCompilerConfig = Partial<ReactCompilerOptions>
 
 interface AppConfig {
   /**
@@ -368,13 +351,13 @@ export interface CliConfig {
      * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
      * Get the appId either by
      * - Checking the output of `sanity deploy`.
-     * - Get it from your project's Studio tab in https://sanity.io/manage
+     * - Get it from your project's Studio tab in https://www.sanity.io/manage
      */
     appId?: string
 
     /**
      * Enable auto-updates for studios.
-     * {@link https://www.sanity.io/docs/cli#auto-updates}
+     * {@link https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56}
      */
     autoUpdates?: boolean
   }
@@ -387,6 +370,41 @@ export interface CliConfig {
      * is the directory they will be read from and written to.
      */
     aspectsPath: string
+  }
+  /**
+   * Configuration for Sanity typegen
+   */
+  typegen?: Partial<TypeGenConfig>
+
+  /**
+   * Configuration for schema extraction (`sanity schema extract`)
+   */
+  schemaExtraction?: {
+    /**
+     * Output path for the extracted schema file.
+     * Defaults to `schema.json` in the working directory.
+     */
+    path?: string
+
+    /**
+     * When true, schema fields marked as required will be non-optional in the output.
+     * Defaults to `false`
+     */
+    enforceRequiredFields?: boolean
+
+    /**
+     * Additional glob patterns to watch for schema changes in watch mode.
+     * These extend the default patterns:
+     * - `sanity.config.{js,jsx,ts,tsx,mjs}`
+     * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}`
+     */
+    watchPatterns?: string[]
+
+    /**
+     * The name of the workspace to generate a schema for. Required if your Sanity project has more than one
+     * workspace.
+     */
+    workspace?: string
   }
 }
 

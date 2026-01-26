@@ -62,6 +62,7 @@ export interface ImageMetadata {
   palette?: ImagePalette
   lqip?: string
   blurHash?: string
+  thumbHash?: string
   hasAlpha: boolean
   isOpaque: boolean
 }
@@ -143,8 +144,11 @@ export type AssetFromSource = {
 }
 
 /** @public */
+export type AssetSourceComponentAction = 'select' | 'upload' | 'openInSource'
+
+/** @public */
 export interface AssetSourceComponentProps {
-  action?: 'select' | 'upload'
+  action?: AssetSourceComponentAction
   assetSource: AssetSource
   assetType?: 'file' | 'image' | 'sanity.video'
   accept: string
@@ -153,9 +157,15 @@ export interface AssetSourceComponentProps {
   selectedAssets: Asset[]
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource[]) => void
+  onChangeAction?: (action: AssetSourceComponentAction) => void
   schemaType?: ImageSchemaType | FileSchemaType
   /** @beta */
   uploader?: AssetSourceUploader
+  /**
+   * The asset to open in source. Only provided when action is 'openInSource'.
+   * @beta
+   */
+  assetToOpen?: Asset
 }
 
 /** @public */
@@ -166,10 +176,21 @@ export type AssetMetadataType =
   | 'palette'
   | 'lqip'
   | 'blurhash'
+  | 'thumbhash'
   | 'none'
 
 /** @beta */
 export type AssetSourceUploaderClass = new (...args: any[]) => AssetSourceUploader
+
+/**
+ * The result of calling `AssetSource.openInSource`.
+ * @beta
+ */
+export type AssetSourceOpenInSourceResult =
+  | {type: 'url'; url: string; target?: '_blank' | '_self'}
+  | {type: 'component'}
+  | false
+  | undefined
 
 /** @public */
 export interface AssetSource {
@@ -179,9 +200,24 @@ export interface AssetSource {
 
   i18nKey?: string
   component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<EmptyProps>
+  icon?: ComponentType
   /** @beta */
   Uploader?: AssetSourceUploaderClass
+  /**
+   * Resolve how to open an asset in its original source.
+   *
+   * This function is called for each AssetSource when determining if
+   * "Open in Source" should be available. The plugin should check
+   * `asset.source.name` to determine if it can handle this asset.
+   *
+   * Return values:
+   * - `{ type: 'url', url: string }` - Open the URL (in new window by default)
+   * - `{ type: 'component' }` - Render the asset source component with action='openInSource'
+   * - `false` or `undefined` - This plugin cannot handle this asset
+   *
+   * @beta
+   */
+  openInSource?: (asset: Asset) => AssetSourceOpenInSourceResult
 }
 
 /** @beta */

@@ -1,4 +1,5 @@
 import {
+  isKeySegment,
   type Path,
   type SanityDocument,
   type ValidationContext,
@@ -116,7 +117,19 @@ export function TestForm(props: TestFormProps) {
   useEffect(() => {
     if (focusPathFromProps) {
       setFocusPath(focusPathFromProps)
-      onSetOpenPath(focusPathFromProps)
+
+      // Calculate openPath the same way as handleFocus does
+      const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]
+      if (isKeySegment(lastSegment)) {
+        onSetOpenPath(focusPathFromProps)
+      } else {
+        const lastKeyIndex = focusPathFromProps.findLastIndex((seg) => isKeySegment(seg))
+        const newOpenPath =
+          lastKeyIndex >= 0
+            ? focusPathFromProps.slice(0, lastKeyIndex + 1)
+            : focusPathFromProps.slice(0, -1)
+        onSetOpenPath(newOpenPath)
+      }
     }
   }, [focusPathFromProps])
 
@@ -154,7 +167,7 @@ export function TestForm(props: TestFormProps) {
   )
 
   useEffect(() => {
-    validateStaticDocument(document, workspace, (result) => setValidation(result))
+    void validateStaticDocument(document, workspace, (result) => setValidation(result))
   }, [document, workspace])
 
   const formState = useFormState({
@@ -179,6 +192,20 @@ export function TestForm(props: TestFormProps) {
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
       onPathFocusFromProps?.(nextFocusPath)
+
+      // When focusing on an object field, set openPath to the field's parent.
+      // Exception: if focusing directly on an array item (so it has a key),
+      // it should skip updating openPath - let explicit onPathOpen calls handle it.
+      const lastSegment = nextFocusPath[nextFocusPath.length - 1]
+
+      if (!isKeySegment(lastSegment)) {
+        // For fields inside array items, find the last key segment to preserve context
+        const lastKeyIndex = nextFocusPath.findLastIndex((seg) => isKeySegment(seg))
+        const newOpenPath =
+          lastKeyIndex >= 0 ? nextFocusPath.slice(0, lastKeyIndex + 1) : nextFocusPath.slice(0, -1)
+
+        onSetOpenPath(newOpenPath)
+      }
     },
     [onPathFocusFromProps],
   )

@@ -26,11 +26,13 @@ export {
   type TargetPerspective,
 } from './perspective/types'
 export {useExcludedPerspective} from './perspective/useExcludedPerspective'
+export {useGetDefaultPerspective} from './perspective/useGetDefaultPerspective'
 export {usePerspective} from './perspective/usePerspective'
 export {useSetPerspective} from './perspective/useSetPerspective'
 export * from './presence'
 export * from './preview'
 export {
+  Chip,
   formatRelativeLocalePublishDate,
   getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
@@ -47,6 +49,7 @@ export {
   ReleaseAvatar,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
+  sortReleases,
   useActiveReleases,
   useArchivedReleases,
   useDocumentVersionInfo,
@@ -62,17 +65,18 @@ export {
 } from './releases'
 export {
   EditScheduleForm,
-  ScheduleAction,
+  useScheduleAction as ScheduleAction,
   ScheduledBadge,
   SchedulesContext,
 } from './scheduled-publishing'
 export {createSchema, getSchemaTypeTitle} from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export {createSearch, getSearchableTypes, isPerspectiveRaw} from './search'
+export * from './singleDocRelease'
 export * from './store'
 export * from './studio'
 export {DEFAULT_STUDIO_CLIENT_OPTIONS} from './studioClient'
-export {IsLastPaneProvider} from './tasks'
+export {IsLastPaneProvider, useDocumentPreviewValues} from './tasks'
 export * from './templates'
 export * from './theme'
 export * from './user-color'
@@ -88,5 +92,8 @@ export {type ReleaseDocument} from '@sanity/client'
 // If moved at the top it creates a circular dependency issue where `useClient` is not found when running tests
 export {useCanvasCompanionDoc} from './canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from './canvas/useNavigateToCanvasDoc'
+export {getDocumentIdForCanvasLink} from './canvas/utils/getDocumentIdForCanvasLink'
 export {useDocumentLimitsUpsellContext} from './limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from './limits/context/documents/isDocumentLimitError'
+export {ReleaseAvatarIcon} from './releases/components/ReleaseAvatar'
+export {DEFAULT_ANNOTATIONS, DEFAULT_DECORATORS} from '@sanity/schema'

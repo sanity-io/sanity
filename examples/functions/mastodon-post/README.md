@@ -8,7 +8,7 @@ Content teams want to automatically share their published articles on Mastodon t
 
 ## Solution
 
-This Sanity Function automatically posts to Mastodon when content is published using the `@humanwhocodes/crosspost` library. When a post is published, the function creates a Mastodon post containing the title, mastodonPost, and slug, helping maintain consistent presence across decentralized social networks.
+This Sanity Function automatically posts to Mastodon when you publish a new post with the `mastodonPost` field defined using the `@humanwhocodes/crosspost` library. The function creates a Mastodon post containing the title, mastodonPost, and slug, helping maintain consistent presence across decentralized social networks.
 
 ## Benefits
 
@@ -16,7 +16,7 @@ This Sanity Function automatically posts to Mastodon when content is published u
 - **Saves time** by eliminating manual cross-posting tasks
 - **Reaches decentralized audiences** by sharing on Mastodon instances
 - **Ensures consistency** with automatic posting of title, mastodonPost, and link
-- **Reduces missed opportunities** by never forgetting to share published content
+- **Reduces missed opportunities** by automatically posting to Mastodon
 
 ## Requirements
 
@@ -118,8 +118,8 @@ defineField({
          memory: 1,
          timeout: 10,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post'",
+           on: ['create'],
+           filter: "_type == 'post' && defined(mastodonPost)",
            projection: '{title, mastodonPost, slug}',
          },
          env: {
@@ -226,7 +226,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    This command will:
    - Package your function code and .env file
    - Upload it to Sanity's infrastructure
-   - Configure the event triggers for post publications
+   - Configure the event triggers for new posts with mastodonPost field
    - Make your mastodon-post function live in production
 
 3. **If you're not using a .env file - Add environment variables**
@@ -247,17 +247,17 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 4. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Publishing a new post and confirming it appears on Mastodon
+   - Creating a new post with the mastodonPost field and confirming it appears on Mastodon
    - Monitoring function logs in the CLI
 
 ## Customization
 
 ### Add conditional posting
 
-Only post certain types of content by updating the filter:
+Only post when creating posts with `postToMastodon` set to true:
 
 ```ts
-filter: "_type == 'post' && defined(publishedAt)"
+filter: "_type == 'post' && defined(mastodonPost) && postToMastodon == true"
 ```
 
 ### Include additional fields

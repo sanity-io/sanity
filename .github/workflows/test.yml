@@ -14,8 +14,8 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 60
-    name: Test (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: Test (node ${{ matrix.node }})
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -25,7 +25,6 @@ jobs:
       # we want to know if a test fails on a specific node version
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         node: [20, 22, 24]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
@@ -36,57 +35,27 @@ jobs:
         #     experimental: true
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
 
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip tests for examples-only changes
-        if: steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping unit tests"
-          exit 0
-      - uses: pnpm/action-setup@v4
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+      - uses: ./.github/actions/setup
+        if: steps.check_examples.outputs.path_only != 'true'
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
-
       - name: Build packages
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Test
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         id: test
         run: |
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
@@ -100,8 +69,8 @@ jobs:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples_only.outputs.examples_only != 'true' }}
-        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && matrix.node == '20' && steps.check_examples.outputs.path_only != 'true' }}
+        uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
           path: ".vitest-reports/*"
@@ -111,71 +80,38 @@ jobs:
   report-coverage:
     if: ${{ !cancelled() }}
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     permissions:
       # Required to put a comment into the pull-request
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check if only examples files changed
-        id: check_examples_only
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, check files changed in the PR
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            # For pushes, check files in the last commit
-            CHANGED_FILES=$(git diff --name-only HEAD~1)
-          fi
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if all changed files are in examples/ directory
-          EXAMPLES_ONLY="true"
-          while IFS= read -r file; do
-            if [[ ! "$file" =~ ^examples/ ]]; then
-              EXAMPLES_ONLY="false"
-              break
-            fi
-          done <<< "$CHANGED_FILES"
-
-          echo "examples_only=$EXAMPLES_ONLY" >> $GITHUB_OUTPUT
-
-      - name: Skip coverage for examples-only changes
-        if: steps.check_examples_only.outputs.examples_only == 'true'
-        run: |
-          echo "Only examples files changed, skipping coverage report"
-          exit 0
-
-      - uses: pnpm/action-setup@v4
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-      - uses: actions/setup-node@v5
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        id: check_examples
+        uses: ./.github/actions/check-path-only
         with:
-          node-version: lts/*
+          path: examples/
 
-      - name: Install project dependencies
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        run: pnpm install
+      - uses: ./.github/actions/setup
+        if: steps.check_examples.outputs.path_only != 'true'
 
       - name: "Download coverage artifacts"
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: actions/download-artifact@v5
+        if: steps.check_examples.outputs.path_only != 'true'
+        uses: actions/download-artifact@v7
         with:
           path: .vitest-reports
           pattern: blob-report-${{ github.run_id }}-*
           merge-multiple: true
 
       - name: Merged report
-        if: steps.check_examples_only.outputs.examples_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true'
         run: |
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        if: steps.check_examples_only.outputs.examples_only != 'true'
-        uses: davelosert/vitest-coverage-report-action@8ab049ff5a2c6e78f78af446329379b318544a1a # v2
+        if: steps.check_examples.outputs.path_only != 'true'
+        uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2

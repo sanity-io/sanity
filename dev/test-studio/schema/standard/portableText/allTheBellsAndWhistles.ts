@@ -1,4 +1,11 @@
-import {BellIcon, ColorWheelIcon, DocumentPdfIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {
+  BellIcon,
+  ColorWheelIcon,
+  DocumentPdfIcon,
+  ImageIcon,
+  InfoOutlineIcon,
+  LinkIcon,
+} from '@sanity/icons'
 import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
@@ -144,6 +151,23 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               title: 'Inline reference',
               to: [{type: 'book'}],
             }),
+            defineField({
+              type: 'object',
+              name: 'inlineIcon',
+              icon: LinkIcon,
+              fields: [
+                defineField({
+                  type: 'string',
+                  name: 'iconName',
+                  title: 'Icon',
+                }),
+                defineField({
+                  type: 'string',
+                  name: 'iconColor',
+                  title: 'Icon Color',
+                }),
+              ],
+            }),
           ],
         }),
 
@@ -175,7 +199,11 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           },
           preview: {
             select: {
+              caption: 'caption',
               media: 'asset',
+            },
+            prepare({caption, media}) {
+              return {media, title: caption || 'No caption'}
             },
           },
           fields: [
@@ -216,6 +244,24 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               type: 'boolean',
             }),
           ],
+        }),
+
+        defineField({
+          type: 'image',
+          icon: ImageIcon,
+          name: 'imageWithAssetUrlPreview',
+          title: 'Image w/ asset url preview',
+          options: {
+            hotspot: true,
+          },
+          preview: {
+            select: {
+              media: 'asset.url',
+            },
+            prepare({media}) {
+              return {media, title: 'Image w/ asset url preview'}
+            },
+          },
         }),
 
         defineField({
@@ -421,6 +467,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
     defineField({
       name: 'content',
       type: 'array',
+      title: 'Content, comments disabled',
+      components: {
+        field: (props) => {
+          // eslint-disable-next-line camelcase
+          return props.renderDefault({...props, __internal_comments: undefined})
+        },
+      },
       of: [
         defineArrayMember({
           name: 'something',

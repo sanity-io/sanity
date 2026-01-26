@@ -72,7 +72,7 @@ export function TasksAddonWorkspaceProvider(props: {children: React.ReactNode; m
     if (!addonDataset && ready) {
       // The user is trying to use the addon dataset form, but it hasn't been created yet.
       // We should create it.
-      createAddonDataset()
+      void createAddonDataset()
     }
   }, [addonDataset, ready, createAddonDataset])
 

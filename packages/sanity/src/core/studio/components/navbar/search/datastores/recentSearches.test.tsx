@@ -333,15 +333,15 @@ describe('search-store', () => {
     it('should limit number of saved searches', async () => {
       const {result, rerender} = await constructRecentSearchesStore()
 
-      ;[...Array(MAX_RECENT_SEARCHES + 10).keys()].forEach((i) => {
-        act(() =>
+      for (const i of Array(MAX_RECENT_SEARCHES + 10).keys()) {
+        await act(async () => {
           result.current.addSearch({
             query: `${i}`,
             types: [],
-          }),
-        )
+          })
+        })
         rerender()
-      })
+      }
 
       rerender()
       const recentSearches = result.current.getRecentSearches()
@@ -491,7 +491,7 @@ describe('search-store', () => {
                 },
               },
             ],
-            version: 2,
+            version: 3,
           }),
         )
         expect(recentSearches.length).toBe(1)

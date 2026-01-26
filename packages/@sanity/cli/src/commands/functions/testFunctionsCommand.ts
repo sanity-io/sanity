@@ -1,57 +1,31 @@
+import {FunctionsTestCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Arguments
-  <name> The name of the Sanity Function
-
-Options
-  --event <create|update|delete> The type of event to simulate (default: 'create')
-  --data <data> Data to send to the function
-  --data-before <data> Data to send to the function when event is update
-  --data-after <data> Data to send to the function when event is update
-  --file <file> Read data from file and send to the function
-  --file-before <file> Read data from file and send to the function when event is update
-  --file-after <file> Read data from file and send to the function when event is update
-  --document-id <id> Document to fetch and send to function
-  --document-id-before <id> Document to fetch and send to function when event is update
-  --document-id-after <id> Document to fetch and send to function when event is update
-  --timeout <timeout> Execution timeout value in seconds
-  --api <version> Sanity API Version to use
-  --dataset <dataset> The Sanity dataset to use
-  --project-id <id> Sanity Project ID to use
-  --with-user-token Prime access token from CLI config into context.clientOptions
-
-
-Examples
-  # Test function passing event data on command line
-  sanity functions test echo --data '{ "id": 1 }'
-
-  # Test function passing event data via a file
-  sanity functions test echo --file 'payload.json'
-
-  # Test function passing event data on command line and cap execution time to 60 seconds
-  sanity functions test echo --data '{ "id": 1 }' --timeout 60
-
-  # Test function simulating an update event
-  sanity functions test echo --event update --data-before '{ "title": "before" }' --data-after '{ "title": "after" }'
-`
+import {createErrorLogger, transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface FunctionsTestFlags {
   'data'?: string
+  'd'?: string
   'data-before'?: string
   'data-after'?: string
   'event'?: string
+  'e'?: string
   'file'?: string
+  'f'?: string
   'file-before'?: string
   'file-after'?: string
   'timeout'?: number
+  't'?: number
   'api'?: string
+  'a'?: string
   'dataset'?: string
   'project-id'?: string
   'document-id'?: string
   'document-id-before'?: string
   'document-id-after'?: string
   'with-user-token'?: boolean
+  'media-library-id'?: string
 }
 
 const defaultFlags: FunctionsTestFlags = {
@@ -59,13 +33,29 @@ const defaultFlags: FunctionsTestFlags = {
   'with-user-token': false,
 }
 
+const transformedHelp = transformHelpText(FunctionsTestCommand, 'sanity', 'functions test')
+
+function validateUpdateEventFlags(flags: FunctionsTestFlags): void {
+  if (flags.event !== 'update' && flags.e !== 'update') return
+
+  const hasDataPair = flags['data-before'] && flags['data-after']
+  const hasFilePair = flags['file-before'] && flags['file-after']
+  const hasDocPair = flags['document-id-before'] && flags['document-id-after']
+
+  if (!(hasDataPair || hasFilePair || hasDocPair)) {
+    throw new Error(
+      'When using --event=update, you must provide one of the following flag pairs:\n' +
+        '  --data-before and --data-after\n' +
+        '  --file-before and --file-after\n' +
+        '  --document-id-before and --document-id-after',
+    )
+  }
+}
+
 const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
   name: 'test',
   group: 'functions',
-  helpText,
-  signature:
-    '<name> [--event create|update|delete] [--data <json>] [--data-before <json>] [--data-after <json>] [--file <filename>] [--file-before <filename>] [--file-after <filename>] [--document-id <id>] [--document-id-before <id>] [--document-id-before <id>] [--timeout <seconds>] [--api <version>] [--dataset <name>] [--project-id] <id>] [--with-user-token]',
-  description: 'Invoke a local Sanity Function',
+  ...transformedHelp,
   async action(args, context) {
     const {apiClient, output, chalk} = context
     const [name] = args.argsWithoutOptions
@@ -79,18 +69,16 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     const actualDataset = dataset === '~dummy-placeholder-dataset-' ? undefined : dataset
 
     if (!token) throw new Error('No API token found. Please run `sanity login`.')
-
-    if (!name) {
-      throw new Error('You must provide a function name as the first argument')
-    }
+    if (!name) throw new Error('You must provide a function name as the first argument')
 
     const {initBlueprintConfig} = await import('@sanity/runtime-cli/cores')
     const {functionTestCore} = await import('@sanity/runtime-cli/cores/functions')
 
-    // Prefer projectId in blueprint
     const {blueprint} = await import('@sanity/runtime-cli/actions/blueprints')
-    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint()
+    const log = logger.Logger(output.print)
 
+    // Prefer projectId in blueprint
+    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint(log)
     if (projectId && projectId !== bpProjectId) {
       output.print(
         chalk.yellow('WARNING'),
@@ -101,24 +89,11 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
       )
     }
 
-    if (flags.event === 'update') {
-      const hasDataPair = flags['data-before'] && flags['data-after']
-      const hasFilePair = flags['file-before'] && flags['file-after']
-      const hasDocPair = flags['document-id-before'] && flags['document-id-after']
-
-      if (!(hasDataPair || hasFilePair || hasDocPair)) {
-        throw new Error(
-          'When using --event=update, you must provide one of the following flag pairs:\n' +
-            '  --data-before and --data-after\n' +
-            '  --file-before and --file-after\n' +
-            '  --document-id-before and --document-id-after',
-        )
-      }
-    }
+    validateUpdateEventFlags(flags)
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message: string) => output.print(message),
+      log,
       token,
     })
 
@@ -127,21 +102,24 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     const {success, error} = await functionTestCore({
       ...cmdConfig.value,
       args: {name},
+      helpText: transformedHelp.helpText,
+      error: createErrorLogger(output),
       flags: {
-        'data': flags.data,
-        'data-before': flags['data-before'],
+        'api': flags.a ?? flags.api,
         'data-after': flags['data-after'],
-        'file': flags.file,
-        'file-before': flags['file-before'],
-        'file-after': flags['file-after'],
-        'document-id': flags['document-id'],
-        'document-id-before': flags['document-id-before'],
-        'document-id-after': flags['document-id-after'],
-        'event': flags.event,
-        'timeout': flags.timeout,
-        'api': flags.api,
+        'data-before': flags['data-before'],
+        'data': flags.d ?? flags.data,
         'dataset': flags.dataset || actualDataset,
+        'document-id-after': flags['document-id-after'],
+        'document-id-before': flags['document-id-before'],
+        'document-id': flags['document-id'],
+        'event': flags.e ?? flags.event,
+        'file-after': flags['file-after'],
+        'file-before': flags['file-before'],
+        'file': flags.f ?? flags.file,
+        'media-library-id': flags['media-library-id'],
         'project-id': flags['project-id'] || bpProjectId,
+        'timeout': flags.t ?? flags.timeout,
         'with-user-token': flags['with-user-token'],
       },
     })

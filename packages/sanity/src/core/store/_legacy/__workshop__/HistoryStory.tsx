@@ -14,10 +14,10 @@ export default function HistoryStory() {
   const [history, setHistory] = useState<{documents: SanityDocument[]} | null>(null)
 
   useEffect(() => {
-    // The time at which to view the document’s value
+    // The time at which to view the document's value
     const time = new Date(Date.now() - DAY).toISOString()
 
-    historyStore.getHistory(['drafts.test', 'test'], {time}).then(setHistory)
+    void historyStore.getHistory(['drafts.test', 'test'], {time}).then(setHistory)
   }, [historyStore])
 
   return (

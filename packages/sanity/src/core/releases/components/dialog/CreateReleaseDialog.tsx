@@ -55,6 +55,8 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
         const releaseValue = createReleaseMetadata(release)
 
         await createRelease(releaseValue)
+        // Close the dialog after creating the release.
+        onCancel()
         telemetry.log(CreatedRelease, {origin})
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
@@ -76,10 +78,9 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
             title: t('release.toast.create-release-error.title'),
           })
         }
-      } finally {
-        setIsSubmitting(false)
-        clearReleaseDataFromStorage()
       }
+      setIsSubmitting(false)
+      clearReleaseDataFromStorage()
     },
     [
       releasePromise,

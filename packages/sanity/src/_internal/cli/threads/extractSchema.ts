@@ -1,7 +1,8 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {extractSchema} from '@sanity/schema/_internal'
-import {type Workspace} from 'sanity'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
+import {SchemaError, type Workspace} from 'sanity'
 
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
@@ -16,8 +17,19 @@ export interface ExtractSchemaWorkerData {
 
 /** @internal */
 export interface ExtractSchemaWorkerResult {
+  type: 'success'
   schema: ReturnType<typeof extractSchema>
 }
+
+/** @internal */
+export interface ExtractSchemaWorkerError {
+  type: 'error'
+  error: string
+  validation?: SchemaValidationProblemGroup[]
+}
+
+/** @internal */
+export type ExtractSchemaWorkerMessage = ExtractSchemaWorkerResult | ExtractSchemaWorkerError
 
 async function main() {
   if (isMainThread || !parentPort) {
@@ -41,14 +53,35 @@ async function main() {
     })
 
     parentPort?.postMessage({
+      type: 'success',
       schema,
     } satisfies ExtractSchemaWorkerResult)
+  } catch (err) {
+    const validation = extractValidationFromSchemaError(err)
+    parentPort?.postMessage({
+      type: 'error',
+      error: err instanceof Error ? err.message : String(err),
+      validation,
+    } satisfies ExtractSchemaWorkerError)
   } finally {
     cleanup()
   }
 }
 
-main().then(() => process.exit())
+/**
+ * Extracts validation problem groups from a SchemaError.
+ */
+function extractValidationFromSchemaError(
+  error: unknown,
+): SchemaValidationProblemGroup[] | undefined {
+  if (error instanceof SchemaError) {
+    return error.schema._validation
+  }
+
+  return undefined
+}
+
+void main().then(() => process.exit())
 
 function getWorkspace({
   workspaces,
@@ -67,7 +100,7 @@ function getWorkspace({
 
   if (workspaceName === undefined) {
     throw new Error(
-      `Multiple workspaces found. Please specify which workspace to use with '--workspace'. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
+      `Multiple workspaces found. Please specify which workspace to use with '--workspace' or with the schemaExtraction.workspace config prop. Available workspaces: ${workspaces.map((w) => w.name).join(', ')}`,
     )
   }
   const workspace = workspaces.find((w) => w.name === workspaceName)

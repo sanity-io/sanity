@@ -1,4 +1,4 @@
-import {sample} from 'lodash'
+import {sample} from 'lodash-es'
 import {defer, timer} from 'rxjs'
 import {map, mergeMapTo, shareReplay} from 'rxjs/operators'
 

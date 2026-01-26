@@ -13,99 +13,107 @@ concurrency:
 jobs:
   install:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
+    outputs:
+      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      cli_only: ${{ steps.check_cli.outputs.path_only }}
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v6
         with:
-          node-version: lts/*
+          fetch-depth: 0
 
-      - name: Install project dependencies
-        run: pnpm install
+      - name: Check if only examples files changed
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - name: Check if only CLI files changed
+        id: check_cli
+        uses: ./.github/actions/check-path-only
+        with:
+          path: packages/@sanity/cli/
+
+      - uses: ./.github/actions/setup
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
 
       - name: Build packages
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
         # This warms up the turborepo remote cache
         run: pnpm build --output-logs=full --log-order=grouped
 
   playwright-ct-test:
     timeout-minutes: 30
     needs: [install]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        project: [chromium, firefox]
         # Add more shards here if needed, but remember that the github required checks will have to be updated as well
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+      - uses: ./.github/actions/setup
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
 
       - name: Store Playwright's Version
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
           echo "Playwright's Version: $PLAYWRIGHT_VERSION"
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
       - name: Cache Playwright Browsers for Playwright's Version
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
       - name: Install Playwright Browsers
         # TODO: Fix webkit caching when downloading from cache
         # for some reason it doesn't work without installing again
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true' || matrix.project == 'webkit'
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
       - name: Build packages
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Run end-to-end tests
+        if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         env:
           PWTEST_BLOB_REPORT_NAME: ${{ matrix.project }}
           NODE_OPTIONS: --max_old_space_size=8192
         run: pnpm --filter sanity test:ct --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - uses: actions/upload-artifact@v6
+        if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
         with:
           name: playwright-ct-report-${{ matrix.project }}-${{ matrix.shardIndex }}
           path: ${{ github.workspace }}/packages/sanity/blob-report
           retention-days: 30
 
   merge-reports:
-    if: always()
-    needs: [playwright-ct-test]
-    runs-on: ubuntu-latest
+    if: always() && needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+    needs: [install, playwright-ct-test]
+    runs-on: ubuntu-8core
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: lts/*
-
-      - name: Install project dependencies
-        run: pnpm install
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Download blob reports from Github Actions Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-ct-report-*
           merge-multiple: true
@@ -114,7 +122,7 @@ jobs:
       - name: Merge into HTML Report
         run: npx playwright merge-reports --reporter json ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report >> ${{ github.workspace }}/packages/sanity/playwright-ct/playwright-ct-report/playwright-ct-test-results.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: full-playwright-ct-report

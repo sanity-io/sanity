@@ -5,7 +5,6 @@ import {
   CommentsProvider,
   useCommentsEnabled,
   usePerspective,
-  useStudioUrl,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -42,7 +41,6 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
   const {params, setParams} = usePaneRouter()
-  const {studioUrl} = useStudioUrl(window.location.origin)
   const {resolveIntentLink} = useRouter()
 
   const selectedCommentId = params?.comment
@@ -60,9 +58,9 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         inspect: COMMENTS_INSPECTOR_NAME,
         comment: commentId,
       })
-      return `${studioUrl}${intentLink}`
+      return `${window.location.origin}${intentLink}`
     },
-    [documentId, documentType, resolveIntentLink, studioUrl],
+    [documentId, documentType, resolveIntentLink],
   )
 
   const handleClearSelectedComment = useCallback(() => {
