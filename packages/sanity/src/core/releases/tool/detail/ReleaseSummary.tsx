@@ -18,7 +18,7 @@ import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
-import {type DocumentFilterType,documentMatchesFilter} from './releaseDocumentActions'
+import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -77,6 +77,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const filterRows = useCallback(
     (data: DocumentInRelease[], searchTerm: string) => {
+      // this is a temporary way of doing the search without the previews
+      // until we have it moved to the server side
       return data.filter((doc) => {
         const matchesSearch = searchTerm ? searchDocumentRelease(doc.document, searchTerm) : true
         return matchesSearch && documentMatchesFilter(doc, activeFilter)

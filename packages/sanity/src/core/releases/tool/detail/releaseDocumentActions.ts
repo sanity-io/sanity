@@ -7,8 +7,7 @@ export type DocumentFilterType = 'all' | 'added' | 'changed' | 'unpublished' | '
 export interface DocumentActionConfig {
   key: 'added' | 'changed' | 'unpublished'
   tone: 'positive' | 'caution' | 'critical'
-  tableLabelKey: string
-  filterLabelKey: string
+  labelKey: string
 }
 
 export interface FilterTabConfig {
@@ -21,20 +20,17 @@ export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
   {
     key: 'added',
     tone: 'positive',
-    tableLabelKey: 'table-body.action.add',
-    filterLabelKey: 'filter-tab.add',
+    labelKey: 'table-body.action.add',
   },
   {
     key: 'changed',
     tone: 'caution',
-    tableLabelKey: 'table-body.action.change',
-    filterLabelKey: 'filter-tab.change',
+    labelKey: 'table-body.action.change',
   },
   {
     key: 'unpublished',
     tone: 'critical',
-    tableLabelKey: 'table-body.action.unpublish',
-    filterLabelKey: 'filter-tab.unpublish',
+    labelKey: 'table-body.action.unpublish',
   },
 ]
 
@@ -42,7 +38,7 @@ export const FILTER_TAB_CONFIGS: FilterTabConfig[] = [
   {key: 'all', labelKey: 'filter-tab.all', tone: 'default'},
   ...DOCUMENT_ACTION_CONFIGS.map((config) => ({
     key: config.key,
-    labelKey: config.filterLabelKey,
+    labelKey: config.labelKey,
     tone: config.tone,
   })),
   {key: 'errors', labelKey: 'filter-tab.errors', tone: 'critical'},
@@ -53,7 +49,9 @@ export type ActionCounts = Record<'added' | 'changed' | 'unpublished' | 'errors'
 /**
  * Counts documents by their action type and validation errors
  */
-export function countDocumentsByAction(documents: (DocumentInRelease | BundleDocumentRow)[]): ActionCounts {
+export function countDocumentsByAction(
+  documents: (DocumentInRelease | BundleDocumentRow)[],
+): ActionCounts {
   return documents.reduce<ActionCounts>(
     (acc, doc) => {
       const actionType = getDocumentActionType(doc)

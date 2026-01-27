@@ -80,7 +80,7 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
           tone={documentActionConfig.tone}
           data-testid={`${actionType}-badge-${datum.document._id}`}
         >
-          {t(documentActionConfig.tableLabelKey)}
+          {t(documentActionConfig.labelKey)}
         </Badge>
       )
     }

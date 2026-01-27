@@ -428,12 +428,6 @@ const releasesLocaleStrings = {
 
   /** Filter tab label for all documents */
   'filter-tab.all': 'All',
-  /** Filter tab label for added documents */
-  'filter-tab.add': 'Add',
-  /** Filter tab label for changed documents */
-  'filter-tab.change': 'Change',
-  /** Filter tab label for documents to be unpublished */
-  'filter-tab.unpublish': 'Unpublish',
   /** Filter tab label for documents with validation errors */
   'filter-tab.errors': 'Errors',
 

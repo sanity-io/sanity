@@ -1,5 +1,5 @@
 import {type ReleaseState} from '@sanity/client'
-import {Box, Card, Container, Flex, Skeleton, TabList} from '@sanity/ui'
+import {Box, Container, Flex, Skeleton, TabList} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {Tab} from '../../../../../ui-components'
@@ -39,18 +39,16 @@ export function ReleaseDocumentFilterTabs({
     return (
       <Container width={3}>
         <Box padding={3}>
-          <Card border radius={2} padding={1} style={{display: 'inline-block'}}>
-            <Flex align="center" gap={2}>
-              {FILTER_TAB_CONFIGS.map((config) => (
-                <Skeleton
-                  key={`loading-skeleton-${config.key}`}
-                  animated
-                  style={{width: '70px', height: '32px'}}
-                  radius={2}
-                />
-              ))}
-            </Flex>
-          </Card>
+          <Flex align="center" gap={2}>
+            {FILTER_TAB_CONFIGS.filter((config) => config.key !== 'errors').map((config) => (
+              <Skeleton
+                key={`loading-skeleton-${config.key}`}
+                animated
+                style={{width: '70px', height: '32px'}}
+                radius={2}
+              />
+            ))}
+          </Flex>
         </Box>
       </Container>
     )
@@ -109,30 +107,28 @@ function ReleaseDocumentFilterTabsInner({
   return (
     <Container width={3}>
       <Box padding={3}>
-        <Card border radius={2} padding={1} style={{display: 'inline-block'}}>
-          <TabList space={1}>
-            {FILTER_TAB_CONFIGS.map((config) => {
-              const isSelected = activeFilter === config.key
+        <TabList space={1}>
+          {FILTER_TAB_CONFIGS.map((config) => {
+            const isSelected = activeFilter === config.key
 
-              // Hide tabs with zero counts (except "All")
-              if (config.key !== 'all' && counts[config.key] === 0) {
-                return null
-              }
+            // Hide tabs with zero counts (except "All")
+            if (config.key !== 'all' && counts[config.key] === 0) {
+              return null
+            }
 
-              return (
-                <Tab
-                  key={config.key}
-                  id={`filter-tab-${config.key}`}
-                  aria-controls="document-table-card"
-                  label={getTabLabel(config)}
-                  onClick={() => onFilterChange(config.key)}
-                  selected={isSelected}
-                  tone={getTabTone(config)}
-                />
-              )
-            })}
-          </TabList>
-        </Card>
+            return (
+              <Tab
+                key={config.key}
+                id={`filter-tab-${config.key}`}
+                aria-controls="document-table-card"
+                label={getTabLabel(config)}
+                onClick={() => onFilterChange(config.key)}
+                selected={isSelected}
+                tone={getTabTone(config)}
+              />
+            )
+          })}
+        </TabList>
       </Box>
     </Container>
   )
