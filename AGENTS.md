@@ -116,6 +116,105 @@ pnpm dev                # Starts dev studio at http://localhost:3333
 
 **Note:** The dev studio requires Sanity user authentication in the browser. It's a Vite application that communicates with Sanity API endpoints, so you'll need to log in with a Sanity account when you access `http://localhost:3333` to use the studio.
 
+## Local Development
+
+This section clarifies what requires authentication and what doesn't—critical for AI agents to avoid getting stuck on auth flows.
+
+### Running Tests (No Auth Required)
+
+Unit tests run in jsdom with mocks and **do not require any authentication**:
+
+```bash
+# Build first (required), then run all tests
+pnpm build && pnpm test
+
+# Run a specific test file
+pnpm test -- packages/sanity/src/core/hooks/useClient.test.ts
+
+# Watch mode for iterative development
+pnpm test -- --watch
+
+# Run tests for a specific package
+pnpm test -- --project=sanity
+```
+
+Components that need auth context use `createMockAuthStore` in tests, so no real authentication is needed. This is the recommended way to verify most code changes.
+
+### Running the Dev Studio (Auth Required)
+
+```bash
+pnpm dev  # Starts at http://localhost:3333
+```
+
+- **Requires browser authentication** on first visit—you'll be prompted to log in with a Sanity account
+- Connects to a real Sanity project (configured in `dev/test-studio/sanity.config.ts`)
+- Uses staging API by default (`api.sanity.work`)
+- Session persists in browser, so subsequent visits won't require re-authentication
+
+Use the dev studio when you need to:
+
+- Visually verify UI changes
+- Test real document editing workflows
+- Debug issues that only appear with real data
+
+### E2E Tests (Token Required)
+
+E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
+
+```bash
+SANITY_E2E_SESSION_TOKEN=<your-token>
+SANITY_E2E_PROJECT_ID=<project-id>
+SANITY_E2E_DATASET=<dataset-name>
+```
+
+**How to get a token:**
+
+```bash
+# Option 1: Use your CLI token
+sanity login
+sanity debug --secrets  # Look for "Auth token"
+
+# Option 2: Create a project token at https://sanity.io/manage
+# Navigate to: Project Settings → API → Tokens → Add API token
+```
+
+Then run E2E tests:
+
+```bash
+pnpm e2e:build              # Build E2E studio
+pnpm test:e2e               # Run E2E tests
+pnpm test:e2e --ui          # Interactive mode
+```
+
+**Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
+
+### Workshop Tool (Component Development)
+
+The dev studio includes a **Workshop tool** for isolated component development. Access it via the tools menu in the dev studio.
+
+Workshop is useful for:
+
+- Developing UI components in isolation
+- Testing component states without needing full document context
+- Visual regression testing during development
+
+### Important Note for AI Agents
+
+**What requires authentication:**
+
+- Running the dev studio (`pnpm dev`)
+- E2E tests (`pnpm test:e2e`)
+- Any command that connects to Sanity APIs
+
+**What does NOT require authentication:**
+
+- Building packages (`pnpm build`)
+- Running unit tests (`pnpm test`)
+- Linting and formatting (`pnpm lint`, `pnpm lint:fix`)
+- Type checking (`pnpm check:types`)
+
+**Recommendation:** For most code changes, use `pnpm build && pnpm test` to verify correctness. This covers the vast majority of development tasks without any auth setup. Only use the dev studio when visual verification is specifically needed.
+
 ## Coding Standards
 
 Coding standards are enforced by **oxlint** and **eslint**. Check your code with:
