@@ -12,7 +12,7 @@ import {stripPr} from '../src/utils/stripPrNumber'
 const ADMIN_STUDIO_URL = `http://localhost:3333/`
 
 // oxlint-disable-next-line no-unused-expressions
-yargs(process.argv.slice(2))
+await yargs(process.argv.slice(2))
   .strict()
   .usage('$0 <command>')
   .command({
@@ -44,14 +44,22 @@ yargs(process.argv.slice(2))
         tentativeVersion: {type: 'string', demandOption: true},
       }),
     handler: async (args) => {
-      const result = await createOrUpdateChangelogDocs({
-        pr: args.pr,
-        tentativeVersion: args.tentativeVersion,
-      })
-      if (args.outputFormat === 'pr-description') {
-        console.log(generateChangeLogSummary(args.tentativeVersion, result))
-      } else {
-        console.log(result)
+      try {
+        const result = await createOrUpdateChangelogDocs({
+          pr: args.pr,
+          tentativeVersion: args.tentativeVersion,
+        })
+        if (args.outputFormat === 'pr-description') {
+          // oxlint-disable-next-line no-console
+          console.log(generateChangeLogSummary(args.tentativeVersion, result))
+        } else {
+          // oxlint-disable-next-line no-console
+          console.log(result)
+        }
+      } catch (error) {
+        // oxlint-disable-next-line no-console
+        console.error(error)
+        process.exit(1)
       }
     },
   })
