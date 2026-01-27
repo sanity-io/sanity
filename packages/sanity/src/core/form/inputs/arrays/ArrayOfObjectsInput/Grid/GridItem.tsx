@@ -267,7 +267,10 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         flex={1}
         tabIndex={0}
         disabled={resolvingInitialValue}
-        onClick={onOpen}
+        // Use mousedown instead of click to trigger open before focus events cause re-renders.
+        // This fixes a Chrome-specific issue where the array container receives focus first,
+        // triggering a state update that causes a re-render before the click event completes.
+        onMouseDown={onOpen}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
