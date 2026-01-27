@@ -157,8 +157,15 @@ export function createObserveFields(options: {
         return fetchChunk(selectionChunks[0])
       }
 
-      // Multiple chunks - fetch in parallel and merge sparse arrays
+      // No chunks - return empty array early
+      if (selectionChunks.length === 0) {
+        return of([])
+      }
+
+      // Multiple chunks - fetch in parallel and merge results
       // Each chunk's reassemble places results at their original map indices
+      // We collect all results and build the final array at the end
+      const totalSelections = selections.length
       return from(selectionChunks).pipe(
         mergeMap(fetchChunk, 10),
         reduce((merged: (Record<string, any> | null)[], chunkResults) => {
@@ -166,7 +173,7 @@ export function createObserveFields(options: {
             if (result !== null && result !== undefined) merged[idx] = result
           })
           return merged
-        }, []),
+        }, new Array(totalSelections).fill(null)),
       )
     }
   }
