@@ -28,6 +28,7 @@ import {
 
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
+import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {getPublishedId, idMatchesPerspective, isVersionId} from '../util/draftUtils'
 import {INCLUDE_FIELDS} from './constants'
 import {
@@ -41,13 +42,6 @@ import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
 import {type CombinedSelection, combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
-
-/**
- * Maximum size in bytes for document IDs in a single query.
- * This matches the limit used in availability.ts and accounts for
- * the Sanity client's max query size with room for headers.
- */
-const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
 
 /**
  * Chunks combined selections into smaller groups based on the total byte size of document IDs.
