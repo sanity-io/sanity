@@ -6,6 +6,7 @@ import {
   type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type PortableTextBlock,
 } from '@sanity/types'
 
 import {isString} from '../../util/isString'
