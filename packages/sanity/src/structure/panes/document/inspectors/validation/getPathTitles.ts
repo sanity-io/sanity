@@ -123,7 +123,16 @@ export function getPathTitles(options: {
         throw new Error(`Array item not found: [_key == ${segment._key}]`)
       }
 
-      const ofType = s.of.find((i) => isRecord(v) && i.name === v?._type)
+      // Try to find the type by _type property first
+      let ofType = s.of.find((i) => isRecord(v) && i.name === v?._type)
+
+      // If _type is not set (anonymous object), and there's only one object type, use it
+      if (!ofType && !v?._type) {
+        const objectTypes = s.of.filter((i) => i.jsonType === 'object')
+        if (objectTypes.length === 1) {
+          ofType = objectTypes[0]
+        }
+      }
 
       if (!ofType) {
         throw new Error(`Array item type not found: .${v?._type}`)
