@@ -7,6 +7,7 @@ import {
   Fragment,
   type HTMLProps,
   type RefAttributes,
+  useEffect,
   useMemo,
   useRef,
 } from 'react'
@@ -54,6 +55,7 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
+  invalidDocumentCount?: number
 }
 
 const ITEM_HEIGHT = 59
@@ -71,9 +73,15 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowProps = () => ({}),
   scrollContainerRef,
   hideTableInlinePadding = false,
+  invalidDocumentCount = 0,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  const {searchTerm, sort, showValidationErrorsOnly} = useTableContext()
+  const {searchTerm, sort, showValidationErrorsOnly, setInvalidDocumentCount} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    setInvalidDocumentCount(invalidDocumentCount)
+  }, [invalidDocumentCount, setInvalidDocumentCount])
+
   const filteredData = useMemo(() => {
     const searchFiltered = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
     const validationFiltered =

@@ -161,6 +161,11 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
+  const invalidDocumentCount = useMemo(
+    () => tableData.filter((doc) => doc.validation.hasError).length,
+    [tableData],
+  )
+
   return (
     <Card
       ref={setScrollContainerRef}
@@ -190,6 +195,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             rowActions={renderRowActions}
             searchFilter={filterRows}
             validationFilter={filterValidationErrors}
+            invalidDocumentCount={invalidDocumentCount}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />

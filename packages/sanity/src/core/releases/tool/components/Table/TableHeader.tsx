@@ -1,11 +1,10 @@
 import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Checkbox, Flex, Stack, Text, TextInput, Tooltip} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {useCallback, useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {releasesLocaleNamespace} from '../../../i18n'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
 
@@ -75,28 +74,6 @@ const TableHeaderSearch = ({
   )
 }
 
-function ValidationFilterHeader(props: HeaderProps): React.JSX.Element {
-  const {showValidationErrorsOnly, setShowValidationErrorsOnly} = useTableContext()
-  const {t} = useTranslation(releasesLocaleNamespace)
-
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setShowValidationErrorsOnly(event.currentTarget.checked)
-    },
-    [setShowValidationErrorsOnly],
-  )
-
-  return (
-    <Flex {...props.headerProps} flex={1} padding={1} justify="center" align="center" sizing="border">
-      <Tooltip portal placement="bottom" content={<Text size={1}>{t('table-header.validation-filter-tooltip')}</Text>}>
-        <Flex as="label">
-          <Checkbox checked={showValidationErrorsOnly} onChange={handleChange} />
-        </Flex>
-      </Tooltip>
-    </Flex>
-  )
-}
-
 /**
  *
  * @internal
@@ -137,5 +114,4 @@ export const Headers = {
   SortHeaderButton,
   TableHeaderSearch,
   BasicHeader,
-  ValidationFilterHeader,
 }
