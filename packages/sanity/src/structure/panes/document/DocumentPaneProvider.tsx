@@ -682,6 +682,28 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return undefined
   }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
+  // Sync openPath to URL when enhanced object dialog is enabled
+  const openPathRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (!enhancedObjectDialogEnabled || !ready) return
+
+    const nextPath = openPath.length > 0 ? pathToString(openPath) : undefined
+
+    // Only update if the openPath has actually changed
+    if (nextPath === openPathRef.current) return
+
+    openPathRef.current = nextPath
+
+    // Update URL to match openPath
+    if (nextPath && params.path !== nextPath) {
+      setPaneParams({...params, path: nextPath})
+    } else if (!nextPath && params.path) {
+      // Clear path from URL when openPath is empty
+      const {path: _, ...restParams} = params
+      setPaneParams(restParams)
+    }
+  }, [enhancedObjectDialogEnabled, ready, openPath, params, setPaneParams])
+
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
