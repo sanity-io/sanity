@@ -58,7 +58,7 @@ await yargs(process.argv.slice(2))
         }
       } catch (error) {
         // oxlint-disable-next-line no-console
-        console.error(error)
+        console.error(error.stack)
         process.exit(1)
       }
     },
