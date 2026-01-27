@@ -153,6 +153,7 @@
     "@portabletext/plugin-typography": "^5.0.20",
     "@portabletext/react": "^6.0.2",
     "@portabletext/sanity-bridge": "^2.0.0",
+    "@portabletext/to-html": "^5.0.1",
     "@portabletext/toolkit": "^5.0.1",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",

@@ -1,9 +1,12 @@
+import {toHTML} from '@portabletext/to-html'
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {
   isBlockSchemaType,
   isSpanSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type PortableTextBlock,
 } from '@sanity/types'
 
 import {isString} from '../../util/isString'
@@ -20,6 +23,7 @@ import {type SanityClipboardItem} from './types'
 const MIMETYPE_SANITY_CLIPBOARD = 'web application/vnd.sanity-clipboard-item+json'
 const MIMETYPE_HTML = 'text/html'
 const MIMETYPE_PLAINTEXT = 'text/plain'
+const MIMETYPE_PORTABLE_TEXT = 'web application/x-portable-text'
 
 /**
  * Reports whether or not the current browser supports custom mimetype types
@@ -33,6 +37,11 @@ const SUPPORTS_SANITY_CLIPBOARD_MIMETYPE =
   typeof ClipboardItem !== 'undefined' &&
   'supports' in ClipboardItem &&
   ClipboardItem.supports(MIMETYPE_SANITY_CLIPBOARD)
+
+const SUPPORTS_PORTABLE_TEXT_MIMETYPE =
+  typeof ClipboardItem !== 'undefined' &&
+  'supports' in ClipboardItem &&
+  ClipboardItem.supports(MIMETYPE_PORTABLE_TEXT)
 
 /**
  * The name of the attributed used to store the base64 data. Note that we store
@@ -54,12 +63,34 @@ export async function getClipboardItem(): Promise<SanityClipboardItem | null> {
   return null
 }
 
+/**
+ * Type guard to check if a value looks like a TypedObject (has _type property)
+ */
+function isTypedObject(value: unknown): value is {_type: string} {
+  return typeof value === 'object' && value !== null && '_type' in value
+}
+
+/**
+ * Check if a value is a Portable Text array
+ */
+function isPortableTextValue(value: unknown): boolean {
+  if (!Array.isArray(value)) return false
+  return value.some((item) => isTypedObject(item) && isPortableTextBlock(item))
+}
+
 export async function writeClipboardItem(copyActionResult: SanityClipboardItem): Promise<boolean> {
   const textValue = transformValueToText(copyActionResult.value)
-  const escapedTextValue = escapeHtml(textValue)
   // we use a utf8-safe base64 encoded string to preserve the data as safely as
   // possible when serializing into HTML
   const base64SanityClipboardItem = utf8ToBase64(JSON.stringify(copyActionResult))
+
+  // Check if the value is Portable Text for x-portable-text format
+  const isPTE = isPortableTextValue(copyActionResult.value)
+
+  // Generate semantic HTML for external applications, with embedded base64 data for Safari fallback
+  const htmlValue = transformValueToHtml(copyActionResult.value)
+  // Wrap in a container with the base64 data attribute for round-trip support
+  const htmlWithData = `<div data-${BASE64_ATTR}="${base64SanityClipboardItem}">${htmlValue}</div>`
 
   const clipboardItem = new ClipboardItem({
     ...(SUPPORTS_SANITY_CLIPBOARD_MIMETYPE && {
@@ -67,13 +98,14 @@ export async function writeClipboardItem(copyActionResult: SanityClipboardItem):
         type: MIMETYPE_SANITY_CLIPBOARD,
       }),
     }),
-    [MIMETYPE_HTML]: new Blob(
-      // we store the data within a data attribute because safari will sanitize
-      // and mangle the HTML written to the clipboard
-      // https://stackoverflow.com/a/68958287/5776910
-      [`<p data-${BASE64_ATTR}="${base64SanityClipboardItem}">${escapedTextValue}</p>`],
-      {type: MIMETYPE_HTML},
-    ),
+    // Include x-portable-text format for PTE-to-PTE paste operations
+    ...(isPTE &&
+      SUPPORTS_PORTABLE_TEXT_MIMETYPE && {
+        [MIMETYPE_PORTABLE_TEXT]: new Blob([JSON.stringify(copyActionResult.value)], {
+          type: MIMETYPE_PORTABLE_TEXT,
+        }),
+      }),
+    [MIMETYPE_HTML]: new Blob([htmlWithData], {type: MIMETYPE_HTML}),
     [MIMETYPE_PLAINTEXT]: new Blob([textValue], {type: MIMETYPE_PLAINTEXT}),
   })
 
@@ -101,7 +133,7 @@ export async function parseClipboardItem(item: ClipboardItem): Promise<SanityCli
   const doc = parser.parseFromString(html, 'text/html')
 
   try {
-    const el = doc.querySelector(`[data-${BASE64_ATTR}]`) as HTMLParagraphElement
+    const el = doc.querySelector(`[data-${BASE64_ATTR}]`) as HTMLElement
     if (!el) return null
 
     type CamelCase<S extends string> = S extends `${infer P1}-${infer P2}${infer P3}`
@@ -140,10 +172,49 @@ function base64ToUtf8(base64String: string) {
   return decoder.decode(uint8Array)
 }
 
-function escapeHtml(text: string) {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(text, 'text/html')
-  return doc.documentElement.textContent
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+/**
+ * Convert Portable Text value to semantic HTML for clipboard using \@portabletext/to-html
+ */
+function transformValueToHtml(value: unknown): string {
+  if (!value) return ''
+  if (isString(value)) return `<p>${escapeHtml(value)}</p>`
+  if (Number.isFinite(value)) return `<p>${value}</p>`
+
+  if (Array.isArray(value)) {
+    // Check if this is a Portable Text array
+    if (value.some((item) => isTypedObject(item) && isPortableTextBlock(item))) {
+      return toHTML(value as PortableTextBlock[])
+    }
+
+    // Regular array - join as comma-separated text in a paragraph
+    const text = value.map(transformValueToText).filter(Boolean).join(', ')
+    return text ? `<p>${escapeHtml(text)}</p>` : ''
+  }
+
+  if (typeof value === 'object') {
+    // Check if this is a single Portable Text block
+    if (isTypedObject(value) && isPortableTextBlock(value)) {
+      return toHTML([value as PortableTextBlock])
+    }
+
+    // Regular object - extract non-underscore values
+    const text = Object.entries(value)
+      .map(([key, subValue]) => (key.startsWith('_') ? '' : transformValueToText(subValue)))
+      .filter(Boolean)
+      .join(', ')
+    return text ? `<p>${escapeHtml(text)}</p>` : ''
+  }
+
+  return ''
 }
 
 export function transformValueToText(value: unknown): string {
@@ -152,10 +223,18 @@ export function transformValueToText(value: unknown): string {
   if (Number.isFinite(value)) return value.toString()
 
   if (Array.isArray(value)) {
+    // Check if this is a Portable Text array (has at least one PTE block)
+    if (value.some((item) => isTypedObject(item) && isPortableTextBlock(item))) {
+      return toPlainText(value)
+    }
     return value.map(transformValueToText).filter(Boolean).join(', ')
   }
 
   if (typeof value === 'object') {
+    // Check if this is a single Portable Text block
+    if (isTypedObject(value) && isPortableTextBlock(value)) {
+      return toPlainText(value)
+    }
     return Object.entries(value)
       .map(([key, subValue]) => (key.startsWith('_') ? '' : transformValueToText(subValue)))
       .filter(Boolean)
