@@ -103,6 +103,6 @@ jobs:
           branch: ci/release-main-debug
           labels: "release:latest"
           sign-commits: true
-          base: main
+          base: improve-release-workflow # todo - switch back to main
           #team-reviewers: "@sanity-io/studio"
           draft: true
