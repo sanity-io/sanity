@@ -34,6 +34,7 @@ Promise.resolve(
       builder: (cmd) =>
         cmd.options({
           pr: {type: 'number', demandOption: true},
+          githubOutputKey: {type: 'string', demandOption: false},
           outputFormat: {
             type: 'string',
             demandOption: false,
@@ -52,7 +53,10 @@ Promise.resolve(
           .then((result) => {
             if (args.outputFormat === 'pr-description') {
               // oxlint-disable-next-line no-console
-              console.log(generateChangeLogSummary(args.tentativeVersion, result))
+              const output = generateChangeLogSummary(args.tentativeVersion, result)
+              process.stdout.write(
+                args.githubOutputKey ? `${args.githubOutputKey}<<EOF\n${output}\nEOF` : output,
+              )
             } else {
               // oxlint-disable-next-line no-console
               console.log(result)
