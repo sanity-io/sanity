@@ -5,6 +5,7 @@ import {
   concat,
   defer,
   EMPTY,
+  from,
   fromEvent,
   merge,
   type Observable,
@@ -17,6 +18,7 @@ import {
   filter,
   map,
   mergeMap,
+  reduce,
   share,
   shareReplay,
   startWith,
@@ -38,7 +40,59 @@ import {
 import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
-import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
+import {type CombinedSelection, combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
+
+/**
+ * Maximum size in bytes for document IDs in a single query.
+ * This matches the limit used in availability.ts and accounts for
+ * the Sanity client's max query size with room for headers.
+ */
+const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
+
+/**
+ * Chunks combined selections into smaller groups based on the total byte size of document IDs.
+ * This prevents queries from becoming too large and timing out.
+ *
+ * Similar to chunkDocumentIds in availability.ts, but handles CombinedSelection structure.
+ *
+ * @param combinedSelections - The combined selections to chunk
+ * @returns Array of chunked combined selections, each within the size limit
+ */
+function chunkCombinedSelections(combinedSelections: CombinedSelection[]): CombinedSelection[][] {
+  const chunks: CombinedSelection[][] = []
+
+  for (const selection of combinedSelections) {
+    let chunk: string[] = []
+    let chunkMap: number[] = []
+    let chunkSize = 0
+
+    for (let i = 0; i < selection.ids.length; i++) {
+      const id = selection.ids[i]
+      // +3 accounts for quotes and comma in GROQ request structure: ["id1","id2"]
+      const idSize = id.length + 3
+
+      // Reached the max length? Start a new chunk
+      if (chunkSize + idSize >= MAX_DOCUMENT_ID_CHUNK_SIZE && chunk.length > 0) {
+        chunks.push([{ids: chunk, fields: selection.fields, map: chunkMap}])
+        chunk = []
+        chunkMap = []
+        chunkSize = 0
+      }
+
+      chunk.push(id)
+      chunkMap.push(selection.map[i])
+      chunkSize += idSize
+    }
+
+    // Push overflowing IDs to the last chunk
+    // If there are any remaining IDs from the previous check
+    if (chunk.length > 0) {
+      chunks.push([{ids: chunk, fields: selection.fields, map: chunkMap}])
+    }
+  }
+
+  return chunks
+}
 
 type CachedFieldObserver = {
   id: Id
@@ -85,21 +139,41 @@ export function createObserveFields(options: {
         (perspective && perspective.length > 0) ||
         combinedSelections.some((selection) => selection.ids.some(isVersionId))
 
-      return versionedClient(
+      const apiClient = versionedClient(
         client,
         useReleaseVersion ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion : undefined,
       )
-        .observable.fetch(
-          toQuery(combinedSelections),
-          {},
-          {tag: 'preview.document-paths', perspective},
-        )
-        .pipe(
-          retry({
-            delay: (_: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
-          }),
-          map((result: any) => reassemble(result, combinedSelections)),
-        )
+
+      // Chunk the selections to avoid massive queries that timeout
+      const selectionChunks = chunkCombinedSelections(combinedSelections)
+
+      // Helper to fetch a single chunk
+      const fetchChunk = (chunk: CombinedSelection[]) =>
+        apiClient.observable
+          .fetch(toQuery(chunk), {}, {tag: 'preview.document-paths', perspective})
+          .pipe(
+            retry({
+              delay: (_: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
+            }),
+            map((result: any) => reassemble(result, chunk)),
+          )
+
+      // Single chunk - no merging needed (most common case)
+      if (selectionChunks.length === 1) {
+        return fetchChunk(selectionChunks[0])
+      }
+
+      // Multiple chunks - fetch in parallel and merge sparse arrays
+      // Each chunk's reassemble places results at their original map indices
+      return from(selectionChunks).pipe(
+        mergeMap(fetchChunk, 10),
+        reduce((merged: (Record<string, any> | null)[], chunkResults) => {
+          chunkResults.forEach((result, idx) => {
+            if (result !== null && result !== undefined) merged[idx] = result
+          })
+          return merged
+        }, []),
+      )
     }
   }
   const batchFetchersCache = new Map()
