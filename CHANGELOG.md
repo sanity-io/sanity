@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
+
+### Features
+
+* **form:** add clear button to radio select inputs ([#11936](https://github.com/sanity-io/sanity/issues/11936)) ([c596726](https://github.com/sanity-io/sanity/commit/c59672612e25b557677dbc62989bc9874e0c928e)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **sanity:** add `time` param support to `getDocumentAtRevision` ([#11969](https://github.com/sanity-io/sanity/issues/11969)) ([d517d2a](https://github.com/sanity-io/sanity/commit/d517d2afdc8bedc76dc84f3ffe048923bf87ee14)) by Ash (ash@sanity.io)
+* **sanity:** add utilities for flattening Sanity data ([e3a39ba](https://github.com/sanity-io/sanity/commit/e3a39ba9f065cb013bac2f9613488be27204c7c1)) by Ash (ash@sanity.io)
+* **sanity:** collator for all divergences in a subject-upstream pair ([#11953](https://github.com/sanity-io/sanity/issues/11953)) ([dc2bd87](https://github.com/sanity-io/sanity/commit/dc2bd872b2ab8c9cf74e3d6c487dae5d28f935ab)) by Ash (ash@sanity.io)
+* **sanity:** tooling to find divergences between versions of a document ([4f55661](https://github.com/sanity-io/sanity/commit/4f5566181ee1248614b3d64b2b7e08f1bc7d5abe)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* build range decorations when comments changes ([bd54cbc](https://github.com/sanity-io/sanity/commit/bd54cbcfa6b1b5c6f1102eaa6498f3713d57e753)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **cli:** add early validation for missing dataset in migration command ([#11914](https://github.com/sanity-io/sanity/issues/11914)) ([34215df](https://github.com/sanity-io/sanity/commit/34215dfc3a4cb2100276aa03e526292ea73302ec)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **cli:** pass CLI project ID to runtime-cli if set, upgrade runtime-cli ([#11971](https://github.com/sanity-io/sanity/issues/11971)) ([539bf4a](https://github.com/sanity-io/sanity/commit/539bf4aca764cab92e0a0241a78eb599844f7d26)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+* **core:** preserve marks and markdefs when pasting pte fields ([#11967](https://github.com/sanity-io/sanity/issues/11967)) ([4f6b9ad](https://github.com/sanity-io/sanity/commit/4f6b9ad18d0f6fd3bd98ab61282315f74fdbf626)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** support copy pasting anonymous objects ([#11961](https://github.com/sanity-io/sanity/issues/11961)) ([9d76742](https://github.com/sanity-io/sanity/commit/9d76742237e55595e6f40b00f160d79589ab07ae)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** use `EditorProvider` in comment input ([4a95498](https://github.com/sanity-io/sanity/commit/4a9549804b95acc3f9303adf55fe9a4c3528fee5)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **deps:** update dependency @sanity/client to ^7.14.1 ([#11954](https://github.com/sanity-io/sanity/issues/11954)) ([41911d5](https://github.com/sanity-io/sanity/commit/41911d590008a008244586372465ea2cf903045c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency motion to ^12.27.1 ([#11932](https://github.com/sanity-io/sanity/issues/11932)) ([eb8b2a9](https://github.com/sanity-io/sanity/commit/eb8b2a98877069fca7b0a52fc7da613c290cc2e6)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11955](https://github.com/sanity-io/sanity/issues/11955)) ([70d4df1](https://github.com/sanity-io/sanity/commit/70d4df195e7f2e719e99147c6f9fef9697465881)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11960](https://github.com/sanity-io/sanity/issues/11960)) ([a85174d](https://github.com/sanity-io/sanity/commit/a85174dcdcd3c275fd15e956ad1ebe9f0c236675)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11973](https://github.com/sanity-io/sanity/issues/11973)) ([96a4200](https://github.com/sanity-io/sanity/commit/96a420065fc18d70e4b17a5b0eb150007554cbce)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **portable-text:** combine multiple annotation popovers into single popover ([#11923](https://github.com/sanity-io/sanity/issues/11923)) ([b470e3b](https://github.com/sanity-io/sanity/commit/b470e3b5a96cd8d0eab8c3311fed09816fad30ef)) by RitaDias (rita@sanity.io)
+* **sanity:** ensure dedicated `SlugFieldDiff` is used when diffing slugs ([4cbc5e6](https://github.com/sanity-io/sanity/commit/4cbc5e677e6fa0b1f08104861bbf31967a615b4f)) by Ash (ash@sanity.io)
+* **structure:** validation inspector displays path titles for anonymous objects ([#11968](https://github.com/sanity-io/sanity/issues/11968)) ([1af0e35](https://github.com/sanity-io/sanity/commit/1af0e35075376ec57432ce470a10e3a22b6622aa)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* update response handling to return latest package version ([#11910](https://github.com/sanity-io/sanity/issues/11910)) ([a4d65c4](https://github.com/sanity-io/sanity/commit/a4d65c46946fb1d77fa1c99d82c2037e69ae2540)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
 
 ### Features
