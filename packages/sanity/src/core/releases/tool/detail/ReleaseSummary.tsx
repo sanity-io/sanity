@@ -88,6 +88,8 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       setAddDocumentDialog(false)
       if (!documentToAdd) return
 
+      console.log('noop')
+
       const versionDocumentId = getVersionId(documentToAdd._id, releaseId)
       const pendingAddedDocumentId = `${versionDocumentId}-pending`
 
