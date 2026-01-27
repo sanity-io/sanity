@@ -76,7 +76,7 @@ export const fetchLatestAvailableVersionForPackage = async (options: {
         accept: 'application/json',
       },
     })
-    return res.json().then((data): string => data.packageVersion)
+    return res.json().then((data): string => data.latest)
   } catch (err) {
     console.error(
       `Failed to fetch version for package (using tag=${tag})`,
