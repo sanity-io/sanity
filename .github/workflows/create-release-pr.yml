@@ -86,7 +86,7 @@ jobs:
             (pnpm --silent release-notes generate-changelog \
               --pr=${{ github.event.pull_request.number || 0 }} \
               --tentativeVersion="${{steps.release-as.outputs.version}}" \
-              --outputFormat=pr-description) || echo 0
+              --outputFormat=pr-description)
             echo "EOF"
           } >> $GITHUB_OUTPUT
         env:

@@ -12,60 +12,64 @@ import {stripPr} from '../src/utils/stripPrNumber'
 const ADMIN_STUDIO_URL = `http://localhost:3333/`
 
 // oxlint-disable-next-line no-unused-expressions
-await yargs(process.argv.slice(2))
-  .strict()
-  .usage('$0 <command>')
-  .command({
-    command: 'generate-pr-summary',
-    describe: 'Generate release notes for release PR',
-    builder: (cmd) =>
-      cmd.options({
-        displayVersion: {type: 'string', demandOption: false},
-        pr: {type: 'number', demandOption: false},
-      }),
-    handler: (args) => {
-      generatePRSummary({version: args.displayVersion}).catch(console.error)
-    },
-  })
-  .command({
-    command: 'generate-changelog',
-    describe: 'Generate release note documents for release PR',
-    builder: (cmd) =>
-      cmd.options({
-        pr: {type: 'number', demandOption: true},
-        outputFormat: {
-          type: 'string',
-          demandOption: false,
-          enum: [
-            // outputs PR summary description
-            'pr-description',
-          ],
-        },
-        tentativeVersion: {type: 'string', demandOption: true},
-      }),
-    handler: async (args) => {
-      try {
-        const result = await createOrUpdateChangelogDocs({
+Promise.resolve(
+  yargs(process.argv.slice(2))
+    .strict()
+    .usage('$0 <command>')
+    .command({
+      command: 'generate-pr-summary',
+      describe: 'Generate release notes for release PR',
+      builder: (cmd) =>
+        cmd.options({
+          displayVersion: {type: 'string', demandOption: false},
+          pr: {type: 'number', demandOption: false},
+        }),
+      handler: (args) => {
+        generatePRSummary({version: args.displayVersion}).catch(console.error)
+      },
+    })
+    .command({
+      command: 'generate-changelog',
+      describe: 'Generate release note documents for release PR',
+      builder: (cmd) =>
+        cmd.options({
+          pr: {type: 'number', demandOption: true},
+          outputFormat: {
+            type: 'string',
+            demandOption: false,
+            enum: [
+              // outputs PR summary description
+              'pr-description',
+            ],
+          },
+          tentativeVersion: {type: 'string', demandOption: true},
+        }),
+      handler: (args) => {
+        return createOrUpdateChangelogDocs({
           pr: args.pr,
           tentativeVersion: args.tentativeVersion,
         })
-        if (args.outputFormat === 'pr-description') {
-          // oxlint-disable-next-line no-console
-          console.log(generateChangeLogSummary(args.tentativeVersion, result))
-        } else {
-          // oxlint-disable-next-line no-console
-          console.log(result)
-        }
-      } catch (error) {
-        // oxlint-disable-next-line no-console
-        console.error(error.stack)
-        process.exit(1)
-      }
-    },
-  })
-  .demandCommand(1, 'must provide a valid command')
-  .help('h')
-  .alias('h', 'help').argv
+          .then((result) => {
+            if (args.outputFormat === 'pr-description') {
+              // oxlint-disable-next-line no-console
+              console.log(generateChangeLogSummary(args.tentativeVersion, result))
+            } else {
+              // oxlint-disable-next-line no-console
+              console.log(result)
+            }
+            return undefined
+          })
+          .catch((error) => {
+            // oxlint-disable-next-line no-console
+            console.error(error.stack)
+            process.exit(1)
+          })
+      },
+    })
+    .demandCommand(1, 'must provide a valid command')
+    .help('h')
+    .alias('h', 'help').argv,
+).catch(console.error)
 
 type GenerateChangeLogResult = {
   success?: boolean
