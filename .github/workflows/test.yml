@@ -37,6 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          # Full history required for vitest --changed to diff against base branch
           fetch-depth: 0
 
       - name: Check if only examples files changed
@@ -58,7 +59,14 @@ jobs:
         if: steps.check_examples.outputs.path_only != 'true'
         id: test
         run: |
+          # Base arguments for all test runs
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
+
+          # Add --changed for PRs (unless 'full-test-suite' label is present)
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ contains(github.event.pull_request.labels.*.name, 'full-test-suite') }}" != "true" ]; then
+            ARGS="$ARGS --changed origin/${{ github.base_ref }}"
+          fi
+
           if [ "${{ matrix.node }}" == "20" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
