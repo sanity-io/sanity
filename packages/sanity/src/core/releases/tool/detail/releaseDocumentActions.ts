@@ -36,11 +36,7 @@ export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
 
 export const FILTER_TAB_CONFIGS: FilterTabConfig[] = [
   {key: 'all', labelKey: 'filter-tab.all', tone: 'default'},
-  ...DOCUMENT_ACTION_CONFIGS.map((config) => ({
-    key: config.key,
-    labelKey: config.labelKey,
-    tone: config.tone,
-  })),
+  ...DOCUMENT_ACTION_CONFIGS,
   {key: 'errors', labelKey: 'filter-tab.errors', tone: 'critical'},
 ]
 

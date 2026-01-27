@@ -172,7 +172,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       }}
       className="hide-scrollbar"
     >
-      <Stack>
+      <Stack space={2}>
         <ReleaseDocumentFilterTabs
           documents={tableData}
           releaseState={release.state}

@@ -67,27 +67,22 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
     </Flex>
   ),
   cell: ({cellProps, datum}) => {
-    const actionBadge = () => {
-      const actionType = getDocumentActionType(datum)
-      if (!actionType) return null
-
-      const documentActionConfig = getReleaseDocumentActionConfig(actionType)
-      if (!documentActionConfig) return null
-
-      return (
-        <Badge
-          radius={2}
-          tone={documentActionConfig.tone}
-          data-testid={`${actionType}-badge-${datum.document._id}`}
-        >
-          {t(documentActionConfig.labelKey)}
-        </Badge>
-      )
-    }
+    const actionType = getDocumentActionType(datum)
+    const config = actionType ? getReleaseDocumentActionConfig(actionType) : null
 
     return (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>{actionBadge()}</Box>
+        <Box paddingX={2}>
+          {config && (
+            <Badge
+              radius={2}
+              tone={config.tone}
+              data-testid={`${actionType}-badge-${datum.document._id}`}
+            >
+              {t(config.labelKey)}
+            </Badge>
+          )}
+        </Box>
       </Flex>
     )
   },
