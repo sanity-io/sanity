@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
+
+### Bug Fixes
+
+* **cli:** pass CLI project ID to runtime-cli if set, upgrade runtime-cli ([#11971](https://github.com/sanity-io/sanity/issues/11971)) ([539bf4a](https://github.com/sanity-io/sanity/commit/539bf4aca764cab92e0a0241a78eb599844f7d26)) by Espen Hovlandsdal (espen@hovlandsdal.com)
+
 ## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
 
 ### Bug Fixes

@@ -1636,7 +1636,7 @@ importers:
         specifier: ^5.0.10
         version: 5.0.10
       sanity:
-        specifier: ^5.6.0
+        specifier: ^5.7.0
         version: link:../../sanity
       styled-components:
         specifier: 'catalog:'
@@ -8704,6 +8704,10 @@ packages:
   groq@3.99.0:
     resolution: {integrity: sha512-ZwKAWzvVCw51yjmIf5484KgsAzZAlGTM4uy9lki4PjAYxcEME2Xf93d31LhHzgUAr2JI79H+cNKoRjDHdv1BXQ==}
     engines: {node: '>=18'}
+
+  groq@5.6.0:
+    resolution: {integrity: sha512-CNI1dRPMX1dVv8Mfp+U7J/zq9mxXRhc5pXtAgXMHxPWnp6grCSN8ivmZWIKqGW587zbYBUWrKJzBjaVLK8dHdw==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
 
   gtoken@7.1.0:
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==}
@@ -16046,7 +16050,7 @@ snapshots:
       '@sanity/worker-channels': 1.1.0
       debug: 4.4.3(supports-color@8.1.1)
       globby: 11.1.0
-      groq: link:packages/groq
+      groq: 5.6.0
       groq-js: 1.25.0
       json5: 2.2.3
       reselect: 5.1.1
@@ -20664,6 +20668,8 @@ snapshots:
   groq@3.88.1-typegen-experimental.0: {}
 
   groq@3.99.0: {}
+
+  groq@5.6.0: {}
 
   gtoken@7.1.0(encoding@0.1.13):
     dependencies:
