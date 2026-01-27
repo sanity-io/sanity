@@ -2,15 +2,7 @@ import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
 import {get} from 'lodash-es'
-import {
-  type CSSProperties,
-  Fragment,
-  type HTMLProps,
-  type RefAttributes,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import {type CSSProperties, Fragment, type HTMLProps, type RefAttributes, useMemo, useRef} from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {TableEmptyState} from './TableEmptyState'
@@ -39,7 +31,6 @@ type VirtualDatum = {
 export interface TableProps<TableData, AdditionalRowTableData> {
   columnDefs: Column<RowDatum<TableData, AdditionalRowTableData>>[]
   searchFilter?: (data: TableData[], searchTerm: string) => TableData[]
-  validationFilter?: (data: TableData[]) => TableData[]
   data: TableData[]
   emptyState: (() => React.JSX.Element) | string
   loading?: boolean
@@ -55,7 +46,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
-  invalidDocumentCount?: number
 }
 
 const ITEM_HEIGHT = 59
@@ -66,31 +56,23 @@ const TableInner = <TableData, AdditionalRowTableData>({
   data,
   emptyState,
   searchFilter,
-  validationFilter,
   rowId,
   rowActions,
   loading = false,
   rowProps = () => ({}),
   scrollContainerRef,
   hideTableInlinePadding = false,
-  invalidDocumentCount = 0,
 }: TableProps<TableData, AdditionalRowTableData>) => {
-  const {searchTerm, sort, showValidationErrorsOnly, setInvalidDocumentCount} = useTableContext()
+  const {searchTerm, sort} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
 
-  useEffect(() => {
-    setInvalidDocumentCount(invalidDocumentCount)
-  }, [invalidDocumentCount, setInvalidDocumentCount])
-
   const filteredData = useMemo(() => {
-    const searchFiltered = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
-    const validationFiltered =
-      showValidationErrorsOnly && validationFilter ? validationFilter(searchFiltered) : searchFiltered
+    const searchFiltered = searchFilter ? searchFilter(data, searchTerm || '') : data
 
-    if (!sort) return validationFiltered
+    if (!sort) return searchFiltered
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)
-    return [...validationFiltered].sort((a, b) => {
+    return [...searchFiltered].sort((a, b) => {
       let order: number
 
       const [aValue, bValue]: (number | string)[] = [a, b].map(
@@ -122,7 +104,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
       if (sort.direction === 'asc') return order
       return -order
     })
-  }, [columnDefs, data, searchFilter, searchTerm, sort, showValidationErrorsOnly, validationFilter])
+  }, [columnDefs, data, searchFilter, searchTerm, sort])
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,

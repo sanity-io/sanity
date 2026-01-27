@@ -14,10 +14,11 @@ import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {Table} from '../components/Table/Table'
 import {AddDocumentSearch, type AddedDocument} from './AddDocumentSearch'
-import {ReleaseActionBadges} from './components/ReleaseActionBadges'
+import {ReleaseDocumentFilterTabs} from './components/ReleaseDocumentFilterTabs'
 import {DocumentActions} from './documentTable/DocumentActions'
 import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDefs'
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
+import {type DocumentFilterType,documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './useBundleDocuments'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
@@ -50,6 +51,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   const [openAddDocumentDialog, setAddDocumentDialog] = useState(false)
   const [pendingAddedDocument, setPendingAddedDocument] = useState<BundleDocumentRow[]>([])
+  const [activeFilter, setActiveFilter] = useState<DocumentFilterType>('all')
 
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -74,18 +76,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
 
   const filterRows = useCallback(
-    (data: DocumentInRelease[], searchTerm: string) =>
-      data.filter(({document}) => {
-        // this is a temporary way of doing the search without the previews
-        // until we have it moved to the server side
-        return searchDocumentRelease(document, searchTerm)
-      }),
-    [],
-  )
-
-  const filterValidationErrors = useCallback(
-    (data: DocumentInRelease[]) => data.filter((doc) => doc.validation.hasError),
-    [],
+    (data: DocumentInRelease[], searchTerm: string) => {
+      return data.filter((doc) => {
+        const matchesSearch = searchTerm ? searchDocumentRelease(doc.document, searchTerm) : true
+        return matchesSearch && documentMatchesFilter(doc, activeFilter)
+      })
+    },
+    [activeFilter],
   )
 
   const closeAddDialog = useCallback(
@@ -161,11 +158,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     [documents, pendingAddedDocument],
   )
 
-  const invalidDocumentCount = useMemo(
-    () => tableData.filter((doc) => doc.validation.hasError).length,
-    [tableData],
-  )
-
   return (
     <Card
       ref={setScrollContainerRef}
@@ -179,10 +171,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       className="hide-scrollbar"
     >
       <Stack>
-        <ReleaseActionBadges
+        <ReleaseDocumentFilterTabs
           documents={tableData}
           releaseState={release.state}
           isLoading={isLoading}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
         />
         <Card borderTop>
           <Table<DocumentInReleaseDetail>
@@ -194,8 +188,6 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
             columnDefs={documentTableColumnDefs}
             rowActions={renderRowActions}
             searchFilter={filterRows}
-            validationFilter={filterValidationErrors}
-            invalidDocumentCount={invalidDocumentCount}
             scrollContainerRef={scrollContainerRef}
             defaultSort={{column: 'search', direction: 'asc'}}
           />

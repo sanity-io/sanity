@@ -16,10 +16,6 @@ export interface TableContextValue {
   setSearchTerm: (searchTerm: string) => void
   sort: TableSort | null
   setSortColumn: (column: string) => void
-  showValidationErrorsOnly: boolean
-  setShowValidationErrorsOnly: (value: boolean) => void
-  invalidDocumentCount: number
-  setInvalidDocumentCount: (count: number) => void
 }
 
 /**
@@ -31,8 +27,6 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | null>(null)
   const [sort, setSort] = useState<TableSort | null>(defaultSort || null)
-  const [showValidationErrorsOnly, setShowValidationErrorsOnly] = useState(false)
-  const [invalidDocumentCount, setInvalidDocumentCount] = useState(0)
 
   const setSortColumn = useCallback((newColumn: string) => {
     setSort((s) => {
@@ -49,10 +43,6 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
     setSearchTerm,
     sort,
     setSortColumn,
-    showValidationErrorsOnly,
-    setShowValidationErrorsOnly,
-    invalidDocumentCount,
-    setInvalidDocumentCount,
   }
 
   return <TableContext.Provider value={contextValue}>{children}</TableContext.Provider>

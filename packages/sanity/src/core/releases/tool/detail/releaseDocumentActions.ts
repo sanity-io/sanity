@@ -2,29 +2,84 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from './ReleaseSummary'
 import {type DocumentInRelease} from './useBundleDocuments'
 
+export type DocumentFilterType = 'all' | 'added' | 'changed' | 'unpublished' | 'errors'
+
 export interface DocumentActionConfig {
   key: 'added' | 'changed' | 'unpublished'
   tone: 'positive' | 'caution' | 'critical'
-  translationKey: string
+  tableLabelKey: string
+  filterLabelKey: string
+}
+
+export interface FilterTabConfig {
+  key: DocumentFilterType
+  labelKey: string
+  tone: 'default' | 'positive' | 'caution' | 'critical'
 }
 
 export const DOCUMENT_ACTION_CONFIGS: DocumentActionConfig[] = [
   {
     key: 'added',
     tone: 'positive',
-    translationKey: 'table-body.action.add',
+    tableLabelKey: 'table-body.action.add',
+    filterLabelKey: 'filter-tab.add',
   },
   {
     key: 'changed',
     tone: 'caution',
-    translationKey: 'table-body.action.change',
+    tableLabelKey: 'table-body.action.change',
+    filterLabelKey: 'filter-tab.change',
   },
   {
     key: 'unpublished',
     tone: 'critical',
-    translationKey: 'table-body.action.unpublish',
+    tableLabelKey: 'table-body.action.unpublish',
+    filterLabelKey: 'filter-tab.unpublish',
   },
 ]
+
+export const FILTER_TAB_CONFIGS: FilterTabConfig[] = [
+  {key: 'all', labelKey: 'filter-tab.all', tone: 'default'},
+  ...DOCUMENT_ACTION_CONFIGS.map((config) => ({
+    key: config.key,
+    labelKey: config.filterLabelKey,
+    tone: config.tone,
+  })),
+  {key: 'errors', labelKey: 'filter-tab.errors', tone: 'critical'},
+]
+
+export type ActionCounts = Record<'added' | 'changed' | 'unpublished' | 'errors', number>
+
+/**
+ * Counts documents by their action type and validation errors
+ */
+export function countDocumentsByAction(documents: (DocumentInRelease | BundleDocumentRow)[]): ActionCounts {
+  return documents.reduce<ActionCounts>(
+    (acc, doc) => {
+      const actionType = getDocumentActionType(doc)
+      if (actionType) {
+        acc[actionType]++
+      }
+      if (doc.validation.hasError) {
+        acc.errors++
+      }
+      return acc
+    },
+    {added: 0, changed: 0, unpublished: 0, errors: 0},
+  )
+}
+
+/**
+ * Checks if a document matches the given filter type
+ */
+export function documentMatchesFilter(
+  doc: DocumentInRelease | BundleDocumentRow,
+  filter: DocumentFilterType,
+): boolean {
+  if (filter === 'all') return true
+  if (filter === 'errors') return doc.validation.hasError
+  return getDocumentActionType(doc) === filter
+}
 
 /**
  * Determines the action type for a document based on its state

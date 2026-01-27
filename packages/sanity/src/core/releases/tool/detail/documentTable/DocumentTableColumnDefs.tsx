@@ -1,24 +1,21 @@
 import {type ReleaseState} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Badge, Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {Badge, Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {memo, useCallback} from 'react'
+import {memo} from 'react'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {RelativeTime} from '../../../../components/RelativeTime'
 import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
-import {useTableContext} from '../../components/Table/TableProvider'
-import {type Column, type HeaderProps, type InjectedTableProps} from '../../components/Table/types'
+import {type Column, type InjectedTableProps} from '../../components/Table/types'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
@@ -61,46 +58,6 @@ const MemoDocumentType = memo(
   (prev, next) => prev.type === next.type,
 )
 
-function ValidationFilterHeader(props: HeaderProps): React.JSX.Element {
-  const {showValidationErrorsOnly, setShowValidationErrorsOnly, invalidDocumentCount} =
-    useTableContext()
-  const {t} = useTranslation(releasesLocaleNamespace)
-
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setShowValidationErrorsOnly(event.currentTarget.checked)
-    },
-    [setShowValidationErrorsOnly],
-  )
-
-  return (
-    <Flex
-      {...props.headerProps}
-      flex={1}
-      padding={1}
-      justify="center"
-      align="center"
-      gap={2}
-      sizing="border"
-    >
-      <Tooltip
-        portal
-        placement="bottom"
-        content={<Text size={1}>{t('table-header.validation-filter-tooltip')}</Text>}
-      >
-        <Flex as="label">
-          <Checkbox checked={showValidationErrorsOnly} onChange={handleChange} />
-        </Flex>
-      </Tooltip>
-      {invalidDocumentCount > 0 && (
-        <Text size={1} muted>
-          ({invalidDocumentCount} invalid)
-        </Text>
-      )}
-    </Flex>
-  )
-}
-
 const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentRow> = (t) => ({
   id: 'action',
   width: 100,
@@ -123,7 +80,7 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
           tone={documentActionConfig.tone}
           data-testid={`${actionType}-badge-${datum.document._id}`}
         >
-          {t(documentActionConfig.translationKey)}
+          {t(documentActionConfig.tableLabelKey)}
         </Badge>
       )
     }
@@ -208,7 +165,9 @@ export const getDocumentTableColumnDefs: (
     id: 'validation',
     sorting: false,
     width: 50,
-    header: (props) => <ValidationFilterHeader {...props} />,
+    header: (props) => (
+      <Flex {...props.headerProps} paddingY={3} justify="center" sizing="border" />
+    ),
     cell: ({cellProps, datum}) => {
       if (datum.isLoading) return null
 

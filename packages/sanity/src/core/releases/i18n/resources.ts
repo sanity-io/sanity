@@ -425,8 +425,17 @@ const releasesLocaleStrings = {
   'table-header.type': 'Type',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
-  /** Tooltip for the validation filter checkbox in the document table */
-  'table-header.validation-filter-tooltip': 'Show only documents with validation errors',
+
+  /** Filter tab label for all documents */
+  'filter-tab.all': 'All',
+  /** Filter tab label for added documents */
+  'filter-tab.add': 'Add',
+  /** Filter tab label for changed documents */
+  'filter-tab.change': 'Change',
+  /** Filter tab label for documents to be unpublished */
+  'filter-tab.unpublish': 'Unpublish',
+  /** Filter tab label for documents with validation errors */
+  'filter-tab.errors': 'Errors',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
