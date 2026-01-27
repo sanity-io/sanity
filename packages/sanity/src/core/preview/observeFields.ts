@@ -152,14 +152,15 @@ export function createObserveFields(options: {
             map((result: any) => reassemble(result, chunk)),
           )
 
-      // Single chunk - no merging needed (most common case)
-      if (selectionChunks.length === 1) {
-        return fetchChunk(selectionChunks[0])
-      }
-
       // No chunks - return empty array early
       if (selectionChunks.length === 0) {
         return of([])
+      }
+
+      // Single chunk - no merging needed (most common case)
+      // Kept for performance reasons, as it is the common case (no massive releases) and faster
+      if (selectionChunks.length === 1) {
+        return fetchChunk(selectionChunks[0])
       }
 
       // Multiple chunks - fetch in parallel and merge results
