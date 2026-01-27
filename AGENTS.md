@@ -152,6 +152,7 @@ pnpm dev  # Starts at http://localhost:3333
 - Session persists in browser, so subsequent visits won't require re-authentication
 
 Use the dev studio when you need to:
+
 - Visually verify UI changes
 - Test real document editing workflows
 - Debug issues that only appear with real data
@@ -192,6 +193,7 @@ pnpm test:e2e --ui          # Interactive mode
 The dev studio includes a **Workshop tool** for isolated component development. Access it via the tools menu in the dev studio.
 
 Workshop is useful for:
+
 - Developing UI components in isolation
 - Testing component states without needing full document context
 - Visual regression testing during development
@@ -199,11 +201,13 @@ Workshop is useful for:
 ### Important Note for AI Agents
 
 **What requires authentication:**
+
 - Running the dev studio (`pnpm dev`)
 - E2E tests (`pnpm test:e2e`)
 - Any command that connects to Sanity APIs
 
 **What does NOT require authentication:**
+
 - Building packages (`pnpm build`)
 - Running unit tests (`pnpm test`)
 - Linting and formatting (`pnpm lint`, `pnpm lint:fix`)
