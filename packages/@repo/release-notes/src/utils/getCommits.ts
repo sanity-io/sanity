@@ -20,7 +20,7 @@ export async function* getCommits(
     merges: false,
   }
   await gitClient.verify(branch)
-  let reverseTags = semverTags.slice().reverse()
+  let reverseTags = semverTags.toReversed()
   reverseTags.push(branch)
   if (params.from) {
     if (reverseTags.includes(params.from)) {

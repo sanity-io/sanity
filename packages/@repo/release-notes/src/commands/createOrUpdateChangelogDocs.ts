@@ -63,6 +63,8 @@ export async function createOrUpdateChangelogDocs(args: {
   )
 
   const mutations = [
+    // make sure the platform document exists
+    // this is idempotent and will only create the document if it doesn't already exist
     createIfNotExists({
       _id: STUDIO_PLATFORM_DOCUMENT_ID,
       _type: 'apiPlatform',
