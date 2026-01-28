@@ -1,13 +1,14 @@
-import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-import {styled} from 'styled-components'
+import { Box, Card, type CardTone, Checkbox, Flex, Switch } from '@sanity/ui'
+import { styled } from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {FormFieldBaseHeader} from '../components/formField/FormFieldBaseHeader'
-import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
-import {FormFieldStatus} from '../components/formField/FormFieldStatus'
-import {useFieldActions} from '../field'
-import {type BooleanInputProps} from '../types'
+import { Tooltip } from '../../../ui-components'
+import { useTranslation } from '../../i18n/hooks/useTranslation'
+import { FormFieldBaseHeader } from '../components/formField/FormFieldBaseHeader'
+import { FormFieldHeaderText } from '../components/formField/FormFieldHeaderText'
+import { FormFieldStatus } from '../components/formField/FormFieldStatus'
+import { FormFieldValidationMessages } from '../components/formField/FormFieldValidationMessages'
+import { useFieldActions } from '../field'
+import { type BooleanInputProps } from '../types'
 
 const CenterAlignedBox = styled(Box)`
   align-self: center;
@@ -19,7 +20,7 @@ const CenterAlignedBox = styled(Box)`
  * @beta
  */
 export function BooleanInput(props: BooleanInputProps) {
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const {
     focused,
     __internal_comments: comments,
@@ -29,7 +30,7 @@ export function BooleanInput(props: BooleanInputProps) {
     actions,
     __internal_slot: slot,
   } = useFieldActions()
-  const {id, value, schemaType, readOnly, elementProps, validation, presence} = props
+  const { id, value, schemaType, readOnly, elementProps, validation, presence } = props
   const layout = schemaType.options?.layout || 'switch'
 
   const indeterminate = typeof value !== 'boolean'
@@ -40,14 +41,14 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   const input = (
-    <Box padding={3} style={{paddingTop: '0.85rem'}}>
+    <Box padding={3} style={{ paddingTop: '0.85rem' }}>
       <LayoutSpecificInput
         label={schemaType.title}
         {...elementProps}
         checked={checked}
         readOnly={readOnly}
         indeterminate={indeterminate}
-        style={{margin: -4}}
+        style={{ margin: -4 }}
       />
     </Box>
   )
@@ -82,6 +83,11 @@ export function BooleanInput(props: BooleanInputProps) {
           </FormFieldStatus>
         </CenterAlignedBox>
       </Flex>
+      {validation && validation.length > 0 && (
+        <Box paddingX={3} paddingBottom={2}>
+          <FormFieldValidationMessages validation={validation} />
+        </Box>
+      )}
     </Card>
   )
 }

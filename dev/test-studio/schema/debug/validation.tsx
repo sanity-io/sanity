@@ -309,12 +309,14 @@ export default defineType({
           validation: (Rule) => Rule.required().error('All fields are required'),
         },
       ],
+      validation: (Rule) => Rule.required().error('All fields are required'),
     },
     {
       name: 'image',
       title: 'Image',
       type: 'image',
       options: {hotspot: true},
+      validation: (Rule) => Rule.required().error('Image is required'),
     },
     {
       name: 'dropdown',

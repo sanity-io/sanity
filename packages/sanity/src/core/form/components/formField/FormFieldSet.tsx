@@ -22,6 +22,7 @@ import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
+import {FormFieldValidationMessages} from './FormFieldValidationMessages'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {AlignedBottomGrid, focusRingStyle} from './styles'
 
@@ -234,6 +235,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                 {description}
               </Text>
             )}
+
+            {hasValidationMarkers && <FormFieldValidationMessages validation={validation} />}
           </Stack>
         }
       />
