@@ -15,6 +15,7 @@ import {
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {type Commit} from 'conventional-commits-parser'
 import {format} from 'date-fns'
+import {descriptionToCoAuthors} from 'description-to-co-authors'
 import pMap from 'p-map'
 
 import {client} from '../client'
@@ -161,6 +162,8 @@ function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
       conventionalCommit.scope === 'build' ||
       conventionalCommit.scope === 'test',
     subject: cleanSubject,
+    header: conventionalCommit.header || '',
+    coAuthors: conventionalCommit.body ? descriptionToCoAuthors(conventionalCommit.body) : [],
     scope: conventionalCommit.scope,
     hash: conventionalCommit.hash,
     type: conventionalCommit.type,

@@ -111,7 +111,7 @@ Merging this PR will publish **\`v${tentativeVersion}\`** to npm 🚀
 
 ### Changes to be released
 
-Author | Message | PR | Commit | &nbsp;Note&nbsp;
+Author | Message | PR | Commit | Note
 ------------ | ------------- | ------------- | ------------- | -------------
 ${entriesSection}
 `
