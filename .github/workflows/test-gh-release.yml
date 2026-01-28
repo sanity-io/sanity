@@ -54,9 +54,7 @@ jobs:
       - name: Generate GitHub release
         id: generate-github-release
         run: |
-          pnpm --silent release-notes generate-gh-release-notes \
-            --targetVersion="${{needs.build-and-validate.outputs.version}}"
-            > ${{ runner.temp }}/notes.md
+          pnpm --silent release-notes generate-gh-release-notes --targetVersion="${{needs.build-and-validate.outputs.version}}" > ${{ runner.temp }}/notes.md
 
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
