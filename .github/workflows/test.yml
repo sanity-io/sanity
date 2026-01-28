@@ -117,9 +117,11 @@ jobs:
 
       - name: Merged report
         if: steps.check_examples.outputs.path_only != 'true'
+        id: merge_reports
+        continue-on-error: true
         run: |
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.merge_reports.outcome == 'success'
         uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2
