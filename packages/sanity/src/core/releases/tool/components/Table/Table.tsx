@@ -74,12 +74,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
 
   const filteredData = useMemo(() => {
-    const searchFiltered = searchFilter ? searchFilter(data, searchTerm || '') : data
-
-    if (!sort) return searchFiltered
+    const filteredResult = searchFilter ? searchFilter(data, searchTerm || '') : data
+    if (!sort) return filteredResult
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)
-    return [...searchFiltered].sort((a, b) => {
+    return [...filteredResult].sort((a, b) => {
       let order: number
 
       const [aValue, bValue]: (number | string)[] = [a, b].map(

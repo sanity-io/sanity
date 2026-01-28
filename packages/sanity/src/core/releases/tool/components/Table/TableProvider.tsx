@@ -38,12 +38,7 @@ export const TableProvider: ComponentType<PropsWithChildren & {defaultSort?: Tab
     })
   }, [])
 
-  const contextValue = {
-    searchTerm,
-    setSearchTerm,
-    sort,
-    setSortColumn,
-  }
+  const contextValue = {searchTerm, setSearchTerm, sort, setSortColumn}
 
   return <TableContext.Provider value={contextValue}>{children}</TableContext.Provider>
 }

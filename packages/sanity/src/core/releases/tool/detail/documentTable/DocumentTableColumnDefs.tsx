@@ -16,7 +16,6 @@ import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
-import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
 import {useReleaseHistory} from './useReleaseHistory'
@@ -67,22 +66,35 @@ const documentActionColumn: (t: TFunction<'releases'>) => Column<BundleDocumentR
     </Flex>
   ),
   cell: ({cellProps, datum}) => {
-    const actionType = getDocumentActionType(datum)
-    const config = actionType ? getReleaseDocumentActionConfig(actionType) : null
+    const actionBadge = () => {
+      if (datum.isPending || datum.isLoading) return null
+
+      const willBeUnpublished = isGoingToUnpublish(datum.document)
+      if (willBeUnpublished) {
+        return (
+          <Badge radius={2} tone={'critical'} data-testid={`unpublish-badge-${datum.document._id}`}>
+            {t('table-body.action.unpublish')}
+          </Badge>
+        )
+      }
+      if (datum.document.publishedDocumentExists) {
+        return (
+          <Badge radius={2} tone={'caution'} data-testid={`change-badge-${datum.document._id}`}>
+            {t('table-body.action.change')}
+          </Badge>
+        )
+      }
+
+      return (
+        <Badge radius={2} tone={'positive'} data-testid={`add-badge-${datum.document._id}`}>
+          {t('table-body.action.add')}
+        </Badge>
+      )
+    }
 
     return (
       <Flex align="center" {...cellProps}>
-        <Box paddingX={2}>
-          {config && (
-            <Badge
-              radius={2}
-              tone={config.tone}
-              data-testid={`${actionType}-badge-${datum.document._id}`}
-            >
-              {t(config.labelKey)}
-            </Badge>
-          )}
-        </Box>
+        <Box paddingX={2}>{actionBadge()}</Box>
       </Flex>
     )
   },
@@ -160,8 +172,10 @@ export const getDocumentTableColumnDefs: (
     id: 'validation',
     sorting: false,
     width: 50,
-    header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} justify="center" sizing="border" />
+    header: ({headerProps}) => (
+      <Flex {...headerProps} paddingY={3} sizing="border">
+        <Headers.BasicHeader text={''} />
+      </Flex>
     ),
     cell: ({cellProps, datum}) => {
       if (datum.isLoading) return null
