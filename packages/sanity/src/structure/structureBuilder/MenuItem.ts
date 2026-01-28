@@ -37,6 +37,12 @@ export type MenuItemParamsType = Record<string, string | unknown | undefined>
  * @public */
 export interface MenuItem {
   /**
+   * Unique identifier for the menu item.
+   * Used for tracking selected state of custom menu items.
+   * Menu items with the same id will share selected state (like radio buttons).
+   */
+  id?: string
+  /**
    * The i18n key and namespace used to populate the localized title. This is
    * the recommend way to set the title if you are localizing your studio.
    */
@@ -87,6 +93,25 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   ) {
     this._context = _context
     this.spec = spec ? spec : {}
+  }
+
+  /**
+   * Set menu item id for tracking selected state.
+   * Menu items with the same id will share selected state (like radio buttons).
+   * Use with action 'setMenuItemState' to enable automatic selected state tracking.
+   * @param id - unique identifier for the menu item
+   * @returns menu item builder based on id provided. See {@link MenuItemBuilder}
+   */
+  id(id: string): MenuItemBuilder {
+    return this.clone({id})
+  }
+
+  /**
+   * Get menu item id
+   * @returns menu item id. See {@link PartialMenuItem}
+   */
+  getId(): PartialMenuItem['id'] {
+    return this.spec.id
   }
 
   /**
@@ -231,7 +256,8 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * @returns menu item node based on path provided in options. See {@link MenuItem}
    */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
-    const {title, action, intent} = this.spec
+    const {title, id, action, intent} = this.spec
+
     if (!title) {
       const hint = typeof action === 'string' ? `action: "${action}"` : undefined
       throw new SerializeError(
@@ -242,9 +268,10 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
-    if (!action && !intent) {
+    // Menu items with an id don't need an action - they toggle automatically
+    if (!action && !intent && !id) {
       throw new SerializeError(
-        `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`,
+        `\`action\`, \`intent\`, or \`id\` required for menu item with title ${this.spec.title}`,
         options.path,
         options.index,
         `"${title}"`,
