@@ -638,6 +638,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Version text */
   'help-resources.version': 'v{{version}}',
+  /**Incoming references inspector title */
+  'incoming-references.title': 'Incoming references',
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',

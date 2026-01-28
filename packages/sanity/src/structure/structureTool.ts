@@ -14,6 +14,7 @@ import {useLiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
+import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
 import {type StructureToolOptions} from './types'
@@ -31,7 +32,7 @@ const destructiveActionNames: DocumentActionComponent['action'][] = ['delete', '
 
 const documentBadges = [useLiveEditBadge]
 
-const inspectors = [validationInspector, changesInspector]
+const inspectors = [validationInspector, changesInspector, incomingReferencesInspector]
 
 /**
  * The structureTool is a studio plugin which adds the “structure tool” – a tool within

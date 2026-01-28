@@ -29,6 +29,9 @@ const StyledText = styled(Text)`
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
+/**
+ * @internal
+ */
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     path: Path
