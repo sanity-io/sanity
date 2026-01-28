@@ -43,14 +43,20 @@ export default defineConfig({
 
   // Schema types
   schema: {
-    types: [/* ... */]
+    types: [
+      /* ... */
+    ],
   },
 
   // Plugins
-  plugins: [/* ... */],
+  plugins: [
+    /* ... */
+  ],
 
   // Tools
-  tools: [/* ... */],
+  tools: [
+    /* ... */
+  ],
 })
 ```
 
@@ -95,11 +101,11 @@ All Sanity documents have these system fields:
 
 ```typescript
 interface SanityDocument {
-  _id: string      // Unique identifier
-  _type: string    // Schema type name
-  _createdAt: string  // ISO timestamp
-  _updatedAt: string  // ISO timestamp
-  _rev: string     // Revision ID for optimistic locking
+  _id: string // Unique identifier
+  _type: string // Schema type name
+  _createdAt: string // ISO timestamp
+  _updatedAt: string // ISO timestamp
+  _rev: string // Revision ID for optimistic locking
 }
 ```
 
@@ -107,22 +113,22 @@ interface SanityDocument {
 
 Sanity uses a **draft/publish model** for content management:
 
-| State | ID Pattern | Description |
-|-------|------------|-------------|
-| **Published** | `myDocument` | Live content visible to end users |
-| **Draft** | `drafts.myDocument` | Work-in-progress changes |
-| **Version** | `versions.<releaseId>.myDocument` | Content in a release |
+| State         | ID Pattern                        | Description                       |
+| ------------- | --------------------------------- | --------------------------------- |
+| **Published** | `myDocument`                      | Live content visible to end users |
+| **Draft**     | `drafts.myDocument`               | Work-in-progress changes          |
+| **Version**   | `versions.<releaseId>.myDocument` | Content in a release              |
 
 ### ID Utilities
 
 ```typescript
 import {
-  getDraftId,      // 'foo' → 'drafts.foo'
-  getPublishedId,  // 'drafts.foo' → 'foo'
-  isDraftId,       // Check if ID is a draft
-  isPublishedId,   // Check if ID is published
-  isVersionId,     // Check if ID is in a release
-  getVersionId,    // Get version ID for a release
+  getDraftId, // 'foo' → 'drafts.foo'
+  getPublishedId, // 'drafts.foo' → 'foo'
+  isDraftId, // Check if ID is a draft
+  isPublishedId, // Check if ID is published
+  isVersionId, // Check if ID is in a release
+  getVersionId, // Get version ID for a release
 } from 'sanity'
 ```
 
@@ -142,12 +148,12 @@ The schema system defines the structure of your content. It determines what docu
 
 Sanity supports these primitive and complex types:
 
-| Category | Types |
-|----------|-------|
-| **Primitives** | `string`, `number`, `boolean`, `text` |
-| **Date/Time** | `date`, `datetime` |
-| **Complex** | `object`, `array`, `reference`, `image`, `file` |
-| **Special** | `slug`, `block` (Portable Text), `document` |
+| Category       | Types                                           |
+| -------------- | ----------------------------------------------- |
+| **Primitives** | `string`, `number`, `boolean`, `text`           |
+| **Date/Time**  | `date`, `datetime`                              |
+| **Complex**    | `object`, `array`, `reference`, `image`, `file` |
+| **Special**    | `slug`, `block` (Portable Text), `document`     |
 
 ### Defining Schema Types
 
@@ -180,11 +186,12 @@ export const article = defineType({
 Validation rules are defined per-field using the `Rule` API:
 
 ```typescript
-validation: (rule) => rule
-  .required()
-  .min(5)
-  .max(100)
-  .custom((value) => value?.includes('bad') ? 'No bad words!' : true)
+validation: (rule) =>
+  rule
+    .required()
+    .min(5)
+    .max(100)
+    .custom((value) => (value?.includes('bad') ? 'No bad words!' : true))
 ```
 
 ### Schema Compilation
@@ -208,10 +215,10 @@ Perspectives control which version of documents you see when querying content. T
 
 ### Perspective Types
 
-| Perspective | Description | Document ID Pattern |
-|-------------|-------------|---------------------|
-| `published` | Only published documents | `myDoc` |
-| `drafts` | Drafts layered on published | `drafts.myDoc` → `myDoc` |
+| Perspective   | Description                       | Document ID Pattern                              |
+| ------------- | --------------------------------- | ------------------------------------------------ |
+| `published`   | Only published documents          | `myDoc`                                          |
+| `drafts`      | Drafts layered on published       | `drafts.myDoc` → `myDoc`                         |
 | `<releaseId>` | Release version layered on drafts | `versions.<id>.myDoc` → `drafts.myDoc` → `myDoc` |
 
 ### Perspective Stack
@@ -231,9 +238,9 @@ import {usePerspective} from 'sanity'
 
 function MyComponent() {
   const {
-    selectedPerspectiveName,  // 'published' | 'drafts' | releaseId
-    selectedReleaseId,        // undefined for published/drafts
-    perspectiveStack,         // Array for client queries
+    selectedPerspectiveName, // 'published' | 'drafts' | releaseId
+    selectedReleaseId, // undefined for published/drafts
+    perspectiveStack, // Array for client queries
   } = usePerspective()
 }
 ```
@@ -254,12 +261,12 @@ Releases (also called Content Releases) allow grouping document changes for coor
 
 ### Release States
 
-| State | Description |
-|-------|-------------|
-| **Active** | Being edited, not yet published |
-| **Scheduled** | Set to publish at a specific time |
-| **Published** | All documents have been published |
-| **Archived** | No longer active, kept for history |
+| State         | Description                        |
+| ------------- | ---------------------------------- |
+| **Active**    | Being edited, not yet published    |
+| **Scheduled** | Set to publish at a specific time  |
+| **Published** | All documents have been published  |
+| **Archived**  | No longer active, kept for history |
 
 ### Release Types
 
@@ -277,13 +284,13 @@ Releases are stored as special system documents:
 
 ```typescript
 interface ReleaseDocument {
-  _id: string           // e.g., '_.releases.summer-launch'
+  _id: string // e.g., '_.releases.summer-launch'
   _type: 'system.release'
   metadata: {
     title: string
     description?: string
     releaseType: 'asap' | 'scheduled' | 'undecided'
-    intendedPublishAt?: string  // For scheduled releases
+    intendedPublishAt?: string // For scheduled releases
   }
   state: 'active' | 'published' | 'archived'
 }
@@ -303,9 +310,9 @@ Example: `versions.rSummer2024.article-123`
 
 ```typescript
 import {
-  useActiveReleases,     // Get all active releases
-  useReleaseOperations,  // Create, update, publish, archive
-  useReleasesStore,      // Full release state management
+  useActiveReleases, // Get all active releases
+  useReleaseOperations, // Create, update, publish, archive
+  useReleasesStore, // Full release state management
 } from 'sanity'
 ```
 
@@ -327,12 +334,12 @@ Tools are top-level views or "apps" within Sanity Studio. They appear in the mai
 
 ```typescript
 interface Tool<Options = any> {
-  name: string           // URL segment (e.g., 'desk')
-  title: string          // Display name
-  icon?: ComponentType   // Navigation icon
+  name: string // URL segment (e.g., 'desk')
+  title: string // Display name
+  icon?: ComponentType // Navigation icon
   component: ComponentType<{tool: Tool<Options>}>
-  options?: Options      // Custom configuration
-  router?: Router        // URL routing
+  options?: Options // Custom configuration
+  router?: Router // URL routing
 
   // Intent handling
   canHandleIntent?: (intent, params, payload) => boolean
@@ -421,9 +428,7 @@ import {myPlugin} from './plugins/myPlugin'
 
 export default defineConfig({
   // ...
-  plugins: [
-    myPlugin({option: 'value'}),
-  ],
+  plugins: [myPlugin({option: 'value'})],
 })
 ```
 
@@ -459,16 +464,16 @@ Document Form
 
 Each schema type has a corresponding input component:
 
-| Schema Type | Input Component |
-|-------------|-----------------|
-| `string` | `StringInput` |
-| `number` | `NumberInput` |
-| `boolean` | `BooleanInput` |
-| `array` | `ArrayInput` |
-| `object` | `ObjectInput` |
-| `reference` | `ReferenceInput` |
-| `image` | `ImageInput` |
-| `block` | `PortableTextInput` |
+| Schema Type | Input Component     |
+| ----------- | ------------------- |
+| `string`    | `StringInput`       |
+| `number`    | `NumberInput`       |
+| `boolean`   | `BooleanInput`      |
+| `array`     | `ArrayInput`        |
+| `object`    | `ObjectInput`       |
+| `reference` | `ReferenceInput`    |
+| `image`     | `ImageInput`        |
+| `block`     | `PortableTextInput` |
 
 ### Custom Inputs
 
@@ -479,7 +484,7 @@ defineField({
   name: 'rating',
   type: 'number',
   components: {
-    input: StarRatingInput,  // Custom component
+    input: StarRatingInput, // Custom component
   },
 })
 ```
@@ -507,10 +512,10 @@ Input components receive standardized props:
 
 ```typescript
 interface InputProps {
-  value: unknown              // Current field value
-  schemaType: SchemaType      // Field's schema type
+  value: unknown // Current field value
+  schemaType: SchemaType // Field's schema type
   onChange: (patch: Patch) => void
-  path: Path                  // Path to this field
+  path: Path // Path to this field
   validation: ValidationMarker[]
   presence: FormNodePresence[]
   readOnly?: boolean
@@ -528,21 +533,21 @@ Document Actions are buttons and operations that appear in the document editor's
 
 ### Built-in Actions
 
-| Action | Description |
-|--------|-------------|
-| `publish` | Publish draft to live |
-| `unpublish` | Remove published version |
-| `delete` | Delete document entirely |
-| `duplicate` | Create a copy |
+| Action           | Description               |
+| ---------------- | ------------------------- |
+| `publish`        | Publish draft to live     |
+| `unpublish`      | Remove published version  |
+| `delete`         | Delete document entirely  |
+| `duplicate`      | Create a copy             |
 | `discardChanges` | Revert draft to published |
-| `restore` | Restore from history |
+| `restore`        | Restore from history      |
 
 ### Action Component Structure
 
 ```typescript
 interface DocumentActionComponent {
   (props: DocumentActionProps): DocumentActionDescription | null
-  action?: string  // Identifier for replacement
+  action?: string // Identifier for replacement
 }
 
 interface DocumentActionDescription {
@@ -552,7 +557,7 @@ interface DocumentActionDescription {
   disabled?: boolean
   shortcut?: string
   onHandle?: () => void
-  dialog?: DocumentActionDialogProps  // Show confirmation/form
+  dialog?: DocumentActionDialogProps // Show confirmation/form
 }
 ```
 
@@ -577,9 +582,7 @@ function MyPublishAction(props: DocumentActionProps) {
 export default defineConfig({
   document: {
     actions: (prev, context) =>
-      prev.map((action) =>
-        action.action === 'publish' ? MyPublishAction : action
-      ),
+      prev.map((action) => (action.action === 'publish' ? MyPublishAction : action)),
   },
 })
 ```
@@ -590,13 +593,13 @@ Actions receive context about the document state:
 
 ```typescript
 interface DocumentActionProps {
-  id: string              // Document ID
-  type: string            // Schema type
+  id: string // Document ID
+  type: string // Schema type
   draft: SanityDocument | null
   published: SanityDocument | null
   liveEdit: boolean
   versionType: 'published' | 'draft' | 'version'
-  releaseId?: string      // If editing in a release
+  releaseId?: string // If editing in a release
 }
 ```
 
@@ -628,11 +631,11 @@ Presence is Sanity's real-time collaboration system. It shows which users are vi
 
 ```typescript
 interface FormNodePresence {
-  user: User              // Who is present
-  path: Path              // Where in the document
-  sessionId: string       // Browser session
-  lastActiveAt: string    // When last active
-  selection?: EditorSelection  // For text editors
+  user: User // Who is present
+  path: Path // Where in the document
+  sessionId: string // Browser session
+  lastActiveAt: string // When last active
+  selection?: EditorSelection // For text editors
 }
 ```
 
@@ -667,7 +670,7 @@ The presence system tracks "regions" in the form—areas where users can be pres
 interface FieldPresenceData {
   element: HTMLElement | null
   presence: FormNodePresence[]
-  maxAvatars: number  // Limit visible avatars
+  maxAvatars: number // Limit visible avatars
 }
 ```
 
