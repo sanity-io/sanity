@@ -1,7 +1,11 @@
 import {
   BinaryDocumentIcon,
+  CheckmarkCircleIcon,
   CogIcon,
+  DocumentIcon,
   EarthGlobeIcon,
+  EditIcon,
+  FilterIcon,
   ImagesIcon,
   PlugIcon,
   RocketIcon,
@@ -434,6 +438,69 @@ export const structure: StructureResolver = (
             .title('Species')
             .id('default-ordering-list')
             .filter('_type == $type'),
+        ),
+
+      // Example: Custom menu items with selected state indicator
+      // This demonstrates the setMenuItemState action that shows a checkmark on custom menu items.
+      // Note: This only tracks the selected indicator. For actual filtering, use the existing
+      // S.documentList().filter() pattern in structure builder (see Sanity docs).
+      S.listItem()
+        .title('Menu item selected indicator')
+        .id('menu-item-selected-indicator')
+        .icon(FilterIcon)
+        .child(() =>
+          S.documentTypeList('author')
+            .title('Authors')
+            .id('authors-menu-indicator-demo')
+            .menuItems([
+              // Radio-button behavior: same id, different values - only one shows checkmark
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Default')
+                .icon(DocumentIcon)
+                .group('view')
+                .action('setMenuItemState')
+                .params({id: 'viewMode', value: 'default'}),
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Compact')
+                .icon(CogIcon)
+                .group('view')
+                .action('setMenuItemState')
+                .params({id: 'viewMode', value: 'compact'}),
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Expanded')
+                .icon(EditIcon)
+                .group('view')
+                .action('setMenuItemState')
+                .params({id: 'viewMode', value: 'expanded'}),
+
+              // Checkbox behavior: different ids - each toggles independently
+              S.menuItem()
+                .id('showArchived')
+                .title('Show Archived')
+                .icon(CheckmarkCircleIcon)
+                .group('toggles')
+                .action('setMenuItemState')
+                .params({id: 'showArchived', value: true}),
+              S.menuItem()
+                .id('showFeatured')
+                .title('Show Featured')
+                .icon(CheckmarkCircleIcon)
+                .group('toggles')
+                .action('setMenuItemState')
+                .params({id: 'showFeatured', value: true}),
+
+              // Standard menu items (these actually work - layout changes the view)
+              ...(S.documentTypeList('author').getMenuItems() || []),
+            ])
+            .menuItemGroups([
+              {id: 'view', title: 'View Mode (pick one)'},
+              {id: 'toggles', title: 'Toggles (each independent)'},
+              {id: 'sorting', title: 'Sort'},
+              {id: 'layout', title: 'Layout'},
+            ]),
         ),
 
       ...S.documentTypeListItems()
