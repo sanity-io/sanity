@@ -877,6 +877,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.object.field-group-tabs.all-fields-title': 'All fields',
   /** Aria label for the "Field groups" select control on smaller screens */
   'inputs.object.field-group-tabs.aria-label': 'Field groups',
+  /** Text shown in field group select for a group with error validation */
+  'inputs.object.field-group-tabs.validation-error': 'error',
+  /** Text shown in field group select for a group with info validation */
+  'inputs.object.field-group-tabs.validation-info': 'info',
+  /** Text shown in field group select for a group with warning validation */
+  'inputs.object.field-group-tabs.validation-warning': 'warning',
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
     'This field is <strong>read only</strong> according to the document’s schema and cannot be unset. If you want to be able to unset this in Studio, make sure you remove the <code>readOnly</code> field from the enclosing type in the schema.',

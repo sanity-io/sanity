@@ -1,6 +1,6 @@
 import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
 import norway from './data/norway'
@@ -22,6 +22,16 @@ export default defineType({
   name: 'validationTest',
   type: 'document',
   title: 'Validation test',
+  groups: [
+    {
+      name: 'group1',
+      title: 'Group 1',
+    },
+    {
+      name: 'group2',
+      title: 'Group 2',
+    },
+  ],
   validation: (Rule) =>
     Rule.custom((doc) => {
       if (!doc || !doc.title) {
@@ -44,6 +54,7 @@ export default defineType({
       options: {
         layout: 'checkbox',
       },
+      group: 'group1',
     },
     {
       name: 'switch',
@@ -51,6 +62,7 @@ export default defineType({
       title: 'Check me?',
       validation: (Rule) => Rule.required().valid(true),
       description: 'Must be true',
+      group: 'group1',
     },
     {
       name: 'title',
@@ -58,7 +70,36 @@ export default defineType({
       title: 'Title',
       description: 'Required field with minimum/maximum length validation',
       validation: (Rule) => Rule.required().min(5).max(100),
+      group: 'group2',
     },
+    defineField({
+      name: 'objectWithValidation',
+      type: 'object',
+      groups: [
+        {
+          name: 'objectGroup1',
+          title: 'Group 3',
+        },
+        {
+          name: 'objectGroup2',
+          title: 'Group 2',
+        },
+      ],
+      fields: [
+        defineField({
+          name: 'title',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+          group: 'objectGroup1',
+        }),
+        defineField({
+          name: 'description',
+          type: 'text',
+          validation: (Rule) => Rule.required(),
+          group: 'objectGroup2',
+        }),
+      ],
+    }),
     {
       name: 'slug',
       type: 'slug',
@@ -68,6 +109,7 @@ export default defineType({
       options: {
         source: (document) => document.title,
       },
+      group: 'group2',
     },
     {
       type: 'string',
