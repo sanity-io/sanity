@@ -230,13 +230,13 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
               </TextWithTone>
             )}
 
+            {hasValidationMarkers && <FormFieldValidationMessages validation={validation} />}
+
             {description && (
               <Text muted size={1} id={createDescriptionId(inputId, description)}>
                 {description}
               </Text>
             )}
-
-            {hasValidationMarkers && <FormFieldValidationMessages validation={validation} />}
           </Stack>
         }
       />

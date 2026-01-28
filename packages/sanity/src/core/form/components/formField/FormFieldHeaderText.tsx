@@ -1,12 +1,13 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
-import {memo, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import { type DeprecatedProperty, type FormNodeValidation } from '@sanity/types'
+import { Badge, Box, Flex, Stack, Text } from '@sanity/ui'
+import { memo, type ReactNode } from 'react'
+import { styled } from 'styled-components'
 
-import {TextWithTone} from '../../../components'
-import {useTranslation} from '../../../i18n'
-import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+import { TextWithTone } from '../../../components'
+import { useTranslation } from '../../../i18n'
+import { createDescriptionId } from '../../members/common/createDescriptionId'
+import { FormFieldValidationMessages } from './FormFieldValidationMessages';
+import { FormFieldValidationStatus } from './FormFieldValidationStatus'
 
 const LabelSuffix = styled(Flex)`
   /*
@@ -45,8 +46,8 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
-  const {t} = useTranslation()
+  const { description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix } = props
+  const { t } = useTranslation()
   const hasValidations = validation.length > 0
 
   return (
@@ -55,7 +56,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         <Flex align="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>
             {title || (
-              <span style={{color: 'var(--card-muted-fg-color)'}}>
+              <span style={{ color: 'var(--card-muted-fg-color)' }}>
                 {t('form.field.untitled-field-label')}
               </span>
             )}
@@ -98,6 +99,10 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         </TextWithTone>
       )}
 
+      {validation && validation.length > 0 && (
+        <FormFieldValidationMessages validation={validation} />
+      )}
+      
       {description && (
         <Text muted size={1} id={createDescriptionId(inputId, description)}>
           {description}

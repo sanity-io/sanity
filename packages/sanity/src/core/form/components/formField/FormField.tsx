@@ -8,7 +8,6 @@ import {useFieldActions} from '../../field'
 import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
-import {FormFieldValidationMessages} from './FormFieldValidationMessages'
 
 const EMPTY_ARRAY: never[] = []
 
@@ -99,9 +98,6 @@ export const FormField = memo(function FormField(
         />
       )}
       <div>{children}</div>
-      {validation && validation.length > 0 && (
-        <FormFieldValidationMessages validation={validation} />
-      )}
     </Stack>
   )
 })
