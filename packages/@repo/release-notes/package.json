@@ -18,7 +18,8 @@
     "release-notes": "./bin/release-notes.ts"
   },
   "files": [
-    "src"
+    "src",
+    "bin"
   ],
   "scripts": {
     "check:types": "(cd ../../.. && tsc --project packages/@repo/release-notes/tsconfig.json --erasableSyntaxOnly)",

@@ -121,10 +121,7 @@ export async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
 async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
   const currentDocument = (await client.getDocument(id)) || {}
   const updated = applyPatches(
-    [
-      at('changelog', set([])),
-      ...(entries.length > 0 ? entries.flatMap((c, i) => createEntry(c)) : []),
-    ],
+    [at('changelog', set([])), ...entries.flatMap(createEntry)],
     currentDocument,
   )
 
@@ -191,7 +188,7 @@ async function ensureContentRelease(id: string, title: string, description: stri
         if (
           err instanceof ClientError &&
           err.statusCode === 409 &&
-          err.response.body.error.type === 'documentAlreadyExistsError'
+          err.response?.body?.error?.type === 'documentAlreadyExistsError'
         ) {
           return false
         }

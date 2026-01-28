@@ -55,5 +55,5 @@ function extractBlockText(block: PortableTextBlock) {
     return ''
   }
 
-  return block.children.map((child) => child.text).join('')
+  return block.children.map((child) => (typeof child?.text === 'string' ? child.text : '')).join('')
 }
