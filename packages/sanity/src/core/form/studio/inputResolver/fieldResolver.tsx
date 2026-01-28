@@ -3,21 +3,41 @@ import {
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
   isReferenceSchemaType,
+  type Path,
   type SchemaType,
 } from '@sanity/types'
 import {type ComponentType, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
+import {pathToString} from '../../../field/paths/helpers'
 import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
-import {type FieldMember} from '../../store'
+import {type FieldMember, useRevealedPaths} from '../../store'
 import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
 import {getTypeChain} from './helpers'
 
 const EMPTY_ARRAY: never[] = []
+
+/**
+ * Check if a path or any of its ancestors is in the naturally hidden paths set.
+ * This is needed because a nested field (e.g., 'parent.child') may not be directly
+ * hidden, but its parent ('parent') might be. In that case, the nested field is
+ * implicitly hidden and should show the "Hidden" badge when revealed.
+ */
+function isPathOrAncestorHidden(path: Path, naturallyHiddenPaths: Set<string>): boolean {
+  // Check each prefix of the path, from shortest to longest
+  for (let i = 1; i <= path.length; i++) {
+    const ancestorPath = path.slice(0, i)
+    const ancestorPathStr = pathToString(ancestorPath)
+    if (naturallyHiddenPaths.has(ancestorPathStr)) {
+      return true
+    }
+  }
+  return false
+}
 
 function BooleanField(field: FieldProps) {
   const documentId = usePublishedId()
@@ -92,6 +112,16 @@ function PrimitiveField(field: FieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
+
+  const handleHideRevealed = useMemo(
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
+  )
 
   return (
     <>
@@ -125,6 +155,8 @@ function PrimitiveField(field: FieldProps) {
             title={field.title}
             validation={field.validation}
             deprecated={field.schemaType.deprecated}
+            isRevealed={isRevealed}
+            onHideRevealed={handleHideRevealed}
           >
             <ChangeIndicator
               hasFocus={focused}
@@ -144,6 +176,16 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
+
+  const handleHideRevealed = useMemo(
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
+  )
 
   const disableActions = field.schemaType.options?.disableActions || EMPTY_ARRAY
 
@@ -194,6 +236,8 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          isRevealed={isRevealed}
+          onHideRevealed={handleHideRevealed}
         >
           {field.children}
         </FormFieldSet>
@@ -206,6 +250,16 @@ function ImageOrFileField(field: ObjectFieldProps) {
   const [fieldActionsNodes, setFieldActionNodes] = useState<DocumentFieldActionNode[]>(EMPTY_ARRAY)
   const documentId = usePublishedId()
   const focused = Boolean(field.inputProps.focused)
+  const {isPathRevealed, isRevealRoot, hideRevealedPath, naturallyHiddenPaths} = useRevealedPaths()
+  // Only show the badge if the path is revealed AND it (or an ancestor) is naturally hidden
+  const isNaturallyHidden = isPathOrAncestorHidden(field.path, naturallyHiddenPaths)
+  const isRevealed = isPathRevealed(field.path) && isNaturallyHidden
+  const showCloseButton = isRevealRoot(field.path) && isNaturallyHidden
+
+  const handleHideRevealed = useMemo(
+    () => (showCloseButton ? () => hideRevealedPath(field.path) : undefined),
+    [showCloseButton, hideRevealedPath, field.path],
+  )
 
   // unless the hotspot tool dialog is open we want to show whoever is in there as the field presence
   const hotspotField = field.inputProps.members.find(
@@ -244,6 +298,8 @@ function ImageOrFileField(field: ObjectFieldProps) {
           validation={field.validation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
+          isRevealed={isRevealed}
+          onHideRevealed={handleHideRevealed}
         >
           {field.children}
         </FormFieldSet>

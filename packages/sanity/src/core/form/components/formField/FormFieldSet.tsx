@@ -1,3 +1,4 @@
+import {CloseIcon} from '@sanity/icons'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
@@ -13,6 +14,7 @@ import {
 } from 'react'
 import {css, styled} from 'styled-components'
 
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components'
 import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
@@ -61,6 +63,16 @@ export interface FormFieldSetProps {
   validation?: FormNodeValidation[]
   inputId: string
   deprecated?: DeprecatedProperty
+  /**
+   * Whether this field is temporarily revealed (hidden field shown due to validation navigation)
+   * @internal
+   */
+  isRevealed?: boolean
+  /**
+   * Callback to hide the revealed field again
+   * @internal
+   */
+  onHideRevealed?: () => void
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
@@ -144,6 +156,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     validation = EMPTY_ARRAY,
     inputId,
     deprecated,
+    isRevealed,
+    onHideRevealed,
     ...restProps
   } = props
 
@@ -219,6 +233,36 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
               {hasValidationMarkers && (
                 <Box marginLeft={2}>
                   <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+                </Box>
+              )}
+              {isRevealed && (
+                <Box marginLeft={2}>
+                  <Tooltip
+                    content={
+                      <Box padding={2}>
+                        <Text size={1}>
+                          {t('form.field.revealed-tooltip', {
+                            defaultValue:
+                              'This field is normally hidden but is shown because of a validation error',
+                          })}
+                        </Text>
+                      </Box>
+                    }
+                    placement="top"
+                    portal
+                  >
+                    <Badge
+                      data-testid={`revealed-badge-${title}`}
+                      tone="caution"
+                      onClick={onHideRevealed}
+                      style={onHideRevealed ? {cursor: 'pointer'} : undefined}
+                    >
+                      <Flex align="center" paddingX={1} gap={2}>
+                        {t('form.field.revealed-label', {defaultValue: 'Hidden'})}
+                        {onHideRevealed && <CloseIcon style={{fontSize: '1rem'}} />}
+                      </Flex>
+                    </Badge>
+                  </Tooltip>
                 </Box>
               )}
             </Flex>

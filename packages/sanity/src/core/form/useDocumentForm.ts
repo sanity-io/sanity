@@ -15,6 +15,7 @@ import deepEquals from 'react-fast-compare'
 
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
+import {pathToString} from '../field/paths/helpers'
 import {useReconnectingToast} from '../hooks'
 import {type ConnectionState, useConnectionState} from '../hooks/useConnectionState'
 import {useDocumentIdStack} from '../hooks/useDocumentIdStack'
@@ -64,6 +65,7 @@ import {
   useFormState,
 } from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {useRevealedPaths} from './store/contexts/RevealedPathsProvider'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 
 interface DocumentFormOptions {
@@ -118,7 +120,7 @@ interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersio
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedFieldSet: (path: Path, collapsed: boolean) => void
   onChange: (event: PatchEvent) => void
-  onPathOpen: (path: Path) => void
+  onPathOpen: (path: Path, options?: {revealHidden?: boolean}) => void
   onProgrammaticFocus: (nextPath: Path) => void
   formStateRef: RefObject<FormState>
   schemaType: ObjectSchemaType
@@ -198,6 +200,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const connectionState = useConnectionState(documentId, documentType, activeDocumentReleaseId)
   useReconnectingToast(connectionState === 'reconnecting')
+
+  // Get revealed paths for hidden field navigation
+  const {revealedPaths, revealPath, clearRevealedPaths} = useRevealedPaths()
 
   const [focusPath, setFocusPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
 
@@ -425,7 +430,38 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
     )
   })
-  const handleChange = (event: PatchEvent) => patchRef.current(event)
+  const handleChange = (event: PatchEvent) => {
+    // Check if any patch affects a path that is NOT a revealed path or its descendant
+    // If editing a non-revealed field (e.g., a "selectedTemplate" field that controls visibility),
+    // we should clear the revealed paths. But if editing within a revealed field, we don't clear.
+    if (revealedPaths.size > 0) {
+      const patchAffectsNonRevealedPath = event.patches.some((p) => {
+        if (!p.path || p.path.length === 0) {
+          return false // Root-level patches don't count
+        }
+        const patchPathStr = pathToString(p.path)
+
+        // Check if this patch path is a revealed path or a descendant of one
+        for (const revealedPath of revealedPaths) {
+          // Patch is to the revealed path itself, or a descendant of it
+          if (patchPathStr === revealedPath || patchPathStr.startsWith(`${revealedPath}.`)) {
+            return false // This patch is within a revealed path - don't trigger clear
+          }
+        }
+
+        // Patch is to a path that is NOT within any revealed path
+        return true
+      })
+
+      if (patchAffectsNonRevealedPath) {
+        // User is editing a field that's not part of the revealed paths
+        // This likely means they're changing something that affects visibility (like selectedTemplate)
+        clearRevealedPaths()
+      }
+    }
+
+    patchRef.current(event)
+  }
 
   useInsertionEffect(() => {
     // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
@@ -487,6 +523,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     changesOpen,
     hasUpstreamVersion,
     displayInlineChanges,
+    revealedPaths,
   })!
 
   const formStateRef = useRef(formState)
@@ -496,7 +533,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   useComlinkViewHistory({editState})
 
-  const handleSetOpenPath = (path: Path) => {
+  const handleSetOpenPath = (path: Path, pathOpenOptions?: {revealHidden?: boolean}) => {
+    // Only reveal hidden fields when explicitly requested (e.g., from validation error click)
+    if (pathOpenOptions?.revealHidden) {
+      revealPath(path)
+    }
+
     const ops = getExpandOperations(formStateRef.current, path)
     ops.forEach((op) => {
       if (op.type === 'expandPath') {

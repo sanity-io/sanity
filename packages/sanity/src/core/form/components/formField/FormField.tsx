@@ -43,6 +43,16 @@ export interface FormFieldProps {
    */
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
+  /**
+   * Whether this field is temporarily revealed (hidden field shown due to validation navigation)
+   * @internal
+   */
+  isRevealed?: boolean
+  /**
+   * Callback to hide the revealed field again
+   * @internal
+   */
+  onHideRevealed?: () => void
 }
 
 /** @internal */
@@ -61,6 +71,8 @@ export const FormField = memo(function FormField(
     title,
     validation,
     deprecated,
+    isRevealed,
+    onHideRevealed,
     ...restProps
   } = props
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
@@ -93,6 +105,8 @@ export const FormField = memo(function FormField(
               title={title}
               validation={validation}
               deprecated={deprecated}
+              isRevealed={isRevealed}
+              onHideRevealed={onHideRevealed}
             />
           }
         />

@@ -24,6 +24,12 @@ import {
 import {type View} from '../../structureBuilder'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
+/** Options for onPathOpen callback */
+export interface PathOpenOptions {
+  /** When true, reveals hidden fields along the path (used for validation error navigation) */
+  revealHidden?: boolean
+}
+
 /** @internal */
 export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   actions: DocumentActionComponent[] | null
@@ -57,7 +63,7 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
   onPaneSplit?: () => void
-  onPathOpen: (path: Path) => void
+  onPathOpen: (path: Path, options?: PathOpenOptions) => void
   onSetActiveFieldGroup: (path: Path, groupName: string) => void
   onSetCollapsedPath: (path: Path, expanded: boolean) => void
   onSetCollapsedFieldSet: (path: Path, expanded: boolean) => void

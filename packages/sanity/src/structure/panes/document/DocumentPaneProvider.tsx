@@ -24,6 +24,7 @@ import {
   type PartialContext,
   pathToString,
   type ReleaseDocument,
+  RevealedPathsProvider,
   selectUpstreamVersion,
   useActiveReleases,
   useCopyPaste,
@@ -47,7 +48,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
 import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
-import {type DocumentPaneContextValue} from './DocumentPaneContext'
+import {type DocumentPaneContextValue, type PathOpenOptions} from './DocumentPaneContext'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
@@ -63,8 +64,21 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line max-statements
 export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+  const {pane} = props
+  const documentId = getPublishedId(pane.options.id)
+
+  // RevealedPathsProvider must wrap the inner component so useRevealedPaths()
+  // in useDocumentForm() gets the real context, not the no-op default
+  return (
+    <RevealedPathsProvider documentId={documentId}>
+      <DocumentPaneProviderInner {...props} />
+    </RevealedPathsProvider>
+  )
+}
+
+// eslint-disable-next-line max-statements
+function DocumentPaneProviderInner(props: DocumentPaneProviderProps) {
   const {
     children,
     index,
@@ -330,9 +344,9 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   )
 
   const handlePathOpen = useCallback(
-    (path: Path) => {
-      // Update internal open path
-      onPathOpen(path)
+    (path: Path, pathOpenOptions?: PathOpenOptions) => {
+      // Update internal open path, passing options (e.g., revealHidden for validation navigation)
+      onPathOpen(path, pathOpenOptions)
 
       if (enhancedObjectDialogEnabled) {
         /**
