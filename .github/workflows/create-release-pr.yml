@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - improve-release-workflow
 
 permissions:
   contents: read
@@ -111,9 +110,9 @@ jobs:
           body: |
             ${{steps.release-notes.outputs.notes}}
           commit-message: "${{steps.version-commit.outputs.message}}"
-          branch: ci/release-main-debug
+          branch: ci/release-main
           labels: "release:latest"
           sign-commits: true
-          base: improve-release-workflow # todo - switch back to main
-          #team-reviewers: "@sanity-io/studio"
+          base: main
+          team-reviewers: "@sanity-io/studio"
           draft: true
