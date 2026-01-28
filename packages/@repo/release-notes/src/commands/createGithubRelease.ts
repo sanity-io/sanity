@@ -48,7 +48,7 @@ export async function createGithubRelease(options: {targetVersion: string}) {
   const formattedChangelog = `
 Author | Message | Commit
 ------------ | ------------- | -------------
-${changelogDocument.changelog.map((entry) => `@${entry.author.username} | ${entry.header} | ${entry.hash}`).join('\n')}
+${changelogDocument.changelog.map((entry) => `${atAuthor(entry.author)} | ${entry.header} | ${entry.hash}`).join('\n')}
   `
   return template({
     changelogDocumentId: documentIds[0],
@@ -57,6 +57,12 @@ ${changelogDocument.changelog.map((entry) => `@${entry.author.username} | ${entr
   })
 }
 
+function atAuthor(author: ChangelogEntry['author']) {
+  if (author.type !== 'bot') {
+    return `@${author.username}`
+  }
+  return author.username
+}
 function template(vars: {changelogDocumentId: string; targetVersion: string; changelog: string}) {
   return `# Sanity Studio v${vars.targetVersion}
 
