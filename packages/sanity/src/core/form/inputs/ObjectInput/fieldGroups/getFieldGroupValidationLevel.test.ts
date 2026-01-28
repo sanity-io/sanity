@@ -1,3 +1,4 @@
+import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FormNodeValidation, type ObjectField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
@@ -166,6 +167,62 @@ describe('getFieldGroupValidationLevel', () => {
       }
 
       expect(getFieldGroupValidationLevel(group, [], validation)).toBe('error')
+    })
+  })
+
+  describe('all-fields group (special case)', () => {
+    const createAllFieldsGroup = (): FormFieldGroup => ({
+      name: ALL_FIELDS_GROUP_NAME,
+      title: 'All Fields',
+      fields: [] as ObjectField[],
+    })
+
+    test('should return error for any error validation regardless of path', () => {
+      const validation = [createValidation('error', ['anyField', 'nested'])]
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('error')
+    })
+
+    test('should return warning for any warning validation regardless of path', () => {
+      const validation = [createValidation('warning', ['someOther', 'path'])]
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('warning')
+    })
+
+    test('should return info for any info validation regardless of path', () => {
+      const validation = [createValidation('info', ['deep', 'nested', 'path'])]
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('info')
+    })
+
+    test('should return undefined when validations array is empty', () => {
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], [])).toBeUndefined()
+    })
+
+    test('should return highest priority level from mixed validations', () => {
+      const validation = [
+        createValidation('info', ['path1']),
+        createValidation('warning', ['path2']),
+        createValidation('error', ['path3']),
+      ]
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('error')
+    })
+
+    test('should return warning when no error present', () => {
+      const validation = [
+        createValidation('info', ['path1']),
+        createValidation('warning', ['path2']),
+      ]
+      const group = createAllFieldsGroup()
+
+      expect(getFieldGroupValidationLevel(group, [], validation)).toBe('warning')
     })
   })
 })
