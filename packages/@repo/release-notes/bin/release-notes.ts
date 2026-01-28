@@ -6,6 +6,7 @@ import {type pMapSkip} from 'p-map'
 import yargs from 'yargs'
 
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
+import {publishReleases} from '../src/commands/publishReleases'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
@@ -54,6 +55,29 @@ await yargs(process.argv.slice(2))
           // oxlint-disable-next-line no-console
           console.log(result)
         }
+      } catch (error) {
+        // oxlint-disable-next-line no-console
+        console.error(error)
+        process.exit(1)
+      }
+    },
+  })
+  .command({
+    command: 'publish-releases',
+    describe: 'Publish pending sanity.io Changelog & github release from the given target version',
+    builder: (cmd) =>
+      cmd.options({
+        targetVersion: {
+          description: 'Version',
+          type: 'string',
+          demandOption: true,
+        },
+      }),
+    handler: async (args) => {
+      try {
+        await publishReleases({
+          targetVersion: args.targetVersion,
+        })
       } catch (error) {
         // oxlint-disable-next-line no-console
         console.error(error)
