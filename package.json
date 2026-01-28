@@ -113,6 +113,7 @@
     "@repo/bundle-manager": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/package.config": "workspace:*",
+    "@repo/release-notes": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
