@@ -1,10 +1,10 @@
-import { type FormNodeValidation } from '@sanity/types'
-import { Box, Flex, Stack, Text } from '@sanity/ui'
-import { toString as pathToString } from '@sanity/util/paths'
-import { memo } from 'react'
-import { styled } from 'styled-components'
+import {type FormNodeValidation} from '@sanity/types'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
+import {memo} from 'react'
+import {styled} from 'styled-components'
 
-import { StatusIcon } from './ValidationStatusIcon'
+import {StatusIcon} from './ValidationStatusIcon'
 
 /**
  * Display mode for validation messages:
@@ -36,7 +36,7 @@ export interface FormFieldValidationMessagesProps {
 export const FormFieldValidationMessages = memo(function FormFieldValidationMessages(
   props: FormFieldValidationMessagesProps,
 ) {
-  const { validation } = props
+  const {validation} = props
 
   if (validation.length === 0) {
     return null
@@ -51,8 +51,8 @@ export const FormFieldValidationMessages = memo(function FormFieldValidationMess
   )
 })
 
-function ValidationMessage(props: { validation: FormNodeValidation }) {
-  const { validation } = props
+function ValidationMessage(props: {validation: FormNodeValidation}) {
+  const {validation} = props
 
   if (VALIDATION_MESSAGE_DISPLAY_MODE === 'text') {
     return <ValidationMessageText validation={validation} />
@@ -61,8 +61,8 @@ function ValidationMessage(props: { validation: FormNodeValidation }) {
   return <ValidationMessageWithIcon validation={validation} />
 }
 
-function ValidationMessageWithIcon(props: { validation: FormNodeValidation }) {
-  const { validation } = props
+function ValidationMessageWithIcon(props: {validation: FormNodeValidation}) {
+  const {validation} = props
 
   return (
     <Flex align="flex-start" gap={2} paddingX={1}>
@@ -78,13 +78,15 @@ function ValidationMessageWithIcon(props: { validation: FormNodeValidation }) {
   )
 }
 
-function ValidationMessageText(props: { validation: FormNodeValidation }) {
-  const { validation } = props
+function ValidationMessageText(props: {validation: FormNodeValidation}) {
+  const {validation} = props
 
   const TextComponent =
-    validation.level === 'error' ? ErrorText : validation.level === 'warning' ? WarningText : InfoText
+    validation.level === 'error'
+      ? ErrorText
+      : validation.level === 'warning'
+        ? WarningText
+        : InfoText
 
-  return (
-    <TextComponent size={1}>{validation.message}</TextComponent>
-  )
+  return <TextComponent size={1}>{validation.message}</TextComponent>
 }

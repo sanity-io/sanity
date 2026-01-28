@@ -18,7 +18,6 @@ import {type CalendarLabels} from '../../../components/inputs/DateInputs/calenda
 import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
 import TimeZoneButtonElementQuery from '../../../components/timeZone/timeZoneButton/TimeZoneButtonElementQuery'
 import {FormFieldHeaderText} from '../../../form/components/formField/FormFieldHeaderText'
-import {FormFieldValidationMessages} from '../../../form/components/formField/FormFieldValidationMessages'
 import {type TimeZoneScopeType, useTimeZone} from '../../../hooks/useTimeZone'
 import {Translate, useTranslation} from '../../../i18n'
 import {EMPTY_ARRAY, getPublishedId} from '../../../util'
@@ -285,11 +284,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
             </div>
           </div>
         </ChangeIndicator>
-        {validation && validation.length > 0 && (
-          <Box paddingTop={2}>
-            <FormFieldValidationMessages validation={validation} />
-          </Box>
-        )}
       </Flex>
     </Root>
   )
