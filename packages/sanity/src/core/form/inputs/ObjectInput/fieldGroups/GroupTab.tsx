@@ -1,4 +1,3 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
 import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
 
 import {Tab} from '../../../../../ui-components'
