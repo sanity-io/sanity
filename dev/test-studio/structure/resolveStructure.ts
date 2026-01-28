@@ -441,9 +441,7 @@ export const structure: StructureResolver = (
         ),
 
       // Example: Custom menu items with selected state indicator
-      // This demonstrates the setMenuItemState action that shows a checkmark on custom menu items.
-      // Note: This only tracks the selected indicator. For actual filtering, use the existing
-      // S.documentList().filter() pattern in structure builder (see Sanity docs).
+      // Just use .id() - clicking toggles the checkmark on/off automatically!
       S.listItem()
         .title('Menu item selected indicator')
         .id('menu-item-selected-indicator')
@@ -459,40 +457,34 @@ export const structure: StructureResolver = (
                 .title('View Mode: Default')
                 .icon(DocumentIcon)
                 .group('view')
-                .action('setMenuItemState')
-                .params({id: 'viewMode', value: 'default'}),
+                .params({value: 'default'}),
               S.menuItem()
                 .id('viewMode')
                 .title('View Mode: Compact')
                 .icon(CogIcon)
                 .group('view')
-                .action('setMenuItemState')
-                .params({id: 'viewMode', value: 'compact'}),
+                .params({value: 'compact'}),
               S.menuItem()
                 .id('viewMode')
                 .title('View Mode: Expanded')
                 .icon(EditIcon)
                 .group('view')
-                .action('setMenuItemState')
-                .params({id: 'viewMode', value: 'expanded'}),
+                .params({value: 'expanded'}),
 
               // Checkbox behavior: different ids - each toggles independently
+              // Just .id() is enough!
               S.menuItem()
                 .id('showArchived')
                 .title('Show Archived')
                 .icon(CheckmarkCircleIcon)
-                .group('toggles')
-                .action('setMenuItemState')
-                .params({id: 'showArchived', value: true}),
+                .group('toggles'),
               S.menuItem()
                 .id('showFeatured')
                 .title('Show Featured')
                 .icon(CheckmarkCircleIcon)
-                .group('toggles')
-                .action('setMenuItemState')
-                .params({id: 'showFeatured', value: true}),
+                .group('toggles'),
 
-              // Standard menu items (these actually work - layout changes the view)
+              // Standard menu items (layout changes the view)
               ...(S.documentTypeList('author').getMenuItems() || []),
             ])
             .menuItemGroups([
