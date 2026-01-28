@@ -257,6 +257,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         // This fixes a Chrome-specific issue where the array container receives focus first,
         // triggering a state update that causes a re-render before the click event completes.
         onMouseDown={onOpen}
+        onClick={onOpen}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing

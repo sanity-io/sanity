@@ -533,7 +533,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       setFocusPath(pathFor(nextFocusPath))
 
       if (enhancedObjectDialogEnabled) {
-        handleSetOpenPath(pathFor(nextFocusPath))
+        handleSetOpenPath(pathFor(nextFocusPath.slice(0, -1)))
       }
 
       focusPathRef.current = nextFocusPath
