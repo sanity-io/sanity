@@ -3,6 +3,9 @@ name: Unit tests
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+    # don't overide the defaults of opened, synchronize, and reopened
+    # just add labeling to allow for full test suite running
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [main]
@@ -117,9 +120,11 @@ jobs:
 
       - name: Merged report
         if: steps.check_examples.outputs.path_only != 'true'
+        id: merge_reports
+        continue-on-error: true
         run: |
           pnpm vitest run --merge-reports --coverage
 
       - name: Report coverage
-        if: steps.check_examples.outputs.path_only != 'true'
+        if: steps.check_examples.outputs.path_only != 'true' && steps.merge_reports.outcome == 'success'
         uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d # v2
