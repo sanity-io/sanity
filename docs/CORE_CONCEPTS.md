@@ -40,15 +40,15 @@ export default defineConfig({
   projectId: 'your-project-id',
   dataset: 'production',
   basePath: '/studio',
-  
+
   // Schema types
   schema: {
     types: [/* ... */]
   },
-  
+
   // Plugins
   plugins: [/* ... */],
-  
+
   // Tools
   tools: [/* ... */],
 })
@@ -67,7 +67,7 @@ export default defineConfig([
     dataset: 'production',
   },
   {
-    name: 'staging', 
+    name: 'staging',
     basePath: '/staging',
     projectId: 'xxx',
     dataset: 'staging',
@@ -333,7 +333,7 @@ interface Tool<Options = any> {
   component: ComponentType<{tool: Tool<Options>}>
   options?: Options      // Custom configuration
   router?: Router        // URL routing
-  
+
   // Intent handling
   canHandleIntent?: (intent, params, payload) => boolean
   getIntentState?: (intent, params, routerState, payload) => unknown
@@ -386,28 +386,28 @@ import {definePlugin} from 'sanity'
 
 export const myPlugin = definePlugin<MyPluginOptions>((options) => ({
   name: 'my-plugin',
-  
+
   // Add schema types
   schema: {
     types: [myCustomType],
   },
-  
+
   // Add tools
   tools: [myTool],
-  
+
   // Customize document handling
   document: {
     actions: (prev, context) => [...prev, myAction],
     badges: (prev, context) => [...prev, myBadge],
   },
-  
+
   // Customize forms
   form: {
     components: {
       input: MyCustomInput,
     },
   },
-  
+
   // Nest other plugins
   plugins: [otherPlugin()],
 }))
@@ -561,7 +561,7 @@ interface DocumentActionDescription {
 ```typescript
 function MyPublishAction(props: DocumentActionProps) {
   const {draft, published} = props
-  
+
   return {
     label: 'Super Publish',
     icon: RocketIcon,
@@ -649,7 +649,7 @@ interface FormNodePresence {
 // In input components
 function MyInput(props: InputProps) {
   const {presence} = props
-  
+
   return (
     <div>
       <PresenceOverlay presence={presence} />
@@ -686,23 +686,23 @@ import {
   definePlugin,
   defineType,
   defineField,
-  
+
   // Document utilities
   getDraftId,
   getPublishedId,
   isDraftId,
-  
+
   // Hooks
   useClient,
   useSchema,
   usePerspective,
   useActiveReleases,
-  
+
   // Form
   set,
   unset,
   insert,
-  
+
   // Types
   type SanityDocument,
   type SchemaType,
