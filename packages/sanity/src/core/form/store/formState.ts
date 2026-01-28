@@ -7,6 +7,7 @@ import {
   type ArraySchemaType,
   type BooleanSchemaType,
   type CurrentUser,
+  type FieldGroup,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isKeyedObject,
@@ -845,7 +846,7 @@ export function createPrepareFormState({
       // All fields can't be hidden when review changes is open or if the all fields group is selected
       props.changesOpen || props.fieldGroupState?.value === ALL_FIELDS_GROUP.name
 
-    const isGroupHidden = (group: FormFieldGroup) =>
+    const isGroupHidden = (group: FieldGroup) =>
       shouldRenderAllFieldsGroup && group.name === ALL_FIELDS_GROUP.name
         ? false
         : props.hidden === true ||
@@ -888,6 +889,7 @@ export function createPrepareFormState({
               selected,
               title: group.title,
               i18n: group.i18n,
+              fields: group.fields || EMPTY_ARRAY,
             },
           ]
     })

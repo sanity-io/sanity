@@ -1,3 +1,4 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
 import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
 
 import {Tab} from '../../../../../ui-components'
@@ -11,6 +12,7 @@ interface GroupType {
   'onClick'?: (value: string) => void
   'selected': boolean
   'title': string
+  'iconRight'?: React.ReactNode
 }
 
 export const GroupTab = forwardRef(function GroupTab(
@@ -50,7 +52,7 @@ export const GroupOption = (props: Omit<GroupType, 'onClick' | 'autoFocus'>) => 
       data-testid={`group-select-${name}`}
       aria-selected={selected ? 'true' : 'false'}
     >
-      {title || name}
+      {title || name} {props.iconRight}
     </option>
   )
 }

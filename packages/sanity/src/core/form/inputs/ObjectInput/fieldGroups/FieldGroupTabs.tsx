@@ -1,9 +1,13 @@
+import {type FormNodeValidation, type Path} from '@sanity/types'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
-import {type ChangeEvent, memo, useCallback} from 'react'
+import {type ChangeEvent, memo, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
+import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
 import {type FormFieldGroup} from '../../../store'
+import {useChildValidation} from '../../../studio/contexts/Validation'
+import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
@@ -12,6 +16,7 @@ interface FieldGroupTabsProps {
   inputId?: string
   onClick?: (name: string) => void
   shouldAutoFocus?: boolean
+  path: Path
 }
 
 const Root = styled(ElementQuery)`
@@ -38,7 +43,11 @@ const GroupTabs = ({
   onClick,
   shouldAutoFocus = true,
   disabled,
-}: FieldGroupTabsProps) => {
+  path,
+  validation,
+}: FieldGroupTabsProps & {
+  validation: FormNodeValidation[]
+}) => {
   const {t} = useTranslation()
   return (
     <TabList space={2} data-testid="field-group-tabs">
@@ -47,6 +56,8 @@ const GroupTabs = ({
           ? t(group.i18n.title.key, {ns: group.i18n.title.ns})
           : group.title || group.name
 
+        const validationLevel = getFieldGroupValidationLevel(group, path, validation)
+
         return (
           <GroupTab
             key={`${inputId}-${group.name}-tab`}
@@ -54,6 +65,7 @@ const GroupTabs = ({
             autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled || group.disabled}
             icon={group?.icon}
+            iconRight={validationLevel ? <StatusIcon status={validationLevel} /> : undefined}
             name={group.name}
             onClick={onClick}
             selected={Boolean(group.selected)}
@@ -72,7 +84,12 @@ const GroupSelect = ({
   inputId,
   onSelect,
   shouldAutoFocus = true,
-}: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
+  path,
+  validation,
+}: Omit<FieldGroupTabsProps, 'onClick'> & {
+  onSelect: (name: string) => void
+  validation: FormNodeValidation[]
+}) => {
   const handleSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       onSelect(event.currentTarget.value)
@@ -97,6 +114,7 @@ const GroupSelect = ({
         const title = group.i18n?.title
           ? t(group.i18n.title.key, {ns: group.i18n.title.ns})
           : group.title || group.name
+        const validationLevel = getFieldGroupValidationLevel(group, path, validation)
 
         return (
           <GroupOption
@@ -104,6 +122,7 @@ const GroupSelect = ({
             aria-controls={`${inputId}-field-group-fields`}
             disabled={group.disabled}
             name={group.name}
+            iconRight={validationLevel ? <StatusIcon status={validationLevel} /> : undefined}
             selected={Boolean(group.selected)}
             title={title}
           />
@@ -124,11 +143,12 @@ export const FieldGroupTabs = memo(function FieldGroupTabs({
     },
     [onClick],
   )
+  const validation = useChildValidation(props.path, true)
 
   return (
     <Root data-testid="field-group-root">
-      <GroupTabs {...props} disabled={disabled} onClick={handleClick} />
-      <GroupSelect {...props} disabled={disabled} onSelect={handleClick} />
+      <GroupTabs {...props} disabled={disabled} onClick={handleClick} validation={validation} />
+      <GroupSelect {...props} disabled={disabled} onSelect={handleClick} validation={validation} />
     </Root>
   )
 })
