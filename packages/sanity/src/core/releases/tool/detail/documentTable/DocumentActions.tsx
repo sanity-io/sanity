@@ -110,6 +110,7 @@ const DocumentActionsInner = memo(
         </Card>
         {showDiscardDialog && (
           <DiscardVersionDialog
+            isGoingToUnpublish={isGoingToUnpublish(document.document)}
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}

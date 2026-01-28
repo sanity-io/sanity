@@ -22,8 +22,9 @@ export function DiscardVersionDialog(props: {
   documentId: string
   documentType: string
   fromPerspective: string | TargetPerspective
+  isGoingToUnpublish: boolean
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, fromPerspective} = props
+  const {onClose, documentId, documentType, fromPerspective, isGoingToUnpublish} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
@@ -99,9 +100,9 @@ export function DiscardVersionDialog(props: {
       <Stack space={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
           <Preview
-            value={{_id: documentId}}
+            value={{_id: isGoingToUnpublish ? getPublishedId(documentId) : documentId}}
             schemaType={schemaType}
-            perspectiveStack={[currentRelease]}
+            perspectiveStack={isGoingToUnpublish ? [] : [currentRelease]}
           />
         ) : (
           <LoadingBlock />
