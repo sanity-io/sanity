@@ -46,6 +46,11 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/extractManifest.cjs',
       runtime: 'node',
     },
+    {
+      source: './src/_internal/cli/threads/generateStudioManifest.ts',
+      require: './lib/_internal/cli/threads/generateStudioManifest.cjs',
+      runtime: 'node',
+    },
   ],
 
   extract: {

@@ -41,6 +41,7 @@ exports[`Conditional property resolver > calls callback function 1`] = `
         "parentTest": "hello",
         "siblingProp": true,
       },
+      "path": [],
       "value": undefined,
     },
   ],

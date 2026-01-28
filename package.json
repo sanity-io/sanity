@@ -89,6 +89,8 @@
     "release:tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; pnpm build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",
+    "test:changed": "vitest --changed",
+    "test:changed:watch": "vitest --changed --watch",
     "test:e2e": "pnpm --filter e2e test",
     "test:exports": "turbo run test --filter=@repo/test-exports --filter=@repo/test-dts-exports",
     "test:vitest": "vitest --run",

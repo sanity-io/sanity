@@ -5,6 +5,15 @@ import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   test: {
+    forceRerunTriggers: [
+      '**/package.json/**',
+      '**/vitest.config.*/**',
+      '**/vite.config.*/**',
+      '**/pnpm-workspace.yaml',
+      '**/pnpm-lock.yaml',
+      '**/turbo.json',
+      '**/.github/workflows/test.yml',
+    ],
     projects: [
       'packages/@sanity/cli',
       'packages/@sanity/mutator',

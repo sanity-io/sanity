@@ -48,6 +48,7 @@ export const DEBUG_INPUT_TYPES = [
   'collapsibleObjects',
   'commentsDebug',
   'conditionalFieldsTest',
+  'conditionalFieldsWithPathTest',
   'customInputsTest',
   'customInputsWithPatches',
   'dateValidation',
