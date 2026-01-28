@@ -28,6 +28,8 @@ import {
   type UnknownTypeNode,
 } from 'groq-js'
 
+import {isAnonymousObject} from './isAnonymousObject'
+
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
     type: 'objectAttribute',
@@ -337,7 +339,12 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode
     }
 
-    if (schemaType.type?.name !== 'document' && schemaType.name !== 'object') {
+    // Only add _type for named objects (not anonymous inline objects)
+    if (
+      schemaType.type?.name !== 'document' &&
+      schemaType.name !== 'object' &&
+      !isAnonymousObject(schemaType)
+    ) {
       attributes._type = {
         type: 'objectAttribute',
         value: {
@@ -554,6 +561,7 @@ function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
 function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
   return isType(typeDef, 'number')
 }
+
 function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
