@@ -34,6 +34,7 @@
     "@sanity/types": "workspace:^",
     "conventional-commits-parser": "^6.2.1",
     "date-fns": "^4.1.0",
+    "description-to-co-authors": "^0.3.0",
     "p-map": "^7.0.3",
     "yargs": "^17.7.2"
   },
