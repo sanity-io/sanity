@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-01-28)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#11994](https://github.com/sanity-io/sanity/issues/11994)) ([6aaca20](https://github.com/sanity-io/sanity/commit/6aaca20134277be6d497ce99d41b428c23a655bf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 ### Bug Fixes

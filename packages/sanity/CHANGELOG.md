@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-01-28)
+
+### Features
+
+* **cli:** integrate manifest generation into deploy action ([8081071](https://github.com/sanity-io/sanity/commit/8081071e54f9dac24d7d827f89148d9bf6c69f8c)) by Dain Cilke (dain.cilke@gmail.com)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.26.0 ([#11983](https://github.com/sanity-io/sanity/issues/11983)) ([052b6a2](https://github.com/sanity-io/sanity/commit/052b6a23074c4b3541665dd21b0680ef29626a1e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11994](https://github.com/sanity-io/sanity/issues/11994)) ([6aaca20](https://github.com/sanity-io/sanity/commit/6aaca20134277be6d497ce99d41b428c23a655bf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* resolve lint errors and update exports snapshot ([9326b6a](https://github.com/sanity-io/sanity/commit/9326b6adb5327e0292b7d36651877df7587bac76)) by Dain Cilke (dain.cilke@gmail.com)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 ### Features
