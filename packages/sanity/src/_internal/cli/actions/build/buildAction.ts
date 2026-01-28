@@ -157,6 +157,10 @@ export default async function buildSanityStudio(
     }
   }
 
+  if (cliConfig?.schemaExtraction?.enabled) {
+    output.print(`${logSymbols.info} Building with schema extraction enabled`)
+  }
+
   const envVarKeys = getSanityEnvVars()
   if (envVarKeys.length > 0) {
     output.print(
@@ -238,6 +242,8 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      schemaExtraction: cliConfig?.schemaExtraction,
+      telemetry: context.telemetry,
     })
 
     trace.log({
