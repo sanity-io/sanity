@@ -30,7 +30,7 @@ jobs:
           fetch-tags: true
 
       - name: Ensure main exists locally
-        run: git checkout -b main origin/main && git switch -
+        run: git checkout -B main origin/main && git switch -
 
       - uses: ./.github/actions/setup
 
