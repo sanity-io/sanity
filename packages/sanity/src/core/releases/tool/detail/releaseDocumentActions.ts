@@ -54,7 +54,7 @@ export function countDocumentsByAction(
       if (actionType) {
         acc[actionType]++
       }
-      if (doc.validation.hasError) {
+      if (doc.validation.hasError && !doc.isPending) {
         acc.errors++
       }
       return acc
@@ -71,7 +71,7 @@ export function documentMatchesFilter(
   filter: DocumentFilterType,
 ): boolean {
   if (filter === 'all') return true
-  if (filter === 'errors') return doc.validation.hasError
+  if (filter === 'errors') return doc.validation.hasError && !doc.isPending
   return getDocumentActionType(doc) === filter
 }
 
