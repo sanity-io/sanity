@@ -123,6 +123,42 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: true
 
+  publish-github-release:
+    needs: [npm-publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Generate GitHub release
+        id: generate-github-release
+        run: |
+          {
+            echo "notes<<EOF"
+            pnpm --silent release-notes generate-gh-release-notes --targetVersion="${{needs.release-as.outputs.version}}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Create GitHub Release
+        run: |
+          gh release create v$RELEASE_AS --notes "${{ steps.generate-github-release.outputs.notes }}"
+        env:
+          RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
+
   bundle-upload:
     needs: npm-publish
     runs-on: ubuntu-latest
