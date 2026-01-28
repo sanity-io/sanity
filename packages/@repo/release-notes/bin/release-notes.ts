@@ -5,8 +5,8 @@ import {type Commit, type CommitBase, type CommitMeta} from 'conventional-commit
 import {type pMapSkip} from 'p-map'
 import yargs from 'yargs'
 
-import {createGithubRelease} from '../src/commands/createGithubRelease'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
+import {publishReleases} from '../src/commands/publishReleases'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
@@ -75,7 +75,7 @@ await yargs(process.argv.slice(2))
       }),
     handler: async (args) => {
       try {
-        const result = await createGithubRelease({
+        const result = await publishReleases({
           targetVersion: args.targetVersion,
         })
         // oxlint-disable-next-line no-console

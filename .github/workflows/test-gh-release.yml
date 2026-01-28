@@ -54,7 +54,7 @@ jobs:
       - name: Generate GitHub release
         id: generate-github-release
         run: |
-          pnpm --silent release-notes generate-gh-release-notes --targetVersion="${{needs.build-and-validate.outputs.version}}" > ${{ runner.temp }}/notes.md
+          pnpm --silent release-notes generate-gh-release-notes --targetVersion="${{needs.build-and-validate.outputs.version}}"
 
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
@@ -62,9 +62,3 @@ jobs:
           RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
           RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Create GitHub Release
-        run: |
-          gh release create v${{ needs.build-and-validate.outputs.version }} --draft -F ${{ runner.temp }}/notes.md
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
