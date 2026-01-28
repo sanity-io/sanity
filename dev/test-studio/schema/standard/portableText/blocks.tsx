@@ -428,6 +428,7 @@ export default defineType({
             {
               type: 'image',
               title: 'Image',
+              // @ts-expect-error - testing inline object fields in portable text block content
               fields: [
                 {title: 'Caption', name: 'caption', type: 'string', options: {isHighlighted: true}},
                 {

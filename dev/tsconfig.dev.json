@@ -2,7 +2,6 @@
   "extends": "@repo/tsconfig/base.json",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "rootDir": "..",
     "customConditions": ["monorepo"]
   }
 }

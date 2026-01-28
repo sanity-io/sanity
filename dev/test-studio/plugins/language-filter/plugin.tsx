@@ -1,4 +1,9 @@
-import {type _DocumentLanguageFilterComponent, definePlugin, type ObjectInputProps} from 'sanity'
+import {
+  definePlugin,
+  type DocumentLanguageFilterComponent,
+  type InputProps,
+  type ObjectInputProps,
+} from 'sanity'
 
 import {LanguageFilterMenuButton} from './LanguageFilterMenuButton'
 import {LanguageFilterObjectInput} from './LanguageFilterObjectInput'
@@ -8,7 +13,7 @@ import {type LanguageFilterPluginOptions} from './types'
  * Language filter plugin for Sanity
  */
 export const languageFilter = definePlugin<LanguageFilterPluginOptions>((options) => {
-  const RenderLanguageFilter: _DocumentLanguageFilterComponent = (props) => {
+  const RenderLanguageFilter: DocumentLanguageFilterComponent = (props) => {
     return <LanguageFilterMenuButton options={options} schemaType={props.schemaType} />
   }
 
@@ -26,7 +31,7 @@ export const languageFilter = definePlugin<LanguageFilterPluginOptions>((options
     },
 
     form: {
-      renderInput(props, next) {
+      renderInput(props: InputProps, next: (props: InputProps) => React.ReactNode) {
         if (props.schemaType.name === 'object') {
           const segment = props.path[props.path.length - 1]
 

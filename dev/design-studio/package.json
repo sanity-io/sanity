@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@types/react": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10"
   }
