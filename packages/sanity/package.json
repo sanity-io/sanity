@@ -129,6 +129,8 @@
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
+    "docs:typedocs:cleanup": "rimraf docs",
+    "docs:typedocs:generate": "typedoc --options typedoc.config.json",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
