@@ -19,3 +19,25 @@ export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttributes>({
   version: 0,
   description: 'Trace emitted when generating TypeScript types for queries',
 })
+
+/**
+ * Attributes for typegen watch mode trace - tracks the start and stop of watch mode
+ * sessions with statistics about generation runs.
+ */
+export type TypegenWatchModeTraceAttributes =
+  | {
+      step: 'started'
+    }
+  | {
+      step: 'stopped'
+      generationSuccessfulCount: number
+      generationFailedCount: number
+      averageGenerationDuration: number
+      watcherDuration: number
+    }
+
+export const TypegenWatchModeTrace = defineTrace<TypegenWatchModeTraceAttributes>({
+  name: 'Typegen Watch Mode Started',
+  version: 0,
+  description: 'Trace emitted when typegen watch mode is run',
+})
