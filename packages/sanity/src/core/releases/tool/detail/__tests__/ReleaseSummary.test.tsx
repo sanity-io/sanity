@@ -285,7 +285,7 @@ describe('ReleaseSummary', () => {
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      expect(within(firstDocumentRow).getByTestId('change-badge-123')).toBeInTheDocument()
+      expect(within(firstDocumentRow).getByTestId('changed-badge-123')).toBeInTheDocument()
     })
 
     it('should show `add` if a document is not published and is not scheduled for unpublishing', async () => {
@@ -306,7 +306,7 @@ describe('ReleaseSummary', () => {
 
       const [firstDocumentRow] = screen.getAllByTestId('table-row')
 
-      expect(within(firstDocumentRow).getByTestId('add-badge-123')).toBeInTheDocument()
+      expect(within(firstDocumentRow).getByTestId('added-badge-123')).toBeInTheDocument()
     })
   })
 })
