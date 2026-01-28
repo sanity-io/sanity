@@ -119,11 +119,11 @@ export default defineConfig({
   name: 'default',
   projectId: 'your-project-id',
   dataset: 'production',
-  
+
   schema: {
     types: [/* document and object types */],
   },
-  
+
   plugins: [
     structureTool(),
     // Additional plugins...
@@ -187,20 +187,20 @@ import {definePlugin} from 'sanity'
 
 export const myPlugin = definePlugin({
   name: 'my-plugin',
-  
+
   // Add schema types
   schema: {
     types: [/* custom types */],
   },
-  
+
   // Add tools to navigation
   tools: [/* custom tools */],
-  
+
   // Customize document actions
   document: {
     actions: (prev, context) => [...prev, customAction],
   },
-  
+
   // Add studio components
   studio: {
     components: {/* component overrides */},
