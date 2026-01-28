@@ -4,7 +4,8 @@ import {escapeField, fieldNeedsEscape} from '../../util'
 import {INCLUDE_FIELDS_QUERY} from '../constants'
 import {type FieldName, type Id, type Selection} from '../types'
 
-type CombinedSelection = {
+/** @internal */
+export type CombinedSelection = {
   ids: Id[]
   fields: FieldName[]
   map: number[]

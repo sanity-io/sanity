@@ -5,6 +5,7 @@ import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/opera
 import shallowEquals from 'shallow-equals'
 
 import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
+import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
@@ -19,9 +20,6 @@ import {
   type ObservePathsFn,
 } from './types'
 import {debounceCollect} from './utils/debounceCollect'
-
-const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
-
 /**
  * Create an SWR operator for document availability
  */
