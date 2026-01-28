@@ -19,24 +19,28 @@ import {type SortOrder} from './types'
 
 interface PaneHeaderProps {
   contentAfter?: ReactNode
+  customMenuItemState?: Record<string, unknown>
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
   menuItemGroups?: PaneMenuItemGroup[]
   menuItems?: PaneMenuItem[]
   setLayout: (layout: GeneralPreviewLayoutKey) => void
   setSortOrder: (sortOrder: SortOrder) => void
+  setCustomMenuItemState: (state: Record<string, unknown>) => void
   title: string
 }
 
 export const PaneHeader = memo(
   ({
     contentAfter,
+    customMenuItemState = {},
     index,
     initialValueTemplates = [],
     menuItemGroups = [],
     menuItems = [],
     setLayout,
     setSortOrder,
+    setCustomMenuItemState,
     title,
   }: PaneHeaderProps) => {
     const {features} = useStructureTool()
@@ -52,8 +56,27 @@ export const PaneHeader = memo(
         setSortOrder: (sort: SortOrder) => {
           setSortOrder(sort)
         },
+        setMenuItemState: (params: {_menuItemId?: string; value?: unknown}) => {
+          const id = params._menuItemId
+          if (!id) {
+            console.warn('setMenuItemState: menu item must have an id set via .id()')
+            return
+          }
+          const value = params.value ?? true
+          const currentValue = customMenuItemState[id]
+          // Toggle behavior: if clicking the same value, remove it (deselect)
+          if (currentValue === value) {
+            // Remove the key from state
+            const newState = Object.fromEntries(
+              Object.entries(customMenuItemState).filter(([key]) => key !== id),
+            )
+            setCustomMenuItemState(newState)
+          } else {
+            setCustomMenuItemState({...customMenuItemState, [id]: value})
+          }
+        },
       }
-    }, [setLayout, setSortOrder])
+    }, [customMenuItemState, setLayout, setSortOrder, setCustomMenuItemState])
 
     return (
       <TooltipDelayGroupProvider>

@@ -22,12 +22,19 @@ import {PaneHeader} from './PaneHeader'
 import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
 
+/**
+ * Type for custom menu item state storage.
+ * Maps menu item IDs to their current state values.
+ */
+type CustomMenuItemState = Record<string, unknown>
+
 const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
   sortOrderRaw?: SortOrder
   layout?: GeneralDocumentListLayoutKey
+  customMenuItemState?: CustomMenuItemState
 }) => {
-  const {menuItems, sortOrderRaw, layout} = options
+  const {menuItems, sortOrderRaw, layout, customMenuItemState = {}} = options
 
   return menuItems?.map((item) => {
     if (item.params?.layout) {
@@ -44,7 +51,18 @@ const addSelectedStateToMenuItems = (options: {
       }
     }
 
-    return {...item, selected: false}
+    // Check custom menu item state by id
+    if (item.id && item.id in customMenuItemState) {
+      const storedValue = customMenuItemState[item.id]
+      const itemValue = item.params?.value ?? true
+      return {
+        ...item,
+        selected: isEqual(storedValue, itemValue),
+      }
+    }
+
+    // Preserve any existing selected state, default to false
+    return {...item, selected: item.selected ?? false}
   })
 }
 
@@ -101,14 +119,23 @@ export const PaneContainer = memo(function PaneContainer(
     defaultSortOrder,
   )
 
+  // Custom menu item state for tracking selected state of custom menu items
+  const [customMenuItemState, setCustomMenuItemState] =
+    useStructureToolSetting<CustomMenuItemState>(
+      'custom-menu-item-state',
+      typeName ?? pane.id, //pane.id for anything that is not documentTypeList
+      {},
+    )
+
   const menuItemsWithSelectedState = useMemo(
     () =>
       addSelectedStateToMenuItems({
         menuItems,
         sortOrderRaw,
         layout,
+        customMenuItemState,
       }),
-    [layout, menuItems, sortOrderRaw],
+    [customMenuItemState, layout, menuItems, sortOrderRaw],
   )
 
   const isSheetListLayout = layout === 'sheetList'
@@ -134,12 +161,14 @@ export const PaneContainer = memo(function PaneContainer(
         )}
 
         <PaneHeader
+          customMenuItemState={customMenuItemState}
           index={index}
           initialValueTemplates={initialValueTemplates}
           menuItemGroups={menuItemGroups}
           menuItems={menuItemsWithSelectedState}
           setLayout={setLayout}
           setSortOrder={setSortOrder}
+          setCustomMenuItemState={setCustomMenuItemState}
           title={title}
         />
         {paneLayout}
