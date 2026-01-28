@@ -1,6 +1,6 @@
 import {type FormNodeValidation, type Path} from '@sanity/types'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
-import {type ChangeEvent, memo, useCallback, useMemo} from 'react'
+import {type ChangeEvent, memo, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
@@ -115,6 +115,9 @@ const GroupSelect = ({
           ? t(group.i18n.title.key, {ns: group.i18n.title.ns})
           : group.title || group.name
         const validationLevel = getFieldGroupValidationLevel(group, path, validation)
+        const validationText = validationLevel
+          ? ` (${t(`inputs.object.field-group-tabs.validation-${validationLevel}`)})`
+          : undefined
 
         return (
           <GroupOption
@@ -122,7 +125,7 @@ const GroupSelect = ({
             aria-controls={`${inputId}-field-group-fields`}
             disabled={group.disabled}
             name={group.name}
-            iconRight={validationLevel ? <StatusIcon status={validationLevel} /> : undefined}
+            iconRight={validationText}
             selected={Boolean(group.selected)}
             title={title}
           />
