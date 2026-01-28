@@ -3,6 +3,9 @@ name: Unit tests
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
+    # don't overide the defaults of opened, synchronize, and reopened
+    # just add labeling to allow for full test suite running
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
     branches: [main]
