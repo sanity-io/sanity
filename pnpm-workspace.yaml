@@ -14,8 +14,9 @@ catalog:
   '@playwright/experimental-ct-react': 1.57.0
   '@playwright/test': 1.57.0
   '@sanity/client': ^7.14.1
-  '@sanity/codegen': 5.6.0
+  '@sanity/codegen': 5.7.2-watch-mode
   '@sanity/migrate': ^5.2.3
+  '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^10.4.2
   '@sanity/ui': ^3.1.11
@@ -90,6 +91,7 @@ trustPolicyExclude:
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@2.1.2'
   - '@swc/core@1.13.5'
+  - '@sanity/codegen@5.7.2-watch-mode'
   - chokidar@4.0.3
   - groq@3.88.1-typegen-experimental.0
   - react-redux@9.2.0

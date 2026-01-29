@@ -6,6 +6,8 @@ import {
   runTypegenGenerate,
   runTypegenWatcher,
   type TypeGenConfig,
+  TypegenWatchModeTrace,
+  TypesGeneratedTrace,
 } from '@sanity/codegen'
 import chalk from 'chalk'
 import {omit, once} from 'lodash-es'
@@ -13,7 +15,6 @@ import {omit, once} from 'lodash-es'
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliConfig} from '../../util/getCliConfig'
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
-import {TypegenWatchModeTrace, TypesGeneratedTrace} from './generate.telemetry'
 
 export interface TypegenGenerateTypesCommandFlags {
   'config-path'?: string
