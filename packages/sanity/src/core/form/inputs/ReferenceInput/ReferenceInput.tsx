@@ -58,7 +58,11 @@ export function ReferenceInput(props: ReferenceInputProps) {
     path,
     elementProps,
     focusPath,
+    validation,
   } = props
+
+  // Derive validation error for the input's customValidity
+  const validationError = validation?.find((v) => v.level === 'error')?.message
   const {selectedReleaseId} = usePerspective()
 
   const {getReferenceInfo} = useReferenceInput({
@@ -363,6 +367,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
               openButton={{onClick: handleAutocompleteOpenButtonClick}}
               portalRef={autoCompletePortalRef}
               value={value?._ref}
+              customValidity={validationError}
             />
 
             {createOptions.length > 0 && (
