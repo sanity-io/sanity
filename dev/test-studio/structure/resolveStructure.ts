@@ -17,7 +17,6 @@ import {
   WarningFilledIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import $false from 'refractor/false'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
