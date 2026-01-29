@@ -158,6 +158,6 @@ function formatEntry({
   const changelogEntryUrl = `${ADMIN_STUDIO_URL}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
   const byline = pr.user?.login ? `[${pr.user?.login}](${pr.user.html_url})` : ''
-  const releaseNoteLink = `[:pencil: Edit](${changelogEntryUrl})`
+  const releaseNoteLink = `[:pencil:&nbsp;Edit](${changelogEntryUrl})`
   return `${byline} | ${originalCommitMessage} | [#${pr.number}](${pr.html_url}) | ${conventionalCommit.hash} | ${releaseNoteLink}`
 }
