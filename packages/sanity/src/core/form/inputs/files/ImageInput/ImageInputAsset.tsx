@@ -14,6 +14,7 @@ const ASSET_FIELD_PATH = ['asset'] as const
 function ImageInputAssetComponent(props: {
   assetSources: BaseImageInputProps['assetSources']
   directUploads: boolean
+  disableNew?: boolean
   elementProps: BaseImageInputProps['elementProps']
   handleClearUploadState: () => void
   onSelectFile: (assetSource: AssetSource, file: File) => void
@@ -30,6 +31,7 @@ function ImageInputAssetComponent(props: {
   value: BaseImageInputValue | undefined
 }) {
   const {
+    disableNew,
     elementProps,
     handleClearUploadState,
     onSelectFile,
@@ -89,7 +91,7 @@ function ImageInputAssetComponent(props: {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
-            isReadOnly={readOnly}
+            isReadOnly={readOnly || disableNew}
             onFocus={handleFileTargetFocus}
             onSelectFile={handleSelectFile}
             radius={2}

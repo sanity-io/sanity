@@ -418,7 +418,15 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, disableNew, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
+  }, [
+    assetSources,
+    directUploads,
+    disableNew,
+    handleSelectFileToUpload,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  ])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (
@@ -440,6 +448,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         <ImageInputAsset
           assetSources={assetSources}
           directUploads={directUploads !== false}
+          disableNew={disableNew}
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
           inputProps={inputProps}
@@ -460,6 +469,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [
       assetSources,
       directUploads,
+      disableNew,
       elementProps,
       handleClearField,
       handleClearUploadState,
