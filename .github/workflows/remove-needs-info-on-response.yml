@@ -27,8 +27,12 @@ jobs:
       REPO: ${{ github.repository }}
 
     steps:
-      - name: Remove needs-more-info label
-        run: gh issue edit "$ISSUE_NUMBER" --remove-label "needs-more-info" --repo "$REPO"
+      - name: Remove labels
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label "needs-more-info" --repo "$REPO"
+
+          # Remove stale-warned if present (user may have responded after receiving the warning)
+          gh issue edit "$ISSUE_NUMBER" --remove-label "stale-warned" --repo "$REPO" 2>/dev/null || true
 
       - name: Post thank you comment
         run: |
