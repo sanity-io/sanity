@@ -427,6 +427,24 @@ export default defineConfig([
     },
   },
   {
+    name: 'media-library-playground-localdev',
+    title: 'Media Library Playground (localdev-staging)',
+    projectId: '5iedwjzw',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: '5iedwjzw'})],
+    basePath: '/media-library-playground-localdev',
+    auth: {
+      loginMethod: 'token',
+    },
+    mediaLibrary: {
+      enabled: true,
+      __internal: {
+        frontendHost: 'http://localhost:3002',
+      },
+    },
+  },
+  {
     name: 'playground-staging',
     title: 'playground (Staging)',
     projectId: 'exx11uqh',

@@ -8,13 +8,10 @@ import {
   DEFAULT_API_VERSION,
   DEPLOYED_FRONTEND_HOST_PRODUCTION,
   DEPLOYED_FRONTEND_HOST_STAGING,
-  IS_LOCAL_DEV,
-  LOCAL_DEV_FRONTEND_HOST,
 } from '../constants'
 import {type SanityMediaLibraryConfig} from '../types'
 
 export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
-  const isLocalDev = IS_LOCAL_DEV
   const workspace = useWorkspace()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const host = client.config().apiHost
@@ -23,8 +20,7 @@ export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
   const deployedFrontendHost = isStaging
     ? DEPLOYED_FRONTEND_HOST_STAGING
     : DEPLOYED_FRONTEND_HOST_PRODUCTION
-  const appHost =
-    frontendHostOverride ?? (isLocalDev ? LOCAL_DEV_FRONTEND_HOST : deployedFrontendHost)
+  const appHost = frontendHostOverride ?? deployedFrontendHost
   const env: 'staging' | 'production' = isStaging ? 'staging' : 'production'
 
   const internalConfig = {
