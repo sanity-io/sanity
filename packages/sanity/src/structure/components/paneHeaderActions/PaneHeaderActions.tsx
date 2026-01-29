@@ -57,9 +57,9 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
         if (toggleHandler) {
           toggleHandler({_menuItemId: item.id, ...(item.params as Record<string, unknown>)})
         }
-        // If no action, we're done after updating toggle state
-        if (!item.action) {
-          return false
+        // If no action, or action is 'setMenuItemState' (already handled above), we're done
+        if (!item.action || item.action === 'setMenuItemState') {
+          return !!toggleHandler
         }
       }
 
@@ -76,7 +76,11 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
             : null
 
       if (handler) {
-        handler(item.params as Record<string, string>)
+        // Include the menu item's id in the params passed to the handler
+        const paramsWithId = item.id
+          ? {...(item.params as Record<string, unknown>), _menuItemId: item.id}
+          : (item.params as Record<string, string>)
+        handler(paramsWithId)
         return true
       }
 
