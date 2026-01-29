@@ -2,6 +2,7 @@ import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
@@ -40,6 +41,7 @@ export const PortableTextEditorPlugins = (props: {
         markdown: {
           config: markdownConfig,
         },
+        pasteLink: {},
         typography: {
           guard: createDecoratorGuard({
             decorators: ({context}) =>
@@ -86,6 +88,7 @@ function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 
   return (
     <>
       <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
+      <DefaultPasteLinkPlugin {...props.plugins.pasteLink} />
       <DefaultTypographyPlugin {...props.plugins.typography} />
     </>
   )
@@ -116,6 +119,16 @@ function DefaultMarkdownShortcutsPlugin(
       {...restMarkdownConfig}
     />
   )
+}
+
+function DefaultPasteLinkPlugin(props: PortableTextPluginsProps['plugins']['pasteLink']) {
+  const {enabled = true, ...pasteLinkPluginProps} = props ?? {}
+
+  if (!enabled) {
+    return null
+  }
+
+  return <PasteLinkPlugin {...pasteLinkPluginProps} />
 }
 
 function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typography']) {
