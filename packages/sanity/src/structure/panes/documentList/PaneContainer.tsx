@@ -12,6 +12,7 @@ import shallowEquals from 'shallow-equals'
 
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
+import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
@@ -27,6 +28,16 @@ import {type SortOrder} from './types'
  * Maps menu item IDs to their current state values.
  */
 type CustomMenuItemState = Record<string, unknown>
+
+/**
+ * Adds auto-generated IDs to menu items that don't have one.
+ */
+const addIdsToMenuItems = (menuItems?: PaneMenuItem[]): PaneMenuItem[] | undefined => {
+  return menuItems?.map((item) => {
+    if (item.id) return item
+    return {...item, id: assignId(item)}
+  })
+}
 
 const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
@@ -121,18 +132,20 @@ export const PaneContainer = memo(function PaneContainer(
 
   // Custom menu item state for tracking selected state of custom menu items
   // Uses local state (doesn't persist across refreshes) to avoid keyValueStore allowlist issues
-  // For multiple different keys that we don't have control over
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
+
+  // Add auto-generated IDs to menu items that don't have one
+  const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
 
   const menuItemsWithSelectedState = useMemo(
     () =>
       addSelectedStateToMenuItems({
-        menuItems,
+        menuItems: menuItemsWithIds,
         sortOrderRaw,
         layout,
         customMenuItemState,
       }),
-    [customMenuItemState, layout, menuItems, sortOrderRaw],
+    [customMenuItemState, layout, menuItemsWithIds, sortOrderRaw],
   )
 
   const isSheetListLayout = layout === 'sheetList'
