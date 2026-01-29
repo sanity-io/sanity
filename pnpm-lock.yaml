@@ -116,6 +116,9 @@ importers:
       '@repo/package.config':
         specifier: workspace:*
         version: link:packages/@repo/package.config
+      '@repo/release-notes':
+        specifier: workspace:*
+        version: link:packages/@repo/release-notes
       '@repo/test-config':
         specifier: workspace:*
         version: link:packages/@repo/test-config
@@ -897,6 +900,64 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+
+  packages/@repo/release-notes:
+    dependencies:
+      '@conventional-changelog/git-client':
+        specifier: ^2.5.1
+        version: 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
+      '@octokit/rest':
+        specifier: ^22.0.0
+        version: 22.0.1
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 7.14.1(debug@4.4.3)
+      '@sanity/id-utils':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@sanity/mutate':
+        specifier: ^0.16.1
+        version: 0.16.1(xstate@5.25.1)
+      '@sanity/types':
+        specifier: ^5.0.0
+        version: link:../../@sanity/types
+      conventional-commits-parser:
+        specifier: ^6.2.1
+        version: 6.2.1
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      description-to-co-authors:
+        specifier: ^0.3.0
+        version: 0.3.0
+      p-map:
+        specifier: ^7.0.3
+        version: 7.0.4
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@portabletext/markdown':
+        specifier: ^1.1.2
+        version: 1.1.2
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@types/yargs':
+        specifier: ^17.0.33
+        version: 17.0.35
+      vitest:
+        specifier: ^4.0.16
+        version: 4.0.16(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/@repo/test-config:
     devDependencies:
@@ -5317,6 +5378,15 @@ packages:
     resolution: {integrity: sha512-q91tzqOoGguLm0BSoCCKAbVSQNtQE/agGHWD31v1e2uh3E2fEZ1cPcAUsQVlTXc1nvuP86QX5A8/P6QR9Gpt6g==}
     engines: {node: '>=18'}
 
+  '@sanity/mutate@0.16.1':
+    resolution: {integrity: sha512-400OooNtiafgJEOCzj0E5atuWlaKp1z6LU/LB/xZUVVywNj3WuT52U6qeVOfGlZeWKhYMCdGFX2ZnMbIrME95w==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      xstate: ^5.19.0
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+
   '@sanity/parse-package-json@2.1.3':
     resolution: {integrity: sha512-lFhjS9bGzMixk2hvlXs/lfCoNIIUPOFuWovGNn7FuWxYKetGajwoF4UyJqm5j0kRT7yibviCo5vC8753d6/sNw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -7518,6 +7588,10 @@ packages:
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
+
+  description-to-co-authors@0.3.0:
+    resolution: {integrity: sha512-GaMDuvOCmtkQ3tjjawAEl3YhxNEIsR9tmlXV4xeypGyiO75YLXRm3iHKltqrmxNgtNlppVzT2pdsPM2Yzm67CA==}
+    engines: {node: '>=18.3.0'}
 
   detect-file@1.0.0:
     resolution: {integrity: sha512-DtCOLG98P007x7wiiOmfI0fi3eIKyWiLTGJ2MDnVi/E04lWGbf+JzrRHMm0rgIIZJGtHpKpbVgLWHrv8xXpc3Q==}
@@ -16420,6 +16494,21 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@sanity/mutate@0.16.1(xstate@5.25.1)':
+    dependencies:
+      '@sanity/client': 7.14.1(debug@4.4.3)
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/uuid': 3.0.2
+      hotscript: 1.0.13
+      lodash: 4.17.21
+      mendoza: 3.0.8
+      nanoid: 5.1.6
+      rxjs: 7.8.2
+    optionalDependencies:
+      xstate: 5.25.1
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/parse-package-json@2.1.3':
     dependencies:
       zod: 4.3.6
@@ -19200,6 +19289,8 @@ snapshots:
   deps-regex@0.2.0: {}
 
   dequal@2.0.3: {}
+
+  description-to-co-authors@0.3.0: {}
 
   detect-file@1.0.0: {}
 
