@@ -31,35 +31,22 @@ function ImageInputUploadPlaceholderComponent(props: {
     [onSelectFile],
   )
 
-  // When disableNew is true, only show the browse button (no upload UI)
-  if (disableNew) {
-    return (
-      <div style={{padding: 1}}>
-        <Card
-          tone={readOnly ? 'transparent' : 'inherit'}
-          border
-          paddingX={3}
-          paddingY={2}
-          radius={2}
-        >
-          {renderBrowser()}
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <div style={{padding: 1}}>
       <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
-        <UploadPlaceholder
-          assetSources={assetSources}
-          browse={renderBrowser()}
-          directUploads={directUploads}
-          onUpload={handleOnUpload}
-          schemaType={schemaType}
-          readOnly={readOnly}
-          type="image"
-        />
+        {disableNew ? (
+          renderBrowser()
+        ) : (
+          <UploadPlaceholder
+            assetSources={assetSources}
+            browse={renderBrowser()}
+            directUploads={directUploads}
+            onUpload={handleOnUpload}
+            schemaType={schemaType}
+            readOnly={readOnly}
+            type="image"
+          />
+        )}
       </Card>
     </div>
   )

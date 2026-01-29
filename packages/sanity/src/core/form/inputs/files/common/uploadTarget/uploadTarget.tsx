@@ -35,10 +35,6 @@ type FileEntry = {
 export interface UploadTargetProps {
   types: SchemaType[]
   isReadOnly?: boolean
-  /**
-   * When true, disables drag-drop and paste uploads without applying readonly styling.
-   * Use this for "disableNew" scenarios where users can still select existing assets.
-   */
   disableUpload?: boolean
   onUpload?: (event: UploadEvent) => void
   onSetHoveringFiles?: (files: FileInfo[]) => void
