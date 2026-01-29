@@ -120,12 +120,9 @@ export const PaneContainer = memo(function PaneContainer(
   )
 
   // Custom menu item state for tracking selected state of custom menu items
-  const [customMenuItemState, setCustomMenuItemState] =
-    useStructureToolSetting<CustomMenuItemState>(
-      'custom-menu-item-state',
-      typeName ?? pane.id, //pane.id for anything that is not documentTypeList
-      {},
-    )
+  // Uses local state (doesn't persist across refreshes) to avoid keyValueStore allowlist issues
+  // For multiple different keys that we don't have control over
+  const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
   const menuItemsWithSelectedState = useMemo(
     () =>

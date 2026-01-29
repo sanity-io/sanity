@@ -1,8 +1,7 @@
-import {isEqual} from 'lodash-es'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {distinctUntilChanged, map, scan} from 'rxjs/operators'
-import {type KeyValueStoreValue, useKeyValueStore} from 'sanity'
+import {map} from 'rxjs/operators'
+import {useKeyValueStore} from 'sanity'
 
 const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
 
@@ -19,23 +18,9 @@ export function useStructureToolSetting<ValueType>(
   const keyValueStoreKey = [STRUCTURE_TOOL_NAMESPACE, namespace, key].filter(Boolean).join('.')
 
   const value$ = useMemo(() => {
-    return keyValueStore.getKey(keyValueStoreKey).pipe(
-      // Use scan to prevent null from overwriting a valid value.
-      // This handles the race condition where local storage has the new value
-      // but the server returns null before the async save completes.
-      scan(
-        (acc: KeyValueStoreValue | null, value: KeyValueStoreValue | null) => {
-          // If we already have a non-null value and server returns null, keep existing
-          if (value === null && acc !== null) {
-            return acc
-          }
-          return value
-        },
-        null as KeyValueStoreValue | null,
-      ),
-      map((value) => (value === null ? defaultValue : value)),
-      distinctUntilChanged(isEqual),
-    )
+    return keyValueStore
+      .getKey(keyValueStoreKey)
+      .pipe(map((value) => (value === null ? defaultValue : value)))
   }, [defaultValue, keyValueStore, keyValueStoreKey])
 
   const value = useObservable(value$, defaultValue) as ValueType
