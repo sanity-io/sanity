@@ -1,9 +1,10 @@
-import {type PortableTextBlock} from '@sanity/types'
+import {type NormalizedMarkdownBlock} from './portabletext-markdown/markdownToPortableText'
+import {type PortableTextMarkdownBlock} from './portabletext-markdown/types'
 
-export function extractReleaseNotes(blocks: PortableTextBlock[]): PortableTextBlock[] {
+export function extractReleaseNotes(blocks: NormalizedMarkdownBlock[]) {
   let activeHeaderIsReleaseNotes = false
   let blockNo = 0
-  const releaseNotesBlocks = []
+  const releaseNotesBlocks: NormalizedMarkdownBlock[] = []
 
   for (const block of blocks) {
     if (isHeading(block)) {
@@ -17,19 +18,17 @@ export function extractReleaseNotes(blocks: PortableTextBlock[]): PortableTextBl
       }
     }
     if (activeHeaderIsReleaseNotes) {
-      if (!isHTMLComment(block)) {
-        if (blockNo === 0 && extractBlockText(block).toLowerCase().startsWith('n/a')) {
-          return []
-        }
-        blockNo++
-        releaseNotesBlocks.push(block)
+      if (blockNo === 0 && extractBlockText(block).toLowerCase().startsWith('n/a')) {
+        return []
       }
+      blockNo++
+      releaseNotesBlocks.push(block)
     }
   }
   return releaseNotesBlocks
 }
 
-function isHeading(block: PortableTextBlock) {
+function isHeading(block: PortableTextMarkdownBlock) {
   if (block._type !== 'block' || typeof block.style !== 'string' || block.style.length !== 2) {
     return false
   }
@@ -40,20 +39,12 @@ function isHeading(block: PortableTextBlock) {
   return pref === 'h' && level >= 1 && level <= 6
 }
 
-function isHTMLBlock(
-  block: PortableTextBlock,
-): block is {_type: 'html'; html: string; _key: string} {
-  return block._type === 'html' && 'html' in block && typeof block.html === 'string'
-}
-
-function isHTMLComment(block: PortableTextBlock) {
-  return isHTMLBlock(block) && block.html.startsWith('<!--') && block.html.endsWith('-->')
-}
-
-function extractBlockText(block: PortableTextBlock) {
+function extractBlockText(block: PortableTextMarkdownBlock) {
   if (block._type !== 'block' || !Array.isArray(block.children)) {
     return ''
   }
 
-  return block.children.map((child) => (typeof child?.text === 'string' ? child.text : '')).join('')
+  return block.children
+    .map((child) => (child._type === 'span' && typeof child?.text === 'string' ? child.text : ''))
+    .join('')
 }
