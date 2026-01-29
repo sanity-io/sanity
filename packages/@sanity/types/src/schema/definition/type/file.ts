@@ -21,6 +21,11 @@ export interface FileOptions extends ObjectOptions {
   accept?: string
   sources?: AssetSource[]
   mediaLibrary?: MediaLibraryOptions
+  /**
+   * When set to `true`, hides the upload UI, only allowing selection of existing assets from the media library.
+   * Useful for centralized asset management workflows where ad-hoc uploads should be prevented.
+   */
+  disableNew?: boolean
 }
 
 /** @public */
