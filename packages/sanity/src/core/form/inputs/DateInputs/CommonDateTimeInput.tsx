@@ -29,6 +29,7 @@ export interface CommonDateTimeInputProps {
   value: string | undefined
   calendarLabels: CalendarLabels
   timeZoneScope: TimeZoneScope
+  validationError?: string
 }
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
@@ -50,6 +51,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
     timeStep,
     timeZoneScope,
     value,
+    validationError,
     ...restProps
   } = props
 
@@ -124,7 +126,7 @@ export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
       readOnly={Boolean(readOnly)}
       onInputChange={handleDatePickerInputChange}
       onChange={handleDatePickerChange}
-      customValidity={parseResult?.error}
+      customValidity={parseResult?.error || validationError}
     />
   )
 })

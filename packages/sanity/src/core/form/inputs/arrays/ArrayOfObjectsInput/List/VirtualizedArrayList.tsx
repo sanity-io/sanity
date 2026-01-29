@@ -1,5 +1,5 @@
 import {type DragStartEvent} from '@dnd-kit/core'
-import {Card, useTheme} from '@sanity/ui'
+import {Card, CardTone, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
   elementScroll,
@@ -36,6 +36,7 @@ interface VirtualizedArrayListProps<Item extends ObjectItem> {
   listGridGap: number
   paddingY: number
   radius: number
+  tone?: CardTone
 }
 
 /**
@@ -66,6 +67,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     listGridGap,
     paddingY,
     radius,
+    tone,
   } = props
 
   const {space} = useTheme().sanity
@@ -170,6 +172,7 @@ export function VirtualizedArrayList<Item extends ObjectItem>(
     <Card
       ref={parentRef}
       border
+      tone={tone}
       radius={radius}
       style={{
         // This is not memoized since it changes on scroll so it will change anyways making memo useless

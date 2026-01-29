@@ -21,7 +21,7 @@ const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
  * @hidden
  * @beta */
 export function DateInput(props: DateInputProps) {
-  const {readOnly, onChange, schemaType, elementProps, value, id} = props
+  const {readOnly, onChange, schemaType, elementProps, value, id, validationError} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT
   const {t} = useTranslation()
   const timeZoneScope: TimeZoneScope = {type: 'input', id}
@@ -55,6 +55,7 @@ export function DateInput(props: DateInputProps) {
       serialize={serialize}
       value={value}
       timeZoneScope={timeZoneScope}
+      validationError={validationError}
     />
   )
 }

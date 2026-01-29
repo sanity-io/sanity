@@ -1,4 +1,4 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../../../i18n'
@@ -36,9 +36,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderInput,
     renderPreview,
     schemaType,
+    validation,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
+
+  // Compute tone for array container based on validation errors
+  const hasErrors = validation?.some((v) => v.level === 'error')
+  const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
   const sortable = schemaType.options?.sortable !== false
 
@@ -61,14 +66,14 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
       >
         <Stack data-ui="ArrayInput__content" space={2}>
           {members?.length === 0 && (
-            <Card padding={3} border radius={2}>
+            <Card padding={3} border radius={2} tone={errorTone}>
               <Text align="center" muted size={1}>
                 {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
               </Text>
             </Card>
           )}
           {members?.length > 0 && (
-            <Card border radius={1}>
+            <Card border radius={1} tone={errorTone}>
               <List
                 columns={[2, 3, 4]}
                 gap={3}

@@ -1,6 +1,6 @@
 import {ResetIcon} from '@sanity/icons'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash-es'
 import {
   type ChangeEvent,
@@ -35,6 +35,7 @@ export function SelectInput(props: StringInputProps) {
   const {
     value,
     readOnly,
+    validation,
     validationError,
     schemaType,
     onChange,
@@ -43,6 +44,9 @@ export function SelectInput(props: StringInputProps) {
     focused,
     elementProps,
   } = props
+
+  const hasErrors = validation?.some((v) => v.level === 'error')
+  const tone: CardTone | undefined = hasErrors ? 'critical' : undefined
   const items = useMemo(
     () => (schemaType.options?.list || []).map(toSelectItem),
     [schemaType.options],
@@ -98,24 +102,26 @@ export function SelectInput(props: StringInputProps) {
       inputId={inputId}
       items={items}
       direction={schemaType.options?.direction || 'vertical'}
-      customValidity={validationError}
       onChange={handleChange}
       readOnly={readOnly}
+      tone={tone}
     />
   ) : (
-    <Select
-      {...elementProps}
-      customValidity={validationError}
-      value={optionValueFromItem(currentItem)}
-      readOnly={readOnly}
-      onChange={handleSelectChange}
-    >
-      {[EMPTY_ITEM, ...items].map((item, i) => (
-        <option key={`${i - 1}`} value={i - 1}>
-          {item.title}
-        </option>
-      ))}
-    </Select>
+    <Card tone={tone} radius={2}>
+      <Select
+        {...elementProps}
+        customValidity={validationError}
+        value={optionValueFromItem(currentItem)}
+        readOnly={readOnly}
+        onChange={handleSelectChange}
+      >
+        {[EMPTY_ITEM, ...items].map((item, i) => (
+          <option key={`${i - 1}`} value={i - 1}>
+            {item.title}
+          </option>
+        ))}
+      </Select>
+    </Card>
   )
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
@@ -134,11 +140,13 @@ const RadioSelect = forwardRef(function RadioSelect(
     onFocus: (event: FocusEvent<HTMLElement>) => void
     customValidity?: string
     inputId?: string
+    tone?: CardTone
   },
 
   ref: ForwardedRef<HTMLInputElement>,
 ) {
-  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
+  const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId, tone} =
+    props
   const {t} = useTranslation()
 
   const handleClear = useCallback(() => {
@@ -150,7 +158,7 @@ const RadioSelect = forwardRef(function RadioSelect(
   const showClearButton = !readOnly && value
 
   return (
-    <Card border paddingY={2} paddingX={3} radius={2}>
+    <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
       <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
         <Layout space={3} role="group" paddingY={1}>
           {items.map((item, index) => (
