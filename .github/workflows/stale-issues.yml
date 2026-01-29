@@ -32,9 +32,11 @@ jobs:
           # Only process issues created/labeled after this date (prevents backlog processing)
           start-date: "2026-01-29T00:00:00Z"
 
-          # Timing: 10 days warning + 4 days to close = 14 days total
-          days-before-stale: 10
-          days-before-close: 4
+          # TESTING ONLY: Shortened timings for manual testing
+          # Production values: days-before-stale: 10, days-before-close: 4
+          # Test values: ~10 minutes before warning, ~5 minutes before close
+          days-before-stale: 0.007 # 0.007 days ≈ 10 minutes
+          days-before-close: 0.003 # 0.003 days ≈ 4-5 minutes
 
           # Reuse existing label (no additional stale label needed)
           stale-issue-label: "needs-more-info"
