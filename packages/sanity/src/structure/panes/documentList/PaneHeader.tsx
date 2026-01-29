@@ -56,12 +56,8 @@ export const PaneHeader = memo(
         setSortOrder: (sort: SortOrder) => {
           setSortOrder(sort)
         },
-        setMenuItemState: (params: {_menuItemId?: string; value?: unknown}) => {
+        setMenuItemState: (params: {_menuItemId: string; value?: unknown}) => {
           const id = params._menuItemId
-          if (!id) {
-            console.warn('Menu item should have an id set via .id()')
-            return
-          }
           const value = params.value ?? true
           const currentValue = customMenuItemState[id]
           // Toggle behavior: if clicking the same value, remove it (deselect)
