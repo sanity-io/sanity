@@ -20,8 +20,12 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v10
+      - name: Mark and close stale issues
+        uses: actions/stale@v10
         with:
+          # Enable detailed statistics in logs
+          enable-statistics: true
+
           # Target only issues with "needs-more-info" label
           only-issue-labels: "needs-more-info"
 
@@ -61,3 +65,15 @@ jobs:
 
           # Remove needs-more-info label if issue gets new activity after warning
           remove-stale-when-updated: true
+
+      - name: Report actions taken
+        if: always()
+        run: |
+          echo "## Stale Issue Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Workflow completed at $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Recent Activity" >> $GITHUB_STEP_SUMMARY
+          echo "Check the logs above for detailed statistics on processed issues." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** Issues with warnings or closures will have comments from github-actions[bot]" >> $GITHUB_STEP_SUMMARY
