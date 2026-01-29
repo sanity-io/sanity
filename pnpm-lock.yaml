@@ -4370,10 +4370,6 @@ packages:
     resolution: {integrity: sha512-jteNUQKgJHLHFbbz806aGZqf+RJJ7t4gwF4MYa8fCwCxQ8/klJNWc0MvaJiBebk7Mc+J39mdlsB4XraaCKznFw==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.36':
-    resolution: {integrity: sha512-NBQIg5hEMhvdbi4mSrdqRGl5XJ0bqTAHq6vDCCCDXUcfVtdk3ZJbSxtRVWyVvo9E28vwqu6MZyHOJylevqcHbA==}
-    engines: {node: '>=18.0.0'}
-
   '@oclif/plugin-help@6.2.37':
     resolution: {integrity: sha512-5N/X/FzlJaYfpaHwDC0YHzOzKDWa41s9t+4FpCDu4f9OMReds4JeNBaaWk9rlIzdKjh2M6AC5Q18ORfECRkHGA==}
     engines: {node: '>=18.0.0'}
@@ -15406,10 +15402,6 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/plugin-help@6.2.36':
-    dependencies:
-      '@oclif/core': 4.8.0
-
   '@oclif/plugin-help@6.2.37':
     dependencies:
       '@oclif/core': 4.8.0
@@ -16413,7 +16405,7 @@ snapshots:
   '@sanity/import@4.1.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
+      '@oclif/plugin-help': 6.2.37
       '@sanity/asset-utils': 2.3.0
       '@sanity/cli-core': 0.1.0-alpha.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/generate-help-url': 4.0.0
@@ -16688,7 +16680,7 @@ snapshots:
       '@architect/inventory': 5.0.0
       '@inquirer/prompts': 8.2.0(@types/node@24.10.4)
       '@oclif/core': 4.8.0
-      '@oclif/plugin-help': 6.2.36
+      '@oclif/plugin-help': 6.2.37
       '@sanity/blueprints': 0.8.0
       '@sanity/blueprints-parser': 0.3.0
       '@sanity/client': 7.14.1(debug@4.4.3)
