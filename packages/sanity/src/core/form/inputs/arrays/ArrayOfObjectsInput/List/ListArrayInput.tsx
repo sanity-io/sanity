@@ -1,6 +1,6 @@
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
@@ -37,9 +37,13 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     renderItem,
     renderPreview,
     schemaType,
+    validation,
     value = EMPTY,
   } = props
   const {t} = useTranslation()
+
+  const hasErrors = validation?.some((v) => v.level === 'error')
+  const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
   // Stores the index of the item being dragged
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
@@ -93,7 +97,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         >
           <Stack data-ui="ArrayInput__content" space={2}>
             {members.length === 0 ? (
-              <Card padding={3} border radius={2}>
+              <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
@@ -102,6 +106,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
               <VirtualizedArrayList
                 key={mountKey}
                 members={members}
+                tone={errorTone}
                 memberKeys={memberKeys}
                 activeDragItemIndex={activeDragItemIndex}
                 focusPathKey={focusPathKey}

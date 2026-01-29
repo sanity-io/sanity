@@ -147,6 +147,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
     elementProps,
     id,
     validation,
+    validationError,
     changed,
     path,
     presence = EMPTY_ARRAY,
@@ -282,6 +283,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                 selectTime
                 value={value}
                 timeZoneScope={timeZoneScope}
+                validationError={validationError}
               />
             </div>
           </div>
