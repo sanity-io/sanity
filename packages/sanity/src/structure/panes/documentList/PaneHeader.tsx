@@ -59,7 +59,7 @@ export const PaneHeader = memo(
         setMenuItemState: (params: {_menuItemId?: string; value?: unknown}) => {
           const id = params._menuItemId
           if (!id) {
-            console.warn('setMenuItemState: menu item must have an id set via .id()')
+            console.warn('Menu item should have an id set via .id()')
             return
           }
           const value = params.value ?? true
