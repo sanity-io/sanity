@@ -34,6 +34,8 @@ export function FileAsset(props: FileAssetProps) {
     value,
   } = props
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const assetFieldPath = useMemo(() => path.concat(ASSET_FIELD_PATH), [path])
 
   const handleFileTargetFocus = useCallback(
@@ -86,6 +88,7 @@ export function FileAsset(props: FileAssetProps) {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
+            disableUpload={disableNew}
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
             onSelectFile={({assetSource, file}) => handleSelectFiles(assetSource, [file])}
@@ -97,7 +100,11 @@ export function FileAsset(props: FileAssetProps) {
           >
             <div style={{position: 'relative'}}>
               {!value?.asset && (
-                <FileUploadPlaceHolder {...props} onSelectFiles={handleSelectFiles} />
+                <FileUploadPlaceHolder
+                  {...props}
+                  disableNew={disableNew}
+                  onSelectFiles={handleSelectFiles}
+                />
               )}
               {!value?._upload && value?.asset && (
                 <FilePreview {...props} onSelectAssets={onSelectAssets} />
@@ -110,12 +117,14 @@ export function FileAsset(props: FileAssetProps) {
   )
 }
 
-function FileUploadPlaceHolder(props: FileAssetProps) {
-  const {assetSources, directUploads, onSelectFiles, schemaType, readOnly} = props
+function FileUploadPlaceHolder(props: FileAssetProps & {disableNew?: boolean}) {
+  const {assetSources, directUploads, disableNew, onSelectFiles, schemaType, readOnly} = props
 
   return (
-    <>
-      <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
+    <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
+      {disableNew ? (
+        <Browser {...props} />
+      ) : (
         <UploadPlaceholder
           assetSources={assetSources}
           browse={<Browser {...props} />}
@@ -125,7 +134,7 @@ function FileUploadPlaceHolder(props: FileAssetProps) {
           readOnly={readOnly}
           type="file"
         />
-      </Card>
-    </>
+      )}
+    </Card>
   )
 }

@@ -1,5 +1,5 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'filesTest',
@@ -113,5 +113,13 @@ export default defineType({
       title: 'No asset source',
       options: {sources: []},
     },
+    defineField({
+      name: 'fileWithDisabledUpload',
+      title: 'File with disabled upload',
+      type: 'file',
+      description:
+        'Can only select existing assets from the media library, direct upload is disabled',
+      options: {disableNew: true},
+    }),
   ],
 })
