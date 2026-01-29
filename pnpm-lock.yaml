@@ -918,9 +918,6 @@ importers:
       '@sanity/mutate':
         specifier: ^0.16.1
         version: 0.16.1(debug@4.4.3)(xstate@5.25.1)
-      '@sanity/types':
-        specifier: ^5.0.0
-        version: link:../../@sanity/types
       conventional-commits-parser:
         specifier: ^6.2.1
         version: 6.2.1
@@ -933,6 +930,9 @@ importers:
       p-map:
         specifier: ^7.0.3
         version: 7.0.4
+      turndown:
+        specifier: ^7.2.2
+        version: 7.2.2
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -952,6 +952,9 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
+      '@types/turndown':
+        specifier: ^5.0.6
+        version: 5.0.6
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.35
@@ -4251,6 +4254,9 @@ packages:
   '@microsoft/tsdoc@0.16.0':
     resolution: {integrity: sha512-xgAyonlVVS+q7Vc7qLW0UrJU7rSFcETRWsqdXZtjzRU8dF+6CkozTK4V4y1LwOX7j8r/vHphjDeMeGI4tNGeGA==}
 
+  '@mixmark-io/domino@2.2.0':
+    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
+
   '@mswjs/interceptors@0.39.8':
     resolution: {integrity: sha512-2+BzZbjRO7Ct61k8fMNHEtoKjeWI9pIlHFTqBwZ5icHpqszIgEZbjb1MW5Z0+bITTCTl3gk4PDBxs9tA/csXvA==}
     engines: {node: '>=18'}
@@ -6017,6 +6023,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/turndown@5.0.6':
+    resolution: {integrity: sha512-ru00MoyeeouE5BX4gRL+6m/BsDfbRayOskWqUvh7CLGW+UXxHQItqALa38kKnOiZPqJrtzJUgAC2+F0rL1S4Pg==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -12396,6 +12405,9 @@ packages:
     resolution: {integrity: sha512-7Imdmg37joOloTnj+DPrab9hIaQcDdJ5RwSzcauo/wMOSAgO+A/I/8b3hsGGs6PWQz70m/jkPgdqWsfNKtwwDQ==}
     hasBin: true
 
+  turndown@7.2.2:
+    resolution: {integrity: sha512-1F7db8BiExOKxjSMU2b7if62D/XOyQyZbPKq/nUwopfgnHlqXHqQ0lvfUTeUIr1lZJzOPFn43dODyMSIfvWRKQ==}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -15184,6 +15196,8 @@ snapshots:
 
   '@microsoft/tsdoc@0.16.0': {}
 
+  '@mixmark-io/domino@2.2.0': {}
+
   '@mswjs/interceptors@0.39.8':
     dependencies:
       '@open-draft/deferred-promise': 2.2.0
@@ -17454,6 +17468,8 @@ snapshots:
 
   '@types/trusted-types@2.0.7':
     optional: true
+
+  '@types/turndown@5.0.6': {}
 
   '@types/unist@2.0.11': {}
 
@@ -24690,6 +24706,10 @@ snapshots:
       turbo-linux-arm64: 2.7.5
       turbo-windows-64: 2.7.5
       turbo-windows-arm64: 2.7.5
+
+  turndown@7.2.2:
+    dependencies:
+      '@mixmark-io/domino': 2.2.0
 
   type-check@0.4.0:
     dependencies:

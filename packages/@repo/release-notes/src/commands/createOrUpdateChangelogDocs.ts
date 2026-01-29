@@ -1,5 +1,4 @@
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
-import {markdownToPortableText} from '@portabletext/markdown'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {ClientError} from '@sanity/client'
 import {createPublishedId, getDraftId, getVersionId} from '@sanity/id-utils'
@@ -24,7 +23,9 @@ import {octokit} from '../octokit'
 import {type PullRequestInfo} from '../types'
 import {extractReleaseNotes} from '../utils/extractReleaseNotes'
 import {getCommits, getSemverTags} from '../utils/getCommits'
+import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {stripPr} from '../utils/stripPrNumber'
+import {uploadImages} from '../utils/uploadImages'
 
 const createId = (releaseId: string, input: string) => {
   const published = createPublishedId(input)
@@ -122,8 +123,9 @@ export async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
 
 async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
   const currentDocument = (await client.getDocument(id)) || {}
+  const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry))
   const updated = applyPatches(
-    [at('changelog', set([])), ...entries.flatMap(createEntry)],
+    [at('changelog', set([])), ...changelogEntryPatches.flat()],
     currentDocument,
   )
 
@@ -134,7 +136,7 @@ function createEntry(info: PullRequestInfo) {
   return info.pr && info.pr.body ? getReleaseNotesMutations(info) : []
 }
 
-function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
+async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
   const cleanSubject = pr
     ? stripPr(conventionalCommit.subject || '', pr.number)
     : conventionalCommit.subject || ''
@@ -171,9 +173,7 @@ function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
     type: conventionalCommit.type,
     contents:
       pr && pr.body
-        ? extractReleaseNotes(
-            markdownToPortableText(pr.body).filter((b) => b._type !== 'horizontal-rule'),
-          )
+        ? await uploadImages(client, extractReleaseNotes(markdownToPortableText(pr.body)))
         : cleanSubject,
   }
   return [at('changelog', insertIfMissing(entry, 'after', -1))]
