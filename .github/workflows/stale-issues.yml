@@ -68,12 +68,90 @@ jobs:
 
       - name: Report actions taken
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/issues
         run: |
-          echo "## Stale Issue Workflow Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Workflow completed at $(date -u)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Recent Activity" >> $GITHUB_STEP_SUMMARY
-          echo "Check the logs above for detailed statistics on processed issues." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Note:** Issues with warnings or closures will have comments from github-actions[bot]" >> $GITHUB_STEP_SUMMARY
+          # Time window for detecting recent changes (5 minutes in seconds)
+          TIME_WINDOW=300
+
+          # Helper function to write a section to the GitHub step summary
+          write_section() {
+            local title="$1"
+            local content="$2"
+            local empty_message="$3"
+
+            echo "### ${title}" >> "$GITHUB_STEP_SUMMARY"
+            if [ -z "$content" ]; then
+              echo "$empty_message" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "$content" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          # Helper function to format issues as markdown links
+          format_as_markdown_links() {
+            jq -r --arg base_url "$ISSUE_BASE_URL" \
+              '.[] | "- [#\(.number)](\($base_url)/\(.number)) - \(.title)"'
+          }
+
+          # Write summary header
+          {
+            echo "## Stale Issue Workflow Summary"
+            echo ""
+            echo "**Workflow completed at:** $(date -u)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Find issues that received stale warnings in this run
+          # Criteria: open issues with "needs-more-info" label where the last comment
+          # was posted by github-actions within the time window and contains the warning text
+          WARNING_ISSUES=$(
+            gh issue list \
+              --label "needs-more-info" \
+              --state open \
+              --limit 100 \
+              --json number,title,comments,updatedAt \
+            | jq --argjson time_window "$TIME_WINDOW" '
+                [.[] | select(
+                  .comments[-1].author.login == "github-actions" and
+                  (.comments[-1].body | contains("will be closed in another 4 days")) and
+                  (.updatedAt | fromdateiso8601) > (now - $time_window)
+                )]
+              ' \
+            | format_as_markdown_links 2>/dev/null || echo ""
+          )
+
+          write_section \
+            "Warning of Closure (10 days inactive)" \
+            "$WARNING_ISSUES" \
+            "No issues received warnings in this run."
+
+          # Find issues that were closed by the stale action in this run
+          # Criteria: closed issues with "needs-more-info" label that were
+          # closed within the time window
+          CLOSED_ISSUES=$(
+            gh issue list \
+              --label "needs-more-info" \
+              --state closed \
+              --limit 100 \
+              --json number,title,closedAt \
+            | jq --argjson time_window "$TIME_WINDOW" '
+                [.[] | select(
+                  (.closedAt | fromdateiso8601) > (now - $time_window)
+                )]
+              ' \
+            | format_as_markdown_links 2>/dev/null || echo ""
+          )
+
+          write_section \
+            "Closed (14 days inactive)" \
+            "$CLOSED_ISSUES" \
+            "No issues were closed in this run."
+
+          # Write footer
+          {
+            echo "---"
+            echo "*Check the workflow logs above for detailed statistics.*"
+          } >> "$GITHUB_STEP_SUMMARY"
