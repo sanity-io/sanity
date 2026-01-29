@@ -44,16 +44,19 @@ export async function commentPrAfterMerge(options: {
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${options.adminStudioBaseUrl}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
+  const authorIsBot = collaborators.author.type === 'Bot'
+
   // Create comment
-  const commentBody = `
-Thanks for your contribution, @${collaborators.author.login}! 🎉
+  const commentBody = `A :scroll: [Release note](${changelogEntryUrl}) has been created for this PR.
 
 ${
-  collaborators.isExternalContribution
-    ? `${collaborators.approvers.map((approver) => mention(approver)).join(', ')} please verify the [:scroll: Release note](${changelogEntryUrl}) for this PR.
-`
-    : `Please review the [:scroll: Release note](${changelogEntryUrl}) for this PR.`
-}`
+  collaborators.isExternalContribution || authorIsBot
+    ? `${collaborators.approvers.map((approver) => mention(approver)).join(', ')} as approver${collaborators.approvers.length > 1 ? 's' : ''} of this PR, please take a look at the [release note](${changelogEntryUrl}) note and make sure it includes all the relevant details.`
+    : `Please take a look and make sure it includes all the relevant details.`
+}
+
+
+${authorIsBot ? '`*beep boop*`' : `Thanks for your contribution, ${mention(collaborators.author)}! 🎉`}`
 
   await createOrUpdateComment({commit: options.commit, pr: pr.number, body: commentBody})
 }
