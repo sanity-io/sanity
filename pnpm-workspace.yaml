@@ -31,7 +31,7 @@ catalog:
   eslint: ^9.39.2
   globals: ^16.2.0
   playwright: 1.57.0
-  prettier: ^3.7.4
+  prettier: ^3.8.1
   react: ^19.2.3
   react-dom: ^19.2.3
   react-is: ^19.2.3
