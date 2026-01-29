@@ -460,32 +460,35 @@ export const structure: StructureResolver = (
                 .title('View Mode: Default')
                 .icon(DocumentIcon)
                 .group('view')
-                .params({value: 'default'}),
+                .params({value: 'default'})
+                .action(() => console.log('default')),
               S.menuItem()
                 .id('viewMode')
                 .title('View Mode: Compact')
                 .icon(CogIcon)
                 .group('view')
-                .params({value: 'compact'}),
+                .params({value: 'compact'})
+                .action(() => console.log('compact')),
               S.menuItem()
                 .id('viewMode')
                 .title('View Mode: Expanded')
                 .icon(EditIcon)
                 .group('view')
-                .params({value: 'expanded'}),
+                .params({value: 'expanded'})
+                .action(() => console.log('expanded')),
 
               // Checkbox behavior: different ids - each toggles independently
               // Just .id() is enough!
               S.menuItem()
-                .id('showArchived')
                 .title('Show Archived')
                 .icon(CheckmarkCircleIcon)
-                .group('toggles'),
+                .group('toggles')
+                .action(() => console.log('archived')),
               S.menuItem()
-                .id('showFeatured')
                 .title('Show Featured')
                 .icon(CheckmarkCircleIcon)
-                .group('toggles'),
+                .group('toggles')
+                .action(() => console.log('featured')),
 
               S.menuItem()
                 .title('Alert action')
