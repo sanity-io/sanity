@@ -35,6 +35,11 @@ type FileEntry = {
 export interface UploadTargetProps {
   types: SchemaType[]
   isReadOnly?: boolean
+  /**
+   * When true, disables drag-drop and paste uploads without applying readonly styling.
+   * Use this for "disableNew" scenarios where users can still select existing assets.
+   */
+  disableUpload?: boolean
   onUpload?: (event: UploadEvent) => void
   onSetHoveringFiles?: (files: FileInfo[]) => void
   onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
@@ -61,6 +66,7 @@ export function uploadTarget<Props>(
   ) {
     const {
       children,
+      disableUpload,
       isReadOnly,
       onSelectFile,
       onSetHoveringFiles,
@@ -138,7 +144,7 @@ export function uploadTarget<Props>(
     // This is called when files are dropped or pasted onto the upload target. It may show the asset source destination picker if needed.
     const handleFiles = useCallback(
       (files: File[]) => {
-        if (isReadOnly || types.length === 0) {
+        if (isReadOnly || disableUpload || types.length === 0) {
           return
         }
         const filesAndAssetSources = getFilesAndAssetSources(
@@ -165,14 +171,14 @@ export function uploadTarget<Props>(
         setFilesToUpload([])
         handleUploadFiles(ready.map((entry) => entry.file))
       },
-      [alertRejectedFiles, isReadOnly, types, formBuilder, handleUploadFiles],
+      [alertRejectedFiles, disableUpload, isReadOnly, types, formBuilder, handleUploadFiles],
     )
 
     const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
 
     const handleFilesOver = useCallback(
       (files: FileInfo[]) => {
-        if (isReadOnly) {
+        if (isReadOnly || disableUpload) {
           return
         }
         setHoveringFiles(files)
@@ -193,11 +199,11 @@ export function uploadTarget<Props>(
           onSetHoveringFiles(files)
         }
       },
-      [formBuilder, isReadOnly, onSetHoveringFiles, types],
+      [disableUpload, formBuilder, isReadOnly, onSetHoveringFiles, types],
     )
 
     const handleFilesOut = useCallback(() => {
-      if (isReadOnly) {
+      if (isReadOnly || disableUpload) {
         return
       }
       setHoveringFiles([])
@@ -206,7 +212,7 @@ export function uploadTarget<Props>(
         onSetHoveringFiles([])
       }
       setFilesToUpload([])
-    }, [isReadOnly, onSetHoveringFiles])
+    }, [disableUpload, isReadOnly, onSetHoveringFiles])
 
     const allAssetSourcesWithUpload = types.flatMap(
       (type) => resolveUploadAssetSources?.(type, formBuilder) ?? [],

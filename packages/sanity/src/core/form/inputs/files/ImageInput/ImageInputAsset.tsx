@@ -91,7 +91,8 @@ function ImageInputAssetComponent(props: {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
-            isReadOnly={readOnly || disableNew}
+            disableUpload={disableNew}
+            isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
             onSelectFile={handleSelectFile}
             radius={2}
