@@ -1,5 +1,6 @@
 name: Close Stale Issues Needing More Info
 
+# Trigger test run
 on:
   schedule:
     - cron: "0 0 * * *"
