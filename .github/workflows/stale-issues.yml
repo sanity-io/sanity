@@ -1,0 +1,60 @@
+name: Close Stale Issues Needing More Info
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: stale-issues
+  cancel-in-progress: false
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v10
+        with:
+          # Target only issues with "needs-more-info" label
+          only-issue-labels: "needs-more-info"
+
+          # Only process issues created/labeled after this date (prevents backlog processing)
+          start-date: "2026-01-29T00:00:00Z"
+
+          # Timing: 10 days warning + 4 days to close = 14 days total
+          days-before-stale: 10
+          days-before-close: 4
+
+          # Reuse existing label (no additional stale label needed)
+          stale-issue-label: "needs-more-info"
+
+          # Warning message (posted after 10 days)
+          stale-issue-message: >
+            Hi there, thanks again for this issue report. We have had a look into it
+            and are currently waiting for some more information. If you are able to help by
+            providing any further details as requested above that would be a great help.
+            If you are no longer experiencing this issue, or aren't able to provide any
+            further details, this issue will be closed in another 4 days.
+
+          # Closure message (posted after 14 days total)
+          close-issue-message: >
+            Hi there, we really appreciate your report of this issue. We had been
+            waiting for some more details to look into this properly. Since we didn't hear
+            back, we are going to close this issue at this current time. However, please
+            do either reopen or raise another issue if you find this is still causing concern.
+            We really thank you for the time to help us make Studio a better experience for
+            all users!
+
+          # Don't process pull requests
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+
+          # Process up to 30 issues per run (default, prevents rate limiting)
+          operations-per-run: 30
+
+          # Remove needs-more-info label if issue gets new activity after warning
+          remove-stale-when-updated: true
