@@ -35,9 +35,9 @@ jobs:
 
           # TESTING ONLY: Shortened timings for manual testing
           # Production values: days-before-stale: 10, days-before-close: 4
-          # Test values: ~10 minutes before warning, ~5 minutes before close
-          days-before-stale: 0.007 # 0.007 days ≈ 10 minutes
-          days-before-close: 0.003 # 0.003 days ≈ 4-5 minutes
+          # Test values: 1 day each for reliable testing (avoids decimal rounding issues)
+          days-before-stale: 1 # 1 day
+          days-before-close: 1 # 1 day after marking stale (2 days total)
 
           # Add "stale-warned" label when posting warning
           # This tracks that the issue has been warned about closure
