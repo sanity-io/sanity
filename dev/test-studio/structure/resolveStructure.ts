@@ -460,7 +460,7 @@ export const structure: StructureResolver = (
                 .icon(DocumentIcon)
                 .group('view')
                 .params({value: 'default'})
-                .action(() => console.log('default')),
+                .action((params) => console.log('default', params?.isSelected, params)),
               S.menuItem()
                 .id('viewMode')
                 .title('View Mode: Compact')

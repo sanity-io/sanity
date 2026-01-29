@@ -76,10 +76,15 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
             : null
 
       if (handler) {
-        // Include the menu item's id in the params passed to the handler
+        // Include the menu item's id and selected state in the params passed to the handler
+        // Note: isSelected reflects the state AFTER the toggle (since toggle handler runs first)
         const paramsWithId = item.id
-          ? {...(item.params as Record<string, unknown>), _menuItemId: item.id}
-          : (item.params as Record<string, string>)
+          ? {
+              ...(item.params as Record<string, unknown>),
+              _menuItemId: item.id,
+              isSelected: !item.selected,
+            }
+          : {...(item.params as Record<string, string>), isSelected: !item.selected}
         handler(paramsWithId)
         return true
       }
