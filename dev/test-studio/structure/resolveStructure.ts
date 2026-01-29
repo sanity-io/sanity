@@ -13,6 +13,7 @@ import {
   TerminalIcon,
   ThListIcon,
   UsersIcon,
+  WarningFilledIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
@@ -483,6 +484,13 @@ export const structure: StructureResolver = (
                 .title('Show Featured')
                 .icon(CheckmarkCircleIcon)
                 .group('toggles'),
+
+              S.menuItem()
+                .id('Alert action')
+                .title('Alert action')
+                .icon(WarningFilledIcon)
+                // eslint-disable-next-line no-alert
+                .action(() => alert('you clicked!')),
 
               // Standard menu items (layout changes the view)
               ...(S.documentTypeList('author').getMenuItems() || []),
