@@ -150,6 +150,7 @@
     "@portabletext/patches": "^2.0.4",
     "@portabletext/plugin-markdown-shortcuts": "^5.0.21",
     "@portabletext/plugin-one-line": "^4.0.21",
+    "@portabletext/plugin-paste-link": "^1.0.0",
     "@portabletext/plugin-typography": "^5.0.21",
     "@portabletext/react": "^6.0.2",
     "@portabletext/sanity-bridge": "^2.0.0",

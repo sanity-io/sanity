@@ -1,4 +1,5 @@
 import {type MarkdownShortcutsPluginProps} from '@portabletext/plugin-markdown-shortcuts'
+import {type PasteLinkPluginProps} from '@portabletext/plugin-paste-link'
 import {type TypographyPluginProps} from '@portabletext/plugin-typography'
 import {
   type ArraySchemaType,
@@ -460,6 +461,12 @@ export interface PortableTextPluginsProps {
            */
           enabled?: boolean
         })
+    pasteLink?: {
+      /**
+       * @defaultValue true
+       */
+      enabled?: boolean
+    } & PasteLinkPluginProps
     typography?: {
       /**
        * @defaultValue true
