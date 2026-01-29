@@ -1,7 +1,6 @@
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {ClientError} from '@sanity/client'
-import {createPublishedId, getDraftId, getVersionId} from '@sanity/id-utils'
 import {
   at,
   createIfNotExists,
@@ -19,18 +18,14 @@ import pMap from 'p-map'
 
 import {client} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
-import {octokit} from '../octokit'
 import {type PullRequestInfo} from '../types'
 import {extractReleaseNotes} from '../utils/extractReleaseNotes'
 import {getCommits, getSemverTags} from '../utils/getCommits'
+import {getMergedPRForCommit} from '../utils/github'
+import {createId} from '../utils/ids'
 import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {stripPr} from '../utils/stripPrNumber'
 import {uploadImages} from '../utils/uploadImages'
-
-const createId = (releaseId: string, input: string) => {
-  const published = createPublishedId(input)
-  return {published, version: getVersionId(published, releaseId), draft: getDraftId(published)}
-}
 
 export async function createOrUpdateChangelogDocs(args: {
   tentativeVersion?: string
@@ -220,18 +215,4 @@ async function fetchCommitPrs(commits: Commit[]) {
     },
     {concurrency: 4},
   )
-}
-
-async function getMergedPRForCommit(owner: string, repo: string, commitSha: string) {
-  // Get PRs associated with the commit
-  // see https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests
-  const {data: prs} = await octokit.repos.listPullRequestsAssociatedWithCommit({
-    owner,
-    repo,
-    // eslint-disable-next-line camelcase
-    commit_sha: commitSha,
-  })
-
-  // Find the merged PR (if any)
-  return prs.find((pr) => pr.merged_at !== null)
 }

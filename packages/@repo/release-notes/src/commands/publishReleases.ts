@@ -47,7 +47,7 @@ export async function publishReleases(options: {targetVersion: string}) {
   const formattedChangelog = `
 Author | Message | Commit
 ------------ | ------------- | -------------
-${changelogDocument.changelog.map((entry) => `${atAuthor(entry.author)} | ${entry.subject} (#${entry.pr}) | ${entry.hash}`).join('\n')}
+${changelogDocument.changelog.map((entry) => `${mention(entry.author)} | ${entry.subject} (#${entry.pr}) | ${entry.hash}`).join('\n')}
   `
   const response = await octokit.request('POST /repos/{owner}/{repo}/releases', {
     owner: 'sanity-io',
@@ -65,12 +65,13 @@ ${changelogDocument.changelog.map((entry) => `${atAuthor(entry.author)} | ${entr
   console.log('Created GitHub Release:', response.data.html_url)
 }
 
-function atAuthor(author: StudioChangelogEntry['author']) {
+function mention(author: StudioChangelogEntry['author']) {
   if (author.type !== 'bot') {
     return `@${author.username}`
   }
   return author.username
 }
+
 function ghReleaseTemplate(vars: {
   changelogDocumentId: string
   targetVersion: string
