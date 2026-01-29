@@ -1,5 +1,6 @@
 import {type RestEndpointMethodTypes} from '@octokit/rest'
 import {type Commit} from 'conventional-commits-parser'
+import {type CoAuthor} from 'description-to-co-authors'
 
 export type KnownEnvVar =
   | 'RELEASE_NOTES_SANITY_DATASET'
@@ -14,4 +15,24 @@ export type PullRequest =
 export type PullRequestInfo = {
   pr?: PullRequest
   conventionalCommit: Commit
+}
+
+export type StudioChangelogEntry = {
+  _key: string
+  _type: string
+  author: {
+    imageUrl: string
+    type: string
+    url: string
+    username: string
+  }
+  coAuthors: CoAuthor[]
+  authorAssociation: string
+  exclude: boolean
+  hash: string
+  pr: number
+  scope: number
+  subject: string
+  header: string
+  type: string
 }

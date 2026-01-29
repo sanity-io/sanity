@@ -1,8 +1,6 @@
 import {ConventionalGitClient} from '@conventional-changelog/git-client'
-import {markdownToPortableText} from '@portabletext/markdown'
 import {MONOREPO_ROOT} from '@repo/utils'
 import {ClientError} from '@sanity/client'
-import {createPublishedId, getDraftId, getVersionId} from '@sanity/id-utils'
 import {
   at,
   createIfNotExists,
@@ -20,16 +18,14 @@ import pMap from 'p-map'
 
 import {client} from '../client'
 import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
-import {octokit} from '../octokit'
 import {type PullRequestInfo} from '../types'
 import {extractReleaseNotes} from '../utils/extractReleaseNotes'
 import {getCommits, getSemverTags} from '../utils/getCommits'
+import {getMergedPRForCommit} from '../utils/github'
+import {createId} from '../utils/ids'
+import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {stripPr} from '../utils/stripPrNumber'
-
-const createId = (releaseId: string, input: string) => {
-  const published = createPublishedId(input)
-  return {published, version: getVersionId(published, releaseId), draft: getDraftId(published)}
-}
+import {uploadImages} from '../utils/uploadImages'
 
 export async function createOrUpdateChangelogDocs(args: {
   tentativeVersion?: string
@@ -122,8 +118,9 @@ export async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
 
 async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
   const currentDocument = (await client.getDocument(id)) || {}
+  const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry))
   const updated = applyPatches(
-    [at('changelog', set([])), ...entries.flatMap(createEntry)],
+    [at('changelog', set([])), ...changelogEntryPatches.flat()],
     currentDocument,
   )
 
@@ -134,7 +131,7 @@ function createEntry(info: PullRequestInfo) {
   return info.pr && info.pr.body ? getReleaseNotesMutations(info) : []
 }
 
-function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
+async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
   const cleanSubject = pr
     ? stripPr(conventionalCommit.subject || '', pr.number)
     : conventionalCommit.subject || ''
@@ -171,9 +168,7 @@ function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInfo) {
     type: conventionalCommit.type,
     contents:
       pr && pr.body
-        ? extractReleaseNotes(
-            markdownToPortableText(pr.body).filter((b) => b._type !== 'horizontal-rule'),
-          )
+        ? await uploadImages(client, extractReleaseNotes(markdownToPortableText(pr.body)))
         : cleanSubject,
   }
   return [at('changelog', insertIfMissing(entry, 'after', -1))]
@@ -220,18 +215,4 @@ async function fetchCommitPrs(commits: Commit[]) {
     },
     {concurrency: 4},
   )
-}
-
-async function getMergedPRForCommit(owner: string, repo: string, commitSha: string) {
-  // Get PRs associated with the commit
-  // see https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests
-  const {data: prs} = await octokit.repos.listPullRequestsAssociatedWithCommit({
-    owner,
-    repo,
-    // eslint-disable-next-line camelcase
-    commit_sha: commitSha,
-  })
-
-  // Find the merged PR (if any)
-  return prs.find((pr) => pr.merged_at !== null)
 }

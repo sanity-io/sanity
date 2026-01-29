@@ -32,11 +32,11 @@
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
-    "@sanity/types": "workspace:^",
     "conventional-commits-parser": "^6.2.1",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
     "p-map": "^7.0.3",
+    "turndown": "^7.2.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -45,6 +45,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
+    "@types/turndown": "^5.0.6",
     "@types/yargs": "^17.0.33",
     "vitest": "catalog:"
   },

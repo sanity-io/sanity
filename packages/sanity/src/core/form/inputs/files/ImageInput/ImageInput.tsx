@@ -404,18 +404,29 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
+        disableNew={disableNew}
         onSelectFile={handleSelectFileToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
+  }, [
+    assetSources,
+    directUploads,
+    disableNew,
+    handleSelectFileToUpload,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  ])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (

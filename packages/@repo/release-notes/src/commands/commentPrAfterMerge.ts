@@ -1,0 +1,161 @@
+/* oxlint-disable no-console */
+import {type RestEndpointMethodTypes} from '@octokit/rest'
+
+import {octokit} from '../octokit'
+import {getMergedPRForCommit} from '../utils/github'
+import {createId} from '../utils/ids'
+
+const REPO = {
+  owner: 'sanity-io',
+  repo: 'sanity',
+}
+
+const INTERNAL_ASSOCIATIONS = ['MEMBER', 'OWNER']
+
+export async function commentPrAfterMerge(options: {
+  commit: string
+  baseVersion: string
+  adminStudioBaseUrl: string
+}) {
+  const pr = await getMergedPRForCommit('sanity-io', 'sanity', options.commit)
+  if (!pr) {
+    throw new Error('No PR found for this commit')
+  }
+
+  console.log(`Found PR #${pr.number}`)
+
+  // Get PR details including reviewers
+  const {data: pullRequest} = await octokit.rest.pulls.get({
+    ...REPO,
+    // eslint-disable-next-line camelcase
+    pull_number: pr.number,
+  })
+  if (!pullRequest) {
+    return
+  }
+
+  const collaborators = await getCollaborators(pullRequest)
+  const baseVersionId = Buffer.from(options.baseVersion).toString('base64url')
+  const releaseId = `rstudio-${baseVersionId}`
+
+  const changelogDocumentId = createId(releaseId, `studio-${baseVersionId}`)
+
+  const entryKey = options.commit.slice(0, 8)
+  const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
+  const changelogEntryUrl = `${options.adminStudioBaseUrl}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
+
+  // Create comment
+  const commentBody = `
+Thanks for your contribution, @${collaborators.author.login}! 🎉
+
+${
+  collaborators.isExternalContribution
+    ? `${collaborators.approvers.map((approver) => mention(approver)).join(', ')} please verify the [:scroll: Release note](${changelogEntryUrl}) for this PR.
+`
+    : `Please review the [:scroll: Release note](${changelogEntryUrl}) for this PR.`
+}`
+
+  await createOrUpdateComment({commit: options.commit, pr: pr.number, body: commentBody})
+}
+
+async function createOrUpdateComment(options: {commit: string; pr: number; body: string}) {
+  const idempotenceMarker = `[idempotence-key]:#release-notes-reminder\n`
+
+  const {data: existingComments} = await octokit.rest.issues.listComments({
+    ...REPO,
+    // eslint-disable-next-line camelcase
+    issue_number: options.pr,
+    // eslint-disable-next-line camelcase
+    per_page: 100,
+    order: 'created',
+    direction: 'desc',
+  })
+
+  const existingComment = existingComments.find(
+    (comment) => comment.body && comment.body?.includes(idempotenceMarker),
+  )
+
+  if (existingComment && existingComment.body) {
+    // check if there are any changes
+    const withoutMarker = existingComment.body.replace(idempotenceMarker, '')
+    if (withoutMarker === options.body) {
+      console.log('Comment is unchanged. Nothing to do')
+      return Promise.resolve()
+    }
+    return octokit.rest.issues.updateComment({
+      ...REPO,
+      // eslint-disable-next-line camelcase
+      comment_id: existingComment.id,
+      body: idempotenceMarker + options.body,
+    })
+  }
+
+  return octokit.rest.issues.createComment({
+    ...REPO,
+    // eslint-disable-next-line camelcase
+    issue_number: options.pr,
+    body: idempotenceMarker + options.body,
+  })
+}
+
+type PullRequest = RestEndpointMethodTypes['pulls']['get']['response']['data']
+/**
+ * Retrieves information about collaborators involved in a pull request.
+ *
+ * @param pullRequest - The pull request object containing details about the PR.
+ * @returns An object containing:
+ * - author: The user who created the pull request.
+ * - external: A boolean indicating if the author is external to the organization.
+ * - approvers: An array of users who have approved the pull request and belong to the internal associations.
+ */
+async function getCollaborators(pullRequest: PullRequest) {
+  const author = pullRequest.user
+  const isExternalContribution = !INTERNAL_ASSOCIATIONS.includes(pullRequest.author_association)
+
+  // Get reviews to find reviewers
+  const {data: reviews} = await octokit.rest.pulls.listReviews({
+    ...REPO,
+    // eslint-disable-next-line camelcase
+    pull_number: pullRequest.number,
+  })
+  const approvers = reviews
+    .filter((review) => {
+      return (
+        review.state === 'APPROVED' &&
+        INTERNAL_ASSOCIATIONS.includes(review.author_association) &&
+        review.user?.type === 'User'
+      )
+    })
+    .map((review) => review.user)
+    .filter((approver) => !!approver)
+
+  return {
+    isExternalContribution,
+    author,
+    approvers: uniqueBy(approvers, (approver) => approver.login),
+  }
+}
+/**
+ * Returns a new array with unique items, keyed by `keyFn`.
+ * Keeps the FIRST item encountered for each key and preserves input order.
+ */
+export function uniqueBy<T, K>(items: readonly T[], keyFn: (item: T) => K): T[] {
+  const seen = new Set<K>()
+  const out: T[] = []
+  for (const item of items) {
+    const key = keyFn(item)
+    if (!seen.has(key)) {
+      seen.add(key)
+      out.push(item)
+    }
+  }
+
+  return out
+}
+
+function mention(user: PullRequest['user']) {
+  if (user.type !== 'Bot') {
+    return `@${user.login}`
+  }
+  return user.login
+}

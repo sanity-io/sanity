@@ -253,6 +253,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={1}
         disabled={resolvingInitialValue}
+        // Use mousedown instead of click to trigger open before focus events cause re-renders.
+        // This fixes a Safari-specific issue where the array container receives focus first,
+        // triggering a state update that causes a re-render before the click event completes.
+        onMouseDown={onOpen}
         onClick={onOpen}
         ref={setPreviewCardElement}
         onFocus={onFocus}
