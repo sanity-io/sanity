@@ -44,6 +44,8 @@
     "dev:test-create-studio": "pnpm --filter test-create-integration-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
     "dev:test-studio-production-profiling": "REACT_PRODUCTION_PROFILING=true turbo run start --filter=sanity-test-studio",
+    "docs:typedocs:cleanup": "pnpm --filter=sanity docs:typedocs:cleanup",
+    "docs:typedocs:generate": "pnpm --filter=sanity docs:typedocs:generate",
     "e2e:build": "turbo run build --filter=studio-e2e-testing",
     "e2e:cleanup:pr": "tsx -r dotenv-flow/config e2e/scripts/cleanupPr",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
@@ -139,6 +141,7 @@
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
+    "typedoc": "^0.28.16",
     "typescript": "catalog:",
     "vercel": "^48.12.1",
     "vitest": "catalog:"
