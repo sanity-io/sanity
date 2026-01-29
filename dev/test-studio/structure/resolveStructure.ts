@@ -448,9 +448,9 @@ export const structure: StructureResolver = (
         .id('menu-item-selected-indicator')
         .icon(FilterIcon)
         .child(() =>
-          S.documentTypeList('author')
-            .title('Authors')
-            .id('authors-menu-indicator-demo')
+          S.documentTypeList('book')
+            .title('Books')
+            .id('books-menu-indicator-demo')
             .menuItems([
               // Radio-button behavior: same id, different values - only one shows checkmark
               S.menuItem()
@@ -493,7 +493,7 @@ export const structure: StructureResolver = (
                 .action(() => alert('you clicked!')),
 
               // Standard menu items (layout changes the view)
-              ...(S.documentTypeList('author').getMenuItems() || []),
+              ...(S.documentTypeList('book').getMenuItems() || []),
             ])
             .menuItemGroups([
               {id: 'view', title: 'View Mode (pick one)'},
