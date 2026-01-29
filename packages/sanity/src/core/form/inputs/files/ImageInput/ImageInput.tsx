@@ -448,7 +448,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         <ImageInputAsset
           assetSources={assetSources}
           directUploads={directUploads !== false}
-          disableNew={disableNew}
           elementProps={elementProps}
           handleClearUploadState={handleClearUploadState}
           inputProps={inputProps}
@@ -469,7 +468,6 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [
       assetSources,
       directUploads,
-      disableNew,
       elementProps,
       handleClearField,
       handleClearUploadState,

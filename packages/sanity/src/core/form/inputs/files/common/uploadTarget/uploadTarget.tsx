@@ -10,6 +10,7 @@ import {
   type ReactNode,
   type RefAttributes,
   useCallback,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -35,7 +36,6 @@ type FileEntry = {
 export interface UploadTargetProps {
   types: SchemaType[]
   isReadOnly?: boolean
-  disableUpload?: boolean
   onUpload?: (event: UploadEvent) => void
   onSetHoveringFiles?: (files: FileInfo[]) => void
   onSelectFile?: (props: InputOnSelectFileFunctionProps) => void
@@ -62,7 +62,6 @@ export function uploadTarget<Props>(
   ) {
     const {
       children,
-      disableUpload,
       isReadOnly,
       onSelectFile,
       onSetHoveringFiles,
@@ -75,6 +74,14 @@ export function uploadTarget<Props>(
     const {t} = useTranslation()
 
     const formBuilder = useFormBuilder()
+
+    // Check if all image/file types in the types array have disableNew: true
+    // This centralizes the disableUpload logic so parent components don't need to compute it
+    const disableUpload = useMemo(() => {
+      const assetTypes = types.filter((type) => _isType(type, 'image') || _isType(type, 'file'))
+      // Only disable upload if there are asset types AND all of them have disableNew
+      return assetTypes.length > 0 && assetTypes.every((type) => type.options?.disableNew === true)
+    }, [types])
 
     const [filesToUpload, setFilesToUpload] = useState<File[]>([])
     const [showAssetSourceDestinationPicker, setShowAssetSourceDestinationPicker] = useState(false)

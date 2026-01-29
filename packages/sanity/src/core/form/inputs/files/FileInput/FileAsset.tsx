@@ -88,7 +88,6 @@ export function FileAsset(props: FileAssetProps) {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
-            disableUpload={disableNew}
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
             onSelectFile={({assetSource, file}) => handleSelectFiles(assetSource, [file])}
