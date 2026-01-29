@@ -1,0 +1,47 @@
+name: Test release notes reminder
+
+on:
+  push:
+    branches:
+      - release-notes-mention-debug
+
+permissions:
+  contents: read
+
+jobs:
+  test-release-note-reminder:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Get base version
+        # store the current version and use as base version when generating changelog documents
+        id: get-base-version
+        run: |
+          echo "base-version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Update version
+        run: |
+          pnpm --silent release-notes comment-pr-after-merge \
+          --baseVersion=${{ steps.get-base-version.outputs.base-version }} \
+          --commit=b1cdfb947270d44c4aa9220deecb5ae35fdc145a
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
