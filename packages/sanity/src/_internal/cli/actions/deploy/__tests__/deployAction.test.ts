@@ -367,4 +367,131 @@ describe('deployStudioAction', () => {
 
     expect(mockContext.output.error).toHaveBeenCalledWith('Application limit reached')
   })
+
+  describe('external deployment', () => {
+    const mockExternalApplication: UserApplication = {
+      id: 'external-app-id',
+      appHost: 'https://my-studio.example.com',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      urlType: 'external',
+      projectId: 'example',
+      organizationId: null,
+      title: null,
+      type: 'studio',
+    }
+
+    it('registers an external URL without building', async () => {
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should NOT call build
+      expect(buildSanityStudioMock).not.toHaveBeenCalled()
+
+      // Should NOT create tarball (but deployment IS called to register manifest)
+      expect(tarPackMock).not.toHaveBeenCalled()
+
+      // Should call createDeployment without tarball
+      expect(helpers.createDeployment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tarball: undefined,
+          manifest: mockWorkerSuccessResult.studioManifest,
+        }),
+      )
+
+      // Should call getOrCreateStudio with urlType: 'external'
+      expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
+        expect.objectContaining({
+          urlType: 'external',
+        }),
+      )
+
+      // Should print success message
+      expect(mockContext.output.print).toHaveBeenCalledWith(
+        expect.stringContaining('Success! Studio registered'),
+      )
+    })
+
+    it('uses studioHost from config as external URL', async () => {
+      mockContext.cliConfig = {studioHost: 'https://my-studio.example.com'}
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      expect(helpers.getOrCreateUserApplicationFromConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          appHost: 'https://my-studio.example.com',
+          urlType: 'external',
+        }),
+      )
+    })
+
+    it('deploys schemas when --schema-required is passed with --external', async () => {
+      const {deploySchemasAction} = await import('../../schema/deploySchemasAction')
+
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {'external': true, 'schema-required': true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should call deploySchemasAction with extract-manifest: true
+      expect(deploySchemasAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'extract-manifest': true,
+          'schema-required': true,
+        }),
+        expect.anything(),
+      )
+    })
+
+    it('skips source directory checks for external deployments', async () => {
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: ['customSourceDir'],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should NOT check directory emptiness for external
+      expect(helpers.dirIsEmptyOrNonExistent).not.toHaveBeenCalled()
+      expect(helpers.checkDir).not.toHaveBeenCalled()
+    })
+  })
 })
