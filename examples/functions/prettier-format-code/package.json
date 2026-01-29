@@ -5,7 +5,7 @@
   "dependencies": {
     "@sanity/client": "^7.14.1",
     "@sanity/functions": "^1.0.3",
-    "prettier": "^3.7.4"
+    "prettier": "^3.8.1"
   },
   "blueprintResourceItem": {
     "name": "prettier-format-code",
