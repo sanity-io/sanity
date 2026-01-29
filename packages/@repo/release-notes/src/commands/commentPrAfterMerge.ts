@@ -44,22 +44,25 @@ export async function commentPrAfterMerge(options: {
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
   const changelogEntryUrl = `${options.adminStudioBaseUrl}/intent/edit/id=${changelogDocumentId.published};path=${entryPath}/?perspective=${releaseId}`
 
+  const authorIsBot = collaborators.author.type === 'Bot'
+
   // Create comment
-  const commentBody = `
-Thanks for your contribution, @${collaborators.author.login}! 🎉
+  const commentBody = `A **[:scroll: Release note](${changelogEntryUrl})** has been created for this PR.
 
 ${
-  collaborators.isExternalContribution
-    ? `${collaborators.approvers.map((approver) => mention(approver)).join(', ')} please verify the [:scroll: Release note](${changelogEntryUrl}) for this PR.
-`
-    : `Please review the [:scroll: Release note](${changelogEntryUrl}) for this PR.`
-}`
+  collaborators.isExternalContribution || authorIsBot
+    ? `${collaborators.approvers.map((approver) => mention(approver)).join(', ')} as reviewer${collaborators.approvers.length > 1 ? 's' : ''} of this PR, please take a look and make sure it includes all the relevant details.`
+    : `Please take a look and make sure it includes all the relevant details.`
+}
+
+
+${authorIsBot ? '`*beep boop*`' : `Thanks for your contribution, ${mention(collaborators.author)}! 🎉`}`
 
   await createOrUpdateComment({commit: options.commit, pr: pr.number, body: commentBody})
 }
 
 async function createOrUpdateComment(options: {commit: string; pr: number; body: string}) {
-  const idempotenceMarker = `[idempotence-key]:#release-notes-reminder\n`
+  const idempotencyMarker = `[idempotency-key]:#release-notes-reminder\n`
 
   const {data: existingComments} = await octokit.rest.issues.listComments({
     ...REPO,
@@ -72,12 +75,12 @@ async function createOrUpdateComment(options: {commit: string; pr: number; body:
   })
 
   const existingComment = existingComments.find(
-    (comment) => comment.body && comment.body?.includes(idempotenceMarker),
+    (comment) => comment.body && comment.body?.includes(idempotencyMarker),
   )
 
   if (existingComment && existingComment.body) {
     // check if there are any changes
-    const withoutMarker = existingComment.body.replace(idempotenceMarker, '')
+    const withoutMarker = existingComment.body.replace(idempotencyMarker, '')
     if (withoutMarker === options.body) {
       console.log('Comment is unchanged. Nothing to do')
       return Promise.resolve()
@@ -86,7 +89,7 @@ async function createOrUpdateComment(options: {commit: string; pr: number; body:
       ...REPO,
       // eslint-disable-next-line camelcase
       comment_id: existingComment.id,
-      body: idempotenceMarker + options.body,
+      body: idempotencyMarker + options.body,
     })
   }
 
@@ -94,7 +97,7 @@ async function createOrUpdateComment(options: {commit: string; pr: number; body:
     ...REPO,
     // eslint-disable-next-line camelcase
     issue_number: options.pr,
-    body: idempotenceMarker + options.body,
+    body: idempotencyMarker + options.body,
   })
 }
 
