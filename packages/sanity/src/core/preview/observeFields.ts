@@ -51,8 +51,11 @@ import {type CombinedSelection, combineSelections, reassemble, toQuery} from './
  *
  * @param combinedSelections - The combined selections to chunk
  * @returns Array of chunked combined selections, each within the size limit
+ * @internal
  */
-function chunkCombinedSelections(combinedSelections: CombinedSelection[]): CombinedSelection[][] {
+export function chunkCombinedSelections(
+  combinedSelections: CombinedSelection[],
+): CombinedSelection[][] {
   const chunks: CombinedSelection[][] = []
 
   for (const selection of combinedSelections) {
