@@ -23,7 +23,7 @@ export function maybeSerializeMenuItem(
  * @public */
 export type MenuItemActionType =
   | string
-  | ((params: Record<string, string> | undefined, scope?: any) => void)
+  | ((params: Record<string, unknown> | undefined, scope?: unknown) => void)
 
 /**
  * Menu items parameters

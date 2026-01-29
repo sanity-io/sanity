@@ -84,7 +84,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
               _menuItemId: item.id,
               isSelected: !item.selected,
             }
-          : {...(item.params as Record<string, string>), isSelected: !item.selected}
+          : {...(item.params as Record<string, unknown>), isSelected: !item.selected}
         handler(paramsWithId)
         return true
       }
