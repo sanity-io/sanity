@@ -120,7 +120,7 @@
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/coverage-v8": "^4.0.18",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "depcheck": "^1.4.7",
     "dotenv": "^16.6.1",
