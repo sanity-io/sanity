@@ -50,6 +50,7 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
+  mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
@@ -770,6 +771,9 @@ function resolveSource({
     mediaLibrary: {
       enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+      __internal: {
+        frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+      },
     },
 
     advancedVersionControl: {

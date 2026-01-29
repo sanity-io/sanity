@@ -1,4 +1,5 @@
 import {useClient} from '../../../../hooks'
+import {useWorkspace} from '../../../../studio'
 import {
   API_HOST_PRODUCTION,
   API_HOST_STAGING,
@@ -7,20 +8,19 @@ import {
   DEFAULT_API_VERSION,
   DEPLOYED_FRONTEND_HOST_PRODUCTION,
   DEPLOYED_FRONTEND_HOST_STAGING,
-  IS_LOCAL_DEV,
-  LOCAL_DEV_FRONTEND_HOST,
 } from '../constants'
 import {type SanityMediaLibraryConfig} from '../types'
 
 export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
-  const isLocalDev = IS_LOCAL_DEV
+  const workspace = useWorkspace()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const host = client.config().apiHost
   const isStaging = host.endsWith('sanity.work')
+  const frontendHostOverride = workspace.mediaLibrary?.__internal?.frontendHost
   const deployedFrontendHost = isStaging
     ? DEPLOYED_FRONTEND_HOST_STAGING
     : DEPLOYED_FRONTEND_HOST_PRODUCTION
-  const appHost = isLocalDev ? LOCAL_DEV_FRONTEND_HOST : deployedFrontendHost
+  const appHost = frontendHostOverride ?? deployedFrontendHost
   const env: 'staging' | 'production' = isStaging ? 'staging' : 'production'
 
   const internalConfig = {
@@ -31,7 +31,6 @@ export function useSanityMediaLibraryConfig(): SanityMediaLibraryConfig {
       app: appHost,
       api: isStaging ? API_HOST_STAGING : API_HOST_PRODUCTION,
     },
-    isLocalDev,
     env,
   }
 

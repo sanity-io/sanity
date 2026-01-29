@@ -20,10 +20,6 @@ export interface SanityMediaLibraryConfig {
    */
   __internal: {
     /**
-     * Whether the plugin is running in a local development environment against local Media Library app
-     */
-    isLocalDev: boolean
-    /**
      * Whether to use the staging or production Media Library environment
      */
     env: 'staging' | 'production'

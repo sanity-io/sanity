@@ -1233,6 +1233,21 @@ export interface MediaLibraryConfig {
    * If not provided, the Media Library will be automatically detected.
    */
   libraryId?: string
+  /**
+   * Internal configuration for the Media Library.
+   * @internal
+   * @hidden
+   */
+  __internal?: {
+    /**
+     * Override the Media Library frontend host URL.
+     * Used for internal testing against local or custom environments.
+     * @example 'http://localhost:3001'
+     * @internal
+     * @hidden
+     */
+    frontendHost?: string
+  }
 }
 
 /**
