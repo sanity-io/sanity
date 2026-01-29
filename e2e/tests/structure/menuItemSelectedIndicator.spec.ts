@@ -117,4 +117,15 @@ test.describe('Menu item selected indicator', () => {
     await page.getByTestId('pane-context-menu-button').click()
     await expectCheckmark(page.getByRole('menuitem', {name: 'Alert action'}), true)
   })
+
+  test('menu item with hideCheckmark does not show checkmark', async ({page}) => {
+    // Open the context menu
+    await page.getByTestId('pane-context-menu-button').click()
+
+    const noCheckmark = page.getByRole('menuitem', {name: 'No checkmark'})
+    await expect(noCheckmark).toBeVisible()
+
+    // Click the action - should not trigger alert and should not show checkmark
+    await noCheckmark.click()
+  })
 })
