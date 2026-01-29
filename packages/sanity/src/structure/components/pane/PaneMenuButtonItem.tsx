@@ -97,13 +97,15 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   )
   const {title} = useI18nText(node)
 
+  const showCheckmark = node.selected && !node.hideCheckmark
+
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
       <MenuItem
         disabled={disabled || Boolean(node.disabled)}
         hotkeys={node.hotkey?.split('+')}
         icon={node.icon}
-        iconRight={node.iconRight || (node.selected && CheckmarkIcon)}
+        iconRight={node.iconRight || (showCheckmark && CheckmarkIcon)}
         onClick={node.onAction}
         pressed={node.selected}
         text={title}
@@ -135,6 +137,8 @@ function PaneContextIntentMenuItem(props: {
 
   const {title} = useI18nText(node)
 
+  const showCheckmark = node.selected && !node.hideCheckmark
+
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
       <MenuItem
@@ -143,7 +147,7 @@ function PaneContextIntentMenuItem(props: {
         hotkeys={node.hotkey?.split('+')}
         href={intentLink.href}
         icon={node.icon}
-        iconRight={node.selected ? CheckmarkIcon : undefined}
+        iconRight={showCheckmark ? CheckmarkIcon : undefined}
         onClick={handleClick}
         pressed={node.selected}
         text={title}

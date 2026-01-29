@@ -5,6 +5,7 @@ import {
   DocumentIcon,
   EarthGlobeIcon,
   EditIcon,
+  EmptyIcon,
   FilterIcon,
   ImagesIcon,
   PlugIcon,
@@ -16,6 +17,7 @@ import {
   WarningFilledIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
+import $false from 'refractor/false'
 import {type Observable, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
@@ -486,11 +488,16 @@ export const structure: StructureResolver = (
                 .group('toggles'),
 
               S.menuItem()
-                .id('Alert action')
                 .title('Alert action')
                 .icon(WarningFilledIcon)
                 // eslint-disable-next-line no-alert
                 .action(() => alert('you clicked!')),
+
+              S.menuItem()
+                .title('No checkmark')
+                .icon(EmptyIcon)
+                .action(() => console.log('you clicked!'))
+                .params({hideCheckmark: true}),
 
               // Standard menu items (layout changes the view)
               ...(S.documentTypeList('book').getMenuItems() || []),
