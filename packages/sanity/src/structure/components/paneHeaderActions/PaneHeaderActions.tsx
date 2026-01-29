@@ -51,14 +51,16 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
   const handleAction = useCallback(
     (item: PaneMenuItem) => {
-      // If menu item has an id but no action, it's a toggle - use setMenuItemState
-      if (item.id && !item.action) {
+      // If menu item has an id, update toggle state first
+      if (item.id) {
         const toggleHandler = actionHandlers.setMenuItemState
         if (toggleHandler) {
           toggleHandler({_menuItemId: item.id, ...(item.params as Record<string, unknown>)})
-          return true
         }
-        return false
+        // If no action, we're done after updating toggle state
+        if (!item.action) {
+          return false
+        }
       }
 
       if (typeof item.action === 'string' && !(item.action in actionHandlers)) {
