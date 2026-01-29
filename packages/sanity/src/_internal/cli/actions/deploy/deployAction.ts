@@ -34,6 +34,7 @@ export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   'build'?: boolean
   'schema-required'?: boolean
   'verbose'?: boolean
+  'external'?: boolean
 }
 
 export default async function deployStudioAction(
@@ -45,6 +46,8 @@ export default async function deployStudioAction(
   const customSourceDir = args.argsWithoutOptions[0]
   const sourceDir = path.resolve(process.cwd(), customSourceDir || path.join(workDir, 'dist'))
   const isAutoUpdating = shouldAutoUpdate({flags, cliConfig, output})
+  const isExternal = !!flags.external
+  const urlType: 'internal' | 'external' = isExternal ? 'external' : 'internal'
 
   const installedSanityVersion = await getInstalledSanityVersion()
 
@@ -57,7 +60,8 @@ export default async function deployStudioAction(
     throw new Error('Did you mean `sanity graphql deploy`?')
   }
 
-  if (customSourceDir) {
+  // Skip source directory checks for external deployments
+  if (customSourceDir && !isExternal) {
     let relativeOutput = path.relative(process.cwd(), sourceDir)
     if (relativeOutput[0] !== '.') {
       relativeOutput = `./${relativeOutput}`
@@ -94,10 +98,11 @@ export default async function deployStudioAction(
         client,
         context,
         spinner,
+        urlType,
         ...(appId ? {appId, appHost: undefined} : {appId: undefined, appHost: configStudioHost}),
       })
     } else {
-      userApplication = await getOrCreateStudio({client, context, spinner})
+      userApplication = await getOrCreateStudio({client, context, spinner, urlType})
     }
   } catch (err) {
     if (err.message) {
@@ -109,8 +114,8 @@ export default async function deployStudioAction(
     throw err
   }
 
-  // Always build the project, unless --no-build is passed
-  const shouldBuild = flags.build
+  // Always build the project, unless --no-build is passed or --external is used
+  const shouldBuild = flags.build && !isExternal
   if (shouldBuild) {
     const buildArgs = {
       ...args,
@@ -124,15 +129,19 @@ export default async function deployStudioAction(
     }
   }
 
-  await deploySchemasAction(
-    {
-      'extract-manifest': shouldBuild,
-      'manifest-dir': `${sourceDir}/static`,
-      'schema-required': flags['schema-required'],
-      'verbose': flags.verbose,
-    },
-    {...context, manifestExtractor: createManifestExtractor(context)},
-  )
+  // Deploy schemas: for internal, always run; for external, only with --schema-required
+  if (!isExternal || flags['schema-required']) {
+    await deploySchemasAction(
+      {
+        // For external, always extract from source (no dist folder)
+        'extract-manifest': isExternal ? true : shouldBuild,
+        'manifest-dir': isExternal ? undefined : `${sourceDir}/static`,
+        'schema-required': flags['schema-required'],
+        'verbose': flags.verbose,
+      },
+      {...context, manifestExtractor: createManifestExtractor(context)},
+    )
+  }
 
   spinner = output.spinner('Generating studio manifest').start()
 
@@ -161,23 +170,26 @@ export default async function deployStudioAction(
     }
   }
 
-  // Ensure that the directory exists, is a directory and seems to have valid content
-  spinner = output.spinner('Verifying local content').start()
-  try {
-    await checkDir(sourceDir)
-    spinner.succeed()
-  } catch (err) {
-    spinner.fail()
-    debug('Error checking directory', err)
-    throw err
+  let tarball
+  if (!isExternal) {
+    // Ensure that the directory exists, is a directory and seems to have valid content
+    spinner = output.spinner('Verifying local content').start()
+    try {
+      await checkDir(sourceDir)
+      spinner.succeed()
+    } catch (err) {
+      spinner.fail()
+      debug('Error checking directory', err)
+      throw err
+    }
+
+    // Now create a tarball of the given directory
+    const parentDir = path.dirname(sourceDir)
+    const base = path.basename(sourceDir)
+    tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
   }
 
-  // Now create a tarball of the given directory
-  const parentDir = path.dirname(sourceDir)
-  const base = path.basename(sourceDir)
-  const tarball = tar.pack(parentDir, {entries: [base]}).pipe(zlib.createGzip())
-
-  spinner = output.spinner('Deploying to sanity.studio').start()
+  spinner = output.spinner(isExternal ? 'Registering studio' : 'Deploying to sanity.studio').start()
   try {
     const {location} = await createDeployment({
       client,
@@ -191,7 +203,11 @@ export default async function deployStudioAction(
     spinner.succeed()
 
     // And let the user know we're done
-    output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
+    if (isExternal) {
+      output.print(`\nSuccess! Studio registered`)
+    } else {
+      output.print(`\nSuccess! Studio deployed to ${chalk.cyan(location)}`)
+    }
 
     if (!appId) {
       const example = `Example:
