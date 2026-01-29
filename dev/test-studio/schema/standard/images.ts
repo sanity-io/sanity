@@ -232,5 +232,15 @@ export default defineType({
         },
       },
     },
+    {
+      name: 'imageWithDisabledUpload',
+      title: 'Image with disabled upload',
+      type: 'image',
+      description: 'Can only select existing assets from the media library, direct upload is disabled',
+      options: {
+        disableNew: true,
+        hotspot: true,
+      },
+    },
   ],
 })
