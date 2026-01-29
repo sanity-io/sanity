@@ -256,7 +256,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    * @returns menu item node based on path provided in options. See {@link MenuItem}
    */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
-    const {title, id, action, intent} = this.spec
+    const {title, action, intent} = this.spec
 
     if (!title) {
       const hint = typeof action === 'string' ? `action: "${action}"` : undefined
@@ -269,9 +269,9 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
     }
 
     // Menu items with an id don't need an action - they toggle automatically
-    if (!action && !intent && !id) {
+    if (!action && !intent) {
       throw new SerializeError(
-        `\`action\`, \`intent\`, or \`id\` required for menu item with title ${this.spec.title}`,
+        `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`,
         options.path,
         options.index,
         `"${title}"`,
