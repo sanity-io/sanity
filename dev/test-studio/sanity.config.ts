@@ -3,7 +3,7 @@ import {colorInput} from '@sanity/color-input'
 import {debugSecrets} from '@sanity/debug-preview-url-secret-plugin'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {BookIcon} from '@sanity/icons'
+import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
@@ -142,6 +142,41 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
                       href: `/preview/index.html?${new URLSearchParams({title: doc.title})}`,
                     },
                   ],
+                }
+              },
+            }),
+            // Test document type for verifying DocumentLocation icon and showHref properties
+            locationResolverTest: defineLocations({
+              select: {title: 'title', slug: 'slug.current'},
+              resolve: (doc) => {
+                if (!doc?.title) return {message: 'Add a title to see locations', tone: 'caution'}
+                return {
+                  locations: [
+                    {
+                      title: 'Email Client View',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/email`,
+                      icon: EnvelopeIcon,
+                      showHref: false,
+                    },
+                    {
+                      title: 'Web View',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}`,
+                      // Uses defaults: DesktopIcon, showHref: true
+                    },
+                    {
+                      title: 'Mobile App',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/app`,
+                      icon: MobileDeviceIcon,
+                      showHref: false,
+                    },
+                    {
+                      title: 'In-store Display',
+                      href: `/newsletter/${doc.slug ?? 'untitled'}/display`,
+                      icon: PresentationIcon,
+                      showHref: false,
+                    },
+                  ],
+                  message: 'Preview this content in different contexts',
                 }
               },
             }),

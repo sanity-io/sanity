@@ -197,16 +197,21 @@ function LocationItem(props: {
       <Flex gap={3}>
         <Box flex="none">
           <Text size={1}>
-            <DesktopIcon />
+            {(() => {
+              const Icon = node.icon ?? DesktopIcon
+              return <Icon />
+            })()}
           </Text>
         </Box>
         <Stack flex={1} space={2}>
           <Text size={1} weight="medium">
             {node.title}
           </Text>
-          <Text muted size={1} textOverflow="ellipsis">
-            {node.href}
-          </Text>
+          {node.showHref !== false && (
+            <Text muted size={1} textOverflow="ellipsis">
+              {node.href}
+            </Text>
+          )}
         </Stack>
       </Flex>
     </Card>
