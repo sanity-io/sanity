@@ -1,10 +1,10 @@
-import {type SchemaType} from '@sanity/types'
+import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
   type FIXME,
   getPublishedId,
+  pathToString,
   PreviewCard,
-  type SanityDocument,
   useDocumentPresence,
   useDocumentPreviewStore,
 } from 'sanity'
@@ -12,42 +12,40 @@ import {
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter'
 
-const EMPTY_ARRAY: [] = []
-
-interface ReferencePreviewLinkProps {
+interface IncomingReferencePreviewProps {
   onClick?: () => void
-  type: SchemaType & {icon?: any}
-  value: SanityDocument | {_id: string; _type: string}
+  type: SchemaType
+  value: SanityDocument
+  path: Path
 }
 
-export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
-  const {onClick, type, value} = props
+export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
+  const {onClick, type, value, path} = props
   const publishedId = getPublishedId(value?._id)
   const documentPresence = useDocumentPresence(publishedId)
   const documentPreviewStore = useDocumentPreviewStore()
-  const {ReferenceChildLink} = usePaneRouter()
+  const {ChildLink} = usePaneRouter()
 
   const Link = useCallback(
     function LinkComponent(linkProps: {children: ReactNode}) {
       return (
-        <ReferenceChildLink
-          documentId={value?._id}
-          documentType={type?.name}
-          parentRefPath={EMPTY_ARRAY}
+        <ChildLink
+          childId={getPublishedId(value?._id)}
+          childParameters={{type: type.name, path: pathToString(path)}}
           {...linkProps}
         />
       )
     },
-    [ReferenceChildLink, type?.name, value?._id],
+    [ChildLink, type.name, value?._id, path],
   )
 
   return (
     <PreviewCard __unstable_focusRing as={Link as FIXME} data-as="a" onClick={onClick} radius={2}>
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
-        icon={type?.icon}
-        layout="compact"
-        presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
+        icon={type.icon || false}
+        layout="default"
+        presence={documentPresence}
         schemaType={type}
         value={value}
       />
