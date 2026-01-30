@@ -37,7 +37,8 @@ export function CrossWorkspaceNavigationTest() {
   const [documentId, setDocumentId] = useState('grrm')
   const [documentType, setDocumentType] = useState('author')
 
-  const handleNavigateToWorkspace = useCallback(
+  // Using navigateUrl for cross-workspace navigation
+  const handleNavigateUrlToWorkspace = useCallback(
     (targetBasePath: string) => {
       const url = buildCrossWorkspaceIntentUrl(targetBasePath, 'edit', {
         id: documentId,
@@ -49,7 +50,17 @@ export function CrossWorkspaceNavigationTest() {
     [router, documentId, documentType],
   )
 
-  const currentWorkspace = WORKSPACES.find((w) => w.basePath === workspace.basePath)
+  // Using navigateIntent - this will stay in the CURRENT workspace
+  const handleNavigateIntent = useCallback(() => {
+    router.navigateIntent('edit', {id: documentId, type: documentType})
+  }, [router, documentId, documentType])
+
+  // Get the URL that resolveIntentLink would generate (for demonstration)
+  const currentWorkspaceIntentUrl = router.resolveIntentLink('edit', {
+    id: documentId,
+    type: documentType,
+  })
+
   const otherWorkspaces = WORKSPACES.filter((w) => w.basePath !== workspace.basePath)
 
   return (
@@ -116,16 +127,73 @@ export function CrossWorkspaceNavigationTest() {
           </Stack>
         </Card>
 
-        {/* Navigation Buttons */}
+        {/* navigateIntent - Comparison for each workspace */}
+        <Card padding={4} radius={2} shadow={1} tone="caution">
+          <Stack space={4}>
+            <Text weight="bold" size={2}>
+              Why navigateIntent() Cannot Cross Workspaces
+            </Text>
+            <Text size={1}>
+              <code>navigateIntent()</code> internally calls <code>resolveIntentLink()</code> which
+              uses the current router's <code>encode()</code> method. This always prefixes URLs with
+              the <strong>current workspace's basePath</strong> ({workspace.basePath}).
+            </Text>
+            <Card padding={3} radius={2} tone="default">
+              <Stack space={3}>
+                <Text size={1} weight="bold">
+                  What navigateIntent generates (always uses current basePath):
+                </Text>
+                <Code size={1}>{currentWorkspaceIntentUrl}</Code>
+                <Text size={1} weight="bold">
+                  What you'd need for cross-workspace navigation:
+                </Text>
+                {otherWorkspaces.slice(0, 3).map((ws) => (
+                  <Code key={ws.name} size={1}>
+                    {buildCrossWorkspaceIntentUrl(ws.basePath, 'edit', {
+                      id: documentId,
+                      type: documentType,
+                    })}{' '}
+                    ← {ws.name}
+                  </Code>
+                ))}
+              </Stack>
+            </Card>
+            <Text size={1} muted>
+              Notice the basePath difference: <code>{workspace.basePath}</code> vs{' '}
+              <code>{otherWorkspaces[0]?.basePath}</code>, etc.
+            </Text>
+          </Stack>
+        </Card>
+
+        {/* Test navigateIntent */}
+        <Card padding={4} radius={2} shadow={1} tone="positive">
+          <Stack space={4}>
+            <Text weight="bold" size={2}>
+              Test navigateIntent() (stays in current workspace)
+            </Text>
+            <Button
+              tone="positive"
+              text={`navigateIntent('edit', {id: '${documentId}', type: '${documentType}'})`}
+              icon={LaunchIcon}
+              onClick={handleNavigateIntent}
+            />
+            <Text size={1} muted>
+              👆 This will always navigate within <strong>{workspace.name}</strong> (
+              {workspace.basePath}) regardless of what document ID you use.
+            </Text>
+          </Stack>
+        </Card>
+
+        {/* Navigation Buttons - Cross Workspace */}
         <Card padding={4} radius={2} shadow={1}>
           <Stack space={4}>
             <Text weight="bold" size={2}>
-              Navigate to Other Workspaces
+              Using navigateUrl() - Cross-Workspace Navigation
             </Text>
             <Text size={1} muted>
-              Click a button to navigate to that workspace with an edit intent for the document
-              above. This uses <code>router.navigateUrl()</code> to perform a cross-workspace
-              navigation.
+              To navigate to a <strong>different workspace</strong>, you must manually construct the
+              intent URL with the target workspace's basePath and use{' '}
+              <code>router.navigateUrl()</code>.
             </Text>
             <Stack space={2}>
               {otherWorkspaces.map((ws) => {
@@ -140,7 +208,7 @@ export function CrossWorkspaceNavigationTest() {
                         mode="ghost"
                         text={`${ws.name} (${ws.basePath})`}
                         icon={LaunchIcon}
-                        onClick={() => handleNavigateToWorkspace(ws.basePath)}
+                        onClick={() => handleNavigateUrlToWorkspace(ws.basePath)}
                         style={{width: '100%', justifyContent: 'flex-start'}}
                       />
                     </Box>
@@ -222,17 +290,31 @@ export function CrossWorkspaceNavigationTest() {
         <Card padding={4} radius={2} shadow={1}>
           <Stack space={3}>
             <Text weight="bold" size={2}>
-              Code Example
+              Code Examples
+            </Text>
+            <Text size={1} weight="bold">
+              Same workspace (using navigateIntent):
             </Text>
             <Code language="typescript">
-              {`// Build cross-workspace intent URL
+              {`// navigateIntent stays in current workspace
+router.navigateIntent('edit', { id: 'myDoc', type: 'author' })
+
+// resolveIntentLink also uses current workspace basePath
+const url = router.resolveIntentLink('edit', { id: 'myDoc', type: 'author' })
+// Result: "/test/intent/edit/id=myDoc;type=author/" (if in /test workspace)`}
+            </Code>
+            <Text size={1} weight="bold">
+              Cross-workspace (using navigateUrl):
+            </Text>
+            <Code language="typescript">
+              {`// Build cross-workspace intent URL manually
 const url = \`\${targetBasePath}/intent/edit/id=\${docId};type=\${docType}/\`
 
-// Navigate using the router
+// Navigate using navigateUrl
 router.navigateUrl({ path: url })
 
 // Or use as a link href
-<a href={url}>Go to document</a>`}
+<a href={url}>Go to document in other workspace</a>`}
             </Code>
           </Stack>
         </Card>
