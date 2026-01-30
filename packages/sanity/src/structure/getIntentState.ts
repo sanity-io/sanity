@@ -15,6 +15,13 @@ export function setActivePanes(panes: Array<PaneNode | typeof LOADING_PANE>): vo
  * This function looks at the _active panes_ to resolve an intent. this type of
  * intent resolution is faster and does not cause the panes to reset
  *
+ * NOTE: This function does not support the `defaultPanes` feature since it
+ * doesn't have access to the structure context needed to resolve document node
+ * configuration. When `defaultPanes` is configured, the split pane behavior
+ * will only work when using the slower `resolveIntent` path. This is acceptable
+ * since `getIntentState` is an optimization for reusing already-open panes,
+ * and users who have closed split panes may prefer single-pane behavior.
+ *
  * @internal
  */
 export function getIntentState(

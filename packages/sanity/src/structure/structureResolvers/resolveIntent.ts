@@ -3,7 +3,9 @@ import {firstValueFrom, type Observable} from 'rxjs'
 
 import {type StructureContext} from '../structureBuilder'
 import {
+  type DocumentPaneNode,
   type PaneNode,
+  type RouterPaneGroup,
   type RouterPanes,
   type RouterPaneSiblingContext,
   type UnresolvedPaneNode,
@@ -11,6 +13,31 @@ import {
 import {assignId} from './assignId'
 import {createPaneResolver, type PaneResolverMiddleware} from './createPaneResolver'
 import {memoBind} from './memoBind'
+
+/**
+ * Creates split pane siblings for a document with defaultPanes configured.
+ * Returns a RouterPaneGroup with multiple siblings, each showing a different view.
+ */
+function createSplitPaneGroup(
+  documentPaneNode: DocumentPaneNode,
+  documentId: string,
+  otherParams: Record<string, string | undefined>,
+  payload: unknown,
+): RouterPaneGroup {
+  const {defaultPanes} = documentPaneNode
+
+  // If no defaultPanes or less than 2 views, return single pane
+  if (!defaultPanes || defaultPanes.length < 2) {
+    return [{id: documentId, params: otherParams, payload}]
+  }
+
+  // Create a sibling for each view in defaultPanes
+  return defaultPanes.map((viewId) => ({
+    id: documentId,
+    params: {...otherParams, view: viewId},
+    payload,
+  }))
+}
 
 interface TraverseOptions {
   unresolvedPane: UnresolvedPaneNode | undefined
@@ -104,12 +131,12 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
     // if the resolved pane is a document pane and the pane's ID matches then
     // resolve the intent to the current path
     if (resolvedPane.type === 'document' && resolvedPane.id === targetId) {
+      // Create split pane group if defaultPanes is configured
+      const documentPaneGroup = createSplitPaneGroup(resolvedPane, targetId, otherParams, payload)
+
       return [
         {
-          panes: [
-            ...path.slice(0, path.length - 1).map((i) => [{id: i}]),
-            [{id: targetId, params: otherParams, payload}],
-          ],
+          panes: [...path.slice(0, path.length - 1).map((i) => [{id: i}]), documentPaneGroup],
           depthIndex: path.length,
           levelIndex,
         },
@@ -136,13 +163,31 @@ export async function resolveIntent(options: ResolveIntentOptions): Promise<Rout
         // case, the user can implement their own `canHandleIntent` function
         resolvedPane.options.filter === '_type == $type')
     ) {
+      // Create split pane group if defaultPanes is configured
+      let documentPaneGroup: RouterPaneGroup = [{id: params.id, params: otherParams, payload}]
+
+      // Only check for defaultPanes if structureContext is available
+      if (structureContext) {
+        // Resolve the document node to check for defaultPanes config
+        const documentNode = structureContext
+          .resolveDocumentNode({documentId: params.id, schemaType: schemaTypeName})
+          .serialize({path: [...path, params.id]})
+
+        documentPaneGroup = createSplitPaneGroup(
+          documentNode as DocumentPaneNode,
+          params.id,
+          otherParams,
+          payload,
+        )
+      }
+
       return [
         {
           panes: [
             // map the current path to router panes
             ...path.map((id) => [{id}]),
-            // then augment with the intents IDs and params
-            [{id: params.id, params: otherParams, payload}],
+            // then augment with the document pane(s)
+            documentPaneGroup,
           ],
           depthIndex: path.length,
           levelIndex,

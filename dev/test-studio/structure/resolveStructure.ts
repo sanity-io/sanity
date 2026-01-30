@@ -262,6 +262,17 @@ export const structure: StructureResolver = (
                     },
                   }).apiVersion('2023-07-28'),
                 ),
+              S.listItem()
+                .title('Authors with default windows')
+                .child(
+                  S.documentList({
+                    id: 'authors-with-default-windows',
+                    title: 'Authors with default windows',
+                    options: {
+                      filter: '_type == "author"',
+                    },
+                  }),
+                ),
 
               // A singleton not using `documentListItem`, eg no built-in preview
               S.listItem()

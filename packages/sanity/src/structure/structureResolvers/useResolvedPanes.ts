@@ -1,10 +1,15 @@
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {ReplaySubject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../constants'
-import {type PaneNode, type RouterPaneGroup, type RouterPanes} from '../types'
+import {
+  type DocumentPaneNode,
+  type PaneNode,
+  type RouterPaneGroup,
+  type RouterPanes,
+} from '../types'
 import {useStructureTool} from '../useStructureTool'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
 
@@ -58,6 +63,18 @@ export function useResolvedPanes(): Panes {
   if (error) throw error
 
   const {structureContext, rootPaneNode} = useStructureTool()
+  const {navigate, state: routerState} = useRouter()
+
+  // Get router panes directly from router state (doesn't include implicit root pane)
+  // Memoized to avoid unnecessary effect re-runs
+  const routerPanesFromState = useMemo(
+    () => (routerState?.panes || []) as RouterPanes,
+    [routerState?.panes],
+  )
+
+  // Track which document IDs we've already expanded to avoid re-expanding
+  // when the user manually closes a split pane
+  const expandedDocumentIds = useRef<Set<string>>(new Set())
 
   const [data, setData] = useState<Omit<Panes, 'maximizedPane' | 'setMaximizedPane'>>({
     paneDataItems: [],
@@ -124,6 +141,57 @@ export function useResolvedPanes(): Panes {
 
     return () => subscription.unsubscribe()
   }, [rootPaneNode, routerPanesStream, structureContext])
+
+  // Auto-expand panes based on defaultPanes configuration
+  // This handles the case where a user clicks directly on a list item (not via intent)
+  useEffect(() => {
+    const {paneDataItems} = data
+
+    // Find the last pane that is a document with defaultPanes
+    const lastPaneData = paneDataItems[paneDataItems.length - 1]
+    if (!lastPaneData) return
+
+    const lastPane = lastPaneData.pane
+    if (lastPane === LOADING_PANE) return
+    if (lastPane.type !== 'document') return
+
+    // We've confirmed lastPane.type === 'document', so we can safely cast
+    const documentPane = lastPane as unknown as DocumentPaneNode
+    const {defaultPanes} = documentPane
+
+    // Check if defaultPanes is configured with 2+ views
+    if (!defaultPanes || defaultPanes.length < 2) return
+
+    // Convert from resolved pane groupIndex (includes root) to router pane index (no root)
+    // groupIndex 0 = root, groupIndex 1 = routerPanesFromState[0], etc.
+    const routerPaneIndex = lastPaneData.groupIndex - 1
+    const currentGroup = routerPanesFromState[routerPaneIndex]
+
+    // Only expand if currently single sibling (not already split)
+    if (!currentGroup || currentGroup.length !== 1) return
+
+    // Check if user already has a view param - they may have manually navigated
+    const currentParams = currentGroup[0].params
+    if (currentParams?.view) return
+
+    // Check if we've already expanded this document (user may have closed split pane)
+    const documentId = documentPane.options.id
+    if (expandedDocumentIds.current.has(documentId)) return
+
+    // Mark this document as expanded
+    expandedDocumentIds.current.add(documentId)
+
+    // Create expanded group with split panes (similar to duplicateCurrent + setView)
+    const expandedGroup: RouterPaneGroup = defaultPanes.map((viewId) => ({
+      id: currentGroup[0].id,
+      params: {...currentParams, view: viewId},
+      payload: currentGroup[0].payload,
+    }))
+
+    // Navigate to expanded state (replace to avoid polluting history)
+    // Replace the last pane group with the expanded version
+    navigate({panes: [...routerPanesFromState.slice(0, -1), expandedGroup]}, {replace: true})
+  }, [data, navigate, routerPanesFromState])
 
   const paneDataItemsWithMaximized = useMemo(() => {
     return data.paneDataItems.map((item) => ({

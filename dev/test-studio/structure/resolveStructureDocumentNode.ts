@@ -4,10 +4,14 @@ import {JSONPreviewDocumentView} from '../components/documentViews/jsonPreview'
 
 export const defaultDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}) => {
   if (schemaType === 'author') {
-    return S.document().views([
-      S.view.form(),
-      S.view.component(JSONPreviewDocumentView).title('JSON'),
-    ])
+    // Example: Opens with form + JSON preview side-by-side by default
+    // This demonstrates the new .defaultPanes() API (issue #7844)
+    return S.document()
+      .views([
+        S.view.form().id('editor'),
+        S.view.component(JSONPreviewDocumentView).id('json-preview').title('JSON'),
+      ])
+      .defaultPanes(['editor', 'json-preview'])
   }
 
   if (schemaType === 'manyViews') {

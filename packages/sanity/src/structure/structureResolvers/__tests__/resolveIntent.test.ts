@@ -366,4 +366,335 @@ describe('resolveIntent', () => {
 
     expect(caught).toBe(true)
   })
+
+  describe('defaultPanes', () => {
+    it('creates split panes when defaultPanes is configured on a document node', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes(['editor', 'preview'])
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([
+          S.documentTypeListItem('author').title('Authors'),
+          S.documentTypeListItem('book').title('Books'),
+        ]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should have split panes with both views
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'editor'}, payload: undefined},
+          {id: 'author123', params: {view: 'preview'}, payload: undefined},
+        ],
+      ])
+    })
+
+    it('does not create split panes when defaultPanes has only one view', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes(['editor']) // Only one view - should not split
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should have single pane, no split
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [{id: 'author123', params: {}, payload: undefined}],
+      ])
+    })
+
+    it('filters invalid view IDs from defaultPanes', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(vi.fn())
+
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes(['editor', 'invalid-view', 'preview'])
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should create split panes with only valid view IDs
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'editor'}, payload: undefined},
+          {id: 'author123', params: {view: 'preview'}, payload: undefined},
+        ],
+      ])
+
+      // Should have warned about invalid view ID
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('invalid-view'))
+
+      consoleSpy.mockRestore()
+    })
+
+    it('does not create split panes for documents without defaultPanes', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder) => {
+          return builder
+            .document()
+            .views([
+              builder.view.form().id('editor'),
+              builder.view.form().id('preview').title('Preview'),
+            ])
+          // No defaultPanes configured
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should have single pane, no split
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [{id: 'author123', params: {}, payload: undefined}],
+      ])
+    })
+
+    it('does not create split panes when defaultPanes is empty array', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes([]) // Empty array - should not split
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should have single pane, no split
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [{id: 'author123', params: {}, payload: undefined}],
+      ])
+    })
+
+    it('creates multiple split panes when defaultPanes has more than 2 views', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+                builder.view.form().id('json').title('JSON'),
+              ])
+              .defaultPanes(['editor', 'preview', 'json'])
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should have 3 split panes
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'editor'}, payload: undefined},
+          {id: 'author123', params: {view: 'preview'}, payload: undefined},
+          {id: 'author123', params: {view: 'json'}, payload: undefined},
+        ],
+      ])
+    })
+
+    it('preserves other params in split panes', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes(['editor', 'preview'])
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author', inspect: 'changes'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should preserve 'inspect' param in all split panes
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'editor', inspect: 'changes'}, payload: undefined},
+          {id: 'author123', params: {view: 'preview', inspect: 'changes'}, payload: undefined},
+        ],
+      ])
+    })
+
+    it('preserves payload in split panes', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return builder
+              .document()
+              .views([
+                builder.view.form().id('editor'),
+                builder.view.form().id('preview').title('Preview'),
+              ])
+              .defaultPanes(['editor', 'preview'])
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const testPayload = {initialValue: {name: 'Test Author'}}
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: testPayload,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // Should preserve payload in all split panes
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'editor'}, payload: testPayload},
+          {id: 'author123', params: {view: 'preview'}, payload: testPayload},
+        ],
+      ])
+    })
+  })
 })
