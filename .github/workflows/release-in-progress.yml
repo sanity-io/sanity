@@ -14,3 +14,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.head_ref == 'ci/release-main' &&
       (github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' || github.event.action == 'closed')
+
+    steps:
+      - name: Test
+        run: echo "Hello"
