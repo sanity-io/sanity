@@ -26,10 +26,51 @@ export type MenuItemActionType =
   | ((params: Record<string, unknown> | undefined, scope?: unknown) => void)
 
 /**
- * Menu items parameters
+ * Known menu item parameters that control built-in behavior.
+ * These properties have specific meanings in the structure builder.
  *
  * @public */
-export type MenuItemParamsType = Record<string, string | unknown | undefined>
+export interface KnownMenuItemParams {
+  /**
+   * When true, hides the checkmark indicator for this menu item.
+   * Useful when you want the menu item to perform an action without showing a selection state.
+   */
+  hideCheckmark?: boolean
+
+  /**
+   * The value to associate with this menu item for tracking selected state.
+   * Used with the 'setMenuItemState' action for custom toggle behavior.
+   * When a menu item is clicked, this value is stored against the menu item's `id`.
+   * Defaults to `true` if not specified.
+   */
+  value?: unknown
+
+  /**
+   * Layout key for layout switching menu items.
+   * Used with the 'setLayout' action.
+   */
+  layout?: string
+
+  /**
+   * Sort ordering configuration for sort menu items.
+   * Used with the 'setSortOrder' action.
+   */
+  by?: SortOrderingItem[]
+
+  /**
+   * Extended projection string for sort ordering.
+   * Used internally for sort menu items.
+   */
+  extendedProjection?: string
+}
+
+/**
+ * Menu items parameters.
+ * Includes known parameters that control built-in behavior,
+ * plus allows additional custom parameters.
+ *
+ * @public */
+export type MenuItemParamsType = KnownMenuItemParams & Record<string, unknown>
 
 /**
  * Interface for menu items
