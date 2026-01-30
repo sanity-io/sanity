@@ -7,7 +7,8 @@ permissions:
   contents: read
 
 jobs:
-  update-check-suite:
+  update-release-status:
+    name: "Update release status check suite"
     runs-on: ubuntu-latest
 
     if: |
@@ -17,4 +18,16 @@ jobs:
 
     steps:
       - name: Test
-        run: echo "Hello"
+        run: echo "TODO"
+
+  check-release-status:
+    runs-on: ubuntu-latest
+    name: "Check release status"
+
+    if: |
+      github.event_name == 'pull_request' &&
+      github.head_ref != 'ci/release-main'
+
+    steps:
+      - name: Check if release is in progress
+        run: echo "No release in progress"
