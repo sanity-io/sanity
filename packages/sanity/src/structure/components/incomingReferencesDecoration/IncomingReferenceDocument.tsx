@@ -3,6 +3,7 @@ import {motion, type Variants} from 'motion/react'
 import {useCallback, useState} from 'react'
 import {
   getPublishedId,
+  getReferencePaths,
   pathToString,
   SanityDefaultPreview,
   type SanityDocument,
@@ -13,7 +14,6 @@ import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {usePaneRouter} from '../paneRouter'
-import {getReferencePaths} from './getReferencePaths'
 import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
 import {IncomingReferencePreview} from './IncomingReferencePreview'
 import {type IncomingReferencesOptions} from './types'

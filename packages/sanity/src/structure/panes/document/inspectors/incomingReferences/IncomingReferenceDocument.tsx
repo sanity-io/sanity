@@ -1,10 +1,16 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
-import {getPublishedId, pathToString, type SanityDocument, useSchema, useTranslation} from 'sanity'
+import {
+  getPublishedId,
+  getReferencePaths,
+  pathToString,
+  type SanityDocument,
+  useSchema,
+  useTranslation,
+} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {getReferencePaths} from '../../../../components/incomingReferencesDecoration/getReferencePaths'
 import {IncomingReferencePreview} from '../../../../components/incomingReferencesDecoration/IncomingReferencePreview'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
