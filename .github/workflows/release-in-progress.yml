@@ -13,7 +13,7 @@ jobs:
 
     if: |
       github.event_name == 'pull_request' &&
-      github.head_ref == 'ci/release-main' &&
+      (github.head_ref == 'ci/release-main' || github.head_ref == 'block-merge-when-release-in-progress-test') &&
       (github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' || github.event.action == 'closed')
 
     steps:
