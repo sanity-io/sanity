@@ -44,6 +44,7 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
               _type: typeName,
               ...initialDocument,
             }),
+            ...patchMutation,
           ]
       // No drafting, so patch and commit the published document
       published.mutate(mutations)
