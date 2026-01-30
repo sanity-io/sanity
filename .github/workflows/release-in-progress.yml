@@ -1,0 +1,16 @@
+name: Check if release is in progress
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  update-check-suite:
+    runs-on: ubuntu-latest
+
+    if: |
+      github.event_name == 'pull_request' &&
+      github.head_ref == 'ci/release-main' &&
+      (github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft' || github.event.action == 'closed')
