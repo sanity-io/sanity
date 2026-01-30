@@ -19,6 +19,26 @@ export const getOffsetsTo = (
     width: source.offsetWidth,
   }
 
+  // If the source element is not contained within the target (e.g., when the source is
+  // rendered in a portal like a dialog), use getBoundingClientRect to calculate the
+  // position relative to the target element.
+  if (!target.contains(source)) {
+    const targetRect = target.getBoundingClientRect()
+    const sourceRect = source.getBoundingClientRect()
+
+    // Calculate position relative to the target's content area, accounting for scroll
+    rect.top = sourceRect.top - targetRect.top + target.scrollTop
+    rect.left = sourceRect.left - targetRect.left + target.scrollLeft
+
+    // For portal elements, use the target's visible scroll area as bounds
+    bounds.top = target.scrollTop
+    bounds.left = target.scrollLeft
+    bounds.height = target.clientHeight
+    bounds.width = target.clientWidth
+
+    return {rect, bounds}
+  }
+
   let foundScrollContainer = false
   let el: HTMLElement | null = source
 
