@@ -63,6 +63,7 @@ import {languageFilterDebugType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import {locationResolverTest} from './debug/locationResolverTest'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
 import notitle from './debug/notitle'
@@ -253,6 +254,7 @@ export function createSchemaTypes(projectId: string) {
     invalidPreviews,
     languageFilterDebugType,
     lazyComponents,
+    locationResolverTest,
     liveEdit,
     localeString,
     manyFieldsTest,

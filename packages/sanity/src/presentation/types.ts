@@ -28,6 +28,14 @@ export interface DocumentLocation {
    * URL of the document location
    */
   href: string
+  /**
+   * Optional icon component to display instead of the default DesktopIcon
+   */
+  icon?: ComponentType
+  /**
+   * Whether to show the href below the title. Defaults to true
+   */
+  showHref?: boolean
 }
 
 /**
