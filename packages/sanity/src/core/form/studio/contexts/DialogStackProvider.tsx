@@ -1,10 +1,11 @@
-import {type Path} from '@sanity/types'
+import {isKeySegment, type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {DialogStackContext, type DialogStackEntry} from 'sanity/_singletons'
-import {useFullscreenPTE} from '../../inputs/PortableText/contexts/fullscreen/useFullscreenPTE'
-import {useFormCallbacks} from '../../..'
+
 import {stringToPath} from '../../../field/paths/helpers'
-import {EMPTY_ARRAY, isKeySegment} from '../../../../_exports'
+import {EMPTY_ARRAY} from '../../../util/empty'
+import {useFullscreenPTE} from '../../inputs/PortableText/contexts/fullscreen'
+import {useFormCallbacks} from './FormCallbacks'
 
 interface DialogStackProviderProps {
   children: ReactNode
