@@ -1,14 +1,10 @@
 /* oxlint-disable no-console */
 import {type RestEndpointMethodTypes} from '@octokit/rest'
 
+import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
 import {createId} from '../utils/ids'
-
-const REPO = {
-  owner: 'sanity-io',
-  repo: 'sanity',
-}
 
 const INTERNAL_ASSOCIATIONS = ['MEMBER', 'OWNER']
 
