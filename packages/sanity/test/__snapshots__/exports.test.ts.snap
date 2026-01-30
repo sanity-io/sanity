@@ -340,6 +340,7 @@ exports[`exports snapshot 1`] = `
     "getPreviewValueWithFallback": "function",
     "getProviderTitle": "function",
     "getPublishedId": "function",
+    "getReferencePaths": "function",
     "getReleaseIdFromReleaseDocumentId": "function",
     "getReleaseTone": "function",
     "getSanityCreateLinkMetadata": "function",
