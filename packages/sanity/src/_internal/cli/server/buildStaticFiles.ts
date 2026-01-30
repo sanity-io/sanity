@@ -96,7 +96,6 @@ export async function buildStaticFiles(
     importMap,
     reactCompiler,
     isApp,
-    typegen,
     telemetryLogger,
   })
 

@@ -1,14 +1,14 @@
 import {existsSync} from 'node:fs'
 import path from 'node:path'
 
+import {type CliCommandContext} from '@sanity/cli'
 import {
-  type CliCommandContext,
-  type GenerateTypesResult,
-  generateTypesToFile,
+  type GenerationResult,
+  runTypegenGenerate,
+  type TypeGenConfig,
   TypegenWatchModeTrace,
   TypesGeneratedTrace,
-} from '@sanity/cli'
-import {type TypeGenConfig} from '@sanity/codegen'
+} from '@sanity/codegen'
 import {debounce, mean, once} from 'lodash-es'
 import logSymbols from 'log-symbols'
 import picomatch from 'picomatch'
@@ -113,7 +113,7 @@ export function sanityTypegenPlugin(options: TypegenPluginOptions): Plugin {
    * If generation is already running, queues one more generation to run after completion.
    * Returns the generation result, or null if generation was skipped or failed.
    */
-  async function runGeneration(isBuilding = false): Promise<GenerateTypesResult | null> {
+  async function runGeneration(isBuilding = false): Promise<GenerationResult | null> {
     if (isGenerating) {
       pendingGeneration = true
       return null
@@ -134,35 +134,10 @@ export function sanityTypegenPlugin(options: TypegenPluginOptions): Plugin {
         return null
       }
 
-      const result = await generateTypesToFile(
-        {
-          workDir,
-          schemaPath: config.schema,
-          searchPath: config.path,
-          outputPath: resolvedOutputPath,
-          overloadClientMethods: config.overloadClientMethods,
-          formatGeneratedCode: config.formatGeneratedCode,
-        },
-        {
-          print: (...args) => output.log(...args),
-          warn: (...args) => output.log(logSymbols.warning, ...args),
-          error: (...args) => output.error(...args),
-          success: (...args) => output.log(logSymbols.success, ...args),
-          clear: () => {},
-          // Create a no-op spinner since we don't show spinners in Vite plugin context
-          spinner: () => {
-            const noopSpinner: any = {
-              start: () => noopSpinner,
-              succeed: () => noopSpinner,
-              fail: () => noopSpinner,
-              warn: () => noopSpinner,
-              stop: () => noopSpinner,
-              text: '',
-            }
-            return noopSpinner
-          },
-        },
-      )
+      const result = await runTypegenGenerate({
+        workDir,
+        config,
+      })
 
       if (isBuilding) {
         // Add newline for better formatting in build output

@@ -163,6 +163,7 @@
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "catalog:",
+    "@sanity/codegen": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
     "@sanity/diff": "workspace:*",
