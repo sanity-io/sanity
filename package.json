@@ -137,7 +137,7 @@
     "oxlint-tsgolint": "0.11.3",
     "playwright": "catalog:",
     "prettier": "catalog:",
-    "prettier-plugin-packagejson": "^2.5.20",
+    "prettier-plugin-packagejson": "^3.0.0",
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
