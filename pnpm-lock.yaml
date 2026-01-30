@@ -15,6 +15,9 @@ catalogs:
     '@sanity/client':
       specifier: ^7.14.1
       version: 7.14.1
+    '@sanity/codegen':
+      specifier: ^5.8.0
+      version: 5.8.0
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
@@ -92,8 +95,8 @@ catalogs:
       version: 7.3.1
 
 overrides:
-  '@sanity/ui@3': ^3.1.11
   '@sanity/types': ^5.0.0
+  '@sanity/ui@3': ^3.1.11
   jsdom: 26.1.0
   vitest: ^4.0.18
 
@@ -1108,8 +1111,8 @@ importers:
         specifier: 'catalog:'
         version: 7.14.1(debug@4.4.3)
       '@sanity/codegen':
-        specifier: 5.7.2-watch-mode.4
-        version: 5.7.2-watch-mode.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)
+        specifier: 'catalog:'
+        version: 5.8.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/runtime-cli':
         specifier: ^13.1.0
         version: 13.1.0(@types/node@24.10.4)(debug@4.4.3)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -1125,9 +1128,6 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
-      chokidar:
-        specifier: ^3.6.0
-        version: 3.6.0
       debug:
         specifier: ^4.4.3
         version: 4.4.3(supports-color@8.1.1)
@@ -5233,8 +5233,8 @@ packages:
       sanity: ^5
       styled-components: ^6.1
 
-  '@sanity/codegen@5.7.2-watch-mode.4':
-    resolution: {integrity: sha512-E0WFOM5ikwCsC9UgdVCO0jAIEpLQckwQ5sRNDF6zUzH8a2EoVHtPen78N8pTsRamH795jZGHKxstVFVPU3/cyQ==}
+  '@sanity/codegen@5.8.0':
+    resolution: {integrity: sha512-PPp9iACt1dgnNd+fnLJzkmJZWMqpznXkIivXRUk9M91xKLLcbWRA+81BkA28w6CRIfxQULWoIC3VW9sAje1IqQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
 
@@ -16332,7 +16332,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@5.7.2-watch-mode.4(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)':
+  '@sanity/codegen@5.8.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/generator': 7.28.6
