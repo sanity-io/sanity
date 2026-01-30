@@ -56,7 +56,7 @@ export function getDocumentAtRevision<InputContext extends Context>({
       .pipe(
         map((response) => {
           const document = response.documents[0]
-          return {document: document, loading: false, revisionId: document._rev}
+          return {document: document, loading: false, revisionId: document?._rev}
         }),
 
         catchError((error: Error) => {
