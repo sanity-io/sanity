@@ -6,27 +6,11 @@ import {
 import {type Schema} from '@sanity/types'
 import debugit from 'debug'
 import {max, sum} from 'lodash-es'
-import {firstValueFrom} from 'rxjs'
 
 import {isDev} from '../../environment'
-import {getFeatures} from '../../hooks/useFeatureEnabled'
 import {DESCRIPTOR_CONVERTER} from '../../schema'
 
 const debug = debugit('sanity:manifest')
-
-const DISABLE_TOGGLE = 'toggle.schema.upload-pause.disable'
-
-async function isEnabled(client: SanityClient): Promise<boolean> {
-  const {projectId} = client.config()
-  if (!projectId) return false
-
-  return firstValueFrom(getFeatures({projectId, versionedClient: client}))
-    .then((features) => !features.includes(DISABLE_TOGGLE))
-    .catch((err) => {
-      debug('Fetching features failed. Sending schema to server.', {err})
-      return true
-    })
-}
 
 const MAX_SYNC_ITERATIONS = 5
 
@@ -53,8 +37,6 @@ export async function uploadSchema(
   schema: Schema,
   client: SanityClient,
 ): Promise<string | undefined> {
-  if (!(await isEnabled(client))) return undefined
-
   // The process for uploading the schema is based around two concepts:
   //
   // We first _claim_ the descriptor ID. This means that we're requesting that
