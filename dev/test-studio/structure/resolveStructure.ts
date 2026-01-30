@@ -21,6 +21,7 @@ import {
   type StructureResolver,
 } from 'sanity/structure'
 
+import {CrossWorkspaceNavigationTest} from '../components/CrossWorkspaceNavigationTest'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
@@ -65,6 +66,11 @@ export const structure: StructureResolver = (
         .id('translate')
         .title('Translate Test')
         .child(S.component(TranslateExample).id('example')),
+      S.listItem()
+        .id('cross-workspace-nav')
+        .title('Cross-Workspace Navigation Test')
+        .icon(EarthGlobeIcon)
+        .child(S.component(CrossWorkspaceNavigationTest).id('cross-workspace-nav-test')),
       S.listItem()
         .title('Untitled repro')
         .child(
