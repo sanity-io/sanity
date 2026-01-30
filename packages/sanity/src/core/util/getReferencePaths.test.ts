@@ -103,4 +103,102 @@ describe('getReferencePaths', () => {
     const referencePaths = getReferencePaths(document, referenceToId)
     expect(referencePaths).toEqual([['arrayOfNamedReferences', {_key: '50ec4f259aea'}]])
   })
+
+  it('should return multiple paths when the same reference appears multiple times', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+      author: {_ref: 'foo-bar', _type: 'reference'},
+      reviewer: {_ref: 'foo-bar', _type: 'reference'},
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([['author'], ['reviewer']])
+  })
+
+  it('should return an empty array when no reference matches', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+      author: {_ref: 'other-id', _type: 'reference'},
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([])
+  })
+
+  it('should use index for array items without _key', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+      items: [
+        {_ref: 'other-id', _type: 'reference'},
+        {_ref: 'foo-bar', _type: 'reference'},
+      ],
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([['items', 1]])
+  })
+
+  it('should handle null and undefined values gracefully', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+      nullField: null,
+      undefinedField: undefined,
+      author: {_ref: 'foo-bar', _type: 'reference'},
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([['author']])
+  })
+
+  it('should return an empty array for a document with no user fields', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([])
+  })
+
+  it('should find references within portable text blocks', () => {
+    const document = {
+      _type: 'test',
+      _id: 'test',
+      _createdAt: '2021-01-01',
+      _updatedAt: '2021-01-01',
+      _rev: 'test',
+      body: [
+        {
+          _type: 'block',
+          _key: 'block1',
+          children: [{_type: 'span', _key: 'span1', text: 'Hello'}],
+          markDefs: [
+            {
+              _key: 'link1',
+              _type: 'internalLink',
+              reference: {_ref: 'foo-bar', _type: 'reference'},
+            },
+          ],
+        },
+      ],
+    }
+    const referencePaths = getReferencePaths(document, 'foo-bar')
+    expect(referencePaths).toEqual([
+      ['body', {_key: 'block1'}, 'markDefs', {_key: 'link1'}, 'reference'],
+    ])
+  })
 })
