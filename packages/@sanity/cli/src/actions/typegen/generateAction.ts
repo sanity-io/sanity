@@ -27,6 +27,10 @@ async function getConfig(
 ): Promise<{config: TypeGenConfig; path?: string; type: 'legacy' | 'cli'}> {
   const config = await getCliConfig(workDir)
 
+  if (!config?.config) {
+    throw new Error('Unable to load config')
+  }
+
   // check if the legacy config exist
   const legacyConfigPath = configPath || 'sanity-typegen.json'
   let hasLegacyConfig = false
@@ -96,16 +100,18 @@ async function runSingle(
   const trace = telemetry.trace(TypesGeneratedTrace)
   trace.start()
 
+  const spinner = output.spinner({}).start('Loading config…')
   try {
-    const spinner = output.spinner({}).start('Loading config…')
+    let config: Awaited<ReturnType<typeof getConfig>>
+    try {
+      config = await getConfig(workDir, flags['config-path'])
+      spinner.succeed(`Config loaded from ${config.path?.replace(workDir, '.')}`)
+    } catch (err) {
+      spinner.fail()
+      throw err
+    }
 
-    const {
-      config: typegenConfig,
-      type: typegenConfigMethod,
-      path: configPath,
-    } = await getConfig(workDir, flags['config-path'])
-
-    spinner.succeed(`Config loaded from ${configPath?.replace(workDir, '.')}`)
+    const {config: typegenConfig, type: typegenConfigMethod} = config
 
     const result = await runTypegenGenerate({
       config: typegenConfig,
@@ -119,8 +125,10 @@ async function runSingle(
       configOverloadClientMethods: typegenConfig.overloadClientMethods,
     })
   } catch (error) {
+    console.error(` ${chalk.red('›')}   ${error.message}`)
     trace.error(error as Error)
-    throw error
+    process.exitCode = 1
+    // throw error
   } finally {
     trace.complete()
   }
@@ -135,13 +143,18 @@ async function runWatcher(
   const trace = telemetry.trace(TypegenWatchModeTrace)
   trace.start()
 
+  const spinner = output.spinner({}).start('Loading config…')
   try {
-    const spinner = output.spinner({}).start('Loading config…')
+    let config: Awaited<ReturnType<typeof getConfig>>
+    try {
+      config = await getConfig(workDir, flags['config-path'])
+      spinner.succeed(`Config loaded from ${config.path?.replace(workDir, '.')}`)
+    } catch (err) {
+      spinner.fail()
+      throw err
+    }
 
-    const {config: typegenConfig, path: configPath} = await getConfig(workDir, flags['config-path'])
-
-    spinner.succeed(`Config loaded from ${configPath?.replace(workDir, '.')}`)
-
+    const typegenConfig = config.config
     const {promise, resolve} = promiseWithResolvers<void>()
 
     const typegenWatcher = runTypegenWatcher({
@@ -168,8 +181,9 @@ async function runWatcher(
 
     await promise
   } catch (error) {
+    console.error(` ${chalk.red('›')}   ${error.message}`)
     trace.error(error as Error)
-    throw error
+    process.exitCode = 1
   } finally {
     trace.complete()
   }

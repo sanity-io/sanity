@@ -4,6 +4,7 @@ import {type Ora} from 'ora'
 import {expect, test, vi} from 'vitest'
 
 import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '../../../types'
+import {getCliConfig} from '../../../util/getCliConfig'
 import generateAction, {type TypegenGenerateTypesCommandFlags} from '../generateAction'
 
 vi.mock('@sanity/codegen', async (importOriginal) => {
@@ -14,6 +15,10 @@ vi.mock('@sanity/codegen', async (importOriginal) => {
     runTypegenGenerate: vi.fn(),
   }
 })
+
+vi.mock('../../../util/getCliConfig', () => ({
+  getCliConfig: vi.fn(),
+}))
 
 vi.mock('node:fs/promises', () => ({
   stat: vi.fn().mockResolvedValue({
@@ -61,6 +66,13 @@ test(generateAction.name, async () => {
     path: './src/**/*.{ts,js}',
   }
 
+  // Mock getCliConfig to return a config without typegen (triggers legacy config path)
+  vi.mocked(getCliConfig).mockResolvedValue({
+    config: {},
+    path: '/work-dir/sanity.cli.ts',
+  })
+
+  // readConfig returns legacy typegen config
   vi.mocked(readConfig).mockResolvedValue(mockConfig)
 
   const mockResult = {
