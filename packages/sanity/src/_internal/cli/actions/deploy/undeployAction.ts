@@ -44,7 +44,10 @@ export default async function undeployStudioAction(
   // Double-check
   output.print('')
 
-  const url = `https://${chalk.yellow(userApplication.appHost)}.sanity.studio`
+  const isExternal = userApplication.urlType === 'external'
+  const url = isExternal
+    ? chalk.yellow(userApplication.appHost)
+    : `https://${chalk.yellow(userApplication.appHost)}.sanity.studio`
 
   /**
    * Unattended mode means that if there are any prompts it will use `YES` for them but will no change anything that doesn't have a prompt
@@ -53,12 +56,17 @@ export default async function undeployStudioAction(
 
   // If it is in unattended mode, we don't want to prompt
   if (!unattendedMode) {
+    const confirmMessage = isExternal
+      ? `This will unregister the external studio at ${url}.
+  Are you ${chalk.red('sure')} you want to unregister?`
+      : `This will undeploy ${url} and make it unavailable for your users.
+  The hostname will be available for anyone to claim.
+  Are you ${chalk.red('sure')} you want to undeploy?`
+
     const shouldUndeploy = await prompt.single({
       type: 'confirm',
       default: false,
-      message: `This will undeploy ${url} and make it unavailable for your users.
-  The hostname will be available for anyone to claim.
-  Are you ${chalk.red('sure')} you want to undeploy?`.trim(),
+      message: confirmMessage.trim(),
     })
 
     if (!shouldUndeploy) {
@@ -66,7 +74,7 @@ export default async function undeployStudioAction(
     }
   }
 
-  spinner = output.spinner('Undeploying studio').start()
+  spinner = output.spinner(isExternal ? 'Unregistering studio' : 'Undeploying studio').start()
   try {
     await deleteUserApplication({
       client,
@@ -81,6 +89,8 @@ export default async function undeployStudioAction(
   }
 
   output.print(
-    `Studio undeploy scheduled. It might take a few minutes before ${url} is unavailable.`,
+    isExternal
+      ? `External studio unregistered.`
+      : `Studio undeploy scheduled. It might take a few minutes before ${url} is unavailable.`,
   )
 }
