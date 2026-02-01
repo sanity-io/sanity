@@ -192,7 +192,7 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         expect(result.code).toBe(0)
 
         // Verify generation output is printed
-        expect(result.stdout).toContain('Generated types to')
+        expect(result.stderr).toContain('Successfully generated types')
 
         // Check that the output file was created
         await expect(stat(outputPath)).resolves.toBeTruthy()
