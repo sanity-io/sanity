@@ -2,10 +2,16 @@ import {randomUUID} from 'node:crypto'
 import {access, readFile, unlink, writeFile} from 'node:fs/promises'
 import {join} from 'node:path'
 
+import {once} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'
-import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
+import {
+  runSanityCmdCommand,
+  runSanityLongRunningCommand,
+  studioNames,
+  studiosPath,
+} from './shared/environment'
 
 const workingTypegen = {
   schema: './working-schema.json',
@@ -242,6 +248,63 @@ describeCliTest('CLI: `sanity typegen`', () => {
       )
 
       test(
+        'sanity typegen gedsanerate: watch mode',
+        withConfig(
+          {
+            config: workingTypegen,
+            legacyConfig,
+          },
+          async (configFileName) => {
+            const {cmdOptions, cmdArgs} = getParams(configFileName)
+            const filename = `newfile.ts`
+            const fileToAdd = join(studiosPath, studioName, 'src', filename)
+
+            async function cleanup() {
+              try {
+                await unlink(fileToAdd)
+              } catch (err) {
+                if (err.code === 'ENOENT') {
+                  return
+                }
+                throw err
+              }
+            }
+
+            const createFile = once(async () => {
+              await writeFile(fileToAdd, '')
+            })
+
+            await cleanup()
+
+            try {
+              const {stderr, stdout} = await runSanityLongRunningCommand(
+                studioName,
+                ['typegen', 'generate', '--watch', ...cmdArgs],
+                cmdOptions,
+                async (output) => {
+                  // assert that we've evaluated three files for queries
+                  expect(output.stderr).toContain('found queries in 1 file after evaluating 1 file')
+
+                  // add a ts file to the tmp studio dir
+                  await createFile()
+
+                  // expect the console to show message about added file
+                  expect(output.stdout).toContain(`add: src/${filename}`)
+
+                  // assert that it evaluated one more file
+                  expect(output.stderr).toContain(
+                    'found queries in 1 file after evaluating 2 files',
+                  )
+                },
+              )
+            } finally {
+              await cleanup()
+            }
+          },
+        ),
+      )
+
+      test(
         'sanity typegen generate: formats code',
         withConfig(
           {
@@ -365,6 +428,8 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
             expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+
+            expect(types.toString()).toMatchSnapshot()
           },
         ),
       )

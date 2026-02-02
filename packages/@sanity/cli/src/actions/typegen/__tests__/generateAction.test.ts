@@ -1,7 +1,7 @@
 import type * as SanityCodegen from '@sanity/codegen'
 import {readConfig, runTypegenGenerate, TypesGeneratedTrace} from '@sanity/codegen'
 import {type Ora} from 'ora'
-import {expect, test, vi} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '../../../types'
 import {getCliConfig} from '../../../util/getCliConfig'
@@ -51,93 +51,95 @@ const telemetry = {
   log: vi.fn(),
 } as CliCommandContext['telemetry']
 
-test(generateAction.name, async () => {
-  const workDir = '/work-dir'
-  const schemaPath = './schema.json'
-  const overloadClientMethods = true
-  const configPath = './custom-sanity-typegen.json'
-  const generates = './custom-output-folder/sanity.types.ts'
+describe(generateAction.name, () => {
+  test(`sends telemetry traces`, async () => {
+    const workDir = '/work-dir'
+    const schemaPath = './schema.json'
+    const overloadClientMethods = true
+    const configPath = './custom-sanity-typegen.json'
+    const generates = './custom-output-folder/sanity.types.ts'
 
-  const mockConfig = {
-    generates,
-    schema: schemaPath,
-    overloadClientMethods,
-    formatGeneratedCode: true,
-    path: './src/**/*.{ts,js}',
-  }
+    const mockConfig = {
+      generates,
+      schema: schemaPath,
+      overloadClientMethods,
+      formatGeneratedCode: true,
+      path: './src/**/*.{ts,js}',
+    }
 
-  // Mock getCliConfig to return a config without typegen (triggers legacy config path)
-  vi.mocked(getCliConfig).mockResolvedValue({
-    config: {},
-    path: '/work-dir/sanity.cli.ts',
-  })
+    // Mock getCliConfig to return a config without typegen (triggers legacy config path)
+    vi.mocked(getCliConfig).mockResolvedValue({
+      config: {},
+      path: '/work-dir/sanity.cli.ts',
+    })
 
-  // readConfig returns legacy typegen config
-  vi.mocked(readConfig).mockResolvedValue(mockConfig)
+    // readConfig returns legacy typegen config
+    vi.mocked(readConfig).mockResolvedValue(mockConfig)
 
-  const mockResult = {
-    code: '/* generated types */',
-    duration: 100,
-    emptyUnionTypeNodesGenerated: 0,
-    filesWithErrors: 1,
-    outputSize: 874,
-    queriesCount: 2,
-    queryFilesCount: 1,
-    schemaTypesCount: 2,
-    typeNodesGenerated: 8,
-    unknownTypeNodesGenerated: 0,
-    unknownTypeNodesRatio: 0,
-  }
+    const mockResult = {
+      code: '/* generated types */',
+      duration: 100,
+      emptyUnionTypeNodesGenerated: 0,
+      filesWithErrors: 1,
+      outputSize: 874,
+      queriesCount: 2,
+      queryFilesCount: 1,
+      schemaTypesCount: 2,
+      typeNodesGenerated: 8,
+      unknownTypeNodesGenerated: 0,
+      unknownTypeNodesRatio: 0,
+    }
 
-  vi.mocked(runTypegenGenerate).mockResolvedValue(mockResult)
+    vi.mocked(runTypegenGenerate).mockResolvedValue(mockResult)
 
-  await generateAction(
-    {
-      extOptions: {'config-path': configPath},
-    } as CliCommandArguments<TypegenGenerateTypesCommandFlags>,
-    {
-      output: {spinner: spinner},
-      workDir,
-      telemetry,
-    } as CliCommandContext,
-  )
-
-  // Verify config was loaded
-  expect(readConfig).toHaveBeenCalledWith(configPath)
-
-  // Verify runTypegenGenerate was called with correct parameters
-  expect(runTypegenGenerate).toHaveBeenCalledWith({
-    config: mockConfig,
-    workDir,
-  })
-
-  // Verify spinner messages
-  const logs = oraHandler.mock.calls.map(([message]) => message).join('\n')
-  expect(logs).toMatchInlineSnapshot(`
-    "  Loading config…
-    ✓ Config loaded from ./custom-sanity-typegen.json"
-  `)
-
-  // Verify telemetry
-  expect(telemetry.trace).toHaveBeenCalledWith(TypesGeneratedTrace)
-  expect(trace.start).toHaveBeenCalledTimes(1)
-  expect(trace.complete).toHaveBeenCalledTimes(1)
-  expect(trace.error).not.toHaveBeenCalled()
-  expect(trace.log.mock.lastCall).toMatchInlineSnapshot(`
-    [
+    await generateAction(
       {
-        "configMethod": "legacy",
-        "configOverloadClientMethods": true,
-        "emptyUnionTypeNodesGenerated": 0,
-        "filesWithErrors": 1,
-        "outputSize": 874,
-        "queriesCount": 2,
-        "queryFilesCount": 1,
-        "schemaTypesCount": 2,
-        "typeNodesGenerated": 8,
-        "unknownTypeNodesGenerated": 0,
-        "unknownTypeNodesRatio": 0,
-      },
-    ]
-  `)
+        extOptions: {'config-path': configPath},
+      } as CliCommandArguments<TypegenGenerateTypesCommandFlags>,
+      {
+        output: {spinner: spinner},
+        workDir,
+        telemetry,
+      } as CliCommandContext,
+    )
+
+    // Verify config was loaded
+    expect(readConfig).toHaveBeenCalledWith(configPath)
+
+    // Verify runTypegenGenerate was called with correct parameters
+    expect(runTypegenGenerate).toHaveBeenCalledWith({
+      config: mockConfig,
+      workDir,
+    })
+
+    // Verify spinner messages
+    const logs = oraHandler.mock.calls.map(([message]) => message).join('\n')
+    expect(logs).toMatchInlineSnapshot(`
+      "  Loading config…
+      ✓ Config loaded from ./custom-sanity-typegen.json"
+    `)
+
+    // Verify telemetry
+    expect(telemetry.trace).toHaveBeenCalledWith(TypesGeneratedTrace)
+    expect(trace.start).toHaveBeenCalledTimes(1)
+    expect(trace.complete).toHaveBeenCalledTimes(1)
+    expect(trace.error).not.toHaveBeenCalled()
+    expect(trace.log.mock.lastCall).toMatchInlineSnapshot(`
+      [
+        {
+          "configMethod": "legacy",
+          "configOverloadClientMethods": true,
+          "emptyUnionTypeNodesGenerated": 0,
+          "filesWithErrors": 1,
+          "outputSize": 874,
+          "queriesCount": 2,
+          "queryFilesCount": 1,
+          "schemaTypesCount": 2,
+          "typeNodesGenerated": 8,
+          "unknownTypeNodesGenerated": 0,
+          "unknownTypeNodesRatio": 0,
+        },
+      ]
+    `)
+  })
 })
