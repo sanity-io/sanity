@@ -24,26 +24,19 @@ jobs:
         id: stale
         uses: actions/stale@v10
         with:
-          # Enable detailed statistics in logs
           enable-statistics: true
-
-          # Target only issues with "needs-more-info" label
           only-issue-labels: "needs-more-info"
 
-          # Only process issues created/labeled after this date (prevents backlog processing)
+          # Prevents backlog processing
           start-date: "2026-01-29T00:00:00Z"
 
-          # TESTING ONLY: Shortened timings for manual testing
-          # Production values: days-before-stale: 10, days-before-close: 4
-          # Test values: 1 day each for reliable testing (avoids decimal rounding issues)
-          days-before-stale: 1 # 1 day
-          days-before-close: 1 # 1 day after marking stale (2 days total)
+          # 10 days inactive → warning, then 4 more days → closure (14 days total)
+          days-before-stale: 10
+          days-before-close: 4
 
-          # Add "stale-warned" label when posting warning
-          # This tracks that the issue has been warned about closure
+          # Tracks that warning has been posted
           stale-issue-label: "stale-warned"
 
-          # Warning message (posted after 10 days)
           stale-issue-message: >
             Hi there, thanks again for this issue report. We have had a look into it
             and are currently waiting for some more information. If you are able to help by
@@ -51,7 +44,6 @@ jobs:
             If you are no longer experiencing this issue, or aren't able to provide any
             further details, this issue will be closed in another 4 days.
 
-          # Closure message (posted after 14 days total)
           close-issue-message: >
             Hi there, we really appreciate your report of this issue. We had been
             waiting for some more details to look into this properly. Since we didn't hear
@@ -60,14 +52,13 @@ jobs:
             We really thank you for the time to help us make Studio a better experience for
             all users!
 
-          # Don't process pull requests
           days-before-pr-stale: -1
           days-before-pr-close: -1
 
-          # Process up to 30 issues per run (default, prevents rate limiting)
+          # Prevents rate limiting
           operations-per-run: 30
 
-          # Remove needs-more-info label if issue gets new activity after warning
+          # Resets stale state if user responds
           remove-stale-when-updated: true
 
       - name: Report actions taken
@@ -77,7 +68,6 @@ jobs:
           CLOSED_ISSUES: ${{ steps.stale.outputs.closed-issues-prs }}
           ISSUE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/issues
         run: |
-          # Write summary header
           {
             echo "## Stale Issue Workflow Summary"
             echo ""
@@ -85,7 +75,6 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # Format and display staled issues (received warnings)
           echo "### ⚠️ Warning of Closure (10 days inactive)" >> "$GITHUB_STEP_SUMMARY"
           if [ -z "$STALED_ISSUES" ] || [ "$STALED_ISSUES" = "[]" ]; then
             echo "No issues received warnings in this run." >> "$GITHUB_STEP_SUMMARY"
@@ -96,7 +85,6 @@ jobs:
           fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          # Format and display closed issues
           echo "### ✅ Closed (14 days inactive)" >> "$GITHUB_STEP_SUMMARY"
           if [ -z "$CLOSED_ISSUES" ] || [ "$CLOSED_ISSUES" = "[]" ]; then
             echo "No issues were closed in this run." >> "$GITHUB_STEP_SUMMARY"
@@ -107,7 +95,6 @@ jobs:
           fi
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          # Write footer
           {
             echo "---"
             echo "*Check the workflow logs above for detailed statistics.*"
