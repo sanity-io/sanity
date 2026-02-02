@@ -2,6 +2,7 @@ import {
   type CustomValidator,
   type FieldReference,
   type LocalizedValidationMessages,
+  type ValidationContext,
 } from '../validation'
 
 /** @public */
@@ -20,9 +21,10 @@ export interface RuleDef<T, FieldValue = unknown> {
 }
 
 /** @public */
-export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = T | T[]
+export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = T | T[] | boolean
 
 /** @public */
 export type ValidationBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = (
   rule: T,
+  context: ValidationContext,
 ) => RuleBuilder<T, FieldValue>

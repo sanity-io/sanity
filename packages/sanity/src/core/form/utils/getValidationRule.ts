@@ -12,6 +12,9 @@ const normalizeRules = (
     )
   }
   if (!validation) return []
+  // if validation is true, then we don't need to normalize it
+  if (validation === true) return []
+
   if (Array.isArray(validation)) return validation as Rule[]
   return [validation]
 }
