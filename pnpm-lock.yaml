@@ -16,8 +16,8 @@ catalogs:
       specifier: ^7.14.1
       version: 7.14.1
     '@sanity/codegen':
-      specifier: ^5.9.0-watch-mode.1
-      version: 5.9.0-watch-mode.1
+      specifier: ^5.9.1
+      version: 5.9.1
     '@sanity/eslint-config-i18n':
       specifier: ^2.0.0
       version: 2.0.0
@@ -1112,7 +1112,7 @@ importers:
         version: 7.14.1(debug@4.4.3)
       '@sanity/codegen':
         specifier: 'catalog:'
-        version: 5.9.0-watch-mode.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)
+        version: 5.9.1(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/runtime-cli':
         specifier: ^13.1.0
         version: 13.1.0(@types/node@24.10.4)(debug@4.4.3)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -5233,10 +5233,12 @@ packages:
       sanity: ^5
       styled-components: ^6.1
 
-  '@sanity/codegen@5.9.0-watch-mode.1':
-    resolution: {integrity: sha512-951vNLmabCQ8ZeCiQ7Aqj3wAkUuZ69NZcfyGicc8wcXgaoII4reIlhyAIuGi3fhbBtlpKtinGXLS8bJqEH8KAg==}
+  '@sanity/codegen@5.9.1':
+    resolution: {integrity: sha512-Znsh0ed09NZftKAThi24qqymDzNaUhaahJ4vg3JXiAJ80KYOv//XXHJS2sLxC9TjcJgjvrYpktVcLDB127KDXg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
+    peerDependencies:
+      '@sanity/telemetry': ^0.8.0
 
   '@sanity/color-input@6.0.3':
     resolution: {integrity: sha512-BFZasSpq8BmIIATKtdICxUG2YukIP6LbCVgpLHYKsRHmfGWjpnBQ8fKljOhK9u013jraamd9coNsPWCg44nO6Q==}
@@ -16332,7 +16334,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@5.9.0-watch-mode.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(react@19.2.3)(terser@5.44.1)(yaml@2.8.2)':
+  '@sanity/codegen@5.9.1(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/generator': 7.28.6
@@ -16365,7 +16367,6 @@ snapshots:
       - jiti
       - less
       - lightningcss
-      - react
       - sass
       - sass-embedded
       - stylus
