@@ -114,7 +114,6 @@ jobs:
           labels: "release:latest"
           sign-commits: true
           base: main
-          team-reviewers: "@sanity-io/studio"
           draft: true
 
       - name: Post release notes reminder to the associated PR
