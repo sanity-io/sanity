@@ -86,28 +86,19 @@ jobs:
 
       - name: Comment on PR
         if: github.event_name == 'pull_request' && steps.generate.outputs.success == 'true'
-        uses: actions/github-script@v7
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
-          script: |
-            const fileSize = '${{ steps.generate.outputs.file_size }}';
-            const exportCount = '${{ steps.generate.outputs.export_count }}';
-
-            const body = `## 📚 TypeDoc Generation Result
+          comment-tag: "typedoc-result"
+          message: |
+            ## 📚 TypeDoc Generation Result
 
             ✅ **TypeDoc generated successfully!**
 
-            - **File size:** ${fileSize}
-            - **Total exports:** ${exportCount}
-            - **Artifact:** \`sanity-typedoc-${{ github.sha }}\`
+            - **File size:** ${{ steps.generate.outputs.file_size }}
+            - **Total exports:** ${{ steps.generate.outputs.export_count }}
+            - **Artifact:** `sanity-typedoc-${{ github.sha }}`
 
-            The TypeDoc JSON file has been generated and validated. All documentation scripts completed successfully.`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+            The TypeDoc JSON file has been generated and validated. All documentation scripts completed successfully.
 
       - name: Extract version from tag
         if: (startsWith(github.ref, 'refs/tags/v') || github.event.inputs.upload == 'true') && steps.generate.outputs.success == 'true'
