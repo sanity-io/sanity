@@ -326,15 +326,22 @@ function validateItemObservable({
     schemaParent: unknown,
     schemaPath: ValidationContext['path'],
     parentHiddenValue: boolean,
-  ) =>
-    parentHiddenValue ||
-    resolveConditionalProperty(schemaType?.hidden, {
-      document: restOfContext.document,
-      parent: schemaParent,
-      value: schemaValue,
-      currentUser: null,
-      path: schemaPath || [],
-    })
+  ) => {
+    // If there is no schema type, fall back to the parent's hidden state.
+    if (!schemaType) {
+      return parentHiddenValue
+    }
+    return (
+      parentHiddenValue ||
+      resolveConditionalProperty(schemaType.hidden, {
+        document: restOfContext.document,
+        parent: schemaParent,
+        value: schemaValue,
+        currentUser: null,
+        path: schemaPath || [],
+      })
+    )
+  }
   const hidden = resolveHiddenForType(type, value, parent, path, parentHidden)
 
   // Note: this validator is added here because it's conditional based on the
