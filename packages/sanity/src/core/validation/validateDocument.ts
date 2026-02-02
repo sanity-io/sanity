@@ -305,7 +305,9 @@ type ExplicitUndefined<T> = {
 type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
-} & ExplicitUndefined<ValidationContext>
+  hidden?: boolean
+  parentHidden?: boolean
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'parentHidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(validateItemObservable(opts))
