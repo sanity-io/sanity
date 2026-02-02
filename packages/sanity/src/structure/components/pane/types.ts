@@ -79,7 +79,7 @@ export interface _PaneMenuItem {
   key: string
 
   disabled?: boolean | {reason: ReactNode}
-  hideCheckmark?: boolean
+  hideSelectionIndicator?: boolean
   hotkey?: string
   icon: ComponentType | ReactNode
   iconRight?: ComponentType | ReactNode

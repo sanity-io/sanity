@@ -496,10 +496,10 @@ export const structure: StructureResolver = (
                 .action(() => alert('you clicked!')),
 
               S.menuItem()
-                .title('No checkmark')
+                .title('No selection indicator')
                 .icon(EmptyIcon)
                 .action(() => console.log('you clicked!'))
-                .params({hideCheckmark: true}),
+                .params({hideSelectionIndicator: true}),
 
               // Standard menu items (layout changes the view)
               ...(S.documentTypeList('book').getMenuItems() || []),

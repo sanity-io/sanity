@@ -97,7 +97,7 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   )
   const {title} = useI18nText(node)
 
-  const showCheckmark = node.selected && !node.hideCheckmark
+  const showCheckmark = node.selected && !node.hideSelectionIndicator
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
@@ -137,7 +137,7 @@ function PaneContextIntentMenuItem(props: {
 
   const {title} = useI18nText(node)
 
-  const showCheckmark = node.selected && !node.hideCheckmark
+  const showCheckmark = node.selected && !node.hideSelectionIndicator
 
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
