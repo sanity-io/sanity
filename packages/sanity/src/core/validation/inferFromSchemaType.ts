@@ -1,4 +1,4 @@
-import {type Schema, type SchemaType} from '@sanity/types'
+import {type Schema, type SchemaType, type SchemaValidationValue} from '@sanity/types'
 
 import {normalizeValidationRules} from './util/normalizeValidationRules'
 
@@ -23,7 +23,13 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
 
   visited.add(typeDef)
 
-  typeDef.validation = normalizeValidationRules(typeDef)
+  const usesValidationContext = hasValidationContext(typeDef.validation)
+
+  // Only normalize validation at schema-compile time when it doesn't rely on runtime context.
+  // Context-aware validation functions must be evaluated during validation, where context exists.
+  if (!usesValidationContext) {
+    typeDef.validation = normalizeValidationRules(typeDef)
+  }
 
   if ('fields' in typeDef) {
     for (const field of typeDef.fields) {
@@ -44,4 +50,12 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
       traverse(annotation, visited)
     }
   }
+}
+
+function hasValidationContext(validation: SchemaValidationValue | undefined): boolean {
+  if (!validation) return false
+  if (Array.isArray(validation)) {
+    return validation.some(hasValidationContext)
+  }
+  return typeof validation === 'function' && validation.length >= 2
 }

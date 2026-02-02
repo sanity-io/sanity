@@ -15,6 +15,7 @@ import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {type SourceClientOptions, type Workspace} from '../config'
+import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
@@ -268,6 +269,8 @@ export function validateDocumentObservable({
     getDocumentExists,
     environment,
     customValidationConcurrencyLimiter,
+    hidden: false,
+    parentHidden: false,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
@@ -317,6 +320,24 @@ function validateItemObservable({
   environment,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
+  const parentHidden = restOfContext.hidden === true
+  const resolveHiddenForType = (
+    schemaType: SchemaType | undefined,
+    schemaValue: unknown,
+    schemaParent: unknown,
+    schemaPath: ValidationContext['path'],
+    parentHiddenValue: boolean,
+  ) =>
+    parentHiddenValue ||
+    resolveConditionalProperty(schemaType?.hidden, {
+      document: restOfContext.document,
+      parent: schemaParent,
+      value: schemaValue,
+      currentUser: null,
+      path: schemaPath || [],
+    })
+  const hidden = resolveHiddenForType(type, value, parent, path, parentHidden)
+
   // Note: this validator is added here because it's conditional based on the
   // environment.
   const addUnknownFieldsValidator = (rule: Rule) => {
@@ -336,13 +357,23 @@ function validateItemObservable({
     return rule
   }
 
-  const rules = normalizeValidationRules(type)
+  const rules = normalizeValidationRules(type, {
+    ...restOfContext,
+    hidden,
+    parentHidden,
+    environment,
+    parent,
+    path,
+    type,
+  })
   // run validation for the current value
   const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
     defer(() =>
       rule.validate(value, {
         ...restOfContext,
         environment,
+        hidden,
+        parentHidden,
         parent,
         path,
         type,
@@ -381,6 +412,13 @@ function validateItemObservable({
             .map(addUnknownFieldsValidator)
             .map((subRule) => {
               const nestedValue = isRecord(value) ? value[name] : undefined
+              const nestedHidden = resolveHiddenForType(
+                fieldType,
+                nestedValue,
+                value,
+                path.concat(name),
+                hidden,
+              )
               return defer(() =>
                 subRule.validate(nestedValue, {
                   ...restOfContext,
@@ -388,6 +426,8 @@ function validateItemObservable({
                   path: path.concat(name),
                   type: fieldType,
                   environment,
+                  hidden: nestedHidden,
+                  parentHidden: hidden,
                   __internal: {customValidationConcurrencyLimiter},
                 }),
               )
@@ -400,6 +440,8 @@ function validateItemObservable({
       type.fields.map((field) =>
         validateItemObservable({
           ...restOfContext,
+          hidden,
+          parentHidden: hidden,
           parent: value,
           value: isRecord(value) ? value[field.name] : undefined,
           path: path.concat(field.name),
@@ -422,6 +464,8 @@ function validateItemObservable({
       value.map((item, index) =>
         validateItemObservable({
           ...restOfContext,
+          hidden,
+          parentHidden: hidden,
           parent: value,
           value: item,
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),

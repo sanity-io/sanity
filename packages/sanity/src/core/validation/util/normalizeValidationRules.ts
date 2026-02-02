@@ -1,4 +1,9 @@
-import {type Rule, type RuleTypeConstraint, type SchemaType} from '@sanity/types'
+import {
+  type Rule,
+  type RuleTypeConstraint,
+  type SchemaType,
+  type ValidationContext,
+} from '@sanity/types'
 
 import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
@@ -79,10 +84,10 @@ function extractValueFromListOption(option: unknown, typeDef: SchemaType): unkno
     : (option as Record<string, unknown>).value
 }
 
-/**
- * Takes in `SchemaValidationValue` and returns an array of `Rule` instances.
- */
-export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[] {
+export function normalizeValidationRules(
+  typeDef: SchemaType | undefined,
+  context?: ValidationContext,
+): Rule[] {
   if (!typeDef) {
     return []
   }
@@ -91,15 +96,14 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
 
   if (Array.isArray(validation)) {
     return validation.flatMap((i) =>
-      normalizeValidationRules({
-        ...typeDef,
-        validation: i,
-      }),
+      normalizeValidationRules(
+        {
+          ...typeDef,
+          validation: i,
+        },
+        context,
+      ),
     )
-  }
-
-  if (validation && typeof validation === 'object') {
-    return [validation]
   }
 
   const baseRule =
@@ -111,12 +115,23 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
       }, {}),
     ).reduce(baseRuleReducer, new RuleClass(typeDef))
 
+  if (validation === true) {
+    return [baseRule]
+  }
+
+  if (validation && typeof validation === 'object') {
+    return [validation]
+  }
+
   if (!validation) {
     return [baseRule]
   }
 
-  return normalizeValidationRules({
-    ...typeDef,
-    validation: validation(baseRule),
-  })
+  return normalizeValidationRules(
+    {
+      ...typeDef,
+      validation: validation(baseRule, context as ValidationContext),
+    },
+    context,
+  )
 }
