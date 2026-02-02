@@ -5,6 +5,8 @@ import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
 import {createId} from '../utils/ids'
+import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
+import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
 
 const INTERNAL_ASSOCIATIONS = ['MEMBER', 'OWNER']
 
@@ -27,6 +29,16 @@ export async function commentPrAfterMerge(options: {
     pull_number: pr.number,
   })
   if (!pullRequest) {
+    return
+  }
+
+  // skip the reminder comment if the PR description explicitly states "no release notes needed"
+  const skipReminder = pullRequest.body
+    ? shouldExcludeReleaseNotes(extractReleaseNotes(markdownToPortableText(pullRequest.body)))
+    : false
+
+  if (skipReminder) {
+    console.log(`PR #${pr.number} explicitly states no notes for release is required, skipping.`)
     return
   }
 
