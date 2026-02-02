@@ -8,6 +8,7 @@ import {type Workspace} from '../../src/core/config'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
+import {hasValidationContext} from '../../src/core/validation/inferFromSchemaType'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
@@ -480,3 +481,56 @@ async function expectError(
   // This shouldn't actually be needed, but counts against an assertion in jest-terms
   expect(levelMatch.message).toMatch(message!)
 }
+
+describe('hasValidationContext', () => {
+  describe('returns false for non-context-aware validation', () => {
+    test('undefined', () => {
+      expect(hasValidationContext(undefined)).toBe(false)
+    })
+
+    test('false', () => {
+      expect(hasValidationContext(false)).toBe(false)
+    })
+
+    test('Rule instance', () => {
+      const rule = {} as Rule
+      expect(hasValidationContext(rule)).toBe(false)
+    })
+
+    test('function with 0 parameters', () => {
+      const validation = () => ({}) as Rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('function with 1 parameter (rule only)', () => {
+      const validation = (_rule: Rule) => _rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('array with no context-aware functions', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule) => _rule]
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+  })
+
+  describe('returns true for context-aware validation', () => {
+    test('function with 2 parameters (rule and context)', () => {
+      const validation = (_rule: Rule, _context: unknown) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+    test('function with rest parameters after rule', () => {
+      const validation = (_rule: Rule, ..._args: unknown[]) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('array containing at least one context-aware function', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule, _context: unknown) => _rule]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('nested array with context-aware function', () => {
+      const validation = [[(_rule: Rule, _context: unknown) => _rule]]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+  })
+})
