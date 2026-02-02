@@ -26,5 +26,5 @@ export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> 
 /** @public */
 export type ValidationBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = (
   rule: T,
-  context: ValidationContext,
+  context?: ValidationContext,
 ) => RuleBuilder<T, FieldValue>

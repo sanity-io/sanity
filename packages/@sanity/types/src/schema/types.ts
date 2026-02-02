@@ -210,7 +210,7 @@ export type SchemaValidationValue =
   | undefined
   | Rule
   | SchemaValidationValue[]
-  | ((rule: Rule, context: ValidationContext) => SchemaValidationValue)
+  | ((rule: Rule, context?: ValidationContext) => SchemaValidationValue)
 
 /** @public */
 export type DeprecatedSchemaType<TSchemaType extends BaseSchemaType = BaseSchemaType> =
