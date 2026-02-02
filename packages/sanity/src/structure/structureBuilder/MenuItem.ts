@@ -32,7 +32,8 @@ export type MenuItemActionType =
  * @public */
 export interface KnownMenuItemParams {
   /**
-   * When true, hides the visual indicator showing this menu item is selected.
+   * When true, hides all visual indicators showing this menu item is selected.
+   * This includes both the checkmark icon and the pressed/selected styling.
    * The item can still be selected - this only affects the visual feedback.
    * Useful when you want the menu item to perform an action without showing a selection state.
    */

@@ -79,6 +79,7 @@ export interface _PaneMenuItem {
   key: string
 
   disabled?: boolean | {reason: ReactNode}
+  /** When true, hides all icon indicators showing this menu item is selected. */
   hideSelectionIndicator?: boolean
   hotkey?: string
   icon: ComponentType | ReactNode
