@@ -206,7 +206,6 @@ export type InitialValueProperty<Params, Value> =
  */
 export type SchemaValidationValue =
   | false
-  | true
   | undefined
   | Rule
   | SchemaValidationValue[]

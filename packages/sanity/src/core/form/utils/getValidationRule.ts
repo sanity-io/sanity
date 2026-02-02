@@ -11,9 +11,7 @@ const normalizeRules = (
       }"'s \`validation\` was not run though \`inferFromSchema\``,
     )
   }
-  if (!validation) return []
-  // if validation is true, then we don't need to normalize it
-  if (validation === true) return []
+  if (validation === false || validation === undefined) return []
 
   if (Array.isArray(validation)) return validation as Rule[]
   return [validation]
