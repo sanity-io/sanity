@@ -454,6 +454,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
   /** The text for the add reference item in the incoming references input */
   'incoming-references-input.add-reference-item': 'Add item',
+  /** The aria-label for the incoming references list */
+  'incoming-references-input.list-label': 'Incoming references of type {{type}}',
   /** The text for the no items in the incoming references input */
   'incoming-references-input.no-items': 'No items',
   /** The text for the reference from in the incoming references input */

@@ -1,7 +1,9 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
+  CommandList,
+  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   LoadingBlock,
   useClient,
@@ -12,9 +14,13 @@ import {
 
 import {structureLocaleNamespace} from '../../../i18n'
 import {INITIAL_STATE} from '../getIncomingReferences'
+import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'
 import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
-import {getCrossDatasetIncomingReferences} from './getCrossDatasetIncomingReferences'
+import {
+  type CrossDatasetIncomingReferenceDocument,
+  getCrossDatasetIncomingReferences,
+} from './getCrossDatasetIncomingReferences'
 
 export function CrossDatasetIncomingReferenceType({
   type,
@@ -45,6 +51,13 @@ export function CrossDatasetIncomingReferenceType({
   const {t} = useTranslation(structureLocaleNamespace)
   const schemaType = schema.get(type.type)
 
+  const renderItem = useCallback<
+    CommandListRenderItemCallback<CrossDatasetIncomingReferenceDocument>
+  >(
+    (document) => <CrossDatasetIncomingReferenceDocumentPreview document={document} type={type} />,
+    [type],
+  )
+
   if (!schemaType) return null
   if (loading) {
     return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
@@ -60,15 +73,23 @@ export function CrossDatasetIncomingReferenceType({
       )}
       <Card radius={2} padding={1} border tone="default">
         {documents && documents.length > 0 ? (
-          <Stack space={1}>
-            {documents.map((document) => (
-              <CrossDatasetIncomingReferenceDocumentPreview
-                key={document.id}
-                document={document}
-                type={type}
-              />
-            ))}
-          </Stack>
+          <IncomingReferencesListContainer $itemCount={documents.length}>
+            <CommandList
+              activeItemDataAttr="data-hovered"
+              ariaLabel={t('incoming-references-input.list-label', {
+                type: type.title || schemaType?.title,
+              })}
+              canReceiveFocus
+              fixedHeight
+              getItemKey={(index) => documents[index].id}
+              itemHeight={INCOMING_REFERENCES_ITEM_HEIGHT}
+              items={documents}
+              onlyShowSelectionWhenActive
+              overscan={5}
+              renderItem={renderItem}
+              wrapAround={false}
+            />
+          </IncomingReferencesListContainer>
         ) : (
           <>
             <Flex align="center" justify="center" padding={2}>
