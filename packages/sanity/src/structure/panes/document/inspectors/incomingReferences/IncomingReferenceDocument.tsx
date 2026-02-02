@@ -44,7 +44,7 @@ export const IncomingReferenceDocument = (props: {
   const schemaType = schema.get(document._type)
   if (!schemaType)
     return (
-      <Card border radius={2} padding={1} tone="critical">
+      <Card radius={2} tone="critical">
         <Box paddingY={4} paddingX={3}>
           <Text size={1}>
             {t('incoming-references-pane.schema-type-not-found', {type: document._type})}
@@ -54,7 +54,7 @@ export const IncomingReferenceDocument = (props: {
     )
 
   return (
-    <Card border radius={2} padding={1} tone="default">
+    <Card radius={2} tone="default">
       <FadeInFlex initial={{opacity: 0}} animate={{opacity: 1}} gap={1} align="center">
         <Box flex={1}>
           <IncomingReferencePreview

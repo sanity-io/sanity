@@ -59,21 +59,23 @@ function TypeSection<T>({
         </Box>
       </Flex>
       {documents.length > 0 ? (
-        <IncomingReferencesListContainer $itemCount={documents.length}>
-          <CommandList
-            activeItemDataAttr="data-hovered"
-            ariaLabel={t('incoming-references-input.list-label', {type: title})}
-            canReceiveFocus
-            fixedHeight
-            getItemKey={getItemKey}
-            itemHeight={INCOMING_REFERENCES_ITEM_HEIGHT}
-            items={documents}
-            onlyShowSelectionWhenActive
-            overscan={5}
-            renderItem={renderItem}
-            wrapAround={false}
-          />
-        </IncomingReferencesListContainer>
+        <Card radius={2} padding={1} border tone="default">
+          <IncomingReferencesListContainer $itemCount={documents.length}>
+            <CommandList
+              activeItemDataAttr="data-hovered"
+              ariaLabel={t('incoming-references-input.list-label', {type: title})}
+              canReceiveFocus
+              fixedHeight
+              getItemKey={getItemKey}
+              itemHeight={INCOMING_REFERENCES_ITEM_HEIGHT}
+              items={documents}
+              onlyShowSelectionWhenActive
+              overscan={5}
+              renderItem={renderItem}
+              wrapAround={false}
+            />
+          </IncomingReferencesListContainer>
+        </Card>
       ) : (
         <Box padding={0}>
           <Card border radius={3} padding={1} tone="default">
