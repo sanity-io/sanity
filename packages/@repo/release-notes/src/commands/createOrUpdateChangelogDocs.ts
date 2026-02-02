@@ -120,7 +120,7 @@ async function mergeChangelogBody(id: string, entries: PullRequestInfo[]) {
   const currentDocument = (await client.getDocument(id)) || {}
   const changelogEntryPatches = await pMap(entries, async (entry) => createEntry(entry))
   const updated = applyPatches(
-    [at('changelog', set([])), ...changelogEntryPatches.flat()],
+    [at('changelog', setIfMissing([])), ...changelogEntryPatches.flat()],
     currentDocument,
   )
 
