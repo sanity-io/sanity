@@ -60,8 +60,10 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
  *
  * Functions with 1 parameter like `(rule) => rule.required()` don't need context
  * and can be normalized immediately for better performance.
+ *
+ * @internal
  */
-function hasValidationContext(validation: SchemaValidationValue | undefined): boolean {
+export function hasValidationContext(validation: SchemaValidationValue | undefined): boolean {
   if (!validation) return false
   if (Array.isArray(validation)) {
     return validation.some(hasValidationContext)
