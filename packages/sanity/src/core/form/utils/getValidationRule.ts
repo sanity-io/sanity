@@ -12,7 +12,6 @@ const normalizeRules = (
     )
   }
   if (!validation) return []
-
   if (Array.isArray(validation)) return validation as Rule[]
   return [validation]
 }
