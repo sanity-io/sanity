@@ -57,5 +57,5 @@ function hasValidationContext(validation: SchemaValidationValue | undefined): bo
   if (Array.isArray(validation)) {
     return validation.some(hasValidationContext)
   }
-  return typeof validation === 'function' && validation.length >= 2
+  return typeof validation === 'function'
 }
