@@ -171,7 +171,7 @@ async function getReleaseNotesMutations({pr, conventionalCommit}: PullRequestInf
         ? await uploadImages(client, extractReleaseNotes(markdownToPortableText(pr.body)))
         : cleanSubject,
   }
-  return [at('changelog', insertIfMissing(entry, 'after', -1))]
+  return [at('changelog', insertIfMissing(entry, 'before', 0))]
 }
 
 async function ensureContentRelease(id: string, title: string, description: string) {
