@@ -33,7 +33,7 @@ describe('tagVersion()', () => {
         timestamp: currentUnixTime(),
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invalid tag "florp". Must be one of: latest, stable, next"]`,
+      `[Error: Invalid tag "florp". Must be one of: latest, stable, next, next-major"]`,
     )
   })
 
@@ -56,51 +56,54 @@ describe('tagVersion()', () => {
   })
 
   it('removes stale entries when tagging', () => {
-    const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
+    const newStable = {timestamp: currentUnixTime(), version: '1.2.4' as const}
 
-    const versions = [
-      {timestamp: currentUnixTime() - 100, version: '1.2.4'},
-      {timestamp: currentUnixTime() - 100, version: '1.2.3'},
-    ]
+    const previous = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
+    const stale = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.2' as const}
+
+    const versions = [newStable, previous, stale]
 
     const manifest = {
       tags: {
         stable: [
+          // always keep previous so we preserve buffer
+          previous,
           // stale, can and should be removed
-          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
+          stale,
         ],
       },
       versions,
     }
-    expect(tagVersion(manifest, 'stable', newEntry)).toEqual({
+    expect(tagVersion(manifest, 'stable', newStable)).toEqual({
       tags: {
-        stable: [newEntry],
+        stable: [newStable, previous],
       },
       versions,
     })
   })
 
   it('sets default when passed options.setAsDefault is true', () => {
-    const newEntry = {timestamp: currentUnixTime(), version: '1.2.4' as const}
+    const newLatest = {timestamp: currentUnixTime(), version: '1.2.4' as const}
 
-    const versions = [
-      {timestamp: currentUnixTime() - 100, version: '1.2.4'},
-      {timestamp: currentUnixTime() - 100, version: '1.2.3'},
-    ]
+    const previous = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const}
+    const stale = {timestamp: currentUnixTime() - 60 * 31, version: '1.2.2' as const}
 
+    const versions = [newLatest, previous, stale]
     const manifest = {
       tags: {
         latest: [
+          // always keep previous so we preserve buffer
+          previous,
           // stale, can and should be removed
-          {timestamp: currentUnixTime() - 60 * 31, version: '1.2.3' as const},
+          stale,
         ],
       },
       versions,
     }
-    expect(tagVersion(manifest, 'latest', newEntry, {setAsDefault: true})).toEqual({
-      default: newEntry.version,
+    expect(tagVersion(manifest, 'latest', newLatest, {setAsDefault: true})).toEqual({
+      default: newLatest.version,
       tags: {
-        latest: [newEntry],
+        latest: [newLatest, previous],
       },
       versions,
     })
