@@ -179,6 +179,16 @@ export const Rule: RuleClass = class Rule implements IRule {
     return rule
   }
 
+  skip(): Rule {
+    const rule = this.clone()
+    rule._rules = []
+    rule._required = 'optional'
+    rule._message = undefined
+    rule._level = 'error'
+    rule._fieldRules = undefined
+    return rule
+  }
+
   required(): Rule {
     const rule = this.cloneWithRules([{flag: 'presence', constraint: 'required'}])
     rule._required = 'required'

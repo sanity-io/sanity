@@ -162,6 +162,7 @@ export interface Rule {
   either(children: Rule[]): Rule
   optional(): Rule
   required(): Rule
+  skip(): Rule
   custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
   media<T extends MediaAssetTypes = MediaAssetTypes>(fn: MediaValidator<T>): Rule
   min(len: number | string | FieldReference): Rule

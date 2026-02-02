@@ -10,7 +10,7 @@
  * 3. Even though the parent is hidden, validation still runs on children
  * 4. This prevents publishing the document
  */
-import {defineField, defineType, type ValidationContext} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 // Reusable nested object type with required fields
 const titleObject = defineType({
@@ -92,14 +92,14 @@ export const hiddenFieldValidationTypes = [
             title: 'Title',
             type: 'string',
             validation: (rule, context) =>
-              context.parentHidden || context.hidden ? true : rule.required().min(5),
+              context?.parentHidden || context?.hidden ? rule.skip() : rule.required().min(5),
           }),
           defineField({
             name: 'subtitle',
             title: 'Subtitle',
             type: 'string',
-            validation: (rule, context: ValidationContext & {parentHidden?: boolean}) =>
-              context.parentHidden || context.hidden ? true : rule.required().min(5),
+            validation: (rule, context) =>
+              context?.parentHidden || context?.hidden ? rule.skip() : rule.required().min(5),
           }),
           defineField({
             name: 'metadata',
@@ -116,11 +116,8 @@ export const hiddenFieldValidationTypes = [
                 name: 'publishDate',
                 title: 'Publish Date',
                 type: 'date',
-                validation: (
-                  rule,
-                  context,
-                  // this means that if the parent is hidden or if the current field is hidden then the validation will always just pass
-                ) => (context.parentHidden || context.hidden ? true : rule.required()),
+                validation: (rule, context) =>
+                  context?.parentHidden || context?.hidden ? rule.skip() : rule.required(),
               }),
             ],
           }),

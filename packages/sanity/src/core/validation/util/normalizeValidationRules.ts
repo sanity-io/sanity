@@ -115,10 +115,6 @@ export function normalizeValidationRules(
       }, {}),
     ).reduce(baseRuleReducer, new RuleClass(typeDef))
 
-  if (validation === true) {
-    return [baseRule]
-  }
-
   if (validation && typeof validation === 'object') {
     return [validation]
   }
@@ -127,11 +123,15 @@ export function normalizeValidationRules(
     return [baseRule]
   }
 
-  return normalizeValidationRules(
-    {
-      ...typeDef,
-      validation: validation(baseRule, context as ValidationContext),
-    },
-    context,
-  )
+  if (typeof validation === 'function') {
+    return normalizeValidationRules(
+      {
+        ...typeDef,
+        validation: validation(baseRule, context),
+      },
+      context,
+    )
+  }
+
+  return [baseRule]
 }
