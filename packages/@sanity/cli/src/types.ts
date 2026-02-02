@@ -378,6 +378,7 @@ export interface CliConfig {
     /**
      * Enable typegen as part of sanity dev and sanity build.
      * When enabled, types are generated on startup and when files change.
+     * Defaults to `false`
      */
     enabled?: boolean
   }
