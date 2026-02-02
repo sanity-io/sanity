@@ -323,6 +323,7 @@
     "@typescript/native-preview": "catalog:",
     "@vitest/expect": "^4.0.18",
     "babel-plugin-react-compiler": "1.0.0",
+    "babel-plugin-styled-components": "catalog:",
     "blob-polyfill": "^9.0.20240710",
     "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.3.1",

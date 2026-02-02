@@ -90,6 +90,7 @@
     "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "1.0.0",
+    "babel-plugin-styled-components": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

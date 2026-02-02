@@ -62,6 +62,6 @@ export default defineConfig({
     },
   },
 
-  babel: {reactCompiler: true},
+  babel: {reactCompiler: true, styledComponents: true},
   reactCompilerOptions: {target: '19'},
 })
