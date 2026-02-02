@@ -52,10 +52,27 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
   }
 }
 
+/**
+ * Checks if a validation function uses the context parameter.
+ *
+ * Functions with 2+ parameters like `(rule, context) => ...` need runtime context
+ * (e.g., `context.hidden`, `context.document`) and cannot be pre-evaluated at schema compile time.
+ *
+ * Functions with 1 parameter like `(rule) => rule.required()` don't need context
+ * and can be normalized immediately for better performance.
+ */
 function hasValidationContext(validation: SchemaValidationValue | undefined): boolean {
   if (!validation) return false
   if (Array.isArray(validation)) {
     return validation.some(hasValidationContext)
   }
-  return typeof validation === 'function'
+  if (typeof validation !== 'function') return false
+
+  // Check declared parameter count first (most common case)
+  if (validation.length >= 2) return true
+
+  // Function.length doesn't count rest parameters, so check the signature for patterns like
+  // `(rule, ...args)` which would have length === 1 but still expects context
+  const signature = Function.prototype.toString.call(validation)
+  return /\(\s*\w+\s*,\s*\.\.\./.test(signature)
 }
