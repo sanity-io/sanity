@@ -268,6 +268,7 @@ export function validateDocumentObservable({
     i18n,
     getDocumentExists,
     environment,
+    customValidationConcurrencyLimiter,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
