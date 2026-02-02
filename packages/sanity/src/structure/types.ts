@@ -12,6 +12,7 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
+import {LOADING_PANE} from './constants'
 import {
   type DefaultDocumentNodeResolver,
   type Intent,
@@ -312,6 +313,9 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   defaultPanes?: string[]
 }
 
+export function isDocumentPaneNode(pane: PaneNode | typeof LOADING_PANE): pane is DocumentPaneNode {
+  return pane !== LOADING_PANE && pane.type === 'document'
+}
 /** @internal */
 export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList'> {
   defaultLayout?: GeneralPreviewLayoutKey
