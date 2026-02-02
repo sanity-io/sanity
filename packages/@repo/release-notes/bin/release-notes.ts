@@ -8,6 +8,8 @@ import yargs from 'yargs'
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
 import {publishReleases} from '../src/commands/publishReleases'
+import {writeCommitCheck} from '../src/commands/writeCommitCheck'
+import {writePrChecks} from '../src/commands/writePrChecks'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
 
@@ -116,6 +118,24 @@ await yargs(process.argv.slice(2))
         process.exit(1)
       }
     },
+  })
+  .command({
+    command: 'status-check-prs',
+    describe: 'Update in-flight release status checks for all open PRs',
+    handler: () => writePrChecks().then(() => void 0),
+  })
+  .command({
+    command: 'status-check-commit',
+    describe: 'Update in-flight release status checks for a single commit',
+    builder: (cmd) =>
+      cmd.options({
+        commit: {
+          description: 'Head commit to run check on',
+          type: 'string',
+          demandOption: true,
+        },
+      }),
+    handler: (args) => writeCommitCheck({commit: args.commit}).then(() => void 0),
   })
   .demandCommand(1, 'must provide a valid command')
   .help('h')
