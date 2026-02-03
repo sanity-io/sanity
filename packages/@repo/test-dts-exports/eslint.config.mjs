@@ -6,7 +6,6 @@ export default defineConfig([
   {
     rules: {
       'import/consistent-type-specifier-style': 'off',
-      'simple-import-sort/imports': 'off',
       'max-statements': 'off',
       'unused-imports/no-unused-imports': 'off',
       'import/no-named-default': 'off',
