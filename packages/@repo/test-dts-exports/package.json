@@ -28,7 +28,6 @@
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "prettier": "catalog:",
     "ts-morph": "^26.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:",

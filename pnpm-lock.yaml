@@ -72,9 +72,6 @@ catalogs:
     playwright:
       specifier: 1.57.0
       version: 1.57.0
-    prettier:
-      specifier: ^3.8.1
-      version: 3.8.1
     react:
       specifier: ^19.2.3
       version: 19.2.3
@@ -1013,9 +1010,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      prettier:
-        specifier: 'catalog:'
-        version: 3.8.1
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -1144,7 +1138,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       prettier:
-        specifier: 'catalog:'
+        specifier: ^3.8.1
         version: 3.8.1
       semver:
         specifier: ^7.7.2
