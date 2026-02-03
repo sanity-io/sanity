@@ -245,20 +245,19 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
 
-  // Handle click: if the dialog is already open (opened by mousedown), just stop propagation
-  // to prevent the dialog's onClickOutside from detecting this as an "outside" click.
-  // If not open yet, call onOpen (fallback for when mousedown didn't trigger).
+  // Prevent default on mousedown to stop focus from shifting before click completes.
+  // This fixes a Safari issue where focus events trigger re-renders that interrupt the click.
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    event.preventDefault()
+  }, [])
+
+  // Handle click: open the dialog and stop propagation to prevent onClickOutside from firing.
   const handleClick = useCallback(
     (event: React.MouseEvent) => {
-      if (open) {
-        // Dialog already open (from mousedown) - just stop propagation
-        event.stopPropagation()
-      } else {
-        // Dialog not open yet - open it (fallback)
-        onOpen()
-      }
+      event.stopPropagation()
+      onOpen()
     },
-    [open, onOpen],
+    [onOpen],
   )
 
   const item = (
@@ -288,7 +287,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         // triggering a state update that causes a re-render before the click event completes.
         // The click handler checks if already open and stops propagation to prevent
         // the dialog's onClickOutside from detecting this as an "outside" click.
-        onMouseDown={onOpen}
+        onMouseDown={handleMouseDown}
         onClick={handleClick}
         ref={setPreviewCardElement}
         onFocus={onFocus}
