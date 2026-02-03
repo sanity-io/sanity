@@ -131,13 +131,13 @@ const importAssetsAction: CliCommandAction<ImportAssetsFlags> = async (args, con
     args.extOptions['media-library-id'] ?? (await determineTargetMediaLibrary(context))
 
   const client = apiClient().withConfig({
-    'apiVersion': MINIMUM_API_VERSION,
-    'requestTagPrefix': 'sanity.mediaLibraryCli.import',
-    '~experimental_resource': {
+    apiVersion: MINIMUM_API_VERSION,
+    requestTagPrefix: 'sanity.mediaLibraryCli.import',
+    resource: {
       type: 'media-library',
       id: mediaLibraryId,
     },
-    'perspective': 'drafts',
+    perspective: 'drafts',
   })
 
   output.print()
