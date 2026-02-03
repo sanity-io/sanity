@@ -4,8 +4,9 @@ import {map} from 'rxjs/operators'
 import {type RouterState, useRouter} from 'sanity/router'
 
 import {LOADING_PANE} from '../constants'
-import {isDocumentPaneNode, type PaneNode, type RouterPaneGroup, type RouterPanes} from '../types'
+import {type PaneNode, type RouterPaneGroup, type RouterPanes} from '../types'
 import {useStructureTool} from '../useStructureTool'
+import {isDocumentPaneNode} from '../utils'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
 
 interface PaneData {
