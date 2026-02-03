@@ -32,9 +32,10 @@ function createSplitPaneGroup(
   }
 
   // Create a sibling for each view in defaultPanes
-  return defaultPanes.map((viewId) => ({
+  // Add expanded: 'true' to the first pane to avoid re-expanding on subsequent navigations
+  return defaultPanes.map((viewId, index) => ({
     id: documentId,
-    params: {...otherParams, view: viewId},
+    params: {...otherParams, view: viewId, ...(index === 0 ? {expanded: 'true'} : {})},
     payload,
   }))
 }
