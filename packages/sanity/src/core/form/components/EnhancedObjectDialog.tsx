@@ -166,8 +166,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const handleCompleteDialogClose = useCallback(() => {
     telemetry.log(NestedDialogClosed)
     close()
-    onClose?.()
-  }, [close, onClose, telemetry])
+  }, [close, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
