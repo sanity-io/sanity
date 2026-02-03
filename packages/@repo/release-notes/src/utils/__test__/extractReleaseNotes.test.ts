@@ -136,6 +136,13 @@ ${a}
       ).toEqual(true)
     },
   )
+  it('treats missing release notes as not excluded', () => {
+    expect(
+      shouldExcludeReleaseNotes(
+        extractReleaseNotes(markdownToPortableText(`this is just some markdown`)),
+      ),
+    ).toEqual(false)
+  })
   it('skips inline html comments', () => {
     const notes = extractReleaseNotes(
       markdownToPortableText(`
