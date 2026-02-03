@@ -38,7 +38,6 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.json)",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

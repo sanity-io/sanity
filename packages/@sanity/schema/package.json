@@ -50,7 +50,6 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/schema/tsconfig.json)",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

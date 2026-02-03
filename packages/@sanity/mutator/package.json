@@ -38,7 +38,6 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/mutator/tsconfig.json)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.cjs",

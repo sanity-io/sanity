@@ -25,7 +25,6 @@
   "main": "package.json",
   "scripts": {
     "build": "sanity build",
-    "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 4000",
     "lint": "eslint .",

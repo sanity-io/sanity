@@ -99,7 +99,6 @@
   ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.json)",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

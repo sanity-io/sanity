@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "build": "tsc && vite build && sanity manifest extract",
-    "check:types": "tsc --noEmit",
     "dev": "vite",
     "preview": "vite preview"
   },

@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "sanity build",
-    "check:types": "tsc --noEmit",
     "dev": "sanity dev",
     "lint": "eslint .",
     "start": "tsx ./index.ts",
