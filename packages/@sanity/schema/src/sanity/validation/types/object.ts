@@ -8,13 +8,13 @@ const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/
 
 /**
- * DOM Node/Element property names that can cause issues when used as field names.
- * Using these as field names may cause Studio crashes due to name collisions
- * with DOM APIs when document values are accidentally treated as DOM elements.
+ * Field names that can cause issues due to collisions with DOM API properties
+ * or React naming conventions. Using these as field names may cause Studio
+ * crashes when document values are accidentally treated as DOM elements.
  *
  * See: https://github.com/sanity-io/sanity/issues/4435
  */
-const RESERVED_DOM_PROPERTY_NAMES = new Set([
+const PROBLEMATIC_FIELD_NAMES = new Set([
   // Node properties
   'parentNode',
   'childNodes',
@@ -107,13 +107,13 @@ function validateFieldName(name: any): Array<any> {
       HELP_IDS.OBJECT_FIELD_NAME_INVALID,
     ]
   }
-  if (RESERVED_DOM_PROPERTY_NAMES.has(name)) {
+  if (PROBLEMATIC_FIELD_NAMES.has(name)) {
     return [
       warning(
-        `Field name "${name}" may cause issues. This name collides with a DOM API property, ` +
+        `Field name "${name}" may cause issues. This name collides with a DOM API property or a React naming convention, ` +
           `which can cause the Studio to crash in certain scenarios. ` +
           `Consider renaming this field to avoid potential issues.`,
-        HELP_IDS.OBJECT_FIELD_NAME_RESERVED_DOM_PROPERTY,
+        HELP_IDS.OBJECT_FIELD_NAME_PROBLEMATIC,
       ),
     ]
   }

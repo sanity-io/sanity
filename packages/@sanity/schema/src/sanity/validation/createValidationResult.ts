@@ -30,7 +30,7 @@ export const HELP_IDS = {
   GLOBAL_DOCUMENT_REFERENCE_INVALID: 'global-document-reference-invalid',
   DEPRECATED_BLOCKEDITOR_KEY: 'schema-deprecated-blockeditor-key',
   STANDALONE_BLOCK_TYPE: 'schema-standalone-block-type',
-  OBJECT_FIELD_NAME_RESERVED_DOM_PROPERTY: 'schema-field-name-reserved-dom-property',
+  OBJECT_FIELD_NAME_PROBLEMATIC: 'schema-field-name-problematic',
 }
 
 function createValidationResult(

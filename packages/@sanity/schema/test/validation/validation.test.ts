@@ -446,8 +446,8 @@ describe('Validation test', () => {
     })
   })
 
-  describe('DOM property name validation', () => {
-    test('warns when field name is a reserved DOM property (parentNode)', () => {
+  describe('Problematic field name validation', () => {
+    test('warns when field name is a problematic DOM property (parentNode)', () => {
       const schemaDef = [
         {
           type: 'document',
@@ -467,13 +467,13 @@ describe('Validation test', () => {
       expect(parentNodeField._problems).toHaveLength(1)
       expect(parentNodeField._problems[0]).toMatchObject({
         severity: 'warning',
-        helpId: 'schema-field-name-reserved-dom-property',
+        helpId: 'schema-field-name-problematic',
       })
       expect(parentNodeField._problems[0].message).toContain('parentNode')
       expect(parentNodeField._problems[0].message).toContain('DOM API property')
     })
 
-    test('warns when field name is a reserved DOM property (children)', () => {
+    test('warns when field name is a problematic DOM property (children)', () => {
       const schemaDef = [
         {
           type: 'object',
@@ -490,11 +490,11 @@ describe('Validation test', () => {
       expect(childrenField._problems).toHaveLength(1)
       expect(childrenField._problems[0]).toMatchObject({
         severity: 'warning',
-        helpId: 'schema-field-name-reserved-dom-property',
+        helpId: 'schema-field-name-problematic',
       })
     })
 
-    test('warns for various reserved DOM property names', () => {
+    test('warns for various problematic field names', () => {
       const schemaDef = [
         {
           type: 'object',
@@ -521,12 +521,12 @@ describe('Validation test', () => {
         expect(field._problems).toHaveLength(1)
         expect(field._problems[0]).toMatchObject({
           severity: 'warning',
-          helpId: 'schema-field-name-reserved-dom-property',
+          helpId: 'schema-field-name-problematic',
         })
       }
     })
 
-    test('does not warn for non-reserved field names', () => {
+    test('does not warn for non-problematic field names', () => {
       const schemaDef = [
         {
           type: 'object',
