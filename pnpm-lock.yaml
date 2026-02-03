@@ -95,14 +95,14 @@ catalogs:
       version: 7.3.1
 
 overrides:
-  '@sanity/ui@3': ^3.1.11
   '@sanity/types': ^5.0.0
+  '@sanity/ui@3': ^3.1.11
   jsdom: 26.1.0
   vitest: ^4.0.18
 
 patchedDependencies:
   '@sanity/codegen@5.9.1':
-    hash: a231369a5c5809e774652f5038e8321d3ccc419534e47b028b169ec5453c6415
+    hash: 57eb4d5b5a714f810a2a695831f437ee35020f0a2f34c76ce166a0181bb69c06
     path: patches/@sanity__codegen@5.9.1.patch
 
 importers:
@@ -1117,7 +1117,7 @@ importers:
         version: 7.14.1(debug@4.4.3)
       '@sanity/codegen':
         specifier: 'catalog:'
-        version: 5.9.1(patch_hash=a231369a5c5809e774652f5038e8321d3ccc419534e47b028b169ec5453c6415)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+        version: 5.9.1(patch_hash=57eb4d5b5a714f810a2a695831f437ee35020f0a2f34c76ce166a0181bb69c06)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/runtime-cli':
         specifier: ^13.1.0
         version: 13.1.0(@types/node@24.10.4)(debug@4.4.3)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -1835,7 +1835,7 @@ importers:
         version: 7.14.1(debug@4.4.3)
       '@sanity/codegen':
         specifier: 'catalog:'
-        version: 5.9.1(patch_hash=a231369a5c5809e774652f5038e8321d3ccc419534e47b028b169ec5453c6415)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+        version: 5.9.1(patch_hash=57eb4d5b5a714f810a2a695831f437ee35020f0a2f34c76ce166a0181bb69c06)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/color':
         specifier: ^3.0.6
         version: 3.0.6
@@ -16339,7 +16339,7 @@ snapshots:
       - react-dom
       - react-is
 
-  '@sanity/codegen@5.9.1(patch_hash=a231369a5c5809e774652f5038e8321d3ccc419534e47b028b169ec5453c6415)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
+  '@sanity/codegen@5.9.1(patch_hash=57eb4d5b5a714f810a2a695831f437ee35020f0a2f34c76ce166a0181bb69c06)(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/generator': 7.28.6
