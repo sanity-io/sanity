@@ -633,7 +633,7 @@ importers:
         version: 5.2.3(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)
       '@sanity/preview-url-secret':
         specifier: ^4.0.2
-        version: 4.0.2(@sanity/client@7.14.1(debug@4.4.3))
+        version: 4.0.2(@sanity/client@7.14.1)
       '@sanity/react-loader':
         specifier: ^2.0.5
         version: 2.0.5(@sanity/types@packages+@sanity+types)(react@19.2.3)(typescript@5.9.3)
@@ -1886,8 +1886,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(@sanity/client@7.14.1(debug@4.4.3))(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
-        specifier: ^4.0.2
-        version: 4.0.2(@sanity/client@7.14.1(debug@4.4.3))
+        specifier: ^4.0.3
+        version: 4.0.3(@sanity/client@7.14.1(debug@4.4.3))
       '@sanity/schema':
         specifier: workspace:*
         version: link:../@sanity/schema
@@ -5454,6 +5454,12 @@ packages:
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.13.2
+
+  '@sanity/preview-url-secret@4.0.3':
+    resolution: {integrity: sha512-aVkOiVvQDDC08fp3hkhrcz32QmjX8tVlLz843NE5y2TPTV6sc/+yg+uG/vwzeGtuDn0mjsjFm4EPUw54MMyr+w==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.14.1
 
   '@sanity/react-loader@2.0.5':
     resolution: {integrity: sha512-S1EnUXeqnY2eq0pWCEsdb37d0Xzu3kct+m5JWlYead+Djux42gOO+N0wTi+aqJ+KP+G4M6ZRDnaZMJrpDSApSQ==}
@@ -16424,7 +16430,7 @@ snapshots:
   '@sanity/debug-preview-url-secret-plugin@2.0.4(@sanity/client@7.14.1)(react@19.2.3)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.3)
-      '@sanity/preview-url-secret': 4.0.2(@sanity/client@7.14.1(debug@4.4.3))
+      '@sanity/preview-url-secret': 4.0.2(@sanity/client@7.14.1)
       react: 19.2.3
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -16778,7 +16784,12 @@ snapshots:
       prettier: 3.8.1
       prettier-plugin-packagejson: 2.5.20(prettier@3.8.1)
 
-  '@sanity/preview-url-secret@4.0.2(@sanity/client@7.14.1(debug@4.4.3))':
+  '@sanity/preview-url-secret@4.0.2(@sanity/client@7.14.1)':
+    dependencies:
+      '@sanity/client': 7.14.1(debug@4.4.3)
+      '@sanity/uuid': 3.0.2
+
+  '@sanity/preview-url-secret@4.0.3(@sanity/client@7.14.1(debug@4.4.3))':
     dependencies:
       '@sanity/client': 7.14.1(debug@4.4.3)
       '@sanity/uuid': 3.0.2
@@ -17088,7 +17099,7 @@ snapshots:
       '@sanity/insert-menu': 3.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@sanity/types@packages+@sanity+types)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@sanity/mutate': 0.11.0-canary.4(xstate@5.25.1)
       '@sanity/presentation-comlink': 2.0.1(@sanity/client@7.14.1(debug@4.4.3))(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 4.0.2(@sanity/client@7.14.1(debug@4.4.3))
+      '@sanity/preview-url-secret': 4.0.2(@sanity/client@7.14.1)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.4)(react@19.2.3)
       '@sanity/visual-editing-csm': 3.0.4(@sanity/client@7.14.1(debug@4.4.3))(@sanity/types@packages+@sanity+types)(typescript@5.9.3)
       '@vercel/stega': 1.0.0
