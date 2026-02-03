@@ -16,14 +16,11 @@
     "promise"
   ],
   "ignorePatterns": [
-    "**/etc/*",
     "**/.sanity/*",
     "**/public/*",
-    "**/build/*",
     "**/.next/*",
     "**/static/*",
     "**/coverage/*",
-    "**/lib/*",
     "**/node_modules/*",
     "**/dist/*",
     "*.json",
