@@ -83,15 +83,23 @@ test.describe('Custom Release Actions', () => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
         test.slow()
-        await page.goto(setupPath)
-        await page.waitForLoadState('load', {timeout: 30000})
+
+        // Navigate and wait for the releases API response to complete
+        // This ensures the release data is fully loaded before interacting with the page
+        await Promise.all([
+          page.waitForResponse(
+            (response) => response.url().includes('/data/query/') && response.status() === 200,
+          ),
+          page.goto(setupPath),
+        ])
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
           // On overview page, wait for the releases table
           await expect(page.getByRole('table')).toBeVisible()
         } else {
-          // On individual release page, wait for the menu button
+          // On individual release page, wait for the menu button which indicates
+          // the release data has loaded successfully
           await expect(page.getByTestId('release-menu-button')).toBeVisible()
         }
       })
