@@ -1,4 +1,3 @@
-// @ts-expect-error -- Type declaration in typings/ not resolved in all monorepo contexts
 import humanizeList from 'humanize-list'
 import {flatten, partition} from 'lodash-es'
 

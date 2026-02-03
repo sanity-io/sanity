@@ -1,4 +1,3 @@
-// @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
 type AnyIntlOptions = Intl.DateTimeFormat | Intl.ListFormatOptions | Intl.NumberFormatOptions
 
 /**
@@ -11,7 +10,6 @@ type AnyIntlOptions = Intl.DateTimeFormat | Intl.ListFormatOptions | Intl.Number
 export const intlCache = (() => {
   const caches = {
     dateTimeFormat: createCache<Intl.DateTimeFormat>(),
-    // @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
     listFormat: createCache<Intl.ListFormat>(),
     numberFormat: createCache<Intl.NumberFormat>(),
     relativeTimeFormat: createCache<Intl.RelativeTimeFormat>(),
@@ -29,7 +27,6 @@ export const intlCache = (() => {
     return instance
   }
 
-  // @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
   function listFormat(locale: string, options: Intl.ListFormatOptions) {
     const key = getCacheId(locale, options)
     let instance = caches.listFormat[key]
@@ -37,7 +34,6 @@ export const intlCache = (() => {
       return instance
     }
 
-    // @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
     instance = new Intl.ListFormat(locale, options)
     caches.listFormat[key] = instance
     return instance

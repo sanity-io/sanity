@@ -1,4 +1,3 @@
-// @ts-expect-error -- Type declaration in typings/ not resolved in all monorepo contexts
 import exif from 'exif-component'
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'

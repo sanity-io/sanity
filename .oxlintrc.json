@@ -30,7 +30,15 @@
     "examples/**",
     "packages/@sanity/cli/templates/**/*",
     "dev/test-studio/sanity.theme.mjs",
-    "dev/test-studio/workshop/scopes.js"
+    "dev/test-studio/workshop/scopes.js",
+    "packages/*/dist/**",
+    "packages/*/lib/**",
+    "packages/@sanity/*/dist/**",
+    "packages/@sanity/*/lib/**",
+    "packages/@repo/*/dist/**",
+    "packages/@repo/*/lib/**",
+    "packages/@sanity/cli/codemods/**",
+    "packages/@sanity/cli/test/__fixtures__/**"
   ],
   "categories": {
     "correctness": "error",
