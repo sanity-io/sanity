@@ -353,7 +353,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
       if (invalidViewIds.length > 0) {
         // eslint-disable-next-line no-console
         console.warn(
-          `[Sanity] defaultPanes contains invalid view IDs that don't match any defined views: ${invalidViewIds.join(', ')}. Valid view IDs are: ${viewIds.join(', ')}`,
+          `DefaultPanes contains invalid view IDs that don't match any defined views: ${invalidViewIds.join(', ')}. Valid view IDs are: ${viewIds.join(', ')}`,
         )
       }
 

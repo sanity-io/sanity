@@ -614,6 +614,92 @@ describe('resolveIntent', () => {
       ])
     })
 
+    it('creates correct order of splitPanes when it has multiple views ', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return (
+              builder
+                .document()
+                .views([
+                  builder.view.form().id('editor'),
+                  builder.view.form().id('preview').title('Preview'),
+                  builder.view.form().id('json').title('JSON'),
+                ])
+                // Order is inversed
+                .defaultPanes(['preview', 'editor'])
+            )
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [
+          {id: 'author123', params: {view: 'preview'}, payload: undefined},
+          {id: 'author123', params: {view: 'editor'}, payload: undefined},
+        ],
+      ])
+    })
+
+    it('does not crash if defaultPane does not exist and falls back to default behavior', async () => {
+      const source = await getMockSource({config: {schema: mockSchema}})
+      const S = createStructureBuilder({
+        source,
+        defaultDocumentNode: (builder, {schemaType}) => {
+          if (schemaType === 'author') {
+            return (
+              builder
+                .document()
+                .views([
+                  builder.view.form().id('editor'),
+                  builder.view.form().id('preview').title('Preview'),
+                  builder.view.form().id('json').title('JSON'),
+                ])
+                // Only 'editor' is valid, 'incorrectPreview' doesn't exist
+                .defaultPanes(['editor', 'incorrectPreview'])
+            )
+          }
+          return builder.document()
+        },
+        perspectiveStack: ['drafts'],
+      })
+
+      const rootPaneNode = S.list()
+        .title('Content')
+        .items([S.documentTypeListItem('author').title('Authors')]) as unknown as UnresolvedPaneNode
+
+      const routerPanes = await resolveIntent({
+        intent: 'edit',
+        params: {id: 'author123', type: 'author'},
+        payload: undefined,
+        rootPaneNode,
+        structureContext: S.context,
+      })
+
+      // With only 1 valid view after filtering, falls back to default behavior (no view param)
+      expect(routerPanes).toEqual([
+        [{id: 'author'}],
+        [{id: 'author123', params: {}, payload: undefined}],
+      ])
+    })
+
     it('preserves other params in split panes', async () => {
       const source = await getMockSource({config: {schema: mockSchema}})
       const S = createStructureBuilder({
