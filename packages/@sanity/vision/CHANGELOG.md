@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
+
+### Bug Fixes
+
+* optimize styled components when publishing to npm ([#12047](https://github.com/sanity-io/sanity/issues/12047)) ([550d11e](https://github.com/sanity-io/sanity/commit/550d11e8fec21a0fb950e0830ea95678dec38c20)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 **Note:** Version bump only for package @sanity/vision
