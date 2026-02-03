@@ -7,7 +7,7 @@ import {isEqual, memoize} from 'lodash-es'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {type AuthConfig} from '../../../config'
+import {type AuthConfig, type LoginMethod} from '../../../config'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
@@ -50,6 +50,21 @@ const getHashToken = (): string | null => {
   history.replaceState(null, '', newUrl)
 
   return tokenParam
+}
+
+const getAuthOptions = (
+  loginMethod: LoginMethod,
+  token: string | null,
+): {token: string} | {withCredentials: boolean} | null => {
+  if (loginMethod === 'cookie') {
+    return {withCredentials: true}
+  }
+
+  if (loginMethod === 'token') {
+    return token ? {token} : null
+  }
+
+  return token ? {token} : {withCredentials: true}
 }
 
 const getStoredToken = (projectId: string): string | null => {
@@ -194,7 +209,7 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...(token ? {token} : {withCredentials: true}),
+        ...getAuthOptions(loginMethod, token),
         perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
@@ -279,7 +294,7 @@ export function _createAuthStore({
       projectId,
       dataset,
       useCdn: true,
-      ...(token ? {token} : {withCredentials: true}),
+      ...getAuthOptions(loginMethod, token),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       headers: DEFAULT_STUDIO_CLIENT_HEADERS,
