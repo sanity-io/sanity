@@ -100,8 +100,8 @@ const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 })
 
 const RetryCardButton = styled(Card)`
-  // Add not on hover
-      &:not(:hover) {
+  /* Add not on hover */
+  &:not(:hover) {
     background-color: transparent;
   }
 `
@@ -112,8 +112,8 @@ const RootStack = styled(Stack)(({theme}) => {
   return css`
     position: relative;
 
-    // Only show the floating layer on hover when hover is supported.
-    // Else, the layer is always visible.
+    /* Only show the floating layer on hover when hover is supported.
+    Else, the layer is always visible. */
     @media (hover: hover) {
       ${ContextMenuBox} {
         opacity: 0;

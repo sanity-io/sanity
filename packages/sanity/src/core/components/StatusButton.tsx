@@ -14,8 +14,8 @@ export type StatusButtonProps = ButtonProps & {
 
 const StyledButton = styled(Button)`
   position: relative;
-  // The children in button is rendered inside a span, we need to absolutely position it.
-      & > span:nth-child(2) {
+  /* The children in button is rendered inside a span, we need to absolutely position it. */
+  & > span:nth-child(2) {
     position: absolute;
     top: 6px;
     right: 6px;

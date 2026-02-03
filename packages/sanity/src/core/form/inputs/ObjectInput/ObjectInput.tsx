@@ -13,9 +13,9 @@ import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
 
 const RootStack = styled(Stack)`
-  // Disable focus ring for the object block. We instead highlight the left border on the fieldset
-      // for level > 0 to signal that you have focused on the object
-      &:focus {
+  /* Disable focus ring for the object block. We instead highlight the left border on the fieldset
+  for level > 0 to signal that you have focused on the object */
+  &:focus {
     outline: none;
   }
 `

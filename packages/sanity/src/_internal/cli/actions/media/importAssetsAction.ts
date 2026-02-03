@@ -478,7 +478,7 @@ function uploadAsset({
         filter((response) => response.type === 'response'),
         tap(() => debug(`[Asset ${asset}] Finished uploading new asset`)),
         // TODO: The `client.assets.upload` method should return `MediaLibraryUploadResponse` when operating on Media Library resources. When that occurs, this type assertion can be removed.
-        map((response) => (response as MediaLibraryUploadResponse).body),
+        map((response) => (response as unknown as MediaLibraryUploadResponse).body),
         map<MediaLibraryUploadResult, ResolvedAsset>((result) => ({
           assetIds: [result.asset._id],
           originalFilename: asset,

@@ -24,12 +24,12 @@ const Divider = styled(Box)`
 `
 
 const SerializerContainer = styled.div`
-  // Remove margin top of first element
-      > div:first-child {
+  /* Remove margin top of first element */
+  > div:first-child {
     margin-top: 0;
   }
-  // Remove margin bottom to last box.
-      > [data-ui='Box']:last-child {
+  /* Remove margin bottom to last box. */
+  > [data-ui='Box']:last-child {
     margin-bottom: 0;
   }
 `

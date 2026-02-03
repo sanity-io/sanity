@@ -21,8 +21,8 @@ const ReleasesNavContainer = styled(Card)`
   padding: 2px;
   margin: -3px 0;
 
-  // The children in button is rendered inside a span, we need to absolutely position the dot for the error.
-      span:has(> [data-ui='error-status-icon']) {
+  /* The children in button is rendered inside a span, we need to absolutely position the dot for the error. */
+  span:has(> [data-ui='error-status-icon']) {
     position: absolute;
     top: 6px;
     right: 6px;
