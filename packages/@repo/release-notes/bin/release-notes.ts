@@ -134,8 +134,14 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        pr: {
+          description: 'Current pull request',
+          type: 'number',
+          demandOption: true,
+        },
       }),
-    handler: (args) => writeCommitCheck({commit: args.commit}).then(() => void 0),
+    handler: (args) =>
+      writeCommitCheck({commit: args.commit, currentPrNumber: args.pr}).then(() => void 0),
   })
   .demandCommand(1, 'must provide a valid command')
   .help('h')
