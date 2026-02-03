@@ -92,7 +92,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack} = useDialogStack({
+  const {dialogId, isTop, stack, close} = useDialogStack({
     path: currentPath,
   })
 
@@ -151,7 +151,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     [isTop, stack, onPathOpen, onClose, telemetry],
   )
 
-  const handleClose = useCallback(() => {
+  const handleStackedDialogClose = useCallback(() => {
     // This means that we are closing the dialog and are not at the root level
     // Which means we will open the parent dialog
     if (stack.length >= 2) {
@@ -162,6 +162,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
     onClose?.()
   }, [onClose, stack, telemetry])
+
+  const handleCompleteDialogClose = useCallback(() => {
+    telemetry.log(NestedDialogClosed)
+    close()
+  }, [close, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
@@ -178,11 +183,12 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           data-testid="nested-object-dialog"
           header={<DialogBreadcrumbs currentPath={currentPath} />}
           id={dialogId}
-          onClose={handleClose}
+          onClose={handleStackedDialogClose}
           onDragEnter={onDragEnter}
           onDrop={onDrop}
           width={width}
           animate={!shouldDisableAnimation}
+          onClickOutside={handleCompleteDialogClose}
         >
           {contents}
         </StyledDialog>
@@ -197,7 +203,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     >
       <PopoverDialog
         header={header}
-        onClose={handleClose}
+        onClose={handleStackedDialogClose}
         width={width}
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}

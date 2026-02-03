@@ -25,6 +25,8 @@ export interface DialogStackContextValue {
   remove: (id: string) => void
   /** Update the path of an existing dialog entry */
   update: (id: string, path?: Path) => void
+  /** Close dialogs */
+  close: () => void
 }
 
 /**
