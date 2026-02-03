@@ -678,7 +678,7 @@ importers:
         version: 5.3.0
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       qs:
         specifier: ^6.14.1
         version: 6.14.1
@@ -787,7 +787,7 @@ importers:
         version: link:../utils
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       read-package-up:
         specifier: ^11.0.0
         version: 11.0.0
@@ -887,7 +887,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -1081,7 +1081,7 @@ importers:
         version: 16.6.1
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       ora:
         specifier: ^8.2.0
         version: 8.2.0
@@ -1275,7 +1275,7 @@ importers:
         version: 3.1.0
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
@@ -1369,7 +1369,7 @@ importers:
         version: 4.4.3(supports-color@8.1.1)
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1433,7 +1433,7 @@ importers:
         version: 3.1.0
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       object-inspect:
         specifier: ^1.13.4
         version: 1.13.4
@@ -1640,7 +1640,7 @@ importers:
         version: 2.2.3
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       quick-lru:
         specifier: ^5.1.1
         version: 5.1.1
@@ -2037,7 +2037,7 @@ importers:
         version: 2.2.3
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       log-symbols:
         specifier: ^2.2.0
         version: 2.2.0
@@ -2411,7 +2411,7 @@ importers:
         version: 11.1.0
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2481,7 +2481,7 @@ importers:
         version: 11.1.0
       lodash-es:
         specifier: ^4.17.22
-        version: 4.17.22
+        version: 4.17.23
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
@@ -9923,9 +9923,6 @@ packages:
     resolution: {integrity: sha512-XT9ewWAC43tiAV7xDAPflMkG0qOPn2QjHqlgX8FOqmWa/rxnyYDulF9T0F7tRy1u+TVTmK/M//6VIOye+2zDXg==}
     engines: {node: '>=20'}
 
-  lodash-es@4.17.22:
-    resolution: {integrity: sha512-XEawp1t0gxSi9x01glktRZ5HDy0HXqrM0x5pXQM98EaI0NxO6jVM7omDOxsuEo5UIASAnm2bRp1Jt/e0a2XU8Q==}
-
   lodash-es@4.17.23:
     resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
 
@@ -16174,7 +16171,7 @@ snapshots:
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
       date-fns: 3.6.0
       lodash: 4.17.21
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       react-fast-compare: 3.2.2
       rxjs: 7.8.2
@@ -16534,7 +16531,7 @@ snapshots:
       get-it: 8.7.0(debug@4.4.3)
       get-uri: 6.0.5
       gunzip-maybe: 1.4.2
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       p-map: 7.0.4
       pretty-ms: 9.3.0
       split2: 4.2.0
@@ -16566,7 +16563,7 @@ snapshots:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       react-is: 19.2.3
     transitivePeerDependencies:
@@ -16579,7 +16576,7 @@ snapshots:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)(styled-components@6.1.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       react-is: 19.2.3
     transitivePeerDependencies:
@@ -16847,7 +16844,7 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       '@types/lodash-es': 4.17.12
       groq: 3.88.1-typegen-experimental.0
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       react-compiler-runtime: 19.1.0-rc.2(react@19.2.3)
       react-dom: 19.2.3(react@19.2.3)
@@ -16872,7 +16869,7 @@ snapshots:
       '@sanity/mutate': 0.12.6(debug@4.4.3)
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       reselect: 5.1.1
       rxjs: 7.8.2
       zustand: 5.0.9(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
@@ -16896,7 +16893,7 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       groq-js: 1.26.0
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       reselect: 5.1.1
       rxjs: 7.8.2
       zustand: 5.0.9(@types/react@19.2.7)(immer@11.0.1)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
@@ -22020,8 +22017,6 @@ snapshots:
     dependencies:
       p-locate: 6.0.0
 
-  lodash-es@4.17.22: {}
-
   lodash-es@4.17.23: {}
 
   lodash.debounce@4.0.8: {}
@@ -23858,7 +23853,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 3.7.4(react@19.2.3)
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       react-photo-album: 3.4.0(@types/react@19.2.7)(react@19.2.3)
       sanity: link:packages/sanity
@@ -23877,7 +23872,7 @@ snapshots:
       '@sanity/ui': 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.3)(react@19.2.3)
       '@sanity/util': 4.22.0
       framer-motion: 12.27.1(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       react: 19.2.3
       sanity: link:packages/sanity
     transitivePeerDependencies:
