@@ -276,13 +276,6 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     return this.clone({defaultPanes: viewIds})
   }
 
-  /** Get the view IDs configured to open as split panes by default
-   * @returns array of view IDs or undefined. See {@link PartialDocumentNode}
-   */
-  getDefaultWindows(): PartialDocumentNode['defaultPanes'] {
-    return this.spec.defaultPanes
-  }
-
   /** Serialize Document builder
    * @param options - serialization options. See {@link SerializeOptions}
    * @returns document node based on path, index and hint provided in options. See {@link DocumentNode}
