@@ -1828,6 +1828,9 @@ importers:
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.14.1(debug@4.4.3)
+      '@sanity/codegen':
+        specifier: 'catalog:'
+        version: 5.9.1(@sanity/telemetry@0.8.1(react@19.2.3))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/color':
         specifier: ^3.0.6
         version: 3.0.6

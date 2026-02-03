@@ -1,4 +1,4 @@
-import {readdir, readFile, stat} from 'node:fs/promises'
+import {copyFile, readdir, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
 
 import {describe, expect, test, vi} from 'vitest'
@@ -23,6 +23,9 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
           env: {SANITY_STUDIO_FROM_ACTUAL_ENV: envTestId},
         })
         expect(result.code).toBe(0)
+
+        // Verify no mention about typegen running
+        expect(result.stdout + result.stderr).not.toContain('Generated types to')
 
         const files = await readdir(path.join(studioPath, 'out', 'static'))
         const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
@@ -161,6 +164,44 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       },
       120 * 1000,
     )
+
+    test.each([
+      {title: 'relative paths', absolute: false},
+      {title: 'absolute paths', absolute: true},
+    ])('build with typegen with $title', async ({absolute}) => {
+      const studioDir = path.join(studiosPath, studioName)
+      const randomId = Math.random().toString(36).slice(2)
+      const schemaPath = path.join(studioDir, `${randomId}schema.json`)
+      const outputPath = path.join(studioDir, `${randomId}.types.ts`)
+
+      // Copy working-schema.json to schema.json for typegen to use
+      await copyFile(path.join(studioDir, 'working-schema.json'), schemaPath)
+
+      try {
+        // Check that the output file does not exist before building
+        await expect(stat(outputPath)).rejects.toThrow()
+
+        const result = await runSanityCmdCommand(studioName, ['build', 'out-typegen', '-y'], {
+          env: {
+            SANITY_CLI_TEST_TYPEGEN: '1',
+            SANITY_CLI_TEST_TYPEGEN_SCHEMA_PATH: absolute ? schemaPath : path.basename(schemaPath),
+            SANITY_CLI_TEST_TYPEGEN_OUTPUT_PATH: absolute ? outputPath : path.basename(outputPath),
+          },
+        })
+
+        expect(result.code).toBe(0)
+
+        // Verify generation output is printed
+        expect(result.stderr).toContain('Successfully generated types')
+
+        // Check that the output file was created
+        await expect(stat(outputPath)).resolves.toBeTruthy()
+      } finally {
+        // Clean up created files
+        await unlink(schemaPath).catch(() => {})
+        await unlink(outputPath).catch(() => {})
+      }
+    })
 
     test.skip(
       'deploy',

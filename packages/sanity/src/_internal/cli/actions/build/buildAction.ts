@@ -23,6 +23,7 @@ import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {getAppId} from '../../util/getAppId'
 import {baseUrl} from '../../util/baseUrl'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
+import {runTypegenGenerate, RunTypegenOptions, TypesGeneratedTrace} from '@sanity/codegen'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -238,6 +239,8 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      typegen: cliConfig?.typegen,
+      telemetryLogger: telemetry,
     })
 
     trace.log({
@@ -259,6 +262,36 @@ export default async function buildSanityStudio(
     spin.fail()
     trace.error(err)
     throw err
+  }
+
+  if (cliConfig?.typegen?.enabled) {
+    const typegenTrace = telemetry.trace(TypesGeneratedTrace)
+
+    try {
+      typegenTrace.start()
+      const typegenConfig = cliConfig?.typegen
+      const typegenOptions: RunTypegenOptions = {
+        workDir,
+        config: {
+          formatGeneratedCode: typegenConfig?.formatGeneratedCode ?? false,
+          generates: typegenConfig?.generates ?? 'sanity.types.ts',
+          overloadClientMethods: typegenConfig?.overloadClientMethods ?? false,
+          path: typegenConfig?.path ?? './src/**/*.{ts,tsx,js,jsx}',
+          schema: typegenConfig?.schema ?? 'schema.json',
+        },
+      }
+
+      const {code, ...stats} = await runTypegenGenerate(typegenOptions)
+      typegenTrace.log({
+        ...stats,
+        configMethod: 'cli',
+        configOverloadClientMethods: typegenConfig.overloadClientMethods ?? false,
+      })
+      typegenTrace.complete()
+    } catch (err) {
+      typegenTrace.error(err)
+      throw err
+    }
   }
 
   return {didCompile: true}
