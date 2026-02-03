@@ -45,6 +45,19 @@
     "**/packages/@repo/*/turbo.json",
     "**/packages/@sanity/*/turbo.json",
     "pnpm-lock.yaml",
-    "**/packages/sanity/playwright-ct/template/.cache/**/*"
+    "**/packages/sanity/playwright-ct/template/.cache/**/*",
+    "packages/sanity/src/core/comments/components/list/CommentsListItemLayout.tsx",
+    "packages/sanity/src/core/components/StatusButton.tsx",
+    "packages/sanity/src/core/components/popoverDialog/PopoverDialog.tsx",
+    "packages/sanity/src/core/components/previewCard/PreviewCard.tsx",
+    "packages/sanity/src/core/form/components/formField/FormFieldHeaderText.tsx",
+    "packages/sanity/src/core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview.styled.tsx",
+    "packages/sanity/src/core/form/inputs/GlobalDocumentReferenceInput/GlobalDocumentReferencePreview.styled.tsx",
+    "packages/sanity/src/core/form/inputs/ObjectInput/ObjectInput.tsx",
+    "packages/sanity/src/core/form/inputs/PortableText/toolbar/BlockStyleSelect.tsx",
+    "packages/sanity/src/core/form/inputs/ReferenceInput/ReferenceLinkCard.tsx",
+    "packages/sanity/src/core/perspective/navbar/ReleasesNav.tsx",
+    "packages/sanity/src/core/studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer.tsx",
+    "packages/sanity/src/structure/components/confirmDeleteDialog/VersionsPreviewList.tsx"
   ]
 }
