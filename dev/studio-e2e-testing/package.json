@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@types/react": "catalog:",
     "eslint": "catalog:"
   }
 }

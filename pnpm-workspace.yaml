@@ -1,7 +1,6 @@
 packages:
   - dev/*
   - perf/*
-  - examples/*
   - scripts
   - e2e
   - packages/@repo/*
