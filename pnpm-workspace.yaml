@@ -18,7 +18,7 @@ catalog:
   '@sanity/migrate': ^5.2.3
   '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.2
+  '@sanity/pkg-utils': ^10.4.3
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
