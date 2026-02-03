@@ -18,7 +18,7 @@ export function createSchemaStoreFixture(staticDate: string) {
     basePath: '/',
   }
 
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const testManifest: CreateManifest = {
     version: 1,
     createdAt: staticDate,

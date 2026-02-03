@@ -3,7 +3,7 @@ type MaybeClipboardItemData = {[mimeType: string]: Blob}
 type MaybeClipboardItemDelayedData = {[mimeType: string]: Promise<Blob>}
 
 // Use a type assertion to avoid conflicts with existing definitions
-// @ts-expect-error -- Legacy test code, will be fixed separately
+// @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
 const ClipboardItemPolyfill = class ClipboardItem {
   private data: MaybeClipboardItemData
 

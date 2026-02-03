@@ -15,7 +15,7 @@ describe('sortEvents', () => {
   it('should sort events in the right order, if published and edited have same timestamp, published goes first ', () => {
     const remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[] = []
     const events: DocumentGroupEvent[] = [
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'publishDocumentVersion',
@@ -28,7 +28,7 @@ describe('sortEvents', () => {
         publishCause: 'document.publish',
         id: 'b3075281-d9f1-41d0-9304-bca31a6ec958',
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'createDocumentVersion',
@@ -42,7 +42,7 @@ describe('sortEvents', () => {
       },
     ]
     const expandedEvents: EditDocumentVersionEvent[] = [
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         type: 'editDocumentVersion',
         documentId: 'drafts.b149d8d0-a4eb-451e-8160-4e489380b670',
@@ -75,7 +75,7 @@ describe('sortEvents', () => {
   })
   it('should handle remote edits correctly', () => {
     const remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[] = [
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         type: 'editDocumentVersion',
         documentId: 'drafts.bcbfdedd-a719-4959-98fb-f68c8851d32f',
@@ -107,7 +107,7 @@ describe('sortEvents', () => {
       },
     ]
     const events: DocumentGroupEvent[] = [
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'createDocumentVersion',
@@ -119,7 +119,7 @@ describe('sortEvents', () => {
         id: '1fc72aa1-9870-4020-8a88-9ad18f199840',
         parentId: '577b6fa4-ceba-40bd-babd-9ffbcfff682d',
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'publishDocumentVersion',
@@ -144,7 +144,7 @@ describe('sortEvents', () => {
 describe('addParentToEvents', () => {
   it('should add the parents', () => {
     const events: DocumentGroupEvent[] = [
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         type: 'editDocumentVersion',
         documentId: 'drafts.bcbfdedd-a719-4959-98fb-f68c8851d32f',
@@ -168,7 +168,7 @@ describe('addParentToEvents', () => {
           },
         ],
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'publishDocumentVersion',
@@ -181,7 +181,7 @@ describe('addParentToEvents', () => {
         publishCause: 'document.publish',
         id: '0d2e2557-d165-48f7-866e-1b664f25a5a5',
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         type: 'editDocumentVersion',
         documentId: 'drafts.bcbfdedd-a719-4959-98fb-f68c8851d32f',
@@ -205,7 +205,7 @@ describe('addParentToEvents', () => {
           },
         ],
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         type: 'editDocumentVersion',
         documentId: 'drafts.bcbfdedd-a719-4959-98fb-f68c8851d32f',
@@ -223,7 +223,7 @@ describe('addParentToEvents', () => {
           },
         ],
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'createDocumentVersion',
@@ -246,7 +246,7 @@ describe('addParentToEvents', () => {
         versionRevisionId: '577b6fa4-ceba-40bd-babd-9ffbcfff682d',
         publishCause: 'document.publish',
         id: '577b6fa4-ceba-40bd-babd-9ffbcfff682d',
-        // @ts-expect-error -- Legacy test code, will be fixed separately
+        // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
         creationEvent: {
           author: 'p8xDvUMxC',
           type: 'createDocumentVersion',
@@ -259,7 +259,7 @@ describe('addParentToEvents', () => {
           parentId: '577b6fa4-ceba-40bd-babd-9ffbcfff682d',
         },
       },
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       {
         author: 'p8xDvUMxC',
         type: 'createDocumentVersion',

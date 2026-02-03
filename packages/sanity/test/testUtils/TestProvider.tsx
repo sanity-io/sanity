@@ -62,7 +62,7 @@ export async function createTestProvider({
     paneDataItems: [],
     routerPanes: [],
     resolvedPanes: [],
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     focusedPane: null,
     setFocusedPane: noop,
   }
@@ -107,7 +107,7 @@ export async function createTestProvider({
                         <ResolvedPanesProvider value={resolvedPanes}>
                           <CopyPasteProvider>
                             <ResourceCacheProvider>
-                              {/* @ts-expect-error -- Legacy test code, will be fixed separately */}
+                              {/* @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking */}
                               <AddonDatasetContext.Provider value={addonDatasetContextValue}>
                                 <PerspectiveContext.Provider value={perspectiveContextValueMock}>
                                   <DocumentLimitUpsellProvider>

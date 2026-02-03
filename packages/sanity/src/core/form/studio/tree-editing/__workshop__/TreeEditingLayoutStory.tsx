@@ -134,7 +134,7 @@ export default function TreeEditingLayoutStory(): React.JSX.Element {
   }, [])
 
   return (
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
     <TreeEditingLayout
       breadcrumbs={state.breadcrumbs}
       items={state.menuItems}

@@ -29,7 +29,7 @@ describe('registerStudioManifest', () => {
     projectId: 'app-project',
     urlType: 'internal',
     appHost: 'test-studio',
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     apiHost: 'https://api.sanity.io',
   }
 

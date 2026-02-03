@@ -37,7 +37,7 @@ vi.mock('../../src/core/validation/util/convertToValidationMarker', async () => 
 })
 
 beforeEach(() => {
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   convertToValidationMarker.mockClear()
 })
 
@@ -791,10 +791,10 @@ describe('validateItem', () => {
       },
     ])
 
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     const calls = convertToValidationMarker.mock.calls
 
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     expect(calls.find((call) => call[0] === 'from root')).toMatchObject([
       'from root',
       'error',
@@ -805,7 +805,7 @@ describe('validateItem', () => {
         type: rootType,
       },
     ])
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     expect(calls.find((call) => call[0] === 'from level 1 object')).toMatchObject([
       'from level 1 object',
       'error',
@@ -816,7 +816,7 @@ describe('validateItem', () => {
         type: level1ObjectType,
       },
     ])
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     expect(calls.find((call) => call[0] === 'from level 2 via object')).toMatchObject([
       'from level 2 via object',
       'error',
@@ -827,7 +827,7 @@ describe('validateItem', () => {
         type: level2StringType,
       },
     ])
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     expect(calls.find((call) => call[0] === 'from level 1 array')).toMatchObject([
       'from level 1 array',
       'error',
@@ -838,7 +838,7 @@ describe('validateItem', () => {
         type: level1ArrayType,
       },
     ])
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     expect(calls.find((call) => call[0] === 'from level 2 via array')).toMatchObject([
       'from level 2 via array',
       'error',

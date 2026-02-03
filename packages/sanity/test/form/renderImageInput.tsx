@@ -37,7 +37,7 @@ export async function renderImageInput(options: {
     const {schemaType, value, ...restProps} = inputProps
     const {client} = context
 
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     return {
       ...restProps,
       assetSources,

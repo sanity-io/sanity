@@ -10,7 +10,7 @@ export function mutationEvent({
   resultRev: string
   mutations: MutationPayload[]
 }): MutationEvent {
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   return {
     type: 'mutation',
     documentId: 'test',

@@ -53,7 +53,7 @@ describe('usePostPublishTransactions', () => {
   ] as TransactionLogEventWithEffects[]
 
   it('should return null initially', () => {
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockGetTransactionsLogs.mockResolvedValue(undefined)
 
     const {result} = renderHook(() => usePostPublishTransactions(mockDocuments))

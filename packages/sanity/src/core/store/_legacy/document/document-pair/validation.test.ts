@@ -51,7 +51,7 @@ function createSubscription(
 ) {
   const getClient = () => client
 
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const stream = validation(
     {
       client,
@@ -92,7 +92,7 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const stream = validation(
     {
       client,
@@ -151,7 +151,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -203,7 +203,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -225,7 +225,7 @@ describe('validation', () => {
     await doneValidating()
 
     // push a valid value
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -283,7 +283,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -340,7 +340,7 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       validation(
         {
           client,
@@ -357,7 +357,7 @@ describe('validation', () => {
     )
 
     // simulate first emission from validation listener
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: {
@@ -395,7 +395,7 @@ describe('validation', () => {
     ])
 
     const immediatePlayback = await firstValueFrom(
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -405,7 +405,7 @@ describe('validation', () => {
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -430,7 +430,7 @@ describe('validation', () => {
       () => EMPTY,
     )
 
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockEditStateSubject.next({
       id: 'example-id',
       draft: null,

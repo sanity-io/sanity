@@ -64,7 +64,7 @@ describe('buildVendorDependencies', async () => {
       })
 
       expect(build).toHaveBeenCalledTimes(1)
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const [buildConfig] = build.mock.calls[0]
 
       expect(buildConfig).toMatchObject({

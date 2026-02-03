@@ -23,7 +23,7 @@ export default function FormBuilderStory() {
   const {validation: validationRaw} = useValidationStatus(
     documentId,
     documentType,
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
     value?._id || documentId,
   )
   const validation = useUnique(validationRaw)

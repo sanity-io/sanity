@@ -4,7 +4,7 @@ import {type useReleasesUpsell} from '../useReleasesUpsell'
 
 export const useReleasesUpsellMockReturn: Mocked<ReturnType<typeof useReleasesUpsell>> = {
   mode: 'default',
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   guardWithReleaseLimitUpsell: vi.fn((cb) => cb()),
   onReleaseLimitReached: vi.fn(),
   upsellDialogOpen: false,

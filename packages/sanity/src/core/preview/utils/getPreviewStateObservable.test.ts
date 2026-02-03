@@ -4,7 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {getPreviewStateObservable} from './getPreviewStateObservable'
 
 // Mock schema type
-// @ts-expect-error -- Legacy test code, will be fixed separately
+// @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
 const mockSchemaType = {
   name: 'article',
   type: 'document',

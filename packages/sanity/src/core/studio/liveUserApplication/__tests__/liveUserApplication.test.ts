@@ -36,7 +36,7 @@ const createMockCache = (
   >,
 ): UserApplicationCache => {
   return {
-    // @ts-expect-error -- Legacy test code, will be fixed separately
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     get: vi.fn((client: SanityClient) => {
       const {projectId} = client.config()
       return Promise.resolve(

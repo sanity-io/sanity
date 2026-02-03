@@ -56,7 +56,7 @@ export async function renderFileInput(options: {
       ...restProps,
       assetSources,
       client,
-      // @ts-expect-error -- Legacy test code, will be fixed separately
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       t: (key: string, values?: Record<string, string>) => key,
       directUploads: true,
       observeAsset,

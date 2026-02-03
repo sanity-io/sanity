@@ -151,7 +151,7 @@ function getSchemaTypes(opts: GetSchemaTypesOpts) {
 }
 
 const FEATURES: WorkspaceOptions['beta'] = {
-  // @ts-expect-error -- Legacy test code, will be fixed separately
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   treeArrayEditing: {
     enabled: true,
   },

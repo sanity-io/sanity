@@ -389,7 +389,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
-        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         {
           argsWithoutOptions: [],
           extOptions: {external: true},
@@ -433,7 +433,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
-        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         {
           argsWithoutOptions: [],
           extOptions: {external: true},
@@ -459,7 +459,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
-        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         {
           argsWithoutOptions: [],
           extOptions: {'external': true, 'schema-required': true},
