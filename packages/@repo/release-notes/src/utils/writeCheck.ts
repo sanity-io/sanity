@@ -2,8 +2,20 @@ import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {type PullRequest} from '../types'
 
-export function writeCheck({headSha, releasePr}: {releasePr: PullRequest; headSha: string}) {
-  const canMerge = !releasePr || releasePr.draft
+export function writeCheck({
+  currentPrNumber,
+  headSha,
+  releasePr,
+}: {
+  currentPrNumber: number
+  releasePr: PullRequest
+  headSha: string
+}) {
+  const canMerge =
+    !releasePr ||
+    releasePr.draft ||
+    // Release PR should always be mergeable
+    releasePr.number === currentPrNumber
 
   return octokit.checks.create({
     ...REPO,

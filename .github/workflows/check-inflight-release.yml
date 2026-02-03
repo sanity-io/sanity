@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Run in-flight release status check on PR"
 
-    if: github.event_name == 'pull_request' && github.head_ref != 'ci/release-main' # run for all PRs *except* for Release PR
+    if: github.event_name == 'pull_request'
 
     steps:
       - uses: actions/checkout@v6
@@ -55,7 +55,8 @@ jobs:
       - name: Check if there is an in-flight release
         run: |
           pnpm --silent release-notes status-check-commit \
-            --commit=${{ github.event.pull_request.head.sha }}
+            --commit=${{ github.event.pull_request.head.sha }} \
+            --pr=${{ github.event.pull_request.number }}
         env:
           RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
           RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
