@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
 import {type Plugin} from 'vite'
 
 import {generateWebManifest} from '../webManifest'

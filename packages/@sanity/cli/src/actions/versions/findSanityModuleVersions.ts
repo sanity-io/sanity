@@ -1,7 +1,6 @@
+import getLatestVersion from 'get-latest-version'
 import {readFileSync} from 'node:fs'
 import {join as joinPath} from 'node:path'
-
-import getLatestVersion from 'get-latest-version'
 import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'

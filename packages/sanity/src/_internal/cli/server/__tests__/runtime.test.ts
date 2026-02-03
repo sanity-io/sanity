@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises'
 import path, {win32} from 'node:path'
-
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {toForwardSlashes, writeSanityRuntime} from '../runtime'

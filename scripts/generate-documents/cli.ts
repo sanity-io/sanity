@@ -1,9 +1,8 @@
+import {readEnv} from '@repo/utils'
+import {createClient} from '@sanity/client'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {parseArgs} from 'node:util'
-
-import {readEnv} from '@repo/utils'
-import {createClient} from '@sanity/client'
 import {tap} from 'rxjs'
 
 import {run} from './run'

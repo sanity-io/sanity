@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import {type CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -11,6 +9,7 @@ import {
 } from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
+import path from 'node:path'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
@@ -46,12 +45,12 @@ Examples
 
 interface CreateFlags {
   ['dry-run']?: boolean
-  concurrency?: number
+  'concurrency'?: number
   ['from-export']?: string
-  progress?: boolean
-  dataset?: string
-  project?: string
-  confirm?: boolean
+  'progress'?: boolean
+  'dataset'?: string
+  'project'?: string
+  'confirm'?: boolean
 }
 
 function parseCliFlags(args: {argv?: string[]}) {

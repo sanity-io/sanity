@@ -1,9 +1,8 @@
+import {type CliCommandDefinition} from '@sanity/cli'
+import {deburr} from 'lodash-es'
 import {existsSync, mkdirSync} from 'node:fs'
 import {writeFile} from 'node:fs/promises'
 import path from 'node:path'
-
-import {type CliCommandDefinition} from '@sanity/cli'
-import {deburr} from 'lodash-es'
 
 import {MIGRATIONS_DIRECTORY} from './constants'
 import {minimalAdvanced} from './templates/minimalAdvanced'

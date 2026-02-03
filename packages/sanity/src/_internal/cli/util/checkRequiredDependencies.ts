@@ -1,7 +1,6 @@
-import path from 'node:path'
-
 import {type CliCommandContext} from '@sanity/cli'
 import execa from 'execa'
+import path from 'node:path'
 import oneline from 'oneline'
 import semver, {type SemVer} from 'semver'
 

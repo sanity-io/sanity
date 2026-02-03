@@ -1,7 +1,3 @@
-import {stat} from 'node:fs/promises'
-import path from 'node:path'
-import {isMainThread, parentPort, workerData} from 'node:worker_threads'
-
 import {
   findQueriesInPath,
   getResolver,
@@ -11,6 +7,9 @@ import {
   type TypegenWorkerChannel as CodegenTypegenWorkerChannel,
 } from '@sanity/codegen'
 import {type WorkerChannel, WorkerChannelReporter} from '@sanity/worker-channels'
+import {stat} from 'node:fs/promises'
+import path from 'node:path'
+import {isMainThread, parentPort, workerData} from 'node:worker_threads'
 
 export interface TypegenGenerateTypesWorkerData {
   workDir: string

@@ -42,7 +42,9 @@ const FloatingButtonBox = styled(Box)`
   right: 24px;
   z-index: 2;
 `
-const FloatingButton = styled(Button)``
+const FloatingButton = styled(Button)`
+  
+`
 
 interface AnnouncementProps {
   announcement: StudioAnnouncementDocument

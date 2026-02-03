@@ -10,7 +10,7 @@ import {useDocumentPane} from '../useDocumentPane'
 
 export const StatusText = styled(Text)`
   color: var(--card-muted-fg-color);
-
+  
   em {
     color: var(--card-fg-color);
     font-weight: 500;

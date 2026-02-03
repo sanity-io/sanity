@@ -1,5 +1,6 @@
-import {createContext} from 'sanity/_createContext'
 import type {SemVer} from 'semver'
+
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @hidden

@@ -1,4 +1,5 @@
 import type {CliCommandContext, CliConfig} from '@sanity/cli'
+
 import path from 'node:path'
 
 export function withMediaLibraryConfig(

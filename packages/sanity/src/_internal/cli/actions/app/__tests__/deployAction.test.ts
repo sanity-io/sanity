@@ -1,6 +1,5 @@
-import zlib from 'node:zlib'
-
 import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '@sanity/cli'
+import zlib from 'node:zlib'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 

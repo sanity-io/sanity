@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
 import {type InlineConfig} from 'vite'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 

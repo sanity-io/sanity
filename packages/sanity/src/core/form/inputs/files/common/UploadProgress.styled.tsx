@@ -22,7 +22,7 @@ export const LeftSection = styled(Stack)`
 export const CodeWrapper = styled(Code)`
   position: relative;
   width: 100%;
-
+  
   code {
     overflow: hidden;
     overflow: clip;

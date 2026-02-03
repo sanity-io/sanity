@@ -1,7 +1,6 @@
-import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-
 import {extractSchema} from '@sanity/schema/_internal'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 import {SchemaError, type Workspace} from 'sanity'
 
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'

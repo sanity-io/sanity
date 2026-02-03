@@ -1,7 +1,6 @@
+import chalk from 'chalk'
 // oxlint-disable no-console
 import os from 'node:os'
-
-import chalk from 'chalk'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 

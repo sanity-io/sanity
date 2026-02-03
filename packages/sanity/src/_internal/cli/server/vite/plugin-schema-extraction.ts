@@ -1,8 +1,7 @@
-import path from 'node:path'
-
 import {type CliCommandContext} from '@sanity/cli'
 import {debounce, mean, once} from 'lodash-es'
 import logSymbols from 'log-symbols'
+import path from 'node:path'
 import picomatch from 'picomatch'
 import {type Plugin} from 'vite'
 

@@ -1,7 +1,6 @@
-import path from 'node:path'
-
 import {type CliCommandAction} from '@sanity/cli'
 import {exportDataset, type ExportProgress} from '@sanity/export'
+import path from 'node:path'
 
 import {MINIMUM_API_VERSION} from './constants'
 import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'

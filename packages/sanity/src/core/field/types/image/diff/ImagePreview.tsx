@@ -79,7 +79,7 @@ const Image = styled.img`
   object-fit: contain;
   width: 100%;
   height: 100%;
-
+  
   &[data-action='removed'] {
     opacity: 0.45;
   }

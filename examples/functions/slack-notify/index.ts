@@ -1,7 +1,6 @@
-import {env} from 'node:process'
-
 import {documentEventHandler} from '@sanity/functions'
 import {WebClient} from '@slack/web-api'
+import {env} from 'node:process'
 
 const {
   SLACK_OAUTH_TOKEN = '',

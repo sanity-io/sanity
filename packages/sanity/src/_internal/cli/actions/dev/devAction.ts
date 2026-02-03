@@ -1,6 +1,3 @@
-/* eslint-disable max-statements */
-import path from 'node:path'
-
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -10,6 +7,8 @@ import {
 import {type SanityProject} from '@sanity/client'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
+/* eslint-disable max-statements */
+import path from 'node:path'
 import semver from 'semver'
 import {version} from 'vite'
 import {hideBin} from 'yargs/helpers'

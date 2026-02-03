@@ -20,7 +20,7 @@ export const CrossDatasetReferencesDetails = styled.details`
 
 export const CrossDatasetReferencesSummary = styled.summary`
   list-style: none;
-
+  
   &::-webkit-details-marker {
     display: none;
   }

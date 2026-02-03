@@ -1,9 +1,4 @@
-// @ts-check
-import {dirname, resolve} from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import js from '@eslint/js'
-import {defineConfig, globalIgnores} from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
@@ -19,7 +14,11 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsdocPlugin from 'eslint-plugin-tsdoc'
 import unicorn from 'eslint-plugin-unicorn'
 import unusedImports from 'eslint-plugin-unused-imports'
+import {defineConfig, globalIgnores} from 'eslint/config'
 import globals from 'globals'
+// @ts-check
+import {dirname, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import tsLint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)

@@ -1,8 +1,3 @@
-import fs from 'node:fs/promises'
-import {createRequire} from 'node:module'
-import {EOL} from 'node:os'
-import path from 'node:path'
-
 import {type CliCommandAction, type CliCommandContext, type SanityClient} from '@sanity/cli'
 import {validateMediaLibraryAssetAspect} from '@sanity/schema/_internal'
 import {
@@ -13,6 +8,10 @@ import {
 } from '@sanity/types'
 import {type Chalk} from 'chalk'
 import {register} from 'esbuild-register/dist/node'
+import fs from 'node:fs/promises'
+import {createRequire} from 'node:module'
+import {EOL} from 'node:os'
+import path from 'node:path'
 import pluralize from 'pluralize-esm'
 import {
   catchError,

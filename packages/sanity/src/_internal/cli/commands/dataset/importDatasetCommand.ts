@@ -1,12 +1,11 @@
-import {createReadStream} from 'node:fs'
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
 import {type CliCommandContext, type CliCommandDefinition, type CliOutputter} from '@sanity/cli'
 import {sanityImport} from '@sanity/import'
 import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
 import {padStart} from 'lodash-es'
+import {createReadStream} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import prettyMs from 'pretty-ms'
 
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'

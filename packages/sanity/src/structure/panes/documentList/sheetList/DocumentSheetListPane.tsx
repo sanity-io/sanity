@@ -37,7 +37,7 @@ const Table = styled.table`
   white-space: nowrap;
   width: 100%;
   border: 1px solid lightgray;
-
+  
   thead {
     display: grid;
     position: sticky;

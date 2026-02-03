@@ -1,5 +1,3 @@
-import os from 'node:os'
-
 import {
   defineConfig,
   devices,
@@ -7,6 +5,7 @@ import {
   type PlaywrightTestProject,
 } from '@playwright/test'
 import {loadEnvFiles} from '@repo/utils'
+import os from 'node:os'
 
 import {findEnv, readBoolEnv, readEnv} from './helpers/envVars'
 

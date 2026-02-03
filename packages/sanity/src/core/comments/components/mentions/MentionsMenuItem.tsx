@@ -8,7 +8,9 @@ import {useUser} from '../../../store'
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsAvatar} from '../avatars'
 
-const InnerFlex = styled(Flex)``
+const InnerFlex = styled(Flex)`
+  
+`
 
 const SKELETON_INLINE_STYLE: CSSProperties = {width: '50%'}
 

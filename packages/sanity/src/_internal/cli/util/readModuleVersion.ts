@@ -1,5 +1,4 @@
 import path from 'node:path'
-
 import resolveFrom from 'resolve-from'
 
 import {readPackageManifest} from './readPackageManifest'

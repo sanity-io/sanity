@@ -1,6 +1,5 @@
-import path from 'node:path'
-
 import {generateHelpUrl} from '@sanity/generate-help-url'
+import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 

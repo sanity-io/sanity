@@ -1,4 +1,5 @@
 import type {PubSub} from 'nano-pubsub'
+
 import {createContext} from 'sanity/_createContext'
 
 /**

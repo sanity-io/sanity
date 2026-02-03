@@ -35,7 +35,7 @@ export const EditableCard = styled(Card)`
   position: relative;
   overflow: hidden;
   overflow: clip;
-
+  
   & > [data-portal] {
     position: absolute;
     top: 0;
@@ -43,12 +43,12 @@ export const EditableCard = styled(Card)`
     right: 0;
     bottom: 0;
     pointer-events: none;
-
+  
     & > * {
       pointer-events: initial;
     }
   }
-
+  
   &::selection,
   *::selection {
     background-color: transparent;
@@ -61,7 +61,7 @@ export const Scroller = styled(ScrollContainer)`
   height: 100%;
   display: flex;
   flex-direction: column;
-
+  
   & > * {
     flex: 1;
     min-height: auto;
@@ -137,12 +137,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       width: calc(

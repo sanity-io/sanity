@@ -16,7 +16,7 @@ const ROOT_STYLE = css`
   &:not([hidden]) {
     display: flex;
   }
-
+  
   align-items: center;
 `
 
@@ -171,18 +171,22 @@ export function textInputRepresentationStyle(
       /* focused */
       *:not(:disabled):focus + & {
         &[data-border] {
-          --input-box-shadow: ${$unstableDisableFocusRing
-            ? undefined
-            : focusRingStyle({
-                border: {color: color.input.default.enabled.border, width: input.border.width},
-                focusRing: input.text.focusRing,
-              })};
+          --input-box-shadow: ${
+            $unstableDisableFocusRing
+              ? undefined
+              : focusRingStyle({
+                  border: {color: color.input.default.enabled.border, width: input.border.width},
+                  focusRing: input.text.focusRing,
+                })
+          };
         }
 
         &:not([data-border]) {
-          --input-box-shadow: ${$unstableDisableFocusRing
-            ? undefined
-            : focusRingStyle({focusRing: input.text.focusRing})};
+          --input-box-shadow: ${
+            $unstableDisableFocusRing
+              ? undefined
+              : focusRingStyle({focusRing: input.text.focusRing})
+          };
         }
       }
 

@@ -1,5 +1,4 @@
 import {EventEmitter} from 'node:events'
-
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {sanityTypegenPlugin} from '../plugin-typegen'

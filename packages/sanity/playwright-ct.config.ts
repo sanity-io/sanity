@@ -1,7 +1,6 @@
+import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import {defineConfig, devices} from '@playwright/experimental-ct-react'
 import {defaultClientConditions} from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

@@ -1,6 +1,5 @@
 import {copyFile, readdir, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
-
 import {describe, expect, test, vi} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'

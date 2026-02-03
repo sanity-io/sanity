@@ -37,7 +37,9 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, x: 0},
 }
 
-const MotionStack = styled(motion.create(Stack))``
+const MotionStack = styled(motion.create(Stack))`
+  
+`
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void

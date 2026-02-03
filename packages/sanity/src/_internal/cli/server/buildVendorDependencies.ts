@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import path from 'node:path'
-
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
 

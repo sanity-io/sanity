@@ -1,6 +1,5 @@
-import path from 'node:path'
-
 import getPort from 'get-port'
+import path from 'node:path'
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'

@@ -1,10 +1,9 @@
-/* eslint-disable max-statements */
-import path from 'node:path'
-
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
+/* eslint-disable max-statements */
+import path from 'node:path'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 

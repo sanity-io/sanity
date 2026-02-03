@@ -1,5 +1,4 @@
 import Module from 'node:module'
-
 import {describe, expect, test} from 'vitest'
 
 import {setupImportErrorHandler} from '../importErrorHandler'

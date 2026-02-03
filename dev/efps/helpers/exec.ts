@@ -1,7 +1,6 @@
+import chalk from 'chalk'
 import {spawn} from 'node:child_process'
 import process from 'node:process'
-
-import chalk from 'chalk'
 import {type Ora} from 'ora'
 
 interface ExecOptions {

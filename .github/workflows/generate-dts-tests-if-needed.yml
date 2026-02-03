@@ -33,12 +33,12 @@ jobs:
       - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
         id: create-pull-request
         with:
-          body: "I ran `pnpm generate:dts-exports` 🧑‍💻. If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports` 💡"
+          body: 'I ran `pnpm generate:dts-exports` 🧑‍💻. If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports` 💡'
           branch: actions/generate-dts-tests-if-needed
-          commit-message: "chore(tests): generate dts tests 🤖 ✨"
+          commit-message: 'chore(tests): generate dts tests 🤖 ✨'
           labels: 🤖 bot
           sign-commits: true
-          title: "chore(tests): generate dts tests 🤖 ✨"
+          title: 'chore(tests): generate dts tests 🤖 ✨'
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Enable automerge on Pull Request

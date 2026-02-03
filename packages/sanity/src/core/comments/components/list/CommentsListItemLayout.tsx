@@ -47,7 +47,9 @@ import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
-const ContextMenuBox = styled(Box)``
+const ContextMenuBox = styled(Box)`
+  
+`
 
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
@@ -84,7 +86,7 @@ const IntentText = styled(Text)(({theme}) => {
 
 const InnerStack = styled(Stack)`
   transition: opacity 200ms ease;
-
+  
   &[data-muted='true'] {
     transition: unset;
     opacity: 0.5;
@@ -101,7 +103,7 @@ const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 
 const RetryCardButton = styled(Card)`
   // Add not on hover
-  &:not(:hover) {
+      &:not(:hover) {
     background-color: transparent;
   }
 `

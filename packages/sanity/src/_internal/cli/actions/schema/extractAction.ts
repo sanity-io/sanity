@@ -1,7 +1,6 @@
-import {join} from 'node:path'
-
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {mean, once} from 'lodash-es'
+import {join} from 'node:path'
 
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'

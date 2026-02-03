@@ -40,7 +40,7 @@ const OPTION_STYLE = css`
   list-style: none;
   display: flex;
   white-space: nowrap;
-
+  
   &[data-hidden='true'] {
     opacity: 0;
     visibility: hidden;

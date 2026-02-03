@@ -13,6 +13,17 @@ import {throttle} from 'lodash-es'
 import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 
+import {
+  type FormState,
+  getExpandOperations,
+  type NodeChronologyProps,
+  type OnPathFocusPayload,
+  type PatchEvent,
+  setAtPath,
+  type StateTree,
+  toMutationPatches,
+  useFormState,
+} from '.'
 import {useCanvasCompanionDoc} from '../canvas/actions/useCanvasCompanionDoc'
 import {isSanityCreateLinkedDocument} from '../create/createUtils'
 import {useReconnectingToast} from '../hooks'
@@ -52,17 +63,6 @@ import {
   isSystemBundle,
   useUnique,
 } from '../util'
-import {
-  type FormState,
-  getExpandOperations,
-  type NodeChronologyProps,
-  type OnPathFocusPayload,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useFormState,
-} from '.'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
 

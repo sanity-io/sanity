@@ -11,7 +11,9 @@ import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 
-const RootFlex = styled(Flex)``
+const RootFlex = styled(Flex)`
+  
+`
 
 const TitleCard = styled(Card)`
   min-height: max-content;

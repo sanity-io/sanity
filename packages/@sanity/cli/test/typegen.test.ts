@@ -1,8 +1,7 @@
+import {once} from 'lodash-es'
 import {randomUUID} from 'node:crypto'
 import {access, readFile, unlink, writeFile} from 'node:fs/promises'
 import {join} from 'node:path'
-
-import {once} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'

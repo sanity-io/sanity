@@ -3,37 +3,25 @@
   "version": "5.8.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
-    "sanity",
+    "cli",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content",
-    "cli",
+    "sanity",
     "tool"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/cli"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
-  "type": "commonjs",
-  "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "monorepo": "./src/index.ts",
-      "default": "./lib/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
   },
@@ -43,6 +31,24 @@
     "lib",
     "templates"
   ],
+  "type": "commonjs",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsc --project packages/@sanity/cli/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -142,11 +148,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./package.json": "./package.json"
-    }
   }
 }

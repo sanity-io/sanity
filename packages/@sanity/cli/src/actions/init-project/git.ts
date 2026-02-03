@@ -1,6 +1,5 @@
 import {execFileSync, execSync, type ExecSyncOptions} from 'node:child_process'
 import path from 'node:path'
-
 import {rimrafSync} from 'rimraf'
 
 const defaultCommitMessage = 'feat: bootstrap sanity studio'

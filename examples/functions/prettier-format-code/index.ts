@@ -1,5 +1,5 @@
-import {documentEventHandler} from '@sanity/functions'
 import {createClient} from '@sanity/client'
+import {documentEventHandler} from '@sanity/functions'
 import {format, type Options} from 'prettier'
 
 const PRETTIER_CONFIG: Options = {

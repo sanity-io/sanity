@@ -1,7 +1,7 @@
 import type * as NodeWorkerThreads from 'node:worker_threads'
-import zlib from 'node:zlib'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import zlib from 'node:zlib'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 

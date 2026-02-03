@@ -41,7 +41,9 @@ const CardIconWrapper = styled.span`
 `
 
 // These are here because using vanilla UI components caused a type issue inside of styled-components
-const CustomFlex = styled(Flex)``
+const CustomFlex = styled(Flex)`
+  
+`
 
 const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
@@ -101,11 +103,11 @@ const RowButton = styled(Button)<RowProps>`
       &:hover:before {
         background-color: var(--card-bg-color);
       }
-
+      
       &:focus:before {
         background-color: var(--card-code-bg-color);
       }
-
+      
       &:focus-within:before {
         background-color: var(--card-bg-color);
       }

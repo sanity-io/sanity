@@ -1,9 +1,8 @@
+import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
 import fs from 'node:fs'
 import {writeFile} from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
 import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 import {Project} from 'ts-morph'
 

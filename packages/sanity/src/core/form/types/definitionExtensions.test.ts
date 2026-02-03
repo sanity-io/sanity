@@ -1,16 +1,3 @@
-// oxlint-disable no-unused-vars
-// noinspection JSUnusedLocalSymbols
-import {
-  type CrossDatasetReferenceValue,
-  defineArrayMember,
-  defineField,
-  defineType,
-  type FileValue,
-  type GeopointValue,
-  type ImageValue,
-  type ReferenceValue,
-  type SlugValue,
-} from '@sanity/types'
 // NOTE:
 // Fix: Addressed type error caused by missing 'preview' property in
 // 'DocumentComponents'. The error "Object literal may only specify known
@@ -57,6 +44,20 @@ import type {
   TextComponents,
   UrlComponents,
 } from 'sanity'
+
+// oxlint-disable no-unused-vars
+// noinspection JSUnusedLocalSymbols
+import {
+  type CrossDatasetReferenceValue,
+  defineArrayMember,
+  defineField,
+  defineType,
+  type FileValue,
+  type GeopointValue,
+  type ImageValue,
+  type ReferenceValue,
+  type SlugValue,
+} from '@sanity/types'
 /* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
 

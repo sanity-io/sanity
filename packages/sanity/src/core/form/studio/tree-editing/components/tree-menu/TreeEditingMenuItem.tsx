@@ -41,7 +41,7 @@ const SCROLL_BEHAVIOR_OPTIONS: StandardBehaviorOptions = {
 
 const AnimateChevronIcon = styled(ChevronRightIcon)`
   transition: transform 0.2s ease;
-
+  
   &[data-expanded='true'] {
     transform: rotate(90deg);
   }

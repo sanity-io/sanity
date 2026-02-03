@@ -14,7 +14,7 @@ const ChangeSegment = styled(Text)`
     display: inline;
     line-height: calc(1.25em + 2px);
   }
-
+  
   &:hover {
     background-color: none !important;
     background-image: linear-gradient(

@@ -1,7 +1,6 @@
+import archiver, {type ProgressData} from 'archiver'
 import {createWriteStream} from 'node:fs'
 import zlib from 'node:zlib'
-
-import archiver, {type ProgressData} from 'archiver'
 
 import debug from './debug'
 

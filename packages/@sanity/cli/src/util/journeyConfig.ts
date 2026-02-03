@@ -1,12 +1,11 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import {Worker} from 'node:worker_threads'
-
 import {
   type BaseSchemaDefinition,
   type DocumentDefinition,
   type ObjectDefinition,
 } from '@sanity/types'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import {Worker} from 'node:worker_threads'
 import {format} from 'prettier'
 
 import {type CliApiClient} from '../types'

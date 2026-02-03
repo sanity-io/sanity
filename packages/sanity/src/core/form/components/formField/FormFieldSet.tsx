@@ -69,7 +69,7 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
 
 const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
   border: none;
-
+  
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
   body:not(:-moz-handler-blocked) & {
     display: table-cell;
@@ -97,16 +97,20 @@ const Content = styled(Box)<{
       border-color 0.2s ease-in-out,
       box-shadow 0.2s ease-in-out;
 
-    ${$borderLeft &&
-    $focused &&
-    `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`}
+    ${
+      $borderLeft &&
+      $focused &&
+      `border-left: 1px solid var(--card-focus-ring-color);
+    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
+    }
 
-    ${$borderLeft &&
-    !$focused &&
-    `
+    ${
+      $borderLeft &&
+      !$focused &&
+      `
       box-shadow: inset 0 0 0 transparent;
-    `}
+    `
+    }
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};

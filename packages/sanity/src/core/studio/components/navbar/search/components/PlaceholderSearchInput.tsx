@@ -12,7 +12,7 @@ const KeyboardShortcutFlex = styled(Flex)`
   position: absolute;
   right: 0;
   top: 0;
-
+  
   & > :first-child {
     margin-right: 1px;
   }

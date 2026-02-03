@@ -67,7 +67,7 @@ const PointerOverlayDiv = styled.div`
   right: 0;
   top: 0;
   z-index: 1;
-
+  
   @media (hover: hover) {
     &[data-enabled='true'] {
       display: block;

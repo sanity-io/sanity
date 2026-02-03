@@ -1,4 +1,5 @@
 import type {ObjectSchemaType} from '@sanity/types'
+
 import {createContext} from 'sanity/_createContext'
 
 /**

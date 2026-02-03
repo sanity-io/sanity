@@ -1,9 +1,3 @@
-import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
-import {mkdtemp} from 'node:fs/promises'
-import {tmpdir} from 'node:os'
-import path from 'node:path'
-import {finished} from 'node:stream/promises'
-
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -14,6 +8,11 @@ import {absolutify} from '@sanity/util/fs'
 import {Mutex} from 'async-mutex'
 import createDebug from 'debug'
 import {isString} from 'lodash-es'
+import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
+import {mkdtemp} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
+import {finished} from 'node:stream/promises'
 import prettyMs from 'pretty-ms'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'

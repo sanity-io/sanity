@@ -1,7 +1,6 @@
+import {type SanityClient} from '@sanity/client'
 import fs from 'node:fs'
 import path from 'node:path'
-
-import {type SanityClient} from '@sanity/client'
 import {type Browser, chromium} from 'playwright'
 
 import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'

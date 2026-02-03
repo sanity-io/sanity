@@ -1,8 +1,7 @@
+import {applyEdits, modify} from 'jsonc-parser'
 import {existsSync} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
-import {applyEdits, modify} from 'jsonc-parser'
 
 import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../../types'
 import {getCliToken} from '../../util/clientWrapper'

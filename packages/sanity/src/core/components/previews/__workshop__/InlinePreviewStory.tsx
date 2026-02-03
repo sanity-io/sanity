@@ -14,7 +14,7 @@ const PreviewWrapper = styled.span`
   padding: 2px;
   margin-top: 0.0625em;
   height: calc(1em - 1px);
-
+  
   & > span {
     vertical-align: top;
     margin: 0;

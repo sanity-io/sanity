@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
-          path: ".vitest-reports/*"
+          path: '.vitest-reports/*'
           include-hidden-files: true
           retention-days: 1
 
@@ -110,7 +110,7 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.check_examples.outputs.path_only != 'true'
 
-      - name: "Download coverage artifacts"
+      - name: 'Download coverage artifacts'
         if: steps.check_examples.outputs.path_only != 'true'
         uses: actions/download-artifact@v7
         with:

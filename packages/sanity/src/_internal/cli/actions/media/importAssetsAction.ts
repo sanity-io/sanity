@@ -1,11 +1,3 @@
-import {createHash} from 'node:crypto'
-import {createReadStream} from 'node:fs'
-import fs, {mkdtemp} from 'node:fs/promises'
-import {tmpdir} from 'node:os'
-import path from 'node:path'
-import {text} from 'node:stream/consumers'
-import {pipeline} from 'node:stream/promises'
-
 import {
   type CliCommandAction,
   type CliCommandContext,
@@ -16,6 +8,13 @@ import {type FileAsset, type ImageAsset, type SanityDocument} from '@sanity/type
 import {type Chalk} from 'chalk'
 import gunzipMaybe from 'gunzip-maybe'
 import isTar from 'is-tar'
+import {createHash} from 'node:crypto'
+import {createReadStream} from 'node:fs'
+import fs, {mkdtemp} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
+import {text} from 'node:stream/consumers'
+import {pipeline} from 'node:stream/promises'
 // @ts-expect-error `peek-stream` module currently untyped
 import peek from 'peek-stream'
 import {

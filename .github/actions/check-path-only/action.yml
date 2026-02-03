@@ -1,5 +1,5 @@
-name: "Check Path Only"
-description: "Checks if only files in a specified directory path have changed"
+name: 'Check Path Only'
+description: 'Checks if only files in a specified directory path have changed'
 
 inputs:
   path:
@@ -8,7 +8,7 @@ inputs:
 
 outputs:
   path_only:
-    description: "true if only files in the specified path changed, false otherwise"
+    description: 'true if only files in the specified path changed, false otherwise'
     value: ${{ steps.check.outputs.path_only }}
 
 runs:

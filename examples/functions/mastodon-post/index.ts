@@ -1,7 +1,6 @@
-import {env} from 'node:process'
-
 import {Client, MastodonStrategy} from '@humanwhocodes/crosspost'
 import {documentEventHandler} from '@sanity/functions'
+import {env} from 'node:process'
 
 const {MASTODON_TOKEN = '', MASTODON_HOST = ''} = env
 

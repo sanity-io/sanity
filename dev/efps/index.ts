@@ -1,16 +1,14 @@
 // oxlint-disable no-console
 // oxlint-disable-next-line no-unassigned-import
 import 'dotenv/config'
-
-import fs from 'node:fs'
-import path from 'node:path'
-import process from 'node:process'
-import {fileURLToPath} from 'node:url'
-
 import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import chalk from 'chalk'
 import Table from 'cli-table3'
+import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
+import {fileURLToPath} from 'node:url'
 import Ora from 'ora'
 import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'

@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
 import {describe, expect} from 'vitest'
 
 import {determineAppTemplate} from '../src/actions/init-project/determineAppTemplate'

@@ -83,7 +83,7 @@ export const IncomingReferenceDocument = (props: {
       variants={variants}
     >
       <Box flex={1}>
-        {/* In some cases when the document has been recently linked the value we get 
+        {/* In some cases when the document has been recently linked the value we get
           in the listener is not the latest, but a previous value with the document not yet linked, this handles that */}
         {referencePaths.length > 0 ? (
           <IncomingReferencePreview

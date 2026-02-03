@@ -14,7 +14,7 @@ const Root = styled.div`
   width: 9px;
   z-index: 1;
   cursor: ew-resize;
-
+  
   /* Border */
   & > span:nth-child(1) {
     display: block;
@@ -26,7 +26,7 @@ const Root = styled.div`
     transition: opacity 200ms;
     /* opacity: 0.5; */
   }
-
+  
   /* Hover effect */
   & > span:nth-child(2) {
     display: block;
@@ -39,7 +39,7 @@ const Root = styled.div`
     opacity: 0;
     transition: opacity 150ms;
   }
-
+  
   @media (hover: hover) {
     &:hover > span:nth-child(2) {
       opacity: 0.2;

@@ -6,7 +6,7 @@ export const Root = styled(Flex)`
     overflow-y: auto;
     overflow-x: hidden;
   }
-
+  
   & .Resizer {
     background: var(--card-border-color);
     opacity: 1;
@@ -15,11 +15,11 @@ export const Root = styled(Flex)`
     background-clip: padding-box;
     border: solid transparent;
   }
-
+  
   & .Resizer:hover {
     border-color: var(--card-shadow-ambient-color);
   }
-
+  
   & .Resizer.horizontal {
     height: 11px;
     margin: -5px 0;
@@ -28,7 +28,7 @@ export const Root = styled(Flex)`
     width: 100%;
     z-index: 4;
   }
-
+  
   & .Resizer.vertical {
     width: 11px;
     margin: 0 -5px;
@@ -36,11 +36,11 @@ export const Root = styled(Flex)`
     cursor: col-resize;
     z-index: 2; /* To prevent the resizer from being hidden behind CodeMirror scroll area */
   }
-
+  
   .Resizer.disabled {
     cursor: not-allowed;
   }
-
+  
   .Resizer.disabled:hover {
     border-color: transparent;
   }

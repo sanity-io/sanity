@@ -1,11 +1,10 @@
+import {createClient} from '@sanity/client'
+import Configstore from 'configstore'
+import {copy as copyCb} from 'cpx'
 import {execFileSync, spawnSync} from 'node:child_process'
 import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
 import {hostname} from 'node:os'
 import path from 'node:path'
-
-import {createClient} from '@sanity/client'
-import Configstore from 'configstore'
-import {copy as copyCb} from 'cpx'
 
 import {cleanupDangling} from './cleanupDangling'
 import {

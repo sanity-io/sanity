@@ -1,6 +1,5 @@
 // oxlint-disable no-explicit-any
 import assert from 'node:assert'
-
 import {describe, expect, it} from 'vitest'
 
 import {type WorkspaceLike} from '../../workspaces'

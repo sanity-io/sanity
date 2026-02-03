@@ -215,11 +215,11 @@ interface PaneViewProps {
 
 const PaneViewRoot = styled(Card)`
   box-shadow: 0 0 0 1px var(--card-border-color) !important;
-
+  
   &[data-resizing] {
     pointer-events: none;
   }
-
+  
   & + & {
     margin-left: 1px;
   }

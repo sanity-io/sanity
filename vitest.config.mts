@@ -1,6 +1,5 @@
 // oxlint-disable-next-line import/no-unassigned-import
 import '@vitest/coverage-v8'
-
 import {defineConfig} from 'vitest/config'
 
 export default defineConfig({

@@ -1,12 +1,11 @@
-import {dirname} from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import baseConfig from '@repo/eslint-config'
 import i18nConfig from '@sanity/eslint-config-i18n'
-import {defineConfig} from 'eslint/config'
 import boundaries from 'eslint-plugin-boundaries'
 import testingLibrary from 'eslint-plugin-testing-library'
+import {defineConfig} from 'eslint/config'
 import globals from 'globals'
+import {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

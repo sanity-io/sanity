@@ -1,5 +1,5 @@
-import {createClient, type SanityClient} from '@sanity/client'
 import {sanityIdify, readEnv} from '@repo/utils'
+import {createClient, type SanityClient} from '@sanity/client'
 
 export function createE2EClient(dataset: string): SanityClient {
   return createClient({

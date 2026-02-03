@@ -16,7 +16,7 @@ const StyledHeading = styled(Heading)`
     display: inline;
     text-transform: none;
     margin: 0;
-
+  
     &::before,
     &::after {
       content: unset;

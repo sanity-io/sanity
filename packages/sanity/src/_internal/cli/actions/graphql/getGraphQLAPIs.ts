@@ -1,8 +1,7 @@
+import {type CliCommandContext} from '@sanity/cli'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {isMainThread, Worker} from 'node:worker_threads'
-
-import {type CliCommandContext} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 import {createSchema} from 'sanity'
 

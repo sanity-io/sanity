@@ -7,7 +7,7 @@ export const RatioBox = styled(Card)`
   min-height: 3.75rem;
   max-height: min(calc(var(--image-height) * 1px), 30vh);
   aspect-ratio: var(--image-width) / var(--image-height);
-
+  
   & img {
     display: block;
     width: 100%;

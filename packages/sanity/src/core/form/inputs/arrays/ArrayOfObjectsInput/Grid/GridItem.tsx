@@ -36,13 +36,13 @@ const PreviewCard = styled(Card)`
   border-top-left-radius: inherit;
   height: 100%;
   position: relative;
-
+  
   @media (hover: hover) {
     &:hover {
       filter: brightness(95%);
     }
   }
-
+  
   &:focus:focus-visible {
     box-shadow: 0 0 0 2px var(--card-focus-ring-color);
   }

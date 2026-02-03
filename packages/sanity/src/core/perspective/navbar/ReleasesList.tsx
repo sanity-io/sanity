@@ -27,19 +27,18 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(({
-  $reducePadding,
-  $removePadding,
-}) => {
-  const padding = $reducePadding ? '4px' : '16px'
-  return css`
+const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(
+  ({$reducePadding, $removePadding}) => {
+    const padding = $reducePadding ? '4px' : '16px'
+    return css`
     position: sticky;
     top: 0;
     background-color: var(--card-bg-color);
     z-index: 10;
     padding-bottom: ${$removePadding ? '0px' : padding};
   `
-})
+  },
+)
 
 export function ReleasesList({
   areReleasesEnabled,

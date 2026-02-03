@@ -106,12 +106,12 @@ jobs:
         id: create-pull-request
         with:
           token: ${{ steps.app-token.outputs.token }}
-          title: "${{steps.version-commit.outputs.message}}"
+          title: '${{steps.version-commit.outputs.message}}'
           body: |
             ${{steps.release-notes.outputs.notes}}
-          commit-message: "${{steps.version-commit.outputs.message}}"
+          commit-message: '${{steps.version-commit.outputs.message}}'
           branch: ci/release-main
-          labels: "release:latest"
+          labels: 'release:latest'
           sign-commits: true
           base: main
           draft: true

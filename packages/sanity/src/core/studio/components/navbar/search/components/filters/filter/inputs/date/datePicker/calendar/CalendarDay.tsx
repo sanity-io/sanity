@@ -28,21 +28,21 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
 
 const CustomCard = styled(Card)`
   position: relative;
-
+  
   &[data-focused='true'] {
     z-index: 1;
   }
-
+  
   &[data-start-date='true'] {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-
+  
   &[data-end-date='true'] {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-
+  
   &[data-within-range='true'] {
     border-radius: 0;
   }

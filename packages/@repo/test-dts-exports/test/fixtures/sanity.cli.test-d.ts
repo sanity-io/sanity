@@ -2,7 +2,6 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import {describe, expectTypeOf, test} from 'vitest'
 import type {
   CliClientOptions,
   CliConfig,
@@ -12,6 +11,8 @@ import type {
   getStudioEnvironmentVariables,
   StudioEnvVariablesOptions,
 } from 'sanity/cli'
+
+import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/cli', () => {
   test('CliClientOptions', () => {

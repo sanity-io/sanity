@@ -1,8 +1,7 @@
+import getPort from 'get-port'
 import {createHash} from 'node:crypto'
 import {copyFile, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
-
-import getPort from 'get-port'
 import {describe, expect, test} from 'vitest'
 
 import {describeCliTest} from './shared/describe'

@@ -24,7 +24,7 @@ export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'cente
   top: 0;
   right: 0;
   bottom: 0;
-
+  
   &:before {
     background-color: var(--card-bg-color);
     opacity: 0.75;
@@ -36,7 +36,7 @@ export const ProgressFlex = styled(Flex).attrs({align: 'center', justify: 'cente
     right: 0;
     bottom: 0;
   }
-
+  
   > svg {
     position: relative;
     z-index: 2;

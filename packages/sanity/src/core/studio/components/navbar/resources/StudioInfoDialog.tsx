@@ -41,7 +41,7 @@ function getVersionType(ver: SemVer): 'development' | 'prerelease' | 'default' {
 
 const TruncateBadge = styled(Badge)`
   display: block;
-
+  
   span {
     display: block;
     white-space: nowrap;

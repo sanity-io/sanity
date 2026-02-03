@@ -9,7 +9,10 @@ import {useTranslation} from '../../../../i18n'
 
 const DragHandleButton = styled(Button)<{$grid?: boolean; disabled?: boolean}>((props) => {
   const {$grid, disabled} = props
-  if (disabled) return css``
+  if (disabled)
+    return css`
+      
+    `
   return css`
     cursor: ${$grid ? 'move' : 'ns-resize'};
   `

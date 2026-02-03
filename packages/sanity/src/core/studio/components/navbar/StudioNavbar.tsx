@@ -44,7 +44,7 @@ const EMPTY_ARRAY: [] = []
 const RootLayer = styled(Layer)`
   min-height: auto;
   position: relative;
-
+  
   &[data-search-open='true'] {
     top: 0;
     position: sticky;

@@ -1,5 +1,3 @@
-import {stat} from 'node:fs/promises'
-
 import {
   configDefinition,
   readConfig,
@@ -11,6 +9,7 @@ import {
 } from '@sanity/codegen'
 import chalk from 'chalk'
 import {omit, once} from 'lodash-es'
+import {stat} from 'node:fs/promises'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliConfig} from '../../util/getCliConfig'

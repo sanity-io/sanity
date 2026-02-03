@@ -1,5 +1,4 @@
 import path from 'node:path'
-
 import preferredPM from 'preferred-pm'
 import which from 'which'
 

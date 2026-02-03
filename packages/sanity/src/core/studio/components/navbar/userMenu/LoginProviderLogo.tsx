@@ -14,7 +14,7 @@ const Root = styled.div`
   align-items: center;
   border: 1px solid var(--card-bg-color);
   box-sizing: content-box;
-
+  
   svg {
     box-sizing: content-box;
     border: 1px solid var(--card-hairline-soft-color);
@@ -23,7 +23,7 @@ const Root = styled.div`
     width: 12px;
     height: 12px;
   }
-
+  
   &[data-logo='github'] {
     svg {
       path {
@@ -31,7 +31,7 @@ const Root = styled.div`
       }
     }
   }
-
+  
   &[data-logo='saml'] {
     svg {
       path {

@@ -28,7 +28,9 @@ export const StyledDialog = styled(Dialog)(() => {
   `
 })
 
-export const RootFlex = styled(Flex)``
+export const RootFlex = styled(Flex)`
+  
+`
 
 export const PopoverHeaderCard = styled(Card)`
   min-height: max-content;

@@ -1,11 +1,3 @@
-/* eslint-disable import/extensions */
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import readline from 'node:readline'
-import {Readable} from 'node:stream'
-import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-
 import {
   type ClientConfig,
   createClient,
@@ -13,6 +5,13 @@ import {
   type SanityDocument,
 } from '@sanity/client'
 import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
+/* eslint-disable import/extensions */
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import readline from 'node:readline'
+import {Readable} from 'node:stream'
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 import {isRecord, validateDocument} from 'sanity'
 
 import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball.ts'

@@ -1,12 +1,11 @@
+import chalk from 'chalk'
+import cleanStack from 'clean-stack'
 /**
  * TypeScript version of the `neat-stack` module by
  * ISC License (ISC)
  * Copyright 2017 - 2019 Shinnosuke Watanabe
  */
 import {inspect} from 'node:util'
-
-import chalk from 'chalk'
-import cleanStack from 'clean-stack'
 
 const options = {pretty: process.platform !== 'win32'}
 

@@ -1,6 +1,5 @@
-import {types} from 'node:util'
-
 import {createClient, type SanityClient} from '@sanity/client'
+import {types} from 'node:util'
 import {firstValueFrom, from} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 

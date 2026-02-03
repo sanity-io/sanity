@@ -27,7 +27,7 @@ const DEFAULT_MESSAGE_KEY = 'panes.resolving.default-message'
 const Content = styled(Flex)`
   opacity: 0;
   transition: opacity 200ms;
-
+  
   &[data-mounted] {
     opacity: 1;
   }

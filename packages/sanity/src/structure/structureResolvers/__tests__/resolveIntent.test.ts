@@ -1,11 +1,10 @@
+import {type SchemaPluginOptions} from 'sanity'
 /* eslint-disable simple-import-sort/imports */
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
 import {describe, expect, it, vi} from 'vitest'
-import {createStructureBuilder, SerializeError} from '../../structureBuilder'
-
-import {type SchemaPluginOptions} from 'sanity'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 /* eslint-enable simple-import-sort/imports */
 import {type PaneNode, type UnresolvedPaneNode} from '../../types'
 import {PaneResolutionError} from '../PaneResolutionError'

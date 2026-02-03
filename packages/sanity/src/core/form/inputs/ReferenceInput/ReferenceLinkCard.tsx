@@ -4,10 +4,10 @@ import {styled} from 'styled-components'
 
 export const StyledCard = styled(Card)`
   /* this is a hack to avoid layout jumps while previews are loading
-     there's probably better ways of solving this */
+         there's probably better ways of solving this */
   min-height: 33px;
   position: relative;
-
+  
   /* TextWithTone uses its own logic to set color, and we therefore need */
   /* to override this logic in order to set the correct color in different states */
   &[data-selected],

@@ -29,12 +29,12 @@ const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
 
 const Root = styled(Box)`
   height: 100%;
-
+  
   a {
     color: currentColor;
     text-decoration: none;
   }
-
+  
   svg[data-sanity-icon] {
     margin: 0;
   }

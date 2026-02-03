@@ -62,7 +62,7 @@ const ToggleIconBox = styled(Box)`
   width: 9px;
   height: 9px;
   margin-right: 3px;
-
+  
   & svg {
     transition: transform 100ms;
   }

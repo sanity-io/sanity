@@ -1,4 +1,5 @@
 import type {Path} from '@sanity/types'
+
 import {createContext} from 'sanity/_createContext'
 
 /** @internal */

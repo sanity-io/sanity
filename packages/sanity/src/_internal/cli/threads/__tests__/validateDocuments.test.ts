@@ -1,10 +1,9 @@
+import {type SanityDocument} from '@sanity/client'
+import {evaluate, parse} from 'groq-js'
 import {createServer, type Server} from 'node:http'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
-
-import {type SanityDocument} from '@sanity/client'
-import {evaluate, parse} from 'groq-js'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'

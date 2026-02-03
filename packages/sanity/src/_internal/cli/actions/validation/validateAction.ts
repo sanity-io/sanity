@@ -1,6 +1,3 @@
-import fs from 'node:fs'
-import path from 'node:path'
-
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -10,6 +7,8 @@ import {
 import {type ClientConfig} from '@sanity/client'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import {type ValidationWorkerChannel} from '../../threads/validateDocuments'
 import {type WorkerChannelReceiver} from '../../util/workerChannels'

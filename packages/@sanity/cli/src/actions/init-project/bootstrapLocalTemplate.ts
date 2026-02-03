@@ -1,8 +1,7 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
 import chalk from 'chalk'
 import {deburr} from 'lodash-es'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'

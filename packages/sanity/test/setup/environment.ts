@@ -5,7 +5,6 @@ import 'blob-polyfill'
 import './clipboardItemPolyfill'
 // oxlint-disable-next-line no-unassigned-import
 import '@testing-library/jest-dom/vitest'
-
 import {cleanup} from '@testing-library/react'
 import {afterEach, beforeEach, expect, vi} from 'vitest'
 

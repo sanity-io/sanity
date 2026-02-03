@@ -21,8 +21,8 @@ import {styled} from 'styled-components'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap; */
+      overflow: hidden;
+      white-space: nowrap; */
   max-width: 120px;
 `
 

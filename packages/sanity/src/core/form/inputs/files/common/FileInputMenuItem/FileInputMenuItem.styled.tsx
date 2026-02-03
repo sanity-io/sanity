@@ -4,7 +4,7 @@ import {MenuItem} from '../../../../../../ui-components'
 
 export const FileMenuItem = styled(MenuItem)`
   position: relative;
-
+  
   & input {
     overflow: hidden;
     overflow: clip;

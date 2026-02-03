@@ -24,7 +24,7 @@ export const InteractivePath = styled.path`
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0;
-
+  
   &:hover {
     opacity: 0.2;
   }

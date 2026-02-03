@@ -14,8 +14,8 @@ import {
   throwError,
   timer,
 } from 'rxjs'
-import {scan} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
+import {scan} from 'rxjs/operators'
 import {
   createSearch,
   createSWR,

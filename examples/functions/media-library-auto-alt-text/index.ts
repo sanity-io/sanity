@@ -1,5 +1,5 @@
-import {documentEventHandler} from '@sanity/functions'
 import {createClient} from '@sanity/client'
+import {documentEventHandler} from '@sanity/functions'
 
 const MAX_KEYWORD_WAIT = 5 // How many times to retry (total attempts = MAX_KEYWORD_WAIT + 1)
 const KEYWORD_WAIT_MS = 1500 // Wait 1.5 seconds between checks

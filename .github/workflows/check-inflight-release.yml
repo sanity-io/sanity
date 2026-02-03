@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   update-release-status:
-    name: "Update in-flight release status checks"
+    name: 'Update in-flight release status checks'
     runs-on: ubuntu-latest
 
     if: |
@@ -38,7 +38,7 @@ jobs:
 
   check-pr-release-status:
     runs-on: ubuntu-latest
-    name: "Run in-flight release status check on PR"
+    name: 'Run in-flight release status check on PR'
 
     if: github.event_name == 'pull_request'
 

@@ -8,7 +8,7 @@ const TimeZoneButtonElementQuery = styled(ElementQuery)`
   .button-large {
     display: none;
   }
-
+  
   &[data-eq-min~='2'] {
     .button-small {
       display: none;

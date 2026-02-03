@@ -1,12 +1,11 @@
-import {writeFile} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
-
 import {type CliOutputter} from '@sanity/cli'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {type FSWatcher} from 'chokidar'
 import {type SchemaType} from 'groq-js'
+import {writeFile} from 'node:fs/promises'
+import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
 import readPkgUp from 'read-pkg-up'
 
 import {

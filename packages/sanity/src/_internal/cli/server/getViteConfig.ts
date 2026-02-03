@@ -1,6 +1,3 @@
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import {
   type CliCommandContext,
   type CliConfig,
@@ -8,6 +5,8 @@ import {
   type UserViteConfig,
 } from '@sanity/cli'
 import debug from 'debug'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
 

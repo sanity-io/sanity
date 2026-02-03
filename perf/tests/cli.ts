@@ -1,10 +1,9 @@
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {parseArgs} from 'node:util'
-
 import {createClient} from '@sanity/client'
 import {config} from 'dotenv'
 import globby from 'globby'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {parseArgs} from 'node:util'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {findEnv, readEnv} from './config/envVars'

@@ -1,8 +1,7 @@
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 /* eslint-disable max-statements */
 import path from 'node:path'
 import zlib from 'node:zlib'
-
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 
 import {getAppId} from '../../util/getAppId'

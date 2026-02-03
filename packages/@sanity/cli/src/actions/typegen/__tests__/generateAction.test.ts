@@ -1,4 +1,5 @@
 import type * as SanityCodegen from '@sanity/codegen'
+
 import {readConfig, runTypegenGenerate, TypesGeneratedTrace} from '@sanity/codegen'
 import {type Ora} from 'ora'
 import {describe, expect, test, vi} from 'vitest'

@@ -1,7 +1,6 @@
-import assert, {strictEqual} from 'node:assert'
-
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {type DocumentSchemaType} from 'groq-js'
+import assert, {strictEqual} from 'node:assert'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'

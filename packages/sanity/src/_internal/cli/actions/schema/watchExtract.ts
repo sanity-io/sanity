@@ -1,8 +1,7 @@
-import path from 'node:path'
-
 import {type CliOutputter} from '@sanity/cli'
 import chokidar, {type FSWatcher} from 'chokidar'
 import {debounce} from 'lodash-es'
+import path from 'node:path'
 
 /** Default glob patterns to watch for schema changes */
 export const DEFAULT_WATCH_PATTERNS = [

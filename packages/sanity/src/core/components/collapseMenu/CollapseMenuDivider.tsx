@@ -3,7 +3,7 @@ import {styled} from 'styled-components'
 const DividerDiv = styled.div`
   border-right: 1px solid var(--card-border-color);
   height: auto;
-
+  
   &[data-hidden] {
     opacity: 0;
   }

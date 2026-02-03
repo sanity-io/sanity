@@ -45,7 +45,7 @@ const IconBox = styled(Flex)`
     transform: rotate(0);
     transition: transform 100ms;
   }
-
+  
   &[data-open] > div > svg {
     transform: rotate(90deg);
   }

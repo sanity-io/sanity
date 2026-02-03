@@ -1,6 +1,5 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
-
 import tar from 'tar'
 import {describe, expect} from 'vitest'
 

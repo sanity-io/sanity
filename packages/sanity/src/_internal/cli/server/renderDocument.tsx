@@ -1,3 +1,6 @@
+import chalk from 'chalk'
+import importFresh from 'import-fresh'
+import {parse as parseHtml} from 'node-html-parser'
 /**
  * Looks for and imports (in preferred order):
  *   - src/_document.js
@@ -10,10 +13,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
-
-import chalk from 'chalk'
-import importFresh from 'import-fresh'
-import {parse as parseHtml} from 'node-html-parser'
 import {renderToStaticMarkup} from 'react-dom/server'
 
 import {BasicDocument} from './components/BasicDocument'

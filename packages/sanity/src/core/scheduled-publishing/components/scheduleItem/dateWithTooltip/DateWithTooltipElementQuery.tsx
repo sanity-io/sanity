@@ -11,7 +11,7 @@ const DateWithTooltipElementQuery: typeof ElementQuery = styled(ElementQuery)`
   .date-large {
     display: none;
   }
-
+  
   &[data-eq-min~='1'] {
     .date-small {
       display: none;
@@ -23,7 +23,7 @@ const DateWithTooltipElementQuery: typeof ElementQuery = styled(ElementQuery)`
       display: none;
     }
   }
-
+  
   &[data-eq-min~='2'] {
     .date-small {
       display: none;

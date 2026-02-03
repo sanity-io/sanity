@@ -27,7 +27,7 @@ const TextWithToneStyle = styled(Text)`
       --card-fg-color: var(--card-badge-critical-fg-color);
     }
   }
-
+  
   &[data-dimmed] {
     opacity: 0.3;
   }

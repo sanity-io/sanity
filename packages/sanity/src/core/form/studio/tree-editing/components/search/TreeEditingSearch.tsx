@@ -14,7 +14,9 @@ import {treeEditingSearch} from './utils'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 
-const RootFlex = styled(Flex)``
+const RootFlex = styled(Flex)`
+  
+`
 
 const PopoverListFlex = styled(Flex)<{
   $maxDisplayedItems: number

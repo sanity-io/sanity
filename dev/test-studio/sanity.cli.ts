@@ -1,5 +1,4 @@
 import path from 'node:path'
-
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig, type UserConfig} from 'vite'
 

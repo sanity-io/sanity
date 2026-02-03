@@ -1,3 +1,8 @@
+import {
+  defineBlueprint,
+  defineDocumentFunction,
+  defineMediaLibraryAssetFunction,
+} from '@sanity/blueprints'
 /**
  * This blueprint is used to run and test the examples.
  *
@@ -6,12 +11,6 @@
  */
 import {readdirSync, readFileSync} from 'node:fs'
 import {join} from 'node:path'
-
-import {
-  defineBlueprint,
-  defineDocumentFunction,
-  defineMediaLibraryAssetFunction,
-} from '@sanity/blueprints'
 
 function loadFunctionResources() {
   const functionsDir = './functions'

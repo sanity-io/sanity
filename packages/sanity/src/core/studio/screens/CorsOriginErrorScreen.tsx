@@ -33,7 +33,7 @@ const HelpLink = styled.a`
   display: inline-flex;
   align-items: center;
   gap: 0.25em;
-
+  
   &:hover {
     text-decoration: underline;
   }

@@ -1,8 +1,7 @@
-import {isMainThread, type MessagePort, parentPort, workerData} from 'node:worker_threads'
-
 import {type CliCommandContext, type GraphQLAPIConfig} from '@sanity/cli'
 import {type Schema} from '@sanity/types'
 import {isPlainObject} from 'lodash-es'
+import {isMainThread, type MessagePort, parentPort, workerData} from 'node:worker_threads'
 import oneline from 'oneline'
 import {type Workspace} from 'sanity'
 

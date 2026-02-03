@@ -1,7 +1,6 @@
+import chalk from 'chalk'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import chalk from 'chalk'
 import {lastValueFrom, of, toArray} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 

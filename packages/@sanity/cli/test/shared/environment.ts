@@ -1,9 +1,8 @@
+import {createClient} from '@sanity/client'
 import {spawn, type SpawnOptions} from 'node:child_process'
 import {existsSync, readFileSync} from 'node:fs'
 import {platform, tmpdir} from 'node:os'
 import path from 'node:path'
-
-import {createClient} from '@sanity/client'
 import which from 'which'
 
 export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN_STAGING || '').trim()
