@@ -1,3 +1,7 @@
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {describe, expect, it, vi} from 'vitest'
+
 import {mockUseRouterReturn} from '../../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
@@ -9,9 +13,6 @@ import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
 import {type InjectedTableProps} from '../../../components/Table/types'
 import {ReleaseNameCell} from '../../columnCells/ReleaseName'
 import {type TableRelease} from '../../ReleasesOverview'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),

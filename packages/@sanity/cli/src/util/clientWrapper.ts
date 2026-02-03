@@ -1,5 +1,5 @@
-import {type CliApiConfig} from '../types'
-import {getUserConfig} from './getUserConfig'
+import path from 'node:path'
+
 import {
   type ClientConfig,
   type ClientError,
@@ -10,7 +10,9 @@ import {
 } from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import chalk from 'chalk'
-import path from 'node:path'
+
+import {type CliApiConfig} from '../types'
+import {getUserConfig} from './getUserConfig'
 
 const apiHosts: Record<string, string | undefined> = {
   staging: 'https://api.sanity.work',

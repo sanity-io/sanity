@@ -1,9 +1,10 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../../components'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {ReleaseTime} from '../ReleaseTime'
-import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
   const {t} = useTranslation()

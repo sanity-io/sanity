@@ -1,3 +1,9 @@
+import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
+import {type SchemaType, type UploadState} from '@sanity/types'
+import {Box, Card, type CardTone, Menu} from '@sanity/ui'
+import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
+
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
@@ -22,11 +28,6 @@ import {randomKey} from '../../../../utils/randomKey'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
-import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType, type UploadState} from '@sanity/types'
-import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
 

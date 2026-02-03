@@ -1,10 +1,11 @@
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {useBoundaryElement} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+
 import {isEmptyItem} from '../../../../store/utils/isEmptyItem'
 import {usePortableTextMemberItemElementRefs} from '../../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberItems} from '../../hooks/usePortableTextMembers'
 import {ObjectEditModal} from './ObjectEditModal'
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {useBoundaryElement} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
 
 export function AnnotationObjectEditModal(props: {
   focused: boolean | undefined

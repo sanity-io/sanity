@@ -1,5 +1,6 @@
-import {eventsArray} from '../objects'
 import {defineField, defineType, type ReferenceFilterResolverContext} from '@sanity/types'
+
+import {eventsArray} from '../objects'
 
 export const referencesDocument = defineType({
   name: 'referencesDocument',

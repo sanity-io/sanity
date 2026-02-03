@@ -1,9 +1,10 @@
-import {type UserListWithPermissionsHookValue} from '../../../src/core/hooks/useUserListWithPermissions'
-import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash-es'
 import {useState} from 'react'
 import {CommentInput} from 'sanity'
+
+import {type UserListWithPermissionsHookValue} from '../../../src/core/hooks/useUserListWithPermissions'
+import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 
 const currentUser: CurrentUser = {
   email: '',

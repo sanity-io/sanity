@@ -1,6 +1,7 @@
-import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useFormValue} from 'sanity'
+
+import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
 export function CharacterCount(props: any) {
   const doc = useFormValue([]) as any

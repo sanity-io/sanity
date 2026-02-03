@@ -1,12 +1,13 @@
+import {type SanityClient} from '@sanity/client'
+import {of} from 'rxjs'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {type IdPair} from '../../types'
 import {checkoutPair} from '../checkoutPair'
 import {type OperationArgs} from '../operations/types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {patch} from './patch'
-import {type SanityClient} from '@sanity/client'
-import {of} from 'rxjs'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 vi.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: vi.fn()}))
 const isLiveEditEnabledMock = isLiveEditEnabled as Mock<typeof isLiveEditEnabled>

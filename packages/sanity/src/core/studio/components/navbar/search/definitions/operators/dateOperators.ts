@@ -1,4 +1,14 @@
 import {
+  endOfDay,
+  endOfMinute,
+  isValid,
+  startOfDay,
+  startOfMinute,
+  startOfToday,
+  sub,
+} from 'date-fns'
+
+import {
   SearchButtonValueDate,
   SearchButtonValueDateLast,
   SearchButtonValueDateRange,
@@ -19,15 +29,6 @@ import {
   type SearchOperatorParams,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
-import {
-  endOfDay,
-  endOfMinute,
-  isValid,
-  startOfDay,
-  startOfMinute,
-  startOfToday,
-  sub,
-} from 'date-fns'
 
 // 'Before' and 'after' dates
 export interface OperatorDateDirectionValue {

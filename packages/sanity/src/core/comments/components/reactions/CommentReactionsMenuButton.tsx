@@ -1,10 +1,11 @@
+import {Card, useClickOutsideEvent} from '@sanity/ui'
+import {cloneElement, useCallback, useMemo, useRef, useState} from 'react'
+
 import {Popover, type PopoverProps} from '../../../../ui-components'
 import {type TFunction, useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentsUIMode} from '../../types'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
-import {Card, useClickOutsideEvent} from '@sanity/ui'
-import {cloneElement, useCallback, useMemo, useRef, useState} from 'react'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 

@@ -1,6 +1,7 @@
+import {Stack} from '@sanity/ui'
+
 import {QueryErrorDetails} from './QueryErrorDetails'
 import {ErrorCode} from './QueryErrorDialog.styled'
-import {Stack} from '@sanity/ui'
 
 export function QueryErrorDialog(props: {error: Error}) {
   return (

@@ -1,7 +1,8 @@
+import {useImperativeHandle, useMemo, useState} from 'react'
+
 import {HookCollectionState} from './HookCollectionState'
 import {type GetHookCollectionStateProps} from './types'
 import {useHookCollectionStates} from './useHookCollectionStates'
-import {useImperativeHandle, useMemo, useState} from 'react'
 
 /** @internal */
 export function GetHookCollectionState<Args, State>(

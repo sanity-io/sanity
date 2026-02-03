@@ -1,8 +1,9 @@
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
+
 import {type DocumentRevision, type HistoryStore} from '../../../history'
 import {type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
-import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
 
 /** @public */
 export type MapDocument = (document: SanityDocumentLike) => SanityDocumentLike

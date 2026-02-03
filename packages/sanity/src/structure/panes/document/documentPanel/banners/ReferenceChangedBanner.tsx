@@ -1,7 +1,3 @@
-import {usePaneRouter} from '../../../../components'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {type RouterPaneGroup} from '../../../../types'
-import {Banner} from './Banner'
 import {CloseIcon, SyncIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
@@ -18,6 +14,11 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+
+import {usePaneRouter} from '../../../../components'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {type RouterPaneGroup} from '../../../../types'
+import {Banner} from './Banner'
 
 interface ParentReferenceInfo {
   loading: boolean

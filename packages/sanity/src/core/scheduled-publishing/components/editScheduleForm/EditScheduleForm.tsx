@@ -1,7 +1,8 @@
-import {type ScheduleFormData} from '../../types'
-import ScheduleForm from './ScheduleForm'
 import {Stack} from '@sanity/ui'
 import {type PropsWithChildren} from 'react'
+
+import {type ScheduleFormData} from '../../types'
+import ScheduleForm from './ScheduleForm'
 
 interface Props {
   onChange?: (formData: ScheduleFormData) => void

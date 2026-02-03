@@ -1,9 +1,10 @@
-import {useCurrentUser} from '../../store'
-import {CommentsListItemLayout} from '../components/list/CommentsListItemLayout'
-import {type CommentDocument, type CommentsUIMode} from '../types'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
+
+import {useCurrentUser} from '../../store'
+import {CommentsListItemLayout} from '../components/list/CommentsListItemLayout'
+import {type CommentDocument, type CommentsUIMode} from '../types'
 
 const MOCK_COMMENT: CommentDocument = {
   _id: 'id',

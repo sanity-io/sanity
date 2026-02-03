@@ -1,3 +1,8 @@
+import {TrashIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ErrorInfo, useCallback, useState} from 'react'
+import FocusLock from 'react-focus-lock'
+
 import {Button, ErrorBoundary} from '../../../../../../../../ui-components'
 import {supportsTouch} from '../../../../../../../util'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -8,10 +13,6 @@ import {getFieldFromFilter, getFilterKey} from '../../../utils/filterUtils'
 import {FilterDetails} from '../common/FilterDetails'
 import {FilterError} from './FilterError'
 import {OperatorsMenuButton} from './OperatorsMenuButton'
-import {TrashIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useState} from 'react'
-import FocusLock from 'react-focus-lock'
 
 interface FilterFormProps {
   filter: SearchFilter

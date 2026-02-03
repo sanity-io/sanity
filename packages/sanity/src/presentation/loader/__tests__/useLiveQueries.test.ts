@@ -1,6 +1,7 @@
-import {initialState, reducer} from '../useLiveQueries'
 import {type ClientPerspective} from '@sanity/client'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+
+import {initialState, reducer} from '../useLiveQueries'
 
 describe('useLiveQueries', () => {
   const query1 = `count(*)`

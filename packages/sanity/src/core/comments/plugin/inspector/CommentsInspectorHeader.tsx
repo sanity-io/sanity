@@ -1,11 +1,12 @@
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {commentsLocaleNamespace} from '../../i18n'
-import {type CommentStatus, type CommentsUIMode} from '../../types'
 import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'
+
+import {Button, MenuButton, MenuItem} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {commentsLocaleNamespace} from '../../i18n'
+import {type CommentStatus, type CommentsUIMode} from '../../types'
 
 const Root = styled(Card)({
   position: 'relative',

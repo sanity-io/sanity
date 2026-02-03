@@ -1,3 +1,6 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -10,8 +13,6 @@ import {
   createReleaseOperationsStore,
   type ReleaseOperationsStore,
 } from '../createReleaseOperationStore'
-import {type ReleaseDocument} from '@sanity/client'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 describe('createReleaseOperationsStore', () => {
   let mockClient: any

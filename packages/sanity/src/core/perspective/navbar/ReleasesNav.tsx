@@ -1,3 +1,7 @@
+import {Card} from '@sanity/ui'
+import {type ComponentType} from 'react'
+import {styled} from 'styled-components'
+
 import {usePerspective} from '../../perspective/usePerspective'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useWorkspace} from '../../studio/workspace'
@@ -5,9 +9,6 @@ import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
-import {Card} from '@sanity/ui'
-import {type ComponentType} from 'react'
-import {styled} from 'styled-components'
 
 const ReleasesNavContainer = styled(Card)`
   position: relative;

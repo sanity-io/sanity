@@ -1,3 +1,6 @@
+import {act, renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
   activeScheduledRelease,
@@ -9,8 +12,6 @@ import {useAllReleasesMockReturn} from '../../releases/store/__tests__/__mocks/u
 import {useReleaseOperationsMockReturn} from '../../releases/store/__tests__/__mocks/useReleaseOperations.mock'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
-import {act, renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../releases/store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),

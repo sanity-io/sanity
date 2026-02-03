@@ -1,3 +1,10 @@
+import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon, WarningOutlineIcon} from '@sanity/icons'
+import {SanityMonogram} from '@sanity/logos'
+import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
+import {useEffect, useId} from 'react'
+import semver, {type SemVer} from 'semver'
+import {styled} from 'styled-components'
+
 import {Button, Dialog, Tooltip} from '../../../../../ui-components'
 import {TextWithTone} from '../../../../components'
 import {isProd} from '../../../../environment'
@@ -5,12 +12,6 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
-import {CogIcon, GithubIcon, LaunchIcon, RefreshIcon, WarningOutlineIcon} from '@sanity/icons'
-import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
-import {useEffect, useId} from 'react'
-import semver, {type SemVer} from 'semver'
-import {styled} from 'styled-components'
 
 interface StudioInfoDialogProps {
   onClose: () => void

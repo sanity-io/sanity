@@ -1,3 +1,8 @@
+import {type SchemaType} from '@sanity/types'
+import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type ElementType, type ReactNode, useState} from 'react'
+import {styled} from 'styled-components'
+
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
@@ -19,10 +24,6 @@ import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
-import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
 
 const StatusDotPlaceholder = styled(Box)`
   width: 9px;

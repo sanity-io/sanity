@@ -1,13 +1,14 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ConfirmScheduledDraftsDialog} from './ConfirmScheduledDraftsDialog'
 import {type Mode} from './queryParamUtils'
-import {type ReleaseDocument} from '@sanity/client'
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
 
 interface ConfirmActiveScheduledDraftsBannerProps {
   releases: ReleaseDocument[]

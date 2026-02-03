@@ -1,4 +1,3 @@
-import {ValidationListItem} from './ValidationListItem'
 import {
   isValidationErrorMarker,
   isValidationInfoMarker,
@@ -9,6 +8,8 @@ import {
 } from '@sanity/types'
 import {Container} from '@sanity/ui'
 import {useCallback} from 'react'
+
+import {ValidationListItem} from './ValidationListItem'
 
 /** @internal */
 export interface ValidationListProps {

@@ -6,7 +6,16 @@
   "bracketSpacing": false,
   "quoteProps": "consistent",
   "experimentalSortImports": {
-    "groups": [["^\\u0000"], ["^node:"], ["^[^.]"], ["^\\."]]
+    "groups": [
+      ["side-effect", "side-effect-style"],
+      ["builtin", "subpath"],
+      ["external"],
+      ["internal"],
+      "unknown",
+      ["parent", "sibling", "index", "style"]
+    ],
+    "newlinesBetween": true,
+    "sortSideEffects": false
   },
   "experimentalSortPackageJson": {"sortScripts": true},
   "overrides": [

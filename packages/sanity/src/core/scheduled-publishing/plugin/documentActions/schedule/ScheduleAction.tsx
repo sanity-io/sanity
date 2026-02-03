@@ -1,3 +1,7 @@
+import {CalendarIcon, ClockIcon} from '@sanity/icons'
+import {Box, Text} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionComponent,
@@ -20,9 +24,6 @@ import useScheduleOperation from '../../../hooks/useScheduleOperation'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
 import {NewScheduleInfo} from './NewScheduleInfo'
 import Schedules from './Schedules'
-import {CalendarIcon, ClockIcon} from '@sanity/icons'
-import {Box, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
 
 const debug = debugWithName('ScheduleAction')
 

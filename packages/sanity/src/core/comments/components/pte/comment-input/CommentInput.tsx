@@ -1,9 +1,3 @@
-import {type UserListWithPermissionsHookValue} from '../../../../hooks'
-import {editorSchemaType} from '../config'
-import {renderBlock as defaultRenderBlock} from '../render'
-import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
-import {CommentInputInner} from './CommentInputInner'
-import {CommentInputProvider} from './CommentInputProvider'
 import {
   type EditorEmittedEvent,
   EditorProvider,
@@ -30,6 +24,13 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {type UserListWithPermissionsHookValue} from '../../../../hooks'
+import {editorSchemaType} from '../config'
+import {renderBlock as defaultRenderBlock} from '../render'
+import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
+import {CommentInputInner} from './CommentInputInner'
+import {CommentInputProvider} from './CommentInputProvider'
 
 /**
  * `EditorProvider` doesn't have a `ref` prop. This plugin takes care of

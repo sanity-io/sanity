@@ -1,5 +1,6 @@
-import {useUserListWithPermissions} from '../../hooks'
 import {Card, Code} from '@sanity/ui'
+
+import {useUserListWithPermissions} from '../../hooks'
 
 const DOCUMENT = {
   _id: '1e1744ab-43d5-4fff-8a2a-28c58bf0434a',

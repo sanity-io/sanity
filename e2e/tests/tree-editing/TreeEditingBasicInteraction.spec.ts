@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.skip('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {

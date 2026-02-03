@@ -1,4 +1,3 @@
-import {type FormPatch} from '../../patch'
 import {type SanityClient} from '@sanity/client'
 import {
   type AssetMetadataType,
@@ -7,6 +6,8 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
+
+import {type FormPatch} from '../../patch'
 
 /**
  *

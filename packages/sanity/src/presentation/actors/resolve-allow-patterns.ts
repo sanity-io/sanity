@@ -1,5 +1,6 @@
-import {type PreviewUrlAllowOption, type PreviewUrlAllowOptionContext} from '../types'
 import {fromPromise, type PromiseActorLogic} from 'xstate'
+
+import {type PreviewUrlAllowOption, type PreviewUrlAllowOptionContext} from '../types'
 
 interface Context extends Pick<PreviewUrlAllowOptionContext, 'client'> {
   allowOption: PreviewUrlAllowOption | undefined

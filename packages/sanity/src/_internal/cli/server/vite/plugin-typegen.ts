@@ -1,3 +1,6 @@
+import {existsSync} from 'node:fs'
+import path from 'node:path'
+
 import {type CliCommandContext} from '@sanity/cli'
 import {
   type GenerationResult,
@@ -8,8 +11,6 @@ import {
 } from '@sanity/codegen'
 import {debounce, mean, once} from 'lodash-es'
 import logSymbols from 'log-symbols'
-import {existsSync} from 'node:fs'
-import path from 'node:path'
 import picomatch from 'picomatch'
 import {type Plugin} from 'vite'
 

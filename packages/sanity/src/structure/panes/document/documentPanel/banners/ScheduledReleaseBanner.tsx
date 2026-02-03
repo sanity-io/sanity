@@ -1,4 +1,3 @@
-import {Banner} from './Banner'
 import {LockIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {
@@ -9,6 +8,8 @@ import {
   Translate,
   useTranslation,
 } from 'sanity'
+
+import {Banner} from './Banner'
 
 export function ScheduledReleaseBanner({
   currentRelease,

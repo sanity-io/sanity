@@ -1,5 +1,6 @@
-import {getReferencePaths} from './getReferencePaths'
 import {describe, expect, it} from 'vitest'
+
+import {getReferencePaths} from './getReferencePaths'
 
 describe('getReferencePaths', () => {
   it('should return the reference path when the reference is at the root', () => {

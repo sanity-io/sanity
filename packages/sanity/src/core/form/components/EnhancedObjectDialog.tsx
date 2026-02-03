@@ -1,3 +1,9 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {type Path} from '@sanity/types'
+import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {styled} from 'styled-components'
+
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
 import {pathToString} from '../../field/paths/helpers'
@@ -12,11 +18,6 @@ import {
   NestedDialogOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type Path} from '@sanity/types'
-import {Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
-import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 /**
  * Styled Dialog component that conditionally hides the dialog card and backdrop.

@@ -1,3 +1,11 @@
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@portabletext/editor'
+import {isKeySegment} from '@sanity/types'
+import {memo, useCallback, useMemo} from 'react'
+
 import {type PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
@@ -6,13 +14,6 @@ import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSc
 import {getActionIcon} from './helpers'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
-import {
-  PortableTextEditor,
-  usePortableTextEditor,
-  usePortableTextEditorSelection,
-} from '@portabletext/editor'
-import {isKeySegment} from '@sanity/types'
-import {memo, useCallback, useMemo} from 'react'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 

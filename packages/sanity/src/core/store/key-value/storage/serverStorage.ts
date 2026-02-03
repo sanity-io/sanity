@@ -1,8 +1,9 @@
+import {type SanityClient} from '@sanity/client'
+import DataLoader from 'dataloader'
+
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type KeyValueStoreValue} from '../types'
 import {type KeyValuePair} from './types'
-import {type SanityClient} from '@sanity/client'
-import DataLoader from 'dataloader'
 
 /** @internal */
 export interface ServerStorageOptions {

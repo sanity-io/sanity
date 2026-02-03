@@ -1,9 +1,10 @@
-import {useDocumentPreviewStore} from '../store/_legacy/datastores'
-import {type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {type QueryParams} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {scan} from 'rxjs/operators'
+
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
+import {type DocumentIdSetObserverState} from './liveDocumentIdSet'
 
 const INITIAL_STATE = {status: 'loading' as const, documentIds: []}
 

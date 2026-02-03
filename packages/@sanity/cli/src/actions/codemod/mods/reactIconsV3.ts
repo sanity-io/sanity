@@ -1,9 +1,11 @@
+import path from 'node:path'
+
+import resolveFrom from 'resolve-from'
+import semverCompare from 'semver-compare'
+
 import {type PackageJson} from '../../../types'
 import {readJson} from '../../../util/readJson'
 import {type CodeMod} from '../types'
-import path from 'node:path'
-import resolveFrom from 'resolve-from'
-import semverCompare from 'semver-compare'
 
 const purpose = 'Transform react-icons v2 imports to v3 form'
 const description = `

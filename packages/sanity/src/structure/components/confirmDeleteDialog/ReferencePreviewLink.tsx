@@ -1,5 +1,3 @@
-import {PaneItemPreview} from '../paneItem/PaneItemPreview'
-import {usePaneRouter} from '../paneRouter'
 import {type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
 import {
@@ -10,6 +8,9 @@ import {
   useDocumentPresence,
   useDocumentPreviewStore,
 } from 'sanity'
+
+import {PaneItemPreview} from '../paneItem/PaneItemPreview'
+import {usePaneRouter} from '../paneRouter'
 
 const EMPTY_ARRAY: [] = []
 

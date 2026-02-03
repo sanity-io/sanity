@@ -1,10 +1,11 @@
+/* eslint-disable camelcase */
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback} from 'react'
+
 import {MenuItem} from '../../../ui-components'
 import {SANITY_VERSION} from '../../version'
 import {WhatsNewHelpMenuItemClicked} from './__telemetry__/studioAnnouncements.telemetry'
 import {useStudioAnnouncements} from './useStudioAnnouncements'
-/* eslint-disable camelcase */
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback} from 'react'
 
 export function StudioAnnouncementsMenuItem({text}: {text: string}) {
   const {onDialogOpen, studioAnnouncements} = useStudioAnnouncements()

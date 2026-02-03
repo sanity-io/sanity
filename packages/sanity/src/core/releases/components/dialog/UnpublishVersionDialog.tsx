@@ -1,3 +1,7 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {Stack, Text, useToast} from '@sanity/ui'
+import {type CSSProperties, useCallback, useState} from 'react'
+
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
@@ -12,9 +16,6 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {type ReleaseDocument} from '@sanity/client'
-import {Stack, Text, useToast} from '@sanity/ui'
-import {type CSSProperties, useCallback, useState} from 'react'
 
 export function UnpublishVersionDialog(props: {
   onClose: () => void

@@ -1,5 +1,6 @@
-import type {StructureToolContextValue} from '../../structure/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {StructureToolContextValue} from '../../structure/types'
 
 /**
  * @internal

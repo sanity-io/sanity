@@ -1,3 +1,8 @@
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
+import {combineLatest, firstValueFrom, type Observable} from 'rxjs'
+import {map} from 'rxjs/operators'
+
 import {createMockAuthStore} from '../store'
 import {prepareConfig} from './prepareConfig'
 import {
@@ -7,10 +12,6 @@ import {
   type Source,
   type Workspace,
 } from './types'
-import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
-import {combineLatest, firstValueFrom, type Observable} from 'rxjs'
-import {map} from 'rxjs/operators'
 
 /**
  * Fully resolves a configuration including subscribing to all sources and

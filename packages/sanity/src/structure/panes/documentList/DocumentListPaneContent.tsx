@@ -1,7 +1,3 @@
-import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
-import {structureLocaleNamespace} from '../../i18n'
-import {FULL_LIST_LIMIT} from './constants'
-import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -19,6 +15,11 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
+import {structureLocaleNamespace} from '../../i18n'
+import {FULL_LIST_LIMIT} from './constants'
+import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
 
 const RootBox = styled(Box)<{$opacity?: number}>`
   position: relative;

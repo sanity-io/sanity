@@ -1,3 +1,8 @@
+import {defineField} from '@sanity/types'
+import {fireEvent, screen} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import {describe, expect, test, vi} from 'vitest'
+
 import {renderStringInput} from '../../../../../../test/form'
 import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
@@ -8,10 +13,6 @@ import {
   mockUseTimeZoneWithOslo,
   mockUseTimeZoneWithTokyo,
 } from './__mocks__/timezoneMocks'
-import {defineField} from '@sanity/types'
-import {fireEvent, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import {describe, expect, test, vi} from 'vitest'
 
 vi.mock('sanity', () => ({
   set: vi.fn(),

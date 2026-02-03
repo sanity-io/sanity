@@ -1,6 +1,7 @@
+import {describe, expect, test} from 'vitest'
+
 import {type CommentReactionItem} from '../types'
 import {mergeCommentReactions} from '../utils/mergeCommentReactions'
-import {describe, expect, test} from 'vitest'
 
 const REACTIONS_A: CommentReactionItem[] = [
   {

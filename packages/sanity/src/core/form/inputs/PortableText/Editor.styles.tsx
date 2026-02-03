@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
 import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+
+import {ScrollContainer} from '../../../components/scroll'
+import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {

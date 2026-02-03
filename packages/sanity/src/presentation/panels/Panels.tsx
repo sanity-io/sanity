@@ -2,6 +2,20 @@
 // https://github.com/bvaughn/react-resizable-panels/tree/main/packages/react-resizable-panels
 
 import {
+  type CSSProperties,
+  type FunctionComponent,
+  type PropsWithChildren,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {PresentationPanelsContext} from 'sanity/_singletons'
+import {styled} from 'styled-components'
+
+import {
   type ElementMap,
   type InitialDragState,
   type PanelElement,
@@ -19,19 +33,6 @@ import {
   isResizer,
   validateWidths,
 } from './util'
-import {
-  type CSSProperties,
-  type FunctionComponent,
-  type PropsWithChildren,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 const PanelsWrapper = styled.div`
   display: flex;

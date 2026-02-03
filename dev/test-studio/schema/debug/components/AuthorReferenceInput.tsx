@@ -1,4 +1,3 @@
-import styles from './AuthorReferenceInput.module.css'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
 import {Button, Spinner} from '@sanity/ui'
@@ -11,6 +10,8 @@ import {
   useState,
 } from 'react'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
+
+import styles from './AuthorReferenceInput.module.css'
 
 const noop = () => null
 

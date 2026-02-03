@@ -1,7 +1,8 @@
-import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
-import {IncomingReferencesList} from './IncomingReferencesList'
 import {Card, Flex} from '@sanity/ui'
 import {type DocumentInspectorComponent, type DocumentInspectorProps, useTranslation} from 'sanity'
+
+import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
+import {IncomingReferencesList} from './IncomingReferencesList'
 
 export const IncomingReferencesInspector: DocumentInspectorComponent = (
   props: DocumentInspectorProps,

@@ -1,9 +1,10 @@
-import {type WorkspaceSummary} from '../../../config/types'
-import {type UserApplicationCache} from '../../../store/userApplications'
-import {findUserApplication} from '../liveUserApplication'
 import {type SanityClient} from '@sanity/client'
 import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {type WorkspaceSummary} from '../../../config/types'
+import {type UserApplicationCache} from '../../../store/userApplications'
+import {findUserApplication} from '../liveUserApplication'
 
 // Mock window.location with origin and pathname
 const mockWindowLocation = (origin: string | undefined, pathname: string = '/') => {

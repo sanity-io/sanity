@@ -1,3 +1,6 @@
+import {type DefinedTelemetryLog} from '@sanity/telemetry/react'
+import {type ButtonTone} from '@sanity/ui'
+
 import {
   ArchivedRelease,
   DeletedRelease,
@@ -5,8 +8,6 @@ import {
   UnarchivedRelease,
   UnscheduledRelease,
 } from '../../../__telemetry__/releases.telemetry'
-import {type DefinedTelemetryLog} from '@sanity/telemetry/react'
-import {type ButtonTone} from '@sanity/ui'
 
 export type ReleaseAction =
   | 'archive'

@@ -1,5 +1,6 @@
-import {Coloured, Custom} from './CustomStyle'
 import {defineArrayMember, defineField, defineType, type FieldGroupDefinition} from 'sanity'
+
+import {Coloured, Custom} from './CustomStyle'
 
 export const mainGroup: FieldGroupDefinition = {
   name: 'main',

@@ -1,5 +1,6 @@
-import {extractSearchableText} from './extractSearchableText'
 import {type SanityDocument} from '@sanity/types'
+
+import {extractSearchableText} from './extractSearchableText'
 
 /**
  * This is a temporary way of doing the search without the previews

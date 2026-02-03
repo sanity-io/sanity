@@ -1,11 +1,12 @@
-import {useClient} from '../../../../hooks'
-import {SANITY_VERSION} from '../../../../version'
-import {getTrialStage, TrialDialogViewed} from './__telemetry__/trialDialogEvents.telemetry'
-import {type FreeTrialResponse} from './types'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ReactNode, useEffect, useState} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+
+import {useClient} from '../../../../hooks'
+import {SANITY_VERSION} from '../../../../version'
+import {getTrialStage, TrialDialogViewed} from './__telemetry__/trialDialogEvents.telemetry'
+import {type FreeTrialResponse} from './types'
 /**
  * @internal
  */

@@ -1,4 +1,3 @@
-import {useComlinkStore} from '../store/_legacy/datastores'
 import {type Node} from '@sanity/comlink'
 import {
   type CanvasResource,
@@ -36,6 +35,8 @@ import {
   throwError,
   timeout,
 } from 'rxjs'
+
+import {useComlinkStore} from '../store/_legacy/datastores'
 
 interface FavoriteStatusResponse {
   isFavorited: boolean

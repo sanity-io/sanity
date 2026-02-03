@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect, type Page} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 const WAIT_OPTIONS = {
   timeout: 20 * 1000, // 20 seconds

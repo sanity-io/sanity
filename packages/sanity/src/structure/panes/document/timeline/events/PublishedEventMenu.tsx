@@ -1,7 +1,3 @@
-import {MenuButton} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 import {
   Flex,
   Menu,
@@ -26,6 +22,11 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+
+import {MenuButton} from '../../../../../ui-components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)

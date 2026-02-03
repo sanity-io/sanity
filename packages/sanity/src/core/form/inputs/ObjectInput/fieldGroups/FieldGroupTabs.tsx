@@ -1,13 +1,14 @@
+import {type FormNodeValidation, type Path} from '@sanity/types'
+import {ElementQuery, Select, TabList} from '@sanity/ui'
+import {type ChangeEvent, memo, useCallback} from 'react'
+import {styled} from 'styled-components'
+
 import {useTranslation} from '../../../../i18n'
 import {StatusIcon} from '../../../components/formField/ValidationStatusIcon'
 import {type FormFieldGroup} from '../../../store'
 import {useChildValidation} from '../../../studio/contexts/Validation'
 import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {GroupOption, GroupTab} from './GroupTab'
-import {type FormNodeValidation, type Path} from '@sanity/types'
-import {ElementQuery, Select, TabList} from '@sanity/ui'
-import {type ChangeEvent, memo, useCallback} from 'react'
-import {styled} from 'styled-components'
 
 interface FieldGroupTabsProps {
   disabled?: boolean

@@ -1,8 +1,9 @@
-import {expectManifestSchemaConversion} from './utils'
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
 import {createSchema} from 'sanity'
 import {describe, test} from 'vitest'
+
+import {expectManifestSchemaConversion} from './utils'
 
 const DESCRIPTOR_CONVERTER = new DescriptorConverter()
 

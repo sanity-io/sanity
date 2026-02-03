@@ -1,7 +1,8 @@
-import {Button} from '../button'
 import {EditIcon, PublishIcon} from '@sanity/icons'
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
+
+import {Button} from '../button'
 
 export default function ButtonStory() {
   const text = useString('Text', 'Text', 'Props') || ''

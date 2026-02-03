@@ -1,6 +1,7 @@
+import {useEffect} from 'react'
+
 import {getPublishedId, isVersionId} from '../../../util'
 import {type ActiveDocument, useIsLastPane, useTasks, useTasksEnabled} from '../../context'
-import {useEffect} from 'react'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document

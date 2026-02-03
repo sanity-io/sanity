@@ -1,3 +1,9 @@
+import {Box} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
+import {AnimatePresence} from 'motion/react'
+import {useEffect, useMemo, useRef} from 'react'
+import {styled} from 'styled-components'
+
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {
   isAddDocumentToReleaseEvent,
@@ -7,11 +13,6 @@ import {
   type ReleaseEvent,
 } from './events/types'
 import {ReleaseActivityListItem} from './ReleaseActivityListItem'
-import {Box} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import {AnimatePresence} from 'motion/react'
-import {useEffect, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 
 const estimateSize = (event: ReleaseEvent | undefined) => {
   if (!event) {

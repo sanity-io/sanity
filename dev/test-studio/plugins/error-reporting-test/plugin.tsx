@@ -1,7 +1,8 @@
-import {ErrorReportingTest} from './ErrorReportingTest'
 import {AsteriskIcon} from '@sanity/icons'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
+
+import {ErrorReportingTest} from './ErrorReportingTest'
 
 export const errorReportingTestPlugin = definePlugin(() => {
   return {

@@ -1,3 +1,13 @@
+import {type SanityDocument} from '@sanity/client'
+import {lazy, Suspense} from 'react'
+import {
+  definePlugin,
+  getPublishedId,
+  getVersionFromId,
+  type InputProps,
+  isDocumentSchemaType,
+} from 'sanity'
+
 import {
   DEFAULT_TOOL_ICON,
   DEFAULT_TOOL_NAME,
@@ -17,15 +27,6 @@ import {
   type DocumentResolver,
   type PresentationPluginOptions,
 } from './types'
-import {type SanityDocument} from '@sanity/client'
-import {lazy, Suspense} from 'react'
-import {
-  definePlugin,
-  getPublishedId,
-  getVersionFromId,
-  type InputProps,
-  isDocumentSchemaType,
-} from 'sanity'
 
 const PresentationTool = lazy(() => import('./PresentationToolGrantsCheck'))
 const BroadcastDisplayedDocument = lazy(() => import('./loader/BroadcastDisplayedDocument'))

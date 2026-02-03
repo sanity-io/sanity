@@ -1,13 +1,14 @@
+import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
+import {type ValidationMarker} from '@sanity/types'
+import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {format} from 'date-fns'
+
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'
 import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {useValidationState} from '../../utils/validationUtils'
-import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
-import {type ValidationMarker} from '@sanity/types'
-import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
 
 interface Props {
   id: string

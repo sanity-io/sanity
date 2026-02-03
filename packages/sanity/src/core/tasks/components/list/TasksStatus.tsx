@@ -1,6 +1,7 @@
-import {useTaskOperations} from '../../hooks/useTaskOperations'
 import {Checkbox, Flex, Spinner} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+
+import {useTaskOperations} from '../../hooks/useTaskOperations'
 
 interface TasksStatusProps {
   documentId: string

@@ -1,6 +1,7 @@
-import {CustomTextInputBox} from './CustomTextInputBox'
 import {TextInput} from '@sanity/ui'
 import {type ComponentProps, forwardRef} from 'react'
+
+import {CustomTextInputBox} from './CustomTextInputBox'
 
 interface CustomTextInputProps extends ComponentProps<typeof TextInput> {
   $background?: boolean

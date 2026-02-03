@@ -1,12 +1,13 @@
+import {type ReactNode, useMemo, useState} from 'react'
+import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource} from 'sanity'
+import {StructureToolContext} from 'sanity/_singletons'
+
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
 import {
   type StructureResolver,
   type StructureToolContextValue,
   type UnresolvedPaneNode,
 } from './types'
-import {type ReactNode, useMemo, useState} from 'react'
-import {useConfigContextFromSource, useDocumentStore, usePerspective, useSource} from 'sanity'
-import {StructureToolContext} from 'sanity/_singletons'
 
 /** @internal */
 export interface StructureToolProviderProps {

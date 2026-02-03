@@ -1,14 +1,3 @@
-import {usePaneRouter} from '../../components'
-import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
-import {structureLocaleNamespace} from '../../i18n'
-import {type DocumentPaneNode} from '../../types'
-import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
-import {CommentsWrapper} from './comments'
-import {useDocumentLayoutComponent} from './document-layout'
-import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
-import {type DocumentPaneProviderProps} from './types'
-import {useResetHistoryParams} from './useResetHistoryParams'
 import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
@@ -25,6 +14,18 @@ import {
   useTemplates,
   useTranslation,
 } from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
+import {structureLocaleNamespace} from '../../i18n'
+import {type DocumentPaneNode} from '../../types'
+import {ErrorPane} from '../error'
+import {LoadingPane} from '../loading'
+import {CommentsWrapper} from './comments'
+import {useDocumentLayoutComponent} from './document-layout'
+import {DocumentPaneProviderWrapper} from './DocumentPaneProviderWrapper'
+import {type DocumentPaneProviderProps} from './types'
+import {useResetHistoryParams} from './useResetHistoryParams'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 

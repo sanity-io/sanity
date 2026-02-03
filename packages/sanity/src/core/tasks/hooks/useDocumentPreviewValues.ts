@@ -1,11 +1,12 @@
-import {useSchema} from '../../hooks'
-import {usePerspective} from '../../perspective/usePerspective'
-import {getPreviewStateObservable} from '../../preview'
-import {useDocumentPreviewStore} from '../../store'
 import {type PreviewValue} from '@sanity/types'
 import {type ElementType, type ReactNode, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
+
+import {useSchema} from '../../hooks'
+import {usePerspective} from '../../perspective/usePerspective'
+import {getPreviewStateObservable} from '../../preview'
+import {useDocumentPreviewStore} from '../../store'
 
 interface PreviewHookOptions {
   documentId: string

@@ -1,6 +1,7 @@
+import {type ReferenceValue} from '@sanity/types'
+
 import {FileReferencePreview} from './FileReferencePreview'
 import {ImageReferencePreview} from './ImageReferencePreview'
-import {type ReferenceValue} from '@sanity/types'
 
 interface AssetPreviewProps {
   reference: ReferenceValue

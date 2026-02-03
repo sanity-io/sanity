@@ -1,3 +1,6 @@
+import {Stack, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+
 import {Button} from '../../../../../ui-components'
 import {isDev} from '../../../../environment'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -6,8 +9,6 @@ import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField'
 import {PatchEvent, set} from '../../../patch'
 import {type DuplicateKeysError} from '../../../store/types/memberErrors'
-import {Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
 
 interface Props {
   error: DuplicateKeysError

@@ -1,4 +1,5 @@
 import path from 'node:path'
+
 import pkgDir from 'pkg-dir'
 
 /**

@@ -1,3 +1,8 @@
+import {type ObjectSchemaType, type Path} from '@sanity/types'
+import {Stack} from '@sanity/ui'
+import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
+import {DiffContext} from 'sanity/_singletons'
+
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -13,10 +18,6 @@ import {DiffBorder, FieldChangeContainer} from './FieldChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
 import {ValueError} from './ValueError'
-import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Stack} from '@sanity/ui'
-import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
-import {DiffContext} from 'sanity/_singletons'
 
 const ParentWrapper = ({
   children,

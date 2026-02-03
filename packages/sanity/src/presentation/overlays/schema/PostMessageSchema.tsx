@@ -1,6 +1,3 @@
-import {API_VERSION} from '../../constants'
-import {type VisualEditingConnection} from '../../types'
-import {extractSchema} from './extract'
 /* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
@@ -12,6 +9,10 @@ import {
   useClient,
   useWorkspace,
 } from 'sanity'
+
+import {API_VERSION} from '../../constants'
+import {type VisualEditingConnection} from '../../types'
+import {extractSchema} from './extract'
 
 export interface PostMessageSchemaProps {
   comlink: VisualEditingConnection

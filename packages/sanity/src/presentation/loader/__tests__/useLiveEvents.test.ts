@@ -1,5 +1,6 @@
-import {initialState, reducer} from '../useLiveEvents'
 import {describe, expect, test} from 'vitest'
+
+import {initialState, reducer} from '../useLiveEvents'
 
 describe('useLiveEvents', () => {
   const msg1 = {type: 'message' as const, id: '123', tags: ['s1:abc' as const]}

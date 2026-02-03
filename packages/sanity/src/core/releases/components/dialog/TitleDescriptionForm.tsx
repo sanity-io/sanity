@@ -1,11 +1,12 @@
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 import {type EditableReleaseDocument} from '@sanity/client'
 import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
+
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 

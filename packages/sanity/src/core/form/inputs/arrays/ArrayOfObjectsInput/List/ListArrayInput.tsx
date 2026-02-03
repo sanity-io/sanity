@@ -1,3 +1,9 @@
+import {type DragStartEvent} from '@dnd-kit/core'
+import {isKeySegment} from '@sanity/types'
+import {Card, Stack, Text} from '@sanity/ui'
+import {useCallback, useMemo, useRef, useState} from 'react'
+import shallowEquals from 'shallow-equals'
+
 import {useTranslation} from '../../../../../i18n'
 import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
@@ -6,11 +12,6 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useMemoCompare} from './useMemoCompare'
 import {useVisibilityDetection} from './useVisibilityDetection'
 import {VirtualizedArrayList} from './VirtualizedArrayList'
-import {type DragStartEvent} from '@dnd-kit/core'
-import {isKeySegment} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
-import shallowEquals from 'shallow-equals'
 
 const EMPTY: [] = []
 

@@ -1,3 +1,5 @@
+import {memo} from 'react'
+
 import {type ObjectMember} from '../../store'
 import {
   type RenderAnnotationCallback,
@@ -11,7 +13,6 @@ import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 import {MemberFieldSet} from './MemberFieldset'
-import {memo} from 'react'
 
 /** @internal */
 export interface ObjectInputMemberProps {

@@ -1,10 +1,11 @@
-import {getDialogPropsFromContext, useUpsellContext} from '../../hooks/useUpsellContext'
-import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
 import {useContext} from 'react'
 import {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
 } from 'sanity/_singletons'
+
+import {getDialogPropsFromContext, useUpsellContext} from '../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../studio/upsell/UpsellDialog'
 
 /**
  * @beta

@@ -1,7 +1,3 @@
-import {type ReleaseId} from '../../../perspective/types'
-import {type DocumentAvailability} from '../../../preview'
-import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
-import {type ObjectInputProps} from '../../types'
 import {
   type I18nTextRecord,
   type Path,
@@ -11,6 +7,11 @@ import {
 } from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
+
+import {type ReleaseId} from '../../../perspective/types'
+import {type DocumentAvailability} from '../../../preview'
+import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
+import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
   _id: string

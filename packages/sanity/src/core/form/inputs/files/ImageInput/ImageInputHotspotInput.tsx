@@ -1,3 +1,5 @@
+import {Stack} from '@sanity/ui'
+
 import {Dialog} from '../../../../../ui-components'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n'
@@ -5,7 +7,6 @@ import {PresenceOverlay} from '../../../../presence'
 import {type InputProps} from '../../../types'
 import {ImageToolInput} from '../ImageToolInput'
 import {type BaseImageInputProps} from './types'
-import {Stack} from '@sanity/ui'
 
 export function ImageInputHotspotInput(props: {
   handleCloseDialog: () => void

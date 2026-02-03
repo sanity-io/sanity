@@ -1,8 +1,9 @@
-import * as useDidUpdate from '../useDidUpdate'
-import {useScrollIntoViewOnFocusWithin} from '../useScrollIntoViewOnFocusWithin'
 import {renderHook} from '@testing-library/react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
+
+import * as useDidUpdate from '../useDidUpdate'
+import {useScrollIntoViewOnFocusWithin} from '../useScrollIntoViewOnFocusWithin'
 
 vi.mock('scroll-into-view-if-needed', () => ({
   default: vi.fn(),

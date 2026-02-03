@@ -1,3 +1,7 @@
+import {type ReleaseState} from '@sanity/client'
+import {Box, Container, Flex, Skeleton, TabList} from '@sanity/ui'
+import {useMemo} from 'react'
+
 import {Tab} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -8,9 +12,6 @@ import {
   type FilterTabConfig,
 } from '../releaseDocumentActions'
 import {type DocumentInRelease} from '../useBundleDocuments'
-import {type ReleaseState} from '@sanity/client'
-import {Box, Container, Flex, Skeleton, TabList} from '@sanity/ui'
-import {useMemo} from 'react'
 
 interface ReleaseDocumentFilterTabsProps {
   documents: DocumentInRelease[]

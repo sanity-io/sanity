@@ -1,6 +1,3 @@
-import {EventsTimeline} from '../../timeline/events/EventsTimeline'
-import {TimelineError} from '../../timeline/TimelineError'
-import {useDocumentPane} from '../../useDocumentPane'
 import {BoundaryElementProvider, Card, Flex, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {
@@ -16,6 +13,10 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {EventsTimeline} from '../../timeline/events/EventsTimeline'
+import {TimelineError} from '../../timeline/TimelineError'
+import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

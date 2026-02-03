@@ -1,10 +1,11 @@
+import {type ThrottleSettings} from 'lodash-es'
+import {useCallback, useRef, useState} from 'react'
+import deepCompare from 'react-fast-compare'
+
 import {isNonNullable, useThrottledCallback} from '../../util'
 import {postTask} from '../../util/postTask'
 import {getHookId} from './actionId'
 import {type GetHookCollectionStateProps} from './types'
-import {type ThrottleSettings} from 'lodash-es'
-import {useCallback, useRef, useState} from 'react'
-import deepCompare from 'react-fast-compare'
 
 const throttleOptions: ThrottleSettings = {trailing: true}
 

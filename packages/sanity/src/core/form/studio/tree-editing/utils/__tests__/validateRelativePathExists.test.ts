@@ -1,6 +1,7 @@
-import {validateRelativePathExists} from '../build-tree-editing-state/utils'
 import {type Path} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
+
+import {validateRelativePathExists} from '../build-tree-editing-state/utils'
 
 describe('validateRelativePathExists', () => {
   test('if the relative path is null, should return the relative path', () => {

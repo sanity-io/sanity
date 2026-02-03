@@ -1,7 +1,8 @@
-import {useSource} from '../../../../../studio/source'
-import {type EnhancedObjectDialogContextValue} from './useEnhancedObjectDialog'
 import {useMemo} from 'react'
 import {EnhancedObjectDialogContext} from 'sanity/_singletons'
+
+import {useSource} from '../../../../../studio/source'
+import {type EnhancedObjectDialogContextValue} from './useEnhancedObjectDialog'
 
 interface EnhancedObjectDialogProviderProps {
   children: React.ReactNode

@@ -1,5 +1,6 @@
-import type {RouterContextValue} from '../../router/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {RouterContextValue} from '../../router/types'
 
 /**
  * @internal

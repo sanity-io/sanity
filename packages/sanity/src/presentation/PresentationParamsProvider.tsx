@@ -1,6 +1,7 @@
-import {type PresentationParamsContextValue} from './types'
 import {type FunctionComponent, type PropsWithChildren, useMemo} from 'react'
 import {PresentationParamsContext} from 'sanity/_singletons'
+
+import {type PresentationParamsContextValue} from './types'
 
 export const PresentationParamsProvider: FunctionComponent<
   PropsWithChildren<{

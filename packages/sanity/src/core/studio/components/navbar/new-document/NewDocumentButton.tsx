@@ -1,3 +1,17 @@
+import {AddIcon, SearchIcon} from '@sanity/icons'
+import {isDeprecatedSchemaType} from '@sanity/types'
+import {
+  Card,
+  Flex,
+  Stack,
+  Text,
+  TextInput,
+  type TextInputProps,
+  useClickOutsideEvent,
+} from '@sanity/ui'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import ReactFocusLock from 'react-focus-lock'
+
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks'
@@ -16,19 +30,6 @@ import {
 import {NewDocumentList, type NewDocumentListProps} from './NewDocumentList'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
 import {type ModalType, type NewDocumentOption} from './types'
-import {AddIcon, SearchIcon} from '@sanity/icons'
-import {isDeprecatedSchemaType} from '@sanity/types'
-import {
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextInput,
-  type TextInputProps,
-  useClickOutsideEvent,
-} from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import ReactFocusLock from 'react-focus-lock'
 
 const MAX_DISPLAYED_ITEMS = 10
 

@@ -1,10 +1,12 @@
-import debug from './debug'
-import withRetry from './withRetry'
-import {getIt} from 'get-it'
-import {keepAlive, promise} from 'get-it/middleware'
 import {createWriteStream} from 'node:fs'
 import path from 'node:path'
 import {pipeline} from 'node:stream/promises'
+
+import {getIt} from 'get-it'
+import {keepAlive, promise} from 'get-it/middleware'
+
+import debug from './debug'
+import withRetry from './withRetry'
 
 const CONNECTION_TIMEOUT = 15 * 1000 // 15 seconds
 const READ_TIMEOUT = 3 * 60 * 1000 // 3 minutes

@@ -1,10 +1,12 @@
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
+import {type ClientConfig, createClient, type SanityClient} from '@sanity/client'
+import debugit from 'debug'
+import {generateStudioManifest, type StudioManifest, uploadSchema, type Workspace} from 'sanity'
+
 import {resolveIcon} from '../../manifest/extractWorkspaceManifest'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
-import {type ClientConfig, createClient, type SanityClient} from '@sanity/client'
-import debugit from 'debug'
-import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-import {generateStudioManifest, type StudioManifest, uploadSchema, type Workspace} from 'sanity'
 
 const debug = debugit('sanity:cli:generate-studio-manifest')
 

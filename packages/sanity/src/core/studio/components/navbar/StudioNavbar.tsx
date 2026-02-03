@@ -1,3 +1,20 @@
+import {MenuIcon} from '@sanity/icons'
+import {
+  BoundaryElementProvider,
+  Box,
+  Card,
+  Flex,
+  Grid,
+  Layer,
+  LayerProvider,
+  PortalProvider,
+  useMediaIndex,
+} from '@sanity/ui'
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {NavbarContext} from 'sanity/_singletons'
+import {type RouterState, useRouterState} from 'sanity/router'
+import {styled} from 'styled-components'
+
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
@@ -21,22 +38,6 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {UserMenu} from './userMenu'
 import {WorkspaceMenuButton} from './workspace'
-import {MenuIcon} from '@sanity/icons'
-import {
-  BoundaryElementProvider,
-  Box,
-  Card,
-  Flex,
-  Grid,
-  Layer,
-  LayerProvider,
-  PortalProvider,
-  useMediaIndex,
-} from '@sanity/ui'
-import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
-import {NavbarContext} from 'sanity/_singletons'
-import {type RouterState, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 

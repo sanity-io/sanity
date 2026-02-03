@@ -1,3 +1,6 @@
+import {render, screen, waitFor} from '@testing-library/react'
+import {describe, expect, test} from 'vitest'
+
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -8,8 +11,6 @@ import {
 } from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDashboardFooter} from '../ReleaseDashboardFooter'
-import {render, screen, waitFor} from '@testing-library/react'
-import {describe, expect, test} from 'vitest'
 
 const renderTest = async (props?: Partial<React.ComponentProps<typeof ReleaseDashboardFooter>>) => {
   const wrapper = await createTestProvider({

@@ -1,6 +1,7 @@
+import {expect, test} from '@playwright/experimental-ct-react'
+
 import {testHelpers} from '../utils/testHelpers'
 import ArrayInputStory from './ArrayInputStory'
-import {expect, test} from '@playwright/experimental-ct-react'
 
 test.use({viewport: {width: 1200, height: 1000}})
 

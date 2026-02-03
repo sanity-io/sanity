@@ -1,6 +1,7 @@
-import {type ConnectionStatus} from './types'
 import {type StatusEvent} from '@sanity/comlink'
 import {useCallback, useMemo, useState} from 'react'
+
+import {type ConnectionStatus} from './types'
 
 /**
  * A hook that manages and returns the connection status of multiple channels

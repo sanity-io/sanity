@@ -1,10 +1,11 @@
-import {type CommentMessage} from '../../types'
-import {transformChildren} from '../../utils'
-import {MentionInlineBlock, NormalBlock} from './blocks'
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
 import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+
+import {type CommentMessage} from '../../types'
+import {transformChildren} from '../../utils'
+import {MentionInlineBlock, NormalBlock} from './blocks'
 
 const PortableTextWrap = styled(Stack)(() => {
   return css`

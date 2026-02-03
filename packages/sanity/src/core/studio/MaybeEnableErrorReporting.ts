@@ -1,6 +1,7 @@
+import {useEffect} from 'react'
+
 import {type ErrorReporter} from '../error/errorReporter'
 import {useClient} from '../hooks'
-import {useEffect} from 'react'
 
 const CONSENT_CLIENT_OPTIONS = {apiVersion: '2023-12-18'}
 

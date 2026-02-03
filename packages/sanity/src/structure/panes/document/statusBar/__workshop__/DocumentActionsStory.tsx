@@ -1,9 +1,10 @@
+import {Container, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
+
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentStatusBarActions} from '../DocumentStatusBarActions'
-import {Container, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
 
 export default function DocumentActionsStory() {
   const pane: DocumentPaneNode = useMemo(

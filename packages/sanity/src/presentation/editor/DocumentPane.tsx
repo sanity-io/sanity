@@ -1,3 +1,15 @@
+import {studioPath} from '@sanity/client/csm'
+import {Card, Code, Label, Stack} from '@sanity/ui'
+import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {type Path, useTranslation} from 'sanity'
+import {decodeJsonParams} from 'sanity/router'
+import {
+  DocumentPane as StructureDocumentPane,
+  type DocumentPaneNode,
+  PaneLayout,
+} from 'sanity/structure'
+import {styled} from 'styled-components'
+
 import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
@@ -10,17 +22,6 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-import {studioPath} from '@sanity/client/csm'
-import {Card, Code, Label, Stack} from '@sanity/ui'
-import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path, useTranslation} from 'sanity'
-import {decodeJsonParams} from 'sanity/router'
-import {
-  DocumentPane as StructureDocumentPane,
-  type DocumentPaneNode,
-  PaneLayout,
-} from 'sanity/structure'
-import {styled} from 'styled-components'
 
 const WrappedCode = styled(Code)`
   white-space: pre-wrap;

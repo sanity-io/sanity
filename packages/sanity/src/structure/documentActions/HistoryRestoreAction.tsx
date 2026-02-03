@@ -1,5 +1,3 @@
-import {structureLocaleNamespace} from '../i18n'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {RevertIcon} from '@sanity/icons'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -10,6 +8,9 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+
+import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */

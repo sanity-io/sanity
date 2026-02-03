@@ -1,10 +1,11 @@
-import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
-import {determineIsApp} from '../../util/determineIsApp'
 import {
   type CliCommandArguments,
   type CliCommandContext,
   type CliCommandDefinition,
 } from '@sanity/cli'
+
+import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
+import {determineIsApp} from '../../util/determineIsApp'
 
 const helpText = `
 Options

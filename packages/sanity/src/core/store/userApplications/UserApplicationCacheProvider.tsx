@@ -1,6 +1,7 @@
-import {createUserApplicationCache, type UserApplicationCache} from './userApplicationCache'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {UserApplicationCacheContext} from 'sanity/_singletons'
+
+import {createUserApplicationCache, type UserApplicationCache} from './userApplicationCache'
 
 interface UserApplicationCacheProviderProps {
   children: ReactNode

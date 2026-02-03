@@ -1,7 +1,8 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import {ToolbarStory} from './ToolbarStory'
 /* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import {ToolbarStory} from './ToolbarStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Toolbar', () => {

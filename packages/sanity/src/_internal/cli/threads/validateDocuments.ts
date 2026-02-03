@@ -1,3 +1,20 @@
+/* eslint-disable import/extensions */
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import readline from 'node:readline'
+import {Readable} from 'node:stream'
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
+import {
+  type ClientConfig,
+  createClient,
+  type SanityClient,
+  type SanityDocument,
+} from '@sanity/client'
+import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
+import {isRecord, validateDocument} from 'sanity'
+
 import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball.ts'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces.ts'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment.ts'
@@ -7,21 +24,6 @@ import {
   type WorkerChannelEvent,
   type WorkerChannelStream,
 } from '../util/workerChannels.ts'
-import {
-  type ClientConfig,
-  createClient,
-  type SanityClient,
-  type SanityDocument,
-} from '@sanity/client'
-import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
-/* eslint-disable import/extensions */
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-import readline from 'node:readline'
-import {Readable} from 'node:stream'
-import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-import {isRecord, validateDocument} from 'sanity'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000

@@ -1,5 +1,6 @@
-import {createPaneLayoutController} from './paneLayoutController'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createPaneLayoutController} from './paneLayoutController'
 
 describe('paneLayoutController', () => {
   it('should emit state changes', () => {

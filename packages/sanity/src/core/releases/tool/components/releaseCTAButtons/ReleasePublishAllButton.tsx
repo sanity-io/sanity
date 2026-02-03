@@ -1,3 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Flex, Text, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Translate, useTranslation} from '../../../../i18n'
@@ -10,11 +16,6 @@ import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
-import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, PublishIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument

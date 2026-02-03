@@ -1,14 +1,15 @@
+import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {useCallback, useState} from 'react'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useDateTimeFormat} from '../../../../hooks'
 import {useActiveReleases} from '../../../store'
 import {RELEASE_DOCUMENT_TYPE} from '../../../store/constants'
 import {useReleasesIds} from '../../../store/useReleasesIds'
 import {ReleaseForm} from '../ReleaseForm'
-import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {useCallback, useState} from 'react'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 vi.mock('../../../../../core/hooks/useDateTimeFormat', () => ({
   useDateTimeFormat: vi.fn(),

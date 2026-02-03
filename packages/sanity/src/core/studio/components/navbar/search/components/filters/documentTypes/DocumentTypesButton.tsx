@@ -1,3 +1,7 @@
+import {ChevronDownIcon} from '@sanity/icons'
+import {type Placement, useClickOutsideEvent} from '@sanity/ui'
+import {useCallback, useMemo, useRef, useState} from 'react'
+
 import {Button, Popover} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
@@ -5,9 +9,6 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
-import {ChevronDownIcon} from '@sanity/icons'
-import {type Placement, useClickOutsideEvent} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 

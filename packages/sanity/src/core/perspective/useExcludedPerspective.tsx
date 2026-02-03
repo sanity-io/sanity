@@ -1,6 +1,7 @@
-import {usePerspective} from './usePerspective'
 import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
+
+import {usePerspective} from './usePerspective'
 
 export interface ExcludedPerspectiveValue {
   /* The excluded perspectives */

@@ -1,5 +1,6 @@
-import {colorizeJson} from '../../util/colorizeJson'
 import {type CliCommandDefinition} from '@sanity/cli'
+
+import {colorizeJson} from '../../util/colorizeJson'
 
 const helpText = `
 Get and print a document from the projects configured dataset

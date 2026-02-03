@@ -1,6 +1,7 @@
-import {getPreviewStateObservable} from './getPreviewStateObservable'
 import {type PrepareViewOptions, type SchemaType} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
+
+import {getPreviewStateObservable} from './getPreviewStateObservable'
 
 // Mock schema type
 const mockSchemaType = {

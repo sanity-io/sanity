@@ -1,5 +1,6 @@
-import {createSafeJsonParser} from '../src/createSafeJsonParser'
 import {expect, test} from 'vitest'
+
+import {createSafeJsonParser} from '../src/createSafeJsonParser'
 
 const parse = createSafeJsonParser({
   errorLabel: 'Error parsing JSON',

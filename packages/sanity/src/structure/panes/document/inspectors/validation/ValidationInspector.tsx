@@ -1,7 +1,3 @@
-import {ErrorBoundary} from '../../../../../ui-components'
-import {DocumentInspectorHeader} from '../../documentInspector'
-import {useDocumentPane} from '../../useDocumentPane'
-import {getPathTitles} from './getPathTitles'
 import {
   ErrorOutlineIcon,
   type IconComponent,
@@ -18,6 +14,11 @@ import {
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
+
+import {ErrorBoundary} from '../../../../../ui-components'
+import {DocumentInspectorHeader} from '../../documentInspector'
+import {useDocumentPane} from '../../useDocumentPane'
+import {getPathTitles} from './getPathTitles'
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   error: ErrorOutlineIcon,

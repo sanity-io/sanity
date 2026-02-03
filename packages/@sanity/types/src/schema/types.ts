@@ -1,3 +1,6 @@
+import {type SanityClient} from '@sanity/client'
+import {type ComponentType} from 'react'
+
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
 import {type CurrentUser} from '../user'
@@ -19,8 +22,6 @@ import {
 } from './definition/type'
 import {type ArrayOptions} from './definition/type/array'
 import {type PreviewConfig} from './preview'
-import {type SanityClient} from '@sanity/client'
-import {type ComponentType} from 'react'
 
 export {defineArrayMember, defineField, defineType, typed} from './define'
 

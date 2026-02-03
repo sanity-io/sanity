@@ -1,7 +1,8 @@
-import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
-import {schema} from './schema'
 import {type ObjectSchemaType, type ReferenceSchemaType, type StringSchemaType} from '@sanity/types'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
+
+import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
+import {schema} from './schema'
 
 beforeEach(() => {
   vi.resetModules()

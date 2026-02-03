@@ -1,6 +1,3 @@
-import {IncomingReferencePreview} from '../../../../components/incomingReferencesDecoration/IncomingReferencePreview'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
-import {structureLocaleNamespace} from '../../../../i18n'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
@@ -13,6 +10,10 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+
+import {IncomingReferencePreview} from '../../../../components/incomingReferencesDecoration/IncomingReferencePreview'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
 
 const FadeInFlex = motion(Flex)
 

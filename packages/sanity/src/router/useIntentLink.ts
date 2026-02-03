@@ -1,7 +1,8 @@
+import {useMemo} from 'react'
+
 import {type IntentParameters, type SearchParam} from './types'
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
-import {useMemo} from 'react'
 
 /**
  * @public

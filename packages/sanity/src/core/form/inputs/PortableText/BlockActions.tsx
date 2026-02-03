@@ -1,3 +1,8 @@
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {type PortableTextBlock} from '@sanity/types'
+import {useMemo} from 'react'
+import {styled} from 'styled-components'
+
 import {type PatchEvent} from '../../patch'
 import {
   type RenderBlockActionsCallback,
@@ -5,10 +10,6 @@ import {
 } from '../../types/_transitional'
 import {createInsertCallback, createSetCallback, createUnsetCallback} from './callbacks'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {type PortableTextBlock} from '@sanity/types'
-import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
 interface BlockActionsProps {
   block: PortableTextBlock

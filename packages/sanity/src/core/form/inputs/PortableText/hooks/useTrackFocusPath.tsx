@@ -1,5 +1,3 @@
-import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
-import {usePortableTextMemberItems} from './usePortableTextMembers'
 import {
   PortableTextEditor,
   usePortableTextEditor,
@@ -9,6 +7,9 @@ import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
+
+import {usePortableTextMemberItemElementRefs} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {
   focusPath: Path

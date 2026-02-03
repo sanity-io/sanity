@@ -1,3 +1,7 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
+import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
+import {initReactI18next} from 'react-i18next'
+
 import {type SourceOptions} from '../config'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
@@ -12,9 +16,6 @@ import {
   type LocaleResourceBundle,
   type LocaleSource,
 } from './types'
-/* eslint-disable @sanity/i18n/no-i18next-import */
-import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
-import {initReactI18next} from 'react-i18next'
 
 /**
  * @internal

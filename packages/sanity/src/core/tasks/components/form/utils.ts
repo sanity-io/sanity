@@ -1,6 +1,7 @@
+import {isPortableTextTextBlock} from '@sanity/types'
+
 import {getPublishedId} from '../../../util'
 import {type TaskDocument, type TaskTarget} from '../../types'
-import {isPortableTextTextBlock} from '@sanity/types'
 
 interface GetTargetValueOptions {
   documentId: string

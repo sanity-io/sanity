@@ -1,3 +1,7 @@
+import {Card, Stack, Text} from '@sanity/ui'
+import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
+import {useCallback, useMemo, useState} from 'react'
+
 import {Dialog} from '../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
@@ -6,9 +10,6 @@ import {getCalendarLabels} from '../../form/inputs/DateInputs/utils'
 import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
-import {Card, Stack, Text} from '@sanity/ui'
-import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
-import {useCallback, useMemo, useState} from 'react'
 
 type ScheduleDraftDialogVariant = 'schedule' | 'edit-schedule'
 

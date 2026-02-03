@@ -1,3 +1,5 @@
+import {type I18nTextRecord, type InitialValueTemplateItem, type PreviewLayoutKey} from 'sanity'
+
 import {
   type InitialValueTemplateItemBuilder,
   maybeSerializeInitialValueTemplateItem,
@@ -19,7 +21,6 @@ import {
 } from './StructureNodes'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {validateId} from './util/validateId'
-import {type I18nTextRecord, type InitialValueTemplateItem, type PreviewLayoutKey} from 'sanity'
 
 function noChildResolver() {
   return undefined

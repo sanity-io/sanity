@@ -8,10 +8,11 @@
  * Vite is MIT licensed, copyright (c) Yuxi (Evan) You and Vite contributors.
  */
 
-import {parse} from 'dotenv'
-import {expand} from 'dotenv-expand'
 import fs from 'node:fs'
 import path from 'node:path'
+
+import {parse} from 'dotenv'
+import {expand} from 'dotenv-expand'
 
 export function loadEnv(
   mode: string,

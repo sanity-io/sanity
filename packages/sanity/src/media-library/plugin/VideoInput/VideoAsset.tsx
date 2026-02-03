@@ -1,3 +1,7 @@
+import {type AssetSource} from '@sanity/types'
+import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+
 import {ChangeIndicator} from '../../../core/changeIndicators/ChangeIndicator'
 import {PlaceholderText} from '../../../core/form/inputs/files/common/PlaceholderText'
 import {type FileInfo, FileTarget} from '../../../core/form/inputs/files/common/styles'
@@ -11,9 +15,6 @@ import {InvalidVideoWarning} from './InvalidVideoWarning'
 import {CardOverlay, FlexContainer} from './styles'
 import {type VideoAssetProps} from './types'
 import {VideoPreview} from './VideoPreview'
-import {type AssetSource} from '@sanity/types'
-import {Box, Card, type ThemeColorToneKey} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
 
 const ASSET_FIELD_PATH = ['asset']
 

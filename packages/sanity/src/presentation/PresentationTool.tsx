@@ -1,34 +1,3 @@
-import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
-import PostMessageFeatures from './features/PostMessageFeatures'
-import {presentationMachine} from './machines/presentation-machine'
-import {type PreviewUrlRef} from './machines/preview-url'
-import {SharedStateProvider} from './overlays/SharedStateProvider'
-import {Panel} from './panels/Panel'
-import {Panels} from './panels/Panels'
-import {PresentationContent} from './PresentationContent'
-import {PresentationNavigateProvider} from './PresentationNavigateProvider'
-import {usePresentationNavigator} from './PresentationNavigator'
-import {PresentationParamsProvider} from './PresentationParamsProvider'
-import {PresentationProvider} from './PresentationProvider'
-import {Preview} from './preview/Preview'
-import {
-  type FrameState,
-  type PresentationNavigate,
-  type PresentationPluginOptions,
-  type PresentationStateParams,
-  type PresentationViewport,
-  type StructureDocumentPaneParams,
-  type VisualEditingConnection,
-} from './types'
-import {useAllowPatterns} from './useAllowPatterns'
-import {useDocumentsOnPage} from './useDocumentsOnPage'
-import {useMainDocument} from './useMainDocument'
-import {useParams} from './useParams'
-import {usePopups} from './usePopups'
-import {usePresentationPerspective} from './usePresentationPerspective'
-import {useStatus} from './useStatus'
-import {useTargetOrigin} from './useTargetOrigin'
-import {debounce} from './util/debounce'
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
   type Controller,
@@ -70,6 +39,38 @@ import {
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
+import PostMessageFeatures from './features/PostMessageFeatures'
+import {presentationMachine} from './machines/presentation-machine'
+import {type PreviewUrlRef} from './machines/preview-url'
+import {SharedStateProvider} from './overlays/SharedStateProvider'
+import {Panel} from './panels/Panel'
+import {Panels} from './panels/Panels'
+import {PresentationContent} from './PresentationContent'
+import {PresentationNavigateProvider} from './PresentationNavigateProvider'
+import {usePresentationNavigator} from './PresentationNavigator'
+import {PresentationParamsProvider} from './PresentationParamsProvider'
+import {PresentationProvider} from './PresentationProvider'
+import {Preview} from './preview/Preview'
+import {
+  type FrameState,
+  type PresentationNavigate,
+  type PresentationPluginOptions,
+  type PresentationStateParams,
+  type PresentationViewport,
+  type StructureDocumentPaneParams,
+  type VisualEditingConnection,
+} from './types'
+import {useAllowPatterns} from './useAllowPatterns'
+import {useDocumentsOnPage} from './useDocumentsOnPage'
+import {useMainDocument} from './useMainDocument'
+import {useParams} from './useParams'
+import {usePopups} from './usePopups'
+import {usePresentationPerspective} from './usePresentationPerspective'
+import {useStatus} from './useStatus'
+import {useTargetOrigin} from './useTargetOrigin'
+import {debounce} from './util/debounce'
 
 const LiveQueries = lazy(() => import('./loader/LiveQueries'))
 const PostMessageDocuments = lazy(() => import('./overlays/PostMessageDocuments'))

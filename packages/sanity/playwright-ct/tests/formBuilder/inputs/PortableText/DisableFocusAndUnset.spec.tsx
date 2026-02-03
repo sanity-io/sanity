@@ -1,6 +1,7 @@
-import DisableFocusAndUnsetStory from './DisableFocusAndUnsetStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
+
+import DisableFocusAndUnsetStory from './DisableFocusAndUnsetStory'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 

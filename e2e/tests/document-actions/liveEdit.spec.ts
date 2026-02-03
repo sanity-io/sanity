@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test(`liveEdited document can be created, edited, and deleted`, async ({
   page,

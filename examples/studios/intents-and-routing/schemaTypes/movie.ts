@@ -1,5 +1,6 @@
-import {MovieTitleInput} from './MovieTitleInput'
 import {defineField, defineType} from 'sanity'
+
+import {MovieTitleInput} from './MovieTitleInput'
 
 export default defineType({
   name: 'movie',

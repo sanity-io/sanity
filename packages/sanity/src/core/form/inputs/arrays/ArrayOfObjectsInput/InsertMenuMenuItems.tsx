@@ -1,10 +1,11 @@
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useInsertMenuPopover} from './InsertMenuPopover'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {type InsertMenuOptions} from '@sanity/insert-menu'
 import {type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
+
+import {MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useInsertMenuPopover} from './InsertMenuPopover'
 
 /**
  * @internal

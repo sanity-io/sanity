@@ -1,8 +1,9 @@
+import {type SanityDocument} from '@sanity/client'
+import {type CurrentUser, type SchemaType} from '@sanity/types'
+
 import {isTextSelectionComment} from '../helpers'
 import {type CommentDocument, type CommentThreadItem} from '../types'
 import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
-import {type SanityDocument} from '@sanity/client'
-import {type CurrentUser, type SchemaType} from '@sanity/types'
 
 const EMPTY_ARRAY: [] = []
 

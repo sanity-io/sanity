@@ -1,7 +1,8 @@
-import {useUserListWithPermissions} from '../../../hooks'
 import {type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {MentionUserContext} from 'sanity/_singletons'
+
+import {useUserListWithPermissions} from '../../../hooks'
 
 /**
  * @internal

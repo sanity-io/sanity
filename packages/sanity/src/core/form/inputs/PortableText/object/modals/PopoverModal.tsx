@@ -1,15 +1,16 @@
 /* eslint-disable react/no-unused-prop-types */
 
-import {Button, type PopoverProps} from '../../../../../../ui-components'
-import {PresenceOverlay} from '../../../../../presence'
-import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
-import {type ModalWidth} from './types'
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
+
+import {Button, type PopoverProps} from '../../../../../../ui-components'
+import {PresenceOverlay} from '../../../../../presence'
+import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
+import {type ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
   autoFocus?: boolean

@@ -1,6 +1,7 @@
+import {describe, expect, it} from 'vitest'
+
 import {type PaneConfigOpts, type PaneResizeCache} from '../types'
 import {_calcPaneResize} from './_calcPaneResize'
-import {describe, expect, it} from 'vitest'
 
 describe('sanity/structure/components/pane', () => {
   describe('_calcPaneResize', () => {

@@ -1,9 +1,10 @@
-import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {WorkspacePreviewIcon} from '../workspace'
 import {Card, Flex, rem} from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
+import {WorkspacePreviewIcon} from '../workspace'
 
 const LOGO_MARK_SIZE = 25 // width and height, px
 const RADIUS = 2

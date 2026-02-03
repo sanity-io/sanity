@@ -1,3 +1,9 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {motion} from 'motion/react'
+import {useMemo, useState} from 'react'
+import {useRouter} from 'sanity/router'
+
 import {LoadingBlock} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
@@ -12,11 +18,6 @@ import {ReleaseDashboardFooter} from './ReleaseDashboardFooter'
 import {ReleaseDashboardHeader} from './ReleaseDashboardHeader'
 import {ReleaseSummary} from './ReleaseSummary'
 import {useBundleDocuments} from './useBundleDocuments'
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {useMemo, useState} from 'react'
-import {useRouter} from 'sanity/router'
 
 export type ReleaseInspector = 'activity'
 const MotionCard = motion.create(Card)

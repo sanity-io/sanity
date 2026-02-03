@@ -1,11 +1,12 @@
+import {Schema} from '@sanity/schema'
+import {type ObjectSchemaType, type Path} from '@sanity/types'
+import {beforeEach, describe, expect, it, test} from 'vitest'
+
 import {pathToString} from '../../../field'
 import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {type FieldMember, type ObjectFormNode} from '../types'
 import {isObjectFormNode} from '../types/asserters'
 import {DEFAULT_PROPS} from './shared'
-import {Schema} from '@sanity/schema'
-import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {beforeEach, describe, expect, it, test} from 'vitest'
 
 type CollapsibleOptions = {
   collapsible?: boolean

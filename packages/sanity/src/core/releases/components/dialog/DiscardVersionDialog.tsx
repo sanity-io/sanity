@@ -1,3 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
@@ -9,10 +14,6 @@ import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../..
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseDocument} from '@sanity/client'
-import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
 /**
  * @internal
  */

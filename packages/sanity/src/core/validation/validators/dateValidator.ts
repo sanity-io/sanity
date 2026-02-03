@@ -1,6 +1,7 @@
-import {genericValidators} from './genericValidator'
 import {type Validators} from '@sanity/types'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
+
+import {genericValidators} from './genericValidator'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)

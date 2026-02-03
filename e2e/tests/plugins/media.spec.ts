@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test('media plugin should open from input', async ({page, createDraftDocument}) => {
   test.slow()

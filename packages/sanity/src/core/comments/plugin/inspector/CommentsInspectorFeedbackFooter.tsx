@@ -1,8 +1,9 @@
-import {useTranslation} from '../../../i18n'
-import {commentsLocaleNamespace} from '../../i18n'
 import {LaunchIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+
+import {useTranslation} from '../../../i18n'
+import {commentsLocaleNamespace} from '../../i18n'
 
 const FEEDBACK_FORM_LINK = 'https://snty.link/comments-beta-feedback'
 

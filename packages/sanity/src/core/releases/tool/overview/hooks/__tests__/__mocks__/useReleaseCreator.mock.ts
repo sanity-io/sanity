@@ -1,5 +1,6 @@
-import {useReleaseCreator} from '../../useReleaseCreator'
 import {type Mock} from 'vitest'
+
+import {useReleaseCreator} from '../../useReleaseCreator'
 
 export interface UseReleaseCreatorMockReturn {
   createdBy: string | undefined

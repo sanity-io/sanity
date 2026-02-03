@@ -1,5 +1,6 @@
-import {useTranslation} from './useTranslation'
 import {useMemo} from 'react'
+
+import {useTranslation} from './useTranslation'
 
 /**
  * Enforces the shape of an object allowed to be passed into `useI18nText`.

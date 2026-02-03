@@ -1,6 +1,7 @@
-import {type PresentationParamsContextValue} from './types'
 import {useContext} from 'react'
 import {PresentationParamsContext} from 'sanity/_singletons'
+
+import {type PresentationParamsContextValue} from './types'
 
 /** @public */
 export function usePresentationParams(throwOnMissingContext?: true): PresentationParamsContextValue

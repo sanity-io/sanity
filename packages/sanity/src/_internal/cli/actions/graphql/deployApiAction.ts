@@ -1,3 +1,11 @@
+/* eslint-disable max-statements */
+import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
+import {type SanityClient} from '@sanity/client'
+import {get} from 'lodash-es'
+import oneline from 'oneline'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
+
 import {debug} from '../../debug'
 import {getClientUrl} from '../../util/getClientUrl'
 import {getUrlHeaders} from '../../util/getUrlHeaders'
@@ -8,13 +16,6 @@ import gen3 from './gen3'
 import {getGraphQLAPIs} from './getGraphQLAPIs'
 import {SchemaError} from './SchemaError'
 import {type DeployResponse, type GeneratedApiSpecification, type ValidationResponse} from './types'
-/* eslint-disable max-statements */
-import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
-import {type SanityClient} from '@sanity/client'
-import {get} from 'lodash-es'
-import oneline from 'oneline'
-import {hideBin} from 'yargs/helpers'
-import yargs from 'yargs/yargs'
 
 const latestGeneration = 'gen3'
 const generations = {

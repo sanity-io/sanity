@@ -1,8 +1,9 @@
+import {Box, Text} from '@sanity/ui'
+
 import {MenuGroup, type MenuGroupProps} from '../../../../ui-components'
 import {type DocumentFieldActionGroup} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
-import {Box, Text} from '@sanity/ui'
 
 const POPOVER_PROPS: MenuGroupProps['popover'] = {
   placement: 'right',

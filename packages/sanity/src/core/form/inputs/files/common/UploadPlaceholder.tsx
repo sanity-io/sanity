@@ -1,3 +1,9 @@
+import {UploadIcon} from '@sanity/icons'
+import {type AssetSource, type SchemaType} from '@sanity/types'
+import {Flex, useElementSize} from '@sanity/ui'
+import {get} from 'lodash-es'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+
 import {useSource} from '../../../../../core/studio'
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
@@ -10,11 +16,6 @@ import {type FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 import {UploadDropDownMenu} from './UploadDropDownMenu'
-import {UploadIcon} from '@sanity/icons'
-import {type AssetSource, type SchemaType} from '@sanity/types'
-import {Flex, useElementSize} from '@sanity/ui'
-import {get} from 'lodash-es'
-import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 interface UploadPlaceholderProps {
   assetSources: AssetSource[]

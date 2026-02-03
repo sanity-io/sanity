@@ -1,8 +1,9 @@
+import {Container, Flex, Stack, Text} from '@sanity/ui'
+
 import {LoadingBlock} from '../../../components'
 import {type TFunction, useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus} from '../../types'
-import {Container, Flex, Stack, Text} from '@sanity/ui'
 
 interface EmptyStateMessage {
   title: string

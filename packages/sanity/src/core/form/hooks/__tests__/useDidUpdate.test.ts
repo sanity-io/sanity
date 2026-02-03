@@ -1,7 +1,8 @@
-import {useDidUpdate} from '../useDidUpdate'
 import {renderHook} from '@testing-library/react'
 import {StrictMode} from 'react'
 import {describe, expect, it, vi} from 'vitest'
+
+import {useDidUpdate} from '../useDidUpdate'
 
 describe('useDidUpdate', () => {
   describe('Normal Mode', () => {

@@ -1,3 +1,7 @@
+import {Flex, Stack} from '@sanity/ui'
+import {addDays} from 'date-fns'
+import {useCallback, useState} from 'react'
+
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
@@ -6,9 +10,6 @@ import {DateIncludeTimeFooter} from './dateIncludeTimeFooter/DateIncludeTimeFoot
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'
 import {getDateISOString} from './utils/getDateISOString'
-import {Flex, Stack} from '@sanity/ui'
-import {addDays} from 'date-fns'
-import {useCallback, useState} from 'react'
 
 const PLACEHOLDER_START_DATE_OFFSET = -7 // days
 

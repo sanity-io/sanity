@@ -1,5 +1,3 @@
-import {structureLocaleNamespace} from '../../../../i18n'
-import {Banner} from './Banner'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
@@ -16,6 +14,9 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+
+import {structureLocaleNamespace} from '../../../../i18n'
+import {Banner} from './Banner'
 
 interface Props {
   schemaType: ObjectSchemaType

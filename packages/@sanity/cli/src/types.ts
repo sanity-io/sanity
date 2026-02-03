@@ -1,6 +1,3 @@
-import {type CliPackageManager} from './packageManager'
-import {type ClientRequirements} from './util/clientWrapper'
-import {type CliConfigResult} from './util/getCliConfig'
 import {type SanityClient} from '@sanity/client'
 import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
@@ -9,6 +6,10 @@ import type chalk from 'chalk'
 import {type Answers, type ChoiceCollection, type DistinctQuestion, type Separator} from 'inquirer'
 import {type Options, type Ora} from 'ora'
 import {type ConfigEnv, type InlineConfig} from 'vite'
+
+import {type CliPackageManager} from './packageManager'
+import {type ClientRequirements} from './util/clientWrapper'
+import {type CliConfigResult} from './util/getCliConfig'
 
 export interface SanityCore {
   requiredCliVersionRange: string

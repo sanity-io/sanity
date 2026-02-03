@@ -1,3 +1,14 @@
+import {type StackablePerspective} from '@sanity/client'
+import {
+  isCrossDatasetReference,
+  isCrossDatasetReferenceSchemaType,
+  isReferenceSchemaType,
+  type PrepareViewOptions,
+} from '@sanity/types'
+import {isPlainObject} from 'lodash-es'
+import {type Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+
 import {type ObserveForPreviewFn} from './documentPreviewStore'
 import {
   type ApiConfig,
@@ -9,16 +20,6 @@ import {
 } from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
 import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
-import {type StackablePerspective} from '@sanity/client'
-import {
-  isCrossDatasetReference,
-  isCrossDatasetReferenceSchemaType,
-  isReferenceSchemaType,
-  type PrepareViewOptions,
-} from '@sanity/types'
-import {isPlainObject} from 'lodash-es'
-import {type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)

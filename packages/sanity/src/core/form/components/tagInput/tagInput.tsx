@@ -1,7 +1,3 @@
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {focusRingBorderStyle, focusRingStyle} from './styles'
 import {CloseIcon} from '@sanity/icons'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
 import {
@@ -18,6 +14,11 @@ import {
   useState,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
+
+import {Button} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
+import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   const {theme} = props

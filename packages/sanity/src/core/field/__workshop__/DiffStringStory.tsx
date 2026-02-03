@@ -1,5 +1,6 @@
-import {DiffString} from '../diff'
 import {Box} from '@sanity/ui'
+
+import {DiffString} from '../diff'
 
 /**
  * TODO

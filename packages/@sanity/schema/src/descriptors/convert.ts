@@ -1,3 +1,21 @@
+import {
+  type EncodableObject,
+  type EncodableValue,
+  SetBuilder,
+  type SetSynchronization,
+} from '@sanity/descriptors'
+import {
+  type ArraySchemaType,
+  type FieldGroupDefinition,
+  type FieldsetDefinition,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type Rule as IRule,
+  type Schema,
+  type SchemaType,
+} from '@sanity/types'
+import {isEqual, isObject} from 'lodash-es'
+
 import {Rule} from '../legacy/Rule'
 import {OWN_PROPS_NAME} from '../legacy/types/constants'
 import {IdleScheduler, type Scheduler, SYNC_SCHEDULER} from './scheduler'
@@ -29,23 +47,6 @@ import {
   type Validation,
   type ValidationMessage,
 } from './types'
-import {
-  type EncodableObject,
-  type EncodableValue,
-  SetBuilder,
-  type SetSynchronization,
-} from '@sanity/descriptors'
-import {
-  type ArraySchemaType,
-  type FieldGroupDefinition,
-  type FieldsetDefinition,
-  type ObjectSchemaType,
-  type ReferenceSchemaType,
-  type Rule as IRule,
-  type Schema,
-  type SchemaType,
-} from '@sanity/types'
-import {isEqual, isObject} from 'lodash-es'
 
 const MAX_DEPTH_UKNOWN = 5
 

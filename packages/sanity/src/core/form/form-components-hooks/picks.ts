@@ -1,3 +1,5 @@
+import {type ComponentType} from 'react'
+
 import {type PreviewProps} from '../../components/previews'
 import {type PluginOptions} from '../../config'
 import {
@@ -8,7 +10,6 @@ import {
   type ItemProps,
   type PortableTextPluginsProps,
 } from '../types'
-import {type ComponentType} from 'react'
 
 export function pickInputComponent(
   plugin: PluginOptions,

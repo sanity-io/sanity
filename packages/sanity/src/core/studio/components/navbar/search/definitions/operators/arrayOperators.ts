@@ -1,3 +1,5 @@
+import {type ReferenceValue} from '@sanity/types'
+
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
 import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
@@ -14,7 +16,6 @@ import {
   type SearchOperatorInput,
 } from './operatorTypes'
 import {toJSON} from './operatorUtils'
-import {type ReferenceValue} from '@sanity/types'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
 // we understand why `npm run etl` fails with 'Unable to follow symbol' errors

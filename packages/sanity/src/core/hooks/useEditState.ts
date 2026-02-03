@@ -1,7 +1,8 @@
-import {type EditStateFor, useDocumentStore} from '../store'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {debounce, merge, share, skip, take, timer} from 'rxjs'
+
+import {type EditStateFor, useDocumentStore} from '../store'
 
 /** @internal */
 export function useEditState(

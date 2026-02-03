@@ -1,11 +1,12 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
+
 import {
   CommentLinkCopied,
   CommentListViewChanged,
   CommentViewedFromLink,
 } from '../__telemetry__/comments.telemetry'
 import {type CommentStatus} from '../types'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo} from 'react'
 
 interface CommentsTelemetryHookValue {
   commentLinkCopied: () => void

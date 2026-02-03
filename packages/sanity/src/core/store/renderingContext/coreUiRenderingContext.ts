@@ -1,4 +1,3 @@
-import {isCoreUiRenderingContext, type StudioRenderingContext} from './types'
 import {
   catchError,
   distinctUntilChanged,
@@ -8,6 +7,8 @@ import {
   pipe,
   switchMap,
 } from 'rxjs'
+
+import {isCoreUiRenderingContext, type StudioRenderingContext} from './types'
 
 // Core UI Rendering Context is provided via the URL query string, and remains static the entire
 // duration Studio is rendered inside the Core UI iframe.

@@ -1,3 +1,6 @@
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {startCase, uniq} from 'lodash-es'
+
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
 import {useSchema} from '../../../../../../../../hooks'
@@ -8,8 +11,6 @@ import {type SearchFieldDefinition} from '../../../../definitions/fields'
 import {type SearchFilterDefinition} from '../../../../definitions/filters'
 import {getSchemaField} from '../../../../utils/getSchemaField'
 import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {startCase, uniq} from 'lodash-es'
 
 interface FilterTooltipProps {
   children: React.JSX.Element

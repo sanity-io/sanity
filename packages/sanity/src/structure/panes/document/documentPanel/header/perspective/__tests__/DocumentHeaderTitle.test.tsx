@@ -1,14 +1,3 @@
-import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
-import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
-import {
-  mockUseDocumentTitle,
-  useDocumentTitleMockReturn,
-} from '../../../../__mocks__/useDocumentTitle.mock'
-import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
-import {useDocumentPane} from '../../../../useDocumentPane'
-import {DocumentHeaderTitle} from '../../DocumentHeaderTitle'
 import {render, screen, waitFor} from '@testing-library/react'
 import {
   defineConfig,
@@ -20,6 +9,18 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
+
+import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
+import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
+import {
+  mockUseDocumentTitle,
+  useDocumentTitleMockReturn,
+} from '../../../../__mocks__/useDocumentTitle.mock'
+import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
+import {useDocumentPane} from '../../../../useDocumentPane'
+import {DocumentHeaderTitle} from '../../DocumentHeaderTitle'
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({

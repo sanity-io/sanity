@@ -1,9 +1,10 @@
-import {CollapseTabList} from '..'
-import {Button} from '../../../../ui-components'
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useState} from 'react'
+
+import {CollapseTabList} from '..'
+import {Button} from '../../../../ui-components'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 

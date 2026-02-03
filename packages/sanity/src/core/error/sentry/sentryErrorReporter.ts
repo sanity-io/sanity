@@ -1,10 +1,3 @@
-import {isDev} from '../../environment'
-import {hasSanityPackageInImportMap} from '../../environment/importMap'
-import {globalScope} from '../../util/globalScope'
-import {supportsLocalStorage} from '../../util/supportsLocalStorage'
-import {SANITY_VERSION} from '../../version'
-import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
-import {type BufferedTransport, makeBufferedTransport} from './makeBufferedTransport'
 import {
   breadcrumbsIntegration,
   browserApiErrorsIntegration,
@@ -28,6 +21,14 @@ import {
   withScope,
 } from '@sentry/react'
 import {type Transport} from '@sentry/types'
+
+import {isDev} from '../../environment'
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
+import {globalScope} from '../../util/globalScope'
+import {supportsLocalStorage} from '../../util/supportsLocalStorage'
+import {SANITY_VERSION} from '../../version'
+import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
+import {type BufferedTransport, makeBufferedTransport} from './makeBufferedTransport'
 
 const SANITY_DSN = 'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
 

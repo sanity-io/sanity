@@ -1,5 +1,10 @@
 /* eslint-disable camelcase */
 
+import {AvatarStack} from '@sanity/ui'
+import {getTheme_v2} from '@sanity/ui/theme'
+import {useMemo} from 'react'
+import {css, styled} from 'styled-components'
+
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -7,10 +12,6 @@ import {getReleaseIdFromReleaseDocumentId, useActiveReleases} from '../releases'
 import {releasesLocaleNamespace} from '../releases/i18n'
 import {type DocumentPresence} from '../store'
 import {getVersionFromId, isNonNullable} from '../util'
-import {AvatarStack} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {

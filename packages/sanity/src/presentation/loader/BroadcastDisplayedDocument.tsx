@@ -1,7 +1,8 @@
-import {usePresentationParams} from '../usePresentationParams'
-import {useDisplayedDocumentBroadcaster} from './DisplayedDocumentBroadcaster'
 import {memo, useEffect} from 'react'
 import {type SanityDocument} from 'sanity'
+
+import {usePresentationParams} from '../usePresentationParams'
+import {useDisplayedDocumentBroadcaster} from './DisplayedDocumentBroadcaster'
 
 /**
  * Sanity Form input component that reads the current form state and broadcasts it to

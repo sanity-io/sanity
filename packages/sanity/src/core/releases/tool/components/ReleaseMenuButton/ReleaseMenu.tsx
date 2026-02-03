@@ -1,14 +1,3 @@
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {releasesLocaleNamespace} from '../../../i18n'
-import {useReleaseOperations} from '../../../store'
-import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseDefaults} from '../../../util/util'
-import {type DocumentInRelease} from '../../detail/useBundleDocuments'
-import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
-import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
-import {type ReleaseAction} from './releaseActions'
-import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
 import {
   type Dispatch,
@@ -20,6 +9,18 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {releasesLocaleNamespace} from '../../../i18n'
+import {useReleaseOperations} from '../../../store'
+import {useReleasePermissions} from '../../../store/useReleasePermissions'
+import {getReleaseDefaults} from '../../../util/util'
+import {type DocumentInRelease} from '../../detail/useBundleDocuments'
+import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllButton'
+import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
+import {type ReleaseAction} from './releaseActions'
+import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
 
 export type ReleaseMenuProps = Omit<ReleaseMenuButtonProps, 'documentsCount'> & {
   disabled: boolean

@@ -1,7 +1,8 @@
-import {createAppIdCache} from '../appIdCache'
-import {type ResolvedStudioApp, useStudioAppIdStoreInner} from '../useStudioAppIdStore'
 import {renderHook, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
+
+import {createAppIdCache} from '../appIdCache'
+import {type ResolvedStudioApp, useStudioAppIdStoreInner} from '../useStudioAppIdStore'
 
 describe('useStudioAppIdStore', () => {
   it('should return appId when promise resolves', async () => {

@@ -1,5 +1,6 @@
 import {dirname, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
+
 import * as vitest from 'vitest/config'
 import {configDefaults} from 'vitest/config'
 

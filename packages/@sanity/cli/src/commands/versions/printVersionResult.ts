@@ -1,10 +1,11 @@
+import chalk from 'chalk'
+import {padEnd, padStart} from 'lodash-es'
+
 import {
   findSanityModuleVersions,
   type ModuleVersionResult,
 } from '../../actions/versions/findSanityModuleVersions'
 import {type CliCommandAction} from '../../types'
-import chalk from 'chalk'
-import {padEnd, padStart} from 'lodash-es'
 
 const printVersionResultCommand: CliCommandAction = async (args, context) => {
   const versions = await findSanityModuleVersions(context, {target: 'latest'})

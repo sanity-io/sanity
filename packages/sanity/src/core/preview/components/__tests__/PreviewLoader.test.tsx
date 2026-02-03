@@ -1,10 +1,11 @@
-import {useValuePreview} from '../../useValuePreview'
-import {useVisibility} from '../../useVisibility'
-import {PreviewLoader} from '../PreviewLoader'
 import {DocumentIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {useValuePreview} from '../../useValuePreview'
+import {useVisibility} from '../../useVisibility'
+import {PreviewLoader} from '../PreviewLoader'
 
 // Mock dependencies
 vi.mock('../../useValuePreview')

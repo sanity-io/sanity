@@ -1,8 +1,9 @@
+import {type ReactNode, useMemo} from 'react'
+import {UserColorManagerContext} from 'sanity/_singletons'
+
 import {useColorSchemeValue} from '../studio'
 import {createUserColorManager} from './manager'
 import {type UserColorManager} from './types'
-import {type ReactNode, useMemo} from 'react'
-import {UserColorManagerContext} from 'sanity/_singletons'
 
 /** @internal */
 export interface UserColorManagerProviderProps {

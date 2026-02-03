@@ -1,3 +1,7 @@
+import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {Button} from '../../../../../../ui-components'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
@@ -7,9 +11,6 @@ import {WORKSPACES_DOCS_URL} from '../constants'
 import {useWorkspaceAuthStates} from '../hooks'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
-import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
-import {useCallback, useState} from 'react'
 
 export function WorkspaceAuth() {
   const workspaces = useWorkspaces()

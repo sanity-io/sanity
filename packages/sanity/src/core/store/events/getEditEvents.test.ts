@@ -1,6 +1,7 @@
+import {describe, expect, it} from 'vitest'
+
 import {getEditEvents} from './getEditEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
-import {describe, expect, it} from 'vitest'
 
 describe('getEditEvents()', () => {
   const editTransactions = [

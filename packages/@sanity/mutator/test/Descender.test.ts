@@ -1,9 +1,10 @@
+import {expect, test} from 'vitest'
+
 import {Descender} from '../src/jsonpath/Descender'
 import {Expression} from '../src/jsonpath/Expression'
 import {parseJsonPath} from '../src/jsonpath/parse'
 import {PlainProbe} from '../src/jsonpath/PlainProbe'
 import {type Expr} from '../src/jsonpath/types'
-import {expect, test} from 'vitest'
 
 function inner(jsonpath: string): Expr | null {
   const expr = parseJsonPath(jsonpath)

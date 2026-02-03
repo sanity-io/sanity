@@ -1,7 +1,8 @@
-import {insert, PatchEvent} from '../../../patch'
-import {type InsertCallback} from './types'
 import {normalizeBlock} from '@portabletext/block-tools'
 import {type PortableTextBlock} from '@sanity/types'
+
+import {insert, PatchEvent} from '../../../patch'
+import {type InsertCallback} from './types'
 
 export function createInsertCallback(options: {
   allowedDecorators: string[]

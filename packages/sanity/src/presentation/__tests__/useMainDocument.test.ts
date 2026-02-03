@@ -1,5 +1,6 @@
-import {getRouteContext} from '../useMainDocument'
 import {describe, expect, test} from 'vitest'
+
+import {getRouteContext} from '../useMainDocument'
 
 describe('getRouteContext', () => {
   test('handles path parameters', () => {

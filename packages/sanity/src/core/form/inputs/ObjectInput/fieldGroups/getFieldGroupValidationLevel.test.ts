@@ -1,8 +1,9 @@
-import {type FormFieldGroup} from '../../../store'
-import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FormNodeValidation, type ObjectField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
+
+import {type FormFieldGroup} from '../../../store'
+import {getFieldGroupValidationLevel} from './getFieldGroupValidationLevel'
 
 describe('getFieldGroupValidationLevel', () => {
   const createGroup = (fieldName: string, groupName: string = 'group1'): FormFieldGroup => ({

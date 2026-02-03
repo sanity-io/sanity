@@ -1,3 +1,5 @@
+import {useMemo} from 'react'
+
 import usePreviewState from '../../hooks/usePreviewState'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule} from '../../types'
@@ -6,7 +8,6 @@ import DateWithTooltipElementQuery from './dateWithTooltip/DateWithTooltipElemen
 import DocumentPreview from './DocumentPreview'
 import NoSchemaItem from './NoSchemaItem'
 import ToolPreview from './ToolPreview'
-import {useMemo} from 'react'
 
 interface Props {
   schedule: Schedule

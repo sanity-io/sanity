@@ -1,9 +1,10 @@
+import {isEqual} from 'lodash-es'
+
 import {debug} from './debug'
 import {Document} from './Document'
 import {Mutation} from './Mutation'
 import {SquashingBuffer} from './SquashingBuffer'
 import {type Doc, type Mut} from './types'
-import {isEqual} from 'lodash-es'
 
 const ONE_MINUTE = 1000 * 60
 

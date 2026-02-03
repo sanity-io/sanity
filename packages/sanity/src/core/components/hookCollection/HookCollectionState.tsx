@@ -1,8 +1,9 @@
+import {memo, useMemo} from 'react'
+import deepEqual from 'react-fast-compare'
+
 import {getHookId} from './actionId'
 import {defineHookStateComponent} from './defineHookStateComponent'
 import {type HookCollectionActionHook} from './types'
-import {memo, useMemo} from 'react'
-import deepEqual from 'react-fast-compare'
 
 interface HookCollectionStateProps<Args, State> {
   hooks: HookCollectionActionHook<Args, State>[]

@@ -1,3 +1,18 @@
+import {isKeySegment} from '@sanity/types'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_TIME_FORMAT,
+  format,
+  isValidTimeZoneString,
+  parse,
+  type ParseResult,
+} from '@sanity/util/legacyDateFormat'
+import {fromString as pathFromString} from '@sanity/util/paths'
+import {getMinutes, parseISO, setMinutes} from 'date-fns'
+import {useCallback, useMemo} from 'react'
+import {styled} from 'styled-components'
+
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {TimeZoneButton} from '../../../components/timeZone/timeZoneButton/TimeZoneButton'
@@ -14,20 +29,6 @@ import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels, isValidDate} from './utils'
-import {isKeySegment} from '@sanity/types'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
-import {
-  DEFAULT_DATE_FORMAT,
-  DEFAULT_TIME_FORMAT,
-  format,
-  isValidTimeZoneString,
-  parse,
-  type ParseResult,
-} from '@sanity/util/legacyDateFormat'
-import {fromString as pathFromString} from '@sanity/util/paths'
-import {getMinutes, parseISO, setMinutes} from 'date-fns'
-import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 /**
  * Sanitizes an input ID for use in timezone storage keys.

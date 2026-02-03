@@ -1,9 +1,10 @@
+import {Container, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
+
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentBadges} from '../DocumentBadges'
-import {Container, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
 
 export default function DocumentBadgesStory() {
   const pane: DocumentPaneNode = useMemo(

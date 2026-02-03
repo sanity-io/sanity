@@ -1,6 +1,7 @@
+import {type Path, type PathSegment} from '@sanity/types'
+
 import {getItemKey} from '../../paths'
 import {type ChangeNode, type FieldChangeNode} from '../../types'
-import {type Path, type PathSegment} from '@sanity/types'
 
 const isAddedAction = (change: ChangeNode): boolean => {
   return change.type === 'field' && change.diff.action === 'added'

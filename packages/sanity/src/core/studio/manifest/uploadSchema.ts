@@ -1,5 +1,3 @@
-import {isDev} from '../../environment'
-import {DESCRIPTOR_CONVERTER} from '../../schema'
 import {type SanityClient} from '@sanity/client'
 import {
   processSchemaSynchronization,
@@ -8,6 +6,9 @@ import {
 import {type Schema} from '@sanity/types'
 import debugit from 'debug'
 import {max, sum} from 'lodash-es'
+
+import {isDev} from '../../environment'
+import {DESCRIPTOR_CONVERTER} from '../../schema'
 
 const debug = debugit('sanity:manifest')
 

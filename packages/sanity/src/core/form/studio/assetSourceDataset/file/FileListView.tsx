@@ -1,8 +1,9 @@
-import {useTranslation} from '../../../../i18n'
-import {AssetRow} from './AssetRow'
 import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
+
+import {useTranslation} from '../../../../i18n'
+import {AssetRow} from './AssetRow'
 
 interface Props {
   onClick?: (event: MouseEvent) => void

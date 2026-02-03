@@ -1,6 +1,7 @@
+import {createContext} from 'sanity/_createContext'
+
 // oxlint-disable-next-line no-restricted-imports
 import type {SchedulesContextValue} from '../../core/scheduled-publishing/contexts/Schedules'
-import {createContext} from 'sanity/_createContext'
 
 /**
  * @deprecated we will be dropping support for scheduled publishing on a future major version

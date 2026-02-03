@@ -1,5 +1,6 @@
-import {stringOperators} from './stringOperators'
 import {describe, expect, it} from 'vitest'
+
+import {stringOperators} from './stringOperators'
 
 const fieldPath = 'title'
 const value = 'foo'

@@ -1,3 +1,9 @@
+import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {useMemo} from 'react'
+import {css, styled} from 'styled-components'
+
 import {Tooltip} from '../../../../ui-components'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -17,11 +23,6 @@ import {
   TIMELINE_ITEM_EVENT_TONE,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
 } from './constants'
-import {type AvatarSize, AvatarStack, Box, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 interface UserAvatarStackProps {
   maxLength?: number

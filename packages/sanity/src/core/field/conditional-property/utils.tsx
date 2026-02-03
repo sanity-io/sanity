@@ -1,4 +1,3 @@
-import {isRecord} from '../../util'
 import {
   type ConditionalProperty,
   type ConditionalPropertyCallbackContext,
@@ -6,6 +5,8 @@ import {
 } from '@sanity/types'
 import {omit} from 'lodash-es'
 import {useMemo} from 'react'
+
+import {isRecord} from '../../util'
 
 export function isThenable(value: unknown): value is Promise<unknown> {
   return isRecord(value) && typeof value?.then === 'function'

@@ -1,12 +1,13 @@
-import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../../config'
-import {useDocumentType} from '../useDocumentType'
 import {type SanityClient} from '@sanity/client'
 import {renderHook, waitFor} from '@testing-library/react'
 import {asyncScheduler, defer, of} from 'rxjs'
 import {delay, observeOn, tap} from 'rxjs/operators'
 import {expect, test, vi} from 'vitest'
+
+import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../../../config'
+import {useDocumentType} from '../useDocumentType'
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({

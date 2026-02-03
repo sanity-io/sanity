@@ -1,6 +1,7 @@
-import {type Token} from './types'
 import {type CliCommandDefinition} from '@sanity/cli'
 import {Table} from 'console-table-printer'
+
+import {type Token} from './types'
 
 const helpText = `
 Examples

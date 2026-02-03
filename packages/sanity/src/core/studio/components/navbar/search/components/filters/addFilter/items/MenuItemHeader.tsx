@@ -1,6 +1,7 @@
-import {type FilterMenuItemHeader} from '../../../../types'
 import {Box, Card, Text} from '@sanity/ui'
 import {memo} from 'react'
+
+import {type FilterMenuItemHeader} from '../../../../types'
 
 interface MenuItemHeaderFields {
   item: FilterMenuItemHeader

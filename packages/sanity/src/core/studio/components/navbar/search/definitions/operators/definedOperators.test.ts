@@ -1,5 +1,6 @@
-import {definedOperators} from './definedOperators'
 import {describe, expect, it} from 'vitest'
+
+import {definedOperators} from './definedOperators'
 
 const fieldPath = 'title'
 

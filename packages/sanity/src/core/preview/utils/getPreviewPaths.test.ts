@@ -1,6 +1,7 @@
-import {getPreviewPaths} from './getPreviewPaths'
 import {type SchemaType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+
+import {getPreviewPaths} from './getPreviewPaths'
 
 const preview: SchemaType['preview'] = {
   select: {

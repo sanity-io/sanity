@@ -1,5 +1,6 @@
-import {isExactMatchToken, isNegationToken, isPrefixToken, prefixLast} from '../token'
 import {describe, expect, it} from 'vitest'
+
+import {isExactMatchToken, isNegationToken, isPrefixToken, prefixLast} from '../token'
 
 describe('isNegationToken', () => {
   it('identifies negation tokens', () => {

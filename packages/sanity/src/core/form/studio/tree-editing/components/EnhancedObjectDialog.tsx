@@ -1,3 +1,12 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
+import {Box, useGlobalKeyDown} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, type Theme} from '@sanity/ui/theme'
+import {debounce, isEqual} from 'lodash-es'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {css, styled} from 'styled-components'
+
 import {Dialog} from '../../../../../ui-components'
 import {pathToString, stringToPath} from '../../../../field/paths/helpers'
 import {FormInput} from '../../../components/FormInput'
@@ -14,14 +23,6 @@ import {
 import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {isPathTextInPTEField} from '../utils/isPathTextInPTEField'
 import {NestedDialogHeader} from './header/NestedDialogHeader'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type ObjectSchemaType, type Path} from '@sanity/types'
-import {Box, useGlobalKeyDown} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, type Theme} from '@sanity/ui/theme'
-import {debounce, isEqual} from 'lodash-es'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 

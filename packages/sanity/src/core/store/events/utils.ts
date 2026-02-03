@@ -1,3 +1,5 @@
+import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
+
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getVersionFromId} from '../../util/draftUtils'
@@ -18,7 +20,6 @@ import {
   isUpdateLiveDocumentEvent,
   type UpdateLiveDocumentEvent,
 } from './types'
-import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
 
 export function removeDupes(
   events: DocumentGroupEvent[],

@@ -1,8 +1,9 @@
-import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
-import norway from './data/norway'
 import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
 import {defineField, defineType} from 'sanity'
+
+import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
+import norway from './data/norway'
 
 export const validationArraySuperType = {
   name: 'imageArray',

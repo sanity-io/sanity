@@ -1,3 +1,6 @@
+import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
+
 import {
   dateOperators,
   type OperatorDateDirectionValue,
@@ -5,8 +8,6 @@ import {
   type OperatorDateLastValue,
   type OperatorDateRangeValue,
 } from './dateOperators'
-import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
-import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 interface OperatorDateEqualValueWithDate extends OperatorDateEqualValue {
   date: string

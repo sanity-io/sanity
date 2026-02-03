@@ -1,4 +1,3 @@
-import {type AvailabilityResponse} from '../../preview'
 import {type SanityClient} from '@sanity/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {
@@ -13,6 +12,8 @@ import {
   Subject,
   switchMap,
 } from 'rxjs'
+
+import {type AvailabilityResponse} from '../../preview'
 
 /**
  * The amount of time reserved for waiting for new IDs.

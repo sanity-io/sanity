@@ -1,3 +1,7 @@
+import {type ObjectSchemaType} from '@sanity/types'
+import {Badge, Box, Inline} from '@sanity/ui'
+import {useMemo} from 'react'
+
 import {type PreviewLayoutKey} from '../../../components'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
@@ -5,9 +9,6 @@ import {DocumentPreviewPresence} from '../../../presence'
 import {useDocumentVersionInfo} from '../../../releases'
 import {useDocumentPresence} from '../../../store'
 import {type RenderPreviewCallback} from '../../types'
-import {type ObjectSchemaType} from '@sanity/types'
-import {Badge, Box, Inline} from '@sanity/ui'
-import {useMemo} from 'react'
 
 /**
  * Used to preview a referenced type

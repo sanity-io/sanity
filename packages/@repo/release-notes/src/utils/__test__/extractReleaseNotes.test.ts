@@ -1,8 +1,9 @@
+import {portableTextToMarkdown} from '@portabletext/markdown'
+import {describe, expect, it} from 'vitest'
+
 import {markdownToPortableText} from '../portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../pullRequestReleaseNotes'
 import {keyGenerator, readFixture} from './helpers'
-import {portableTextToMarkdown} from '@portabletext/markdown'
-import {describe, expect, it} from 'vitest'
 
 describe('extractReleaseNotesFromPullRequestDescription', () => {
   it('extracts release notes when there is just a single release notes header', () => {

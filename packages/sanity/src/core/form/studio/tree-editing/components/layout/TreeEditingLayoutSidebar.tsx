@@ -1,3 +1,10 @@
+import {PanelLeftIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
+import {Box, Card, Stack, Text} from '@sanity/ui'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
+import {memo, useMemo} from 'react'
+import {styled} from 'styled-components'
+
 import {Button} from '../../../../../../ui-components'
 import {Resizable} from '../../../../../components/resizer/Resizable'
 import {useTranslation} from '../../../../../i18n'
@@ -5,12 +12,6 @@ import {type DialogItem} from '../../types'
 import {TreeEditingSearch} from '../search'
 import {TreeEditingMenu} from '../tree-menu'
 import {FixedHeightFlex} from './styles'
-import {PanelLeftIcon} from '@sanity/icons'
-import {type Path} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {memo, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 const ANIMATION_VARIANTS: Variants = {
   initial: {opacity: 0},

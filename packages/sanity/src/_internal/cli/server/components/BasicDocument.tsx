@@ -3,11 +3,12 @@
  * to avoid importing styled-components from sanity pacakge
  */
 
+/* eslint-disable i18next/no-literal-string  -- title is literal for now */
+import {type JSX} from 'react'
+
 import {Favicons} from './Favicons'
 import {GlobalErrorHandler} from './globalErrorHandler/GlobalErrorHandler'
 import {NoJavascript} from './NoJavascript'
-/* eslint-disable i18next/no-literal-string  -- title is literal for now */
-import {type JSX} from 'react'
 
 /**
  * @internal

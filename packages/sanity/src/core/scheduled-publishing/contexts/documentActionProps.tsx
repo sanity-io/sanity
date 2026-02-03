@@ -1,6 +1,7 @@
-import {type DocumentActionProps} from '../../config/document/actions'
 import {type ReactNode, useContext} from 'react'
 import {DocumentActionPropsContext} from 'sanity/_singletons'
+
+import {type DocumentActionProps} from '../../config/document/actions'
 
 function DocumentActionPropsProvider({
   children,

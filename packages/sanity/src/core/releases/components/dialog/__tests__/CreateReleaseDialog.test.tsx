@@ -1,11 +1,12 @@
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
-import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
-import {CreateReleaseDialog} from '../CreateReleaseDialog'
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
+import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {CreateReleaseDialog} from '../CreateReleaseDialog'
 
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),

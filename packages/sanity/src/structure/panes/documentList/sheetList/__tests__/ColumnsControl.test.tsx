@@ -1,10 +1,11 @@
-import {ColumnsControl} from '../ColumnsControl'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type SanityDocument} from 'sanity'
 import {describe, expect, it} from 'vitest'
+
+import {ColumnsControl} from '../ColumnsControl'
 
 const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
   const initialVisibilityState = {

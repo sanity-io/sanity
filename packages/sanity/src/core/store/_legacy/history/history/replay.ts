@@ -1,6 +1,7 @@
+import {type TransactionLogEventWithEffects} from '@sanity/types'
+
 import {Timeline} from './Timeline'
 import {type DocumentRemoteMutationVersionEvent} from './types'
-import {type TransactionLogEventWithEffects} from '@sanity/types'
 
 export type TraceEvent =
   | {

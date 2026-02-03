@@ -1,3 +1,16 @@
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {
+  cloneElement,
+  type FC,
+  type PropsWithChildren,
+  type ReactElement,
+  type RefObject,
+  useState,
+} from 'react'
+import {route, RouterProvider} from 'sanity/router'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -12,18 +25,6 @@ import {
   documentsInRelease,
   useBundleDocumentsMockReturnWithResults,
 } from './__mocks__/useBundleDocuments.mock'
-import {render, screen, waitFor, within} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {
-  cloneElement,
-  type FC,
-  type PropsWithChildren,
-  type ReactElement,
-  type RefObject,
-  useState,
-} from 'react'
-import {route, RouterProvider} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../index', () => ({
   useDocumentPresence: vi.fn().mockReturnValue({

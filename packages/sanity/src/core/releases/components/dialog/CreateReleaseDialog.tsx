@@ -1,3 +1,8 @@
+import {type EditableReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Box, Card, Flex, useToast} from '@sanity/ui'
+import {type FormEvent, useCallback, useState} from 'react'
+
 import {Button, Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
@@ -11,10 +16,6 @@ import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
-import {type EditableReleaseDocument} from '@sanity/client'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex, useToast} from '@sanity/ui'
-import {type FormEvent, useCallback, useState} from 'react'
 
 interface CreateReleaseDialogProps {
   onCancel: () => void

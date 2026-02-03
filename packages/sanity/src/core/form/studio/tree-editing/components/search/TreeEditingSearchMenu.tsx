@@ -1,11 +1,3 @@
-import {CommandList} from '../../../../../components/commandList/CommandList'
-import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
-import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {supportsTouch} from '../../../../../util/supportsTouch'
-import {useValuePreviewWithFallback} from '../../hooks'
-import {type DialogItem} from '../../types'
-import {ITEM_HEIGHT} from './constants'
 import {type Path} from '@sanity/types'
 import {
   Box,
@@ -16,6 +8,15 @@ import {
 } from '@sanity/ui'
 import {isEqual} from 'lodash-es'
 import {useCallback} from 'react'
+
+import {CommandList} from '../../../../../components/commandList/CommandList'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
+import {supportsTouch} from '../../../../../util/supportsTouch'
+import {useValuePreviewWithFallback} from '../../hooks'
+import {type DialogItem} from '../../types'
+import {ITEM_HEIGHT} from './constants'
 
 interface ResultItemProps {
   item: DialogItem

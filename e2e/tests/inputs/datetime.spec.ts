@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test(`datetime input shows validation on selecting date from datepicker`, async ({
   page,

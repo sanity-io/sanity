@@ -1,8 +1,3 @@
-import {Delay} from '../../../../components'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
-import {useDocumentTitle} from '../../useDocumentTitle'
-import {FormHeader} from './FormHeader'
 import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {
   type FormEvent,
@@ -29,6 +24,12 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+
+import {Delay} from '../../../../components'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentTitle} from '../../useDocumentTitle'
+import {FormHeader} from './FormHeader'
 
 interface FormViewProps {
   hidden: boolean

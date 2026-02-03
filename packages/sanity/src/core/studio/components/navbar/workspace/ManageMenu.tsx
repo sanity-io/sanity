@@ -1,3 +1,6 @@
+import {AddUserIcon, CogIcon} from '@sanity/icons'
+import {Flex, Stack, Text} from '@sanity/ui'
+
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n'
 import {useProject} from '../../../../store/_legacy/project/useProject'
@@ -6,8 +9,6 @@ import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsi
 import {useWorkspace} from '../../../workspace'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 import {WorkspacePreviewIcon} from './WorkspacePreview'
-import {AddUserIcon, CogIcon} from '@sanity/icons'
-import {Flex, Stack, Text} from '@sanity/ui'
 
 export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) {
   const {projectId} = useWorkspace()

@@ -1,18 +1,3 @@
-import {usePaneRouter} from '../../components'
-import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
-import {structureLocaleNamespace} from '../../i18n'
-import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
-import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
-import {type DocumentPaneContextValue} from './DocumentPaneContext'
-import {
-  type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
-  type HistoryStoreProps,
-} from './types'
-import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
-import {useDocumentPaneInspector} from './useDocumentPaneInspector'
-import {usePreviewUrl} from './usePreviewUrl'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
@@ -54,6 +39,22 @@ import {
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
+
+import {usePaneRouter} from '../../components'
+import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
+import {structureLocaleNamespace} from '../../i18n'
+import {type PaneMenuItem} from '../../types'
+import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
+import {type DocumentPaneContextValue} from './DocumentPaneContext'
+import {
+  type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
+  type HistoryStoreProps,
+} from './types'
+import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
+import {useDocumentPaneInspector} from './useDocumentPaneInspector'
+import {usePreviewUrl} from './usePreviewUrl'
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
   historyStore: HistoryStoreProps

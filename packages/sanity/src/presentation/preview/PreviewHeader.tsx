@@ -1,3 +1,10 @@
+import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
+import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
+import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
+import {useSelector} from '@xstate/react'
+import {type RefObject, useCallback, useMemo} from 'react'
+import {useTranslation} from 'sanity'
+
 import {Button, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
 import {type HeaderOptions} from '../types'
@@ -6,12 +13,6 @@ import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
 import {SharePreviewMenu} from './SharePreviewMenu'
-import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
-import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
-import {useSelector} from '@xstate/react'
-import {type RefObject, useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
 
 /** @public */
 export interface PreviewHeaderProps extends PreviewProps {

@@ -1,6 +1,3 @@
-import {type ExtractManifestFlags, extractManifestSafe} from '../../manifest/extractManifestAction'
-import {GenerateManifest} from '../__telemetry__/schemaStore.telemetry'
-import {FlagValidationError} from './schemaStoreValidation'
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -9,6 +6,10 @@ import {
 } from '@sanity/cli'
 import {type TelemetryLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
+
+import {type ExtractManifestFlags, extractManifestSafe} from '../../manifest/extractManifestAction'
+import {GenerateManifest} from '../__telemetry__/schemaStore.telemetry'
+import {FlagValidationError} from './schemaStoreValidation'
 
 export type ManifestExtractor = (manifestDir: string) => Promise<void>
 

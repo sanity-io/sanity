@@ -1,9 +1,3 @@
-import {TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {TableEmptyState} from './TableEmptyState'
-import {TableHeader} from './TableHeader'
-import {TableLayout} from './TableLayout'
-import {TableProvider, type TableSort, useTableContext} from './TableProvider'
-import {type Column} from './types'
 import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
@@ -16,6 +10,13 @@ import {
   useMemo,
   useRef,
 } from 'react'
+
+import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TableEmptyState} from './TableEmptyState'
+import {TableHeader} from './TableHeader'
+import {TableLayout} from './TableLayout'
+import {TableProvider, type TableSort, useTableContext} from './TableProvider'
+import {type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData extends undefined
   ? TableData

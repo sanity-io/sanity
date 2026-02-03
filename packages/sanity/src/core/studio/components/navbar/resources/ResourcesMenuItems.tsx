@@ -1,12 +1,3 @@
-import {MenuItem} from '../../../../../ui-components'
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useTranslation} from '../../../../i18n'
-import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
-import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
-import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
-import {useWorkspaces} from '../../../workspaces'
-import {type ResourcesResponse, type Section} from './helper-functions/types'
-import {useCanDeployStudio} from './useCanDeployStudio'
 /* eslint-disable  no-restricted-imports */
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
@@ -22,6 +13,16 @@ import {
 } from '@sanity/ui'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
+
+import {MenuItem} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {useTranslation} from '../../../../i18n'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
+import {StudioAnnouncementsMenuItem} from '../../../studioAnnouncements/StudioAnnouncementsMenuItem'
+import {useWorkspaces} from '../../../workspaces'
+import {type ResourcesResponse, type Section} from './helper-functions/types'
+import {useCanDeployStudio} from './useCanDeployStudio'
 
 interface ResourcesMenuItemProps {
   error: Error | null

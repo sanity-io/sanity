@@ -1,8 +1,9 @@
-import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
-import {usePane} from './usePane'
 import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+
+import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {usePane} from './usePane'
 
 export type TabsType = 'default' | 'dropdown'
 

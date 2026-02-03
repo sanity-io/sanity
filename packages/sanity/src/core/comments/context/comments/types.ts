@@ -1,3 +1,5 @@
+import {type Path} from '@sanity/types'
+
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {
   type CommentDocument,
@@ -5,7 +7,6 @@ import {
   type CommentStatus,
   type CommentThreadItem,
 } from '../../types'
-import {type Path} from '@sanity/types'
 
 /**
  * @beta

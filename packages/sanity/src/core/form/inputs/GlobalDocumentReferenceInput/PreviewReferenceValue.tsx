@@ -1,12 +1,13 @@
-import {Translate, useTranslation} from '../../../i18n'
-import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
-import {type GlobalDocumentReferenceInfo} from './types'
-import {type Loadable} from './useReferenceInfo'
 import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
 } from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
+
+import {Translate, useTranslation} from '../../../i18n'
+import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
+import {type GlobalDocumentReferenceInfo} from './types'
+import {type Loadable} from './useReferenceInfo'
 
 export function PreviewReferenceValue(props: {
   value: GlobalDocumentReferenceValue

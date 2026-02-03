@@ -1,5 +1,6 @@
-import {type DocumentInRelease, useBundleDocuments} from '../../useBundleDocuments'
 import {type Mock, type Mocked} from 'vitest'
+
+import {type DocumentInRelease, useBundleDocuments} from '../../useBundleDocuments'
 
 export const documentsInRelease: DocumentInRelease = {
   memoKey: 'a',

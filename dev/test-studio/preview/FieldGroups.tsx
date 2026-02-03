@@ -1,5 +1,6 @@
-import {useQuery} from './loader'
 import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+
+import {useQuery} from './loader'
 
 export function FieldGroups(): React.JSX.Element {
   const {data, loading, error} = useQuery<

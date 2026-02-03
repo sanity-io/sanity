@@ -1,14 +1,15 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {CopyIcon} from '@sanity/icons'
+import {MenuDivider, Stack} from '@sanity/ui'
+import {memo} from 'react'
+import {styled} from 'styled-components'
+
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
-import {type ReleaseDocument} from '@sanity/client'
-import {CopyIcon} from '@sanity/icons'
-import {MenuDivider, Stack} from '@sanity/ui'
-import {memo} from 'react'
-import {styled} from 'styled-components'
 
 const ReleasesList = styled(Stack)`
   max-width: 300px;

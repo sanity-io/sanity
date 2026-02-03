@@ -1,9 +1,10 @@
+import {type CliCommandDefinition} from '@sanity/cli'
+import oneline from 'oneline'
+
 import {createAliasHandler} from './createAliasHandler'
 import {deleteAliasHandler} from './deleteAliasHandler'
 import {linkAliasHandler} from './linkAliasHandler'
 import {unlinkAliasHandler} from './unlinkAliasHandler'
-import {type CliCommandDefinition} from '@sanity/cli'
-import oneline from 'oneline'
 
 const helpText = `
 Below are examples of the alias subcommand

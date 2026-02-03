@@ -1,8 +1,3 @@
-import {Button} from '../../../../../ui-components'
-import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
-import {Banner} from './Banner'
 import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
@@ -16,6 +11,12 @@ import {
   useDocumentOperation,
   useTranslation,
 } from 'sanity'
+
+import {Button} from '../../../../../ui-components'
+import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
+import {Banner} from './Banner'
 
 interface ObsoleteDraftBannerProps {
   displayed: Partial<SanityDocument> | null

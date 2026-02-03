@@ -1,3 +1,9 @@
+import {type ResponseQueryOptions} from '@sanity/client'
+import {match, type Path} from 'path-to-regexp'
+import {useEffect, useEffectEvent, useRef, useState} from 'react'
+import {useClient} from 'sanity'
+import {type RouterState, useRouter} from 'sanity/router'
+
 import {API_VERSION} from './constants'
 import {
   type DocumentResolver,
@@ -7,11 +13,6 @@ import {
   type PresentationNavigate,
   type PresentationPerspective,
 } from './types'
-import {type ResponseQueryOptions} from '@sanity/client'
-import {match, type Path} from 'path-to-regexp'
-import {useEffect, useEffectEvent, useRef, useState} from 'react'
-import {useClient} from 'sanity'
-import {type RouterState, useRouter} from 'sanity/router'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
 // returned as the result of a passed function

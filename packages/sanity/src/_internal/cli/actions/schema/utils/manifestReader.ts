@@ -1,11 +1,13 @@
-import {type CreateManifest, type ManifestSchemaType} from '../../../../manifest/manifestTypes'
-import {MANIFEST_FILENAME} from '../../manifest/extractManifestAction'
-import {type DeploySchemasFlags} from '../deploySchemasAction'
-import {type CliOutputter} from '@sanity/cli'
-import chalk from 'chalk'
 import {type Stats} from 'node:fs'
 import {readFile, stat} from 'node:fs/promises'
 import path, {join, resolve} from 'node:path'
+
+import {type CliOutputter} from '@sanity/cli'
+import chalk from 'chalk'
+
+import {type CreateManifest, type ManifestSchemaType} from '../../../../manifest/manifestTypes'
+import {MANIFEST_FILENAME} from '../../manifest/extractManifestAction'
+import {type DeploySchemasFlags} from '../deploySchemasAction'
 
 export type ManifestJsonReader = <T>(
   filePath: string,

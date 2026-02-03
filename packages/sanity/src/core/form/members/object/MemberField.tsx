@@ -1,3 +1,5 @@
+import {memo} from 'react'
+
 import {type FIXME} from '../../../FIXME'
 import {type FieldMember} from '../../store'
 import {
@@ -18,7 +20,6 @@ import {
 } from './fields/asserters'
 import {ObjectField} from './fields/ObjectField'
 import {PrimitiveField} from './fields/PrimitiveField'
-import {memo} from 'react'
 
 /** @internal */
 export interface MemberFieldProps {

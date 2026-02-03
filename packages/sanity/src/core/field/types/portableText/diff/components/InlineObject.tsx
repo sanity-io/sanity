@@ -1,11 +1,3 @@
-import {Popover} from '../../../../../../ui-components'
-import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
-import {useTranslation} from '../../../../../i18n'
-import {Preview} from '../../../../../preview/components/Preview'
-import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import {type ObjectDiff} from '../../../../types'
-import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
   isKeySegment,
@@ -19,6 +11,15 @@ import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+
+import {Popover} from '../../../../../../ui-components'
+import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators'
+import {useTranslation} from '../../../../../i18n'
+import {Preview} from '../../../../../preview/components/Preview'
+import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {type ObjectDiff} from '../../../../types'
+import {isEmptyObject} from '../helpers'
+import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
   diff?: ObjectDiff

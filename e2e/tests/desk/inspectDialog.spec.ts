@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
 const WAIT_OPTIONS = {timeout: 30000}

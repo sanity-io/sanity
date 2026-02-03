@@ -1,9 +1,10 @@
+import {expect} from '@playwright/test'
+
 import {
   expectCreatedOrEditedStatus,
   expectPublishedStatus,
 } from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
-import {expect} from '@playwright/test'
 
 test(`documents can be restored to an earlier revision`, async ({page, createDraftDocument}) => {
   test.slow()

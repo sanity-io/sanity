@@ -1,3 +1,6 @@
+import {type SchemaType} from '@sanity/types'
+import {isRecord} from 'sanity'
+
 import {DocumentBuilder} from './Document'
 import {
   type ListItem,
@@ -8,8 +11,6 @@ import {
 import {HELP_URL, SerializeError} from './SerializeError'
 import {type SerializeOptions} from './StructureNodes'
 import {type StructureContext} from './types'
-import {type SchemaType} from '@sanity/types'
-import {isRecord} from 'sanity'
 
 /**
  * Interface for document list item input

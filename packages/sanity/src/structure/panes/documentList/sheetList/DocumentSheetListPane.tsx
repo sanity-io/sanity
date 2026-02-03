@@ -1,12 +1,3 @@
-import {type BaseStructureToolPaneProps} from '../../types'
-import {ColumnsControl} from './ColumnsControl'
-import {DocumentSheetListFilter} from './DocumentSheetListFilter'
-import {DocumentSheetListHeader} from './DocumentSheetListHeader'
-import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
-import {DocumentSheetListProvider} from './DocumentSheetListProvider'
-import {SheetListCell} from './SheetListCell'
-import {useDocumentSheetColumns} from './useDocumentSheetColumns'
-import {useDocumentSheetList} from './useDocumentSheetList'
 import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
@@ -19,6 +10,16 @@ import {
 import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
+
+import {type BaseStructureToolPaneProps} from '../../types'
+import {ColumnsControl} from './ColumnsControl'
+import {DocumentSheetListFilter} from './DocumentSheetListFilter'
+import {DocumentSheetListHeader} from './DocumentSheetListHeader'
+import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
+import {DocumentSheetListProvider} from './DocumentSheetListProvider'
+import {SheetListCell} from './SheetListCell'
+import {useDocumentSheetColumns} from './useDocumentSheetColumns'
+import {useDocumentSheetList} from './useDocumentSheetList'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'>
 

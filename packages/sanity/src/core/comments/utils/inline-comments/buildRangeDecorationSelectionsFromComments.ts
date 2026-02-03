@@ -1,5 +1,3 @@
-import {isTextSelectionComment} from '../../helpers'
-import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 import {type RangeDecoration} from '@portabletext/editor'
 import {
   applyPatches,
@@ -18,6 +16,9 @@ import {
   type PortableTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
+
+import {isTextSelectionComment} from '../../helpers'
+import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
 // This must be set high to avoid false positives
 // (for example, when there are multiple occurrences of the same word, and you delete the original commented word)

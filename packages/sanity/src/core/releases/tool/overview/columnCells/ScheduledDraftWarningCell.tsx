@@ -1,3 +1,6 @@
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Flex, Text} from '@sanity/ui'
+
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n'
@@ -5,8 +8,6 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
 
 export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
   datum,

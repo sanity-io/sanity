@@ -1,5 +1,6 @@
-import {Segment} from './segments'
 import {css, type RuleSet} from 'styled-components'
+
+import {Segment} from './segments'
 
 export function stringDiffContainerStyles(): RuleSet {
   return css`

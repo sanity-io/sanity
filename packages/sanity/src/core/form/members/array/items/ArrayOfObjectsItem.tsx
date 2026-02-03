@@ -1,3 +1,9 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {type Path} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {useCallback, useMemo, useRef} from 'react'
+import {tap} from 'rxjs/operators'
+
 import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
@@ -33,11 +39,6 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type Path} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
-import {tap} from 'rxjs/operators'
 
 /**
  *

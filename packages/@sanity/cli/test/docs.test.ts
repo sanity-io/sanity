@@ -1,8 +1,9 @@
+import {beforeEach, describe, expect, test, vi} from 'vitest'
+
 import {readDoc} from '../src/actions/docs/readDoc'
 import {searchDocs} from '../src/actions/docs/searchDocs'
 import {normalizePath} from '../src/commands/docs/readCommand'
 import {browse} from '../src/util/browse'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 // Mock fetch globally for the actions
 const mockFetch = vi.fn()

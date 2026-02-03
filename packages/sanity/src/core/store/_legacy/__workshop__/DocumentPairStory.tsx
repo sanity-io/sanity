@@ -1,8 +1,9 @@
+import {Box, Code, Text} from '@sanity/ui'
+import {useEffect, useState} from 'react'
+
 import {Button} from '../../../../ui-components'
 import {useDocumentStore} from '../datastores'
 import {type RemoteSnapshotVersionEvent} from '../document/document-pair/checkoutPair'
-import {Box, Code, Text} from '@sanity/ui'
-import {useEffect, useState} from 'react'
 
 export default function DocumentPairStory() {
   const documentStore = useDocumentStore()

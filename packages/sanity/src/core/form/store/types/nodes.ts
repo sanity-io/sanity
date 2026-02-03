@@ -1,8 +1,3 @@
-import {type FormNodePresence} from '../../../presence'
-import {type ObjectItem} from '../../types'
-import {type ProvenanceDiffAnnotation} from './diff'
-import {type FormFieldGroup} from './fieldGroup'
-import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember, type ObjectMember} from './members'
 import {type Diff} from '@sanity/diff'
 import {
   type ArraySchemaType,
@@ -15,6 +10,12 @@ import {
   type SchemaType,
   type StringSchemaType,
 } from '@sanity/types'
+
+import {type FormNodePresence} from '../../../presence'
+import {type ObjectItem} from '../../types'
+import {type ProvenanceDiffAnnotation} from './diff'
+import {type FormFieldGroup} from './fieldGroup'
+import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember, type ObjectMember} from './members'
 
 /**
  * @public

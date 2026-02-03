@@ -1,12 +1,13 @@
-import {debug} from '../debug'
-import {getCliUpgradeCommand} from '../packageManager'
-import {getUserConfig} from './getUserConfig'
-import {isCi} from './isCi'
 import boxen from 'boxen'
 import chalk from 'chalk'
 import latestVersion from 'get-latest-version'
 import pTimeout from 'p-timeout'
 import semverCompare from 'semver-compare'
+
+import {debug} from '../debug'
+import {getCliUpgradeCommand} from '../packageManager'
+import {getUserConfig} from './getUserConfig'
+import {isCi} from './isCi'
 
 const MAX_BLOCKING_TIME = 300
 const TWELVE_HOURS = 1000 * 60 * 60 * 12

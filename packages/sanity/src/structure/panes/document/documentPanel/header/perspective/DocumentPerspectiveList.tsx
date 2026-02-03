@@ -1,7 +1,3 @@
-import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
-import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
-import {useDocumentPane} from '../../../useDocumentPane'
-import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 import {Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
@@ -35,6 +31,11 @@ import {
   useWorkspace,
   VersionChip,
 } from 'sanity'
+
+import {isLiveEditEnabled} from '../../../../../components/paneItem/helpers'
+import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
+import {useDocumentPane} from '../../../useDocumentPane'
+import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
 const TooltipContent = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()

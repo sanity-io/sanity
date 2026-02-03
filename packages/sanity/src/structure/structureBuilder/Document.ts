@@ -1,3 +1,7 @@
+import {type SchemaType} from '@sanity/types'
+import {uniq} from 'lodash-es'
+import {type I18nTextRecord} from 'sanity'
+
 import {type ChildResolver} from './ChildResolver'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {
@@ -13,9 +17,6 @@ import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 import {validateId} from './util/validateId'
 import {form} from './views'
 import {maybeSerializeView, type ViewBuilder} from './views/View'
-import {type SchemaType} from '@sanity/types'
-import {uniq} from 'lodash-es'
-import {type I18nTextRecord} from 'sanity'
 
 const createDocumentChildResolver =
   ({resolveDocumentNode, getClient}: StructureContext): ChildResolver =>

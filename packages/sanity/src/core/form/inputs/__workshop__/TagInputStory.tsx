@@ -1,7 +1,8 @@
-import {TagInput} from '../../components/tagInput'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useCallback, useState} from 'react'
+
+import {TagInput} from '../../components/tagInput'
 
 interface Tag {
   value: string

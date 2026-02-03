@@ -1,8 +1,9 @@
-import chokidar from 'chokidar'
-import globby from 'globby'
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
+
+import chokidar from 'chokidar'
+import globby from 'globby'
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url))
 

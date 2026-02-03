@@ -1,3 +1,9 @@
+import {HelpCircleIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+import semver from 'semver'
+import {styled} from 'styled-components'
+
 import {MenuButton} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
@@ -6,11 +12,6 @@ import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageV
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
-import {HelpCircleIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import semver from 'semver'
-import {styled} from 'styled-components'
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;

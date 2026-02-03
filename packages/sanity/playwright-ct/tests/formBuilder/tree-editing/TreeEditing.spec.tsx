@@ -1,6 +1,7 @@
-import {TreeEditingStory} from './TreeEditingStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type SanityDocument} from '@sanity/types'
+
+import {TreeEditingStory} from './TreeEditingStory'
 
 const ANIMATION_DURATION = 400
 

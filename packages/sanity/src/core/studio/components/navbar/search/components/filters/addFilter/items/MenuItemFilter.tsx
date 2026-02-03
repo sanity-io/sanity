@@ -1,8 +1,3 @@
-import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {type FilterMenuItemFilter} from '../../../../types'
-import {getFilterKey} from '../../../../utils/filterUtils'
-import {FilterDetails} from '../../common/FilterDetails'
-import {FilterTooltip} from './FilterTooltip'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -11,6 +6,12 @@ import {
   type ResponsivePaddingProps,
 } from '@sanity/ui'
 import {memo, useCallback} from 'react'
+
+import {useSearchState} from '../../../../contexts/search/useSearchState'
+import {type FilterMenuItemFilter} from '../../../../types'
+import {getFilterKey} from '../../../../utils/filterUtils'
+import {FilterDetails} from '../../common/FilterDetails'
+import {FilterTooltip} from './FilterTooltip'
 
 interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   item: FilterMenuItemFilter

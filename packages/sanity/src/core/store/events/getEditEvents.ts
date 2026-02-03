@@ -1,3 +1,9 @@
+import {
+  type MendozaEffectPair,
+  type MendozaPatch,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
+
 import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {
@@ -6,11 +12,6 @@ import {
   type UpdateLiveDocumentEvent,
 } from './types'
 import {isWithinMergeWindow} from './utils'
-import {
-  type MendozaEffectPair,
-  type MendozaPatch,
-  type TransactionLogEventWithEffects,
-} from '@sanity/types'
 
 export function getEffectState(
   effect?: MendozaEffectPair,

@@ -1,8 +1,3 @@
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {structureLocaleNamespace} from '../../../i18n'
-import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
-import {useDiffViewState} from '../../hooks/useDiffViewState'
-import {findRelease} from '../../utils/findRelease'
 import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
 import {
   Badge,
@@ -42,6 +37,12 @@ import {
   useWorkspace,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {structureLocaleNamespace} from '../../../i18n'
+import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
+import {useDiffViewState} from '../../hooks/useDiffViewState'
+import {findRelease} from '../../utils/findRelease'
 
 const VersionModeHeaderLayout = styled.header`
   display: grid;

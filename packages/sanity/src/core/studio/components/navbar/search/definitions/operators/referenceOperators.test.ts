@@ -1,6 +1,7 @@
-import {referenceOperators} from './referenceOperators'
 import {type ReferenceValue} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+
+import {referenceOperators} from './referenceOperators'
 
 const fieldPath = 'relatedArticle'
 const valueDocument: ReferenceValue = {

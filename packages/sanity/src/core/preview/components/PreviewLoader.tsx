@@ -1,3 +1,5 @@
+import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
+
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
 import {useTranslation} from '../../i18n'
@@ -6,7 +8,6 @@ import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
-import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.

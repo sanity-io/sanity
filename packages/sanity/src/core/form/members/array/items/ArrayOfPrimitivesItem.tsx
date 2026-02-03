@@ -1,3 +1,6 @@
+import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/types'
+import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
+
 import {type FIXME} from '../../../../FIXME'
 import {useCopyPaste} from '../../../../studio'
 import {useGetFormValue} from '../../../contexts/GetFormValue'
@@ -16,8 +19,6 @@ import {
 } from '../../../types'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
-import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/types'
-import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
 
 /**
  *

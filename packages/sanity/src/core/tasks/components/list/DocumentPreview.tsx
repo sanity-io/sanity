@@ -1,6 +1,3 @@
-import {useSchema} from '../../../hooks'
-import {usePerspective} from '../../../perspective/usePerspective'
-import {useDocumentPreviewValues} from '../../hooks'
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -8,6 +5,10 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {useSchema} from '../../../hooks'
+import {usePerspective} from '../../../perspective/usePerspective'
+import {useDocumentPreviewValues} from '../../hooks'
 
 const StyledIntentLink = styled(IntentLink)((props) => {
   const theme = getTheme_v2(props.theme)

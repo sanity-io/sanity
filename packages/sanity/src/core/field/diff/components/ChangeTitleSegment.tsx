@@ -1,9 +1,10 @@
+import {Box, rem, Text} from '@sanity/ui'
+import {styled} from 'styled-components'
+
 import {useTranslation} from '../../../i18n'
 import {type Annotation, type FieldChangeNode, type FromToIndex} from '../../types'
 import {getAnnotationAtPath} from '../annotations'
 import {DiffCard} from './DiffCard'
-import {Box, rem, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 const RoundedCard = styled.div`
   border-radius: ${({theme}) => rem(theme.sanity.radius[2])};

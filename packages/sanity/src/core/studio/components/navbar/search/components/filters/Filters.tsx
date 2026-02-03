@@ -1,3 +1,6 @@
+import {Flex} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
+
 import {Button} from '../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../i18n'
 import {DEBUG_MODE} from '../../constants'
@@ -8,8 +11,6 @@ import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
 import {DebugFilterQuery} from './debug/_DebugFilterQuery'
 import {DocumentTypesButton} from './documentTypes/DocumentTypesButton'
 import {FilterButton} from './filter/FilterButton'
-import {Flex} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
 
 /**
  * @internal

@@ -1,11 +1,3 @@
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useClient} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
-import {AssetMenu} from '../shared/AssetMenu'
-import {AssetUsageDialog} from '../shared/AssetUsageDialog'
-import {type AssetMenuAction} from '../types'
 import {type Asset} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
@@ -16,6 +8,15 @@ import {
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
+
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {useClient} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
+import {AssetMenu} from '../shared/AssetMenu'
+import {AssetUsageDialog} from '../shared/AssetUsageDialog'
+import {type AssetMenuAction} from '../types'
 
 interface AssetProps {
   asset: Asset

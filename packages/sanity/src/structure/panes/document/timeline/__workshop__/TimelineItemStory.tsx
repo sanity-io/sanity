@@ -1,4 +1,3 @@
-import {Timeline} from '../timeline'
 import {Box, Card, Container, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -8,6 +7,8 @@ import {
   useDateTimeFormat,
   useTranslation,
 } from 'sanity'
+
+import {Timeline} from '../timeline'
 
 const CHUNKS: Chunk[] = [
   {

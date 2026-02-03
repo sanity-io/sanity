@@ -1,7 +1,8 @@
+import {useMemo} from 'react'
+
 import {useTemplatePermissions} from '../../../../store'
 import {useSource} from '../../../source'
 import {type NewDocumentOption} from './types'
-import {useMemo} from 'react'
 
 interface NewDocumentOptionsValue {
   canCreateDocument: boolean

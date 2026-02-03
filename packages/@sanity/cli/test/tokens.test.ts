@@ -1,6 +1,7 @@
+import {describe, expect} from 'vitest'
+
 import {testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioNames} from './shared/environment'
-import {describe, expect} from 'vitest'
 
 describe.skip('CLI: `sanity tokens`', () => {
   describe.each(studioNames)('%s', (studioName) => {

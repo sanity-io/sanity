@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 const SEARCH_KEY = 'studio.search.recent'
 test('searching creates unique saved searches', async ({

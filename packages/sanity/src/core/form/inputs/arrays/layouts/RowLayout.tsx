@@ -1,9 +1,10 @@
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {DragHandle} from '../common/DragHandle'
-import {MOVING_ITEM_CLASS_NAME} from '../common/list'
 import {Box, Card, type CardTone, Flex, Stack} from '@sanity/ui'
 import {type ReactNode, useRef} from 'react'
 import {styled} from 'styled-components'
+
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {DragHandle} from '../common/DragHandle'
+import {MOVING_ITEM_CLASS_NAME} from '../common/list'
 
 interface RowLayoutProps {
   tone?: CardTone

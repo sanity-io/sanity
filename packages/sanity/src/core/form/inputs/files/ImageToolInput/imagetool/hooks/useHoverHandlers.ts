@@ -1,5 +1,6 @@
-import {type ToolHandleType, type ToolInteractionTarget} from '../types'
 import {useCallback, useState} from 'react'
+
+import {type ToolHandleType, type ToolInteractionTarget} from '../types'
 
 export function useHoverHandlers() {
   const [hoverTarget, setHoverTarget] = useState<ToolInteractionTarget | ToolHandleType | null>(

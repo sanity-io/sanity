@@ -1,7 +1,9 @@
+import {EventEmitter} from 'node:events'
+
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {SchemaExtractionError} from '../../../actions/schema/schemaExtractorApi'
 import {sanitySchemaExtractionPlugin} from '../plugin-schema-extraction'
-import {EventEmitter} from 'node:events'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../actions/schema/schemaExtractorApi', async (importOriginal) => ({
   ...(await importOriginal()),

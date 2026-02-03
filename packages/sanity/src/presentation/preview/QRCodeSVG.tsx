@@ -7,9 +7,10 @@
 
 /* eslint-disable @typescript-eslint/no-shadow,no-eq-null,prefer-arrow-callback */
 
-import {Ecc, QrCode, QrSegment} from './qrcodegen'
 import {motion} from 'motion/react'
 import {memo, useMemo} from 'react'
+
+import {Ecc, QrCode, QrSegment} from './qrcodegen'
 
 type Modules = Array<Array<boolean>>
 type Excavation = {x: number; y: number; w: number; h: number}

@@ -1,3 +1,9 @@
+import {ReadOnlyIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Text} from '@sanity/ui'
+import {useMemo, useState} from 'react'
+import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
+
 import {
   RequestPermissionDialog,
   useRoleRequestsStatus,
@@ -5,11 +11,6 @@ import {
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
-import {ReadOnlyIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
-import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 
 interface InsufficientPermissionBannerProps {
   requiredPermission: 'update' | 'create'

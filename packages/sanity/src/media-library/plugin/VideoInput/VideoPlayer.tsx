@@ -1,7 +1,9 @@
 // oxlint-disable-next-line no-unassigned-import -- style import is effectful
 import 'player.style/sutro'
-import {type VideoPlaybackTokens} from './types'
+
 import MuxPlayer from '@mux/mux-player-react'
+
+import {type VideoPlaybackTokens} from './types'
 
 type VideoPlayerProps = {
   customDomain: string

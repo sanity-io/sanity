@@ -1,7 +1,8 @@
-import {createUserStore} from '../userStore'
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createUserStore} from '../userStore'
 
 export class HttpError extends Error {
   constructor(message: string) {

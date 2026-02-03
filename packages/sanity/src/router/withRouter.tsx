@@ -1,6 +1,7 @@
+import {type ComponentType, type FunctionComponent} from 'react'
+
 import {type RouterContextValue} from './types'
 import {useRouter} from './useRouter'
-import {type ComponentType, type FunctionComponent} from 'react'
 
 /**
  * A higher-order component that injects the `router` object from the `useRouter` hook

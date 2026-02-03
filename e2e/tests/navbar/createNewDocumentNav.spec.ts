@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test('create new document from menu button', async ({page, baseURL}) => {
   await page.goto(baseURL ?? '/content')

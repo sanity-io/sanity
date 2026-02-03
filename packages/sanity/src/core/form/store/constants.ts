@@ -1,6 +1,7 @@
-import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {type FieldGroup} from '@sanity/types'
+
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 
 /**
  * Max supported field depth. Fields deeper than this will be considered hidden.

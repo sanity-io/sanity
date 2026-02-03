@@ -1,3 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {describe, expect, it, vi} from 'vitest'
+
 import {useDocumentPairPermissionsMockReturn} from '../../../../../../../test/mocks/useDocumentPairPermissions.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
@@ -6,10 +11,6 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {VersionContextMenu} from '../VersionContextMenu'
-import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {describe, expect, it, vi} from 'vitest'
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),

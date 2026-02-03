@@ -1,6 +1,7 @@
-import {createRenderingContextStore} from './createRenderingContextStore'
 import {firstValueFrom} from 'rxjs'
 import {describe, expect, it} from 'vitest'
+
+import {createRenderingContextStore} from './createRenderingContextStore'
 
 describe('renderingContext', () => {
   it('emits rendering context', async () => {

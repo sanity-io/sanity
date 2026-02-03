@@ -1,6 +1,7 @@
+import {type SingleActionResult} from '@sanity/client'
+
 import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
 import {type useReleasePermissionsValue} from './useReleasePermissions'
-import {type SingleActionResult} from '@sanity/client'
 
 type ReleasePermissionError = {details: {type: 'insufficientPermissionsError'}}
 

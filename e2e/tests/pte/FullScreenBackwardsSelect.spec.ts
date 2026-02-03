@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 // Skip: Mouse drag selection across paragraphs is inherently unreliable in E2E testing
 // due to timing variability, text block positioning, and selection event handling.
 // @TODO: figure out a way to make this test reliable somewhere / somehow

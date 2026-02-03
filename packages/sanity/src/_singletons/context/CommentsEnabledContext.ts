@@ -1,5 +1,6 @@
-import type {CommentsEnabledContextValue} from '../../core/comments/context/enabled/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {CommentsEnabledContextValue} from '../../core/comments/context/enabled/types'
 
 // NOTE: We initialize this context with a default value (`enabled: false`)
 // rather than `null` to handle cases where the comments feature's availability

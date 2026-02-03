@@ -1,10 +1,11 @@
+import {type Asset as AssetType} from '@sanity/types'
+import {useMemo} from 'react'
+
 import {Dialog} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useLegacyReferringDocuments} from '../../../../hooks/useReferringDocuments'
 import {useTranslation} from '../../../../i18n'
 import {AssetUsageList} from './AssetUsageList'
-import {type Asset as AssetType} from '@sanity/types'
-import {useMemo} from 'react'
 
 export interface UsageDialogProps {
   assetType: 'file' | 'image'

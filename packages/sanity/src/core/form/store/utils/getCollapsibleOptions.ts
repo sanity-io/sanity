@@ -1,5 +1,6 @@
-import {AUTO_COLLAPSE_DEPTH} from '../constants'
 import {type ObjectSchemaTypeWithOptions} from '@sanity/types'
+
+import {AUTO_COLLAPSE_DEPTH} from '../constants'
 
 interface CollapsibleOptions {
   collapsible: boolean | undefined

@@ -1,7 +1,8 @@
-import {type ReleaseId} from './types'
-import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
+
+import {type ReleaseId} from './types'
+import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 
 /**
  * @internal

@@ -1,5 +1,6 @@
-import type {CommentsIntentContextValue} from '../../core/comments/context/intent/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {CommentsIntentContextValue} from '../../core/comments/context/intent/types'
 
 /**
  * @internal

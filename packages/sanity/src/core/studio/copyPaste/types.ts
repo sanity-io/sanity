@@ -1,7 +1,8 @@
-import {type PatchEvent} from '../../form/patch/PatchEvent'
-import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import {type ObjectSchemaType, type Path} from '@sanity/types'
+
+import {type PatchEvent} from '../../form/patch/PatchEvent'
+import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 
 /**
  * @beta

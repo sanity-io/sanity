@@ -1,3 +1,6 @@
+import {find} from 'lodash-es'
+import semver from 'semver'
+
 import {
   type CliCommandDefinition,
   type CliCommandGroupDefinition,
@@ -6,8 +9,6 @@ import {
 } from '../types'
 import {dynamicRequire} from './dynamicRequire'
 import {isCommandGroup} from './isCommandGroup'
-import {find} from 'lodash-es'
-import semver from 'semver'
 
 export interface MergeOptions {
   cwd: string

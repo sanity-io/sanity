@@ -1,7 +1,8 @@
-import {type InputProps} from '../../../form/types/inputProps'
-import {ScheduleBanner} from './ScheduleBanner'
 import {type ValidationMarker} from '@sanity/types'
 import {type PropsWithChildren, useMemo} from 'react'
+
+import {type InputProps} from '../../../form/types/inputProps'
+import {ScheduleBanner} from './ScheduleBanner'
 
 export function ScheduledDocumentInput(props: PropsWithChildren<InputProps>) {
   const {value, validation, children} = props

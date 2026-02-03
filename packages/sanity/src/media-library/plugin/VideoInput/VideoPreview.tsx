@@ -1,3 +1,8 @@
+import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
+import {type AssetSource} from '@sanity/types'
+import {get, startCase} from 'lodash-es'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
+
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
 import {FileInputMenuItem} from '../../../core/form/inputs/files/common/FileInputMenuItem/FileInputMenuItem'
 import {UploadDropDownMenu} from '../../../core/form/inputs/files/common/UploadDropDownMenu'
@@ -10,10 +15,6 @@ import {getPlaybackTokens, type VideoAssetProps} from './types'
 import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
 import {VideoSkeleton} from './VideoSkeleton'
-import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
-import {type AssetSource} from '@sanity/types'
-import {get, startCase} from 'lodash-es'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 function getMediaLibraryId(assetRef: string) {
   const id = assetRef.split(':')?.[1]

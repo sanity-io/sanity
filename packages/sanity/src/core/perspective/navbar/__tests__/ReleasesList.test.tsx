@@ -1,3 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {Menu} from '@sanity/ui'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -16,11 +22,6 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesList} from '../ReleasesList'
-import {type ReleaseDocument} from '@sanity/client'
-import {Menu} from '@sanity/ui'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
   useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),

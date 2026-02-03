@@ -1,9 +1,3 @@
-import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
-import {type LoaderConnection, type PresentationPerspective} from '../types'
-import {type DocumentOnPage} from '../useDocumentsOnPage'
-import {useLiveEvents} from './useLiveEvents'
-import {useLiveQueries} from './useLiveQueries'
-import {mapChangedValue} from './utils'
 import {
   type ClientPerspective,
   type ContentSourceMap,
@@ -42,6 +36,13 @@ import {
   useDataset,
   useProjectId,
 } from 'sanity'
+
+import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
+import {type LoaderConnection, type PresentationPerspective} from '../types'
+import {type DocumentOnPage} from '../useDocumentsOnPage'
+import {useLiveEvents} from './useLiveEvents'
+import {useLiveQueries} from './useLiveQueries'
+import {mapChangedValue} from './utils'
 
 export interface LiveQueriesProps {
   liveDocument: Partial<SanityDocument> | null | undefined

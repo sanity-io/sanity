@@ -1,3 +1,6 @@
+import {useMemo} from 'react'
+import {PerspectiveContext} from 'sanity/_singletons'
+
 import {getReleaseIdFromReleaseDocumentId} from '../releases'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
@@ -6,8 +9,6 @@ import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {type PerspectiveContextValue, type ReleaseId} from './types'
-import {useMemo} from 'react'
-import {PerspectiveContext} from 'sanity/_singletons'
 
 /**
  * @internal

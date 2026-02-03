@@ -1,3 +1,7 @@
+import {type SanityDocument} from '@sanity/types'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+
 import {getIdPair, isRecord} from '../util'
 import {
   type DraftsModelDocument,
@@ -5,9 +9,6 @@ import {
   type ObservePathsFn,
   type PreviewPath,
 } from './types'
-import {type SanityDocument} from '@sanity/types'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
 
 export function createObservePathsDocumentPair(options: {
   observeDocumentPairAvailability: ObserveDocumentAvailabilityFn

@@ -1,6 +1,7 @@
-import globby from 'globby'
 import fs from 'node:fs'
 import path from 'node:path'
+
+import globby from 'globby'
 import {type CDPSession} from 'playwright'
 import SourceMap from 'source-map'
 

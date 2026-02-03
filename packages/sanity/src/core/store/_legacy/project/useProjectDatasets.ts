@@ -1,6 +1,7 @@
+import {useEffect, useState} from 'react'
+
 import {useProjectStore} from '../datastores'
 import {type ProjectDatasetData} from './types'
-import {useEffect, useState} from 'react'
 
 /** @internal */
 export function useProjectDatasets(): {value: ProjectDatasetData[] | null} {

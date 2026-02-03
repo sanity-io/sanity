@@ -1,5 +1,6 @@
-import type {CommentsSelectedPathContextValue} from '../../core/comments/context/selected-path/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {CommentsSelectedPathContextValue} from '../../core/comments/context/selected-path/types'
 
 /**
  * @internal

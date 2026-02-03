@@ -1,5 +1,3 @@
-import {useCurrentLocale, useTranslation} from '../i18n'
-import {intlCache} from '../i18n/intlCache'
 import {
   differenceInDays,
   differenceInHours,
@@ -10,6 +8,9 @@ import {
   differenceInYears,
 } from 'date-fns'
 import {useEffect, useReducer} from 'react'
+
+import {useCurrentLocale, useTranslation} from '../i18n'
+import {intlCache} from '../i18n/intlCache'
 
 interface TimeSpec {
   timestamp: string

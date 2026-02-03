@@ -1,10 +1,11 @@
+import {partition} from 'lodash-es'
+import {concat, type Observable, of, switchMap, throwError, timer} from 'rxjs'
+import {mergeMap, scan} from 'rxjs/operators'
+
 import {debug} from '../debug'
 import {type ListenerEvent} from '../getPairListener'
 import {type MutationEvent} from '../types'
 import {discardChainTo, toOrderedChains} from './eventChainUtils'
-import {partition} from 'lodash-es'
-import {concat, type Observable, of, switchMap, throwError, timer} from 'rxjs'
-import {mergeMap, scan} from 'rxjs/operators'
 
 interface ListenerSequenceState {
   /**

@@ -1,7 +1,8 @@
-import {type BlockStyleProps} from '../../../types'
-import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 import {type BlockStyleRenderProps} from '@portabletext/editor'
 import {useCallback, useMemo} from 'react'
+
+import {type BlockStyleProps} from '../../../types'
+import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'
 
 export const Style = (props: BlockStyleRenderProps) => {
   const {block, focused, children, selected, schemaType} = props

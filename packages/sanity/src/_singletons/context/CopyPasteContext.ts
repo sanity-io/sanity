@@ -1,5 +1,6 @@
-import type {CopyPasteContextType} from '../../core/studio/copyPaste'
 import {createContext} from 'sanity/_createContext'
+
+import type {CopyPasteContextType} from '../../core/studio/copyPaste'
 
 /**
  * @beta

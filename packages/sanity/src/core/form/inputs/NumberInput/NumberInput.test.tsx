@@ -1,6 +1,7 @@
+import {describe, expect, it} from 'vitest'
+
 import {renderNumberInput} from '../../../../../test/form'
 import {NumberInput} from './NumberInput'
-import {describe, expect, it} from 'vitest'
 
 describe('number-input', () => {
   it('renders the number input field', async () => {

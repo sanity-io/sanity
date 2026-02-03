@@ -1,7 +1,8 @@
+import {type ObjectSchemaType} from '@sanity/types'
+
 import {isReleaseDocument} from '../releases/store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../releases/util/util'
 import {type TargetPerspective} from './types'
-import {type ObjectSchemaType} from '@sanity/types'
 
 /**
  * @internal

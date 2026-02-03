@@ -1,3 +1,8 @@
+import {AddDocumentIcon, CopyIcon, InsertAboveIcon, InsertBelowIcon, TrashIcon} from '@sanity/icons'
+import {type SchemaType} from '@sanity/types'
+import {Box, Flex, Menu} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
@@ -7,10 +12,6 @@ import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {InsertMenuGroup} from '../ArrayOfObjectsInput/InsertMenuGroups'
 import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
-import {AddDocumentIcon, CopyIcon, InsertAboveIcon, InsertBelowIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
-import {Box, Flex, Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
   insertableTypes: SchemaType[]

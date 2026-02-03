@@ -1,5 +1,6 @@
-import debug from './debug'
 import {rimraf} from 'rimraf'
+
+import debug from './debug'
 
 async function cleanupTmpDir(tmpDir: string): Promise<void> {
   try {

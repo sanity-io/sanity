@@ -1,9 +1,3 @@
-import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {getFallbackLocaleSource} from '../../../../i18n/fallback'
-import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../../preview'
-import {createSchema} from '../../../../schema'
-import {editState, type EditStateFor} from './editState'
-import {validation} from './validation'
 import {type SanityClient} from '@sanity/client'
 import {
   concat,
@@ -18,6 +12,13 @@ import {
 } from 'rxjs'
 import {buffer, publish, takeWhile} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+
+import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {getFallbackLocaleSource} from '../../../../i18n/fallback'
+import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../../preview'
+import {createSchema} from '../../../../schema'
+import {editState, type EditStateFor} from './editState'
+import {validation} from './validation'
 
 // Mock `./editState`
 const mockEditState = editState as Mock<typeof editState>

@@ -1,6 +1,7 @@
-import {type ConnectorContextValue} from '../changeIndicators/ConnectorContext'
 import {useContext, useMemo} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
+
+import {type ConnectorContextValue} from '../changeIndicators/ConnectorContext'
 
 interface ReviewChangesContextValue extends ConnectorContextValue {
   /**

@@ -1,10 +1,3 @@
-import {Button} from '../../../../../ui-components/button/Button'
-import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
-import {type CalendarDayProps} from './CalendarDay'
-import {CalendarMonth} from './CalendarMonth'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {addDays, addMonths, setHours, setMinutes} from 'date-fns'
@@ -19,6 +12,14 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {Button} from '../../../../../ui-components/button/Button'
+import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {ARROW_KEYS, DEFAULT_MONTH_NAMES} from '../../DateInputs/calendar/constants'
+import {type CalendarDayProps} from './CalendarDay'
+import {CalendarMonth} from './CalendarMonth'
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   focusedDate?: Date

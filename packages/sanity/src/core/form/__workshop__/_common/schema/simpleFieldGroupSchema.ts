@@ -1,5 +1,6 @@
-import {type WorkshopSchemaProps, wrapSchema} from '../data'
 import {CogIcon} from '@sanity/icons'
+
+import {type WorkshopSchemaProps, wrapSchema} from '../data'
 
 export default function getSchema(props: WorkshopSchemaProps) {
   const {hiddenGroup = false} = props

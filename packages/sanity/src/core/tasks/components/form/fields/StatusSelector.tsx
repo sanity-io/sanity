@@ -1,14 +1,15 @@
+import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {type Path, type TitledListValue} from '@sanity/types'
+import {Menu} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, useCallback} from 'react'
+
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {type FormPatch, type PatchEvent, set} from '../../../../form'
 import {useTranslation} from '../../../../i18n'
 import {TaskStatusChanged} from '../../../__telemetry__/tasks.telemetry'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {tasksLocaleNamespace} from '../../../i18n'
-import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type Path, type TitledListValue} from '@sanity/types'
-import {Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback} from 'react'
 
 export const StatusMenuButton = forwardRef(function StatusMenuButton(
   props: {value: string | undefined; options: TitledListValue<string>[]},

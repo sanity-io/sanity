@@ -1,6 +1,7 @@
-import {turboChargeResultIfSourceMap} from '../LiveQueries'
 import {type ContentSourceMap} from '@sanity/client'
 import {expect, test} from 'vitest'
+
+import {turboChargeResultIfSourceMap} from '../LiveQueries'
 
 const perspective = 'drafts'
 

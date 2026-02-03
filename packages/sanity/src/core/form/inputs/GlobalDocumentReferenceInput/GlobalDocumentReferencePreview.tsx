@@ -1,3 +1,10 @@
+import {isImageSource} from '@sanity/asset-utils'
+import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
+import {createImageUrlBuilder} from '@sanity/image-url'
+import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
+import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
+import {isValidElement as reactIsValidElement, useMemo} from 'react'
+
 import {Tooltip} from '../../../../ui-components'
 import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'
 import {type FIXME} from '../../../FIXME'
@@ -5,12 +12,6 @@ import {useTranslation} from '../../../i18n'
 import {type DocumentAvailability} from '../../../preview'
 import {StyledPreviewFlex} from './GlobalDocumentReferencePreview.styled'
 import {resolveProjectDataset} from './utils/resolveProjectDataset'
-import {isImageSource} from '@sanity/asset-utils'
-import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
-import {createImageUrlBuilder} from '@sanity/image-url'
-import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
-import {isValidElement as reactIsValidElement, useMemo} from 'react'
 
 /**
  * Used to preview a referenced type

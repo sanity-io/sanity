@@ -1,7 +1,8 @@
-import debug from './debug'
-import withRetry from './withRetry'
 import {getIt, type MiddlewareResponse} from 'get-it'
 import {keepAlive, promise} from 'get-it/middleware'
+
+import debug from './debug'
+import withRetry from './withRetry'
 
 const CONNECTION_TIMEOUT = 15 * 1000 // 15 seconds
 const READ_TIMEOUT = 3 * 60 * 1000 // 3 minutes

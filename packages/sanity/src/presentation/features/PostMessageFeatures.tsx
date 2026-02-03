@@ -1,5 +1,6 @@
-import {type VisualEditingConnection} from '../types'
 import {type FC, memo, useEffect} from 'react'
+
+import {type VisualEditingConnection} from '../types'
 
 export interface PostMessagePreviewsProps {
   comlink: VisualEditingConnection

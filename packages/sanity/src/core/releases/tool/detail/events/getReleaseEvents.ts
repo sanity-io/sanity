@@ -1,10 +1,3 @@
-import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
-import {type ReleasesReducerState} from '../../../store/reducer'
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
-import {getReleaseActivityEvents} from './getReleaseActivityEvents'
-import {getReleaseEditEvents} from './getReleaseEditEvents'
-import {isCreateReleaseEvent, isEventsAPIEvent, isTranslogEvent, type ReleaseEvent} from './types'
 import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {
   combineLatest,
@@ -18,6 +11,14 @@ import {
   startWith,
   tap,
 } from 'rxjs'
+
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {type ReleasesReducerState} from '../../../store/reducer'
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
+import {getReleaseActivityEvents} from './getReleaseActivityEvents'
+import {getReleaseEditEvents} from './getReleaseEditEvents'
+import {isCreateReleaseEvent, isEventsAPIEvent, isTranslogEvent, type ReleaseEvent} from './types'
 
 interface getReleaseEventsOpts {
   client: SanityClient

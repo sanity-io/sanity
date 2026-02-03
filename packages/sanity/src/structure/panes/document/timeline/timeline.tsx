@@ -1,12 +1,3 @@
-import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
-import {ListWrapper, Root, StackWrapper} from './timeline.styled'
-import {TimelineItem} from './timelineItem'
-import {
-  addChunksMetadata,
-  type ChunksWithCollapsedDrafts,
-  isNonPublishChunk,
-  isPublishChunk,
-} from './utils'
 import {Box, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -16,6 +7,16 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
+
+import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
+import {ListWrapper, Root, StackWrapper} from './timeline.styled'
+import {TimelineItem} from './timelineItem'
+import {
+  addChunksMetadata,
+  type ChunksWithCollapsedDrafts,
+  isNonPublishChunk,
+  isPublishChunk,
+} from './utils'
 
 interface TimelineProps {
   chunks: Chunk[]

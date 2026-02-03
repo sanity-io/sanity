@@ -1,11 +1,12 @@
-import {Button} from '../../../../ui-components'
-import {type RovingFocusProps} from '../types'
-import {useRovingFocus} from '../useRovingFocus'
 import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
 import {fireEvent, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
+
+import {Button} from '../../../../ui-components'
+import {type RovingFocusProps} from '../types'
+import {useRovingFocus} from '../useRovingFocus'
 
 interface TestProps extends Pick<RovingFocusProps, 'direction' | 'initialFocus' | 'loop'> {
   withDisabledButtons?: boolean

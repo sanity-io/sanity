@@ -1,13 +1,14 @@
-import {LoadingBlock} from '../../components/loadingBlock'
-import {useSource} from '../../studio'
-import {defaultLocale} from '../locales'
-import {storePreferredLocale} from '../localeStore'
-import {type Locale} from '../types'
 /* eslint-disable @sanity/i18n/no-i18next-import */
 import {type i18n} from 'i18next'
 import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {I18nextProvider} from 'react-i18next'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
+
+import {LoadingBlock} from '../../components/loadingBlock'
+import {useSource} from '../../studio'
+import {defaultLocale} from '../locales'
+import {storePreferredLocale} from '../localeStore'
+import {type Locale} from '../types'
 
 /**
  * @internal

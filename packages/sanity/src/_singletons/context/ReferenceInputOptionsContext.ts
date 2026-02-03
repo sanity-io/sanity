@@ -1,5 +1,6 @@
-import type {ReferenceInputOptions} from '../../core/form/studio/contexts/ReferenceInputOptions'
 import {createContext} from 'sanity/_createContext'
+
+import type {ReferenceInputOptions} from '../../core/form/studio/contexts/ReferenceInputOptions'
 
 /**
  * @internal

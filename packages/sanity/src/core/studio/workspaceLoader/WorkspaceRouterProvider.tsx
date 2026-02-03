@@ -1,8 +1,3 @@
-import {ErrorBoundary} from '../../../ui-components'
-import {type Tool, type Workspace} from '../../config'
-import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
-import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
-import {useRouterHistory} from '../router/RouterHistoryContext'
 import {escapeRegExp, isEqual} from 'lodash-es'
 import {
   type ComponentType,
@@ -15,6 +10,12 @@ import {
 } from 'react'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
+
+import {ErrorBoundary} from '../../../ui-components'
+import {type Tool, type Workspace} from '../../config'
+import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
+import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
+import {useRouterHistory} from '../router/RouterHistoryContext'
 
 interface WorkspaceRouterProviderProps {
   children: ReactNode

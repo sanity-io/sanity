@@ -1,3 +1,7 @@
+import {type ErrorBoundaryProps} from '@sanity/ui'
+import {lazy, type ReactNode, useCallback, useState} from 'react'
+import {useHotModuleReload} from 'use-hot-module-reload'
+
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {SchemaError} from '../config'
 import {errorReporter} from '../error/errorReporter'
@@ -6,9 +10,6 @@ import {CorsOriginError} from '../store'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
-import {type ErrorBoundaryProps} from '@sanity/ui'
-import {lazy, type ReactNode, useCallback, useState} from 'react'
-import {useHotModuleReload} from 'use-hot-module-reload'
 
 /**
  * The DevServerStoppedErrorScreen will always have been lazy loaded to client

@@ -1,5 +1,6 @@
-import {structureLocaleNamespace} from '../i18n'
 import {type SortOrdering} from '@sanity/types'
+
+import {structureLocaleNamespace} from '../i18n'
 
 export const ORDER_BY_UPDATED_AT: SortOrdering = {
   title: 'Last edited',

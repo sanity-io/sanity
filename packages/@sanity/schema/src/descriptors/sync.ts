@@ -1,10 +1,11 @@
-import {type RegistryType} from './types'
 import {
   processSetSynchronization,
   type SetSynchronization,
   type SynchronizationRequest,
   type SynchronizationResult,
 } from '@sanity/descriptors'
+
+import {type RegistryType} from './types'
 
 // This file provides wrapper types/functions for synchronizing a schema.
 // This avoids users of `@sanity/schema` to have to depend on `@sanity/descriptors`.

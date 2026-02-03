@@ -1,5 +1,6 @@
-import {type HookCollectionActionHook} from './types'
 import {useEffect} from 'react'
+
+import {type HookCollectionActionHook} from './types'
 
 export function defineHookStateComponent<Args, State>({
   hook: useHook,

@@ -1,3 +1,10 @@
+/* eslint-disable max-nested-callbacks */
+import {type SanityDocument} from '@sanity/client'
+import {type User} from '@sanity/types'
+import {sortBy} from 'lodash-es'
+import {useEffect, useMemo, useState} from 'react'
+import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
+
 import {
   type DocumentValuePermission,
   grantsPermissionOn,
@@ -7,12 +14,6 @@ import {
 } from '../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
-/* eslint-disable max-nested-callbacks */
-import {type SanityDocument} from '@sanity/client'
-import {type User} from '@sanity/types'
-import {sortBy} from 'lodash-es'
-import {useEffect, useMemo, useState} from 'react'
-import {concat, forkJoin, map, mergeMap, type Observable, of, shareReplay, switchMap} from 'rxjs'
 
 type Loadable<T> = {
   data: T | null

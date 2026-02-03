@@ -1,9 +1,5 @@
-import {debug} from '../../debug'
-import {DEFAULT_API_VERSION, MIGRATIONS_DIRECTORY} from './constants'
-import {resolveMigrations} from './listMigrationsCommand'
-import {prettyFormat} from './prettyMutationFormatter'
-import {ensureApiVersionFormat} from './utils/ensureApiVersionFormat'
-import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
+import path from 'node:path'
+
 import {type CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -15,9 +11,15 @@ import {
 } from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
-import path from 'node:path'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
+
+import {debug} from '../../debug'
+import {DEFAULT_API_VERSION, MIGRATIONS_DIRECTORY} from './constants'
+import {resolveMigrations} from './listMigrationsCommand'
+import {prettyFormat} from './prettyMutationFormatter'
+import {ensureApiVersionFormat} from './utils/ensureApiVersionFormat'
+import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = `
 Options

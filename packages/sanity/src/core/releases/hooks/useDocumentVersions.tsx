@@ -1,3 +1,7 @@
+import {type QueryParams} from '@sanity/client'
+import {useEffect, useMemo, useState} from 'react'
+import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
+
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
@@ -5,9 +9,6 @@ import {useDocumentPreviewStore} from '../../store'
 import {getPublishedId} from '../../util/draftUtils'
 import {createSWR} from '../../util/rxSwr'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
-import {type QueryParams} from '@sanity/client'
-import {useEffect, useMemo, useState} from 'react'
-import {catchError, finalize, map, type Observable, of, shareReplay} from 'rxjs'
 
 export interface DocumentPerspectiveProps {
   documentId: string

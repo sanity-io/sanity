@@ -1,3 +1,11 @@
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {parseArgs} from 'node:util'
+
+import {createClient} from '@sanity/client'
+import {config} from 'dotenv'
+import globby from 'globby'
+
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {findEnv, readEnv} from './config/envVars'
 import * as queries from './queries'
@@ -6,12 +14,6 @@ import {type Deployment} from './runner/types'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
 import {KNOWN_TEST_IDS} from './runner/utils/testIds'
-import {createClient} from '@sanity/client'
-import {config} from 'dotenv'
-import globby from 'globby'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {parseArgs} from 'node:util'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

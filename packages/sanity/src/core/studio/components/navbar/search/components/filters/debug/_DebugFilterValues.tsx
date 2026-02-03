@@ -1,7 +1,8 @@
+import {Card, Code, Stack} from '@sanity/ui'
+
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
-import {Card, Code, Stack} from '@sanity/ui'
 
 interface DebugFilterValuesProps {
   filter: SearchFilter

@@ -1,5 +1,6 @@
-import {genericValidators} from './genericValidator'
 import {type Validators} from '@sanity/types'
+
+import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'
 const isRelativeUrl = (url: string) => /^\.*\//.test(url)

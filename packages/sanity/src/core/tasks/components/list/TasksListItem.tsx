@@ -1,9 +1,3 @@
-import {Tooltip} from '../../../../ui-components'
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks'
-import {type TaskDocument} from '../../types'
-import {TasksUserAvatar} from '../TasksUserAvatar'
-import {DocumentPreview} from './DocumentPreview'
-import {TasksStatus} from './TasksStatus'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -16,6 +10,13 @@ import {
 import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+
+import {Tooltip} from '../../../../ui-components'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks'
+import {type TaskDocument} from '../../types'
+import {TasksUserAvatar} from '../TasksUserAvatar'
+import {DocumentPreview} from './DocumentPreview'
+import {TasksStatus} from './TasksStatus'
 
 interface TasksListItemProps extends Pick<
   TaskDocument,

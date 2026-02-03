@@ -1,8 +1,3 @@
-import {Tooltip} from '../../../../ui-components'
-import {getTimelineEventIconComponent} from './helpers'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
-import {UserAvatarStack} from './userAvatarStack'
-import {type ChunksWithCollapsedDrafts} from './utils'
 import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
@@ -18,6 +13,12 @@ import {
   useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+
+import {Tooltip} from '../../../../ui-components'
+import {getTimelineEventIconComponent} from './helpers'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
+import {UserAvatarStack} from './userAvatarStack'
+import {type ChunksWithCollapsedDrafts} from './utils'
 
 export const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const theme = getTheme_v2(props.theme)

@@ -1,3 +1,9 @@
+import http, {type Server} from 'node:http'
+import os from 'node:os'
+
+import {type SanityClient} from '@sanity/client'
+import open from 'open'
+
 import {debug as debugIt} from '../../debug'
 import {
   type CliApiClient,
@@ -11,10 +17,6 @@ import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
 import {getUserConfig} from '../../util/getUserConfig'
 import {LoginTrace} from './login.telemetry'
 import {type LoginProvider, type ProvidersResponse, type SamlLoginProvider} from './types'
-import {type SanityClient} from '@sanity/client'
-import http, {type Server} from 'node:http'
-import os from 'node:os'
-import open from 'open'
 
 const callbackEndpoint = '/callback'
 

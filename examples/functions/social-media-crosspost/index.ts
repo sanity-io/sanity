@@ -1,3 +1,5 @@
+import {env} from 'node:process'
+
 import {
   BlueskyStrategy,
   Client,
@@ -13,7 +15,6 @@ import {
 import {createClient} from '@sanity/client'
 import {documentEventHandler} from '@sanity/functions'
 import imageUrlBuilder from '@sanity/image-url'
-import {env} from 'node:process'
 
 // Crosspost response types (not exported by the library)
 type CrosspostSuccessResponse = {ok: true; url: string}

@@ -1,5 +1,6 @@
-import {assignId} from '../assignId'
 import {describe, expect, it} from 'vitest'
+
+import {assignId} from '../assignId'
 
 describe('assignId', () => {
   it('takes in an object and assigns it an ID, on subsequent requests, the same ID will be returned', () => {

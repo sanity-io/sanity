@@ -1,5 +1,3 @@
-import {API_VERSION} from '../constants'
-import {type VisualEditingConnection} from '../types'
 import {
   type ClientPerspective,
   type MutationEvent,
@@ -9,6 +7,9 @@ import {
 import {type FunctionComponent, memo, useEffect} from 'react'
 import {filter, first, merge, shareReplay} from 'rxjs'
 import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS, useClient} from 'sanity'
+
+import {API_VERSION} from '../constants'
+import {type VisualEditingConnection} from '../types'
 
 interface PostMessageDocumentsProps {
   comlink: VisualEditingConnection

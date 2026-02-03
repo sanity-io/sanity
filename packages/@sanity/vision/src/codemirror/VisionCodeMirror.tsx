@@ -1,6 +1,3 @@
-import {codemirrorExtensions} from './extensions'
-import {useCodemirrorTheme} from './useCodemirrorTheme'
-import {EditorRoot} from './VisionCodeMirror.styled'
 import {useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
@@ -8,6 +5,10 @@ import CodeMirror, {
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
 import {forwardRef, useCallback, useImperativeHandle, useRef, useState} from 'react'
+
+import {codemirrorExtensions} from './extensions'
+import {useCodemirrorTheme} from './useCodemirrorTheme'
+import {EditorRoot} from './VisionCodeMirror.styled'
 
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void

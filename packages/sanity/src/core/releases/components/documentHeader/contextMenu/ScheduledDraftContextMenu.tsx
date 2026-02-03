@@ -1,3 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {CalendarIcon} from '@sanity/icons'
+import {Menu, MenuDivider} from '@sanity/ui'
+import {memo} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
@@ -7,11 +13,6 @@ import {isPausedCardinalityOneRelease} from '../../../../util/releaseUtils'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
-import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon} from '@sanity/icons'
-import {Menu, MenuDivider} from '@sanity/ui'
-import {memo} from 'react'
-import {IntentLink} from 'sanity/router'
 
 interface ScheduledDraftContextMenuProps {
   releases: ReleaseDocument[]

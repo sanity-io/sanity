@@ -1,6 +1,7 @@
+import {type MendozaEffectPair, type MendozaPatch} from '@sanity/types'
+
 import {type Chunk, type ChunkType} from '../../../../field'
 import {type Transaction} from './types'
-import {type MendozaEffectPair, type MendozaPatch} from '@sanity/types'
 
 function canMergeEdit(type: ChunkType) {
   return type === 'create' || type === 'editDraft'

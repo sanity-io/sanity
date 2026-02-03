@@ -1,7 +1,8 @@
+import {defineField, defineType} from 'sanity'
+
 import {LazyFieldA} from './components/lazy/LazyFieldA'
 import {LazyInputA} from './components/lazy/LazyInputA'
 import {LazyInputB} from './components/lazy/LazyInputB'
-import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'lazyComponents',

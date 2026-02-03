@@ -1,13 +1,14 @@
+import {type CurrentUser} from '@sanity/types'
+import {Flex, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {styled} from 'styled-components'
+
 import {CommandList} from '../../../../components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {Translate, useTranslation} from '../../../../i18n'
 import {supportsTouch} from '../../../../util'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 import {type NewDocumentOption, type PreviewLayout} from './types'
-import {type CurrentUser} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 const ContentFlex = styled(Flex)`
   min-height: 100px;

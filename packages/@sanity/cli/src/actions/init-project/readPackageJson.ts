@@ -1,5 +1,6 @@
-import {type PackageJson} from '../../types'
 import fs from 'node:fs'
+
+import {type PackageJson} from '../../types'
 
 /**
  * Read the `package.json` file at the given path

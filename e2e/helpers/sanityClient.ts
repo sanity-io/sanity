@@ -1,6 +1,7 @@
-import {readEnv} from './envVars'
 import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
+
+import {readEnv} from './envVars'
 
 export class TestContext {
   client: SanityClient

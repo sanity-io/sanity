@@ -1,5 +1,6 @@
-import type {PresentationDisplayedDocumentContextValue} from '../../presentation/loader/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {PresentationDisplayedDocumentContextValue} from '../../presentation/loader/types'
 
 /**
  * @internal

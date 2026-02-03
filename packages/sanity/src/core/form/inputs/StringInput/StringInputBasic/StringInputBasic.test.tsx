@@ -1,7 +1,8 @@
-import {renderStringInput} from '../../../../../../test/form/renderStringInput'
-import {StringInputBasic} from './StringInputBasic'
 import userEvent from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
+
+import {renderStringInput} from '../../../../../../test/form/renderStringInput'
+import {StringInputBasic} from './StringInputBasic'
 
 describe('StringInputBasic', () => {
   it('renders input value', async () => {

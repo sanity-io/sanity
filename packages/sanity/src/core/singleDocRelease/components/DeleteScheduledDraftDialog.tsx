@@ -1,3 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {type PreviewValue} from '@sanity/types'
+import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
+
 import {Dialog} from '../../../ui-components'
 import {LoadingBlock} from '../../components'
 import {useSchema} from '../../hooks'
@@ -8,10 +13,6 @@ import {useDocumentVersionInfo} from '../../releases/store/useDocumentVersionInf
 import {getErrorMessage, getPublishedId} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
-import {type ReleaseDocument} from '@sanity/client'
-import {type PreviewValue} from '@sanity/types'
-import {Box, Checkbox, Flex, Stack, Text, useToast} from '@sanity/ui'
-import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 interface DeleteScheduledDraftDialogBaseProps {
   onClose: () => void

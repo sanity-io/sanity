@@ -1,6 +1,7 @@
-import {userHasRole} from './userHasRole'
 import {type ConditionalPropertyCallbackContext, type CurrentUser} from '@sanity/types'
 import {expect, test} from 'vitest'
+
+import {userHasRole} from './userHasRole'
 
 const roleLessUser: CurrentUser = {
   id: 'pabc123',

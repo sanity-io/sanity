@@ -1,6 +1,7 @@
-import {definePlugin, type LayoutProps} from '../config'
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
+
+import {definePlugin, type LayoutProps} from '../config'
 
 function SchedulePublishingStudioLayout(props: LayoutProps) {
   const toast = useToast()

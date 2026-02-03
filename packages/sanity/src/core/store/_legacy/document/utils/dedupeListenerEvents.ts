@@ -1,8 +1,9 @@
-import {debug} from '../debug'
-import {type ListenerEvent} from '../getPairListener'
 import TTLCache from '@isaacs/ttlcache'
 import {type MonoTypeOperatorFunction, type Observable} from 'rxjs'
 import {mergeMap, scan} from 'rxjs/operators'
+
+import {debug} from '../debug'
+import {type ListenerEvent} from '../getPairListener'
 
 const DEFAULT_TTL = 120_000
 const DEFAULT_MAX_ENTRIES = 1000

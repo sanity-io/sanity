@@ -1,3 +1,6 @@
+import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
+import {vi} from 'vitest'
+
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfObjectsInputProps,
@@ -13,8 +16,6 @@ import {
 } from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
-import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
-import {vi} from 'vitest'
 
 const noopRenderDefault = () => <></>
 

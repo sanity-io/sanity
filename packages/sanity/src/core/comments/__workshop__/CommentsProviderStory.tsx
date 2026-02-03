@@ -1,11 +1,12 @@
+import {useSelect, useString} from '@sanity/ui-workshop'
+import {useMemo} from 'react'
+
 import {useCurrentUser} from '../../store'
 import {AddonDatasetProvider} from '../../studio'
 import {CommentsList, CommentsUpsellPanel} from '../components'
 import {CommentsEnabledProvider, CommentsProvider, CommentsUpsellProvider} from '../context'
 import {useComments, useCommentsUpsell} from '../hooks'
 import {type CommentsUIMode} from '../types'
-import {useSelect, useString} from '@sanity/ui-workshop'
-import {useMemo} from 'react'
 
 const noop = () => {
   // ...

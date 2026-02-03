@@ -1,3 +1,6 @@
+import {render, screen} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {GetHookCollectionState} from '../../../components/hookCollection'
 import {
   type ReleaseActionComponent,
@@ -6,8 +9,6 @@ import {
 import {activeASAPRelease} from '../../__fixtures__/release.fixture'
 import {documentsInRelease} from '../../tool/detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseActionsResolver} from '../ReleaseActionsResolver'
-import {render, screen} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../components/hookCollection', () => ({
   GetHookCollectionState: vi.fn(({children, hooks, args}) => {

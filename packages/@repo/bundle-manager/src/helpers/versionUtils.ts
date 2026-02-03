@@ -1,8 +1,9 @@
+import {groupBy, partition, uniqBy} from 'lodash-es'
+import semver from 'semver'
+
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'
 import {type VersionEntry} from '../types'
 import {currentUnixTime} from '../utils'
-import {groupBy, partition, uniqBy} from 'lodash-es'
-import semver from 'semver'
 
 /**
  * Cleans up version entries using TTL strategy:

@@ -1,9 +1,3 @@
-import {renderStringInput} from '../../../../../../test/form'
-import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
-import {type TimeZoneScopeType} from '../../../../hooks/useTimeZone'
-import {CommonDateTimeInput} from '../CommonDateTimeInput'
-import {type ParseResult} from '../types'
-import {isValidDate} from '../utils'
 import {defineField} from '@sanity/types'
 import {
   DEFAULT_DATE_FORMAT,
@@ -14,6 +8,13 @@ import {
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {expect, test, vi} from 'vitest'
+
+import {renderStringInput} from '../../../../../../test/form'
+import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
+import {type TimeZoneScopeType} from '../../../../hooks/useTimeZone'
+import {CommonDateTimeInput} from '../CommonDateTimeInput'
+import {type ParseResult} from '../types'
+import {isValidDate} from '../utils'
 
 function parseInputValue(input: string): ParseResult {
   const candidate = parse(input, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`)

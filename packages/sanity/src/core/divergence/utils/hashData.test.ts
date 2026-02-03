@@ -1,5 +1,6 @@
-import {hashData} from './hashData'
 import {expect, it} from 'vitest'
+
+import {hashData} from './hashData'
 
 it('hashes objects', async () => {
   const hash = await hashData({

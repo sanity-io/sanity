@@ -1,6 +1,7 @@
+import {type SanityClient} from '@sanity/client'
+
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../../releases/util/releasesClient'
 import {type IdPair} from '../../types'
-import {type SanityClient} from '@sanity/client'
 
 const ACTIONS_API_MINIMUM_VERSION = '2025-02-19'
 

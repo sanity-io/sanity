@@ -1,11 +1,12 @@
-import {ScrollContainer} from '../../components/scroll'
-import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
-import {ChangeIndicator} from '../ChangeIndicator'
-import {ChangeConnectorRoot} from '../overlay/ChangeConnectorRoot'
 import {type Path} from '@sanity/types'
 import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
+
+import {ScrollContainer} from '../../components/scroll'
+import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
+import {ChangeIndicator} from '../ChangeIndicator'
+import {ChangeConnectorRoot} from '../overlay/ChangeConnectorRoot'
 
 const TestContainer = styled(Container).attrs({
   height: 'fill',

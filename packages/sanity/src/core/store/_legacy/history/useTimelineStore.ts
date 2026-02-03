@@ -1,14 +1,3 @@
-import {
-  type Annotation,
-  type Chunk,
-  type SelectionState,
-  type TimelineController,
-  useHistoryStore,
-  useWorkspace,
-} from '../../..'
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
 import {type ObjectDiff} from '@sanity/diff'
 import {useEffect, useMemo, useRef} from 'react'
 import deepEquals from 'react-fast-compare'
@@ -21,6 +10,18 @@ import {
   type Subscription,
   tap,
 } from 'rxjs'
+
+import {
+  type Annotation,
+  type Chunk,
+  type SelectionState,
+  type TimelineController,
+  useHistoryStore,
+  useWorkspace,
+} from '../../..'
+import {useClient} from '../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
 
 interface UseTimelineControllerOpts {
   documentId: string

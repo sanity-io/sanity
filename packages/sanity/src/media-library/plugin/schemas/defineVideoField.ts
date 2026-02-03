@@ -1,5 +1,6 @@
-import {type VideoDefinition} from './types'
 import {defineField, type FieldDefinitionBase} from '@sanity/types'
+
+import {type VideoDefinition} from './types'
 
 /**
  * Define a video field within a document, object, image or file definition `fields` array.

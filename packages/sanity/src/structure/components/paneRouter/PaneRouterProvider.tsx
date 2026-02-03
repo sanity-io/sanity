@@ -1,3 +1,9 @@
+import {toString as pathToString} from '@sanity/util/paths'
+import {omit} from 'lodash-es'
+import {type ReactNode, useCallback, useMemo} from 'react'
+import {PaneRouterContext} from 'sanity/_singletons'
+import {useRouter, useRouterState} from 'sanity/router'
+
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from '../../types'
 import {usePaneLayout} from '../pane/usePaneLayout'
 import {BackLink} from './BackLink'
@@ -5,11 +11,6 @@ import {ChildLink} from './ChildLink'
 import {ParameterizedLink} from './ParameterizedLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
 import {type PaneRouterContextValue} from './types'
-import {toString as pathToString} from '@sanity/util/paths'
-import {omit} from 'lodash-es'
-import {type ReactNode, useCallback, useMemo} from 'react'
-import {PaneRouterContext} from 'sanity/_singletons'
-import {useRouter, useRouterState} from 'sanity/router'
 
 const emptyArray: never[] = []
 

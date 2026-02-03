@@ -1,6 +1,8 @@
-import {setupImportErrorHandler} from '../importErrorHandler'
 import Module from 'node:module'
+
 import {describe, expect, test} from 'vitest'
+
+import {setupImportErrorHandler} from '../importErrorHandler'
 
 interface ModuleConstructor {
   _load(request: string, parent: Module | undefined, isMain: boolean): any

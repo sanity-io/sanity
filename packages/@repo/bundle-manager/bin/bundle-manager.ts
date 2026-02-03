@@ -1,8 +1,9 @@
 #!/usr/bin/env -S pnpm tsx
 
+import yargs from 'yargs'
+
 import {tagVersion, uploadBundles} from '../src'
 import {verify} from '../src/commands/verify'
-import yargs from 'yargs'
 
 // oxlint-disable-next-line no-unused-expressions
 const task = yargs(process.argv.slice(2))

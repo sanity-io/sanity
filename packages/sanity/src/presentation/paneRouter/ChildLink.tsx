@@ -1,7 +1,8 @@
-import {type PresentationSearchParams} from '../types'
 import {forwardRef} from 'react'
 import {StateLink} from 'sanity/router'
 import {type ChildLinkProps} from 'sanity/structure'
+
+import {type PresentationSearchParams} from '../types'
 
 export const ChildLink = forwardRef(function ChildLink(
   props: ChildLinkProps & {

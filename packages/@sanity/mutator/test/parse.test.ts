@@ -1,5 +1,6 @@
-import {parseJsonPath} from '../src/jsonpath/parse'
 import {expect, test} from 'vitest'
+
+import {parseJsonPath} from '../src/jsonpath/parse'
 
 const cases = {
   'a': {

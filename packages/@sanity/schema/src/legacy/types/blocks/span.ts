@@ -1,7 +1,8 @@
+import {pick} from 'lodash-es'
+
 import createPreviewGetter from '../../preview/createPreviewGetter'
 import {OWN_PROPS_NAME} from '../constants'
 import {hiddenGetter, lazyGetter} from '../utils'
-import {pick} from 'lodash-es'
 
 const INHERITED_FIELDS = [
   'type',

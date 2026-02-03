@@ -1,5 +1,6 @@
-import {type CliCommandDefinition} from '../../types'
 import {size, sortBy} from 'lodash-es'
+
+import {type CliCommandDefinition} from '../../types'
 
 const headings = ['id', 'members', 'name', 'url', 'created']
 const helpText = `

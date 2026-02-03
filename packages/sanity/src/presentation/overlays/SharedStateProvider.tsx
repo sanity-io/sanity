@@ -1,5 +1,3 @@
-import {type VisualEditingConnection} from '../types'
-import {type PresentationSharedStateContextValue} from './types'
 import {type Serializable, type SerializableObject} from '@sanity/presentation-comlink'
 import {
   type FunctionComponent,
@@ -10,6 +8,9 @@ import {
   useRef,
 } from 'react'
 import {PresentationSharedStateContext} from 'sanity/_singletons'
+
+import {type VisualEditingConnection} from '../types'
+import {type PresentationSharedStateContextValue} from './types'
 
 export const SharedStateProvider: FunctionComponent<
   PropsWithChildren<{

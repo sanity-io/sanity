@@ -1,3 +1,12 @@
+import {
+  type ArraySchemaType,
+  type MultiFieldSet,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
+
 import {getItemKeySegment, pathsAreEqual, pathToString} from '../../paths'
 import {getArrayDiffItemType} from '../../schema/helpers'
 import {
@@ -14,14 +23,6 @@ import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {getValueError} from '../../validation'
 import {isFieldChange} from '../helpers'
 import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
-import {
-  type ArraySchemaType,
-  type MultiFieldSet,
-  type ObjectField,
-  type ObjectSchemaType,
-  type Path,
-  type SchemaType,
-} from '@sanity/types'
 
 interface DiffContext {
   itemDiff?: ItemDiff

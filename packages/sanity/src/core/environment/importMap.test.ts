@@ -1,5 +1,6 @@
-import {getSanityImportMapUrl, hasSanityPackageInImportMap} from './importMap'
 import {describe, expect, it, vi} from 'vitest'
+
+import {getSanityImportMapUrl, hasSanityPackageInImportMap} from './importMap'
 
 const querySelectorAllSpy = vi.spyOn(document, 'querySelectorAll')
 

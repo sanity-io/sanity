@@ -1,3 +1,5 @@
+import {type InsertMenuOptions} from '@sanity/insert-menu'
+
 import {type FieldReference} from '../../../validation'
 import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
 import {type InitialValueProperty, type SchemaValidationValue} from '../../types'
@@ -12,7 +14,6 @@ import {
   type SearchConfiguration,
   type TitledListValue,
 } from './common'
-import {type InsertMenuOptions} from '@sanity/insert-menu'
 
 export type {InsertMenuOptions}
 

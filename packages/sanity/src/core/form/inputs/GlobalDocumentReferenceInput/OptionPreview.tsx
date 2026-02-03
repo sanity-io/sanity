@@ -1,12 +1,13 @@
+import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {type ReactNode} from 'react'
+import {type Observable} from 'rxjs'
+
 import {useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 import {GlobalDocumentReferencePreview} from './GlobalDocumentReferencePreview'
 import {type GlobalDocumentReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
-import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
-import {type ReactNode} from 'react'
-import {type Observable} from 'rxjs'
 
 /**
  * Used to preview a referenced type

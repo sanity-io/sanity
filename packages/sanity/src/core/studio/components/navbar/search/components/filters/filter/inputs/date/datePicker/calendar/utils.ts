@@ -1,6 +1,7 @@
+import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
+
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {TAIL_WEEKDAYS} from './constants'
-import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
 
 /**
  * NOTE: `weekStartsOn` uses 1 for Monday, 7 for Sunday. date-fns wants 0 for Sunday, 6 for Saturday.

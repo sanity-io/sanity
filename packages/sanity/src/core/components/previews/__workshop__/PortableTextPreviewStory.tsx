@@ -1,13 +1,14 @@
+import {DocumentIcon, EditIcon} from '@sanity/icons'
+import {Card, Container, Flex, Text} from '@sanity/ui'
+import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
+import {type ComponentType, useMemo} from 'react'
+
 import {ContextMenuButton} from '../../contextMenuButton'
 import {PREVIEW_SIZES} from '../constants'
 import {BlockImagePreview} from '../portableText/BlockImagePreview'
 import {BlockPreview} from '../portableText/BlockPreview'
 import {InlinePreview} from '../portableText/InlinePreview'
 import {type PortableTextPreviewLayoutKey, type PreviewProps} from '../types'
-import {DocumentIcon, EditIcon} from '@sanity/icons'
-import {Card, Container, Flex, Text} from '@sanity/ui'
-import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
-import {type ComponentType, useMemo} from 'react'
 
 const MEDIA_OPTIONS: Record<string, string> = {
   None: 'none',

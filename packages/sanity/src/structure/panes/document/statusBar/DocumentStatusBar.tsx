@@ -1,14 +1,3 @@
-import {usePaneRouter} from '../../../components'
-import {SpacerButton} from '../../../components/spacerButton'
-import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
-import {EMPTY_PARAMS} from '../constants'
-import {useDocumentPane} from '../useDocumentPane'
-import {useDocumentTitle} from '../useDocumentTitle'
-import {DocumentBadges} from './DocumentBadges'
-import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
-import {DocumentStatusLine} from './DocumentStatusLine'
-import {RevisionStatusLine} from './RevisionStatusLine'
-import {useResizeObserver} from './useResizeObserver'
 import {Card, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
@@ -20,6 +9,18 @@ import {
   usePerspective,
   useSanityCreateConfig,
 } from 'sanity'
+
+import {usePaneRouter} from '../../../components'
+import {SpacerButton} from '../../../components/spacerButton'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
+import {EMPTY_PARAMS} from '../constants'
+import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentTitle} from '../useDocumentTitle'
+import {DocumentBadges} from './DocumentBadges'
+import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
+import {DocumentStatusLine} from './DocumentStatusLine'
+import {RevisionStatusLine} from './RevisionStatusLine'
+import {useResizeObserver} from './useResizeObserver'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: Ref<HTMLDivElement>

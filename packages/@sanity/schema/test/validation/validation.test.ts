@@ -1,8 +1,9 @@
-import {validateSchema} from '../../src/sanity/validateSchema'
 /* eslint-disable max-nested-callbacks */
 import {SquareIcon} from '@sanity/icons'
 import {flatten} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
+
+import {validateSchema} from '../../src/sanity/validateSchema'
 
 describe('Validation test', () => {
   test('assigns/populates `_problems` property', () => {

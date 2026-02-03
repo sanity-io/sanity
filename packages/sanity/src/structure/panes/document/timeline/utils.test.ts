@@ -1,6 +1,7 @@
-import {addChunksMetadata} from './utils'
 import {type Chunk} from 'sanity'
 import {describe, expect, it} from 'vitest'
+
+import {addChunksMetadata} from './utils'
 
 const chunks: Chunk[] = [
   {

@@ -1,3 +1,11 @@
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {
+  type CrossDatasetType,
+  type GlobalDocumentReferenceType,
+  type SchemaType,
+} from '@sanity/types'
+import {groupBy} from 'lodash-es'
+
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
 import {prefixLast} from '../common/token'
 import {
@@ -6,13 +14,6 @@ import {
   type SearchSort,
   type SearchTerms,
 } from '../common/types'
-import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {
-  type CrossDatasetType,
-  type GlobalDocumentReferenceType,
-  type SchemaType,
-} from '@sanity/types'
-import {groupBy} from 'lodash-es'
 
 interface SearchParams extends Record<string, unknown> {
   __types: string[]

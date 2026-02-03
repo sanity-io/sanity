@@ -1,5 +1,6 @@
-import {SANITY_VERSION} from '../core/version'
 import {type Context, createContext} from 'react'
+
+import {SANITY_VERSION} from '../core/version'
 
 const MISSING_CONTEXT_HELP_URL = 'https://www.sanity.io/help/missing-context-error'
 

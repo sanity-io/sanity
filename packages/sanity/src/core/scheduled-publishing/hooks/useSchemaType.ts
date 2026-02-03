@@ -1,8 +1,9 @@
+import {type SchemaType} from '@sanity/types'
+import {useMemo} from 'react'
+
 import {useSchema} from '../../hooks/useSchema'
 import {type Schedule} from '../types'
 import {getScheduledDocument} from '../utils/paneItemHelpers'
-import {type SchemaType} from '@sanity/types'
-import {useMemo} from 'react'
 
 export function useScheduleSchemaType(schedule: Schedule): SchemaType | undefined {
   const firstDocument = getScheduledDocument(schedule)

@@ -1,11 +1,12 @@
+/* oxlint-disable no-console */
+import {type RestEndpointMethodTypes} from '@octokit/rest'
+
 import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
 import {createId} from '../utils/ids'
 import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
-/* oxlint-disable no-console */
-import {type RestEndpointMethodTypes} from '@octokit/rest'
 
 const INTERNAL_ASSOCIATIONS = ['MEMBER', 'OWNER']
 

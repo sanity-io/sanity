@@ -1,3 +1,8 @@
+import {TrashIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useEffectEvent, useState} from 'react'
+
 import {Button} from '../../../../../ui-components'
 import {type ObjectInputProps, set} from '../../../../form'
 import {useTranslation} from '../../../../i18n'
@@ -7,10 +12,6 @@ import {useRemoveTask} from '../../../hooks'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
 import {getMentionedUsers} from '../utils'
-import {TrashIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useEffectEvent, useState} from 'react'
 
 const getTaskSubscribers = (task: TaskDocument): string[] => {
   const subscribers = task.subscribers || []

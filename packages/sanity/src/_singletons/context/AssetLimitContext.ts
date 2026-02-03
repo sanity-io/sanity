@@ -1,6 +1,7 @@
+import {createContext} from 'sanity/_createContext'
+
 import type {UpsellDialogViewedInfo} from '../../core/studio/upsell'
 import type {UpsellData} from '../../core/studio/upsell/types'
-import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

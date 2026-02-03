@@ -1,12 +1,13 @@
+import {getImageDimensions} from '@sanity/asset-utils'
+import {type AssetSource, type UploadState} from '@sanity/types'
+import {Box} from '@sanity/ui'
+import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
+
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types'
 import {UploadTargetCard} from '../common/uploadTarget/UploadTargetCard'
 import {UploadWarning} from '../common/UploadWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
-import {getImageDimensions} from '@sanity/asset-utils'
-import {type AssetSource, type UploadState} from '@sanity/types'
-import {Box} from '@sanity/ui'
-import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
 
 const ASSET_FIELD_PATH = ['asset'] as const
 

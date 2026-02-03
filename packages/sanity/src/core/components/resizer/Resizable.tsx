@@ -1,7 +1,8 @@
-import {Resizer} from './Resizer'
 import {Box, type BoxProps} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+
+import {Resizer} from './Resizer'
 
 interface ResizableProps {
   minWidth: number

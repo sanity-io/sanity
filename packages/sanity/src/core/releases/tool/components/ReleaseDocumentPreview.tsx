@@ -1,3 +1,8 @@
+import {type ReleaseState} from '@sanity/client'
+import {Card} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, useMemo} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
@@ -5,10 +10,6 @@ import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPr
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseState} from '@sanity/client'
-import {Card} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useMemo} from 'react'
-import {IntentLink} from 'sanity/router'
 
 interface ReleaseDocumentPreviewProps {
   documentId: string

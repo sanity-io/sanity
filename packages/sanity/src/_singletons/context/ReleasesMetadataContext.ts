@@ -1,5 +1,6 @@
-import type {ReleasesMetadataContextValue} from '../../core/releases/contexts/ReleasesMetadataProvider'
 import {createContext} from 'sanity/_createContext'
+
+import type {ReleasesMetadataContextValue} from '../../core/releases/contexts/ReleasesMetadataProvider'
 
 /**
  * @internal

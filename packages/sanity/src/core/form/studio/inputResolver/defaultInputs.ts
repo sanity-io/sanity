@@ -1,3 +1,5 @@
+import {type ComponentType} from 'react'
+
 import {type FIXME} from '../../../FIXME'
 import {UniversalArrayInput} from '../../inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from '../../inputs/BooleanInput'
@@ -13,7 +15,6 @@ import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/
 import {StudioGlobalDocumentReferenceInput} from '../inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
 import {StudioFileInput} from '../inputs/StudioFileInput'
 import {StudioImageInput} from '../inputs/StudioImageInput'
-import {type ComponentType} from 'react'
 
 export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   document: ObjectInput,

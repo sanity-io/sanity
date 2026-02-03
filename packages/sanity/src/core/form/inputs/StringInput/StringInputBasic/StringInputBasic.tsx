@@ -1,5 +1,6 @@
-import {type StringInputProps} from '../../../types'
 import {TextInput} from '@sanity/ui'
+
+import {type StringInputProps} from '../../../types'
 
 /**
  * This is the default string input implementation, powered by Sanity UI's `TextInput` component. It

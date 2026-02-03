@@ -1,8 +1,3 @@
-import {type MenuButtonProps, Tooltip} from '../../../ui-components'
-import {ContextMenuButton} from '../contextMenuButton'
-import {CollapseMenuDivider} from './CollapseMenuDivider'
-import {CollapseOverflowMenu} from './CollapseOverflowMenu'
-import {ObserveElement} from './ObserveElement'
 import {Flex} from '@sanity/ui'
 import {difference} from 'lodash-es'
 import {
@@ -18,6 +13,12 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+
+import {type MenuButtonProps, Tooltip} from '../../../ui-components'
+import {ContextMenuButton} from '../contextMenuButton'
+import {CollapseMenuDivider} from './CollapseMenuDivider'
+import {CollapseOverflowMenu} from './CollapseOverflowMenu'
+import {ObserveElement} from './ObserveElement'
 
 /** @internal */
 export interface CollapseMenuProps {

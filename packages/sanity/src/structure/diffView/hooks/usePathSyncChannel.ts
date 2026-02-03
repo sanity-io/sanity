@@ -1,8 +1,9 @@
-import {type PathSyncChannelProps, type PathSyncState} from '../types/pathSyncChannel'
 import {type Path} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 import {distinctUntilChanged, filter, map, type Observable} from 'rxjs'
+
+import {type PathSyncChannelProps, type PathSyncState} from '../types/pathSyncChannel'
 
 type Push = (state: PathSyncState) => void
 

@@ -1,5 +1,6 @@
-import {LazyTextInput} from '../../../../../components/inputs/DateInputs/LazyTextInput'
 import {type ChangeEvent, type ComponentProps, type FocusEvent, useCallback} from 'react'
+
+import {LazyTextInput} from '../../../../../components/inputs/DateInputs/LazyTextInput'
 
 type Props = Omit<ComponentProps<typeof LazyTextInput>, 'onChange' | 'value'> & {
   value?: number

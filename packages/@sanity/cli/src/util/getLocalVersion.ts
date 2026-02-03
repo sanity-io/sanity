@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs'
 import {join as joinPath, normalize as normalizePath} from 'node:path'
+
 import resolveFrom from 'resolve-from'
 
 export function getLocalVersion(moduleId: string, workDir: string): string | undefined {

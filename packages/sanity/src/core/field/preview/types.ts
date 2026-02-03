@@ -1,4 +1,3 @@
-import {type UserColor} from '../../user-color'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -9,6 +8,8 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type ComponentType} from 'react'
+
+import {type UserColor} from '../../user-color'
 
 /** @internal */
 export type FieldPreviewComponent<T = any> = ComponentType<{

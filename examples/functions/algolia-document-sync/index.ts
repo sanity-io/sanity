@@ -1,6 +1,7 @@
+import {env} from 'node:process'
+
 import {documentEventHandler} from '@sanity/functions'
 import {algoliasearch} from 'algoliasearch'
-import {env} from 'node:process'
 
 const {ALGOLIA_APP_ID = '', ALGOLIA_WRITE_KEY = ''} = env
 

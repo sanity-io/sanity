@@ -1,11 +1,12 @@
-import {useTranslation} from '../../../../../i18n'
-import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
-import {useSearchState} from '../contexts/search/useSearchState'
 /* eslint-disable react/jsx-pascal-case */
 import {SearchIcon} from '@sanity/icons'
 import {Flex, KBD, TextInput} from '@sanity/ui'
 import {forwardRef, type KeyboardEvent as ReactKeyboardEvent, type Ref, useCallback} from 'react'
 import {styled} from 'styled-components'
+
+import {useTranslation} from '../../../../../i18n'
+import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'
+import {useSearchState} from '../contexts/search/useSearchState'
 
 const KeyboardShortcutFlex = styled(Flex)`
   position: absolute;

@@ -1,10 +1,11 @@
+import {Flex} from '@sanity/ui'
+import {useMemo} from 'react'
+import {css, styled} from 'styled-components'
+
 import {RELEASE_TYPES_TONES, type VersionInfoDocumentStub} from '../../releases'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../../studio/workspace'
-import {Flex} from '@sanity/ui'
-import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 interface DocumentStatusProps {
   draft?: VersionInfoDocumentStub | undefined

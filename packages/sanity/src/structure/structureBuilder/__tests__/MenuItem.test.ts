@@ -1,6 +1,7 @@
+import {describe, expect, it} from 'vitest'
+
 import {MenuItemBuilder} from '../MenuItem'
 import {type StructureContext} from '../types'
-import {describe, expect, it} from 'vitest'
 
 // Minimal mock of StructureContext for testing
 const mockContext = {

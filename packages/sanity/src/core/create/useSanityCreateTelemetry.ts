@@ -1,3 +1,6 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
+
 import {
   CreateDocumentLinkAccepted,
   CreateDocumentLinkCtaClicked,
@@ -5,8 +8,6 @@ import {
   CreateDocumentUnlinkApproved,
   CreateDocumentUnlinkCtaClicked,
 } from './__telemetry__/create.telemetry'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo} from 'react'
 
 interface SanityCreateTelemetryHookValue {
   linkCtaClicked: () => void

@@ -1,6 +1,3 @@
-import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
-import {writeSanityRuntime} from './runtime'
 import {
   type CliCommandContext,
   type CliConfig,
@@ -8,6 +5,10 @@ import {
   type UserViteConfig,
 } from '@sanity/cli'
 import {type ViteDevServer} from 'vite'
+
+import {debug} from './debug'
+import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {writeSanityRuntime} from './runtime'
 
 export interface DevServerOptions {
   cwd: string

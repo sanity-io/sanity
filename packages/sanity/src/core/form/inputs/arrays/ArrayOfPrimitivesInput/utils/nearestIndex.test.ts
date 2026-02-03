@@ -1,5 +1,6 @@
-import {nearestIndexOf} from './nearestIndex'
 import {expect, test} from 'vitest'
+
+import {nearestIndexOf} from './nearestIndex'
 
 test('nearestIndexOf', () => {
   expect(nearestIndexOf(['a', 'b', 'b', 'c', 'a'], 0, 'a')).toBe(0)

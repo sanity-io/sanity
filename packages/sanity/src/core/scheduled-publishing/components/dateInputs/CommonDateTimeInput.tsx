@@ -1,7 +1,3 @@
-import {FormField} from '../../../form/components/formField/FormField'
-import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
-import {DateTimeInput} from './base/DateTimeInput'
-import {type CommonProps, type ParseResult} from './types'
 import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,
@@ -15,6 +11,11 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {FormField} from '../../../form/components/formField/FormField'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
+import {DateTimeInput} from './base/DateTimeInput'
+import {type CommonProps, type ParseResult} from './types'
 
 type Props = CommonProps & {
   title: string

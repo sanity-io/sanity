@@ -1,7 +1,6 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
-import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 /* eslint-disable i18next/no-literal-string */
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
@@ -9,6 +8,8 @@ import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 import {styled} from 'styled-components'
+
+import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 
 const DataCell = styled.td<{width: number}>`
   display: flex;

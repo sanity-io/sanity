@@ -1,5 +1,6 @@
-import type {PresentationSharedStateContextValue} from '../../presentation/overlays/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {PresentationSharedStateContextValue} from '../../presentation/overlays/types'
 
 /**
  * @internal

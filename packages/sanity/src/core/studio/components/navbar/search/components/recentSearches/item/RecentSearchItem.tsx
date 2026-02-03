@@ -1,8 +1,3 @@
-import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
-import {useSearchState} from '../../../contexts/search/useSearchState'
-import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'
-import {DocumentTypesPill} from '../../common/DocumentTypesPill'
-import {FilterPill} from '../../common/FilterPill'
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -18,6 +13,12 @@ import {
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
+
+import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'
+import {DocumentTypesPill} from '../../common/DocumentTypesPill'
+import {FilterPill} from '../../common/FilterPill'
 
 export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   index: number

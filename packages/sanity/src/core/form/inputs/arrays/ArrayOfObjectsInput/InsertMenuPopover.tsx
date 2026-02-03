@@ -1,5 +1,3 @@
-import {Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {
   InsertMenu as SanityInsertMenu,
   type InsertMenuProps as SanityInsertMenuProps,
@@ -7,6 +5,9 @@ import {
 import {type SchemaType} from '@sanity/types'
 import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback, useMemo, useReducer, useRef} from 'react'
+
+import {Popover, type PopoverProps} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
 type PopoverState = {open: boolean}
 

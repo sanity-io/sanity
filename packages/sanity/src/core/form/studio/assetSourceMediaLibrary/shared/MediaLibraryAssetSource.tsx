@@ -1,3 +1,7 @@
+import {type AssetSourceComponentProps} from '@sanity/types'
+import {PortalProvider} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
+
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_API_VERSION} from '../constants'
@@ -5,9 +9,6 @@ import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
-import {type AssetSourceComponentProps} from '@sanity/types'
-import {PortalProvider} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useState} from 'react'
 
 const MediaLibraryAssetSourceComponent = function MediaLibraryAssetSourceComponent(
   props: AssetSourceComponentProps & {libraryId: string | null},

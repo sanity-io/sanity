@@ -1,9 +1,5 @@
-import {debug as baseDebug} from '../debug'
-import {getClientWrapper, getCliToken} from './clientWrapper'
-import {createExpiringConfig} from './createExpiringConfig'
-import {getUserConfig} from './getUserConfig'
-import {isCi} from './isCi'
-import {isTrueish} from './isTrueish'
+import {appendFile} from 'node:fs/promises'
+
 import {type SanityClient} from '@sanity/client'
 import {
   type ConsentStatus,
@@ -11,7 +7,13 @@ import {
   createSessionId,
   type TelemetryEvent,
 } from '@sanity/telemetry'
-import {appendFile} from 'node:fs/promises'
+
+import {debug as baseDebug} from '../debug'
+import {getClientWrapper, getCliToken} from './clientWrapper'
+import {createExpiringConfig} from './createExpiringConfig'
+import {getUserConfig} from './getUserConfig'
+import {isCi} from './isCi'
+import {isTrueish} from './isTrueish'
 
 const debug = baseDebug.extend('telemetry')
 

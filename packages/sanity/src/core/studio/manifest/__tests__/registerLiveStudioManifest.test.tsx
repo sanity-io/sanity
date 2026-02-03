@@ -1,10 +1,11 @@
+import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {of} from 'rxjs'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {type Source, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store'
 import {type UserApplication} from '../../../store/userApplications'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
-import {of} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 // Mock the icon module to avoid styled-components complexity in tests
 vi.mock('../icon', () => ({

@@ -1,3 +1,7 @@
+import {Card, Stack} from '@sanity/ui'
+import {get} from 'lodash-es'
+import {PureComponent} from 'react'
+
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {ArrayOfPrimitivesItem} from '../../../members'
 import {type ArrayOfPrimitivesInputProps} from '../../../types'
@@ -11,9 +15,6 @@ import {ItemRow} from './ItemRow'
 import {NoItemsPlaceholder} from './NoItemsPlaceholder'
 import {type PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
-import {Card, Stack} from '@sanity/ui'
-import {get} from 'lodash-es'
-import {PureComponent} from 'react'
 
 interface State {
   disableTransition: boolean

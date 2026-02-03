@@ -1,5 +1,6 @@
-import {tokenize} from '../src/jsonpath/tokenize'
 import {expect, test} from 'vitest'
+
+import {tokenize} from '../src/jsonpath/tokenize'
 
 const cases = {
   'a.b[7]': [

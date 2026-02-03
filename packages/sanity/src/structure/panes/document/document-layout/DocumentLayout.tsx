@@ -1,21 +1,3 @@
-import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
-import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
-import {structureLocaleNamespace} from '../../../i18n'
-import {useStructureTool} from '../../../useStructureTool'
-import {
-  DOCUMENT_INSPECTOR_MIN_WIDTH,
-  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
-  DOCUMENT_PANEL_MIN_WIDTH,
-} from '../constants'
-import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
-import {DocumentOperationResults} from '../DocumentOperationResults'
-import {DocumentPanel} from '../documentPanel'
-import {DocumentPanelHeader} from '../documentPanel/header'
-import {DocumentActionShortcuts} from '../keyboardShortcuts'
-import {getMenuItems} from '../menuItems'
-import {useDocumentPane} from '../useDocumentPane'
-import {DocumentLayoutError} from './DocumentLayoutError'
-import {DocumentLayoutFooter} from './DocumentLayoutFooter'
 import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
@@ -34,6 +16,25 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
+import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
+import {structureLocaleNamespace} from '../../../i18n'
+import {useStructureTool} from '../../../useStructureTool'
+import {
+  DOCUMENT_INSPECTOR_MIN_WIDTH,
+  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
+  DOCUMENT_PANEL_MIN_WIDTH,
+} from '../constants'
+import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
+import {DocumentOperationResults} from '../DocumentOperationResults'
+import {DocumentPanel} from '../documentPanel'
+import {DocumentPanelHeader} from '../documentPanel/header'
+import {DocumentActionShortcuts} from '../keyboardShortcuts'
+import {getMenuItems} from '../menuItems'
+import {useDocumentPane} from '../useDocumentPane'
+import {DocumentLayoutError} from './DocumentLayoutError'
+import {DocumentLayoutFooter} from './DocumentLayoutFooter'
 
 const EMPTY_ARRAY: [] = []
 

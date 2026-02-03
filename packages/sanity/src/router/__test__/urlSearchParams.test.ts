@@ -1,5 +1,6 @@
-import {route} from '../route'
 import {describe, expect, test} from 'vitest'
+
+import {route} from '../route'
 
 describe('decode w/UrlSearchParams', () => {
   const router = route.create('/tools/:tool', route.create('/edit/:documentId'))

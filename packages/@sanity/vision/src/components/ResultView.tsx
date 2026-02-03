@@ -1,10 +1,11 @@
-import {ResultViewWrapper} from './ResultView.styled'
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons'
 import {Code} from '@sanity/ui'
 import LRU from 'quick-lru'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
+
+import {ResultViewWrapper} from './ResultView.styled'
 
 const lru = new LRU({maxSize: 50000})
 

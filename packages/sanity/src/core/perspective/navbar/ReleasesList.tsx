@@ -1,3 +1,8 @@
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
+import {type JSX, type RefObject, useMemo} from 'react'
+import {css, styled} from 'styled-components'
+
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
@@ -14,10 +19,6 @@ import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 

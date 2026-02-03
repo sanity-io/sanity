@@ -1,3 +1,9 @@
+import {type SanityClient, type StackablePerspective} from '@sanity/client'
+import {flatten, keyBy} from 'lodash-es'
+import {combineLatest, defer, from, type Observable, of} from 'rxjs'
+import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
+import shallowEquals from 'shallow-equals'
+
 import {createSWR, getDraftId, getPublishedId, getVersionId, isRecord} from '../util'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {
@@ -14,11 +20,6 @@ import {
   type ObservePathsFn,
 } from './types'
 import {debounceCollect} from './utils/debounceCollect'
-import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {flatten, keyBy} from 'lodash-es'
-import {combineLatest, defer, from, type Observable, of} from 'rxjs'
-import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
 /**
  * Create an SWR operator for document availability
  */

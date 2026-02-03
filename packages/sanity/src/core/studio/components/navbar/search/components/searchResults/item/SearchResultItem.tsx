@@ -1,3 +1,9 @@
+import {type StackablePerspective} from '@sanity/client'
+import {type SanityDocumentLike} from '@sanity/types'
+import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
+import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {useIntentLink} from 'sanity/router'
+
 import {Tooltip} from '../../../../../../../../ui-components'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
@@ -11,11 +17,6 @@ import {
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
-import {type StackablePerspective} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
-import {type MouseEvent, useCallback, useEffect, useMemo, useState} from 'react'
-import {useIntentLink} from 'sanity/router'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type' | 'title'>) => void
 

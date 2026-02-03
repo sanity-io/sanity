@@ -1,4 +1,3 @@
-import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {
   type ArraySchemaType,
   isArrayOfBlocksSchemaType,
@@ -6,6 +5,8 @@ import {
   type Path,
   type PathSegment,
 } from '@sanity/types'
+
+import {getValueAtPath} from '../../../../../field/paths/helpers'
 
 /**
  * Check if the item is selected

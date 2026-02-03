@@ -1,10 +1,11 @@
+import {type Path} from '@sanity/types'
+import {isHotkey} from 'is-hotkey-esm'
+import {useEffect, useEffectEvent} from 'react'
+
 import {isFileTargetElement} from '../form/inputs/files/common/fileTarget/fileTarget'
 import {type FormDocumentValue} from '../form/types/formDocumentValue'
 import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
-import {type Path} from '@sanity/types'
-import {isHotkey} from 'is-hotkey-esm'
-import {useEffect, useEffectEvent} from 'react'
 
 /** @internal */
 export interface GlobalCopyPasteElementHandler {

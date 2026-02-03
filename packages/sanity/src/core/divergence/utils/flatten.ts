@@ -1,6 +1,7 @@
-import {isRecord} from '../../util/isRecord'
 import {isKeyedObject, type KeyedObject, type KeyedSegment, type Path} from '@sanity/types'
 import {toString} from '@sanity/util/paths'
+
+import {isRecord} from '../../util/isRecord'
 
 /**
  * @internal

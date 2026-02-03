@@ -1,7 +1,8 @@
+import {type SchemaValidationProblem} from '@sanity/types'
+
 import {groupProblems} from './groupProblems'
 import {validateSchema} from './validateSchema'
 import {validateNoCallbacks} from './validation/utils/validateNoCallbacks'
-import {type SchemaValidationProblem} from '@sanity/types'
 
 function unsupportedTypeValidator(typeLabel: string) {
   return function () {

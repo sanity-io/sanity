@@ -1,8 +1,3 @@
-import {Button, Dialog} from '../../../ui-components'
-import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
-import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
-import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
-import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
@@ -10,6 +5,12 @@ import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {addWeeks, isAfter, isBefore} from 'date-fns'
 import {useCallback, useEffect, useState} from 'react'
 import {finalize} from 'rxjs'
+
+import {Button, Dialog} from '../../../ui-components'
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
+import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
+import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
+import {NotAuthenticatedScreen} from './NotAuthenticatedScreen'
 
 /** @internal */
 export interface AccessRequest {

@@ -1,8 +1,10 @@
-import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
-import {createClient, type SanityClient} from '@sanity/client'
 import {types} from 'node:util'
+
+import {createClient, type SanityClient} from '@sanity/client'
 import {firstValueFrom, from} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

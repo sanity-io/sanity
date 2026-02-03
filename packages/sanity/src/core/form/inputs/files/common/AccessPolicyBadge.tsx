@@ -1,7 +1,8 @@
-import {Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 import {LockIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
+
+import {Tooltip} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 
 export function AccessPolicyBadge(props: {hideBackground?: boolean}) {
   const {t} = useTranslation()

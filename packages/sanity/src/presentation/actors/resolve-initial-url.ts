@@ -1,7 +1,8 @@
-import {type PresentationPerspective, type PreviewUrlOption} from '../types'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type SanityClient} from 'sanity'
 import {fromPromise, type PromiseActorLogic} from 'xstate'
+
+import {type PresentationPerspective, type PreviewUrlOption} from '../types'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 
 /** @internal */
 export function defineResolveInitialUrlActor({

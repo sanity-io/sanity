@@ -1,10 +1,11 @@
-import {isRecord} from '../../util'
-import {strings} from './strings'
-import {type ErrorWithId} from './types'
 import {useToast} from '@sanity/ui'
 import {pick} from 'lodash-es'
 import {useCallback} from 'react'
 import {catchError, EMPTY, map, of, type OperatorFunction, tap} from 'rxjs'
+
+import {isRecord} from '../../util'
+import {strings} from './strings'
+import {type ErrorWithId} from './types'
 
 const TOAST_ID = 'copyErrorDetails'
 

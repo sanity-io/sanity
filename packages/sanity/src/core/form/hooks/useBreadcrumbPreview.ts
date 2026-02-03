@@ -1,8 +1,9 @@
+import {isArraySchemaType, type Path, type SchemaType} from '@sanity/types'
+import {useMemo} from 'react'
+
 import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
 import {useFormValue} from '../contexts/FormValue'
 import {useValuePreviewWithFallback} from '../studio/tree-editing/hooks/useValuePreviewWithFallback'
-import {isArraySchemaType, type Path, type SchemaType} from '@sanity/types'
-import {useMemo} from 'react'
 
 /**
  * Hook to get the preview title for a breadcrumb item.

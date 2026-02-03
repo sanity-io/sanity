@@ -1,6 +1,7 @@
+import {type Path, type ValidationError, type ValidationMarker} from '@sanity/types'
+
 import {type ValidationContext} from '../types'
 import {pathToString} from '../util/pathToString'
-import {type Path, type ValidationError, type ValidationMarker} from '@sanity/types'
 
 export function isNonNullable<T>(t: T): t is NonNullable<T> {
   return t !== null || t !== undefined

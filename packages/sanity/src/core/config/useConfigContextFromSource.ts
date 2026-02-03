@@ -1,5 +1,6 @@
-import {type ConfigContext, type Source} from './types'
 import {useMemo} from 'react'
+
+import {type ConfigContext, type Source} from './types'
 
 /**
  * Reduce a {@link Source} down to a {@link ConfigContext}, memoizing using `useMemo`

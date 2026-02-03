@@ -1,12 +1,13 @@
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {set, unset} from '../../../patch'
-import {type ArrayOfPrimitivesInputProps} from '../../../types'
-import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 import {type ArraySchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {startCase} from 'lodash-es'
 import {useMemo} from 'react'
+
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {set, unset} from '../../../patch'
+import {type ArrayOfPrimitivesInputProps} from '../../../types'
+import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {
   return Boolean(option && typeof option === 'object' && 'title' in option && 'value' in option)

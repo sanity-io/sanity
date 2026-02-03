@@ -1,5 +1,6 @@
-import {useAllReleases} from '../../useAllReleases'
 import {type Mock, type Mocked} from 'vitest'
+
+import {useAllReleases} from '../../useAllReleases'
 
 export const useAllReleasesMockReturn: Mocked<ReturnType<typeof useAllReleases>> = {
   data: [],

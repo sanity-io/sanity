@@ -1,5 +1,3 @@
-import {type LanguageFilterPluginOptions} from './types'
-import {usePaneLanguages} from './usePaneLanguages'
 import {TranslateIcon} from '@sanity/icons'
 import {
   Box,
@@ -14,6 +12,9 @@ import {
 } from '@sanity/ui'
 import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
+
+import {type LanguageFilterPluginOptions} from './types'
+import {usePaneLanguages} from './usePaneLanguages'
 
 export interface LanguageFilterMenuButtonProps {
   options: LanguageFilterPluginOptions

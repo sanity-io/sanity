@@ -1,3 +1,7 @@
+import {type MutationEvent} from '@sanity/client'
+import {Box, Text} from '@sanity/ui'
+import {Translate, useTranslation} from 'sanity'
+
 import {visionLocaleNamespace} from '../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
 import {DelayedSpinner} from './DelayedSpinner'
@@ -17,9 +21,6 @@ import {
   TimingsCard,
   TimingsTextContainer,
 } from './VisionGui.styled'
-import {type MutationEvent} from '@sanity/client'
-import {Box, Text} from '@sanity/ui'
-import {Translate, useTranslation} from 'sanity'
 
 interface VisionGuiResultProps {
   error?: Error | undefined

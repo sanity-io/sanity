@@ -1,8 +1,3 @@
-import {MenuButton} from '../../../../../../ui-components'
-import {pathToString} from '../../../../../field/paths/helpers'
-import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
-import {useValuePreviewWithFallback} from '../../hooks'
-import {type DialogItem} from '../../types'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {
@@ -29,6 +24,12 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+
+import {MenuButton} from '../../../../../../ui-components'
+import {pathToString} from '../../../../../field/paths/helpers'
+import {NavigatedToNestedObjectViaBreadcrumb} from '../../__telemetry__/nestedObjects.telemetry'
+import {useValuePreviewWithFallback} from '../../hooks'
+import {type DialogItem} from '../../types'
 
 const MAX_LENGTH = 5
 const EMPTY_ARRAY: [] = []

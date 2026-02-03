@@ -1,9 +1,10 @@
-import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {ScheduleItem} from '../../components/scheduleItem'
-import {type Schedule} from '../../types'
 import {Box, Card, Flex, Label} from '@sanity/ui'
 import {type VirtualItem, type Virtualizer} from '@tanstack/react-virtual'
 import {type CSSProperties, useEffect, useMemo, useState} from 'react'
+
+import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
+import {ScheduleItem} from '../../components/scheduleItem'
+import {type Schedule} from '../../types'
 
 export interface ListItem {
   content: Schedule | string

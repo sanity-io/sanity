@@ -1,9 +1,10 @@
-import {addEventData, getReleaseActivityEvents, INITIAL_VALUE} from './getReleaseActivityEvents'
-import {type ReleaseEvent} from './types'
 import {type SanityClient} from '@sanity/client'
 import {of} from 'rxjs'
 import {TestScheduler} from 'rxjs/testing'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {addEventData, getReleaseActivityEvents, INITIAL_VALUE} from './getReleaseActivityEvents'
+import {type ReleaseEvent} from './types'
 
 const mockObservableRequest = vi.fn()
 

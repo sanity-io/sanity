@@ -1,3 +1,8 @@
+import {join} from 'node:path'
+
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {mean, once} from 'lodash-es'
+
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'
 import {formatSchemaValidation} from './formatSchemaValidation'
@@ -7,9 +12,6 @@ import {
   SchemaExtractionError,
   startSchemaWatcher,
 } from './schemaExtractorApi'
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {mean, once} from 'lodash-es'
-import {join} from 'node:path'
 
 export interface ExtractFlags {
   'workspace'?: string

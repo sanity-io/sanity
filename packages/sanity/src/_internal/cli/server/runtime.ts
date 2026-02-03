@@ -1,3 +1,8 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import chokidar from 'chokidar'
+
 import {debug as serverDebug} from './debug'
 import {getEntryModule} from './getEntryModule'
 import {
@@ -7,9 +12,6 @@ import {
   renderDocument,
 } from './renderDocument'
 import {getSanityStudioConfigPath} from './sanityConfig'
-import chokidar from 'chokidar'
-import fs from 'node:fs/promises'
-import path from 'node:path'
 
 const debug = serverDebug.extend('runtime')
 

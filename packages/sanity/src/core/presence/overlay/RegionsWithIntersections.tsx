@@ -1,3 +1,14 @@
+import {
+  type ForwardedRef,
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+
 import {resizeObserver} from '../../util/resizeObserver'
 import {
   DEBUG,
@@ -19,16 +30,6 @@ import {
   RootWrapper,
   TopRegionWrapper,
 } from './RegionsWithIntersections.styled'
-import {
-  type ForwardedRef,
-  forwardRef,
-  type ReactNode,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
 
 interface RegionsWithIntersectionsProps {
   regions: ReportedRegionWithRect<FieldPresenceData>[]

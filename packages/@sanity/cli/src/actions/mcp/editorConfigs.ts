@@ -1,8 +1,10 @@
-import {MCP_SERVER_URL} from './constants'
-import execa from 'execa'
 import {existsSync} from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+
+import execa from 'execa'
+
+import {MCP_SERVER_URL} from './constants'
 
 export interface EditorConfig {
   configKey: string

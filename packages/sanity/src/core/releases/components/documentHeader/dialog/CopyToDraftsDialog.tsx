@@ -1,9 +1,10 @@
+import {Text} from '@sanity/ui'
+import {memo, useCallback, useTransition} from 'react'
+
 import {Dialog} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {Text} from '@sanity/ui'
-import {memo, useCallback, useTransition} from 'react'
 
 interface CopyToDraftsDialogProps {
   documentId: string

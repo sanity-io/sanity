@@ -1,5 +1,3 @@
-import {ReferenceInput} from '../ReferenceInput'
-import {type ReferenceInfo, type ReferenceInputProps} from '../types'
 import {Schema} from '@sanity/schema'
 import {type Reference} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
@@ -9,6 +7,9 @@ import {forwardRef, useImperativeHandle} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
+
+import {ReferenceInput} from '../ReferenceInput'
+import {type ReferenceInfo, type ReferenceInputProps} from '../types'
 
 const EMPTY_SEARCH = () => of([])
 

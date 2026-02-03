@@ -1,3 +1,7 @@
+import {type PreviewValue, type SanityDocument} from '@sanity/types'
+import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {useMemo} from 'react'
+
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
 import {
@@ -8,9 +12,6 @@ import {
   type VersionInfoDocumentStub,
 } from '../../releases'
 import {useWorkspace} from '../../studio/workspace'
-import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
-import {useMemo} from 'react'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null

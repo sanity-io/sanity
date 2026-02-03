@@ -1,3 +1,11 @@
+import {
+  type ArraySchemaType,
+  type NumberSchemaType,
+  type SchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {type ComponentType} from 'react'
+
 import {type PreviewProps} from '../../../components'
 import {type FIXME} from '../../../FIXME'
 import {SanityDefaultPreview} from '../../../preview'
@@ -9,13 +17,6 @@ import {getTypeChain} from './helpers'
 import {resolveArrayInput} from './resolveArrayInput'
 import {resolveNumberInput} from './resolveNumberInput'
 import {resolveStringInput} from './resolveStringInput'
-import {
-  type ArraySchemaType,
-  type NumberSchemaType,
-  type SchemaType,
-  type StringSchemaType,
-} from '@sanity/types'
-import {type ComponentType} from 'react'
 
 function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME> | undefined {
   if (is.type('array', type)) {

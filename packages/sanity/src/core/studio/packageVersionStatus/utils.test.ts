@@ -1,5 +1,6 @@
-import {parseImportMapModuleCdnUrl} from './utils'
 import {describe, expect, it} from 'vitest'
+
+import {parseImportMapModuleCdnUrl} from './utils'
 
 describe('parseImportMapModuleCdnUrl for legacy urls', () => {
   it('returns undefined but warns if an invalid module url is given', () => {

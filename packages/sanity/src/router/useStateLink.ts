@@ -1,6 +1,7 @@
+import {type MouseEventHandler, useMemo} from 'react'
+
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
-import {type MouseEventHandler, useMemo} from 'react'
 
 const EMPTY_STATE = {}
 

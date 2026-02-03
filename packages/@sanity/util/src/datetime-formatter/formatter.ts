@@ -1,5 +1,6 @@
-import sanitizeLocale from './sanitizeLocale'
 import {format} from 'date-fns'
+
+import sanitizeLocale from './sanitizeLocale'
 
 function getMonthName(
   date: Date,

@@ -1,6 +1,7 @@
-import {chooseDatasetPrompt} from '../dataset/chooseDatasetPrompt'
 import {type CliCommandContext} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
+
+import {chooseDatasetPrompt} from '../dataset/chooseDatasetPrompt'
 
 type ResolvedApiClient = {
   projectId: string

@@ -1,5 +1,6 @@
-import {type NormalizedWorkspace} from './types'
 import {escapeRegExp} from 'lodash-es'
+
+import {type NormalizedWorkspace} from './types'
 
 /**
  * Recursively creates a matching expression.

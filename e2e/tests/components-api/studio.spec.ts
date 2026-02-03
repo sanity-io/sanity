@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Studio Components API:', () => {
   test('studio.components.layout', async ({page}) => {

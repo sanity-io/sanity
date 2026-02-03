@@ -1,7 +1,8 @@
-import {useMeasurePerformanceTelemetry} from './useMeasurePerformanceTelemetry'
-import {useWebVitalsTelemetry} from './useWebVitalsTelemetry'
 // Tracks performance metrics from the field
 import {type PropsWithChildren} from 'react'
+
+import {useMeasurePerformanceTelemetry} from './useMeasurePerformanceTelemetry'
+import {useWebVitalsTelemetry} from './useWebVitalsTelemetry'
 
 /**
  * Component that tracks performance telemetry for the Studio.

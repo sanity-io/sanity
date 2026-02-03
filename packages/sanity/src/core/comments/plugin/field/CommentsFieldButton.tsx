@@ -1,11 +1,3 @@
-import {Button, Popover, Tooltip} from '../../../../ui-components'
-import {type UserListWithPermissionsHookValue} from '../../../hooks'
-import {Translate, useTranslation} from '../../../i18n'
-import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
-import {CommentInput, type CommentInputHandle} from '../../components'
-import {hasCommentMessageValue} from '../../helpers'
-import {commentsLocaleNamespace} from '../../i18n'
-import {type CommentMessage} from '../../types'
 import {AddCommentIcon, CommentIcon} from '@sanity/icons'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
@@ -18,6 +10,15 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+
+import {Button, Popover, Tooltip} from '../../../../ui-components'
+import {type UserListWithPermissionsHookValue} from '../../../hooks'
+import {Translate, useTranslation} from '../../../i18n'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
+import {CommentInput, type CommentInputHandle} from '../../components'
+import {hasCommentMessageValue} from '../../helpers'
+import {commentsLocaleNamespace} from '../../i18n'
+import {type CommentMessage} from '../../types'
 
 const ContentStack = styled(Stack)`
   width: 320px;

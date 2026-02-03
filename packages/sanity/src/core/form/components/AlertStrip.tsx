@@ -1,7 +1,8 @@
-import {Details} from './Details'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, type CardProps, Flex} from '@sanity/ui'
 import {type HTMLProps, type ReactNode} from 'react'
+
+import {Details} from './Details'
 
 interface AlertProps extends Omit<CardProps, 'title'> {
   title: ReactNode

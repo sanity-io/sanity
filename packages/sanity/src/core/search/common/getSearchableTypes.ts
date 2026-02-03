@@ -1,5 +1,6 @@
-import {isNonNullable} from '../../util/isNonNullable'
 import {type ObjectSchemaType, type Schema, type SchemaType} from '@sanity/types'
+
+import {isNonNullable} from '../../util/isNonNullable'
 
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   Boolean(type.type && type.type.name === 'document')

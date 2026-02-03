@@ -1,7 +1,8 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import {DecoratorsStory} from './DecoratorsStory'
 /* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import {DecoratorsStory} from './DecoratorsStory'
 
 const DEFAULT_DECORATORS = [
   {

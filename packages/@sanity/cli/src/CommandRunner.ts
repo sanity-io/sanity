@@ -1,3 +1,6 @@
+import chalk from 'chalk'
+import {cloneDeep, sortBy} from 'lodash-es'
+
 import {baseCommands} from './commands'
 import {debug} from './debug'
 import cliOutputter from './outputters/cliOutputter'
@@ -20,8 +23,6 @@ import {
 } from './util/generateCommandsDocumentation'
 import {isCommandGroup} from './util/isCommandGroup'
 import {getNoSuchCommandText} from './util/noSuchCommandText'
-import chalk from 'chalk'
-import {cloneDeep, sortBy} from 'lodash-es'
 
 interface Handlers {
   outputter: CliOutputter

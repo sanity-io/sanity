@@ -1,7 +1,8 @@
-import {filterDefinitions} from './defaultFilters'
-import {createFieldDefinitions, generateFieldId, MAX_OBJECT_TRAVERSAL_DEPTH} from './fields'
 import {Schema} from '@sanity/schema'
 import {describe, expect, it} from 'vitest'
+
+import {filterDefinitions} from './defaultFilters'
+import {createFieldDefinitions, generateFieldId, MAX_OBJECT_TRAVERSAL_DEPTH} from './fields'
 
 describe('createFieldDefinitions', () => {
   it('should create a flattened list of all available fields', () => {

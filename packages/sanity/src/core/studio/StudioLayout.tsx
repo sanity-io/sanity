@@ -1,3 +1,11 @@
+/* eslint-disable @sanity/i18n/no-attribute-template-literals */
+import {Card, Flex} from '@sanity/ui'
+import {startCase} from 'lodash-es'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {NavbarContext} from 'sanity/_singletons'
+import {RouteScope, useRouter, useRouterState} from 'sanity/router'
+import {styled} from 'styled-components'
+
 import {LoadingBlock} from '../components/loadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
@@ -13,13 +21,6 @@ import {
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-/* eslint-disable @sanity/i18n/no-attribute-template-literals */
-import {Card, Flex} from '@sanity/ui'
-import {startCase} from 'lodash-es'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
-import {NavbarContext} from 'sanity/_singletons'
-import {RouteScope, useRouter, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 const DetectViteDevServerStopped = lazy(() =>
   import('./ViteDevServerStopped').then((DevServerStopped) => ({

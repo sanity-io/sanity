@@ -1,12 +1,14 @@
+import path from 'node:path'
+
+import {type CliCommandContext} from '@sanity/cli'
+import execa from 'execa'
+import oneline from 'oneline'
+import semver, {type SemVer} from 'semver'
+
 import {peerDependencies} from '../../../../package.json'
 import {determineIsApp} from './determineIsApp'
 import {readModuleVersion} from './readModuleVersion'
 import {type PartialPackageManifest, readPackageManifest} from './readPackageManifest'
-import {type CliCommandContext} from '@sanity/cli'
-import execa from 'execa'
-import path from 'node:path'
-import oneline from 'oneline'
-import semver, {type SemVer} from 'semver'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',

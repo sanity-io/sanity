@@ -1,9 +1,3 @@
-import {ContextMenuButton} from '../../../core/components/contextMenuButton/ContextMenuButton'
-import {useTranslation} from '../../../core/i18n'
-import {Popover} from '../../../ui-components/popover/Popover'
-import {RatioBox} from './styles'
-import {type VideoPlaybackTokens} from './types'
-import {VideoSkeleton} from './VideoSkeleton'
 import {Box, Card, Inline, Menu, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {
   type CSSProperties,
@@ -15,6 +9,13 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {ContextMenuButton} from '../../../core/components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../core/i18n'
+import {Popover} from '../../../ui-components/popover/Popover'
+import {RatioBox} from './styles'
+import {type VideoPlaybackTokens} from './types'
+import {VideoSkeleton} from './VideoSkeleton'
 
 const VideoPlayer = lazy(() =>
   import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),

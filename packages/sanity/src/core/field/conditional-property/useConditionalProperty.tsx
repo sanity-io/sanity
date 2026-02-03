@@ -1,7 +1,8 @@
+import {type ConditionalProperty, type Path, type SanityDocument} from '@sanity/types'
+
 import {useCurrentUser} from '../../store'
 import {useUnique} from '../../util'
 import {useCheckCondition} from './utils'
-import {type ConditionalProperty, type Path, type SanityDocument} from '@sanity/types'
 
 /**
  * @internal Not yet a stable API

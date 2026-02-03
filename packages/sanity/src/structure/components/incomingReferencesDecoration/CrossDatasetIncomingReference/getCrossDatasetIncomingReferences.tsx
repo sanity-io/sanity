@@ -1,5 +1,3 @@
-import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
-import {type CrossDatasetIncomingReference} from '../types'
 import {DocumentIcon} from '@sanity/icons'
 import {type PreviewValue} from '@sanity/types'
 import {map, type Observable, of, startWith} from 'rxjs'
@@ -13,6 +11,9 @@ import {
   prepareForPreview,
   type SanityClient,
 } from 'sanity'
+
+import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
+import {type CrossDatasetIncomingReference} from '../types'
 
 export const INITIAL_STATE = {
   documents: [],

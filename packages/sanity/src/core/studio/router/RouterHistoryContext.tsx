@@ -1,6 +1,7 @@
-import {type RouterHistory} from './types'
 import {type ReactNode, useContext} from 'react'
 import {RouterHistoryContext} from 'sanity/_singletons'
+
+import {type RouterHistory} from './types'
 
 /** @internal */
 export function RouterHistoryProvider({

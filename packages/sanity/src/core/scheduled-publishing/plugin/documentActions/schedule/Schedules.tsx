@@ -1,6 +1,7 @@
+import {Box, Stack, Text} from '@sanity/ui'
+
 import {ScheduleItem} from '../../../components/scheduleItem'
 import {type Schedule} from '../../../types'
-import {Box, Stack, Text} from '@sanity/ui'
 
 interface Props {
   schedules: Schedule[]

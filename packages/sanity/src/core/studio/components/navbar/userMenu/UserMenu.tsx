@@ -1,12 +1,3 @@
-import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
-import {UserAvatar} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {getProviderTitle} from '../../../../store'
-import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
-import {useWorkspace} from '../../../workspace'
-import {AppearanceMenu} from './ApperanceMenu'
-import {LocaleMenu} from './LocaleMenu'
-import {LoginProviderLogo} from './LoginProviderLogo'
 import {LeaveIcon} from '@sanity/icons'
 import {
   Box,
@@ -21,6 +12,16 @@ import {
 } from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+
+import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+import {UserAvatar} from '../../../../components'
+import {useTranslation} from '../../../../i18n'
+import {getProviderTitle} from '../../../../store'
+import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
+import {useWorkspace} from '../../../workspace'
+import {AppearanceMenu} from './ApperanceMenu'
+import {LocaleMenu} from './LocaleMenu'
+import {LoginProviderLogo} from './LoginProviderLogo'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;

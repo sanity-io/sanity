@@ -1,5 +1,6 @@
-import formatter from './formatter'
 import {afterAll, beforeAll, describe, expect, test, vi} from 'vitest'
+
+import formatter from './formatter'
 
 // August 8th 2025 12:00:00.123 local time in UTC
 const date = new Date('2025-08-08T13:09:08.123Z')

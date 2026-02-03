@@ -1,5 +1,3 @@
-import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
-import {imageUrlToBlob} from './utils/imageUrlToBlob'
 import {
   type ClipboardEvent,
   type ComponentType,
@@ -16,6 +14,9 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
+import {imageUrlToBlob} from './utils/imageUrlToBlob'
 
 export type FileInfo = {
   kind: DataTransferItem['kind'] // 'file' or 'string'

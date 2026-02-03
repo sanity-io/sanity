@@ -1,6 +1,7 @@
-import {type CommentIntentGetter} from '../../types'
 import {memo, type ReactNode} from 'react'
 import {CommentsIntentContext} from 'sanity/_singletons'
+
+import {type CommentIntentGetter} from '../../types'
 
 /**
  * @beta

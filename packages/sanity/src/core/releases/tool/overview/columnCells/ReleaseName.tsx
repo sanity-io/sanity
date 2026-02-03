@@ -1,3 +1,8 @@
+import {PinFilledIcon, PinIcon} from '@sanity/icons'
+import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {useRouter} from 'sanity/router'
+
 import {Button, Tooltip} from '../../../../../ui-components'
 import {PREVIEW_SIZES} from '../../../../components/previews/constants'
 import {TitleSkeleton} from '../../../../components/previews/general/DetailPreview.styled'
@@ -12,10 +17,6 @@ import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
-import {PinFilledIcon, PinIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
 
 export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   cellProps,

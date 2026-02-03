@@ -1,6 +1,7 @@
+import {isPublishedId} from '@sanity/client/csm'
+
 import {type OperationImpl} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
-import {isPublishedId} from '@sanity/client/csm'
 
 export const del: OperationImpl<[versions: string[]], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) =>

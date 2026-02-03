@@ -1,11 +1,3 @@
-import {Button} from '../../../../ui-components/button/Button'
-import {Popover} from '../../../../ui-components/popover/Popover'
-import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n'
-import {type CalendarProps} from './calendar/Calendar'
-import {type CalendarLabels} from './calendar/types'
-import {DatePicker} from './DatePicker'
-import {LazyTextInput} from './LazyTextInput'
 import {CalendarIcon} from '@sanity/icons'
 import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
 import {isPast} from 'date-fns'
@@ -22,6 +14,15 @@ import {
   useState,
 } from 'react'
 import FocusLock from 'react-focus-lock'
+
+import {Button} from '../../../../ui-components/button/Button'
+import {Popover} from '../../../../ui-components/popover/Popover'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
+import {useTranslation} from '../../../i18n'
+import {type CalendarProps} from './calendar/Calendar'
+import {type CalendarLabels} from './calendar/types'
+import {DatePicker} from './DatePicker'
+import {LazyTextInput} from './LazyTextInput'
 
 export interface DateTimeInputProps {
   customValidity?: string

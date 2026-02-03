@@ -1,6 +1,7 @@
+import {describe, expect, test} from 'vitest'
+
 // Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
 import {arrayToJSONMatchPath} from '../src/jsonpath/arrayToJSONMatchPath'
-import {describe, expect, test} from 'vitest'
 
 const cases: [any, string][] = [
   [['a', 'b', 'c'], 'a.b.c'],

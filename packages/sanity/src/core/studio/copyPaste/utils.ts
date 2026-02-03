@@ -1,5 +1,3 @@
-import {isString} from '../../util/isString'
-import {type SanityClipboardItem} from './types'
 import {toHTML} from '@portabletext/to-html'
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {
@@ -10,6 +8,9 @@ import {
   type Path,
   type PortableTextBlock,
 } from '@sanity/types'
+
+import {isString} from '../../util/isString'
+import {type SanityClipboardItem} from './types'
 
 /**
  * The custom mimetype used when populating a ClipboardItem. Note that this

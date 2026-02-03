@@ -1,6 +1,7 @@
+import {describe, expect, it} from 'vitest'
+
 import {discardChainTo, toOrderedChains} from '../eventChainUtils'
 import {mutationEvent} from './test-utils'
-import {describe, expect, it} from 'vitest'
 
 describe(toOrderedChains.name, () => {
   it('returns a list of chains', () => {

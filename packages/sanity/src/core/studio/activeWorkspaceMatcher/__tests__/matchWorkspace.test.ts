@@ -1,10 +1,12 @@
+// oxlint-disable no-explicit-any
+import assert from 'node:assert'
+
+import {describe, expect, it} from 'vitest'
+
 import {type WorkspaceLike} from '../../workspaces'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
 import {matchWorkspace as actualMatchWorkspace} from '../matchWorkspace'
 import {normalizedWorkspaces} from '../useNormalizedWorkspaces'
-// oxlint-disable no-explicit-any
-import assert from 'node:assert'
-import {describe, expect, it} from 'vitest'
 
 describe('matchWorkspace', () => {
   const matchWorkspace = ({

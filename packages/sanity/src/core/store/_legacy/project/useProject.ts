@@ -1,6 +1,7 @@
+import {useEffect, useState} from 'react'
+
 import {useProjectStore} from '../datastores'
 import {type ProjectData} from './types'
-import {useEffect, useState} from 'react'
 
 /** @internal */
 export function useProject(): {value: ProjectData | null} {

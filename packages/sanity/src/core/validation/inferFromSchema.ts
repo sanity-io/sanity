@@ -1,5 +1,6 @@
-import {inferFromSchemaType} from './inferFromSchemaType'
 import {type Schema} from '@sanity/types'
+
+import {inferFromSchemaType} from './inferFromSchemaType'
 
 // Note: Mutates schema. Refactor when @sanity/schema supports middlewares
 export function inferFromSchema(schema: Schema): Schema {

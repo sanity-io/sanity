@@ -1,5 +1,6 @@
-import type {StudioAnnouncementsContextValue} from '../../core/studio/studioAnnouncements/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {StudioAnnouncementsContextValue} from '../../core/studio/studioAnnouncements/types'
 
 /**
  * @internal

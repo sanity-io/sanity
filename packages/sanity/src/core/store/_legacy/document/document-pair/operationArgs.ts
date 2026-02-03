@@ -1,3 +1,8 @@
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {combineLatest, type Observable} from 'rxjs'
+import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
+
 import {type HistoryStore} from '../../history'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -5,10 +10,6 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {type OperationArgs} from './operations'
 import {snapshotPair} from './snapshotPair'
-import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
-import {combineLatest, type Observable} from 'rxjs'
-import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
 export const operationArgs = memoize(
   (

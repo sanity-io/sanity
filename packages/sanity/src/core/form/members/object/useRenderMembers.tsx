@@ -1,7 +1,8 @@
+import {useMemo} from 'react'
+
 import {isDev} from '../../../environment'
 import {type ObjectMember} from '../../store/types/members'
 import {type ObjectInputProps} from '../../types/inputProps'
-import {useMemo} from 'react'
 
 export function useRenderMembers(
   schemaType: ObjectInputProps['schemaType'],

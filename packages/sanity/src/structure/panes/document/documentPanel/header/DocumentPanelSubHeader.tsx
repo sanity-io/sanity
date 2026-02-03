@@ -1,3 +1,7 @@
+import {ArrowLeftIcon} from '@sanity/icons'
+import {memo, useMemo} from 'react'
+import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
+
 import {Button} from '../../../../../ui-components'
 import {PaneHeader, usePane, usePaneRouter} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -6,9 +10,6 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {FavoriteToggle} from './FavoriteToggle'
-import {ArrowLeftIcon} from '@sanity/icons'
-import {memo, useMemo} from 'react'
-import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
 
 /**
  * When not collapsed this component will render the title and the tabs.

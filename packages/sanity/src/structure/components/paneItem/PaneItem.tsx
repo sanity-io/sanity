@@ -1,6 +1,3 @@
-import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
-import {PaneItemPreview} from './PaneItemPreview'
 import {ChevronRightIcon, DocumentIcon, FolderIcon} from '@sanity/icons'
 import {
   isSanityDocument,
@@ -31,6 +28,10 @@ import {
   useEditState,
   useSchema,
 } from 'sanity'
+
+import {MissingSchemaType} from '../MissingSchemaType'
+import {usePaneRouter} from '../paneRouter'
+import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string

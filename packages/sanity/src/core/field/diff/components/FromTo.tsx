@@ -1,6 +1,7 @@
-import {FromToArrow} from './FromToArrow'
 import {Flex, Grid, rem, useTheme} from '@sanity/ui'
 import {forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+
+import {FromToArrow} from './FromToArrow'
 
 /** @internal */
 export type FromToProps = {

@@ -1,7 +1,8 @@
-import {createSchema} from '../../../schema'
-import {deriveSearchWeightsFromType2024} from '../deriveSearchWeightsFromType2024'
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+
+import {createSchema} from '../../../schema'
+import {deriveSearchWeightsFromType2024} from '../deriveSearchWeightsFromType2024'
 
 describe('deriveSearchWeightsFromType2024', () => {
   it('works for schemas that branch out a lot', () => {

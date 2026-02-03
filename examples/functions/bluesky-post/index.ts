@@ -1,6 +1,7 @@
+import {env} from 'node:process'
+
 import {BlueskyStrategy, Client} from '@humanwhocodes/crosspost'
 import {documentEventHandler} from '@sanity/functions'
-import {env} from 'node:process'
 
 const {BLUESKY_USERNAME = '', BLUESKY_PASSWORD = '', BLUESKY_HOST = 'bsky.social'} = env
 

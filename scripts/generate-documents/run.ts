@@ -1,6 +1,7 @@
-import {type DocGenTemplate} from './types'
 import {type SanityClient} from '@sanity/client'
 import {mergeMap, range} from 'rxjs'
+
+import {type DocGenTemplate} from './types'
 
 export type ProgramArgs = {
   client: SanityClient

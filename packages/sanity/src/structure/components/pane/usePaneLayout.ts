@@ -1,6 +1,7 @@
-import {type PaneLayoutContextValue} from './types'
 import {useContext} from 'react'
 import {PaneLayoutContext} from 'sanity/_singletons'
+
+import {type PaneLayoutContextValue} from './types'
 
 /**
  *

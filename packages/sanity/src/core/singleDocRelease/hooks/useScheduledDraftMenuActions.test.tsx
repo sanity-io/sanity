@@ -1,3 +1,8 @@
+import {Menu} from '@sanity/ui'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
+
 // Now we can safely import the hook and other dependencies
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {MenuItem} from '../../../ui-components'
@@ -10,10 +15,6 @@ import {
   type UseScheduledDraftMenuActionsOptions,
 } from './useScheduledDraftMenuActions'
 import {useScheduleDraftOperations} from './useScheduleDraftOperations'
-import {Menu} from '@sanity/ui'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Mock the dialog components BEFORE importing the hook to prevent dependency issues
 vi.mock('../components/PublishScheduledDraftDialog', () => ({

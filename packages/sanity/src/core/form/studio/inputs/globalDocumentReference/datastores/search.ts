@@ -1,8 +1,3 @@
-import {type Groq2024SearchResults} from '../../../../../search'
-import {createSearchQuery} from '../../../../../search/groq2024/createSearchQuery'
-import {getNextCursor} from '../../../../../search/groq2024/getNextCursor'
-import {type SearchParams} from '../../../../../search/weighted/createSearchQuery'
-import {collate} from '../../../../../util'
 import {type SanityClient} from '@sanity/client'
 import {
   type GlobalDocumentReferenceSchemaType,
@@ -12,6 +7,12 @@ import {
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
+
+import {type Groq2024SearchResults} from '../../../../../search'
+import {createSearchQuery} from '../../../../../search/groq2024/createSearchQuery'
+import {getNextCursor} from '../../../../../search/groq2024/getNextCursor'
+import {type SearchParams} from '../../../../../search/weighted/createSearchQuery'
+import {collate} from '../../../../../util'
 
 interface SearchHit {
   id: string

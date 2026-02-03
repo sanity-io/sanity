@@ -1,6 +1,7 @@
+import {type ReactNode, useCallback, useEffect, useRef} from 'react'
+
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useSearchHotkeys} from '../../hooks/useSearchHotkeys'
-import {type ReactNode, useCallback, useEffect, useRef} from 'react'
 
 interface SearchWrapperProps {
   children: ReactNode

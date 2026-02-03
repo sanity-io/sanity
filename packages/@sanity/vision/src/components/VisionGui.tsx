@@ -1,31 +1,3 @@
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
-import {visionLocaleNamespace} from '../i18n'
-import {
-  getActivePerspective,
-  isSupportedPerspective,
-  isVirtualPerspective,
-  type SupportedPerspective,
-} from '../perspectives'
-import {type VisionProps} from '../types'
-import {encodeQueryString} from '../util/encodeQueryString'
-import {getLocalStorage} from '../util/localStorage'
-import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
-import {prefixApiVersion} from '../util/prefixApiVersion'
-import {validateApiVersion} from '../util/validateApiVersion'
-import {ParamsEditor, parseParams} from './ParamsEditor'
-import {QueryRecall} from './QueryRecall'
-import {usePaneSize} from './usePaneSize'
-import {
-  InputBackgroundContainerLeft,
-  InputContainer,
-  Root,
-  SplitpaneContainer,
-  StyledLabel,
-} from './VisionGui.styled'
-import {VisionGuiControls} from './VisionGuiControls'
-import {VisionGuiHeader} from './VisionGuiHeader'
-import {VisionGuiResult} from './VisionGuiResult'
 /* eslint-disable max-statements */
 import {SplitPane} from '@rexxars/react-split-pane'
 import {
@@ -59,6 +31,35 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
+
+import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
+import {visionLocaleNamespace} from '../i18n'
+import {
+  getActivePerspective,
+  isSupportedPerspective,
+  isVirtualPerspective,
+  type SupportedPerspective,
+} from '../perspectives'
+import {type VisionProps} from '../types'
+import {encodeQueryString} from '../util/encodeQueryString'
+import {getLocalStorage} from '../util/localStorage'
+import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
+import {prefixApiVersion} from '../util/prefixApiVersion'
+import {validateApiVersion} from '../util/validateApiVersion'
+import {ParamsEditor, parseParams} from './ParamsEditor'
+import {QueryRecall} from './QueryRecall'
+import {usePaneSize} from './usePaneSize'
+import {
+  InputBackgroundContainerLeft,
+  InputContainer,
+  Root,
+  SplitpaneContainer,
+  StyledLabel,
+} from './VisionGui.styled'
+import {VisionGuiControls} from './VisionGuiControls'
+import {VisionGuiHeader} from './VisionGuiHeader'
+import {VisionGuiResult} from './VisionGuiResult'
 
 function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   if (!node || !other) {

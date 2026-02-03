@@ -1,13 +1,3 @@
-import {type PortableTextMarker} from '../..'
-import {type FormNodePresence} from '../../presence'
-import {
-  type RenderAnnotationCallback,
-  type RenderArrayOfObjectsItemCallback,
-  type RenderBlockCallback,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderPreviewCallback,
-} from './renderCallback'
 import {type MarkdownShortcutsPluginProps} from '@portabletext/plugin-markdown-shortcuts'
 import {type PasteLinkPluginProps} from '@portabletext/plugin-paste-link'
 import {type TypographyPluginProps} from '@portabletext/plugin-typography'
@@ -25,6 +15,17 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {type ReactNode} from 'react'
+
+import {type PortableTextMarker} from '../..'
+import {type FormNodePresence} from '../../presence'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from './renderCallback'
 
 /**
  * Props for rendering text decorations in Portable Text blocks.

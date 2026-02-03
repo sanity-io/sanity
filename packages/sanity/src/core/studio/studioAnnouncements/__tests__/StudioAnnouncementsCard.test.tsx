@@ -1,13 +1,14 @@
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../config/defineConfig'
-import {ProductAnnouncementCardSeen} from '../__telemetry__/studioAnnouncements.telemetry'
-import {StudioAnnouncementsCard} from '../StudioAnnouncementsCard'
 /* eslint-disable camelcase */
 import {Menu} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../config/defineConfig'
+import {ProductAnnouncementCardSeen} from '../__telemetry__/studioAnnouncements.telemetry'
+import {StudioAnnouncementsCard} from '../StudioAnnouncementsCard'
 
 const config = defineConfig({
   projectId: 'test',

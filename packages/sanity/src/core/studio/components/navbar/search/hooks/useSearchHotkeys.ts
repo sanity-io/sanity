@@ -1,7 +1,8 @@
-import {GLOBAL_SEARCH_KEY} from '../constants'
 import {useGlobalKeyDown, useLayer} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {useCallback} from 'react'
+
+import {GLOBAL_SEARCH_KEY} from '../constants'
 
 const isSearchHotKey = isHotkey(`mod+${GLOBAL_SEARCH_KEY}`)
 const isEscape = isHotkey('escape')

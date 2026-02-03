@@ -1,15 +1,16 @@
-import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../config/defineConfig'
-import {WhatsNewHelpMenuItemClicked} from '../__telemetry__/studioAnnouncements.telemetry'
-import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'
-import {type StudioAnnouncementDocument} from '../types'
-import {useStudioAnnouncements} from '../useStudioAnnouncements'
 /* eslint-disable camelcase */
 import {Menu} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../config/defineConfig'
+import {WhatsNewHelpMenuItemClicked} from '../__telemetry__/studioAnnouncements.telemetry'
+import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'
+import {type StudioAnnouncementDocument} from '../types'
+import {useStudioAnnouncements} from '../useStudioAnnouncements'
 
 vi.mock('../useStudioAnnouncements')
 vi.mock('@sanity/telemetry/react', () => ({

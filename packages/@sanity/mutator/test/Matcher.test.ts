@@ -1,6 +1,7 @@
+import {expect, test} from 'vitest'
+
 import {Matcher} from '../src/jsonpath/Matcher'
 import {PlainProbe} from '../src/jsonpath/PlainProbe'
-import {expect, test} from 'vitest'
 
 // Just a couple of basic tests to check that basic object descent works.
 // The real hardcore testing of the matcher is done indirectly in the

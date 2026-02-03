@@ -1,7 +1,8 @@
+import {Spinner} from '@sanity/ui'
+
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {useBundleDocuments} from '../../detail/useBundleDocuments'
 import {ValidationProgressIndicator} from '../../detail/ValidationProgressIndicator'
-import {Spinner} from '@sanity/ui'
 
 export function ReleaseColumnValidationLoading({releaseId}: {releaseId: string}) {
   const rId = getReleaseIdFromReleaseDocumentId(releaseId)

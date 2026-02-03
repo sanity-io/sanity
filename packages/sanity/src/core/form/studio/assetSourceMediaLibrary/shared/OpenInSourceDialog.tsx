@@ -1,3 +1,8 @@
+import {type PluginPayload} from '@sanity/media-library-types'
+import {type Asset} from '@sanity/types'
+import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {type ReactNode, useCallback, useMemo} from 'react'
+
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
@@ -7,10 +12,6 @@ import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type PluginPostMessage} from '../types'
 import {AppDialog} from './Dialog'
 import {Iframe} from './Iframe'
-import {type PluginPayload} from '@sanity/media-library-types'
-import {type Asset} from '@sanity/types'
-import {Box, Card, Flex, useTheme} from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo} from 'react'
 
 export interface OpenInSourceDialogProps {
   asset: Asset

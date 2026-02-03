@@ -1,3 +1,5 @@
+import {expect, type Page} from '@playwright/test'
+
 import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
@@ -8,7 +10,6 @@ import {
   getRandomReleaseId,
   skipIfBrowser,
 } from '../utils/methods'
-import {expect, type Page} from '@playwright/test'
 
 test.describe('Custom Release Actions', () => {
   // Initialize IDs at module level to avoid linting issues

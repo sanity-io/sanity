@@ -1,3 +1,7 @@
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useEffect, useRef} from 'react'
+import {onCLS, onFCP, onINP, onLCP, onTTFB} from 'web-vitals/attribution'
+
 import {
   PerformanceCLSMeasured,
   PerformanceFCPMeasured,
@@ -5,9 +9,6 @@ import {
   PerformanceLCPMeasured,
   PerformanceTTFBMeasured,
 } from '../__telemetry__/performance.telemetry'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useRef} from 'react'
-import {onCLS, onFCP, onINP, onLCP, onTTFB} from 'web-vitals/attribution'
 
 /**
  * Tracks Core Web Vitals using Google's web-vitals library.

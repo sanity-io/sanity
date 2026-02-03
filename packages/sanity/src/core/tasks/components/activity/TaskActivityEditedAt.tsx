@@ -1,8 +1,9 @@
+import {Box, Flex, Text} from '@sanity/ui'
+import {memo} from 'react'
+
 import {Tooltip} from '../../../../ui-components'
 import {getChangeDetails, NoWrap, UserName, useUpdatedTimeAgo} from './helpers'
 import {type FieldChange} from './helpers/parseTransactions'
-import {Box, Flex, Text} from '@sanity/ui'
-import {memo} from 'react'
 
 interface EditedAtProps {
   activity: FieldChange

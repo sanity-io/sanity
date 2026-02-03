@@ -1,10 +1,11 @@
+import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
+import {useMemo} from 'react'
+
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
 import {useWorkspace} from '../studio/workspace'
 import {getVersionId, isDraftId} from '../util/draftUtils'
 import {useFilteredReleases} from './useFilteredReleases'
-import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
-import {useMemo} from 'react'
 
 interface Options extends StrictVersionLayeringOptions {
   displayed: Partial<SanityDocument> | null

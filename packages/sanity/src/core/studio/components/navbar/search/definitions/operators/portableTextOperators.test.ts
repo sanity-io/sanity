@@ -1,5 +1,6 @@
-import {portableTextOperators} from './portableTextOperators'
 import {describe, expect, it} from 'vitest'
+
+import {portableTextOperators} from './portableTextOperators'
 
 const fieldPath = 'body'
 const value = 'foo'

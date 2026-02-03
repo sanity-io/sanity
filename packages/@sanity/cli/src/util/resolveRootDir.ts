@@ -1,6 +1,7 @@
-import {debug} from '../debug'
 import fs from 'node:fs'
 import path from 'node:path'
+
+import {debug} from '../debug'
 
 /**
  * Resolve project root directory, falling back to cwd if it cannot be found

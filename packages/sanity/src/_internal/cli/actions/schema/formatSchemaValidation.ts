@@ -1,8 +1,9 @@
+import {isatty} from 'node:tty'
+
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaValidationProblemGroup, type SchemaValidationProblemPath} from '@sanity/types'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
-import {isatty} from 'node:tty'
 
 const isTty = isatty(1)
 

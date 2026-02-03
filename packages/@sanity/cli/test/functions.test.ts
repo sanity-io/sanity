@@ -1,9 +1,10 @@
+import {describe, expect, it, vi} from 'vitest'
+
 import devFunctionsCommand from '../src/commands/functions/devFunctionsCommand'
 import envFunctionsCommand from '../src/commands/functions/envFunctionsCommand'
 import logsFunctionsCommand from '../src/commands/functions/logsFunctionsCommand'
 import testFunctionsCommand from '../src/commands/functions/testFunctionsCommand'
 import {type CliCommandArguments, type CliCommandContext} from '../src/types'
-import {describe, expect, it, vi} from 'vitest'
 
 const mockCores = {
   functionDevCore: vi.fn().mockResolvedValue({success: true}),

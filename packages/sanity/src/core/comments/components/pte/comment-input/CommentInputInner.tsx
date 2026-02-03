@@ -1,3 +1,11 @@
+import {type RenderBlockFunction} from '@portabletext/editor'
+import {type CurrentUser} from '@sanity/types'
+import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {useCallback} from 'react'
+import {css, styled} from 'styled-components'
+
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useUser} from '../../../../store'
@@ -6,13 +14,6 @@ import {CommentsAvatar} from '../../avatars'
 import {MentionIcon, SendIcon} from '../../icons'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
-import {type RenderBlockFunction} from '@portabletext/editor'
-import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
 
 const EditableWrap = styled(Box)`
   max-height: 20vh;

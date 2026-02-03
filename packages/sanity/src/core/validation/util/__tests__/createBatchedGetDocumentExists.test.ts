@@ -1,11 +1,12 @@
+import {type SanityClient} from '@sanity/client'
+import {from, map, of} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
+
 import {
   createBatchedGetDocumentExists,
   MAX_BUFFER_SIZE,
   MAX_REQUEST_CONCURRENCY,
 } from '../createBatchedGetDocumentExists'
-import {type SanityClient} from '@sanity/client'
-import {from, map, of} from 'rxjs'
-import {describe, expect, it, vi} from 'vitest'
 
 const timeout = (milliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, milliseconds))

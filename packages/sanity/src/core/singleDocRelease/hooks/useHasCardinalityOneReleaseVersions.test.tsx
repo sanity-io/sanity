@@ -1,11 +1,12 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {
   activeASAPRelease,
   activeScheduledRelease,
 } from '../../releases/__fixtures__/release.fixture'
 import {useHasCardinalityOneReleaseVersions} from './useHasCardinalityOneReleaseVersions'
-import {type ReleaseDocument} from '@sanity/client'
-import {renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../releases/hooks/useDocumentVersions')
 vi.mock('../../releases/store/useActiveReleases')

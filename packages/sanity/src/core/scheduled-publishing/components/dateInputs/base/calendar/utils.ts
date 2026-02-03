@@ -1,5 +1,6 @@
-import {TAIL_WEEKDAYS} from './constants'
 import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
+
+import {TAIL_WEEKDAYS} from './constants'
 
 export const getWeekStartsOfMonth = (date: Date): Date[] => {
   const firstDay = startOfMonth(date)

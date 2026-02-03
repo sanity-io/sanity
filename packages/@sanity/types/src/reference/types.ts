@@ -1,8 +1,9 @@
+import {type ClientPerspective, type SanityClient, type StackablePerspective} from '@sanity/client'
+
 import {type SanityDocument} from '../documents'
 import {type Path} from '../paths'
 import {type BaseSchemaTypeOptions} from '../schema'
 import {type SearchStrategy} from '../search/types'
-import {type ClientPerspective, type SanityClient, type StackablePerspective} from '@sanity/client'
 
 /** @public */
 export interface Reference {

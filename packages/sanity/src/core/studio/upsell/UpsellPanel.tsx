@@ -1,11 +1,12 @@
-import {Button} from '../../../ui-components'
-import {type UpsellData} from './types'
-import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 import {LaunchIcon} from '@sanity/icons'
 import {_responsive, Box, Card, Flex, type FlexDirection} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+
+import {Button} from '../../../ui-components'
+import {type UpsellData} from './types'
+import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
 type Layout = 'vertical' | 'horizontal'
 const Image = styled.img<{$direction: FlexDirection[]}>((props) => {

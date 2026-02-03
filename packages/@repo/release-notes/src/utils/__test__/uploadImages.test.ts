@@ -1,9 +1,10 @@
+import {type SanityImageAssetDocument} from '@sanity/client'
+import {describe, expect, it, vi} from 'vitest'
+
 import {markdownToPortableText} from '../portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes} from '../pullRequestReleaseNotes'
 import {uploadImages} from '../uploadImages'
 import {keyGenerator, readFixture} from './helpers'
-import {type SanityImageAssetDocument} from '@sanity/client'
-import {describe, expect, it, vi} from 'vitest'
 
 const assetDocument = ({id}: {id: string}): SanityImageAssetDocument => ({
   _id: id,

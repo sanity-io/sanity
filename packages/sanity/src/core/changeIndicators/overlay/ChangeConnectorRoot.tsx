@@ -1,9 +1,10 @@
-import {ScrollContainer} from '../../components/scroll'
-import {ChangeIndicatorsTracker} from '../tracker'
-import {ConnectorsOverlay} from './ConnectorsOverlay'
 import {type Path} from '@sanity/types'
 import {type ReactNode, useMemo, useState} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
+
+import {ScrollContainer} from '../../components/scroll'
+import {ChangeIndicatorsTracker} from '../tracker'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
 
 /** @internal */
 export interface ChangeConnectorRootProps {

@@ -1,12 +1,13 @@
+import {TrashIcon} from '@sanity/icons'
+import {Box, Menu} from '@sanity/ui'
+import {useId} from 'react'
+
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../../i18n'
 import {type ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
 import {IncompatibleItemType} from './IncompatibleItemType'
-import {TrashIcon} from '@sanity/icons'
-import {Box, Menu} from '@sanity/ui'
-import {useId} from 'react'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 

@@ -1,3 +1,11 @@
+import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
+import {hues} from '@sanity/color'
+import {ImageIcon} from '@sanity/icons'
+import {createImageUrlBuilder} from '@sanity/image-url'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {type SyntheticEvent, useMemo, useState} from 'react'
+import {styled} from 'styled-components'
+
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useDocumentValues} from '../../../../store'
@@ -6,13 +14,6 @@ import {MetaInfo} from '../../../diff'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
 import {type ImagePreviewProps, type MinimalAsset} from './types'
-import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
-import {hues} from '@sanity/color'
-import {ImageIcon} from '@sanity/icons'
-import {createImageUrlBuilder} from '@sanity/image-url'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {type SyntheticEvent, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 
 const ASSET_FIELDS = ['originalFilename']
 

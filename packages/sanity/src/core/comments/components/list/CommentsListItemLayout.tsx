@@ -1,3 +1,22 @@
+/* eslint-disable complexity */
+import {hues} from '@sanity/color'
+import {type CurrentUser} from '@sanity/types'
+import {
+  type AvatarSize,
+  Box,
+  Card,
+  Flex,
+  Stack,
+  Text,
+  TextSkeleton,
+  useClickOutsideEvent,
+} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {IntentLink} from 'sanity/router'
+import {css, styled} from 'styled-components'
+
 import {useDidUpdate} from '../../../form'
 import {
   type RelativeTimeOptions,
@@ -25,24 +44,6 @@ import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
-/* eslint-disable complexity */
-import {hues} from '@sanity/color'
-import {type CurrentUser} from '@sanity/types'
-import {
-  type AvatarSize,
-  Box,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextSkeleton,
-  useClickOutsideEvent,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 

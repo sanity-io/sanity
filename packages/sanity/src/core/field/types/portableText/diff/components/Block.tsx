@@ -1,3 +1,8 @@
+import {type Path, type PortableTextTextBlock} from '@sanity/types'
+import {Box, Card, Stack, Text} from '@sanity/ui'
+import {type MouseEvent, useCallback, useContext} from 'react'
+import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
+
 import {useTranslation} from '../../../../../i18n'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
@@ -5,10 +10,6 @@ import {type PortableTextDiff} from '../types'
 import {Blockquote} from './Blockquote'
 import {Header} from './Header'
 import {Paragraph} from './Paragraph'
-import {type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Card, Stack, Text} from '@sanity/ui'
-import {type MouseEvent, useCallback, useContext} from 'react'
-import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 
 const EMPTY_PATH: Path = []
 

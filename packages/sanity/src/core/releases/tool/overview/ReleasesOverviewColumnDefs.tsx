@@ -1,3 +1,8 @@
+import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Card, Flex, Text} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+import {type TFunction} from 'i18next'
+
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
@@ -11,10 +16,6 @@ import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
-import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Text} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type TFunction} from 'i18next'
 
 const enableColumnFormMode =
   (currentMode: Mode) => (column: Column<TableRelease>, expectedMode: Mode | 'all') => {

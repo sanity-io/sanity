@@ -1,6 +1,7 @@
+import {type CliCommandContext, type CliPrompter} from '@sanity/cli'
+
 import {type ProjectRole, type TokenResponse} from '../../commands/tokens/types'
 import {isInteractive} from '../../util/isInteractive'
-import {type CliCommandContext, type CliPrompter} from '@sanity/cli'
 
 interface AddTokenFlags {
   role?: string

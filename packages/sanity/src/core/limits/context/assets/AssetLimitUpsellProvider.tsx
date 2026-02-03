@@ -1,7 +1,8 @@
-import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
-import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {type PropsWithChildren, useContext} from 'react'
 import {AssetLimitUpsellContext, type AssetLimitUpsellContextValue} from 'sanity/_singletons'
+
+import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 
 export function AssetLimitUpsellProvider({children}: PropsWithChildren) {
   const contextValue = useUpsellContext({

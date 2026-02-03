@@ -1,31 +1,3 @@
-import {usePerspective} from '../../../perspective/usePerspective'
-import {EMPTY_ARRAY} from '../../../util'
-import {pathToString} from '../../../validation/util/pathToString'
-import {
-  PortableTextInputCollapsed,
-  PortableTextInputExpanded,
-} from '../../__telemetry__/form.telemetry'
-import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
-import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type PortableTextInputProps} from '../../types'
-import {Compositor} from './Compositor'
-import {useFullscreenPTE} from './contexts/fullscreen'
-import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
-import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
-import {PortableTextMemberSchemaTypesProvider} from './contexts/PortableTextMemberSchemaTypes'
-import {
-  type PortableTextOptimisticDiffApi,
-  useOptimisticPortableTextDiff,
-} from './diff/useOptimisticPortableTextDiff'
-import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
-import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import {PortableTextEditorPlugins} from './object/Plugins'
-import {
-  type PresenceCursorDecorationsHookProps,
-  usePresenceCursorDecorations,
-} from './presence-cursors'
-import {usePatches} from './usePatches'
 import {
   type EditorChange,
   type EditorEmittedEvent,
@@ -54,6 +26,35 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import {usePerspective} from '../../../perspective/usePerspective'
+import {EMPTY_ARRAY} from '../../../util'
+import {pathToString} from '../../../validation/util/pathToString'
+import {
+  PortableTextInputCollapsed,
+  PortableTextInputExpanded,
+} from '../../__telemetry__/form.telemetry'
+import {SANITY_PATCH_TYPE} from '../../patch'
+import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {immutableReconcile} from '../../store/utils/immutableReconcile'
+import {type PortableTextInputProps} from '../../types'
+import {Compositor} from './Compositor'
+import {useFullscreenPTE} from './contexts/fullscreen'
+import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
+import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
+import {PortableTextMemberSchemaTypesProvider} from './contexts/PortableTextMemberSchemaTypes'
+import {
+  type PortableTextOptimisticDiffApi,
+  useOptimisticPortableTextDiff,
+} from './diff/useOptimisticPortableTextDiff'
+import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
+import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {PortableTextEditorPlugins} from './object/Plugins'
+import {
+  type PresenceCursorDecorationsHookProps,
+  usePresenceCursorDecorations,
+} from './presence-cursors'
+import {usePatches} from './usePatches'
 
 function keyGenerator() {
   return randomKey(12)

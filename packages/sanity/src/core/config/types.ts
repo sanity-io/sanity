@@ -1,3 +1,22 @@
+import {type BifurClient} from '@sanity/bifur-client'
+import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
+import {
+  type AssetSource,
+  type CurrentUser,
+  type ObjectSchemaType,
+  type SanityDocumentLike,
+  type Schema,
+  type SchemaType,
+  type SchemaTypeDefinition,
+  type SearchStrategy,
+} from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+import {type i18n} from 'i18next'
+import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
+import {type Observable} from 'rxjs'
+import {type Router, type RouterState} from 'sanity/router'
+
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
 import {type AuthStore} from '../store'
@@ -17,24 +36,6 @@ import {
 import {type FormComponents} from './form'
 import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
-import {type BifurClient} from '@sanity/bifur-client'
-import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
-import {
-  type AssetSource,
-  type CurrentUser,
-  type ObjectSchemaType,
-  type SanityDocumentLike,
-  type Schema,
-  type SchemaType,
-  type SchemaTypeDefinition,
-  type SearchStrategy,
-} from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type i18n} from 'i18next'
-import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
-import {type Observable} from 'rxjs'
-import {type Router, type RouterState} from 'sanity/router'
 
 /**
  * @hidden

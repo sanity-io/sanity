@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Array revert changes', () => {
   // eslint-disable-next-line max-statements

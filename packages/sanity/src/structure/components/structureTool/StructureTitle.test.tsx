@@ -1,3 +1,8 @@
+import {render, waitFor} from '@testing-library/react'
+// eslint-disable-next-line no-restricted-imports
+import * as SANITY from 'sanity'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
@@ -6,10 +11,6 @@ import {type StructureContext} from '../../structureBuilder'
 import {type Panes} from '../../structureResolvers'
 import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
-import {render, waitFor} from '@testing-library/react'
-// eslint-disable-next-line no-restricted-imports
-import * as SANITY from 'sanity'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 vi.mock('../../hooks/useDocumentLastRev', () => ({
   useDocumentLastRev: vi.fn(() => ({lastRevisionDocument: null, loading: false})),

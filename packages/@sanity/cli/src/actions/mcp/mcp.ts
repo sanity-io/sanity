@@ -1,12 +1,14 @@
+import {existsSync} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import {applyEdits, modify} from 'jsonc-parser'
+
 import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../../types'
 import {getCliToken} from '../../util/clientWrapper'
 import {NO_EDITORS_DETECTED_MESSAGE} from './constants'
 import {EDITOR_CONFIGS, type EditorName} from './editorConfigs'
 import {detectAvailableEditors, type Editor} from './editors'
-import {applyEdits, modify} from 'jsonc-parser'
-import {existsSync} from 'node:fs'
-import fs from 'node:fs/promises'
-import path from 'node:path'
 
 export interface MCPSetupResult {
   detectedEditors: EditorName[]

@@ -1,8 +1,3 @@
-import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
-import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
-import {type PathSyncChannel} from '../types/pathSyncChannel'
-import {findRelease} from '../utils/findRelease'
-import {Scroller} from './Scroller'
 import {type Path, type SanityDocument} from '@sanity/types'
 import {
   BoundaryElementProvider,
@@ -41,6 +36,12 @@ import {
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+
+import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
+import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
+import {type PathSyncChannel} from '../types/pathSyncChannel'
+import {findRelease} from '../utils/findRelease'
+import {Scroller} from './Scroller'
 
 const DiffViewPaneLayout = styled(Card)`
   position: relative;

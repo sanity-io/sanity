@@ -1,9 +1,10 @@
-import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-import {ROOT_PATH} from '../../../StringInput/StringInputPortableText/StringInputPortableText'
-import {DeletedSegment, InsertedSegment} from './segments'
 import {type RangeDecoration} from '@portabletext/editor'
 import {type Diff} from '@sanity/diff'
 import {type Path} from '@sanity/types'
+
+import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
+import {ROOT_PATH} from '../../../StringInput/StringInputPortableText/StringInputPortableText'
+import {DeletedSegment, InsertedSegment} from './segments'
 
 interface ComputeStringDiffRangeDecorationsOptions {
   diff: Diff<ProvenanceDiffAnnotation>

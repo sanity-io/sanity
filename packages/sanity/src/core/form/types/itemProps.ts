@@ -1,7 +1,3 @@
-import {type FormNodePresence} from '../../presence'
-import {type NodeDiffProps, type ProvenanceDiffAnnotation} from '../store'
-import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from './event'
-import {type ObjectInputProps} from './inputProps'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -19,6 +15,11 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type FocusEvent, type ReactNode} from 'react'
+
+import {type FormNodePresence} from '../../presence'
+import {type NodeDiffProps, type ProvenanceDiffAnnotation} from '../store'
+import {type ArrayInputCopyEvent, type ArrayInputInsertEvent} from './event'
+import {type ObjectInputProps} from './inputProps'
 
 /** @public */
 export type ObjectItem = {

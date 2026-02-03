@@ -1,12 +1,3 @@
-import {type Source} from '../../../../config'
-import {type FIXME} from '../../../../FIXME'
-import {useSource} from '../../../../studio'
-import {useFormValue} from '../../../contexts/FormValue'
-import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput'
-import {type ObjectInputProps} from '../../../types'
-import {getReferenceClient} from './datastores/getReferenceClient'
-import {createGetReferenceInfo} from './datastores/getReferenceInfo'
-import {search} from './datastores/search'
 import {
   type GlobalDocumentReferenceSchemaType,
   type GlobalDocumentReferenceValue,
@@ -19,6 +10,16 @@ import {get} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
+
+import {type Source} from '../../../../config'
+import {type FIXME} from '../../../../FIXME'
+import {useSource} from '../../../../studio'
+import {useFormValue} from '../../../contexts/FormValue'
+import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput'
+import {type ObjectInputProps} from '../../../types'
+import {getReferenceClient} from './datastores/getReferenceClient'
+import {createGetReferenceInfo} from './datastores/getReferenceInfo'
+import {search} from './datastores/search'
 
 async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,

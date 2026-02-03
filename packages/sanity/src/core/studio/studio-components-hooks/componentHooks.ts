@@ -1,3 +1,5 @@
+import {type ComponentType} from 'react'
+
 import {useMiddlewareComponents} from '../../config'
 import {
   type ActiveToolLayoutProps,
@@ -15,7 +17,6 @@ import {
   pickNavbarComponent,
   pickToolMenuComponent,
 } from './picks'
-import {type ComponentType} from 'react'
 
 /**
  * @internal

@@ -6,11 +6,12 @@
  * effectively letting you preview a revert action you might be considering to perform.
  */
 
-import {type PresentationDisplayedDocumentContextValue} from './types'
 import isEqual from 'fast-deep-equal'
 import {type PropsWithChildren, useCallback, useContext, useEffect} from 'react'
 import {type SanityDocument} from 'sanity'
 import {PresentationDisplayedDocumentContext} from 'sanity/_singletons'
+
+import {type PresentationDisplayedDocumentContextValue} from './types'
 
 export interface DisplayedDocumentBroadcasterProps extends PropsWithChildren {
   setDisplayedDocument: React.Dispatch<

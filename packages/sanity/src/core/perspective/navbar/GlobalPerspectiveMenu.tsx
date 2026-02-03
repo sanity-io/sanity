@@ -1,3 +1,9 @@
+import {ChevronDownIcon} from '@sanity/icons'
+// eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
+import {Button, Menu} from '@sanity/ui'
+import {useCallback, useRef, useState} from 'react'
+import {styled} from 'styled-components'
+
 import {MenuButton} from '../../../ui-components'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
@@ -5,11 +11,6 @@ import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
-import {ChevronDownIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
-import {Button, Menu} from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;

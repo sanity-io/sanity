@@ -1,8 +1,9 @@
-import {useDocumentStore} from '../store'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of, timer} from 'rxjs'
 import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
+
+import {useDocumentStore} from '../store'
 
 /** @internal */
 export type ConnectionState = 'connecting' | 'reconnecting' | 'connected'

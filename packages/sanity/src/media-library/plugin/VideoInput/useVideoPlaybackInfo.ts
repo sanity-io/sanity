@@ -1,6 +1,3 @@
-import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
-import {useClient} from '../../../core/hooks/useClient'
-import {type VideoPlaybackInfo} from './types'
 import {type SanityClient} from '@sanity/client'
 import {type Reference, type SanityDocument} from '@sanity/types'
 import {useCallback, useMemo, useState} from 'react'
@@ -15,6 +12,10 @@ import {
   switchMap,
   timeout,
 } from 'rxjs/operators'
+
+import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
+import {useClient} from '../../../core/hooks/useClient'
+import {type VideoPlaybackInfo} from './types'
 
 const POLLING_DELAY = 2_000
 const POLLING_MAX_DURATION = 120_000

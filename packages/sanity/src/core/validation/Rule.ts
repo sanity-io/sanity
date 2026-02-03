@@ -1,13 +1,3 @@
-import {convertToValidationMarker} from './util/convertToValidationMarker'
-import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
-import {pathToString} from './util/pathToString'
-import {arrayValidators} from './validators/arrayValidator'
-import {booleanValidators} from './validators/booleanValidator'
-import {dateValidators} from './validators/dateValidator'
-import {genericValidators} from './validators/genericValidator'
-import {numberValidators} from './validators/numberValidator'
-import {objectValidators} from './validators/objectValidator'
-import {stringValidators} from './validators/stringValidator'
 import {Rule as BaseRule} from '@sanity/schema'
 import {
   type CustomValidator,
@@ -18,6 +8,17 @@ import {
   type Validator,
 } from '@sanity/types'
 import {get} from 'lodash-es'
+
+import {convertToValidationMarker} from './util/convertToValidationMarker'
+import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
+import {pathToString} from './util/pathToString'
+import {arrayValidators} from './validators/arrayValidator'
+import {booleanValidators} from './validators/booleanValidator'
+import {dateValidators} from './validators/dateValidator'
+import {genericValidators} from './validators/genericValidator'
+import {numberValidators} from './validators/numberValidator'
+import {objectValidators} from './validators/objectValidator'
+import {stringValidators} from './validators/stringValidator'
 
 const typeValidators = {
   Boolean: booleanValidators,

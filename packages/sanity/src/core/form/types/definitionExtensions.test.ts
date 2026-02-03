@@ -1,24 +1,3 @@
-import {type PreviewProps} from '../../components'
-import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
-import {
-  type ArrayFieldProps,
-  type ArrayOfPrimitivesFieldProps,
-  type BooleanFieldProps,
-  type FieldProps,
-  type NumberFieldProps,
-  type ObjectFieldProps,
-  type StringFieldProps,
-} from './fieldProps'
-import {
-  type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesInputProps,
-  type BooleanInputProps,
-  type InputProps,
-  type NumberInputProps,
-  type ObjectInputProps,
-  type StringInputProps,
-} from './inputProps'
-import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 // oxlint-disable no-unused-vars
 // noinspection JSUnusedLocalSymbols
 import {
@@ -80,6 +59,28 @@ import type {
 } from 'sanity'
 /* eslint-enable import/consistent-type-specifier-style,no-restricted-imports */
 import {describe, it} from 'vitest'
+
+import {type PreviewProps} from '../../components'
+import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
+import {
+  type ArrayFieldProps,
+  type ArrayOfPrimitivesFieldProps,
+  type BooleanFieldProps,
+  type FieldProps,
+  type NumberFieldProps,
+  type ObjectFieldProps,
+  type StringFieldProps,
+} from './fieldProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type InputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
+} from './inputProps'
+import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {

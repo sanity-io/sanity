@@ -1,3 +1,7 @@
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {useState} from 'react'
+import {useHotModuleReload} from 'use-hot-module-reload'
+
 import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {SchemaError} from '../../config'
 import {isDev} from '../../environment'
@@ -5,9 +9,6 @@ import {useTranslation} from '../../i18n'
 import {CorsOriginError} from '../../store'
 import {isRecord} from '../../util'
 import {Alert} from '../components/Alert'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
-import {useHotModuleReload} from 'use-hot-module-reload'
 
 /**
  * @internal

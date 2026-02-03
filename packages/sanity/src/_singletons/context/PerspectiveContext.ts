@@ -1,5 +1,6 @@
-import type {PerspectiveContextValue} from '../../core/perspective/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {PerspectiveContextValue} from '../../core/perspective/types'
 
 /**
  *

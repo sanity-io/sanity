@@ -1,10 +1,3 @@
-import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
-import {useHistoryRestoreAction} from '../../../documentActions'
-import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
-import {useDocumentPane} from '../useDocumentPane'
-import {ActionMenuButton} from './ActionMenuButton'
-import {ActionStateDialog} from './ActionStateDialog'
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
@@ -15,6 +8,14 @@ import {
   usePerspective,
   useSource,
 } from 'sanity'
+
+import {Button, Tooltip} from '../../../../ui-components'
+import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
+import {useHistoryRestoreAction} from '../../../documentActions'
+import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
+import {useDocumentPane} from '../useDocumentPane'
+import {ActionMenuButton} from './ActionMenuButton'
+import {ActionStateDialog} from './ActionStateDialog'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean

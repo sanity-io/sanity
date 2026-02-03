@@ -1,7 +1,8 @@
-import {createSchema} from '../../../../schema/createSchema'
-import {createImmutableReconcile} from '../immutableReconcile'
 import {defineField, defineType} from '@sanity/types'
 import {beforeEach, expect, type Mock, test, vi} from 'vitest'
+
+import {createSchema} from '../../../../schema/createSchema'
+import {createImmutableReconcile} from '../immutableReconcile'
 
 const immutableReconcile = createImmutableReconcile({decorator: vi.fn})
 

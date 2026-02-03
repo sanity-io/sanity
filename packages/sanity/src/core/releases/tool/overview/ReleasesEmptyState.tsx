@@ -1,9 +1,10 @@
+import {Flex, Inline, Text} from '@sanity/ui'
+
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
-import {Flex, Inline, Text} from '@sanity/ui'
 
 interface ReleasesEmptyStateProps {
   createReleaseButton?: React.ReactNode

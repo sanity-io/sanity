@@ -1,3 +1,8 @@
+import {of, Subject} from 'rxjs'
+import {type PermissionCheckResult, type SanityClient} from 'sanity'
+import {describe, expect, test, vi} from 'vitest'
+import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
+
 import {defineResolveAllowPatternsActor} from '../../actors/resolve-allow-patterns'
 import {defineResolveInitialUrlActor} from '../../actors/resolve-initial-url'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
@@ -15,10 +20,6 @@ import {
   previewUrlSecretDocument,
   shareAccessSingletonDocument,
 } from '../preview-url'
-import {of, Subject} from 'rxjs'
-import {type PermissionCheckResult, type SanityClient} from 'sanity'
-import {describe, expect, test, vi} from 'vitest'
-import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
 if (typeof URLPattern === 'undefined') {
   await import('urlpattern-polyfill')

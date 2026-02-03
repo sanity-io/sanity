@@ -1,7 +1,8 @@
+import {useState} from 'react'
+
 import {AddonDatasetProvider} from '../../studio'
 import {TaskSidebarContent, TasksSidebarHeader} from '../components'
 import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../context'
-import {useState} from 'react'
 
 function noop(id: string) {
   return null

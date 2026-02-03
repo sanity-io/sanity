@@ -1,8 +1,9 @@
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {map, startWith} from 'rxjs/operators'
+
 import {useClient} from '../../../../../hooks'
 import {useKeyValueStore} from '../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, startWith} from 'rxjs/operators'
 
 export const RECENT_SEARCH_VERSION = 3
 const STORED_SEARCHES_NAMESPACE = 'studio.search.recent'

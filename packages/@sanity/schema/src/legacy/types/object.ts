@@ -1,9 +1,3 @@
-import guessOrderingConfig from '../ordering/guessOrderingConfig'
-import createPreviewGetter from '../preview/createPreviewGetter'
-import {normalizeSearchConfigs} from '../searchConfig/normalize'
-import {resolveSearchConfig} from '../searchConfig/resolve'
-import {ALL_FIELDS_GROUP_NAME, DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
-import {hiddenGetter, lazyGetter} from './utils'
 import {
   type FieldGroup,
   type FieldGroupDefinition,
@@ -13,6 +7,13 @@ import {
   type ObjectField,
 } from '@sanity/types'
 import {castArray, flatMap, pick, startCase} from 'lodash-es'
+
+import guessOrderingConfig from '../ordering/guessOrderingConfig'
+import createPreviewGetter from '../preview/createPreviewGetter'
+import {normalizeSearchConfigs} from '../searchConfig/normalize'
+import {resolveSearchConfig} from '../searchConfig/resolve'
+import {ALL_FIELDS_GROUP_NAME, DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   ...DEFAULT_OVERRIDEABLE_FIELDS,

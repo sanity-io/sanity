@@ -1,6 +1,3 @@
-import {useFormBuilder} from '../..'
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
 import {type Path} from '@sanity/types'
 import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -14,6 +11,10 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {useFormBuilder} from '../..'
+import {Popover} from '../../../../ui-components'
+import {Translate, useTranslation} from '../../../i18n'
 
 const StyledPopover = styled(Popover)`
   & > div {

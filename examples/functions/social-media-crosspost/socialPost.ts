@@ -1,5 +1,6 @@
-import {CharacterCount} from '../../components/characterCount'
 import {defineField, defineType} from 'sanity'
+
+import {CharacterCount} from '../../components/characterCount'
 
 export const platformConfig = {
   x: {limit: 280, label: 'X'},

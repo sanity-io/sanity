@@ -1,8 +1,9 @@
+import {compact} from 'lodash-es'
+
 import {type Expression} from './Expression'
 import {Matcher} from './Matcher'
 import {PlainProbe} from './PlainProbe'
 import {type Probe} from './Probe'
-import {compact} from 'lodash-es'
 
 export function extractAccessors(path: string, value: unknown): Probe[] {
   const result: Probe[] = []

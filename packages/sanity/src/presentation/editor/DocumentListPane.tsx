@@ -1,3 +1,14 @@
+import {Card, Code, Flex, Label, Stack} from '@sanity/ui'
+import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
+import {getPublishedId, useTranslation} from 'sanity'
+import {
+  DocumentListPane as StructureDocumentListPane,
+  PaneLayout,
+  type PaneNode,
+  StructureToolProvider,
+} from 'sanity/structure'
+import {styled} from 'styled-components'
+
 import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
@@ -9,16 +20,6 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-import {Card, Code, Flex, Label, Stack} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, useTranslation} from 'sanity'
-import {
-  DocumentListPane as StructureDocumentListPane,
-  PaneLayout,
-  type PaneNode,
-  StructureToolProvider,
-} from 'sanity/structure'
-import {styled} from 'styled-components'
 
 const RootLayout = styled(PaneLayout)`
   height: 100%;

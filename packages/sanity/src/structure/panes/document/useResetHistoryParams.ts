@@ -1,7 +1,8 @@
-import {usePaneRouter} from '../../components'
-import {EMPTY_PARAMS} from './constants'
 import {useEffect, useEffectEvent, useRef} from 'react'
 import {usePerspective} from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {EMPTY_PARAMS} from './constants'
 
 /**
  * This hooks takes care of resetting the history related params when the perspective changes.

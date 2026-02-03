@@ -1,6 +1,7 @@
-import {type FreeTrialResponse} from './types'
 import {useContext} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
+
+import {type FreeTrialResponse} from './types'
 
 /**
  * @internal

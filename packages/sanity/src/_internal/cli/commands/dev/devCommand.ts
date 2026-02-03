@@ -1,11 +1,13 @@
-import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
-import {determineIsApp} from '../../util/determineIsApp'
+import {createRequire} from 'node:module'
+
 import {
   type CliCommandArguments,
   type CliCommandContext,
   type CliCommandDefinition,
 } from '@sanity/cli'
-import {createRequire} from 'node:module'
+
+import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
+import {determineIsApp} from '../../util/determineIsApp'
 
 const require = createRequire(import.meta.url)
 

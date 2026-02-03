@@ -1,5 +1,3 @@
-import {visionLocaleNamespace} from '../i18n'
-import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 import {HelpCircleIcon} from '@sanity/icons'
 import {
   Badge,
@@ -16,6 +14,9 @@ import {
 import {useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+
+import {visionLocaleNamespace} from '../i18n'
+import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
 const Dot = styled.div<{$tone: CardTone}>`
   width: 4px;

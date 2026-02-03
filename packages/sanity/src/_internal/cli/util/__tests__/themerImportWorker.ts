@@ -1,5 +1,6 @@
-import {mockBrowserEnvironment} from '../mockBrowserEnvironment'
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
+import {mockBrowserEnvironment} from '../mockBrowserEnvironment'
 
 export type ThemerImportWorkerData = {
   workDir: string

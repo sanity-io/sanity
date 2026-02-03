@@ -1,3 +1,7 @@
+import {type SchemaType} from '@sanity/types'
+import {type Observable} from 'rxjs'
+import {type I18nTextRecord} from 'sanity'
+
 import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {ComponentBuilder} from './Component'
 import {DocumentBuilder} from './Document'
@@ -13,9 +17,6 @@ import {
 import {type StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {validateId} from './util/validateId'
-import {type SchemaType} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {type I18nTextRecord} from 'sanity'
 
 /**
  * Unserialized list item child.

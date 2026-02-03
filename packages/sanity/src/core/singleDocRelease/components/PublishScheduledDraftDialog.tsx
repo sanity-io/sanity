@@ -1,3 +1,7 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {Dialog} from '../../../ui-components'
 import {LoadingBlock} from '../../components'
 import {useSchema} from '../../hooks'
@@ -6,9 +10,6 @@ import {Preview} from '../../preview'
 import {getErrorMessage} from '../../util'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
-import {type ReleaseDocument} from '@sanity/client'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
 
 interface PublishScheduledDraftDialogProps {
   onClose: () => void

@@ -1,3 +1,12 @@
+import {
+  isBooleanSchemaType,
+  isCrossDatasetReferenceSchemaType,
+  isDateTimeSchemaType,
+  isReferenceSchemaType,
+  type SchemaType,
+} from '@sanity/types'
+import {type ComponentType, useMemo, useState} from 'react'
+
 import {ChangeIndicator} from '../../../changeIndicators'
 import {type DocumentFieldActionNode} from '../../../config'
 import {FormField, FormFieldSet} from '../../components'
@@ -7,14 +16,6 @@ import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {type FieldMember} from '../../store'
 import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
 import {getTypeChain} from './helpers'
-import {
-  isBooleanSchemaType,
-  isCrossDatasetReferenceSchemaType,
-  isDateTimeSchemaType,
-  isReferenceSchemaType,
-  type SchemaType,
-} from '@sanity/types'
-import {type ComponentType, useMemo, useState} from 'react'
 
 const EMPTY_ARRAY: never[] = []
 

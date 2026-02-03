@@ -1,9 +1,10 @@
-import {LOADER_QUERY_GC_INTERVAL} from '../constants'
-import {getQueryCacheKey, type QueryCacheKey} from './utils'
 import {type ClientPerspective} from '@sanity/client'
 import isEqual from 'fast-deep-equal'
 import {useDeferredValue, useEffect, useReducer} from 'react'
 import {type QueryParams} from 'sanity'
+
+import {LOADER_QUERY_GC_INTERVAL} from '../constants'
+import {getQueryCacheKey, type QueryCacheKey} from './utils'
 
 type LiveQueriesState = Map<
   QueryCacheKey,

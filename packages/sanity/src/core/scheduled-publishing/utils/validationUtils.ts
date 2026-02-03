@@ -1,4 +1,3 @@
-import {type ValidationStatus} from '../types'
 import {
   isValidationErrorMarker,
   isValidationWarningMarker,
@@ -6,6 +5,8 @@ import {
 } from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
 import {useMemo} from 'react'
+
+import {type ValidationStatus} from '../types'
 
 export const EMPTY_VALIDATION_STATUS: ValidationStatus = {
   validation: [],

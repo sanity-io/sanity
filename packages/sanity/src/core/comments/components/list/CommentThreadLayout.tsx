@@ -1,3 +1,14 @@
+import {type CurrentUser} from '@sanity/types'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
+  Flex,
+  Stack,
+} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
+import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
+import {css, styled} from 'styled-components'
+
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
@@ -11,16 +22,6 @@ import {
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
-import {type CurrentUser} from '@sanity/types'
-import {
-  // eslint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling and children behavior.
-  Flex,
-  Stack,
-} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
-import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 const HeaderFlex = styled(Flex)`
   min-height: 25px;

@@ -1,7 +1,8 @@
+import {type CliCommandDefinition} from '@sanity/cli'
+
 import parseApiErr from '../../actions/backup/parseApiErr'
 import resolveApiClient from '../../actions/backup/resolveApiClient'
 import {defaultApiVersion} from './backupGroup'
-import {type CliCommandDefinition} from '@sanity/cli'
 
 const helpText = `
 Examples

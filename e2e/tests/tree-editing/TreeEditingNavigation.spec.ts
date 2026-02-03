@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.skip('navigation - tree sidebar', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}) => {

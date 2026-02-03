@@ -1,11 +1,12 @@
+import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {type CSSProperties, useCallback} from 'react'
+import {styled} from 'styled-components'
+
 import {type UserWithPermission} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsAvatar} from '../avatars'
-import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
-import {type CSSProperties, useCallback} from 'react'
-import {styled} from 'styled-components'
 
 const InnerFlex = styled(Flex)``
 

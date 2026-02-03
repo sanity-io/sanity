@@ -1,13 +1,4 @@
 import {
-  type ArrayDiff,
-  type DiffComponent,
-  type DiffComponentOptions,
-  type ObjectDiff,
-  type StringDiffSegment,
-} from '../../../types'
-import * as TextSymbols from './symbols'
-import {type InlineSymbolMap, type MarkSymbolMap, type PortableTextDiff} from './types'
-import {
   cleanupEfficiency,
   DIFF_DELETE,
   DIFF_EQUAL,
@@ -28,6 +19,16 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {flatten, isEqual, orderBy} from 'lodash-es'
+
+import {
+  type ArrayDiff,
+  type DiffComponent,
+  type DiffComponentOptions,
+  type ObjectDiff,
+  type StringDiffSegment,
+} from '../../../types'
+import * as TextSymbols from './symbols'
+import {type InlineSymbolMap, type MarkSymbolMap, type PortableTextDiff} from './types'
 
 export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 

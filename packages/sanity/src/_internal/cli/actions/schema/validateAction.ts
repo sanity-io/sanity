@@ -1,16 +1,18 @@
+import {writeFileSync} from 'node:fs'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
+
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import logSymbols from 'log-symbols'
+import readPkgUp from 'read-pkg-up'
+
 import {
   type ValidateSchemaWorkerData,
   type ValidateSchemaWorkerResult,
 } from '../../threads/validateSchema'
 import {formatSchemaValidation, getAggregatedSeverity} from './formatSchemaValidation'
 import {generateMetafile} from './metafile'
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import logSymbols from 'log-symbols'
-import {writeFileSync} from 'node:fs'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
-import readPkgUp from 'read-pkg-up'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

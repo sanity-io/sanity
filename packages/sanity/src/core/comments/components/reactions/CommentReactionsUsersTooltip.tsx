@@ -1,3 +1,8 @@
+import {type CurrentUser} from '@sanity/types'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {styled} from 'styled-components'
+
 import {Tooltip} from '../../../../ui-components'
 import {useListFormat} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
@@ -6,10 +11,6 @@ import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'
 import {EmojiText} from './EmojiText.styled'
-import {type CurrentUser} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {styled} from 'styled-components'
 
 const TEXT_SIZE: number | number[] = 1
 

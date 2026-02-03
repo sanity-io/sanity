@@ -1,7 +1,8 @@
-import {useHistoryStore} from '../datastores'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Code, Text} from '@sanity/ui'
 import {useEffect, useState} from 'react'
+
+import {useHistoryStore} from '../datastores'
 
 const SECOND = 1000
 const MINUTE = SECOND * 60

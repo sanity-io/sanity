@@ -1,3 +1,11 @@
+import {type ObjectSchemaType} from '@sanity/types'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {type PropsWithChildren} from 'react'
+import {FormBuilderContext} from 'sanity/_singletons'
+import {describe, expect, it, vi} from 'vitest'
+
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {type FormBuilderContextValue} from '../../../FormBuilderContext'
@@ -11,13 +19,6 @@ import {
 } from '../../../studio'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
 import {PrimitiveField} from './PrimitiveField'
-import {type ObjectSchemaType} from '@sanity/types'
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {type PropsWithChildren} from 'react'
-import {FormBuilderContext} from 'sanity/_singletons'
-import {describe, expect, it, vi} from 'vitest'
 
 const EMPTY_ARRAY: never[] = []
 

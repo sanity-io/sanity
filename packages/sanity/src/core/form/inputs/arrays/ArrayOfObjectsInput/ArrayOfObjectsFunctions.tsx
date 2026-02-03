@@ -1,3 +1,9 @@
+import {AddIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {type ArraySchemaType} from '@sanity/types'
+import {Grid} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {Button, Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
@@ -5,11 +11,6 @@ import {CreatedNewObject} from '../../../studio/tree-editing/__telemetry__/neste
 import {useEnhancedObjectDialog} from '../../../studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
 import {useInsertMenuPopover} from './InsertMenuPopover'
-import {AddIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type ArraySchemaType} from '@sanity/types'
-import {Grid} from '@sanity/ui'
-import {useCallback, useState} from 'react'
 
 /**
  * @hidden

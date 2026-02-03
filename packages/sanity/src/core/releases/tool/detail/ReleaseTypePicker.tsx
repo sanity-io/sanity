@@ -1,3 +1,10 @@
+import {type ReleaseType} from '@sanity/client'
+import {LockIcon, PublishIcon} from '@sanity/icons'
+import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {isBefore, startOfMinute} from 'date-fns'
+import {isEqual} from 'lodash-es'
+import {useCallback, useMemo, useRef, useState} from 'react'
+
 import {Button, Popover, Tab} from '../../../../ui-components'
 import {MONTH_PICKER_VARIANT} from '../../../components/inputs/DateInputs/calendar/Calendar'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -18,12 +25,6 @@ import {
 } from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {ReleaseDateInput} from './ReleaseDateInput'
-import {type ReleaseType} from '@sanity/client'
-import {LockIcon, PublishIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {isBefore, startOfMinute} from 'date-fns'
-import {isEqual} from 'lodash-es'
-import {useCallback, useMemo, useRef, useState} from 'react'
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props

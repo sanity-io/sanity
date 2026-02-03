@@ -1,3 +1,7 @@
+import {ChevronDownIcon} from '@sanity/icons'
+import {Inline, Menu, MenuDivider} from '@sanity/ui'
+import {useCallback, useId} from 'react'
+
 import {Button, MenuButton, MenuItem} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -5,9 +9,6 @@ import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition, type SearchOperatorDefinition} from '../../../definitions/operators'
 import {type SearchFilter} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
-import {ChevronDownIcon} from '@sanity/icons'
-import {Inline, Menu, MenuDivider} from '@sanity/ui'
-import {useCallback, useId} from 'react'
 
 interface OperatorsMenuButtonProps {
   filter: SearchFilter

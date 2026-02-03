@@ -1,9 +1,10 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import {PresenceCursorsStory} from './PresenceCursorsStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Page} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
 import {type FormNodePresence} from 'sanity'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import {PresenceCursorsStory} from './PresenceCursorsStory'
 
 const TEXT = 'Hello, this is some text in the editor.'
 

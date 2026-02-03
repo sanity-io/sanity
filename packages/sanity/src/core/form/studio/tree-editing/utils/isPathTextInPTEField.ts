@@ -1,5 +1,3 @@
-import {stringToPath} from '../../../../field/paths/helpers'
-import {pathToString} from '../../../../validation/util/pathToString'
 import {
   isArrayOfBlocksSchemaType,
   isArrayOfObjectsSchemaType,
@@ -8,6 +6,9 @@ import {
   type Path,
 } from '@sanity/types'
 import {get, startsWith} from '@sanity/util/paths'
+
+import {stringToPath} from '../../../../field/paths/helpers'
+import {pathToString} from '../../../../validation/util/pathToString'
 
 /**
  * Find the paths to Portable Text Editor (array of type block) schema types in a list of fields

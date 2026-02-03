@@ -1,3 +1,18 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
+import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
+import {
+  memo,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {useObservable} from 'react-rx'
+
 import {Popover, Tooltip} from '../../../../ui-components'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useTranslation} from '../../../i18n'
@@ -14,20 +29,6 @@ import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
 import {CopyToDraftsDialog} from './dialog/CopyToDraftsDialog'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
-import {type ReleaseDocument} from '@sanity/client'
-import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
-import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
-import {
-  memo,
-  type MouseEvent,
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {useObservable} from 'react-rx'
 
 type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release' | 'copy-to-drafts'
 

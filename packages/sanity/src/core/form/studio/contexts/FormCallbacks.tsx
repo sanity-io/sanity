@@ -1,9 +1,10 @@
-import {type OnPathFocusPayload} from '../..'
-import {type FormPatch, type PatchEvent} from '../../patch'
 /* eslint-disable react/no-unused-prop-types */
 import {type Path} from '@sanity/types'
 import {memo, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef} from 'react'
 import {FormCallbacksContext} from 'sanity/_singletons'
+
+import {type OnPathFocusPayload} from '../..'
+import {type FormPatch, type PatchEvent} from '../../patch'
 
 /** @internal */
 export interface FormCallbacksValue {

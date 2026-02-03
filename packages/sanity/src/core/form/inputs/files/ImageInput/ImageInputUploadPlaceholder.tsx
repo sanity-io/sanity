@@ -1,8 +1,9 @@
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
-import {type BaseImageInputProps} from './types'
 import {type AssetSource} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {memo, useCallback} from 'react'
+
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
+import {type BaseImageInputProps} from './types'
 
 function ImageInputUploadPlaceholderComponent(props: {
   assetSources: BaseImageInputProps['assetSources']

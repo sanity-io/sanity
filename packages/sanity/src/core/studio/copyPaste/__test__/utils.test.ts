@@ -1,5 +1,6 @@
-import {transformValueToText} from '../utils'
 import {describe, expect, it} from 'vitest'
+
+import {transformValueToText} from '../utils'
 
 describe('transformValueToText', () => {
   it('returns empty string for falsy values', () => {

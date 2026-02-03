@@ -1,3 +1,5 @@
+import {type CurrentUser, isKeyedObject, type Path, type SchemaType} from '@sanity/types'
+
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {MAX_FIELD_DEPTH} from '../constants'
 import {type StateTree} from '../types/state'
@@ -8,7 +10,6 @@ import {
   type ConditionalPropertyCallbackContext,
   resolveConditionalProperty,
 } from './resolveConditionalProperty'
-import {type CurrentUser, isKeyedObject, type Path, type SchemaType} from '@sanity/types'
 
 interface ResolveCallbackStateOptions {
   property: 'readOnly' | 'hidden'

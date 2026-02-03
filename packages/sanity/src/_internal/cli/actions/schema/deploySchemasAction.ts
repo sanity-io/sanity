@@ -1,3 +1,8 @@
+import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {type SanityClient} from '@sanity/client'
+import chalk from 'chalk'
+import {partition} from 'lodash-es'
+
 import {
   CURRENT_WORKSPACE_SCHEMA_VERSION,
   type ManifestWorkspaceFile,
@@ -16,10 +21,6 @@ import {
   type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
 import {getWorkspaceSchemaId} from './utils/workspaceSchemaId'
-import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
-import {type SanityClient} from '@sanity/client'
-import chalk from 'chalk'
-import {partition} from 'lodash-es'
 
 export interface DeploySchemasFlags extends SchemaStoreCommonFlags {
   'workspace'?: string

@@ -1,5 +1,6 @@
-import {type CreateLinkedSanityDocument, type CreateLinkMetadata} from './types'
 import {type BaseSchemaTypeOptions, type SanityDocumentLike, type SchemaType} from '@sanity/types'
+
+import {type CreateLinkedSanityDocument, type CreateLinkMetadata} from './types'
 
 /**
  * @internal

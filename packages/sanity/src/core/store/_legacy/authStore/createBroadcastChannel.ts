@@ -1,7 +1,8 @@
-import {isNonNullable} from '../../../util'
-import * as storage from './storage'
 import {fromEvent, merge, type Observable, of, Subject} from 'rxjs'
 import {filter, map, shareReplay} from 'rxjs/operators'
+
+import {isNonNullable} from '../../../util'
+import * as storage from './storage'
 
 export interface BroadcastChannel<T> {
   messages: Observable<T>

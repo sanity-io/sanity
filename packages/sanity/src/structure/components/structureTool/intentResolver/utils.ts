@@ -1,7 +1,8 @@
-import {PaneResolutionError} from '../../../structureResolvers'
 import {uuid} from '@sanity/uuid'
 import {firstValueFrom} from 'rxjs'
 import {type DocumentStore, getPublishedId} from 'sanity'
+
+import {PaneResolutionError} from '../../../structureResolvers'
 
 export function removeDraftPrefix(documentId: string): string {
   const publishedId = getPublishedId(documentId)

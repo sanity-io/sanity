@@ -1,3 +1,5 @@
+import {type ReleaseDocument} from '@sanity/client'
+
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -10,7 +12,6 @@ import {
   useScheduledDraftMenuActions,
   type UseScheduledDraftMenuActionsReturn,
 } from '../../hooks/useScheduledDraftMenuActions'
-import {type ReleaseDocument} from '@sanity/client'
 
 /**
  * Higher-order function that creates a scheduled draft document action

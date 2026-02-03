@@ -1,3 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useRef, useState} from 'react'
+
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
@@ -16,10 +21,6 @@ import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
 import {ReleaseTypePicker} from './ReleaseTypePicker'
 import {type DocumentInRelease} from './useBundleDocuments'
 import {ValidationProgressIndicator} from './ValidationProgressIndicator'
-import {type ReleaseDocument} from '@sanity/client'
-import {ErrorOutlineIcon, PinFilledIcon, PinIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useRef, useState} from 'react'
 
 export function ReleaseDashboardDetails({
   release,

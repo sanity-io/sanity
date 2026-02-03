@@ -1,13 +1,3 @@
-import {MenuButton} from '../../../../ui-components'
-import {pathToString} from '../../../field/paths/helpers'
-import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
-import {useFormValue} from '../../contexts/FormValue'
-import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
-import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
-import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
-import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
-import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
-import {useFormBuilder} from '../../useFormBuilder'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // eslint-disable-next-line no-restricted-imports
@@ -20,6 +10,17 @@ import {
   useMemo,
   useState,
 } from 'react'
+
+import {MenuButton} from '../../../../ui-components'
+import {pathToString} from '../../../field/paths/helpers'
+import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
+import {useFormValue} from '../../contexts/FormValue'
+import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'
+import {useBreadcrumbSiblingInfo} from '../../hooks/useBreadcrumbSiblingInfo'
+import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {NavigatedToNestedObjectViaBreadcrumb} from '../../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {shouldBeInBreadcrumb} from '../../studio/tree-editing/utils/build-tree-editing-state/utils'
+import {useFormBuilder} from '../../useFormBuilder'
 
 const MAX_LENGTH = 5
 const SEPARATOR = '/'

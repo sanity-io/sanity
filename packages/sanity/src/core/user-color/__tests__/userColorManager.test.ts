@@ -1,8 +1,9 @@
-import {createUserColorManager, type UserColorManagerOptions} from '../manager'
-import {type UserColor} from '../types'
 import {omit} from 'lodash-es'
 import {BehaviorSubject, type Observable} from 'rxjs'
 import {describe, expect, test} from 'vitest'
+
+import {createUserColorManager, type UserColorManagerOptions} from '../manager'
+import {type UserColor} from '../types'
 
 const colorPreferences: Record<string, string> = {
   anders: 'orange',

@@ -1,7 +1,8 @@
+import {beforeEach, describe, expect, test, vi} from 'vitest'
+
 import {getSpec} from '../src/actions/openapi/getSpec'
 import {listSpecs} from '../src/actions/openapi/listSpecs'
 import {browse} from '../src/util/browse'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 // Mock fetch globally for the actions
 const mockFetch = vi.fn()

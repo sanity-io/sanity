@@ -1,8 +1,9 @@
-import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
 import {render, renderHook, waitFor} from '@testing-library/react'
 import {Component, memo, Profiler, type PropsWithChildren, useDeferredValue} from 'react'
 import * as Rx from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

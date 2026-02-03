@@ -1,3 +1,5 @@
+import {useMemo} from 'react'
+
 import {useClient} from '../../hooks/useClient'
 import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
@@ -7,7 +9,6 @@ import {
   type CanvasCompanionDocsStore,
   createCanvasCompanionDocsStore,
 } from './createCanvasCompanionDocsStore'
-import {useMemo} from 'react'
 
 export function useCanvasCompanionDocsStore(): CanvasCompanionDocsStore {
   const resourceCache = useResourceCache()

@@ -1,11 +1,12 @@
+import {Flex, PortalProvider, ToastProvider, useTheme} from '@sanity/ui'
+import {useBoolean} from '@sanity/ui-workshop'
+import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
+
 import {PaneLayout} from '../../PaneLayout'
 import {panes} from './config'
 import {DocumentPane} from './DocumentPane'
 import {ListPane} from './ListPane'
 import {Navbar} from './Navbar'
-import {Flex, PortalProvider, ToastProvider, useTheme} from '@sanity/ui'
-import {useBoolean} from '@sanity/ui-workshop'
-import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 
 export function SplitPanesStory() {
   const debug = useBoolean('Debug', false) || false

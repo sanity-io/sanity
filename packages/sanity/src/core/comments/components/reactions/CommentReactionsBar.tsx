@@ -1,3 +1,12 @@
+import {type CurrentUser} from '@sanity/types'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button as UIButton,
+  Flex,
+  Text,
+} from '@sanity/ui'
+import {memo, useCallback, useMemo, useState} from 'react'
+
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {
@@ -11,14 +20,6 @@ import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
 import {TransparentCard} from './TransparentCard.styled'
-import {type CurrentUser} from '@sanity/types'
-import {
-  // eslint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Flex,
-  Text,
-} from '@sanity/ui'
-import {memo, useCallback, useMemo, useState} from 'react'
 
 /**
  * A function that groups reactions by name. For example:

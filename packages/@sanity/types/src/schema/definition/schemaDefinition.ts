@@ -1,3 +1,5 @@
+import {type ComponentType, type ReactNode} from 'react'
+
 import {type PreviewConfig} from '../preview'
 import {type InitialValueProperty, type SchemaValidationValue} from '../types'
 import {
@@ -22,7 +24,6 @@ import {
   type UrlDefinition,
 } from './type'
 import {type BaseSchemaDefinition} from './type/common'
-import {type ComponentType, type ReactNode} from 'react'
 
 /**
  * `IntrinsicDefinitions` is a lookup map for "predefined" schema definitions.

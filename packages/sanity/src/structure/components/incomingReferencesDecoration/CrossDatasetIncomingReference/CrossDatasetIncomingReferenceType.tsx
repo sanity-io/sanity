@@ -1,12 +1,3 @@
-import {structureLocaleNamespace} from '../../../i18n'
-import {INITIAL_STATE} from '../getIncomingReferences'
-import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
-import {type CrossDatasetIncomingReference} from '../types'
-import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
-import {
-  type CrossDatasetIncomingReferenceDocument,
-  getCrossDatasetIncomingReferences,
-} from './getCrossDatasetIncomingReferences'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -20,6 +11,16 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
+
+import {structureLocaleNamespace} from '../../../i18n'
+import {INITIAL_STATE} from '../getIncomingReferences'
+import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
+import {type CrossDatasetIncomingReference} from '../types'
+import {CrossDatasetIncomingReferenceDocumentPreview} from './CrossDatasetIncomingReferenceDocumentPreview'
+import {
+  type CrossDatasetIncomingReferenceDocument,
+  getCrossDatasetIncomingReferences,
+} from './getCrossDatasetIncomingReferences'
 
 export function CrossDatasetIncomingReferenceType({
   type,

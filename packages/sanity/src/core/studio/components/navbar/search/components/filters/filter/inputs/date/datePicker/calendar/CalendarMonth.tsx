@@ -1,10 +1,11 @@
+import {Box, Grid, Text} from '@sanity/ui'
+import {styled} from 'styled-components'
+
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'
 import {SHORT_WEEK_DAY_KEYS} from './constants'
 import {useCalendar} from './contexts/useDatePicker'
 import {useWeeksOfMonth} from './utils'
-import {Box, Grid, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 const WEEK_DAY_NAME_KEYS = {
   // Monday is start of the week

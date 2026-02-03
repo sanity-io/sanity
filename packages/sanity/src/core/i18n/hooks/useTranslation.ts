@@ -1,7 +1,8 @@
-import {maybeWrapT} from '../debug'
 /* eslint-disable @sanity/i18n/no-i18next-import */
 import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+
+import {maybeWrapT} from '../debug'
 
 /**
  * Inlined from `react-i18next/helpers`, as our TSC doesn't support importing from it.

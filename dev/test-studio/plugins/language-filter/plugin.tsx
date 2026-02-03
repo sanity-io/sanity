@@ -1,7 +1,8 @@
+import {type _DocumentLanguageFilterComponent, definePlugin, type ObjectInputProps} from 'sanity'
+
 import {LanguageFilterMenuButton} from './LanguageFilterMenuButton'
 import {LanguageFilterObjectInput} from './LanguageFilterObjectInput'
 import {type LanguageFilterPluginOptions} from './types'
-import {type _DocumentLanguageFilterComponent, definePlugin, type ObjectInputProps} from 'sanity'
 
 /**
  * Language filter plugin for Sanity

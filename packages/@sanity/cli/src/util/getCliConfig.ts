@@ -1,7 +1,3 @@
-import {debug} from '../debug'
-import {type CliConfig} from '../types'
-import {getCliWorkerPath} from './cliWorker'
-import {dynamicRequire} from './dynamicRequire'
 /**
  * Reads the Sanity CLI config from one of the following files (in preferred order):
  *   - sanity.cli.js
@@ -18,6 +14,11 @@ import {dynamicRequire} from './dynamicRequire'
 import fs from 'node:fs'
 import path from 'node:path'
 import {Worker} from 'node:worker_threads'
+
+import {debug} from '../debug'
+import {type CliConfig} from '../types'
+import {getCliWorkerPath} from './cliWorker'
+import {dynamicRequire} from './dynamicRequire'
 
 export type CliConfigResult = {config: CliConfig; path: string} | {config: null; path: string}
 

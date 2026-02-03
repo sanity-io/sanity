@@ -1,7 +1,8 @@
-import {usePane} from '../../components'
 import {Box} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
+
+import {usePane} from '../../components'
 
 interface UserComponentPaneContentProps {
   children: ReactNode

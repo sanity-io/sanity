@@ -1,8 +1,3 @@
-import {type ObjectInputProps} from '../../src/core'
-import {type GlobalDocumentReferenceInputProps} from '../../src/core/form/inputs/GlobalDocumentReferenceInput'
-import {type TestRenderInputContext} from './renderInput'
-import {renderObjectInput} from './renderObjectInput'
-import {type TestRenderProps} from './types'
 import {
   type FieldDefinition,
   type GlobalDocumentReferenceSchemaType,
@@ -10,6 +5,12 @@ import {
 } from '@sanity/types'
 import {type ReactElement} from 'react'
 import {of} from 'rxjs'
+
+import {type ObjectInputProps} from '../../src/core'
+import {type GlobalDocumentReferenceInputProps} from '../../src/core/form/inputs/GlobalDocumentReferenceInput'
+import {type TestRenderInputContext} from './renderInput'
+import {renderObjectInput} from './renderObjectInput'
+import {type TestRenderProps} from './types'
 
 const EMPTY_SEARCH = () => of([])
 

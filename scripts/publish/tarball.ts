@@ -1,9 +1,10 @@
-import chalk from 'chalk'
-import globby from 'globby'
 import {spawn} from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
+
+import chalk from 'chalk'
+import globby from 'globby'
 
 main().catch((err) => {
   console.error(chalk.red(err))

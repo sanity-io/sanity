@@ -1,6 +1,7 @@
-import {fromString, get, resolveKeyedPath, toString} from '../src/paths'
 // oxlint-disable ban-ts-comment
 import {expect, test} from 'vitest'
+
+import {fromString, get, resolveKeyedPath, toString} from '../src/paths'
 
 const srcObject = {
   title: 'Hei',

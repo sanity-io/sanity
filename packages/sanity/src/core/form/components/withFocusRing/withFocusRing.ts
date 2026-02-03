@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 
-import {focusRingBorderStyle, focusRingStyle} from './helpers'
 import {rem, type Theme} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
 import {css, styled} from 'styled-components'
+
+import {focusRingBorderStyle, focusRingStyle} from './helpers'
 
 export function withFocusRing<Props>(component: ComponentType<Props>) {
   return styled(component)<Props & {$border?: boolean; $radius?: number}>(

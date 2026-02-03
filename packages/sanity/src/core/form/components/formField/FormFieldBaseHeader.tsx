@@ -1,12 +1,13 @@
+import {Box, Card, Flex} from '@sanity/ui'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {css, styled} from 'styled-components'
+
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type DocumentFieldActionNode} from '../../../config'
 import {FieldPresence, type FormNodePresence} from '../../../presence'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
 import {type FieldCommentsProps} from '../../types'
-import {Box, Card, Flex} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 const Root = styled(Flex)<{
   $floatingCardWidth: number

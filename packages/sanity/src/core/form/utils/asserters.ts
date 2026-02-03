@@ -1,3 +1,5 @@
+import {isArraySchemaType, isBooleanSchemaType, isObjectSchemaType} from '@sanity/types'
+
 import {type ArrayOfObjectsInputProps, type InputProps, type ObjectInputProps} from '../types'
 import {
   type BooleanFieldProps,
@@ -5,7 +7,6 @@ import {
   type ObjectFieldProps,
   type PrimitiveFieldProps,
 } from '../types/fieldProps'
-import {isArraySchemaType, isBooleanSchemaType, isObjectSchemaType} from '@sanity/types'
 
 export function assertType<T>(v: unknown): asserts v is T {
   // intentionally empty

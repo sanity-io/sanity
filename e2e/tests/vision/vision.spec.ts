@@ -1,6 +1,7 @@
+import {expect} from '@playwright/test'
+
 import {test} from '../../studio-test'
 import {encodeQueryString, getVisionRegions, openVisionTool} from './utils'
-import {expect} from '@playwright/test'
 
 test.describe('Vision', () => {
   test('should be possible to type an execute a query', async ({page, sanityClient}) => {

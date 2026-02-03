@@ -1,8 +1,3 @@
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../i18n'
-import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
-import {RELEASES_INTENT} from '../../releases/plugin'
-import {SCHEDULES_TOOL_NAME} from '../../schedules/plugin'
 import {CalendarIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -15,6 +10,12 @@ import {
 } from 'react'
 import {IntentLink, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {useTranslation} from '../../i18n'
+import {NavigatedToReleasesOverview} from '../../releases/__telemetry__/navigation.telemetry'
+import {RELEASES_INTENT} from '../../releases/plugin'
+import {SCHEDULES_TOOL_NAME} from '../../schedules/plugin'
 
 const StyledLinkComponent = styled(IntentLink)`
   text-decoration: none;

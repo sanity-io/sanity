@@ -1,9 +1,3 @@
-import {Button, Popover} from '../../../ui-components'
-import {useTranslation} from '../../i18n'
-import {createLocaleNamespace} from '../i18n'
-import {type CreateLinkedDocumentBannerContentProps} from '../types'
-import {CreateLearnMoreButton} from './CreateLearnMoreButton'
-import {CreateSvg} from './media/CreateSvg'
 import {InfoOutlineIcon, ReadOnlyIcon} from '@sanity/icons'
 import {
   Badge,
@@ -17,6 +11,13 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import {useCallback, useRef, useState} from 'react'
+
+import {Button, Popover} from '../../../ui-components'
+import {useTranslation} from '../../i18n'
+import {createLocaleNamespace} from '../i18n'
+import {type CreateLinkedDocumentBannerContentProps} from '../types'
+import {CreateLearnMoreButton} from './CreateLearnMoreButton'
+import {CreateSvg} from './media/CreateSvg'
 
 const POPOVER_RADIUS = 3
 

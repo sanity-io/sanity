@@ -1,3 +1,6 @@
+import {find} from 'lodash-es'
+import {isRecord} from 'sanity'
+
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
 import {DividerBuilder} from './Divider'
 import {isDocumentListItem} from './DocumentListItem'
@@ -13,8 +16,6 @@ import {type ListItem, ListItemBuilder} from './ListItem'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
-import {find} from 'lodash-es'
-import {isRecord} from 'sanity'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {

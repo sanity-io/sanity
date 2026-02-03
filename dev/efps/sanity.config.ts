@@ -1,9 +1,10 @@
+import {defineConfig} from 'sanity'
+
 import {apiConfig} from './apiConfig'
 import {articleEfps} from './tests/article/sanity.config'
 import {recipeEfps} from './tests/recipe/sanity.config'
 import {singleStringEfps} from './tests/singleString/sanity.config'
 import {syntheticEfps} from './tests/synthetic/sanity.config'
-import {defineConfig} from 'sanity'
 
 const common = {
   ...apiConfig,

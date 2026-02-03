@@ -1,13 +1,3 @@
-import {type _PaneMenuItem} from './components/pane/types'
-import {
-  type DefaultDocumentNodeResolver,
-  type Intent,
-  type MenuItem as StructureToolMenuItem,
-  type StructureBuilder,
-  type StructureContext,
-  type UserComponent,
-  type View,
-} from './structureBuilder'
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {
@@ -20,6 +10,17 @@ import {
   type LocaleSource,
   type PerspectiveStack,
 } from 'sanity'
+
+import {type _PaneMenuItem} from './components/pane/types'
+import {
+  type DefaultDocumentNodeResolver,
+  type Intent,
+  type MenuItem as StructureToolMenuItem,
+  type StructureBuilder,
+  type StructureContext,
+  type UserComponent,
+  type View,
+} from './structureBuilder'
 
 /** @internal */
 export interface StructureToolFeatures {

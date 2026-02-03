@@ -1,7 +1,8 @@
-import {activeScheduledRelease} from '../releases/__fixtures__/release.fixture'
-import {isCardinalityOneRelease} from './releaseUtils'
 import {type ReleaseDocument} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
+
+import {activeScheduledRelease} from '../releases/__fixtures__/release.fixture'
+import {isCardinalityOneRelease} from './releaseUtils'
 
 // Type definitions for edge case testing
 type ReleaseDocumentWithNullCardinality = ReleaseDocument & {

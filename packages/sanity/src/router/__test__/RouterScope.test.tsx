@@ -1,9 +1,10 @@
+import {act, renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {RouterProvider} from '../RouterProvider'
 import {RouteScope} from '../RouteScope'
 import {type Router, type RouterState} from '../types'
 import {useRouter} from '../useRouter'
-import {act, renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../stickyParams', () => ({
   STICKY_PARAMS: ['stickyParam'],

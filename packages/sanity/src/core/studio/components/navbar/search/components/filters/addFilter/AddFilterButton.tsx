@@ -1,12 +1,13 @@
+import {AddIcon} from '@sanity/icons'
+import {useClickOutsideEvent} from '@sanity/ui'
+import {useCallback, useRef, useState} from 'react'
+
 import {Button, Popover} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
-import {AddIcon} from '@sanity/icons'
-import {useClickOutsideEvent} from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
 
 export function AddFilterButton() {
   const [open, setOpen] = useState(false)

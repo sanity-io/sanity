@@ -1,5 +1,6 @@
-import type {RouterHistory} from '../../core/studio/router'
 import {createContext} from 'sanity/_createContext'
+
+import type {RouterHistory} from '../../core/studio/router'
 
 /**
  * Internal use only. Userland should leverage the public `useRouter` APIs.

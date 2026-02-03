@@ -1,3 +1,11 @@
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
+import {useMemo, useState} from 'react'
+
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
@@ -7,13 +15,6 @@ import {createCallbackResolver} from './conditional-property/createCallbackResol
 import {createPrepareFormState} from './formState'
 import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
 import {immutableReconcile} from './utils/immutableReconcile'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type SanityDocument,
-  type ValidationMarker,
-} from '@sanity/types'
-import {useMemo, useState} from 'react'
 
 /** @internal */
 export type FormState<

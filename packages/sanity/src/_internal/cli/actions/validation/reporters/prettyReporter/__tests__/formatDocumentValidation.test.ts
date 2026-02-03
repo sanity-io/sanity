@@ -1,5 +1,6 @@
-import {formatDocumentValidation} from '../formatDocumentValidation'
 import {describe, expect, it, vi} from 'vitest'
+
+import {formatDocumentValidation} from '../formatDocumentValidation'
 
 // disables some terminal specific things that are typically auto detected
 vi.mock(import('node:tty'), async (importOriginal) => {

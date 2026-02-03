@@ -1,9 +1,10 @@
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {useMemo} from 'react'
+
 import {getVersionFromId} from '../../util/draftUtils'
 import {useActiveReleases} from '../store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {useDocumentVersions} from './useDocumentVersions'
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {useMemo} from 'react'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 

@@ -1,5 +1,6 @@
-import {SanityDefaultPreview} from '../components/SanityDefaultPreview'
 import {Box, Card, Container} from '@sanity/ui'
+
+import {SanityDefaultPreview} from '../components/SanityDefaultPreview'
 
 export default function SanityDefaultPreviewStory() {
   return (

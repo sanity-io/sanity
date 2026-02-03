@@ -1,7 +1,8 @@
+import {expect, test} from '@playwright/experimental-ct-react'
+
 import {testHelpers} from '../../../utils/testHelpers'
 import {AnnotationsStory} from './AnnotationsStory'
 import {MultipleAnnotationsStory} from './MultipleAnnotationsStory'
-import {expect, test} from '@playwright/experimental-ct-react'
 
 test.describe('Portable Text Input', () => {
   test.describe('Annotations', () => {

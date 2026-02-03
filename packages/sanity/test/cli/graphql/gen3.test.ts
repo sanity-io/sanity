@@ -1,10 +1,11 @@
+import {orderBy} from 'lodash-es'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen3'
 import manySelfRefsSchema from './fixtures/many-self-refs'
 import testStudioSchema from './fixtures/test-studio'
 import unionRefsSchema from './fixtures/union-refs'
-import {orderBy} from 'lodash-es'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 describe('GraphQL - Generation 3', () => {
   beforeEach(() => {

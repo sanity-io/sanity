@@ -1,6 +1,7 @@
-import {RatioBox} from '../ImageInput/ImagePreview.styled'
 import {Code, Flex, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
+
+import {RatioBox} from '../ImageInput/ImagePreview.styled'
 
 export const CardWrapper = styled(RatioBox)`
   box-sizing: border-box;

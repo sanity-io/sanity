@@ -1,9 +1,10 @@
-import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
-import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
-import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 import {Container, Flex} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback} from 'react'
+
+import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
+import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
+import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
 export function DocumentLimitsUpsellPanel() {
   const {upsellData, telemetryLogs} = useDocumentLimitsUpsellContext()

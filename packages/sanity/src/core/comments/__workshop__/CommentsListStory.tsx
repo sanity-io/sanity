@@ -1,3 +1,9 @@
+import {Schema} from '@sanity/schema'
+import {Container, Flex} from '@sanity/ui'
+import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import {uuid} from '@sanity/uuid'
+import {useCallback, useMemo, useState} from 'react'
+
 import {useUserListWithPermissions} from '../../hooks'
 import {useCurrentUser} from '../../store'
 import {CommentsList} from '../components'
@@ -9,11 +15,6 @@ import {
   type CommentUpdatePayload,
 } from '../types'
 import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
-import {Schema} from '@sanity/schema'
-import {Container, Flex} from '@sanity/ui'
-import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import {uuid} from '@sanity/uuid'
-import {useCallback, useMemo, useState} from 'react'
 
 const noop = () => {
   // noop

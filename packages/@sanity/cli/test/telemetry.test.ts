@@ -1,5 +1,6 @@
-import {runSanityCmdCommand} from './shared/environment'
 import {describe, expect, test} from 'vitest'
+
+import {runSanityCmdCommand} from './shared/environment'
 
 const testTimeout = 60000 // 60 seconds
 

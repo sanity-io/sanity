@@ -1,5 +1,6 @@
-import {type SearchOrdering} from '../types'
 import {type SearchStrategy} from '@sanity/types'
+
+import {type SearchOrdering} from '../types'
 
 export const getOrderings: (context: {
   searchStrategy?: SearchStrategy

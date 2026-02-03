@@ -1,3 +1,8 @@
+import {Box, Card, Portal} from '@sanity/ui'
+import {useState} from 'react'
+import FocusLock from 'react-focus-lock'
+import {styled} from 'styled-components'
+
 import {supportsTouch} from '../../../../util'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SearchWrapper} from './components/common/SearchWrapper'
@@ -7,10 +12,6 @@ import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
 import {useSearchState} from './contexts/search/useSearchState'
 import {hasSearchableTerms} from './utils/hasSearchableTerms'
-import {Box, Card, Portal} from '@sanity/ui'
-import {useState} from 'react'
-import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 interface SearchDialogProps {
   onClose: () => void

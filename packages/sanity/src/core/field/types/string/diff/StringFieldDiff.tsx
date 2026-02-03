@@ -1,7 +1,8 @@
+import {styled} from 'styled-components'
+
 import {DiffFromTo, DiffString} from '../../../diff'
 import {type DiffComponent, type StringDiff} from '../../../types'
 import {StringPreview} from '../preview/StringPreview'
-import {styled} from 'styled-components'
 
 const StringWrapper = styled.div`
   white-space: pre-wrap;

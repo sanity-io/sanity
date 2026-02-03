@@ -1,7 +1,8 @@
-import {type BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
-import {shouldAutoUpdate} from '../shouldAutoUpdate'
 import {type CliConfig} from '@sanity/cli'
 import {describe, expect, it, vi} from 'vitest'
+
+import {type BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
+import {shouldAutoUpdate} from '../shouldAutoUpdate'
 
 describe('shouldAutoUpdate', () => {
   it('should return true when flags["auto-updates"] is true', () => {

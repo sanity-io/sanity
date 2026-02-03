@@ -1,6 +1,7 @@
+import {describe, expect, test} from 'vitest'
+
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
-import {describe, expect, test} from 'vitest'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
   test('should keep the range if similar world added in front of it', () => {

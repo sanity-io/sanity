@@ -1,5 +1,6 @@
-import {type ExcludedPerspectiveValue, useExcludedPerspective} from '../useExcludedPerspective'
 import {type Mock, type Mocked, vi} from 'vitest'
+
+import {type ExcludedPerspectiveValue, useExcludedPerspective} from '../useExcludedPerspective'
 
 export const useExcludedPerspectiveMockReturn: Mocked<ExcludedPerspectiveValue> = {
   excludedPerspectives: [],

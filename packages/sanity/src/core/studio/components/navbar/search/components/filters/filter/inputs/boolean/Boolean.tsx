@@ -1,8 +1,9 @@
+import {Select} from '@sanity/ui'
+import {type ChangeEvent, useCallback} from 'react'
+
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
-import {Select} from '@sanity/ui'
-import {type ChangeEvent, useCallback} from 'react'
 
 export function SearchFilterBooleanInput({onChange, value}: OperatorInputComponentProps<boolean>) {
   const {

@@ -1,9 +1,10 @@
-import {AudienceSelectInput} from '../components/AudienceSelectInput'
-import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
 import {UserIcon as icon} from '@sanity/icons'
 import {type StringRule} from '@sanity/types'
 import {defineField, defineType} from 'sanity'
 import {defineIncomingReferenceDecoration, isIncomingReferenceCreation} from 'sanity/structure'
+
+import {AudienceSelectInput} from '../components/AudienceSelectInput'
+import {RemoveReferenceAction} from '../components/IncomingReferencesActions'
 
 // Generic decide field implementation that works for all types
 const defineLocalDecideField = (config: any) => {

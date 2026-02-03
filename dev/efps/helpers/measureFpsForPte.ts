@@ -1,7 +1,8 @@
+import {type Page} from 'playwright'
+
 import {type EfpsResult} from '../types'
 import {aggregateLatencies} from './aggregateLatencies'
 import {measureBlockingTime} from './measureBlockingTime'
-import {type Page} from 'playwright'
 
 interface MeasureFpsForPteOptions {
   fieldName: string

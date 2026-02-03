@@ -1,11 +1,12 @@
-import {
-  createMultiKeyWeakMap,
-  type MultiKeyWeakMap,
-} from '../../store/_legacy/createMultiKeyWeakMap'
 import {lcs_dp as lcsDp} from '@algorithm.ts/lcs'
 import {type KeyedObject} from '@sanity/types'
 import {intersection} from 'lodash-es'
 import {EMPTY, filter, from, map, type Observable, of, shareReplay, switchMap, toArray} from 'rxjs'
+
+import {
+  createMultiKeyWeakMap,
+  type MultiKeyWeakMap,
+} from '../../store/_legacy/createMultiKeyWeakMap'
 
 let cache: MultiKeyWeakMap | undefined
 

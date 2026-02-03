@@ -1,9 +1,3 @@
-import {Schema} from '../legacy/Schema'
-import {builtinTypes} from './builtinTypes'
-import {groupProblems} from './groupProblems'
-import {type SchemaValidationResult} from './typedefs'
-import {validateSchema} from './validateSchema'
-import {ValidationError} from './validation/ValidationError'
 import {
   type CustomValidator,
   type MediaValidator,
@@ -12,6 +6,13 @@ import {
   type UriValidationOptions,
 } from '@sanity/types'
 import {cloneDeep, isObject} from 'lodash-es'
+
+import {Schema} from '../legacy/Schema'
+import {builtinTypes} from './builtinTypes'
+import {groupProblems} from './groupProblems'
+import {type SchemaValidationResult} from './typedefs'
+import {validateSchema} from './validateSchema'
+import {ValidationError} from './validation/ValidationError'
 
 const builtinSchema = Schema.compile({
   name: 'studio',

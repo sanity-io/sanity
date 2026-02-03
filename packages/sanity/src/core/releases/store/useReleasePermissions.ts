@@ -1,8 +1,9 @@
+import {type SingleActionResult} from '@sanity/client'
+import {useMemo} from 'react'
+
 import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useResourceCache} from '../../store/_legacy/ResourceCacheProvider'
 import {createReleasePermissionsStore} from './createReleasePermissionsStore'
-import {type SingleActionResult} from '@sanity/client'
-import {useMemo} from 'react'
 
 const RELEASE_PERMISSIONS_RESOURCE_CACHE_NAMESPACE = 'ReleasePermissions'
 

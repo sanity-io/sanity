@@ -1,3 +1,12 @@
+import {type SchemaType} from '@sanity/types'
+import {isValidElementType} from 'react-is'
+import {
+  getConfigContextFromSource,
+  getPublishedId,
+  type PerspectiveStack,
+  type Source,
+} from 'sanity'
+
 import {structureLocaleNamespace} from '../i18n'
 import {ComponentBuilder, type ComponentInput} from './Component'
 import {DividerBuilder} from './Divider'
@@ -26,14 +35,6 @@ import {
   type UserComponent,
 } from './types'
 import * as views from './views'
-import {type SchemaType} from '@sanity/types'
-import {isValidElementType} from 'react-is'
-import {
-  getConfigContextFromSource,
-  getPublishedId,
-  type PerspectiveStack,
-  type Source,
-} from 'sanity'
 
 /** @internal */
 export interface StructureBuilderOptions {

@@ -1,6 +1,7 @@
+import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
+
 import {type PerspectiveStack, type ReleaseId} from '../../perspective/types'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 
 /**
  * Sorts releases by their release type and created date.

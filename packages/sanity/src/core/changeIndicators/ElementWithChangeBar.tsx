@@ -1,3 +1,7 @@
+import {useLayer} from '@sanity/ui'
+import {type ReactNode, useContext, useMemo} from 'react'
+import {ReviewChangesContext} from 'sanity/_singletons'
+
 import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {
@@ -7,9 +11,6 @@ import {
   ChangeBarWrapper,
   FieldWrapper,
 } from './ElementWithChangeBar.styled'
-import {useLayer} from '@sanity/ui'
-import {type ReactNode, useContext, useMemo} from 'react'
-import {ReviewChangesContext} from 'sanity/_singletons'
 
 export function ElementWithChangeBar(props: {
   children: ReactNode

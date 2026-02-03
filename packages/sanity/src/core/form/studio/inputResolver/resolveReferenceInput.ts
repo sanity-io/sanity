@@ -1,6 +1,7 @@
-import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 import {type ReferenceSchemaType} from '@sanity/types'
 import {once} from 'lodash-es'
+
+import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 
 const warnInputTypeNotSupported = once(() =>
   console.warn('The option "inputType" on references is removed.'),

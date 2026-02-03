@@ -1,3 +1,7 @@
+import {type Diff} from '@sanity/diff'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {applyPatch, incremental} from 'mendoza'
+
 import {type Annotation, type Chunk} from '../../../../field'
 import {chunkFromTransaction, mergeChunk} from './chunker'
 import {diffValue, type Meta} from './diffValue'
@@ -9,9 +13,6 @@ import {
   type Transaction,
 } from './types'
 import {getAttrs} from './utils'
-import {type Diff} from '@sanity/diff'
-import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch, incremental} from 'mendoza'
 
 /**
  * @hidden

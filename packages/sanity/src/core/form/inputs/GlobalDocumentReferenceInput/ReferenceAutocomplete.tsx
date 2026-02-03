@@ -1,5 +1,3 @@
-import {Popover} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
 import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
 import {
   type ComponentProps,
@@ -11,6 +9,9 @@ import {
   useCallback,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {Popover} from '../../../../ui-components'
+import {Translate, useTranslation} from '../../../i18n'
 
 const StyledPopover = styled(Popover)`
   & > div {

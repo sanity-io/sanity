@@ -1,5 +1,3 @@
-import {useTranslation} from '../../../i18n'
-import {getTypeInfo} from './getTypeInfo'
 /* eslint-disable i18next/no-literal-string */
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
@@ -8,6 +6,9 @@ import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from 
 import {capitalize} from 'lodash-es'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+
+import {useTranslation} from '../../../i18n'
+import {getTypeInfo} from './getTypeInfo'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {
   error: 'critical',

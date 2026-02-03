@@ -1,7 +1,8 @@
-import {usePaneLayout} from './usePaneLayout'
 import {Layer} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
+
+import {usePaneLayout} from './usePaneLayout'
 
 const Root = styled(Layer)`
   position: relative;

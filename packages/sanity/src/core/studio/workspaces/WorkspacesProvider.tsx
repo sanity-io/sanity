@@ -1,7 +1,8 @@
-import {type Config, prepareConfig} from '../../config'
-import {type WorkspacesContextValue} from './WorkspacesContext'
 import {type ComponentType, type ReactNode, useDeferredValue} from 'react'
 import {WorkspacesContext} from 'sanity/_singletons'
+
+import {type Config, prepareConfig} from '../../config'
+import {type WorkspacesContextValue} from './WorkspacesContext'
 
 /** @internal */
 export interface WorkspacesProviderProps {

@@ -1,10 +1,11 @@
-import {Button, type ButtonProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons'
 import {useContext} from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
+
+import {Button, type ButtonProps} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 
 const DragHandleButton = styled(Button)<{$grid?: boolean; disabled?: boolean}>((props) => {
   const {$grid, disabled} = props

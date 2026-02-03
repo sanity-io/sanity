@@ -1,9 +1,3 @@
-import {Button, Dialog} from '../../../../../ui-components'
-import {useClient, useListFormat} from '../../../../hooks'
-import {Translate, useTranslation} from '../../../../i18n'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {FileListView} from '../file/FileListView'
-import {ImageListView} from '../image/ImageListView'
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
@@ -22,6 +16,13 @@ import {
 } from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
+
+import {Button, Dialog} from '../../../../../ui-components'
+import {useClient, useListFormat} from '../../../../hooks'
+import {Translate, useTranslation} from '../../../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {FileListView} from '../file/FileListView'
+import {ImageListView} from '../image/ImageListView'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'

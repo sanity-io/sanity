@@ -1,5 +1,6 @@
-import type {ConnectorContextValue} from '../../core/changeIndicators/ConnectorContext'
 import {createContext} from 'sanity/_createContext'
+
+import type {ConnectorContextValue} from '../../core/changeIndicators/ConnectorContext'
 
 /** @internal */
 export const ReviewChangesContext = createContext<ConnectorContextValue>(

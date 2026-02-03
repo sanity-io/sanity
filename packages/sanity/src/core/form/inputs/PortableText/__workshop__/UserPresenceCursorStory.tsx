@@ -1,6 +1,7 @@
+import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+
 import {HighlightSpan} from '../../../../comments/components/pte/CommentInlineHighlightSpan'
 import {UserPresenceCursor} from '../presence-cursors/UserPresenceCursor'
-import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 
 const user1 = <UserPresenceCursor user={{id: 'p8xDvUMxC', displayName: 'Pedro Bonamin'}} />
 

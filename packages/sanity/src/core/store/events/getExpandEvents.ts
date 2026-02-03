@@ -1,3 +1,6 @@
+import {type SanityClient} from '@sanity/client'
+import {BehaviorSubject, map} from 'rxjs'
+
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
 import {
@@ -6,8 +9,6 @@ import {
   isDeleteDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
-import {type SanityClient} from '@sanity/client'
-import {BehaviorSubject, map} from 'rxjs'
 
 export function getExpandEvents({documentId, client}: {client: SanityClient; documentId: string}) {
   const expandedEventsMap$ = new BehaviorSubject<Map<string, EditDocumentVersionEvent[]>>(new Map())

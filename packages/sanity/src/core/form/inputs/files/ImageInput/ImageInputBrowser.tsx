@@ -1,11 +1,12 @@
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {type BaseImageInputProps} from './types'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {startCase} from 'lodash-es'
 import {type ForwardedRef, forwardRef, memo} from 'react'
+
+import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {type BaseImageInputProps} from './types'
 
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 

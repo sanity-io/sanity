@@ -1,6 +1,7 @@
-import {AVATAR_SIZE} from './constants'
 import {Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
+
+import {AVATAR_SIZE} from './constants'
 
 export const FlexWrapper = styled(Flex)`
   & > div:first-child {

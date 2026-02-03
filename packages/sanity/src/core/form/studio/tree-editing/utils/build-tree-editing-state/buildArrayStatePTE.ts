@@ -1,3 +1,16 @@
+import {
+  type ArraySchemaType,
+  isArrayOfBlocksSchemaType,
+  isArrayOfObjectsSchemaType,
+  isKeySegment,
+  isObjectSchemaType,
+  isReferenceSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
+import {startsWith} from '@sanity/util/paths'
+
 import {getValueAtPath, pathToString} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
@@ -12,18 +25,6 @@ import {
   shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
-import {
-  type ArraySchemaType,
-  isArrayOfBlocksSchemaType,
-  isArrayOfObjectsSchemaType,
-  isKeySegment,
-  isObjectSchemaType,
-  isReferenceSchemaType,
-  type ObjectField,
-  type ObjectSchemaType,
-  type Path,
-} from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
 
 interface BuildArrayStatePTEProps {
   /** The child field that is a portable text editor */

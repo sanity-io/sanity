@@ -1,3 +1,7 @@
+import {MasterDetailIcon} from '@sanity/icons'
+import {lazy} from 'react'
+import {definePlugin, type DocumentActionComponent} from 'sanity'
+
 import {
   useDeleteAction,
   useDiscardChangesAction,
@@ -14,9 +18,6 @@ import {incomingReferencesInspector} from './panes/document/inspectors/incomingR
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
 import {type StructureToolOptions} from './types'
-import {MasterDetailIcon} from '@sanity/icons'
-import {lazy} from 'react'
-import {definePlugin, type DocumentActionComponent} from 'sanity'
 
 const documentActions = [
   usePublishAction,

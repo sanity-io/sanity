@@ -1,3 +1,5 @@
+import {upperFirst} from 'lodash-es'
+
 import {internal} from '../extractFromSanitySchema'
 import {isDocumentType, isUnion} from '../helpers'
 import {
@@ -9,7 +11,6 @@ import {
   type QueryDefinition,
 } from '../types'
 import {getFilterFieldName} from './utils'
-import {upperFirst} from 'lodash-es'
 
 export function generateTypeQueries(
   types: (ConvertedType | ConvertedUnion)[],

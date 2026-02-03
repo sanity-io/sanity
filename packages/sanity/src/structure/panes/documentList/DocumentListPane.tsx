@@ -1,11 +1,3 @@
-import {structureLocaleNamespace} from '../../i18n'
-import {type BaseStructureToolPaneProps} from '../types'
-import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
-import {DocumentListPaneContent} from './DocumentListPaneContent'
-import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
-import {useShallowUnique} from './PaneContainer'
-import {type LoadingVariant, type SortOrder} from './types'
-import {useDocumentList} from './useDocumentList'
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, TextInput} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
@@ -24,6 +16,15 @@ import {
   useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
+
+import {structureLocaleNamespace} from '../../i18n'
+import {type BaseStructureToolPaneProps} from '../types'
+import {EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
+import {DocumentListPaneContent} from './DocumentListPaneContent'
+import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
+import {useShallowUnique} from './PaneContainer'
+import {type LoadingVariant, type SortOrder} from './types'
+import {useDocumentList} from './useDocumentList'
 
 /**
  * @internal

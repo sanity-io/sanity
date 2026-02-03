@@ -1,12 +1,13 @@
-import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {defineConfig} from '../../../../config'
-import {createSanityMediaLibraryFileSource} from '../createAssetSource'
 import {type SanityClient} from '@sanity/client'
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {noop} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
+
+import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../../config'
+import {createSanityMediaLibraryFileSource} from '../createAssetSource'
 
 const fileAssetSource = createSanityMediaLibraryFileSource({
   libraryId: null,

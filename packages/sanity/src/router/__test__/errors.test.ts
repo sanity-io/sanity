@@ -1,5 +1,6 @@
-import {route} from '../route'
 import {expect, test} from 'vitest'
+
+import {route} from '../route'
 
 function mock<T, K extends keyof T>(obj: T, methodName: K, mockFn: T[K]) {
   const original = obj[methodName]

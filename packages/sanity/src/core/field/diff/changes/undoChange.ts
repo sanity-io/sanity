@@ -1,3 +1,19 @@
+import {
+  diffItem,
+  type DiffOptions,
+  type InsertAfterPatch,
+  type SetPatch,
+  type UnsetPatch,
+} from '@sanity/diff-patch'
+import {
+  isIndexSegment,
+  isKeyedObject,
+  isKeySegment,
+  isTypedObject,
+  type PatchOperations,
+  type Path,
+} from '@sanity/types'
+
 import {isRecord} from '../../../util'
 import {
   findIndex,
@@ -15,21 +31,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
-import {
-  isIndexSegment,
-  isKeyedObject,
-  isKeySegment,
-  isTypedObject,
-  type PatchOperations,
-  type Path,
-} from '@sanity/types'
 
 const diffOptions: DiffOptions = {
   diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},

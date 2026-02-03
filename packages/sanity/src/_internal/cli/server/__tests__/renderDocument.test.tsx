@@ -1,8 +1,9 @@
-import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from '../constants'
-import {_prefixUrlWithBasePath, addTimestampedImportMapScriptToHtml} from '../renderDocument'
 import {JSDOM} from 'jsdom'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {describe, expect, it} from 'vitest'
+
+import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from '../constants'
+import {_prefixUrlWithBasePath, addTimestampedImportMapScriptToHtml} from '../renderDocument'
 
 describe('_prefixUrlWithBasePath', () => {
   describe('when basePath is default value of "/"', () => {

@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('Enhanced Object Dialog - open and close', () => {
   test.beforeEach(async ({createDraftDocument}) => {

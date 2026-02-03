@@ -1,3 +1,7 @@
+import {render, screen, waitFor} from '@testing-library/react'
+import {type ComponentProps} from 'react'
+import {describe, expect, it, vi} from 'vitest'
+
 import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
@@ -9,9 +13,6 @@ import {
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {type TableRelease} from '../../overview/ReleasesOverview'
 import {ReleaseTime} from '../ReleaseTime'
-import {render, screen, waitFor} from '@testing-library/react'
-import {type ComponentProps} from 'react'
-import {describe, expect, it, vi} from 'vitest'
 
 vi.mock(
   '../../../hooks/useTimeZone',

@@ -1,5 +1,3 @@
-import {type View} from '../../structureBuilder'
-import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 import {
   type ObjectSchemaType,
   type Path,
@@ -22,6 +20,9 @@ import {
   type StateTree,
   type TimelineStore,
 } from 'sanity'
+
+import {type View} from '../../structureBuilder'
+import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 
 /** @internal */
 export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {

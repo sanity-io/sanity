@@ -1,7 +1,8 @@
-import {useComlinkStore} from '../../store/_legacy/datastores'
 import {type PathChangeMessage} from '@sanity/message-protocol'
 import {useEffect} from 'react'
 import {useRouter} from 'sanity/router'
+
+import {useComlinkStore} from '../../store/_legacy/datastores'
 
 /**
  * Perform a navigation when a Comlink `dashboard/v1/history/change-path` event is emitted.

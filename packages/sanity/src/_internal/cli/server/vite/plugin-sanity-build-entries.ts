@@ -1,5 +1,6 @@
-import {decorateIndexWithBridgeScript, renderDocument} from '../renderDocument'
 import {type ChunkMetadata, type Plugin} from 'vite'
+
+import {decorateIndexWithBridgeScript, renderDocument} from '../renderDocument'
 
 interface ViteOutputBundle {
   [fileName: string]: ViteRenderedChunk | ViteRenderedAsset

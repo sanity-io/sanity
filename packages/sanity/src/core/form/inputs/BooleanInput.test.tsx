@@ -1,9 +1,10 @@
-import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
-import {BooleanInput} from './BooleanInput'
 import {defineField} from '@sanity/types'
 import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it} from 'vitest'
+
+import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
+import {BooleanInput} from './BooleanInput'
 
 const defs = {
   booleanTest: defineField({

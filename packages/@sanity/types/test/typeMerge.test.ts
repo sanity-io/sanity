@@ -1,6 +1,7 @@
+import {describe, it} from 'vitest'
+
 import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../src/schema/definition'
 import {defineType} from '../src/schema/types'
-import {describe, it} from 'vitest'
 
 declare module '../src/schema/definition' {
   // here we type up our custom schema definition

@@ -1,7 +1,8 @@
-import {type DocumentInRelease} from '../../releases/tool/detail/useBundleDocuments'
-import {type ConfigContext} from '../types'
 import {type ReleaseDocument} from '@sanity/client'
 import {type ComponentType, type ReactNode} from 'react'
+
+import {type DocumentInRelease} from '../../releases/tool/detail/useBundleDocuments'
+import {type ConfigContext} from '../types'
 
 /**
  * @public

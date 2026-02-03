@@ -1,5 +1,6 @@
-import {validateMediaLibraryAssetAspect} from '../../src/sanity/validateMediaLibraryAssetAspect'
 import {describe, expect, test} from 'vitest'
+
+import {validateMediaLibraryAssetAspect} from '../../src/sanity/validateMediaLibraryAssetAspect'
 
 describe('validateMediaLibraryAssetAspect', () => {
   describe('unsupported types', () => {

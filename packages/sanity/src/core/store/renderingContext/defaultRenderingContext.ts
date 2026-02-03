@@ -1,5 +1,6 @@
-import {type DefaultRenderingContext, type StudioRenderingContext} from './types'
 import {map, type OperatorFunction} from 'rxjs'
+
+import {type DefaultRenderingContext, type StudioRenderingContext} from './types'
 
 const DEFAULT_RENDERING_CONTEXT: DefaultRenderingContext = {
   name: 'default',

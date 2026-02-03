@@ -1,7 +1,6 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
-import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 /* eslint-disable i18next/no-literal-string */
 import {
   ChevronLeftIcon,
@@ -12,6 +11,8 @@ import {
 import {Flex, Text} from '@sanity/ui'
 import {type Table} from '@tanstack/react-table'
 import {type SanityDocument} from 'sanity'
+
+import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 
 export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
   return (

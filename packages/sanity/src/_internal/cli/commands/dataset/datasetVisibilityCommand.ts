@@ -1,5 +1,6 @@
-import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {type CliCommandDefinition} from '@sanity/cli'
+
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 
 const datasetVisibilityCommand: CliCommandDefinition = {
   name: 'visibility',

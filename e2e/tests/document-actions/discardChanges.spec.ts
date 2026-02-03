@@ -1,6 +1,7 @@
+import {expect} from '@playwright/test'
+
 import {expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
-import {expect} from '@playwright/test'
 
 test(`it is possible to discard changes if a changed document has no published version`, async ({
   page,

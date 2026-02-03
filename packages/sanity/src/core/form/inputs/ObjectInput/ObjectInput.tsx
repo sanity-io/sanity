@@ -1,3 +1,9 @@
+import {isKeySegment} from '@sanity/types'
+import {Stack} from '@sanity/ui'
+import {last} from 'lodash-es'
+import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
+import {styled} from 'styled-components'
+
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ObjectInputMembers} from '../../members'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
@@ -5,11 +11,6 @@ import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
-import {isKeySegment} from '@sanity/types'
-import {Stack} from '@sanity/ui'
-import {last} from 'lodash-es'
-import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 
 const RootStack = styled(Stack)`
   // Disable focus ring for the object block. We instead highlight the left border on the fieldset

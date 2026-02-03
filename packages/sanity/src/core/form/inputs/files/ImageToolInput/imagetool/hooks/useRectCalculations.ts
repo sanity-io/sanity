@@ -1,7 +1,8 @@
+import {useMemo} from 'react'
+
 import {DEFAULT_CROP, DEFAULT_HOTSPOT, MARGIN_SIZE} from '../constants'
 import {type Crop, type Hotspot} from '../types'
 import {constrainHotspotToCrop, getCropDimensions} from '../utils'
-import {useMemo} from 'react'
 
 interface UseRectCalculationsProps {
   size: {width: number; height: number}

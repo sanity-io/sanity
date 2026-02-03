@@ -1,7 +1,8 @@
+import {beforeEach, describe, expect, test, vi} from 'vitest'
+
 import {createProject} from '../src/actions/project/createProject'
 import {createProjectAction} from '../src/actions/project/createProjectAction'
 import createProjectCommand from '../src/commands/projects/createProjectCommand'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 function createMockSanityClient(
   config: {

@@ -1,6 +1,7 @@
+import {negate} from 'lodash-es'
+
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
-import {negate} from 'lodash-es'
 
 export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _PaneMenuGroup {
   return (node.type === 'item' || node.type === 'group') && node.renderAsButton

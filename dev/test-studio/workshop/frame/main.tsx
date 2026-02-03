@@ -1,5 +1,3 @@
-import sanityConfig from '../../sanity.config'
-import {config} from '../config'
 import {type ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import {createMemoryHistory} from 'history'
@@ -11,6 +9,9 @@ import json from 'refractor/json'
 import jsx from 'refractor/jsx'
 import typescript from 'refractor/typescript'
 import {StudioProvider} from 'sanity'
+
+import sanityConfig from '../../sanity.config'
+import {config} from '../config'
 
 registerLanguage(javascript)
 registerLanguage(json)

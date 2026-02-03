@@ -1,8 +1,9 @@
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {type DocumentRevision} from '../../../history'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {restore} from './restore'
 import {type OperationArgs} from './types'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: vi.fn()}))
 

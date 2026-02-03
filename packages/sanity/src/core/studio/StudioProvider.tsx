@@ -1,3 +1,12 @@
+import {ToastProvider} from '@sanity/ui'
+import {type ReactNode, useMemo} from 'react'
+import {registerLanguage} from 'react-refractor'
+import bash from 'refractor/bash'
+import javascript from 'refractor/javascript'
+import json from 'refractor/json'
+import jsx from 'refractor/jsx'
+import typescript from 'refractor/typescript'
+
 import {LoadingBlock} from '../components/loadingBlock'
 import {AppIdCacheProvider} from '../create/studio-app/AppIdCacheProvider'
 import {errorReporter} from '../error/errorReporter'
@@ -31,14 +40,6 @@ import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {ToastProvider} from '@sanity/ui'
-import {type ReactNode, useMemo} from 'react'
-import {registerLanguage} from 'react-refractor'
-import bash from 'refractor/bash'
-import javascript from 'refractor/javascript'
-import json from 'refractor/json'
-import jsx from 'refractor/jsx'
-import typescript from 'refractor/typescript'
 
 registerLanguage(bash)
 registerLanguage(javascript)

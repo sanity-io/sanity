@@ -1,5 +1,3 @@
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
 import {
   type EncodableObject,
   type EncodableValue,
@@ -9,6 +7,9 @@ import {createSchemaFromManifestTypes} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import {capitalize, cloneDeep, startCase} from 'lodash-es'
 import {expect} from 'vitest'
+
+import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
+import {DESCRIPTOR_CONVERTER} from '../../src/core/schema'
 
 export async function expectManifestSchemaConversion(
   schema: Schema,

@@ -1,3 +1,6 @@
+import {useEffect, useState} from 'react'
+import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+
 import {ErrorBoundary} from '../../../ui-components/errorBoundary'
 import {setActivePanes} from '../../getIntentState'
 import {StructureToolProvider} from '../../StructureToolProvider'
@@ -5,8 +8,6 @@ import {type StructureToolOptions} from '../../types'
 import {IntentResolver} from './intentResolver'
 import {StructureError} from './StructureError'
 import {StructureTool} from './StructureTool'
-import {useEffect, useState} from 'react'
-import {SourceProvider, type Tool, useWorkspace} from 'sanity'
 
 interface StructureToolBoundaryProps {
   tool: Tool<StructureToolOptions>

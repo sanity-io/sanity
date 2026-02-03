@@ -1,3 +1,7 @@
+import {render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {useExcludedPerspectiveMockReturn} from '../../../perspective/__mocks__/useExcludedPerspective.mock'
 import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
@@ -15,9 +19,6 @@ import {
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesNav} from '../ReleasesNav'
-import {render, type RenderResult, screen, waitFor, within} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),

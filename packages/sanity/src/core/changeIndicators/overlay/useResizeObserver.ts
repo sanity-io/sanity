@@ -1,5 +1,6 @@
-import {resizeObserver} from '../../util'
 import {useEffect} from 'react'
+
+import {resizeObserver} from '../../util'
 
 export function useResizeObserver(
   element: HTMLDivElement,

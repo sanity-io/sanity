@@ -1,9 +1,10 @@
-import {renderBlockActions} from './blockActions'
-import {renderCustomMarkers} from './customMarkers'
 import {htmlToBlocks} from '@portabletext/block-tools'
 import {type OnPasteFn, type PortableTextBlock} from '@portabletext/editor'
 import {useCallback, useMemo} from 'react'
 import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
+
+import {renderBlockActions} from './blockActions'
+import {renderCustomMarkers} from './customMarkers'
 
 export function CustomContentInput(inputProps: PortableTextInputProps) {
   const {value} = inputProps

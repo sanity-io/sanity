@@ -1,3 +1,7 @@
+import {renderHook} from '@testing-library/react'
+import {of} from 'rxjs'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {useFeatureEnabled} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
 import {useWorkspace} from '../../studio/workspace'
@@ -6,9 +10,6 @@ import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
 } from './ScheduledPublishingEnabledProvider'
-import {renderHook} from '@testing-library/react'
-import {of} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../hooks')
 

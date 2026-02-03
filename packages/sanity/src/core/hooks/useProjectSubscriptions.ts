@@ -1,11 +1,12 @@
-import {useSource} from '../studio'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {useClient} from './useClient'
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+
+import {useSource} from '../studio'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {useClient} from './useClient'
 
 type FeatureAttributes = Record<string, string | number | boolean | null>
 

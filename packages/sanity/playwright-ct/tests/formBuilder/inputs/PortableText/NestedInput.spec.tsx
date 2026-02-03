@@ -1,7 +1,8 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import NestedInputStory from './NestedInputStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Page} from '@playwright/test'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import NestedInputStory from './NestedInputStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Nested inputs', () => {

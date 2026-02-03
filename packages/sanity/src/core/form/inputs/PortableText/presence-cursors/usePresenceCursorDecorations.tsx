@@ -1,12 +1,13 @@
-import {type FormNodePresence} from '../../../../presence'
-import {EMPTY_ARRAY} from '../../../../util/empty'
-import {useFormFieldPresence} from '../../../studio/contexts/Presence'
-import {UserPresenceCursor} from './UserPresenceCursor'
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import {isEqual} from 'lodash-es'
 import {useCallback, useEffect, useRef, useState} from 'react'
+
+import {type FormNodePresence} from '../../../../presence'
+import {EMPTY_ARRAY} from '../../../../util/empty'
+import {useFormFieldPresence} from '../../../studio/contexts/Presence'
+import {UserPresenceCursor} from './UserPresenceCursor'
 
 export interface PresenceCursorDecorationsHookProps {
   path: Path

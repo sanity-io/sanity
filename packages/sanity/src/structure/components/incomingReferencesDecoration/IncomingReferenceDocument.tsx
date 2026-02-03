@@ -1,8 +1,3 @@
-import {structureLocaleNamespace} from '../../i18n'
-import {usePaneRouter} from '../paneRouter'
-import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
-import {IncomingReferencePreview} from './IncomingReferencePreview'
-import {type IncomingReferencesOptions} from './types'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useState} from 'react'
@@ -16,6 +11,12 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+
+import {structureLocaleNamespace} from '../../i18n'
+import {usePaneRouter} from '../paneRouter'
+import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
+import {IncomingReferencePreview} from './IncomingReferencePreview'
+import {type IncomingReferencesOptions} from './types'
 
 const Root = motion.create(Flex)
 

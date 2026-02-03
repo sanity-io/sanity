@@ -1,3 +1,11 @@
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
+import {useCallback, useMemo, useRef} from 'react'
+
 import {type DocumentFieldAction} from '../../config'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -34,13 +42,6 @@ import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
 import {EnhancedObjectDialogProvider} from './tree-editing'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type SanityDocument,
-  type ValidationMarker,
-} from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
 
 /**
  * @alpha

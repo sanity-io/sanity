@@ -1,5 +1,6 @@
-import type {PortableTextMemberItem} from '../../core/form/inputs/PortableText/PortableTextInput'
 import {createContext} from 'sanity/_createContext'
+
+import type {PortableTextMemberItem} from '../../core/form/inputs/PortableText/PortableTextInput'
 
 /**
  * @internal

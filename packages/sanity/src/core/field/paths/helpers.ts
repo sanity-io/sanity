@@ -1,4 +1,3 @@
-import {isRecord} from '../../util'
 import {
   type IndexTuple,
   isIndexSegment,
@@ -9,6 +8,8 @@ import {
   type Path,
   type PathSegment,
 } from '@sanity/types'
+
+import {isRecord} from '../../util'
 
 const rePropName =
   /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g

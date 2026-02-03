@@ -1,8 +1,3 @@
-import {isRecord} from '../../util'
-import {INVALID_PREVIEW_FALLBACK} from '../constants'
-import {type PreviewableType} from '../types'
-import {keysOf} from './keysOf'
-import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
 import {
   isTitledListValue,
   type PrepareViewOptions,
@@ -11,6 +6,12 @@ import {
   type TitledListValue,
 } from '@sanity/types'
 import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash-es'
+
+import {isRecord} from '../../util'
+import {INVALID_PREVIEW_FALLBACK} from '../constants'
+import {type PreviewableType} from '../types'
+import {keysOf} from './keysOf'
+import {extractTextFromBlocks, isPortableTextPreviewValue} from './portableText'
 
 const PRESERVE_KEYS = ['_id', '_type', '_upload', '_createdAt', '_updatedAt']
 const EMPTY: never[] = []

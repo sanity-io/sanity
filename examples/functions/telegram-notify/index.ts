@@ -1,5 +1,6 @@
-import {documentEventHandler} from '@sanity/functions'
 import {env} from 'node:process'
+
+import {documentEventHandler} from '@sanity/functions'
 
 const {TELEGRAM_BOT_TOKEN = '', TELEGRAM_CHAT_ID = '', STUDIO_URL = 'http://localhost:3333'} = env
 

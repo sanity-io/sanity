@@ -1,9 +1,10 @@
-import {Button} from '../../../../../ui-components/button/Button'
-import {structureLocaleNamespace} from '../../../../i18n'
 import {StarFilledIcon, StarIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {type ComponentType} from 'react'
 import {useManageFavorite, type UseManageFavoriteProps, useTranslation} from 'sanity'
+
+import {Button} from '../../../../../ui-components/button/Button'
+import {structureLocaleNamespace} from '../../../../i18n'
 
 export const FavoriteToggle: ComponentType<UseManageFavoriteProps & {documentExists: boolean}> = ({
   documentExists,

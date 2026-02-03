@@ -1,8 +1,9 @@
-import chalk from 'chalk'
-import {globSync} from 'glob'
 import fs from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
+
+import chalk from 'chalk'
+import {globSync} from 'glob'
 import semver from 'semver'
 
 interface LernaConfig {

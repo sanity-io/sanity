@@ -1,6 +1,7 @@
+import {Card, Stack, Text} from '@sanity/ui'
+
 import {PaneLayout} from '../components'
 import {LoadingPane} from '../panes'
-import {Card, Stack, Text} from '@sanity/ui'
 
 export default function LoadingPaneStory() {
   return (

@@ -1,7 +1,3 @@
-import {useZIndex} from '../components'
-import {pathToString} from '../field'
-import {DEBUG} from './constants'
-import {useChangeIndicatorsReporter} from './tracker'
 import {type Path} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -15,6 +11,11 @@ import {
 } from 'react'
 import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
+
+import {useZIndex} from '../components'
+import {pathToString} from '../field'
+import {DEBUG} from './constants'
+import {useChangeIndicatorsReporter} from './tracker'
 
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel

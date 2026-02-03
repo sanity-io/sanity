@@ -1,9 +1,10 @@
+import {describe, expect, test} from 'vitest'
+
 import {ConfigResolutionError} from '../../config/ConfigResolutionError'
 import {SchemaError} from '../../config/SchemaError'
 import {CorsOriginError} from '../../store/_legacy/cors/CorsOriginError'
 import {ViteDevServerStoppedError} from '../../studio/ViteDevServerStopped'
 import {isKnownError} from '../isKnownError'
-import {describe, expect, test} from 'vitest'
 
 describe('#isKnownError', () => {
   test('should return true for SchemaError errors', () => {

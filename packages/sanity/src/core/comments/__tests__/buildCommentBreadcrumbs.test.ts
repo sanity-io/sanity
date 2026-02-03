@@ -1,7 +1,8 @@
-import {buildCommentBreadcrumbs} from '../utils'
 import {Schema} from '@sanity/schema'
 import {type CurrentUser, defineField} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
+
+import {buildCommentBreadcrumbs} from '../utils'
 
 const CURRENT_USER: CurrentUser = {
   email: '',

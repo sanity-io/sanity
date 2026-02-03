@@ -1,3 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {CalendarIcon, TrashIcon} from '@sanity/icons'
+import {Menu, MenuDivider, Spinner} from '@sanity/ui'
+import {memo} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n'
 import {useWorkspace} from '../../../../studio'
@@ -5,11 +11,6 @@ import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
 import {useHasCopyToDraftOption} from './CopyToDraftsMenuItem'
 import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
-import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, TrashIcon} from '@sanity/icons'
-import {Menu, MenuDivider, Spinner} from '@sanity/ui'
-import {memo} from 'react'
-import {IntentLink} from 'sanity/router'
 
 interface CanonicalReleaseContextMenuProps {
   bundleId: string

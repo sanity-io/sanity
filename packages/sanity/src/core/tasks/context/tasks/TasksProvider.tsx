@@ -1,8 +1,9 @@
-import {useTasksStore} from '../../store'
-import {type ActiveDocument, type TasksContextValue} from './types'
 import {debounce} from 'lodash-es'
 import {useMemo, useState} from 'react'
 import {TasksContext} from 'sanity/_singletons'
+
+import {useTasksStore} from '../../store'
+import {type ActiveDocument, type TasksContextValue} from './types'
 
 interface TasksProviderProps {
   children: React.ReactNode

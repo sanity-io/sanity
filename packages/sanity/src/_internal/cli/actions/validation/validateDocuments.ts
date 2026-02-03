@@ -1,14 +1,16 @@
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
+
+import {type ClientConfig} from '@sanity/client'
+import {type ValidationMarker} from '@sanity/types'
+import readPkgUp from 'read-pkg-up'
+
 import {
   type ValidateDocumentsWorkerData,
   type ValidationWorkerChannel,
 } from '../../threads/validateDocuments'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
-import {type ClientConfig} from '@sanity/client'
-import {type ValidationMarker} from '@sanity/types'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
-import readPkgUp from 'read-pkg-up'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

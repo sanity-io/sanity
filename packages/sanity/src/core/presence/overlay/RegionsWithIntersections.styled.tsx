@@ -1,5 +1,6 @@
-import {WithIntersection} from './WithIntersection'
 import {css, styled} from 'styled-components'
+
+import {WithIntersection} from './WithIntersection'
 
 interface StyleProps {
   $debug: boolean

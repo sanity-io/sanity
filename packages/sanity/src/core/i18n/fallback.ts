@@ -1,10 +1,11 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
+import {createInstance, type Resource} from 'i18next'
+import {memoize} from 'lodash-es'
+
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
 import {type LocaleSource} from './types'
-/* eslint-disable @sanity/i18n/no-i18next-import */
-import {createInstance, type Resource} from 'i18next'
-import {memoize} from 'lodash-es'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [defaultLocale]

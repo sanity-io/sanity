@@ -1,6 +1,7 @@
-import {type PortableTextHtml, type PortableTextMarkdownBlock} from './types'
 import {markdownToPortableText as originalMarkdownToPortableText} from '@portabletext/markdown'
 import TurndownService from 'turndown'
+
+import {type PortableTextHtml, type PortableTextMarkdownBlock} from './types'
 
 type Options = {
   keyGenerator?: () => string

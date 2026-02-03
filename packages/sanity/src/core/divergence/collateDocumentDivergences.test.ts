@@ -1,10 +1,11 @@
+import {type SanityDocument} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
+
 import {
   type CollatedDocumentDivergencesState,
   collateDocumentDivergences,
   peekCollatedDocumentDivergences,
 } from './collateDocumentDivergences'
-import {type SanityDocument} from '@sanity/types'
-import {describe, expect, it} from 'vitest'
 
 describe('collateDocumentDivergences', () => {
   it('collates document divergences when context is written', async () => {

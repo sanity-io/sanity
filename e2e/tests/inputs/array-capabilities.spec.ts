@@ -1,6 +1,7 @@
-import {test as base} from '../../studio-test'
 import {expect} from '@playwright/test'
 import {type SanityDocument} from '@sanity/client'
+
+import {test as base} from '../../studio-test'
 
 const test = base.extend<{testDoc: SanityDocument}>({
   testDoc: async ({page, sanityClient}, fnUse) => {

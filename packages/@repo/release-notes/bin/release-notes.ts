@@ -1,4 +1,10 @@
 #!/usr/bin/env -S pnpm tsx
+import {readEnv} from '@repo/utils'
+import {type DraftId, type PublishedId, type VersionId} from '@sanity/id-utils'
+import {type Commit, type CommitBase, type CommitMeta} from 'conventional-commits-parser'
+import {type pMapSkip} from 'p-map'
+import yargs from 'yargs'
+
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
 import {publishReleases} from '../src/commands/publishReleases'
@@ -6,11 +12,6 @@ import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
 import {type KnownEnvVar, type PullRequest} from '../src/types'
 import {stripPr} from '../src/utils/stripPrNumber'
-import {readEnv} from '@repo/utils'
-import {type DraftId, type PublishedId, type VersionId} from '@sanity/id-utils'
-import {type Commit, type CommitBase, type CommitMeta} from 'conventional-commits-parser'
-import {type pMapSkip} from 'p-map'
-import yargs from 'yargs'
 
 const ADMIN_STUDIO_URL = readEnv<KnownEnvVar>('RELEASE_NOTES_ADMIN_STUDIO_URL')
 

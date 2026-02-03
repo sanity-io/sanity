@@ -1,9 +1,10 @@
-import {getValueAtPath} from '../../field'
-import {type FormDocumentValue} from '../types'
 import {type Path} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {FormValueContext} from 'sanity/_singletons'
+
+import {getValueAtPath} from '../../field'
+import {type FormDocumentValue} from '../types'
 
 /**
  * @internal

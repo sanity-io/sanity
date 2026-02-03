@@ -1,3 +1,7 @@
+import {useToast} from '@sanity/ui'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {useHotModuleReload} from 'use-hot-module-reload'
+
 import {SchemaError} from '../config'
 import {errorReporter} from '../error/errorReporter'
 import {isImportError} from '../error/isImportError'
@@ -8,9 +12,6 @@ import {globalScope} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 import {FallbackErrorScreen} from './screens/FallbackErrorScreen'
 import {ImportErrorScreen} from './screens/ImportErrorScreen'
-import {useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
-import {useHotModuleReload} from 'use-hot-module-reload'
 
 type ErrorState = {
   error?: Error | null

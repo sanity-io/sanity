@@ -1,3 +1,6 @@
+import {Card} from '@sanity/ui'
+import {useCallback, useMemo, useRef, useState} from 'react'
+
 import {
   CommentInput,
   type CommentInputHandle,
@@ -8,8 +11,6 @@ import {useTranslation} from '../../../i18n'
 import {useTasksEnabled} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {ActivityItem} from './TasksActivityItem'
-import {Card} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
 
 interface TasksCommentActivityInputProps {
   currentUser: CommentInputProps['currentUser']

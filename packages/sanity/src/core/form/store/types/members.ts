@@ -1,8 +1,9 @@
+import {type ArraySchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
+
 import {type FieldsetMembers, type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
 import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
-import {type ArraySchemaType} from '@sanity/types'
-import {type ComponentType} from 'react'
 
 /** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError | DecorationMember

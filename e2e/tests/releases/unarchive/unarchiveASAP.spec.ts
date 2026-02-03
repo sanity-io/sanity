@@ -1,3 +1,5 @@
+import {expect} from '@playwright/test'
+
 import {test} from '../../../studio-test'
 import {speciesDocumentNameASAP} from '../utils/__fixtures__/documents'
 import {partialASAPReleaseMetadata} from '../utils/__fixtures__/releases'
@@ -14,7 +16,6 @@ import {
   scheduleAndConfirmReleaseMenu,
   unscheduleAndConfirmRelease,
 } from '../utils/release-detail-ui-methods'
-import {expect} from '@playwright/test'
 
 test.describe('Unarchive ASAP', () => {
   test.skip()

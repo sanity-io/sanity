@@ -1,11 +1,12 @@
+import {type RootTheme} from '@sanity/ui/theme'
+import {firstValueFrom} from 'rxjs'
+
 import {type Source, type WorkspaceSummary} from '../../config/types'
 import {type UserApplication} from '../../store/userApplications'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {SANITY_VERSION} from '../../version'
 import {generateStudioManifest} from './generateStudioManifest'
 import {resolveIcon} from './icon'
-import {type RootTheme} from '@sanity/ui/theme'
-import {firstValueFrom} from 'rxjs'
 
 const buildId: string | undefined =
   // @ts-expect-error: __SANITY_BUILD_TIMESTAMP__ is a global env variable set by the vite config

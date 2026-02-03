@@ -1,3 +1,10 @@
+import {CalendarIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
+import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
+import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
+import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import ReactFocusLock from 'react-focus-lock'
+
 import {Button, Popover} from '../../../../../ui-components'
 import {type CalendarLabels} from '../../../../components/inputs/DateInputs/calendar/types'
 import {DatePicker} from '../../../../components/inputs/DateInputs/DatePicker'
@@ -7,12 +14,6 @@ import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hook
 import {useTranslation} from '../../../../i18n'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {tasksLocaleNamespace} from '../../../i18n'
-import {CalendarIcon} from '@sanity/icons'
-import {type Path} from '@sanity/types'
-import {Box, Flex, useClickOutsideEvent} from '@sanity/ui'
-import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
-import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import ReactFocusLock from 'react-focus-lock'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 const deserialize = (value: string | undefined) => parse(value || '', DEFAULT_DATE_FORMAT)

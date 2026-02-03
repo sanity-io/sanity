@@ -1,5 +1,6 @@
-import {slugOperators} from './slugOperators'
 import {describe, expect, it} from 'vitest'
+
+import {slugOperators} from './slugOperators'
 
 const fieldPath = 'slug'
 const value = 'foo'

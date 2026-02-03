@@ -1,6 +1,7 @@
-import {extractClientConfig} from '../extractClientConfig'
 import {type SanityClient} from '@sanity/client'
 import {describe, expect, it, vi} from 'vitest'
+
+import {extractClientConfig} from '../extractClientConfig'
 
 describe('extractClientConfig', () => {
   /**

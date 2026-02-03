@@ -1,10 +1,11 @@
+import {type ReactNode, useMemo} from 'react'
+import {useRouter} from 'sanity/router'
+
 import {PUBLISHED} from '../releases/util/const'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {type ReleaseId} from './types'
-import {type ReactNode, useMemo} from 'react'
-import {useRouter} from 'sanity/router'
 
 /**
  * This component is not meant to be exported by `sanity`, it's meant only for internal use from the `<StudioProvider>` file.

@@ -1,9 +1,10 @@
-import {flattenConfig} from '..'
-import {useSource} from '../../studio'
-import {type PluginOptions} from '../types'
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import {Skeleton} from '@sanity/ui'
 import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
+
+import {flattenConfig} from '..'
+import {useSource} from '../../studio'
+import {type PluginOptions} from '../types'
 
 const emptyRender = () => <Fragment />
 

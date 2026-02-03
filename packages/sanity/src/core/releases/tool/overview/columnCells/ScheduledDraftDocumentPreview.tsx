@@ -1,3 +1,6 @@
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
+
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
 import {useTranslation} from '../../../../i18n'
@@ -6,8 +9,6 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Skeleton, Text} from '@sanity/ui'
 
 export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] = ({
   datum: release,

@@ -1,5 +1,6 @@
-import {getPartialEnvWithNpmPath, type PackageManager} from './packageManagerChoice'
 import execa, {type CommonOptions, type ExecaReturnValue} from 'execa'
+
+import {getPartialEnvWithNpmPath, type PackageManager} from './packageManagerChoice'
 
 export interface InstallOptions {
   packageManager: PackageManager

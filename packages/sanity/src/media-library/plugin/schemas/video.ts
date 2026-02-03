@@ -1,6 +1,7 @@
+import {defineType} from '@sanity/types'
+
 import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
 import {VideoField} from '../VideoInput/VideoField'
-import {defineType} from '@sanity/types'
 
 export const video = defineType({
   name: 'sanity.video',

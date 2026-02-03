@@ -1,14 +1,15 @@
+import {SortIcon} from '@sanity/icons'
+import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {isEqual} from 'lodash-es'
+import {useCallback, useId, useMemo} from 'react'
+import {styled} from 'styled-components'
+
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
 import {useWorkspace} from '../../../../workspace'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {getOrderings} from '../definitions/getOrderings'
 import {type SearchOrdering} from '../types'
-import {SortIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {isEqual} from 'lodash-es'
-import {useCallback, useId, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 interface SearchDivider {
   type: 'divider'

@@ -1,10 +1,11 @@
+import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {renderHook} from '@testing-library/react'
+import {beforeAll, describe, expect, it} from 'vitest'
+
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
 import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'
 import {prepareI18n} from '../../i18n/i18nConfig'
 import {useRelativeTime} from '../useRelativeTime'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {renderHook} from '@testing-library/react'
-import {beforeAll, describe, expect, it} from 'vitest'
 
 describe('useRelativeTime', () => {
   const timeZone = 'UTC'

@@ -1,13 +1,14 @@
-import {type Deployment, type PerformanceTestProps} from './types'
-import {bundle} from './utils/bundlePerfHelpers'
-import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
-import {getDeviceInfo} from './utils/getDeviceInfo'
 // oxlint-disable no-console
 import {type BrowserContext, chromium, type Page} from '@playwright/test'
 import {type SanityClient} from '@sanity/client'
 import {capitalize} from 'lodash-es'
 import {concatMap, from, lastValueFrom, range} from 'rxjs'
 import {tap, toArray} from 'rxjs/operators'
+
+import {type Deployment, type PerformanceTestProps} from './types'
+import {bundle} from './utils/bundlePerfHelpers'
+import {createSanitySessionCookie} from './utils/createSanitySessionCookie'
+import {getDeviceInfo} from './utils/getDeviceInfo'
 
 interface RunCompareOptions {
   deployments: Deployment[]

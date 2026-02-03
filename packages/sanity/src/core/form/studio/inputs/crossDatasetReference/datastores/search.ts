@@ -1,5 +1,3 @@
-import {createSearch} from '../../../../../search'
-import {collate} from '../../../../../util'
 import {type SanityClient} from '@sanity/client'
 import {
   type CrossDatasetReferenceSchemaType,
@@ -7,6 +5,9 @@ import {
 } from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
+
+import {createSearch} from '../../../../../search'
+import {collate} from '../../../../../util'
 
 interface SearchHit {
   id: string

@@ -1,12 +1,13 @@
+import {type CurrentUser} from '@sanity/types'
+import {Card, Text} from '@sanity/ui'
+import {type MouseEvent, useCallback, useMemo} from 'react'
+import {useIntentLink} from 'sanity/router'
+
 import {Tooltip} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useI18nText} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {type NewDocumentOption, type PreviewLayout} from './types'
-import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {type MouseEvent, useCallback, useMemo} from 'react'
-import {useIntentLink} from 'sanity/router'
 
 // This value is used to calculate the max-height of the popover and for the virtual list item size.
 // This value is not used anywhere in this file, but it is exported

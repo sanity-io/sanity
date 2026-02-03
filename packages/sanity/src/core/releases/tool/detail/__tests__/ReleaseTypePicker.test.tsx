@@ -1,3 +1,7 @@
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
@@ -14,9 +18,6 @@ import {
   useReleaseOperationsMockReturn,
 } from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {ReleaseTypePicker} from '../ReleaseTypePicker'
-import {render, screen, waitFor, within} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),

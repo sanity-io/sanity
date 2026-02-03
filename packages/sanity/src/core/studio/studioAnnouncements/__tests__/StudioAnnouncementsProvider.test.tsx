@@ -1,3 +1,10 @@
+/* eslint-disable camelcase */
+import {render, renderHook, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {type ReactNode} from 'react'
+import {of} from 'rxjs'
+import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
+
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {defineConfig} from '../../../config/defineConfig'
 import {type Config} from '../../../config/types'
@@ -13,12 +20,6 @@ import {StudioAnnouncementsProvider} from '../StudioAnnouncementsProvider'
 import {type StudioAnnouncementDocument} from '../types'
 import {useSeenAnnouncements} from '../useSeenAnnouncements'
 import {useStudioAnnouncements} from '../useStudioAnnouncements'
-/* eslint-disable camelcase */
-import {render, renderHook, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {type ReactNode} from 'react'
-import {of} from 'rxjs'
-import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn().mockReturnValue({

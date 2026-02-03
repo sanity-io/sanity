@@ -1,8 +1,9 @@
+import {type ArraySchemaType, type ObjectSchemaType, type SchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
+
 import {diffResolvers} from '../../TODO'
 import {type Diff, type DiffComponent, type DiffComponentOptions} from '../../types'
 import {defaultComponents} from './defaultComponents'
-import {type ArraySchemaType, type ObjectSchemaType, type SchemaType} from '@sanity/types'
-import {type ComponentType} from 'react'
 
 /** @internal */
 export function resolveDiffComponent<D extends Diff = any>(

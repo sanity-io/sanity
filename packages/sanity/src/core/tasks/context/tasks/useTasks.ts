@@ -1,6 +1,7 @@
-import {type TasksContextValue} from './types'
 import {useContext} from 'react'
 import {TasksContext} from 'sanity/_singletons'
+
+import {type TasksContextValue} from './types'
 
 /**
  * @internal

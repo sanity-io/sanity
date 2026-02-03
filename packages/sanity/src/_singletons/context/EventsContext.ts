@@ -1,5 +1,6 @@
-import type {EventsStore} from '../../core/store/events/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {EventsStore} from '../../core/store/events/types'
 
 /**
  * @internal

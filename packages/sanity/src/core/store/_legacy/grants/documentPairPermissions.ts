@@ -1,3 +1,9 @@
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
+import {useMemo} from 'react'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+
 import {useClient, useSchema} from '../../../hooks'
 import {useWorkspace} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
@@ -11,11 +17,6 @@ import {
 import {useGrantsStore} from '../datastores'
 import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {type GrantsStore, type PermissionCheckResult} from './types'
-import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
-import {useMemo} from 'react'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
   const type = schema.get(typeName)

@@ -1,6 +1,3 @@
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core'
-import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 import {
   defineArrayMember,
   defineField,
@@ -10,6 +7,10 @@ import {
 } from '@sanity/types'
 import {pick} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
+
+import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
+import {createSchema} from '../../src/core'
+import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 
 describe('Extract studio manifest', () => {
   test('extracted schema types should be mappable to a createSchema compatible version', () => {

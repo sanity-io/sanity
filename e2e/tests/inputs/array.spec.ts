@@ -1,9 +1,11 @@
-import {createFileDataTransferHandle} from '../../helpers'
-import {test} from '../../studio-test'
-import {expect, type Page} from '@playwright/test'
 import {readFileSync} from 'node:fs'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
+
+import {expect, type Page} from '@playwright/test'
+
+import {createFileDataTransferHandle} from '../../helpers'
+import {test} from '../../studio-test'
 
 const fileName = 'capybara.jpg'
 const image = readFileSync(

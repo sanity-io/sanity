@@ -1,10 +1,3 @@
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
-import {useTranslation} from '../../i18n'
-import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigation.telemetry'
-import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
-import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
-import {useWorkspace} from '../../studio/workspace'
 import {CalendarIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -17,6 +10,14 @@ import {
 } from 'react'
 import {IntentLink, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
+import {useTranslation} from '../../i18n'
+import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigation.telemetry'
+import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
+import {useWorkspace} from '../../studio/workspace'
 
 const StyledLinkComponent = styled(IntentLink)`
   text-decoration: none;

@@ -1,3 +1,7 @@
+import {Flex} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+import {type TFunction} from 'i18next'
+
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
@@ -5,9 +9,6 @@ import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCe
 import {ScheduledDraftWarningCell} from './columnCells/ScheduledDraftWarningCell'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
-import {Flex} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type TFunction} from 'i18next'
 
 export const scheduledDraftsOverviewColumnDefs: (
   t: TFunction<'releases'>,

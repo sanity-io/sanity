@@ -1,3 +1,10 @@
+import {mkdir} from 'node:fs/promises'
+import {join} from 'node:path'
+
+import {getMonoRepo, GitHubFileReader, validateTemplate} from '@sanity/template-validator'
+import {type Framework, frameworks} from '@vercel/frameworks'
+import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
+
 import {debug} from '../../debug'
 import {type CliCommandContext} from '../../types'
 import {getDefaultPortForFramework} from '../../util/frameworkPort'
@@ -14,11 +21,6 @@ import {
 import {type GenerateConfigOptions} from './createStudioConfig'
 import {tryGitInit} from './git'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
-import {getMonoRepo, GitHubFileReader, validateTemplate} from '@sanity/template-validator'
-import {type Framework, frameworks} from '@vercel/frameworks'
-import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
-import {mkdir} from 'node:fs/promises'
-import {join} from 'node:path'
 
 export interface BootstrapRemoteOptions {
   outputPath: string

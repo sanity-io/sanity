@@ -1,5 +1,6 @@
-import {type Tool} from '../types'
 import {type ComponentType} from 'react'
+
+import {type Tool} from '../types'
 
 /**
  * @hidden

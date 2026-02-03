@@ -1,3 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {CalendarIcon, ChevronDownIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Flex, Menu, Text} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton'
 import {MenuItem} from '../../../../ui-components/menuItem'
@@ -9,11 +15,6 @@ import {
 } from '../../__telemetry__/navigation.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type CardinalityView} from './queryParamUtils'
-import {type ReleaseDocument} from '@sanity/client'
-import {CalendarIcon, ChevronDownIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Menu, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
 
 interface CardinalityViewPickerProps {
   cardinalityView: CardinalityView

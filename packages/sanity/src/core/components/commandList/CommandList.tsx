@@ -1,12 +1,3 @@
-import {type FIXME} from '../../FIXME'
-import {focusRingStyle} from '../../form/components/formField/styles'
-import {
-  type CommandListElementType,
-  type CommandListGetItemDisabledCallback,
-  type CommandListGetItemSelectedCallback,
-  type CommandListHandle,
-  type CommandListProps,
-} from './types'
 import {Box, rem, Stack} from '@sanity/ui'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import {throttle} from 'lodash-es'
@@ -25,6 +16,16 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+
+import {type FIXME} from '../../FIXME'
+import {focusRingStyle} from '../../form/components/formField/styles'
+import {
+  type CommandListElementType,
+  type CommandListGetItemDisabledCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListProps,
+} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'

@@ -1,10 +1,11 @@
+import {Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {useRouter} from 'sanity/router'
+
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type ActionResult} from './ReleaseMenuButton'
-import {Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
 
 export const DuplicateReleaseToastLink = ({actionResult}: {actionResult: ActionResult}) => {
   const router = useRouter()

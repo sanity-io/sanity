@@ -1,8 +1,6 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
-import {DocumentSheetListSelect} from './DocumentSheetListSelect'
-import {SheetListCellInner} from './SheetListCell'
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {
@@ -22,6 +20,9 @@ import {
   useDocumentPreviewStore,
   useDocumentVersionInfo,
 } from 'sanity'
+
+import {DocumentSheetListSelect} from './DocumentSheetListSelect'
+import {SheetListCellInner} from './SheetListCell'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 

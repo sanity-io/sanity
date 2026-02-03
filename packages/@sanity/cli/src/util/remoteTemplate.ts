@@ -1,12 +1,14 @@
-import {debug} from '../debug'
-import {type CliApiClient, type PackageJson} from '../types'
-import {ENV_TEMPLATE_FILES, REQUIRED_ENV_VAR} from '@sanity/template-validator'
 import {access, readFile, writeFile} from 'node:fs/promises'
 import {join, posix, sep} from 'node:path'
 import {Readable} from 'node:stream'
 import {pipeline} from 'node:stream/promises'
 import {type ReadableStream} from 'node:stream/web'
+
+import {ENV_TEMPLATE_FILES, REQUIRED_ENV_VAR} from '@sanity/template-validator'
 import {x} from 'tar'
+
+import {debug} from '../debug'
+import {type CliApiClient, type PackageJson} from '../types'
 
 const DISALLOWED_PATHS = [
   // Prevent security risks from unknown GitHub Actions

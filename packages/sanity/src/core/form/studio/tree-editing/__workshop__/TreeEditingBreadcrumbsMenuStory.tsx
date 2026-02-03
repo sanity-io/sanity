@@ -1,9 +1,10 @@
-import {TreeEditingBreadcrumbsMenu} from '../components'
-import {type TreeEditingBreadcrumb} from '../types'
 import {Schema} from '@sanity/schema'
 import {type Path} from '@sanity/types'
 import {Container, Flex} from '@sanity/ui'
 import {useState} from 'react'
+
+import {TreeEditingBreadcrumbsMenu} from '../components'
+import {type TreeEditingBreadcrumb} from '../types'
 
 const schema = Schema.compile({
   name: 'default',

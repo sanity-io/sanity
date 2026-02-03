@@ -1,5 +1,6 @@
-import {testStudioLocaleNamespace} from '../../locales'
 import {defineType} from 'sanity'
+
+import {testStudioLocaleNamespace} from '../../locales'
 
 export default defineType({
   name: 'fieldGroupsWithI18n',

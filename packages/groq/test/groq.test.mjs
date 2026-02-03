@@ -1,9 +1,10 @@
 // Integration test for the Node.js ESM runtime
 
+import {strict as assert} from 'node:assert'
+
 import groq from 'groq'
 // Ensure it's possible to check what version of groq being used
 import pkg from 'groq/package.json' with {type: 'json'}
-import {strict as assert} from 'node:assert'
 
 assert.equal(typeof groq, 'function')
 assert.equal(typeof pkg.version, 'string')

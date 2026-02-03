@@ -1,13 +1,3 @@
-import {type FIXME} from '../../../../../FIXME'
-import {useTranslation} from '../../../../../i18n'
-import {_isType} from '../../../../../util/schemaUtils'
-import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
-import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
-import {useFormBuilder} from '../../../../useFormBuilder'
-import {DropMessage} from '../DropMessage'
-import {type FileInfo, fileTarget} from '../fileTarget'
-import {UploadDestinationPicker} from '../UploadDestinationPicker'
-import {Overlay} from './styles'
 import {type AssetSource, type SchemaType} from '@sanity/types'
 import {Box, type CardTone, Flex, Text, useToast} from '@sanity/ui'
 import {uniqBy} from 'lodash-es'
@@ -25,6 +15,17 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {type FIXME} from '../../../../../FIXME'
+import {useTranslation} from '../../../../../i18n'
+import {_isType} from '../../../../../util/schemaUtils'
+import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
+import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
+import {useFormBuilder} from '../../../../useFormBuilder'
+import {DropMessage} from '../DropMessage'
+import {type FileInfo, fileTarget} from '../fileTarget'
+import {UploadDestinationPicker} from '../UploadDestinationPicker'
+import {Overlay} from './styles'
 
 type FileEntry = {
   file: File

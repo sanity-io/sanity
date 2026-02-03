@@ -1,6 +1,3 @@
-import {customComponents} from './components-api'
-import {e2eI18nBundles} from './i18n/bundles'
-import {schemaTypes} from './schemaTypes'
 import {colorInput} from '@sanity/color-input'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, PlayIcon} from '@sanity/icons'
@@ -19,6 +16,10 @@ import {languageFilter} from 'sanity-test-studio/plugins/language-filter'
 import {defaultDocumentNode, newDocumentOptions, structure} from 'sanity-test-studio/structure'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+
+import {customComponents} from './components-api'
+import {e2eI18nBundles} from './i18n/bundles'
+import {schemaTypes} from './schemaTypes'
 
 const TestReleaseAction: ReleaseActionComponent = (props) => {
   const {release, documents} = props

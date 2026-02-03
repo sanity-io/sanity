@@ -1,8 +1,9 @@
-import {type UserColor, type UserColorHue, type UserColorManager, type UserId} from './types'
 import {COLOR_HUES, type ColorHueKey, type ColorTintKey, hues} from '@sanity/color'
 import {type ThemeColorSchemeKey} from '@sanity/ui'
 import {Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
+
+import {type UserColor, type UserColorHue, type UserColorManager, type UserId} from './types'
 
 /** @internal */
 export interface UserColorManagerOptions {

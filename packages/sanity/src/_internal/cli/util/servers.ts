@@ -1,5 +1,6 @@
-import {ensureTrailingSlash} from './ensureTrailingSlash'
 import {type CliConfig} from '@sanity/cli'
+
+import {ensureTrailingSlash} from './ensureTrailingSlash'
 
 export function gracefulServerDeath(
   command: 'start' | 'dev' | 'preview',

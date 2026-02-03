@@ -1,3 +1,6 @@
+import {capitalize} from 'lodash-es'
+import {memo, useCallback, useMemo} from 'react'
+
 import {FormFieldSet} from '../../components/formField'
 import {type FieldSetMember} from '../../store'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
@@ -12,8 +15,6 @@ import {
 import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
-import {capitalize} from 'lodash-es'
-import {memo, useCallback, useMemo} from 'react'
 
 /** @internal */
 export const MemberFieldSet = memo(function MemberFieldSet(props: {

@@ -1,5 +1,3 @@
-import {type ButtonProps} from '../../../../../../ui-components'
-import {FileButton} from './styles'
 import {
   type ChangeEvent,
   type ForwardedRef,
@@ -8,6 +6,9 @@ import {
   useCallback,
   useId,
 } from 'react'
+
+import {type ButtonProps} from '../../../../../../ui-components'
+import {FileButton} from './styles'
 
 export type FileInputButtonProps = ButtonProps & {
   accept?: string

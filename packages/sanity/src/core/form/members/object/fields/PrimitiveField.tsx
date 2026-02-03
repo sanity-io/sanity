@@ -1,3 +1,6 @@
+import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {type FieldMember, type PrimitiveFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
@@ -10,8 +13,6 @@ import {
 } from '../../../types'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
-import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input

@@ -1,9 +1,3 @@
-import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {useUnique} from '../../../../util'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
-import {getPTEToolbarActionGroups} from './helpers'
-import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 import {
   type HotkeyOptions,
   PortableTextEditor,
@@ -17,6 +11,13 @@ import {
   type PortableTextChild,
 } from '@sanity/types'
 import {useCallback, useMemo} from 'react'
+
+import {type FIXME} from '../../../../FIXME'
+import {useTranslation} from '../../../../i18n'
+import {useUnique} from '../../../../util'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {getPTEToolbarActionGroups} from './helpers'
+import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()

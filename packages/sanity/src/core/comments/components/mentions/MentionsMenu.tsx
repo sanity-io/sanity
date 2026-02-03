@@ -1,8 +1,3 @@
-import {CommandList, type CommandListHandle, LoadingBlock} from '../../../components'
-import {type UserWithPermission} from '../../../hooks'
-import {useTranslation} from '../../../i18n'
-import {commentsLocaleNamespace} from '../../i18n'
-import {MentionsMenuItem} from './MentionsMenuItem'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {deburr} from 'lodash-es'
 import {
@@ -15,6 +10,12 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {CommandList, type CommandListHandle, LoadingBlock} from '../../../components'
+import {type UserWithPermission} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
+import {commentsLocaleNamespace} from '../../i18n'
+import {MentionsMenuItem} from './MentionsMenuItem'
 
 const EMPTY_ARRAY: UserWithPermission[] = []
 

@@ -1,5 +1,6 @@
-import {addToken} from '../../actions/tokens/addToken'
 import {type CliCommandDefinition} from '@sanity/cli'
+
+import {addToken} from '../../actions/tokens/addToken'
 
 const helpText = `
 Examples

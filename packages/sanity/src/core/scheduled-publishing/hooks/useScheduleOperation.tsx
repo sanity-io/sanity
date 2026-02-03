@@ -1,9 +1,10 @@
+import {useToast} from '@sanity/ui'
+
 import {useTimeZone} from '../../hooks/useTimeZone'
 import ToastDescription from '../components/toastDescription/ToastDescription'
 import {type Schedule} from '../types'
 import getErrorMessage from '../utils/getErrorMessage'
 import {useScheduleApi} from './useScheduleApi'
-import {useToast} from '@sanity/ui'
 
 // Custom events
 export const ScheduleEvents = {

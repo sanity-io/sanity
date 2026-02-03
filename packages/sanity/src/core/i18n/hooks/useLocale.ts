@@ -1,6 +1,7 @@
-import {type Locale} from '../types'
 import {useContext} from 'react'
 import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
+
+import {type Locale} from '../types'
 
 /**
  * Returns the currently active locale

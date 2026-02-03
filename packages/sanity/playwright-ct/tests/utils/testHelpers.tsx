@@ -1,6 +1,7 @@
-import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 import {readFileSync} from 'node:fs'
 import path from 'node:path'
+
+import {expect, type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 

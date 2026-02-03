@@ -1,14 +1,3 @@
-import {Button} from '../../../../../ui-components'
-import {useRovingFocus} from '../../../../components'
-import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
-import {ActionMenu} from './ActionMenu'
-import {BlockStyleSelect} from './BlockStyleSelect'
-import {getBlockStyles, getInsertMenuItems} from './helpers'
-import {useActionGroups} from './hooks'
-import {InsertMenu} from './InsertMenu'
-import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
 import {
   type HotkeyOptions,
   PortableTextEditor,
@@ -20,6 +9,18 @@ import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+
+import {Button} from '../../../../../ui-components'
+import {useRovingFocus} from '../../../../components'
+import {useTranslation} from '../../../../i18n'
+import {useResolveInitialValueForType} from '../../../../store'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {ActionMenu} from './ActionMenu'
+import {BlockStyleSelect} from './BlockStyleSelect'
+import {getBlockStyles, getInsertMenuItems} from './helpers'
+import {useActionGroups} from './hooks'
+import {InsertMenu} from './InsertMenu'
+import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */

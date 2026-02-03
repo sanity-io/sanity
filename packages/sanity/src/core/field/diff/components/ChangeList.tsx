@@ -1,3 +1,10 @@
+import {type SanityDocument} from '@sanity/client'
+import {RevertIcon} from '@sanity/icons'
+import {type ObjectSchemaType} from '@sanity/types'
+import {Card, Stack} from '@sanity/ui'
+import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
+import {DiffContext} from 'sanity/_singletons'
+
 import {Button} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
@@ -12,12 +19,6 @@ import {ChangeListWrapper} from './ChangeList.styled'
 import {ChangeResolver} from './ChangeResolver'
 import {NoChanges} from './NoChanges'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
-import {type SanityDocument} from '@sanity/client'
-import {RevertIcon} from '@sanity/icons'
-import {type ObjectSchemaType} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
-import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
-import {DiffContext} from 'sanity/_singletons'
 
 /** @internal */
 export interface ChangeListProps {

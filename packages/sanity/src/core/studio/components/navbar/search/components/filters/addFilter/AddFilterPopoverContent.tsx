@@ -1,3 +1,6 @@
+import {Box, Flex, Text} from '@sanity/ui'
+import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
+
 import {
   CommandList,
   type CommandListGetItemDisabledCallback,
@@ -12,8 +15,6 @@ import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {createFilterMenuItems} from './createFilterMenuItems'
 import {MenuItemFilter} from './items/MenuItemFilter'
 import {MenuItemHeader} from './items/MenuItemHeader'
-import {Box, Flex, Text} from '@sanity/ui'
-import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
 
 interface AddFilterPopoverContentProps {
   onClose: () => void

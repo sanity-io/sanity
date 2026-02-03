@@ -1,11 +1,3 @@
-import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
-import {
-  type IncomingReferenceAction,
-  type IncomingReferenceActionDescription,
-  type IncomingReferenceActionsContext,
-} from './types'
 import {Box, Menu} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 import {
@@ -15,6 +7,15 @@ import {
   type SanityDocument,
   useSource,
 } from 'sanity'
+
+import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
+import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
+import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
+import {
+  type IncomingReferenceAction,
+  type IncomingReferenceActionDescription,
+  type IncomingReferenceActionsContext,
+} from './types'
 
 const IncomingReferenceDocumentActionsInner = ({
   states,

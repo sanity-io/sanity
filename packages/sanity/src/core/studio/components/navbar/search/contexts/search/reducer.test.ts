@@ -1,3 +1,8 @@
+import {type CurrentUser, type SchemaType} from '@sanity/types'
+import {act, renderHook} from '@testing-library/react'
+import {useReducer} from 'react'
+import {describe, expect, it} from 'vitest'
+
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
 import {
@@ -7,10 +12,6 @@ import {
   searchReducer,
   type SearchReducerState,
 } from './reducer'
-import {type CurrentUser, type SchemaType} from '@sanity/types'
-import {act, renderHook} from '@testing-library/react'
-import {useReducer} from 'react'
-import {describe, expect, it} from 'vitest'
 
 const mockUser: CurrentUser = {
   id: 'mock-user',

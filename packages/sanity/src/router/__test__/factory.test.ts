@@ -1,5 +1,6 @@
-import {route} from '../route'
 import {expect, test} from 'vitest'
+
+import {route} from '../route'
 
 test('only route', () => {
   const router = route.create('/foo/:bar')

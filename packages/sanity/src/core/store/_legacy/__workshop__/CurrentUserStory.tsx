@@ -1,6 +1,7 @@
+import {Box, Code, Text} from '@sanity/ui'
+
 import {Button} from '../../../../ui-components'
 import {useSource} from '../../../studio'
-import {Box, Code, Text} from '@sanity/ui'
 
 export default function CurrentUserStory() {
   const {currentUser} = useSource()

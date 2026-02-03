@@ -1,3 +1,8 @@
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {useMemo} from 'react'
+import {combineLatest, defer, from, type Observable, of} from 'rxjs'
+import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
+
 import {useSchema, useTemplates} from '../../../hooks'
 import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
 import {
@@ -10,10 +15,6 @@ import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {useMemo} from 'react'
-import {combineLatest, defer, from, type Observable, of} from 'rxjs'
-import {concatMap, map, switchMap, toArray} from 'rxjs/operators'
 
 /** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>

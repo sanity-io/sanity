@@ -1,5 +1,6 @@
-import {PreviewAny} from './PreviewAny'
 import {capitalize} from 'lodash-es'
+
+import {PreviewAny} from './PreviewAny'
 
 type Props = {
   value: Record<string, any>

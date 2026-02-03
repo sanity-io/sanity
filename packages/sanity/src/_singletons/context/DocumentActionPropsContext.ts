@@ -1,5 +1,6 @@
-import type {DocumentActionProps} from '../../core/config/document/actions'
 import {createContext} from 'sanity/_createContext'
+
+import type {DocumentActionProps} from '../../core/config/document/actions'
 
 /**
  * @internal

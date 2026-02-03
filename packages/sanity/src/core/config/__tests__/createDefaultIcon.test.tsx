@@ -1,7 +1,8 @@
-import {createDefaultIcon} from '../createDefaultIcon'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
+
+import {createDefaultIcon} from '../createDefaultIcon'
 
 function renderIcon(title: string, subtitle = '') {
   return render(

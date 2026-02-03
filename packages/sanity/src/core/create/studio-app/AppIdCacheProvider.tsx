@@ -1,6 +1,7 @@
-import {type AppIdCache, createAppIdCache} from './appIdCache'
 import {type ReactNode, useContext, useMemo} from 'react'
 import {AppIdCacheContext} from 'sanity/_singletons'
+
+import {type AppIdCache, createAppIdCache} from './appIdCache'
 
 interface AppIdCacheProviderProps {
   children: ReactNode

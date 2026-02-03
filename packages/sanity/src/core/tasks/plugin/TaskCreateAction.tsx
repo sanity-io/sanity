@@ -1,9 +1,10 @@
+import {TaskIcon} from '@sanity/icons'
+import {useCallback, useMemo} from 'react'
+
 import {type DocumentActionDescription} from '../../config'
 import {useTranslation} from '../../i18n'
 import {useTasksEnabled, useTasksNavigation, useTasksUpsell} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
-import {TaskIcon} from '@sanity/icons'
-import {useCallback, useMemo} from 'react'
 
 export function TaskCreateAction(): DocumentActionDescription | null {
   const {handleOpenTasks, setViewMode} = useTasksNavigation()

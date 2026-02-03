@@ -1,3 +1,7 @@
+import {type CliCommandContext} from '@sanity/cli'
+import chalk from 'chalk'
+import {uniq} from 'lodash-es'
+
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
 import {createManifestExtractor, ensureManifestExtractSatisfied} from './utils/mainfestExtractor'
@@ -10,9 +14,6 @@ import {
 } from './utils/schemaStoreOutStrings'
 import {parseDeleteSchemasConfig, type SchemaStoreCommonFlags} from './utils/schemaStoreValidation'
 import {uniqueProjectIdDataset} from './utils/uniqueProjectIdDataset'
-import {type CliCommandContext} from '@sanity/cli'
-import chalk from 'chalk'
-import {uniq} from 'lodash-es'
 
 export interface DeleteSchemaFlags extends SchemaStoreCommonFlags {
   ids?: string

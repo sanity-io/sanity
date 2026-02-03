@@ -1,9 +1,10 @@
-import {IntentLink} from './IntentLink'
-import {route} from './route'
-import {RouterProvider} from './RouterProvider'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash-es'
 import {describe, expect, it, vi} from 'vitest'
+
+import {IntentLink} from './IntentLink'
+import {route} from './route'
+import {RouterProvider} from './RouterProvider'
 
 vi.mock('./stickyParams', () => ({
   STICKY_PARAMS: ['aTestStickyParam'],

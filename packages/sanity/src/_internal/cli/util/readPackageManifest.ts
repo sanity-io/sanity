@@ -1,5 +1,6 @@
-import {type PackageJson} from '@sanity/cli'
 import {readFile} from 'node:fs/promises'
+
+import {type PackageJson} from '@sanity/cli'
 
 interface DependencyDeclarations {
   dependencies: Record<string, string | undefined>

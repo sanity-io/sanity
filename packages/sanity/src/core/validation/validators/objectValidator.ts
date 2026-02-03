@@ -1,12 +1,13 @@
-import {getPublishedId} from '../../util'
-import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
-import {pathToString} from '../util/pathToString'
-import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
 import {
   type Asset as MediaLibraryAsset,
   type AssetInstanceDocument,
 } from '@sanity/media-library-types'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
+
+import {getPublishedId} from '../../util'
+import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
+import {pathToString} from '../util/pathToString'
+import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
 

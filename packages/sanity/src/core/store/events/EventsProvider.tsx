@@ -1,6 +1,7 @@
-import {type EventsStore} from './types'
 import {useContext} from 'react'
 import {EventsContext} from 'sanity/_singletons'
+
+import {type EventsStore} from './types'
 
 interface EventsProviderProps {
   value: EventsStore

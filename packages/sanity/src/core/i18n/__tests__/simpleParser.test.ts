@@ -1,5 +1,6 @@
-import {simpleParser} from '../simpleParser'
 import {describe, expect, test} from 'vitest'
+
+import {simpleParser} from '../simpleParser'
 
 describe('simpleParser', () => {
   test('simple string', () => {

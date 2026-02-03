@@ -1,21 +1,3 @@
-import {useSchema} from '../../../../hooks'
-import {usePerspective} from '../../../../perspective/usePerspective'
-import {createSearch} from '../../../../search'
-import {useDocumentPreviewStore} from '../../../../store'
-import {useSource} from '../../../../studio'
-import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {isNonNullable} from '../../../../util'
-import {useFormValue} from '../../../contexts/FormValue'
-import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
-import {
-  type CreateReferenceOption,
-  type EditReferenceEvent,
-} from '../../../inputs/ReferenceInput/types'
-import {type ObjectInputProps} from '../../../types'
-import {useReferenceInputOptions} from '../../contexts'
-import * as adapter from '../client-adapters/reference'
-import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 /* eslint-disable max-nested-callbacks */
 import {type SanityDocument, type StackablePerspective} from '@sanity/client'
 import {getPublishedId} from '@sanity/client/csm'
@@ -36,6 +18,25 @@ import {
 } from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
+
+import {useSchema} from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
+import {createSearch} from '../../../../search'
+import {useDocumentPreviewStore} from '../../../../store'
+import {useSource} from '../../../../studio'
+import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {isNonNullable} from '../../../../util'
+import {useFormValue} from '../../../contexts/FormValue'
+import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
+import {
+  type CreateReferenceOption,
+  type EditReferenceEvent,
+} from '../../../inputs/ReferenceInput/types'
+import {type ObjectInputProps} from '../../../types'
+import {useReferenceInputOptions} from '../../contexts'
+import * as adapter from '../client-adapters/reference'
+import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 
 /**
  *

@@ -1,3 +1,8 @@
+import {CloseIcon} from '@sanity/icons'
+import {Badge, Box, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {format, isWeekend} from 'date-fns'
+import {useCallback, useMemo} from 'react'
+
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SCHEDULE_ACTION_DICTIONARY, SCHEDULE_STATE_DICTIONARY} from '../../constants'
@@ -5,10 +10,6 @@ import {type Schedule, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
 import Pip from './Pip'
-import {CloseIcon} from '@sanity/icons'
-import {Badge, Box, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
-import {format, isWeekend} from 'date-fns'
-import {useCallback, useMemo} from 'react'
 
 interface CalendarDayProps {
   date: Date // clock time

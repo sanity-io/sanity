@@ -1,3 +1,5 @@
+import {type ComponentType} from 'react'
+
 import {type PreviewProps} from '../../components'
 import {useMiddlewareComponents} from '../../config/components'
 import {
@@ -25,7 +27,6 @@ import {
   pickItemComponent,
   pickPreviewComponent,
 } from './picks'
-import {type ComponentType} from 'react'
 
 /**
  * @internal

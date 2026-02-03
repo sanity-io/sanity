@@ -1,3 +1,6 @@
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+
 import {useClient} from '../../../../hooks/useClient'
 import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {useSource} from '../../../../studio/source'
@@ -6,8 +9,6 @@ import {getReleaseDocumentIdFromReleaseId} from '../../../util/getReleaseDocumen
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {EVENTS_INITIAL_VALUE, getReleaseEvents} from './getReleaseEvents'
 import {type ReleaseEvent} from './types'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
 
 export interface ReleaseEvents {
   events: ReleaseEvent[]

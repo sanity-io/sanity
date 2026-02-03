@@ -1,10 +1,11 @@
-import {useDocumentPreviewStore} from '../store'
 import {type QueryParams} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {map} from 'rxjs/operators'
+
+import {useDocumentPreviewStore} from '../store'
 
 const INITIAL_VALUE = {loading: true, documents: []}
 

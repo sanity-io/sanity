@@ -1,3 +1,9 @@
+import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
+import {parse} from 'date-fns'
+import {useEffect, useMemo, useRef} from 'react'
+import {Link, type RouterContextValue, useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
+
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
 import {useTimeZone} from '../../hooks/useTimeZone'
@@ -21,11 +27,6 @@ import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
-import {Box, Card, Container, Flex, Text, useTheme} from '@sanity/ui'
-import {parse} from 'date-fns'
-import {useEffect, useMemo, useRef} from 'react'
-import {Link, type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 
 const Column = styled(Box)`
   flex-direction: column;

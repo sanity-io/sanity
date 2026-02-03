@@ -1,11 +1,3 @@
-import {
-  type PresentationNavigate,
-  type PresentationParamsContextValue,
-  type PresentationSearchParams,
-  type StructureDocumentPaneParams,
-} from '../types'
-import {ChildLink} from './ChildLink'
-import {ReferenceChildLink} from './ReferenceChildLink'
 import {toString as pathToString} from '@sanity/util/paths'
 import {forwardRef, type PropsWithChildren, useCallback, useMemo} from 'react'
 import {getPublishedId, useUnique} from 'sanity'
@@ -17,6 +9,15 @@ import {
   type PaneRouterContextValue,
   type ReferenceChildLinkProps,
 } from 'sanity/structure'
+
+import {
+  type PresentationNavigate,
+  type PresentationParamsContextValue,
+  type PresentationSearchParams,
+  type StructureDocumentPaneParams,
+} from '../types'
+import {ChildLink} from './ChildLink'
+import {ReferenceChildLink} from './ReferenceChildLink'
 
 function encodeQueryString(params: Record<string, unknown> = {}): string {
   const parts = Object.entries(params)

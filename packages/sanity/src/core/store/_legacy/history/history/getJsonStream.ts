@@ -1,5 +1,6 @@
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../../studioClient'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
+
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../../studioClient'
 
 type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
 

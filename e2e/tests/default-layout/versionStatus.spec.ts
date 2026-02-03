@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('auto-updating studio behavior', () => {
   test('should facilitate reload if in auto-updating studio, and version is higher than minversion from importmap', async ({

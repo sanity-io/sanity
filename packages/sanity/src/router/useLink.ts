@@ -1,5 +1,6 @@
-import {useRouter} from './useRouter'
 import {useCallback} from 'react'
+
+import {useRouter} from './useRouter'
 
 function isLeftClickEvent(event: React.MouseEvent) {
   return event.button === 0

@@ -1,6 +1,7 @@
-import {type Divider, type Serializable} from './StructureNodes'
 import {uniqueId} from 'lodash-es'
 import {type I18nTextRecord} from 'sanity'
+
+import {type Divider, type Serializable} from './StructureNodes'
 
 export class DividerBuilder implements Serializable<Divider> {
   protected spec: Divider

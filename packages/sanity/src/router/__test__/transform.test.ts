@@ -1,6 +1,7 @@
+import {expect, test} from 'vitest'
+
 import {route} from '../route'
 import {decodeParams, encodeParams} from '../utils/paramsEncoding'
-import {expect, test} from 'vitest'
 
 test('transform config on regular routes', () => {
   const router = route.create(

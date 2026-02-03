@@ -1,7 +1,8 @@
-import {type CapabilityRecord} from '../renderingContext/types'
-import {type ComlinkStore} from './types'
 import {createNode} from '@sanity/comlink'
 import {type FrameMessages, type WindowMessages} from '@sanity/message-protocol'
+
+import {type CapabilityRecord} from '../renderingContext/types'
+import {type ComlinkStore} from './types'
 
 interface Options {
   capabilities: CapabilityRecord

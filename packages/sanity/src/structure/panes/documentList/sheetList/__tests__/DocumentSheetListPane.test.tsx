@@ -1,11 +1,12 @@
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../i18n'
-import {type DocumentListPaneNode} from '../../../../types'
-import {DocumentSheetListPane} from '../DocumentSheetListPane'
 import {fireEvent, render, screen, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {defineConfig} from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {structureUsEnglishLocaleBundle} from '../../../../i18n'
+import {type DocumentListPaneNode} from '../../../../types'
+import {DocumentSheetListPane} from '../DocumentSheetListPane'
 
 vi.mock('../useDocumentSheetList', () => ({
   useDocumentSheetList: vi.fn().mockReturnValue({

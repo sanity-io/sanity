@@ -1,5 +1,6 @@
-import type {Source} from '../../core/config/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {Source} from '../../core/config/types'
 
 /**
  * @internal

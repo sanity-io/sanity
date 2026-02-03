@@ -1,7 +1,8 @@
-import {buildTreeEditingState} from '../utils'
 import {Schema} from '@sanity/schema'
 import {type SanityDocumentLike} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
+
+import {buildTreeEditingState} from '../utils'
 
 const schema = Schema.compile({
   name: 'default',

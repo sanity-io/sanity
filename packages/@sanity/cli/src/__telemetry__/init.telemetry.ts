@@ -1,5 +1,6 @@
-import {type EditorName} from '../actions/mcp/editorConfigs'
 import {defineTrace} from '@sanity/telemetry'
+
+import {type EditorName} from '../actions/mcp/editorConfigs'
 
 interface StartStep {
   step: 'start'

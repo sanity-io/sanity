@@ -1,3 +1,14 @@
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {ChevronDownIcon} from '@sanity/icons'
+import {
+  Menu,
+  // eslint-disable-next-line no-restricted-imports
+  MenuItem,
+  Text,
+} from '@sanity/ui'
+import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
+import {styled} from 'styled-components'
+
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
@@ -13,16 +24,6 @@ import {
 } from '../text/textStyles'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {type BlockStyleItem} from './types'
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {ChevronDownIcon} from '@sanity/icons'
-import {
-  Menu,
-  // eslint-disable-next-line no-restricted-imports
-  MenuItem,
-  Text,
-} from '@sanity/ui'
-import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 const MenuButtonMemo = memo(MenuButton)
 

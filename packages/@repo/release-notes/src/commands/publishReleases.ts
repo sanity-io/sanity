@@ -1,8 +1,9 @@
+/* oxlint-disable no-console */
+import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
+
 import {client} from '../client'
 import {octokit} from '../octokit'
 import {type StudioChangelogEntry} from '../types'
-/* oxlint-disable no-console */
-import {DocumentId, getPublishedId, getVersionNameFromId, isVersionId} from '@sanity/id-utils'
 
 export async function publishReleases(options: {targetVersion: string}) {
   const changelogDocuments = await client.fetch<{_id: string; changelog: StudioChangelogEntry[]}[]>(

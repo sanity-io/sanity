@@ -1,12 +1,13 @@
+import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {render} from '@testing-library/react'
+import {type SanityClient} from 'sanity'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
+
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {LocaleProviderBase, usEnglishLocale} from '../../../core/i18n'
 import {prepareI18n} from '../../../core/i18n/i18nConfig'
 import {ErrorBoundary} from '../ErrorBoundary'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
-import {type SanityClient} from 'sanity'
-import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 describe('ErrorBoundary', () => {
   beforeAll(() => {

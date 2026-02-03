@@ -1,3 +1,14 @@
+/* eslint-disable max-statements */
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
+import zlib from 'node:zlib'
+
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {minutesToMilliseconds} from 'date-fns'
+import readPkgUp from 'read-pkg-up'
+import tar from 'tar-fs'
+
 import {
   type DeployStudioWorkerResult,
   type DeployStudioWorkerSuccess,
@@ -18,15 +29,6 @@ import {
   getOrCreateUserApplicationFromConfig,
   type UserApplication,
 } from './helpers'
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {minutesToMilliseconds} from 'date-fns'
-/* eslint-disable max-statements */
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
-import zlib from 'node:zlib'
-import readPkgUp from 'read-pkg-up'
-import tar from 'tar-fs'
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   'build'?: boolean

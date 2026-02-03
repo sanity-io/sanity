@@ -1,5 +1,3 @@
-import {type CommentTextSelection} from '../../types'
-import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
 import {type EditorSelection} from '@portabletext/editor'
 import {toPlainText} from '@portabletext/react'
 import {
@@ -8,6 +6,9 @@ import {
   isPortableTextTextBlock,
   type PortableTextBlock,
 } from '@sanity/types'
+
+import {type CommentTextSelection} from '../../types'
+import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
 
 interface BuildSelectionFromFragmentProps {
   fragment: PortableTextBlock[]

@@ -1,4 +1,5 @@
 import config from '#config'
+
 import {createRoot} from 'react-dom/client'
 import {Studio} from 'sanity'
 import {structureTool} from 'sanity/structure'

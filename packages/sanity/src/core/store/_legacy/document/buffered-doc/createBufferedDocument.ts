@@ -1,3 +1,6 @@
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
+
 import {type ListenerEvent} from '../getPairListener'
 import {
   type CommitRequest,
@@ -11,8 +14,6 @@ import {
   type RemoteSnapshotEvent,
   type SnapshotEvent,
 } from './types'
-import {type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
 
 /**
  * @hidden

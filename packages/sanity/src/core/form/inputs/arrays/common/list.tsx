@@ -1,4 +1,3 @@
-import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 import {
   type AutoScrollOptions,
   closestCenter,
@@ -32,6 +31,8 @@ import {
 } from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
+
+import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'
 

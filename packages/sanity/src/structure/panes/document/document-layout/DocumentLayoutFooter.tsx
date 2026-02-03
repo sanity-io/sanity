@@ -1,11 +1,12 @@
+import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui'
+import {type Dispatch, type SetStateAction, useMemo} from 'react'
+import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
+
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneFooter} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
-import {DialogProvider, type DialogProviderProps, PortalProvider} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useMemo} from 'react'
-import {getSanityCreateLinkMetadata, useZIndex} from 'sanity'
 
 const DIALOG_PROVIDER_POSITION: DialogProviderProps['position'] = [
   // We use the `position: fixed` for dialogs on narrower screens (first two media breakpoints).

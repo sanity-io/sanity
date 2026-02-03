@@ -1,9 +1,10 @@
+import {useMemo} from 'react'
+import {TasksEnabledContext} from 'sanity/_singletons'
+
 import {useFeatureEnabled} from '../../../hooks'
 import {FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useWorkspace} from '../../../studio/workspace'
 import {type TasksEnabledContextValue} from './types'
-import {useMemo} from 'react'
-import {TasksEnabledContext} from 'sanity/_singletons'
 
 interface TaksEnabledProviderProps {
   children: React.ReactNode

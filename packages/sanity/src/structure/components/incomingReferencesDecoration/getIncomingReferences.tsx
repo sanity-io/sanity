@@ -1,4 +1,3 @@
-import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
 import {distinctUntilChanged, filter, map, type Observable, of, startWith, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
@@ -7,6 +6,8 @@ import {
   type SanityClient,
   type SanityDocument,
 } from 'sanity'
+
+import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
 
 export const INITIAL_STATE = {
   documents: [],

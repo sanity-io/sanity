@@ -1,3 +1,6 @@
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
+
 import {
   createWorkspaceFromConfig,
   type SchemaPluginOptions,
@@ -6,8 +9,6 @@ import {
   type Workspace,
 } from '../../src/core/config'
 import {createMockSanityClient} from '../mocks/mockSanityClient'
-import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
 
 const defaultMockUser: CurrentUser = {
   id: 'doug',

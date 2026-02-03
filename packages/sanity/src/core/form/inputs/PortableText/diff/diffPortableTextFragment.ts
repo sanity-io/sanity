@@ -1,8 +1,9 @@
-import {type TargetPerspective} from '../../../../perspective/types'
-import {type ProvenanceDiffAnnotation} from '../../../store/types/diff'
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
 import {type Diff, diffInput, wrap} from '@sanity/diff'
 import {type PortableTextBlock} from '@sanity/types'
+
+import {type TargetPerspective} from '../../../../perspective/types'
+import {type ProvenanceDiffAnnotation} from '../../../store/types/diff'
 
 export interface DiffPortableTextFragmentOptions {
   upstreamValue?: PortableTextBlock[]

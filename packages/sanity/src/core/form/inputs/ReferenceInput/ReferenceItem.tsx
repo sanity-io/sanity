@@ -1,3 +1,16 @@
+import {
+  AddDocumentIcon,
+  CloseIcon,
+  CopyIcon,
+  LaunchIcon as OpenInNewTabIcon,
+  SyncIcon as ReplaceIcon,
+  TrashIcon,
+} from '@sanity/icons'
+import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
+import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import {useCallback, useRef, useState} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
@@ -22,18 +35,6 @@ import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailu
 import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
 import {useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
-import {
-  AddDocumentIcon,
-  CloseIcon,
-  CopyIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
-import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
-import {useCallback, useRef, useState} from 'react'
-import {IntentLink} from 'sanity/router'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 

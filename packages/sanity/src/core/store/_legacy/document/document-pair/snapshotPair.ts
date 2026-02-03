@@ -1,3 +1,8 @@
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
+import {filter, map, publishReplay, refCount} from 'rxjs/operators'
+
 import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {
@@ -10,10 +15,6 @@ import {memoize} from '../utils/createMemoizer'
 import {type DocumentVersion} from './checkoutPair'
 import {memoizedPair} from './memoizedPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
-import {type SanityClient} from '@sanity/client'
-import {type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 
 // return true if the event comes with a document snapshot
 function isSnapshotEvent(

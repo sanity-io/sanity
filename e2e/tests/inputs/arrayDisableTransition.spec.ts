@@ -7,8 +7,9 @@
  * unrecognized DOM attributes.
  */
 
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test.describe('PR #11775 - disableTransition prop leak', () => {
   test('array items should not leak disableTransition prop to DOM when sortable=false', async ({

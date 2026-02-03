@@ -1,3 +1,6 @@
+import {Card, Stack, Text} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+
 import {useTranslation} from '../../../../../i18n'
 import {ArrayOfObjectsItem} from '../../../../members'
 import {
@@ -11,8 +14,6 @@ import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
 import {GridItem} from './GridItem'
-import {Card, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
 
 const EMPTY: [] = []
 

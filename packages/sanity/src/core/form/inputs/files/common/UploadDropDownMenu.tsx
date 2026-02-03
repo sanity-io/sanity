@@ -1,3 +1,9 @@
+import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
+import {type AssetSource} from '@sanity/types'
+import {Menu} from '@sanity/ui'
+import {startCase, uniqueId} from 'lodash-es'
+import {type ChangeEvent, type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
+
 import {
   Button,
   MenuButton,
@@ -7,11 +13,6 @@ import {
   MenuItem,
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
-import {type AssetSource} from '@sanity/types'
-import {Menu} from '@sanity/ui'
-import {startCase, uniqueId} from 'lodash-es'
-import {type ChangeEvent, type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 
 const UPLOAD_DROP_DOWN_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 const MENU_GROUP_POPOVER: MenuGroupProps['popover'] = {

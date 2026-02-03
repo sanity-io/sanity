@@ -1,6 +1,3 @@
-import {type FormNodePresence} from '../../../../presence/types'
-import {PresenceProvider} from '../../../studio/contexts/Presence'
-import {usePresenceCursorDecorations} from '../presence-cursors'
 import {
   type EditorEmittedEvent,
   EditorProvider,
@@ -25,6 +22,10 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+
+import {type FormNodePresence} from '../../../../presence/types'
+import {PresenceProvider} from '../../../studio/contexts/Presence'
+import {usePresenceCursorDecorations} from '../presence-cursors'
 
 const renderBlock: RenderBlockFunction = (p) => (
   <div style={{paddingBottom: '1em'}}>

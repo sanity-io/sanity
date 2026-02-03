@@ -1,7 +1,9 @@
+import path from 'node:path'
+
+import isInstalledGlobally from 'is-installed-globally'
+
 import {debug} from '../debug'
 import {getPackageManagerChoice} from './packageManagerChoice'
-import isInstalledGlobally from 'is-installed-globally'
-import path from 'node:path'
 
 const cliPkgName = '@sanity/cli'
 

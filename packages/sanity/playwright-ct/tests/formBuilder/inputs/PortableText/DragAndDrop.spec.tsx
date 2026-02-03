@@ -1,7 +1,8 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import DragAndDropStory from './DragAndDropStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import DragAndDropStory from './DragAndDropStory'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 

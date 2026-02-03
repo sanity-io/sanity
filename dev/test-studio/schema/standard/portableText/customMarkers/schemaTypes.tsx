@@ -1,6 +1,7 @@
-import {CustomContentInput} from './CustomContentInput'
 import {LinkIcon, RocketIcon} from '@sanity/icons'
 import {type BlockAnnotationProps, defineType} from 'sanity'
+
+import {CustomContentInput} from './CustomContentInput'
 
 const boostRender = (props: any) => (
   <span style={{backgroundColor: 'yellow'}}>{props.children}</span>

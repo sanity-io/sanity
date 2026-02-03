@@ -1,9 +1,10 @@
+import {isReferenceSchemaType, type SchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
+
 import {type FIXME} from '../../../FIXME'
 import {PreviewItem} from '../../inputs/arrays/ArrayOfObjectsInput/List/PreviewItem'
 import {ReferenceItem} from '../../inputs/ReferenceInput/ReferenceItem'
 import {type ItemProps} from '../../types'
-import {isReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {type ComponentType} from 'react'
 
 export function defaultResolveItemComponent(
   schemaType: SchemaType,

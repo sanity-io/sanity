@@ -1,8 +1,3 @@
-import {type DocumentFieldActionNode} from '../../../config'
-import {pathToString} from '../../../field'
-import {supportsTouch} from '../../../util'
-import {type FieldCommentsProps} from '../../types/fieldProps'
-import {useHoveredField} from '../useHoveredField'
 import {type Path} from '@sanity/types'
 import {
   memo,
@@ -13,6 +8,12 @@ import {
   useSyncExternalStore,
 } from 'react'
 import {FieldActionsContext, type FieldActionsContextValue} from 'sanity/_singletons'
+
+import {type DocumentFieldActionNode} from '../../../config'
+import {pathToString} from '../../../field'
+import {supportsTouch} from '../../../util'
+import {type FieldCommentsProps} from '../../types/fieldProps'
+import {useHoveredField} from '../useHoveredField'
 
 type FieldActionsProviderProps = PropsWithChildren<{
   actions: DocumentFieldActionNode[]

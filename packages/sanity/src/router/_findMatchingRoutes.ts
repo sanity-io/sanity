@@ -1,3 +1,5 @@
+import {difference, intersection, isPlainObject, pick} from 'lodash-es'
+
 import {
   type InternalSearchParam,
   type MatchError,
@@ -7,7 +9,6 @@ import {
   type RouterState,
 } from './types'
 import {arrayify} from './utils/arrayify'
-import {difference, intersection, isPlainObject, pick} from 'lodash-es'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)

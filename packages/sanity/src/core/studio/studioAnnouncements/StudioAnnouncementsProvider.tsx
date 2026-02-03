@@ -1,3 +1,10 @@
+/* eslint-disable camelcase */
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
+import {StudioAnnouncementContext} from 'sanity/_singletons'
+
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
@@ -16,12 +23,6 @@ import {
 } from './types'
 import {useSeenAnnouncements} from './useSeenAnnouncements'
 import {isValidAnnouncementAudience, isValidAnnouncementRole} from './utils'
-/* eslint-disable camelcase */
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
-import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 interface StudioAnnouncementsProviderProps {
   children: React.ReactNode

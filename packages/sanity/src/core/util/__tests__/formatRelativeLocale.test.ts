@@ -1,6 +1,7 @@
-import {formatRelativeLocale} from '../formatRelativeLocale'
 import {formatRelative} from 'date-fns'
 import {describe, expect, it} from 'vitest'
+
+import {formatRelativeLocale} from '../formatRelativeLocale'
 
 const currentDate = new Date('2023-10-01')
 

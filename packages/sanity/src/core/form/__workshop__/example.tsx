@@ -1,12 +1,13 @@
+import {type ObjectField, type ObjectSchemaTypeWithOptions} from '@sanity/types'
+import {Card, Grid, Stack, useToast} from '@sanity/ui'
+import {useBoolean, useProps} from '@sanity/ui-workshop'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+
 import {PresenceOverlay} from '../../presence'
 import {type PatchEvent} from '../patch'
 import {applyAll} from '../patch/applyPatch'
 import {FilterFieldInput, FormDebugger, TypeTester} from './_common'
 import {getDummyDocument} from './_common/data'
-import {type ObjectField, type ObjectSchemaTypeWithOptions} from '@sanity/types'
-import {Card, Grid, Stack, useToast} from '@sanity/ui'
-import {useBoolean, useProps} from '@sanity/ui-workshop'
-import {useCallback, useEffect, useMemo, useState} from 'react'
 
 export default function ExampleStory() {
   const {setPropValue} = useProps()

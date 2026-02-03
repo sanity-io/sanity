@@ -1,6 +1,7 @@
+import {isPlainObject} from 'lodash-es'
+
 import {error} from '../createValidationResult'
 import object from './object'
-import {isPlainObject} from 'lodash-es'
 
 export default (typeDefinition: any, visitorContext: any) => {
   const typeDef = object(typeDefinition, visitorContext)

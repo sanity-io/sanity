@@ -1,8 +1,3 @@
-import {usePaneRouter} from '../../components'
-import {EMPTY_PARAMS} from './constants'
-import {usePaneOptions} from './DocumentPane'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {type DocumentPaneProviderProps} from './types'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
@@ -21,6 +16,12 @@ import {
   usePerspective,
   useSchema,
 } from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {EMPTY_PARAMS} from './constants'
+import {usePaneOptions} from './DocumentPane'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {type DocumentPaneProviderProps} from './types'
 
 export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const {params = EMPTY_PARAMS} = usePaneRouter()

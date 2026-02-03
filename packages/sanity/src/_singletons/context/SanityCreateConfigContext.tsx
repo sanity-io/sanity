@@ -1,5 +1,6 @@
-import type {SanityCreateConfigContextValue} from '../../core'
 import {createContext} from 'sanity/_createContext'
+
+import type {SanityCreateConfigContextValue} from '../../core'
 
 /**
  * @internal

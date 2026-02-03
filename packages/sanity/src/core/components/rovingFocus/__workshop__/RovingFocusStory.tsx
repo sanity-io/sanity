@@ -1,8 +1,9 @@
-import {Button} from '../../../../ui-components'
-import {useRovingFocus} from '../useRovingFocus'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useState} from 'react'
+
+import {Button} from '../../../../ui-components'
+import {useRovingFocus} from '../useRovingFocus'
 
 const DIRECTION_OPTIONS: Record<string, 'horizontal' | 'vertical'> = {
   horizontal: 'horizontal',

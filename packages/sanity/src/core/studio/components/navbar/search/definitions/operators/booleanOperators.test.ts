@@ -1,5 +1,6 @@
-import {booleanOperators} from './booleanOperators'
 import {describe, expect, it} from 'vitest'
+
+import {booleanOperators} from './booleanOperators'
 
 const fieldPath = 'selected'
 const value = true

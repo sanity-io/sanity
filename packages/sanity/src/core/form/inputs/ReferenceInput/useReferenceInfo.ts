@@ -1,9 +1,10 @@
-import {type ReferenceInfo} from './types'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, concatMap, map, startWith} from 'rxjs/operators'
+
+import {type ReferenceInfo} from './types'
 
 const noop = () => undefined
 

@@ -1,3 +1,6 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {memo, useEffect, useRef, useState} from 'react'
+
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, isPublishedId} from '../../../../util/draftUtils'
@@ -6,8 +9,6 @@ import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {getReleaseDefaults} from '../../../util/util'
 import {CanonicalReleaseContextMenu} from './CanonicalReleaseContextMenu'
 import {ScheduledDraftContextMenu} from './ScheduledDraftContextMenu'
-import {type ReleaseDocument} from '@sanity/client'
-import {memo, useEffect, useRef, useState} from 'react'
 
 interface VersionContextMenuProps {
   documentId: string

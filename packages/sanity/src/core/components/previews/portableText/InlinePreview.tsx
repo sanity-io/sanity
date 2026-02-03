@@ -1,8 +1,9 @@
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {MediaSpan, RootSpan, TextSpan} from './InlinePreview.styled'
-import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 /**
  * @hidden

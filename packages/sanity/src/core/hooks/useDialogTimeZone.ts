@@ -1,6 +1,7 @@
+import {useCallback, useState} from 'react'
+
 import DialogTimeZone from '../components/timeZone/DialogTimeZone'
 import {type TimeZoneScope} from './useTimeZone'
-import {useCallback, useState} from 'react'
 
 function useDialogTimeZone(timeZoneScope: TimeZoneScope) {
   const [visible, setVisible] = useState(false)

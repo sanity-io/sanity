@@ -1,6 +1,7 @@
-import {POPUP_CHECK_INTERVAL} from './constants'
 import {type Controller} from '@sanity/comlink'
 import {useCallback, useEffect, useState} from 'react'
+
+import {POPUP_CHECK_INTERVAL} from './constants'
 
 /**
  * A hook for managing popup Window contexts

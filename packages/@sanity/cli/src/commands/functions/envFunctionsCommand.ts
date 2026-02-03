@@ -1,5 +1,6 @@
-import {type CliCommandDefinition} from '../../types'
 import {logger} from '@sanity/runtime-cli/utils'
+
+import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Commands

@@ -1,7 +1,3 @@
-import {Button, Popover} from '../../../../../ui-components'
-import {useDocumentPane} from '../../useDocumentPane'
-import {TimelineError} from '../TimelineError'
-import {EventsTimeline} from './EventsTimeline'
 import {ChevronDownIcon} from '@sanity/icons'
 import {
   Flex,
@@ -24,6 +20,11 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {Button, Popover} from '../../../../../ui-components'
+import {useDocumentPane} from '../../useDocumentPane'
+import {TimelineError} from '../TimelineError'
+import {EventsTimeline} from './EventsTimeline'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null

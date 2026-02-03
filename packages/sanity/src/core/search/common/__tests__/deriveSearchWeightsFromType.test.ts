@@ -1,7 +1,8 @@
-import {createSchema} from '../../../schema'
-import {deriveSearchWeightsFromType} from '../deriveSearchWeightsFromType'
 import {type CrossDatasetReferenceSchemaType, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+
+import {createSchema} from '../../../schema'
+import {deriveSearchWeightsFromType} from '../deriveSearchWeightsFromType'
 
 describe('deriveSearchWeightsFromType', () => {
   it('finds all the strings and PT fields within a document type', () => {

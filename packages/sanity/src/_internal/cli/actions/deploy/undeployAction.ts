@@ -1,6 +1,7 @@
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+
 import {debug as debugIt} from '../../debug'
 import {deleteUserApplication, getUserApplication} from './helpers'
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 const debug = debugIt.extend('undeploy')
 

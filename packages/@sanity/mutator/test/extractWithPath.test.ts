@@ -1,5 +1,6 @@
-import {extractWithPath} from '../src/jsonpath'
 import {expect, test} from 'vitest'
+
+import {extractWithPath} from '../src/jsonpath'
 
 test('basic extraction', () => {
   expect(

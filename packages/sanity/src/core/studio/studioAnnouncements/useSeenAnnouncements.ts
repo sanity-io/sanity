@@ -1,7 +1,8 @@
-import {useKeyValueStore} from '../../store/_legacy/datastores'
 import {useCallback, useEffect, useMemo} from 'react'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {useRouter} from 'sanity/router'
+
+import {useKeyValueStore} from '../../store/_legacy/datastores'
 
 const KEY = 'studio.announcement.seen'
 const RESET_PARAM = 'reset-announcements'

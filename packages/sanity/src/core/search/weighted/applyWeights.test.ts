@@ -1,9 +1,10 @@
+import {describe, expect, it} from 'vitest'
+
 import {
   calculatePhraseScore,
   calculateWordScore,
   partitionAndSanitizeSearchTerms,
 } from './applyWeights'
-import {describe, expect, it} from 'vitest'
 
 describe('calculatePhraseScore', () => {
   it('should handle exact matches', () => {

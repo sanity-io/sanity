@@ -1,13 +1,14 @@
-import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
-import {Button} from '../../../ui-components/button'
-import {MenuButton} from '../../../ui-components/menuButton'
-import {MenuItem} from '../../../ui-components/menuItem'
-import {type VideoAssetProps} from './types'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {startCase} from 'lodash-es'
 import {useCallback} from 'react'
+
+import {useTranslation} from '../../../core/i18n/hooks/useTranslation'
+import {Button} from '../../../ui-components/button'
+import {MenuButton} from '../../../ui-components/menuButton'
+import {MenuItem} from '../../../ui-components/menuItem'
+import {type VideoAssetProps} from './types'
 
 export function Browser(props: VideoAssetProps) {
   const {

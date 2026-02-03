@@ -1,11 +1,12 @@
-import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
-import {genericValidators} from './genericValidator'
 import {
   isArrayOfBlocksSchemaType,
   type Path,
   type PathSegment,
   type Validators,
 } from '@sanity/types'
+
+import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
+import {genericValidators} from './genericValidator'
 
 export const arrayValidators: Validators = {
   ...genericValidators,

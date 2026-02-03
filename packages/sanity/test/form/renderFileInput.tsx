@@ -1,8 +1,3 @@
-import {type ObjectInputProps} from '../../src/core'
-import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput'
-import {type TestRenderInputContext} from './renderInput'
-import {renderObjectInput} from './renderObjectInput'
-import {type TestRenderProps} from './types'
 import {
   type AssetSource,
   type FieldDefinition,
@@ -10,6 +5,12 @@ import {
   type SchemaTypeDefinition,
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
+
+import {type ObjectInputProps} from '../../src/core'
+import {type BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput'
+import {type TestRenderInputContext} from './renderInput'
+import {renderObjectInput} from './renderObjectInput'
+import {type TestRenderProps} from './types'
 
 const STUB_ASSET_SOURCES: AssetSource[] = [{Uploader: {}, name: 'test-source'} as AssetSource] // @todo
 

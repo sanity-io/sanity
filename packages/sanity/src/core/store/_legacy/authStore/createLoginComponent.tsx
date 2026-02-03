@@ -1,14 +1,15 @@
+/* eslint-disable i18next/no-literal-string */
+import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
+import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
+import {type Observable} from 'rxjs'
+
 import {Button, type ButtonProps} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {type AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
-/* eslint-disable i18next/no-literal-string */
-import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
-import {type Observable} from 'rxjs'
 
 const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
 

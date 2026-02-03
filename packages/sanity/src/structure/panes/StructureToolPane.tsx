@@ -1,9 +1,10 @@
+import {isEqual} from 'lodash-es'
+import {lazy, memo, Suspense} from 'react'
+
 import {PaneRouterProvider} from '../components/paneRouter'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'
 import {UnknownPane} from './unknown'
-import {isEqual} from 'lodash-es'
-import {lazy, memo, Suspense} from 'react'
 
 interface StructureToolPaneProps {
   active: boolean

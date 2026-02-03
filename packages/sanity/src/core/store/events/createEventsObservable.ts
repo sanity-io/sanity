@@ -1,3 +1,5 @@
+import {combineLatest, map, type Observable} from 'rxjs'
+
 import {type useReleasesStore} from '../../releases/store/useReleasesStore'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type EventsObservableValue} from './getInitialFetchEvents'
@@ -13,7 +15,6 @@ import {
   updatePublishedEvents,
   updateVersionEvents,
 } from './utils'
-import {combineLatest, map, type Observable} from 'rxjs'
 
 interface CreateEventsObservableOptions {
   documentId: string

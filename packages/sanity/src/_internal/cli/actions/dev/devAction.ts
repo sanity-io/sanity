@@ -1,3 +1,20 @@
+/* eslint-disable max-statements */
+import path from 'node:path'
+
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliConfig,
+  type CliOutputter,
+} from '@sanity/cli'
+import {type SanityProject} from '@sanity/client'
+import chalk from 'chalk'
+import logSymbols from 'log-symbols'
+import semver from 'semver'
+import {version} from 'vite'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
+
 import {debug as debugIt} from '../../debug'
 import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
@@ -10,21 +27,6 @@ import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
-import {
-  type CliCommandArguments,
-  type CliCommandContext,
-  type CliConfig,
-  type CliOutputter,
-} from '@sanity/cli'
-import {type SanityProject} from '@sanity/client'
-import chalk from 'chalk'
-import logSymbols from 'log-symbols'
-/* eslint-disable max-statements */
-import path from 'node:path'
-import semver from 'semver'
-import {version} from 'vite'
-import {hideBin} from 'yargs/helpers'
-import yargs from 'yargs/yargs'
 
 export interface StartDevServerCommandFlags {
   'host'?: string

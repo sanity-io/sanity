@@ -1,4 +1,3 @@
-import {TooltipDelayGroupProvider} from '../../../ui-components'
 import {
   type PrepareViewOptions,
   type SanityDocument,
@@ -21,6 +20,8 @@ import {
   useDocumentVersionInfo,
   usePerspective,
 } from 'sanity'
+
+import {TooltipDelayGroupProvider} from '../../../ui-components'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore

@@ -1,8 +1,9 @@
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {hues} from '@sanity/color'
 import {type Theme} from '@sanity/ui'
 import {forwardRef} from 'react'
 import {css, styled} from 'styled-components'
+
+import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
 export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark

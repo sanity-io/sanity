@@ -1,6 +1,7 @@
-import {CalloutPreview} from './components/CalloutPreview'
 import {toPlainText} from '@portabletext/react'
 import {defineArrayMember, defineField, defineType} from 'sanity'
+
+import {CalloutPreview} from './components/CalloutPreview'
 
 const myStringType = defineArrayMember({
   type: 'object',

@@ -1,3 +1,7 @@
+import {Card, Code, Stack, Text} from '@sanity/ui'
+import {isPlainObject} from 'lodash-es'
+import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
+
 import {Button} from '../../../../ui-components'
 import {isDev} from '../../../environment'
 import {Translate, useTranslation} from '../../../i18n'
@@ -6,9 +10,6 @@ import {Details} from '../../components/Details'
 import {PatchEvent, set, unset} from '../../patch'
 import {converters as CONVERTERS, type ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
-import {Card, Code, Stack, Text} from '@sanity/ui'
-import {isPlainObject} from 'lodash-es'
-import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
 
 interface Converter extends ValueConverter {
   from: string

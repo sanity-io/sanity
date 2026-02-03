@@ -1,8 +1,10 @@
-import {describeCliTest, testConcurrent} from './shared/describe'
-import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
 import {copyFile, readdir, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
+
 import {describe, expect, test, vi} from 'vitest'
+
+import {describeCliTest, testConcurrent} from './shared/describe'
+import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
   describe.each(studioNames)('%s', (studioName) => {

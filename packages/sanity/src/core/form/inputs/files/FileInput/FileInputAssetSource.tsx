@@ -1,10 +1,11 @@
+import {type AssetSourceComponentAction, type FileAsset} from '@sanity/types'
+import {get} from 'lodash-es'
+import {useCallback, useMemo} from 'react'
+
 import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {FileSkeleton} from './FileSkeleton'
 import {type FileAssetProps} from './types'
-import {type AssetSourceComponentAction, type FileAsset} from '@sanity/types'
-import {get} from 'lodash-es'
-import {useCallback, useMemo} from 'react'
 
 export function FileAssetSource(
   props: FileAssetProps & {

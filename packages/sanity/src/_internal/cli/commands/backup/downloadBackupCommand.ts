@@ -1,3 +1,23 @@
+import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
+import {mkdtemp} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
+import {finished} from 'node:stream/promises'
+
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+  type SanityClient,
+} from '@sanity/cli'
+import {absolutify} from '@sanity/util/fs'
+import {Mutex} from 'async-mutex'
+import createDebug from 'debug'
+import {isString} from 'lodash-es'
+import prettyMs from 'pretty-ms'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
+
 import archiveDir from '../../actions/backup/archiveDir'
 import chooseBackupIdPrompt from '../../actions/backup/chooseBackupIdPrompt'
 import cleanupTmpDir from '../../actions/backup/cleanupTmpDir'
@@ -10,24 +30,6 @@ import resolveApiClient from '../../actions/backup/resolveApiClient'
 import humanFileSize from '../../util/humanFileSize'
 import isPathDirName from '../../util/isPathDirName'
 import {defaultApiVersion} from './backupGroup'
-import {
-  type CliCommandArguments,
-  type CliCommandContext,
-  type CliCommandDefinition,
-  type SanityClient,
-} from '@sanity/cli'
-import {absolutify} from '@sanity/util/fs'
-import {Mutex} from 'async-mutex'
-import createDebug from 'debug'
-import {isString} from 'lodash-es'
-import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
-import {mkdtemp} from 'node:fs/promises'
-import {tmpdir} from 'node:os'
-import path from 'node:path'
-import {finished} from 'node:stream/promises'
-import prettyMs from 'pretty-ms'
-import {hideBin} from 'yargs/helpers'
-import yargs from 'yargs/yargs'
 
 const debug = createDebug('sanity:backup')
 

@@ -1,10 +1,11 @@
+import {type SanityClient} from '@sanity/client'
+import {render, screen} from '@testing-library/react'
+import {describe, expect, it, vi} from 'vitest'
+
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {type Workspace} from '../../config/types'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
-import {type SanityClient} from '@sanity/client'
-import {render, screen} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
 
 vi.mock('../router/RouterHistoryContext', () => ({
   useRouterHistory: () => ({

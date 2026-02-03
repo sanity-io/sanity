@@ -1,7 +1,8 @@
-import {testHelpers} from '../../../utils/testHelpers'
-import {InputStory} from './InputStory'
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type EditorChange, type PortableTextEditor} from '@portabletext/editor'
+
+import {testHelpers} from '../../../utils/testHelpers'
+import {InputStory} from './InputStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {

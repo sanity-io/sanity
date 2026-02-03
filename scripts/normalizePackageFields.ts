@@ -1,6 +1,7 @@
+import {uniq} from 'lodash-es'
+
 import {type PackageManifest} from './types'
 import transformPkgs from './utils/transformPkgs'
-import {uniq} from 'lodash-es'
 
 const COMMON_KEYWORDS = ['sanity', 'cms', 'headless', 'realtime', 'content']
 const supportedNodeVersionRange = '>=14.18.0'

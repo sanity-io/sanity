@@ -1,8 +1,9 @@
+import {type Path, type ReferenceOptions, type SanityDocument} from '@sanity/types'
+import {evaluate, parse} from 'groq-js'
+
 import {type Source} from '../../config'
 import {resolveUserDefinedFilter} from '../../form/studio/inputs/reference/resolveUserDefinedFilter'
 import {isEmptyValue} from './utils'
-import {type Path, type ReferenceOptions, type SanityDocument} from '@sanity/types'
-import {evaluate, parse} from 'groq-js'
 
 export async function documentMatchesGroqFilter(ctx: {
   rootDocumentValue: unknown

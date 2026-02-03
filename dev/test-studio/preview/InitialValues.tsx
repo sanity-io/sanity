@@ -1,5 +1,6 @@
-import {useQuery} from './loader'
 import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+
+import {useQuery} from './loader'
 
 export function InitialValues(): React.JSX.Element {
   const {data, loading, error} = useQuery<

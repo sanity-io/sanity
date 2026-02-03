@@ -1,3 +1,7 @@
+import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
+import {sortBy} from 'lodash-es'
+import {map, tap} from 'rxjs/operators'
+
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
@@ -7,9 +11,6 @@ import {removeDupes} from '../../util/draftUtils'
 import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
-import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
-import {sortBy} from 'lodash-es'
-import {map, tap} from 'rxjs/operators'
 
 function getSearchTerms(
   searchParams: string | SearchTerms,

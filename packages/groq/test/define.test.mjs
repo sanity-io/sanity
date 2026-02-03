@@ -1,7 +1,8 @@
 // Integration test for the Node.js ESM runtime
 
-import {defineQuery} from 'groq'
 import {strict as assert} from 'node:assert'
+
+import {defineQuery} from 'groq'
 
 assert.equal(typeof defineQuery, 'function')
 

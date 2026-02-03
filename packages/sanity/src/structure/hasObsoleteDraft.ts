@@ -1,6 +1,7 @@
-import {isLiveEditEnabled} from './components/paneItem/helpers'
 import {type SchemaType} from '@sanity/types'
 import {type EditStateFor, type Workspace} from 'sanity'
+
+import {isLiveEditEnabled} from './components/paneItem/helpers'
 
 export interface Context {
   editState: Pick<EditStateFor, 'ready' | 'draft' | 'published' | 'version'> | null

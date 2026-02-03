@@ -1,5 +1,6 @@
-import {type SearchSort, type SortDirection} from '../common/types'
 import {type SanityDocumentLike} from '@sanity/types'
+
+import {type SearchSort, type SortDirection} from '../common/types'
 
 /**
  * @internal

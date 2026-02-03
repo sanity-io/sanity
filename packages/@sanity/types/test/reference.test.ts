@@ -1,3 +1,5 @@
+import {describe, it} from 'vitest'
+
 /**
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
@@ -8,7 +10,6 @@ import {
   type ReferenceDefinition,
 } from '../src/schema/definition'
 import {defineType} from '../src/schema/types'
-import {describe, it} from 'vitest'
 
 describe('reference types', () => {
   describe('defineType', () => {

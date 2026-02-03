@@ -1,8 +1,9 @@
+import {type SchemaTypeDefinition} from '@sanity/types'
+import {describe, expect, it, vi} from 'vitest'
+
 import {definePlugin} from '../definePlugin'
 import {resolveConfigProperty} from '../resolveConfigProperty'
 import {type AsyncConfigPropertyReducer, type ConfigPropertyReducer} from '../types'
-import {type SchemaTypeDefinition} from '@sanity/types'
-import {describe, expect, it, vi} from 'vitest'
 
 describe('resolveConfigProperty', () => {
   it('traverses configs and returns a resolved configuration property', () => {

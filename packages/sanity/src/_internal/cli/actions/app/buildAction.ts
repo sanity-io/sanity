@@ -1,3 +1,13 @@
+/* eslint-disable max-statements */
+import path from 'node:path'
+
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {noopLogger} from '@sanity/telemetry'
+import chalk from 'chalk'
+import logSymbols from 'log-symbols'
+import {rimraf} from 'rimraf'
+import semver from 'semver'
+
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
@@ -9,14 +19,6 @@ import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 import {BuildTrace} from './build.telemetry'
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {noopLogger} from '@sanity/telemetry'
-import chalk from 'chalk'
-import logSymbols from 'log-symbols'
-/* eslint-disable max-statements */
-import path from 'node:path'
-import {rimraf} from 'rimraf'
-import semver from 'semver'
 
 export interface BuildSanityAppCommandFlags {
   'yes'?: boolean

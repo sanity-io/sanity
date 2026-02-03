@@ -1,5 +1,6 @@
-import {DocumentTester} from './util/DocumentTester'
 import {test} from 'vitest'
+
+import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {
   new DocumentTester({

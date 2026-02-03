@@ -1,10 +1,3 @@
-import {
-  type EncodedNamedType,
-  type ObjectField,
-} from '../../../@sanity/schema/src/descriptors/types'
-import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
-import {Rule} from '../../src/core/validation'
-import {expectManifestSchemaConversion} from './utils'
 import {createSchemaFromManifestTypes, ValidationError} from '@sanity/schema/_internal'
 import {
   defineArrayMember,
@@ -15,6 +8,14 @@ import {
 } from '@sanity/types'
 import {type ReactNode} from 'react'
 import {assert, describe, expect, test} from 'vitest'
+
+import {
+  type EncodedNamedType,
+  type ObjectField,
+} from '../../../@sanity/schema/src/descriptors/types'
+import {builtinSchema, createSchema, DESCRIPTOR_CONVERTER} from '../../src/core/schema'
+import {Rule} from '../../src/core/validation'
+import {expectManifestSchemaConversion} from './utils'
 
 type Descriptor =
   ReturnType<(typeof DESCRIPTOR_CONVERTER)['get']> extends Promise<infer T> ? T : never

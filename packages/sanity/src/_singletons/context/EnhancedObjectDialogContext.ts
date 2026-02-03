@@ -1,5 +1,6 @@
-import type {EnhancedObjectDialogContextValue} from '../../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 import {createContext} from 'sanity/_createContext'
+
+import type {EnhancedObjectDialogContextValue} from '../../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 
 /**
  * @internal

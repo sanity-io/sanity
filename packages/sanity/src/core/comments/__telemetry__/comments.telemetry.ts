@@ -1,5 +1,6 @@
-import {type CommentStatus} from '../types'
 import {defineEvent} from '@sanity/telemetry'
+
+import {type CommentStatus} from '../types'
 
 export const CommentLinkCopied = defineEvent({
   name: 'Comment Link Copied',

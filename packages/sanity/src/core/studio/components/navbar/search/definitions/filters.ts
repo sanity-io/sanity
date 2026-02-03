@@ -1,6 +1,7 @@
-import {type SearchOperatorType} from './operators/defaultOperators'
 import {type IntrinsicTypeName} from '@sanity/types'
 import {type ComponentType} from 'react'
+
+import {type SearchOperatorType} from './operators/defaultOperators'
 
 export type Operator<TOperators = string> = OperatorDivider | OperatorItem<TOperators>
 

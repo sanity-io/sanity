@@ -1,5 +1,6 @@
-import {FallbackDiff} from '../diff/components/FallbackDiff'
 import {Box} from '@sanity/ui'
+
+import {FallbackDiff} from '../diff/components/FallbackDiff'
 
 /**
  * TODO

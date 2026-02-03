@@ -1,5 +1,6 @@
-import {extractSearchableText} from '../extractSearchableText'
 import {describe, expect, it} from 'vitest'
+
+import {extractSearchableText} from '../extractSearchableText'
 
 describe('extractSearchableText', () => {
   describe('primitive types', () => {

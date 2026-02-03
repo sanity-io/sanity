@@ -1,6 +1,7 @@
+import {type ReactNode} from 'react'
+
 import {StickyOverlay} from './StickyOverlay'
 import {PresenceTracker} from './tracker'
-import {type ReactNode} from 'react'
 
 /** @internal */
 export interface PresenceOverlayProps {

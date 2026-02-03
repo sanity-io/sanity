@@ -1,8 +1,9 @@
+import {Flex, Stack} from '@sanity/ui'
+import {styled} from 'styled-components'
+
 import {CommentsUpsellProvider} from '../../../context'
 import {useCommentsUpsell} from '../../../hooks'
 import {CommentsUpsellPanel} from '../CommentsUpsellPanel'
-import {Flex, Stack} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 const DOCUMENT_INSPECTOR_MAX_WIDTH = 540
 

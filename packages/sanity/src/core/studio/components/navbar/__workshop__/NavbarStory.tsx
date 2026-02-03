@@ -1,8 +1,3 @@
-import {defineConfig, type Tool} from '../../../../config'
-import {isNonNullable} from '../../../../util/isNonNullable'
-import {isTruthy} from '../../../../util/isTruthy'
-import {useNavbarComponent} from '../../../studio-components-hooks'
-import {StudioProvider} from '../../../StudioProvider'
 import {
   CogIcon,
   DashboardIcon,
@@ -15,6 +10,12 @@ import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import {createContext, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+
+import {defineConfig, type Tool} from '../../../../config'
+import {isNonNullable} from '../../../../util/isNonNullable'
+import {isTruthy} from '../../../../util/isTruthy'
+import {useNavbarComponent} from '../../../studio-components-hooks'
+import {StudioProvider} from '../../../StudioProvider'
 
 const SearchFullscreenPortalCard = styled(Card)`
   display: flex;

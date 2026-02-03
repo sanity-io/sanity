@@ -1,7 +1,8 @@
-import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 /* eslint-disable no-restricted-imports */
 import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
 import {type HTMLProps} from 'react'
+
+import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
 
 /** @internal */
 export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'>

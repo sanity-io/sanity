@@ -1,5 +1,6 @@
-import {type Manifest} from '../types'
 import {type Bucket} from '@google-cloud/storage'
+
+import {type Manifest} from '../types'
 
 export async function updateManifestWith(
   bucket: Bucket,

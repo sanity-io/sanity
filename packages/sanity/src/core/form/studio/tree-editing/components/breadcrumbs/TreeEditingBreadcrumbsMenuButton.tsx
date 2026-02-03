@@ -1,12 +1,13 @@
-import {Popover, type PopoverProps} from '../../../../../../ui-components'
-import {type DialogItem} from '../../types'
-import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
-import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 import {type Path} from '@sanity/types'
 import {Box, Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
 import {cloneElement, type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
 import {css, styled} from 'styled-components'
+
+import {Popover, type PopoverProps} from '../../../../../../ui-components'
+import {type DialogItem} from '../../types'
+import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
+import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 

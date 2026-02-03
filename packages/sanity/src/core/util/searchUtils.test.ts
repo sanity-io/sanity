@@ -1,5 +1,6 @@
-import {escapeField, fieldNeedsEscape, joinPath} from './searchUtils'
 import {expect, test} from 'vitest'
+
+import {escapeField, fieldNeedsEscape, joinPath} from './searchUtils'
 
 test('fieldNeedsEscape', () => {
   expect(fieldNeedsEscape('0foo')).toBe(true)

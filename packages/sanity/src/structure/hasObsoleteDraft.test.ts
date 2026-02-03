@@ -1,6 +1,7 @@
-import {type Context, hasObsoleteDraft} from './hasObsoleteDraft'
 import {type SanityDocument} from '@sanity/types'
 import {expect, it} from 'vitest'
+
+import {type Context, hasObsoleteDraft} from './hasObsoleteDraft'
 
 const stubDocument: SanityDocument = {
   _id: 'x',

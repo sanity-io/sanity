@@ -1,9 +1,10 @@
-import {TreeEditingLayout} from '../components'
-import {buildTreeEditingState} from '../utils'
 import {Schema} from '@sanity/schema'
 import {type Path} from '@sanity/types'
 import {Card, Code, Stack} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+
+import {TreeEditingLayout} from '../components'
+import {buildTreeEditingState} from '../utils'
 
 const schema = Schema.compile({
   name: 'default',

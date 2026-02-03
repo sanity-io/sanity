@@ -1,5 +1,6 @@
-import {createAppIdCache} from '../appIdCache'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createAppIdCache} from '../appIdCache'
 
 describe('appIdCache', () => {
   it(`invokes fetch function and caches the result`, async () => {

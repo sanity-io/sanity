@@ -1,5 +1,6 @@
-import {useTranslation} from '../../../i18n'
 import {Stack, Text} from '@sanity/ui'
+
+import {useTranslation} from '../../../i18n'
 
 /** @internal */
 export function NoChanges() {

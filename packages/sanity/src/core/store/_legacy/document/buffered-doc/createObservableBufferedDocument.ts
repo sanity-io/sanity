@@ -1,13 +1,3 @@
-import {type ListenerEvent} from '../getPairListener'
-import {type MutationEvent} from '../types'
-import {
-  type DocumentMutationEvent,
-  type DocumentRebaseEvent,
-  type DocumentRemoteMutationEvent,
-  type MutationPayload,
-  type RemoteSnapshotEvent,
-  type SnapshotEvent,
-} from './types'
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {BehaviorSubject, EMPTY, merge, type Observable, Subject} from 'rxjs'
@@ -24,6 +14,17 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
+
+import {type ListenerEvent} from '../getPairListener'
+import {type MutationEvent} from '../types'
+import {
+  type DocumentMutationEvent,
+  type DocumentRebaseEvent,
+  type DocumentRemoteMutationEvent,
+  type MutationPayload,
+  type RemoteSnapshotEvent,
+  type SnapshotEvent,
+} from './types'
 
 interface MutationAction {
   type: 'mutation'

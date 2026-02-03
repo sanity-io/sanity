@@ -1,8 +1,9 @@
-import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision} from './types'
 import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+
+import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
+import {type EventsStoreRevision} from './types'
 
 const documentRevisionCache: Record<string, Observable<EventsStoreRevision>> = Object.create(null)
 

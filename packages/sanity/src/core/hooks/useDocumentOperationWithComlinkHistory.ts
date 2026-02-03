@@ -1,10 +1,11 @@
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+
 import {useRenderingContextStore} from '../store/_legacy/datastores'
 import {type OperationsAPI} from '../store/_legacy/document/document-pair/operations/types'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {getVersionId} from '../util/draftUtils'
 import {useRecordDocumentHistoryEvent} from './useRecordDocumentHistoryEvent'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
 
 interface Options {
   api: OperationsAPI

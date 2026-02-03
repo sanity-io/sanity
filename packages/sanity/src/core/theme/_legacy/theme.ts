@@ -1,3 +1,6 @@
+import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
+import {studioTheme as defaults} from '@sanity/ui'
+
 import {type StudioTheme} from '../types'
 import {buildColor} from './color'
 import {buildFonts} from './fonts'
@@ -5,8 +8,6 @@ import {_isDark} from './helpers'
 import {buildLegacyPalette} from './palette'
 import {buildLegacyTones} from './tones'
 import {type LegacyThemeProps} from './types'
-import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
-import {studioTheme as defaults} from '@sanity/ui'
 
 /**
  * Build a Sanity UI theme from legacy CSS properties.

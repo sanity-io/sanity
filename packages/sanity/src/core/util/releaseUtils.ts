@@ -1,5 +1,6 @@
-import {isReleaseDocument} from '../releases/store/types'
 import {type ReleaseDocument} from '@sanity/client'
+
+import {isReleaseDocument} from '../releases/store/types'
 
 /**
  * A release document with cardinality 'one'

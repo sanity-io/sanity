@@ -1,7 +1,8 @@
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
+
 import {getCliClient} from '../cliClient'
 import {type CliConfig} from '../types'
 import {resolveRootDir} from '../util/resolveRootDir'
-import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 vi.mock('@sanity/client', () => ({
   // create a mock that only implements the `config()` method

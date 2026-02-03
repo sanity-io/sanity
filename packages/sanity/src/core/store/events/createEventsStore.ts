@@ -1,3 +1,6 @@
+import {type SanityClient} from '@sanity/client'
+import {type Observable} from 'rxjs'
+
 import {type useReleasesStore} from '../../releases/store/useReleasesStore'
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
@@ -5,8 +8,6 @@ import {getExpandEvents} from './getExpandEvents'
 import {getInitialFetchEvents} from './getInitialFetchEvents'
 import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
 import {type EventsStoreRevision} from './types'
-import {type SanityClient} from '@sanity/client'
-import {type Observable} from 'rxjs'
 
 interface EventsStoreOptions {
   client: SanityClient

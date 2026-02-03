@@ -1,3 +1,7 @@
+import {type Path} from '@sanity/types'
+import {isShallowEmptyObject} from '@sanity/util/content'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
+
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
@@ -17,9 +21,6 @@ import {
 } from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {createDescriptionId} from '../../common/createDescriptionId'
-import {type Path} from '@sanity/types'
-import {isShallowEmptyObject} from '@sanity/util/content'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an object input

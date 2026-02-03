@@ -1,7 +1,8 @@
-import {CommentsListItemReferencedValue} from '../components'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean, useText} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
+
+import {CommentsListItemReferencedValue} from '../components'
 
 export default function CommentsListItemReferencedValueStory() {
   const text = useText('value', 'This is a referenced value') || 'This is a referenced value'

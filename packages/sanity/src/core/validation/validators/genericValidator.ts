@@ -1,9 +1,10 @@
+import {type ValidationMarker, type Validators} from '@sanity/types'
+
 import {type LocaleSource} from '../../i18n'
 import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
 import {typeString} from '../util/typeString'
-import {type ValidationMarker, type Validators} from '@sanity/types'
 
 export const SLOW_VALIDATOR_TIMEOUT = 5000
 

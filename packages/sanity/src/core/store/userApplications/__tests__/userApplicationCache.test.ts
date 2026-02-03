@@ -1,7 +1,8 @@
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {createUserApplicationCache, type UserApplication} from '../userApplicationCache'
 import {type SanityClient} from '@sanity/client'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {createUserApplicationCache, type UserApplication} from '../userApplicationCache'
 
 describe('userApplicationCache', () => {
   const mockRequest = vi.fn()

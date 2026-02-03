@@ -1,3 +1,7 @@
+import {type ComponentType, useContext, useMemo, useState} from 'react'
+import {type DocumentLayoutProps} from 'sanity'
+import {ReferenceInputOptionsContext} from 'sanity/_singletons'
+
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {useCreatePathSyncChannel} from '../hooks/useCreatePathSyncChannel'
 import {useDiffViewRouter} from '../hooks/useDiffViewRouter'
@@ -7,9 +11,6 @@ import {VersionModeHeader} from '../versionMode/components/VersionModeHeader'
 import {DialogLayout} from './DialogLayout'
 import {DiffViewPane} from './DiffViewPane'
 import {EditReferenceLinkComponent} from './EditReferenceLinkComponent'
-import {type ComponentType, useContext, useMemo, useState} from 'react'
-import {type DocumentLayoutProps} from 'sanity'
-import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
 export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = ({documentId}) => {
   const {documents, state, mode} = useDiffViewState()

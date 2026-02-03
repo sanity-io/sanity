@@ -1,9 +1,10 @@
+import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {format} from 'date-fns'
+
 import {type ScheduleState} from '../../types'
 import BigIconComingSoon from './BigIconComingSoon'
 import BigIconScreen from './BigIconScreen'
 import BigIconSuccess from './BigIconSuccess'
-import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
 
 interface Props {
   scheduleState?: ScheduleState

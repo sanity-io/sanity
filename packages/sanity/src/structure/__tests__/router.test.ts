@@ -1,5 +1,6 @@
-import {toPath, toState} from '../router'
 import {describe, expect, it} from 'vitest'
+
+import {toPath, toState} from '../router'
 
 describe('toPath', () => {
   it('takes in multiple pane groups and serializes them to a panes path for the state router', () => {

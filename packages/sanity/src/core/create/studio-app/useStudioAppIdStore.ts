@@ -1,9 +1,10 @@
+import {useEffect, useMemo, useState} from 'react'
+
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
 import {useAppIdCache} from './AppIdCacheProvider'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
-import {useEffect, useMemo, useState} from 'react'
 
 export interface ResolvedStudioApp {
   loading: boolean

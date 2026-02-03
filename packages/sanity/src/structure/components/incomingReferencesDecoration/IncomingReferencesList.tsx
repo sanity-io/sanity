@@ -1,10 +1,11 @@
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {useTranslation} from 'sanity'
+
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {CrossDatasetIncomingReferenceType} from './CrossDatasetIncomingReference/CrossDatasetIncomingReferenceType'
 import {IncomingReferencesType} from './IncomingReferencesType'
 import {type IncomingReferencesOptions, isCrossDatasetIncomingReference} from './types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
 
 export function IncomingReferencesList({
   types,

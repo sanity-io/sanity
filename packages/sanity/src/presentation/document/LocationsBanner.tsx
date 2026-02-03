@@ -1,13 +1,3 @@
-import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
-import {presentationLocaleNamespace} from '../i18n'
-import {
-  type DocumentLocation,
-  type DocumentLocationResolver,
-  type DocumentLocationResolvers,
-  type PresentationPluginOptions,
-} from '../types'
-import {useDocumentLocations} from '../useDocumentLocations'
-import {useCurrentPresentationToolName} from './useCurrentPresentationToolName'
 import {
   ChevronRightIcon,
   DesktopIcon,
@@ -21,6 +11,17 @@ import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
+
+import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
+import {presentationLocaleNamespace} from '../i18n'
+import {
+  type DocumentLocation,
+  type DocumentLocationResolver,
+  type DocumentLocationResolvers,
+  type PresentationPluginOptions,
+} from '../types'
+import {useDocumentLocations} from '../useDocumentLocations'
+import {useCurrentPresentationToolName} from './useCurrentPresentationToolName'
 
 const TONE_ICONS: Record<'positive' | 'caution' | 'critical', ComponentType> = {
   positive: InfoOutlineIcon,

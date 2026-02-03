@@ -1,9 +1,10 @@
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {ReleaseDocumentsCounter} from '../../columnCells/ReleaseDocumentsCounter'
 import {render, screen, waitFor} from '@testing-library/react'
 import {type ComponentProps} from 'react'
 import {describe, expect, it} from 'vitest'
+
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
+import {ReleaseDocumentsCounter} from '../../columnCells/ReleaseDocumentsCounter'
 
 const renderTest = async (props: ComponentProps<typeof ReleaseDocumentsCounter>) => {
   const wrapper = await createTestProvider({

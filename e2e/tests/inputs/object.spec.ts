@@ -1,5 +1,6 @@
-import {test} from '../../studio-test'
 import {expect} from '@playwright/test'
+
+import {test} from '../../studio-test'
 
 test('fields groups can use/not use i18n titles', async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/input-debug;field-groups;fieldGroupsWithI18n')

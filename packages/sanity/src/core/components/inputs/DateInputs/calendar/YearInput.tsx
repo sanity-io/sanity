@@ -1,6 +1,7 @@
-import {LazyTextInput} from '../LazyTextInput'
 import {type TextInputProps} from '@sanity/ui'
 import {type ChangeEvent, type HTMLProps, useCallback} from 'react'
+
+import {LazyTextInput} from '../LazyTextInput'
 
 export const YearInput = (
   props: {onChange: (year: number) => void} & TextInputProps &

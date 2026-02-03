@@ -1,6 +1,3 @@
-import {MenuButton, MenuItem, type PopoverProps} from '../../../../ui-components'
-import {structureLocaleNamespace} from '../../../i18n'
-import {ActionStateDialog} from './ActionStateDialog'
 import {Menu} from '@sanity/ui'
 import {memo, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
 import {
@@ -9,6 +6,10 @@ import {
   LegacyLayerProvider,
   useTranslation,
 } from 'sanity'
+
+import {MenuButton, MenuItem, type PopoverProps} from '../../../../ui-components'
+import {structureLocaleNamespace} from '../../../i18n'
+import {ActionStateDialog} from './ActionStateDialog'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]

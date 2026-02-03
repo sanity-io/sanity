@@ -1,6 +1,3 @@
-import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
-import {structureLocaleNamespace} from '../i18n'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {ResetIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -13,6 +10,10 @@ import {
   useDocumentPairPermissions,
   useTranslation,
 } from 'sanity'
+
+import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
+import {structureLocaleNamespace} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
 
 const DISABLED_REASON_KEY = {
   NO_CHANGES: 'action.discard-changes.disabled.no-change',

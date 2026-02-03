@@ -1,7 +1,8 @@
-import {getPublishedId} from '../../util/draftUtils'
-import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
+
+import {getPublishedId} from '../../util/draftUtils'
+import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
  * Given a document id, returns whether it is linked to canvas and the companion doc if it exists.

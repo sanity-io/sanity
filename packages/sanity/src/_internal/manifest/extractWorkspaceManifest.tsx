@@ -1,29 +1,3 @@
-import {SchemaIcon, type SchemaIconProps} from './Icon'
-import {
-  getCustomFields,
-  getDefinedTypeName,
-  isCrossDatasetReference,
-  isCustomized,
-  isDefined,
-  isGlobalDocumentReference,
-  isPrimitive,
-  isRecord,
-  isReference,
-  isString,
-  isType,
-} from './manifestTypeHelpers'
-import {
-  type CreateWorkspaceManifest,
-  type ManifestField,
-  type ManifestFieldset,
-  type ManifestSchemaType,
-  type ManifestSerializable,
-  type ManifestTitledValue,
-  type ManifestTool,
-  type ManifestValidationGroup,
-  type ManifestValidationRule,
-} from './manifestTypes'
-import {config} from './purifyConfig'
 import DOMPurify from 'isomorphic-dompurify'
 import {startCase} from 'lodash-es'
 import {renderToString} from 'react-dom/server'
@@ -50,6 +24,33 @@ import {
   type StringSchemaType,
   type Workspace,
 } from 'sanity'
+
+import {SchemaIcon, type SchemaIconProps} from './Icon'
+import {
+  getCustomFields,
+  getDefinedTypeName,
+  isCrossDatasetReference,
+  isCustomized,
+  isDefined,
+  isGlobalDocumentReference,
+  isPrimitive,
+  isRecord,
+  isReference,
+  isString,
+  isType,
+} from './manifestTypeHelpers'
+import {
+  type CreateWorkspaceManifest,
+  type ManifestField,
+  type ManifestFieldset,
+  type ManifestSchemaType,
+  type ManifestSerializable,
+  type ManifestTitledValue,
+  type ManifestTool,
+  type ManifestValidationGroup,
+  type ManifestValidationRule,
+} from './manifestTypes'
+import {config} from './purifyConfig'
 
 interface Context {
   schema: Schema

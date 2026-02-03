@@ -1,3 +1,6 @@
+import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
+import {Box, Flex} from '@sanity/ui'
+
 import {useTranslation} from '../../../../i18n'
 import {Preview} from '../../../../preview/components/Preview'
 import {useUserColorManager} from '../../../../user-color'
@@ -11,8 +14,6 @@ import {
 } from '../../../types'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
-import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
-import {Box, Flex} from '@sanity/ui'
 
 interface NamedListOption {
   title?: string

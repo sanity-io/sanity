@@ -1,5 +1,6 @@
-import {type CapabilityRecord, type StudioRenderingContext} from './types'
 import {map, type OperatorFunction} from 'rxjs'
+
+import {type CapabilityRecord, type StudioRenderingContext} from './types'
 
 const capabilitiesByRenderingContext: Record<StudioRenderingContext['name'], CapabilityRecord> = {
   coreUi: {

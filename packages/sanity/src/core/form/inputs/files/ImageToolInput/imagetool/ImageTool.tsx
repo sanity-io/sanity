@@ -1,10 +1,11 @@
+import {useLayoutEffect, useRef, useState} from 'react'
+
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {resizeObserver} from '../../../../../util/resizeObserver'
 import {ImageLoader} from './ImageLoader'
 import {ResizeSVG} from './Resize'
 import {ToolSVG} from './ToolSVG'
 import {type ToolSVGProps} from './types'
-import {useLayoutEffect, useRef, useState} from 'react'
 
 export interface ImageToolProps extends Omit<ToolSVGProps, 'image' | 'size'> {
   src: string

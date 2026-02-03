@@ -1,3 +1,12 @@
+import {
+  type ClientConfig as SanityClientConfig,
+  createClient as createSanityClient,
+  type SanityClient,
+} from '@sanity/client'
+import {isEqual, memoize} from 'lodash-es'
+import {defer} from 'rxjs'
+import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
+
 import {type AuthConfig} from '../../../config'
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
@@ -7,14 +16,6 @@ import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
-import {
-  type ClientConfig as SanityClientConfig,
-  createClient as createSanityClient,
-  type SanityClient,
-} from '@sanity/client'
-import {isEqual, memoize} from 'lodash-es'
-import {defer} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {

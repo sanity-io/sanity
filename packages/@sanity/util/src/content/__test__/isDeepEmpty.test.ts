@@ -1,5 +1,6 @@
-import {isDeepEmpty} from '../isDeepEmpty'
 import {expect, it} from 'vitest'
+
+import {isDeepEmpty} from '../isDeepEmpty'
 
 it('returns true for undefined', () => {
   expect(isDeepEmpty(undefined)).toBe(true)

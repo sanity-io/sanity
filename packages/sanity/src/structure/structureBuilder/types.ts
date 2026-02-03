@@ -1,3 +1,11 @@
+import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
+import {
+  type ConfigContext,
+  type InitialValueTemplateItem,
+  type PerspectiveStack,
+  type Source,
+} from 'sanity'
+
 import {type ComponentBuilder, type ComponentInput} from './Component'
 import {type DividerBuilder} from './Divider'
 import {type DocumentBuilder, type PartialDocumentNode} from './Document'
@@ -12,13 +20,6 @@ import {type MenuItemGroup, type MenuItemGroupBuilder} from './MenuItemGroup'
 import {type Divider, type EditorNode} from './StructureNodes'
 import {type ComponentView, type ComponentViewBuilder} from './views/ComponentView'
 import {type FormView, type FormViewBuilder} from './views/FormView'
-import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
-import {
-  type ConfigContext,
-  type InitialValueTemplateItem,
-  type PerspectiveStack,
-  type Source,
-} from 'sanity'
 
 /**
  * View. See {@link FormView} and {@link ComponentView}

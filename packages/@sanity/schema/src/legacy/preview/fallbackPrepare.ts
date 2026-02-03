@@ -1,5 +1,6 @@
-import stringify from './JSONStringifyHuman'
 import {pick} from 'lodash-es'
+
+import stringify from './JSONStringifyHuman'
 
 const OPTIONS = {
   maxEntries: 2,

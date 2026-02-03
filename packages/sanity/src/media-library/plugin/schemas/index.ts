@@ -1,8 +1,9 @@
+import {type ObjectDefinition} from '@sanity/types'
+
 import {type VideoOptions} from './types'
 import {video} from './video'
 import {videoAsset} from './videoAsset'
 import {videoAssetMetadata, videoAssetMetadataPlayback} from './videoAssetMetadata'
-import {type ObjectDefinition} from '@sanity/types'
 
 /**
  * @public

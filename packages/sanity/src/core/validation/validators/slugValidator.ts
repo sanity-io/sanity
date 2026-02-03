@@ -1,5 +1,3 @@
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getPublishedId} from '../../util/draftUtils'
 import {
   type CustomValidator,
   isKeyedObject,
@@ -11,6 +9,9 @@ import {
   type SlugValidationContext,
 } from '@sanity/types'
 import {memoize} from 'lodash-es'
+
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {getPublishedId} from '../../util/draftUtils'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 

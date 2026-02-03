@@ -1,10 +1,11 @@
+import {isEqual} from 'lodash-es'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {map} from 'rxjs'
+
 import {type Previewable} from '../../../../preview/types'
 import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {flattenItems} from '../components/search/utils'
 import {type DialogItem} from '../types'
-import {isEqual} from 'lodash-es'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {map} from 'rxjs'
 
 export interface SearchableTreeEditingMenuItem extends DialogItem {
   title: string | undefined

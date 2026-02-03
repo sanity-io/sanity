@@ -1,15 +1,3 @@
-import {ChangeIndicator} from '../../../../changeIndicators'
-import {LoadingBlock} from '../../../../components/loadingBlock'
-import {Translate, useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
-import {Details} from '../../../components/Details'
-import {FormField} from '../../../components/formField'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {set} from '../../../patch'
-import {type ObjectInputProps} from '../../../types'
-import {RatioBox} from '../common/RatioBox'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT, HotspotImage, ImageTool} from './imagetool'
-import {useLoadImage} from './useLoadImage'
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {
@@ -22,6 +10,19 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {Translate, useTranslation} from '../../../../i18n'
+import {EMPTY_ARRAY} from '../../../../util'
+import {Details} from '../../../components/Details'
+import {FormField} from '../../../components/formField'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {set} from '../../../patch'
+import {type ObjectInputProps} from '../../../types'
+import {RatioBox} from '../common/RatioBox'
+import {DEFAULT_CROP, DEFAULT_HOTSPOT, HotspotImage, ImageTool} from './imagetool'
+import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
   ObjectInputProps<Image, ImageSchemaType>,

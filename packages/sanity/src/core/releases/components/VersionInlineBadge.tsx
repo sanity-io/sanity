@@ -1,9 +1,10 @@
-import {type TargetPerspective} from '../../perspective/types'
-import {LATEST} from '../util/const'
-import {getReleaseTone} from '../util/getReleaseTone'
 import {type BadgeTone} from '@sanity/ui'
 import {type FC, type PropsWithChildren} from 'react'
 import {css, styled} from 'styled-components'
+
+import {type TargetPerspective} from '../../perspective/types'
+import {LATEST} from '../util/const'
+import {getReleaseTone} from '../util/getReleaseTone'
 
 const StyledVersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
   const {$tone} = props

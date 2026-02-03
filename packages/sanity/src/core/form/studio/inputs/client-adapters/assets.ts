@@ -1,11 +1,12 @@
-import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
-import {type DocumentPreviewStore} from '../../../../preview'
-import {type UploadOptions} from '../../uploads/types'
-import {withMaxConcurrency} from '../../utils'
 import {type ProgressEvent, type SanityAssetDocument, type SanityClient} from '@sanity/client'
 import {type FileAsset, type ImageAsset} from '@sanity/types'
 import {Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap} from 'rxjs/operators'
+
+import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
+import {type DocumentPreviewStore} from '../../../../preview'
+import {type UploadOptions} from '../../uploads/types'
+import {withMaxConcurrency} from '../../utils'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

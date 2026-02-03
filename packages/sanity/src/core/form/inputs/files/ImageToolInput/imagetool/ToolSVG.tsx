@@ -1,3 +1,6 @@
+import {uuid} from '@sanity/uuid'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+
 import {
   DEFAULT_CROP,
   DEFAULT_HOTSPOT,
@@ -30,8 +33,6 @@ import {
   getRectCenterY,
   getRectRight,
 } from './utils'
-import {uuid} from '@sanity/uuid'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 function ToolSVGComponent(props: ToolSVGProps) {
   const {value, image, onChange, onChangeEnd, readOnly, size} = props

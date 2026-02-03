@@ -1,10 +1,11 @@
-import {enqueueAssetAccessPolicyFetch} from '../../../../store/accessPolicy/fetch'
-import {getMediaLibraryRef, type MediaLibraryRef} from '../../../../store/accessPolicy/refs'
-import {type AssetAccessPolicy} from '../types'
 import {type SanityClient} from '@sanity/client'
 import {type SanityImageSource} from '@sanity/image-url'
 import {type AssetSource} from '@sanity/types'
 import useSWR from 'swr'
+
+import {enqueueAssetAccessPolicyFetch} from '../../../../store/accessPolicy/fetch'
+import {getMediaLibraryRef, type MediaLibraryRef} from '../../../../store/accessPolicy/refs'
+import {type AssetAccessPolicy} from '../types'
 
 /**
  * Resolve the effective access policy for a given image source, including

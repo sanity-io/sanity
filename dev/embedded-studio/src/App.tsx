@@ -1,7 +1,8 @@
-import config from '../sanity.config'
 import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {Studio, StudioLayout, StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
+
+import config from '../sanity.config'
 
 export function App() {
   const prefersDark = usePrefersDark()

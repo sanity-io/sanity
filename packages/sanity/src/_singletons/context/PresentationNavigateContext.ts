@@ -1,5 +1,6 @@
-import type {PresentationNavigateContextValue} from '../../presentation/types'
 import {createContext} from 'sanity/_createContext'
+
+import type {PresentationNavigateContextValue} from '../../presentation/types'
 
 /**
  * @internal

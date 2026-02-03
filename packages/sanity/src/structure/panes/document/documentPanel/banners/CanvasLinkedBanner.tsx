@@ -1,8 +1,3 @@
-import {Popover} from '../../../../../ui-components'
-import {Button} from '../../../../../ui-components/button/Button'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Banner} from './Banner'
 import {ComposeSparklesIcon, InfoOutlineIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
@@ -13,6 +8,12 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {Popover} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components/button/Button'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {Banner} from './Banner'
 
 const Image = styled.img`
   object-fit: cover;

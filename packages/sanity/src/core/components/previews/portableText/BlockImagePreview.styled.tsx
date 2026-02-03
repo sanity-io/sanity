@@ -1,6 +1,7 @@
-import {PREVIEW_SIZES} from '../constants'
 import {Box, Card, Flex, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
+
+import {PREVIEW_SIZES} from '../constants'
 
 export const HeaderFlex = styled(Flex).attrs({align: 'center'})`
   height: ${rem(PREVIEW_SIZES.block.media.height)};

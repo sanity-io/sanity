@@ -1,8 +1,3 @@
-import {type ObjectInputProps} from '../../src/core'
-import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'
-import {type TestRenderInputContext} from './renderInput'
-import {renderObjectInput} from './renderObjectInput'
-import {type TestRenderProps} from './types'
 import {type ImageUrlBuilder} from '@sanity/image-url'
 import {
   type AssetSource,
@@ -11,6 +6,12 @@ import {
   type SchemaTypeDefinition,
 } from '@sanity/types'
 import {EMPTY} from 'rxjs'
+
+import {type ObjectInputProps} from '../../src/core'
+import {type BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'
+import {type TestRenderInputContext} from './renderInput'
+import {renderObjectInput} from './renderObjectInput'
+import {type TestRenderProps} from './types'
 
 export type TestRenderImageInputCallback = (
   inputProps: BaseImageInputProps,

@@ -1,5 +1,6 @@
-import {type PresentationPerspective} from './types'
 import {usePerspective} from 'sanity'
+
+import {type PresentationPerspective} from './types'
 
 /**
  * @internal

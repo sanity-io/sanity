@@ -1,8 +1,9 @@
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {FormHeader} from '../FormHeader'
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
+
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {FormHeader} from '../FormHeader'
 
 vi.mock('sanity', async (importOriginal) => {
   return {

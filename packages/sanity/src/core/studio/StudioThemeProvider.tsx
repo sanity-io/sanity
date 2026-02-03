@@ -1,9 +1,10 @@
-import {defaultTheme, type StudioTheme} from '../theme'
-import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {type RootTheme} from '@sanity/ui/theme'
 import {type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
+
+import {defaultTheme, type StudioTheme} from '../theme'
+import {useActiveWorkspace} from './activeWorkspaceMatcher'
 
 interface StudioThemeProviderProps {
   children: ReactNode

@@ -1,10 +1,3 @@
-import {CommandList} from '../../../../../components/commandList/CommandList'
-import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
-import {supportsTouch} from '../../../../../util/supportsTouch'
-import {useValuePreviewWithFallback} from '../../hooks'
-import {type DialogItem} from '../../types'
-import {ITEM_HEIGHT} from './constants'
 import {CheckmarkIcon} from '@sanity/icons'
 import {type Path, type PreviewValue} from '@sanity/types'
 import {
@@ -16,6 +9,14 @@ import {
 } from '@sanity/ui'
 import {isEqual} from 'lodash-es'
 import {useCallback} from 'react'
+
+import {CommandList} from '../../../../../components/commandList/CommandList'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {supportsTouch} from '../../../../../util/supportsTouch'
+import {useValuePreviewWithFallback} from '../../hooks'
+import {type DialogItem} from '../../types'
+import {ITEM_HEIGHT} from './constants'
 
 interface BreadcrumbsItemProps {
   item: DialogItem

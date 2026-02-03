@@ -1,5 +1,6 @@
-import {type PaneNode} from '../types'
 import {type ReleaseId} from 'sanity'
+
+import {type PaneNode} from '../types'
 
 export interface BaseStructureToolPaneProps<T extends PaneNode['type']> {
   paneKey: string

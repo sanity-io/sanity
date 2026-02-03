@@ -1,8 +1,9 @@
-import {DEFAULT_LIMIT} from '../weighted/createSearchQuery'
-import {createSearchQuery} from './createSearchQuery'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+
+import {DEFAULT_LIMIT} from '../weighted/createSearchQuery'
+import {createSearchQuery} from './createSearchQuery'
 
 const schemaTypes = [
   defineType({

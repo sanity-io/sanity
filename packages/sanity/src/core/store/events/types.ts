@@ -133,11 +133,12 @@
  *    - `UpdateLiveDocumentEvent`: Raw Update mutation - "Published document exists"
  */
 
-import {type ObjectDiff} from '../../field'
-import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type ReleaseDocument} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
+
+import {type ObjectDiff} from '../../field'
+import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 
 /**
  * Events relevant for the whole document group.

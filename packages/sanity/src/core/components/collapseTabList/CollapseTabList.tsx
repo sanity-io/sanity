@@ -1,7 +1,3 @@
-import {type MenuButtonProps} from '../../../ui-components'
-import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
-import {ObserveElement} from '../collapseMenu/ObserveElement'
-import {ContextMenuButton} from '../contextMenuButton'
 import {Flex} from '@sanity/ui'
 import {
   Children,
@@ -14,6 +10,11 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
+
+import {type MenuButtonProps} from '../../../ui-components'
+import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
+import {ObserveElement} from '../collapseMenu/ObserveElement'
+import {ContextMenuButton} from '../contextMenuButton'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)

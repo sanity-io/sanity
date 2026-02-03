@@ -1,8 +1,9 @@
-import {localStoreStorage} from './storage/localStoreStorage'
-import {type KeyValueStore, type KeyValueStoreValue} from './types'
 import {isEqual} from 'lodash-es'
 import {merge, of} from 'rxjs'
 import {distinctUntilChanged, tap} from 'rxjs/operators'
+
+import {localStoreStorage} from './storage/localStoreStorage'
+import {type KeyValueStore, type KeyValueStoreValue} from './types'
 
 /**
  * Wraps a KeyValueStore and adds Stale-While-Revalidate (SWR) behavior to it

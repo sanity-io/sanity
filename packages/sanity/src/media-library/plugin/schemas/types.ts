@@ -1,4 +1,3 @@
-import {isRecord} from '../../../core/util'
 import {type Asset} from '@sanity/media-library-types'
 import {
   type AssetSource,
@@ -10,6 +9,8 @@ import {
   type RuleDef,
   type ValidationBuilder,
 } from '@sanity/types'
+
+import {isRecord} from '../../../core/util'
 
 /** @public */
 export interface VideoOptions extends ObjectOptions {
