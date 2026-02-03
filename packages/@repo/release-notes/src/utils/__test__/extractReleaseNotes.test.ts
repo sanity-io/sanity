@@ -1,11 +1,11 @@
 import {portableTextToMarkdown} from '@portabletext/markdown'
 import {describe, expect, it} from 'vitest'
 
-import {extractReleaseNotes} from '../extractReleaseNotes'
 import {markdownToPortableText} from '../portabletext-markdown/markdownToPortableText'
+import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../pullRequestReleaseNotes'
 import {keyGenerator, readFixture} from './helpers'
 
-describe('extractReleaseNotesFromPRDescription', () => {
+describe('extractReleaseNotesFromPullRequestDescription', () => {
   it('extracts release notes when there is just a single release notes header', () => {
     const notes = extractReleaseNotes(
       markdownToPortableText(`### Notes for release
@@ -125,15 +125,15 @@ console.log('code!')
       }),
     ])
   })
-  it.each(['n/a', 'N/A', 'n/a – internal only', '\n n/a'])(
+  it.each(['n/a', 'N/A', 'n/a – internal only', '\n n/a', 'Not relevant', 'not required'])(
     'ignores if text starts with %s ',
     (a) => {
-      const notes = extractReleaseNotes(
-        markdownToPortableText(`### Notes for release
+      const markdown = `### Notes for release
 ${a}
-`),
-      )
-      expect(notes).toEqual([])
+`
+      expect(
+        shouldExcludeReleaseNotes(extractReleaseNotes(markdownToPortableText(markdown))),
+      ).toEqual(true)
     },
   )
   it('skips inline html comments', () => {

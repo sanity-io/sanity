@@ -3,7 +3,6 @@ import {type PortableTextMarkdownBlock} from './portabletext-markdown/types'
 
 export function extractReleaseNotes(blocks: NormalizedMarkdownBlock[]) {
   let activeHeaderIsReleaseNotes = false
-  let blockNo = 0
   const releaseNotesBlocks: NormalizedMarkdownBlock[] = []
 
   for (const block of blocks) {
@@ -12,16 +11,12 @@ export function extractReleaseNotes(blocks: NormalizedMarkdownBlock[]) {
         // new header
         break
       }
-      if (extractBlockText(block).includes('Notes for release')) {
+      if (getBlockText(block).includes('Notes for release')) {
         activeHeaderIsReleaseNotes = true
         continue
       }
     }
     if (activeHeaderIsReleaseNotes) {
-      if (blockNo === 0 && extractBlockText(block).toLowerCase().startsWith('n/a')) {
-        return []
-      }
-      blockNo++
       releaseNotesBlocks.push(block)
     }
   }
@@ -39,7 +34,17 @@ function isHeading(block: PortableTextMarkdownBlock) {
   return pref === 'h' && level >= 1 && level <= 6
 }
 
-function extractBlockText(block: PortableTextMarkdownBlock) {
+export function shouldExcludeReleaseNotes(block: PortableTextMarkdownBlock[]): boolean {
+  const firstBlock = getBlockText(block[0]).toLowerCase().trim()
+  return (
+    firstBlock.startsWith('n/a') ||
+    firstBlock.startsWith('not required') ||
+    firstBlock.startsWith('not relevant') ||
+    firstBlock.startsWith('not needed')
+  )
+}
+
+export function getBlockText(block: PortableTextMarkdownBlock) {
   if (block._type !== 'block' || !Array.isArray(block.children)) {
     return ''
   }

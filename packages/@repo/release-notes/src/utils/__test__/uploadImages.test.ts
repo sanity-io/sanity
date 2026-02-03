@@ -1,8 +1,8 @@
 import {type SanityImageAssetDocument} from '@sanity/client'
 import {describe, expect, it, vi} from 'vitest'
 
-import {extractReleaseNotes} from '../extractReleaseNotes'
 import {markdownToPortableText} from '../portabletext-markdown/markdownToPortableText'
+import {extractReleaseNotes} from '../pullRequestReleaseNotes'
 import {uploadImages} from '../uploadImages'
 import {keyGenerator, readFixture} from './helpers'
 
