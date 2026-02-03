@@ -124,8 +124,12 @@ test.describe('Custom Release Actions', () => {
         })
 
         await openReleaseMenu(page, isOverview)
-        const menuItem = await expectCustomActionInMenu(page)
-        await menuItem.click()
+        await expectCustomActionInMenu(page)
+        // Click the menu item directly to avoid stale element references
+        // The menu can re-render when release data updates, causing element detachment
+        await page
+          .getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
+          .click({force: true})
 
         // Wait for the action to execute
         await page.waitForTimeout(1000)
