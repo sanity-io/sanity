@@ -1,8 +1,8 @@
 diff --git a/dist/typescript/typeGenerator.js b/dist/typescript/typeGenerator.js
-index f3bf08daed7749b88b5798f3452ac9689ffc9c6e..eec0d0db84ec087f73dffd5ffe95129c865c62a3 100644
+index f3bf08daed7749b88b5798f3452ac9689ffc9c6e..781f90fbe9f02fe27a6169a9a5775a4b019e2775 100644
 --- a/dist/typescript/typeGenerator.js
 +++ b/dist/typescript/typeGenerator.js
-@@ -200,21 +200,69 @@ import { QueryEvaluationError } from './types.js';
+@@ -200,21 +200,73 @@ import { QueryEvaluationError } from './types.js';
          });
          const program = t.program([]);
          let code = '';
@@ -14,9 +14,13 @@ index f3bf08daed7749b88b5798f3452ac9689ffc9c6e..eec0d0db84ec087f73dffd5ffe95129c
 +            if (!node) return;
 +            // Prevent stack overflow on deeply nested structures
 +            if (depth > 100) return;
++            
++            const isObject = typeof node === 'object';
 +            // Prevent infinite recursion on circular structures
-+            if (typeof node === 'object' && visited.has(node)) return;
-+            if (typeof node === 'object') visited.add(node);
++            if (isObject) {
++                if (visited.has(node)) return;
++                visited.add(node);
++            }
 +            
 +            if (t.isTSTypeReference(node) && t.isIdentifier(node.typeName) && node.typeName.name === 'ArrayOf') {
 +                arrayOfUsed = true;
@@ -25,7 +29,7 @@ index f3bf08daed7749b88b5798f3452ac9689ffc9c6e..eec0d0db84ec087f73dffd5ffe95129c
 +            // Recursively check child nodes
 +            if (Array.isArray(node)) {
 +                node.forEach(child => checkForArrayOf(child, depth + 1));
-+            } else if (typeof node === 'object') {
++            } else if (isObject) {
 +                Object.values(node).forEach(value => checkForArrayOf(value, depth + 1));
 +            }
 +        };
