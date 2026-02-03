@@ -236,6 +236,23 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
+
+  // Handle click: if the dialog is already open (opened by mousedown), just stop propagation
+  // to prevent the dialog's onClickOutside from detecting this as an "outside" click.
+  // If not open yet, call onOpen (fallback for when mousedown didn't trigger).
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (open) {
+        // Dialog already open (from mousedown) - just stop propagation
+        event.stopPropagation()
+      } else {
+        // Dialog not open yet - open it (fallback)
+        onOpen()
+      }
+    },
+    [open, onOpen],
+  )
+
   const item = (
     <RowLayout
       menu={menu}
@@ -253,11 +270,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={1}
         disabled={resolvingInitialValue}
-        // Use mousedown instead of click to trigger open before focus events cause re-renders.
+        // Use mousedown to trigger open before focus events cause re-renders.
         // This fixes a Safari-specific issue where the array container receives focus first,
         // triggering a state update that causes a re-render before the click event completes.
+        // The click handler checks if already open and stops propagation to prevent
+        // the dialog's onClickOutside from detecting this as an "outside" click.
         onMouseDown={onOpen}
-        onClick={onOpen}
+        onClick={handleClick}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
