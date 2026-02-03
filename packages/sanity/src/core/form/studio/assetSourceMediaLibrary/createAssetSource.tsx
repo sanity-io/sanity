@@ -1,3 +1,5 @@
+import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
+import {MediaLibraryUploader} from './uploader'
 import {DocumentIcon, ImageIcon} from '@sanity/icons'
 import {
   type Asset,
@@ -5,9 +7,6 @@ import {
   type AssetSourceComponentProps,
   type AssetSourceOpenInSourceResult,
 } from '@sanity/types'
-
-import {MediaLibraryAssetSource} from './shared/MediaLibraryAssetSource'
-import {MediaLibraryUploader} from './uploader'
 
 // Default name for the Media Library asset source
 // This is used to identify assets created from the Media Library in the openInSource function,

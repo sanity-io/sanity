@@ -1,9 +1,8 @@
-import {Stack, Text} from '@sanity/ui'
-
 import {Dialog} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type useRemoveTask} from '../../hooks'
 import {tasksLocaleNamespace} from '../../i18n'
+import {Stack, Text} from '@sanity/ui'
 
 export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
   const {handleCloseDialog, handleRemove, removeStatus, showDialog} = props

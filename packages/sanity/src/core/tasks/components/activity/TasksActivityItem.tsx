@@ -1,7 +1,6 @@
+import {TasksUserAvatar} from '../TasksUserAvatar'
 import {Box, Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
-
-import {TasksUserAvatar} from '../TasksUserAvatar'
 
 const ActivityChildrenRoot = styled(Flex)`
   height: 100%;

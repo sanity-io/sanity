@@ -1,6 +1,5 @@
-import {studioTheme as defaults, type ThemeFonts} from '@sanity/ui'
-
 import {type LegacyThemeProps} from './types'
+import {studioTheme as defaults, type ThemeFonts} from '@sanity/ui'
 
 /**
  * @deprecated – Will be removed in upcoming major version

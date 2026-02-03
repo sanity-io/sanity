@@ -1660,7 +1660,6 @@ import type {
   ZIndexContextValueKey,
   ZIndexProvider,
 } from 'sanity'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity', () => {

@@ -1,8 +1,3 @@
-import {AddIcon} from '@sanity/icons'
-import {type ComponentProps, type ComponentType, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {from} from 'rxjs'
-
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../studio/workspace'
@@ -11,6 +6,10 @@ import {useActiveReleases} from '../store/useActiveReleases'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 import {useReleasePermissions} from '../store/useReleasePermissions'
 import {getReleaseDefaults} from '../util/util'
+import {AddIcon} from '@sanity/icons'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {from} from 'rxjs'
 
 interface Props {
   onCreateRelease: () => void

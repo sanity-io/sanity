@@ -1,3 +1,22 @@
+import {documentIdEquals} from '../../../util'
+import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
+import {debugParams$} from '../debugParams'
+import {type UserStore} from '../user'
+import {createBifurTransport} from './message-transports/bifurTransport'
+import {
+  type DisconnectEvent,
+  type RollCallEvent,
+  type StateEvent,
+  type TransportEvent,
+} from './message-transports/transport'
+import {mock$} from './mock-events'
+import {
+  type DocumentPresence,
+  type GlobalPresence,
+  type PresenceLocation,
+  type Session,
+  type UserSessionPair,
+} from './types'
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
 import {flatten, groupBy, isEqual, omit, uniq} from 'lodash-es'
@@ -29,26 +48,6 @@ import {
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
-
-import {documentIdEquals} from '../../../util'
-import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
-import {debugParams$} from '../debugParams'
-import {type UserStore} from '../user'
-import {createBifurTransport} from './message-transports/bifurTransport'
-import {
-  type DisconnectEvent,
-  type RollCallEvent,
-  type StateEvent,
-  type TransportEvent,
-} from './message-transports/transport'
-import {mock$} from './mock-events'
-import {
-  type DocumentPresence,
-  type GlobalPresence,
-  type PresenceLocation,
-  type Session,
-  type UserSessionPair,
-} from './types'
 
 /**
  * @hidden

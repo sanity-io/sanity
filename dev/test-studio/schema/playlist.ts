@@ -1,6 +1,5 @@
-import {defineType} from '@sanity/types'
-
 import {CreateDraft} from './debug/components/CreateDraft'
+import {defineType} from '@sanity/types'
 
 export default defineType({
   name: 'playlist',

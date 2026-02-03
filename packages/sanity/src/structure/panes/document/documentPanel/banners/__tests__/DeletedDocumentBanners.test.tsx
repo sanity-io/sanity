@@ -1,3 +1,7 @@
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {useDocumentPane} from '../../../useDocumentPane'
+import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 import {render, screen, waitFor} from '@testing-library/react'
 import {
   LATEST,
@@ -7,11 +11,6 @@ import {
   useReleasesIds,
 } from 'sanity'
 import {describe, expect, it, type Mock, vi} from 'vitest'
-
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
-import {useDocumentPane} from '../../../useDocumentPane'
-import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

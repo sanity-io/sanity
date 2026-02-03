@@ -1,6 +1,5 @@
-import {type Mocked, vi} from 'vitest'
-
 import {type useReleasesUpsell} from '../useReleasesUpsell'
+import {type Mocked, vi} from 'vitest'
 
 export const useReleasesUpsellMockReturn: Mocked<ReturnType<typeof useReleasesUpsell>> = {
   mode: 'default',

@@ -1,8 +1,7 @@
-import {type SchemaTypeDefinition} from '@sanity/types'
-
 import {schemaTypesReducer} from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {type ConfigPropertyReducer, type PluginOptions} from './types'
+import {type SchemaTypeDefinition} from '@sanity/types'
 
 type ConfigContext<T> = T extends ConfigPropertyReducer<any, infer TContext> ? TContext : never
 type SchemaTypeContext = ConfigContext<typeof schemaTypesReducer>

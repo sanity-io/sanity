@@ -1,6 +1,5 @@
-import {set, type StringInputProps} from 'sanity'
-
 import styles from './CustomFontStringInput.module.css'
+import {set, type StringInputProps} from 'sanity'
 
 export default function CustomFontStringInput(props: StringInputProps) {
   const {value, schemaType, onChange} = props

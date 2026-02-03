@@ -1,9 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {keyBy} from 'lodash-es'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
-
 import {type FIXME} from '../../../../../FIXME'
 import {
   type DocumentAvailability,
@@ -14,6 +8,11 @@ import {
 } from '../../../../../preview'
 import {isRecord} from '../../../../../util'
 import {type CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
+import {type SanityClient} from '@sanity/client'
+import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
+import {keyBy} from 'lodash-es'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 

@@ -1,9 +1,3 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-/* eslint-disable max-statements */
-import path from 'node:path'
-import zlib from 'node:zlib'
-import tar from 'tar-fs'
-
 import {getAppId} from '../../util/getAppId'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {
@@ -17,6 +11,11 @@ import {
   type UserApplication,
 } from '../deploy/helpers'
 import buildSanityApp, {type BuildSanityAppCommandFlags} from './buildAction'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+/* eslint-disable max-statements */
+import path from 'node:path'
+import zlib from 'node:zlib'
+import tar from 'tar-fs'
 
 export interface DeployAppActionFlags extends BuildSanityAppCommandFlags {
   build?: boolean

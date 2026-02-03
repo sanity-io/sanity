@@ -1,9 +1,8 @@
-import {TabList} from '@sanity/ui'
-import {type ComponentType, type ReactNode, useCallback} from 'react'
-
 import {Tab} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components'
 import {useDocumentPane} from '../../useDocumentPane'
+import {TabList} from '@sanity/ui'
+import {type ComponentType, type ReactNode, useCallback} from 'react'
 
 /**
  * This component will render the tabs for the document pane, following this rules:

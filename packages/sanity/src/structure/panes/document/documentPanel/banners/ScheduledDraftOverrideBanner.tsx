@@ -1,10 +1,9 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {Banner} from './Banner'
 import {type SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {getPublishedId, Translate, useScheduledDraftDocument, useTranslation} from 'sanity'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {Banner} from './Banner'
 
 interface ScheduledDraftOverrideBannerProps {
   releaseId: string

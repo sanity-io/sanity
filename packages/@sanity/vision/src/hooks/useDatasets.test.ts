@@ -1,9 +1,8 @@
+import {useDatasets} from './useDatasets'
 import {type DatasetsResponse, type SanityClient} from '@sanity/client'
 import {renderHook} from '@testing-library/react'
 import {of, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-
-import {useDatasets} from './useDatasets'
 
 const mockDatasetsList = vi.fn()
 const mockClient = {

@@ -1,8 +1,7 @@
-import arrify from 'arrify'
-import {isUndefined, omitBy} from 'lodash-es'
-
 import {createFallbackPrepare} from './fallbackPrepare'
 import {isBlockField} from './portableText'
+import arrify from 'arrify'
+import {isUndefined, omitBy} from 'lodash-es'
 
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]

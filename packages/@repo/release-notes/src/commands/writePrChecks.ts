@@ -1,9 +1,8 @@
-import pMap from 'p-map'
-
 import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getReleasePr} from '../utils/getReleasePR'
 import {writeCheck} from '../utils/writeCheck'
+import pMap from 'p-map'
 
 export async function writePrChecks() {
   const releasePr = await getReleasePr()

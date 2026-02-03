@@ -1,6 +1,5 @@
-import {useMemo} from 'react'
-
 import {useWorkspace} from '../workspace'
+import {useMemo} from 'react'
 
 export function useEnvAwareSanityWebsiteUrl() {
   const {getClient} = useWorkspace()

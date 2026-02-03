@@ -1,3 +1,10 @@
+import {isProd} from '../../environment'
+import {useClient} from '../../hooks'
+import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
+import {SANITY_VERSION} from '../../version'
+import {useWorkspace} from '../workspace'
+import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
+import {type TelemetryContext} from './types'
 import {
   createBatchedStore,
   type CreateBatchedStoreOptions,
@@ -13,14 +20,6 @@ import {
   version as reactVersion,
 } from 'react'
 import {useRouterState} from 'sanity/router'
-
-import {isProd} from '../../environment'
-import {useClient} from '../../hooks'
-import {useProjectOrganizationId} from '../../store/_legacy/project/useProjectOrganizationId'
-import {SANITY_VERSION} from '../../version'
-import {useWorkspace} from '../workspace'
-import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
-import {type TelemetryContext} from './types'
 
 const sessionId = createSessionId()
 

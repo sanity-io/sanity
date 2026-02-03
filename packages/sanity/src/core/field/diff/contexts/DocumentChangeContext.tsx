@@ -1,7 +1,6 @@
+import {type ObjectDiff} from '../../types'
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
-
-import {type ObjectDiff} from '../../types'
 
 /** @internal */
 export type DocumentChangeContextInstance = {

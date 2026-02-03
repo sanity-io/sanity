@@ -154,7 +154,6 @@ import type {
   View,
   ViewBuilder,
 } from 'sanity/desk'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/desk', () => {

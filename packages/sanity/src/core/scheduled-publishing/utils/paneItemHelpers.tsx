@@ -1,3 +1,6 @@
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
+import {type Schedule} from '../types'
 // Based off: https://github.com/sanity-io/sanity/blob/next/packages/@sanity/desk-tool/src/components/paneItem/helpers.tsx
 import {type SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons'
@@ -5,10 +8,6 @@ import {type SchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
-
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {getDraftId, getPublishedId} from '../../util/draftUtils'
-import {type Schedule} from '../types'
 
 export interface PaneItemPreviewState {
   isLoading?: boolean

@@ -1,6 +1,5 @@
-import {describe, expect, it, vi} from 'vitest'
-
 import {ConcurrencyLimiter} from '../src/concurrency-limiter'
+import {describe, expect, it, vi} from 'vitest'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

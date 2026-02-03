@@ -1,9 +1,8 @@
-import {type ArraySchemaType, isReferenceSchemaType, type Path} from '@sanity/types'
-import {isEqual} from 'lodash-es'
-
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
 import {type DialogItem} from '../../types'
+import {type ArraySchemaType, isReferenceSchemaType, type Path} from '@sanity/types'
+import {isEqual} from 'lodash-es'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType

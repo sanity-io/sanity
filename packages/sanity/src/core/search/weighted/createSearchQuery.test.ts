@@ -1,7 +1,3 @@
-import {Schema} from '@sanity/schema'
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {describe, expect, it, test} from 'vitest'
-
 import {FINDABILITY_MVI} from '../constants'
 import {
   createSearchQuery,
@@ -9,6 +5,9 @@ import {
   extractTermsFromQuery,
   tokenize,
 } from './createSearchQuery'
+import {Schema} from '@sanity/schema'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {describe, expect, it, test} from 'vitest'
 
 const testType = Schema.compile({
   types: [

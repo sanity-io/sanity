@@ -1,3 +1,5 @@
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
+import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 import {
   type EncodableObject,
   type EncodableValue,
@@ -6,9 +8,6 @@ import {
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {type SchemaValidationProblem, type SchemaValidationProblemGroup} from '@sanity/types'
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-
-import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
-import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
 /** @internal */
 export interface ValidateSchemaWorkerData {

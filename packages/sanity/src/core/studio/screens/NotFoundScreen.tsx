@@ -1,7 +1,6 @@
+import {Button} from '../../../ui-components'
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {Card, Flex, Heading, Inline, Stack} from '@sanity/ui'
-
-import {Button} from '../../../ui-components'
 
 export function NotFoundScreen(props: {onNavigateToDefaultWorkspace: () => void}) {
   return (

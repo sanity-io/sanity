@@ -1,7 +1,6 @@
-import {expect, test} from 'vitest'
-
 import {_findMatchingRoutes} from '../_findMatchingRoutes'
 import {type RouterNode} from '../types'
+import {expect, test} from 'vitest'
 
 const node: RouterNode = {
   route: {

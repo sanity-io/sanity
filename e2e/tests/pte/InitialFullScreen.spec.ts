@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test.describe('Initial full screen', () => {
   test('if initial full screen is on for a PTE, you should be able to close it by clicking the collapse button', async ({

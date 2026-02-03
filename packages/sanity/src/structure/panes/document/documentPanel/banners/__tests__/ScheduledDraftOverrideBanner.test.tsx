@@ -1,10 +1,9 @@
-import {type SanityDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
+import {type SanityDocument} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('sanity', async () => {
   const actual = await vi.importActual('sanity')

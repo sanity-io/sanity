@@ -1,7 +1,3 @@
-import {type ObjectSchemaType, type Schema} from '@sanity/types'
-import {isEqual, omit} from 'lodash-es'
-import {useMemo} from 'react'
-
 import {useSchema} from '../../../../../hooks'
 import {type SearchTerms} from '../../../../../search'
 import {useSource} from '../../../../source'
@@ -22,6 +18,9 @@ import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 import {useStoredSearch} from './useStoredSearch'
+import {type ObjectSchemaType, type Schema} from '@sanity/types'
+import {isEqual, omit} from 'lodash-es'
+import {useMemo} from 'react'
 
 export const MAX_RECENT_SEARCHES = 5
 /**

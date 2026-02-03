@@ -1,10 +1,9 @@
+import {TOOLTIP_DELAY_PROPS} from '../tooltip/constants'
 /* eslint-disable no-restricted-imports */
 import {
   TooltipDelayGroupProvider as UITooltipDelayGroupProvider,
   type TooltipDelayGroupProviderProps as UITooltipDelayGroupProviderProps,
 } from '@sanity/ui'
-
-import {TOOLTIP_DELAY_PROPS} from '../tooltip/constants'
 
 /** @internal */
 export type TooltipDelayGroupProviderProps = Omit<UITooltipDelayGroupProviderProps, 'delay'>

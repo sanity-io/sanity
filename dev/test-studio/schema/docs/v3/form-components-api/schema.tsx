@@ -1,5 +1,3 @@
-import {defineType} from 'sanity'
-
 import {structureGroupOptions} from '../../../../structure/groupByOption'
 import {
   ArrayWithCustomActions,
@@ -9,6 +7,7 @@ import {
   CustomPreview,
   FormInput,
 } from './components'
+import {defineType} from 'sanity'
 
 export const formComponentsSchema = defineType({
   type: 'document',

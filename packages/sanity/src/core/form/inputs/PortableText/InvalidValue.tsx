@@ -1,3 +1,9 @@
+import {Translate, useTranslation} from '../../../i18n'
+import {
+  PortableTextInvalidValueIgnore,
+  PortableTextInvalidValueResolve,
+} from '../../__telemetry__/form.telemetry'
+import {Alert} from '../../components/Alert'
 import {type InvalidValueResolution} from '@portabletext/editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
@@ -11,13 +17,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
-
-import {Translate, useTranslation} from '../../../i18n'
-import {
-  PortableTextInvalidValueIgnore,
-  PortableTextInvalidValueResolve,
-} from '../../__telemetry__/form.telemetry'
-import {Alert} from '../../components/Alert'
 
 interface InvalidValueProps {
   onChange: (...args: any[]) => any

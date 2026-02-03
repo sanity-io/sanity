@@ -1,9 +1,8 @@
-import humanizeList from 'humanize-list'
-import {flatten, partition} from 'lodash-es'
-
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
+import humanizeList from 'humanize-list'
+import {flatten, partition} from 'lodash-es'
 
 function isPrimitiveTypeName(typeName: any) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'

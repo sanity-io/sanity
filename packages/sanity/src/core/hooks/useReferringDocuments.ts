@@ -1,9 +1,8 @@
+import {useDocumentStore} from '../store'
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs/operators'
-
-import {useDocumentStore} from '../store'
 
 interface ReferringDocumentsState<Doc> {
   isLoading: boolean

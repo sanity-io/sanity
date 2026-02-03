@@ -1,8 +1,3 @@
-import {isFileSource} from '@sanity/asset-utils'
-import {type AssetSource} from '@sanity/types'
-import {Box, Card} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
@@ -12,6 +7,10 @@ import {Browser} from './Browser'
 import {FilePreview} from './FilePreview'
 import {InvalidFileWarning} from './InvalidFileWarning'
 import {type FileAssetProps} from './types'
+import {isFileSource} from '@sanity/asset-utils'
+import {type AssetSource} from '@sanity/types'
+import {Box, Card} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
 
 const ASSET_FIELD_PATH = ['asset']
 

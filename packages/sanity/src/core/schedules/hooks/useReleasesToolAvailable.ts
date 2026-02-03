@@ -1,7 +1,6 @@
-import {useMemo} from 'react'
-
 import {useWorkspace} from '../../studio/workspace'
 import {SCHEDULES_TOOL_NAME} from '../plugin'
+import {useMemo} from 'react'
 
 /**
  * Determine whether the releases tool is available in the current workspace.

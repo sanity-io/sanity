@@ -1,10 +1,3 @@
-/* eslint-disable camelcase */
-import {type SanityClient} from '@sanity/client'
-import {defineType, type Path} from '@sanity/types'
-import {render, screen} from '@testing-library/react'
-import {useMemo, useState} from 'react'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useWorkspace} from '../../studio'
@@ -14,6 +7,12 @@ import {useFormState} from '../store/useFormState'
 import {type FormDocumentValue} from '../types'
 import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 import {useEnhancedObjectDialog} from './tree-editing'
+/* eslint-disable camelcase */
+import {type SanityClient} from '@sanity/client'
+import {defineType, type Path} from '@sanity/types'
+import {render, screen} from '@testing-library/react'
+import {useMemo, useState} from 'react'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 const schemaTypes = [
   defineType({

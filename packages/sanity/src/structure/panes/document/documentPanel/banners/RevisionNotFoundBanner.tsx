@@ -1,10 +1,9 @@
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
-
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Text} from '@sanity/ui'
+import {useTranslation} from 'sanity'
 
 export function RevisionNotFoundBanner() {
   const {revisionNotFound} = useDocumentPane()

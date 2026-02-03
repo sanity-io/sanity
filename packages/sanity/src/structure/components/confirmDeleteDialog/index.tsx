@@ -1,10 +1,9 @@
-import {Box, Text} from '@sanity/ui'
-import {type ComponentProps, useCallback, useId, useState} from 'react'
-import {useTranslation} from 'sanity'
-
 import {Dialog, ErrorBoundary} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
+import {Box, Text} from '@sanity/ui'
+import {type ComponentProps, useCallback, useId, useState} from 'react'
+import {useTranslation} from 'sanity'
 
 export type {ConfirmDeleteDialogProps}
 

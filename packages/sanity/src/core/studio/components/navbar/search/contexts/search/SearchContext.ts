@@ -1,7 +1,6 @@
-import {type Dispatch, type SetStateAction} from 'react'
-
 import {type CommandListHandle} from '../../../../../../components/commandList/types'
 import {type SearchAction, type SearchReducerState} from './reducer'
+import {type Dispatch, type SetStateAction} from 'react'
 
 /**
  * @internal

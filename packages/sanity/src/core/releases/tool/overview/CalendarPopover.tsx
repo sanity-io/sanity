@@ -1,12 +1,11 @@
-import {CalendarIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
-import {Button, useClickOutsideEvent} from '@sanity/ui'
-import {type ReactNode, useRef, useState} from 'react'
-
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
+import {CalendarIcon} from '@sanity/icons'
+// eslint-disable-next-line no-restricted-imports
+import {Button, useClickOutsideEvent} from '@sanity/ui'
+import {type ReactNode, useRef, useState} from 'react'
 
 export function CalendarPopover({content}: {content: ReactNode}) {
   const buttonRef = useRef<HTMLButtonElement | null>(null)

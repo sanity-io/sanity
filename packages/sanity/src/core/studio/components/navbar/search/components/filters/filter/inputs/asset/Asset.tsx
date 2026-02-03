@@ -1,10 +1,3 @@
-import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
-import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
-import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
-import {get, startCase} from 'lodash-es'
-import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
 import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
@@ -16,6 +9,12 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
+import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
+import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
+import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
+import {get, startCase} from 'lodash-es'
+import {useCallback, useEffect, useId, useMemo, useState} from 'react'
+import {styled} from 'styled-components'
 
 type AssetType = keyof Pick<Source['form'], 'file' | 'image'>
 

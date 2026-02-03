@@ -1,6 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {useCallback} from 'react'
-
 import {useClient} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
@@ -9,6 +6,8 @@ import {useFormBuilder} from '../../useFormBuilder'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
 import {type FileLike} from '../uploads/types'
 import {observeFileAsset} from './client-adapters/assets'
+import {type SchemaType} from '@sanity/types'
+import {useCallback} from 'react'
 
 /**
  * @hidden

@@ -1,7 +1,3 @@
-import {Box, Text} from '@sanity/ui'
-import {useMemo} from 'react'
-import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-
 import {Tooltip} from '../../../../ui-components'
 import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
@@ -15,6 +11,9 @@ import {
   RootBox,
   TooltipContentStack,
 } from './MediaPreview.styled'
+import {Box, Text} from '@sanity/ui'
+import {useMemo} from 'react'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 /**
  * @hidden

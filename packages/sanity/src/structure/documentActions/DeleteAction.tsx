@@ -1,3 +1,5 @@
+import {ConfirmDeleteDialog} from '../components'
+import {structureLocaleNamespace} from '../i18n'
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -11,9 +13,6 @@ import {
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
-
-import {ConfirmDeleteDialog} from '../components'
-import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_TITLE_KEY = {
   NOTHING_TO_DELETE: 'action.delete.disabled.nothing-to-delete',

@@ -1,14 +1,13 @@
-/* eslint-disable i18next/no-literal-string */
-import {WarningOutlineIcon} from '@sanity/icons'
-import {Stack, Text} from '@sanity/ui'
-import {useCallback, useId, useState} from 'react'
-
 import {Dialog} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'
+/* eslint-disable i18next/no-literal-string */
+import {WarningOutlineIcon} from '@sanity/icons'
+import {Stack, Text} from '@sanity/ui'
+import {useCallback, useId, useState} from 'react'
 
 export function ConfigIssuesButton() {
   const schema = useSchema()

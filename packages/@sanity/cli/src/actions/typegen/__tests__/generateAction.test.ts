@@ -1,12 +1,10 @@
-import type * as SanityCodegen from '@sanity/codegen'
-
-import {readConfig, runTypegenGenerate, TypesGeneratedTrace} from '@sanity/codegen'
-import {type Ora} from 'ora'
-import {describe, expect, test, vi} from 'vitest'
-
 import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '../../../types'
 import {getCliConfig} from '../../../util/getCliConfig'
 import generateAction, {type TypegenGenerateTypesCommandFlags} from '../generateAction'
+import type * as SanityCodegen from '@sanity/codegen'
+import {readConfig, runTypegenGenerate, TypesGeneratedTrace} from '@sanity/codegen'
+import {type Ora} from 'ora'
+import {describe, expect, test, vi} from 'vitest'
 
 vi.mock('@sanity/codegen', async (importOriginal) => {
   const original = await importOriginal<typeof SanityCodegen>()

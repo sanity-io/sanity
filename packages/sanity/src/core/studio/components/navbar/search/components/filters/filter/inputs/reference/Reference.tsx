@@ -1,12 +1,3 @@
-import {
-  isArraySchemaType,
-  isReferenceSchemaType,
-  type ReferenceValue,
-  type SchemaType,
-} from '@sanity/types'
-import {Box, Card, Stack} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-
 import {Button} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
@@ -15,6 +6,14 @@ import {type OperatorInputComponentProps} from '../../../../../definitions/opera
 import {getSchemaField} from '../../../../../utils/getSchemaField'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
+import {
+  isArraySchemaType,
+  isReferenceSchemaType,
+  type ReferenceValue,
+  type SchemaType,
+} from '@sanity/types'
+import {Box, Card, Stack} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
 
 export function SearchFilterReferenceInput({
   fieldDefinition,

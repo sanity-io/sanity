@@ -1,9 +1,8 @@
+import {CollapseMenu, CollapseMenuButton} from '../'
+import {ContextMenuButton} from '../../contextMenuButton'
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-
-import {CollapseMenu, CollapseMenuButton} from '../'
-import {ContextMenuButton} from '../../contextMenuButton'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 

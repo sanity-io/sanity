@@ -1,6 +1,15 @@
 // oxlint-disable no-console
 // oxlint-disable-next-line no-unassigned-import
 import 'dotenv/config'
+import {exec} from './helpers/exec'
+import {readEnvVar} from './readEnvVar'
+import {createBrowser, runTest} from './runTest'
+import article from './tests/article/article'
+import recipe from './tests/recipe/recipe'
+import singleString from './tests/singleString/singleString'
+import synthetic from './tests/synthetic/synthetic'
+import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
+import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import chalk from 'chalk'
@@ -12,16 +21,6 @@ import {fileURLToPath} from 'node:url'
 import Ora from 'ora'
 import yargs from 'yargs'
 import {hideBin} from 'yargs/helpers'
-
-import {exec} from './helpers/exec'
-import {readEnvVar} from './readEnvVar'
-import {createBrowser, runTest} from './runTest'
-import article from './tests/article/article'
-import recipe from './tests/recipe/recipe'
-import singleString from './tests/singleString/singleString'
-import synthetic from './tests/synthetic/synthetic'
-import {type EfpsAbResult, type EfpsResult, type EfpsTest} from './types'
-import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 
 const TEST_ATTEMPTS = process.env.CI ? 3 : 1
 

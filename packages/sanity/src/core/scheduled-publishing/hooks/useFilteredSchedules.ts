@@ -1,6 +1,5 @@
-import {useMemo} from 'react'
-
 import {type Schedule, type ScheduleState} from '../types'
+import {useMemo} from 'react'
 
 export function useFilteredSchedules(schedules: Schedule[], filter?: ScheduleState): Schedule[] {
   return useMemo(

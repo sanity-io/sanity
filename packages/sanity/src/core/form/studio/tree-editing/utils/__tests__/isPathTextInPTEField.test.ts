@@ -1,8 +1,7 @@
+import {findPTEtypePaths, isPathTextInPTEField} from '../isPathTextInPTEField'
 import {Schema} from '@sanity/schema'
 import {type ObjectField, type ObjectSchemaType, type Path} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
-
-import {findPTEtypePaths, isPathTextInPTEField} from '../isPathTextInPTEField'
 
 // Create a proper Sanity schema for testing
 const schema = Schema.compile({

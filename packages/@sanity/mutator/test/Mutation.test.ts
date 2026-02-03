@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {Mutation} from '../src/document/Mutation'
+import {expect, test} from 'vitest'
 
 test('updates _updatedAt when there is a timestamp', () => {
   const timestamp = '2017-05-02T11:56:00.643Z'

@@ -1,3 +1,4 @@
+import {type PreviewHeaderProps} from './preview/PreviewHeader'
 import {type ClientPerspective, type StackablePerspective} from '@sanity/client'
 import {type ChannelInstance} from '@sanity/comlink'
 import {
@@ -10,8 +11,6 @@ import {type PreviewUrlResolver} from '@sanity/preview-url-secret/define-preview
 import {type ComponentType} from 'react'
 import {type Observable} from 'rxjs'
 import {type DocumentStore, type SanityClient} from 'sanity'
-
-import {type PreviewHeaderProps} from './preview/PreviewHeader'
 
 export type {PreviewUrlResolver}
 

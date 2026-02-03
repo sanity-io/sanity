@@ -1,9 +1,8 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {
   ChangeIndicatorTrackerContextStoreType,
   ChangeIndicatorTrackerGetSnapshotType,
 } from '../../core/changeIndicators/ChangeIndicatorTrackerContexts'
+import {createContext} from 'sanity/_createContext'
 
 /** @internal */
 export const ChangeIndicatorTrackerContextStore =

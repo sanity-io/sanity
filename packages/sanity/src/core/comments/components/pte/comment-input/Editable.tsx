@@ -1,3 +1,10 @@
+import {Popover, type PopoverProps} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {commentsLocaleNamespace} from '../../../i18n'
+import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
+import {renderChild} from '../render'
+import {useCommentInput} from './useCommentInput'
+import {useCursorElement} from './useCursorElement'
 import {
   type EditorSelection,
   PortableTextEditable,
@@ -11,14 +18,6 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {isEqual} from 'lodash-es'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
-
-import {Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {commentsLocaleNamespace} from '../../../i18n'
-import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
-import {renderChild} from '../render'
-import {useCommentInput} from './useCommentInput'
-import {useCursorElement} from './useCursorElement'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}

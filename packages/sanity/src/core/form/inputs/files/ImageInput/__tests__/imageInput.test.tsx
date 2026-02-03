@@ -1,14 +1,13 @@
+import {renderImageInput} from '../../../../../../../test/form'
+// import {UploadOptions} from '../../../../studio/uploads/types'
+// import {ImageUrlBuilder} from '../../types'
+import {BaseImageInput} from '../ImageInput'
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
 // import {EMPTY, of} from 'rxjs'
 import {type ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
 import {screen} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
-
-import {renderImageInput} from '../../../../../../../test/form'
-// import {UploadOptions} from '../../../../studio/uploads/types'
-// import {ImageUrlBuilder} from '../../types'
-import {BaseImageInput} from '../ImageInput'
 
 const defs = {
   mainImage: defineType({

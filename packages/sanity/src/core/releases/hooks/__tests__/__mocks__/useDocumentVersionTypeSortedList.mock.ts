@@ -1,9 +1,8 @@
-import {type Mock, type Mocked} from 'vitest'
-
 import {
   useDocumentVersionTypeSortedList,
   type useDocumentVersionTypeSortedListState,
 } from '../../useDocumentVersionTypeSortedList'
+import {type Mock, type Mocked} from 'vitest'
 
 export const useDocumentVersionTypeSortedListReturn: Mocked<useDocumentVersionTypeSortedListState> =
   {

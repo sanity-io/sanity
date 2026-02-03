@@ -1,7 +1,6 @@
+import {useCurrentUser, useDataset, useProjectId, useSchema, useSource} from '../../../../../core'
 import {type SlugSourceContext} from '@sanity/types'
 import {useMemo} from 'react'
-
-import {useCurrentUser, useDataset, useProjectId, useSchema, useSource} from '../../../../../core'
 
 /**
  * @internal

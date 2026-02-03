@@ -1,3 +1,5 @@
+import {replaceProperty} from '../helpers'
+import {type DiffOptions, type StringDiff, type StringDiffSegment, type StringInput} from '../types'
 import {
   cleanupSemantic,
   DIFF_DELETE,
@@ -5,9 +7,6 @@ import {
   DIFF_INSERT,
   makeDiff,
 } from '@sanity/diff-match-patch'
-
-import {replaceProperty} from '../helpers'
-import {type DiffOptions, type StringDiff, type StringDiffSegment, type StringInput} from '../types'
 
 export function diffString<A>(
   fromInput: StringInput<A>,

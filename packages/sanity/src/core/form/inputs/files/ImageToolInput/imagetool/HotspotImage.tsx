@@ -1,3 +1,7 @@
+import {calculateStyles} from './calculateStyles'
+import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+import {HotspotImageContainer} from './HotspotImage.styles'
+import {type Crop, type Hotspot} from './types'
 import Debug from 'debug'
 import {
   type CSSProperties,
@@ -10,11 +14,6 @@ import {
   useRef,
   useState,
 } from 'react'
-
-import {calculateStyles} from './calculateStyles'
-import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
-import {HotspotImageContainer} from './HotspotImage.styles'
-import {type Crop, type Hotspot} from './types'
 
 const debug = Debug('sanity-imagetool')
 

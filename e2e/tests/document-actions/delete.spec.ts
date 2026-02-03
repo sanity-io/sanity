@@ -1,7 +1,6 @@
-import {expect} from '@playwright/test'
-
 import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 const name = 'Test Name'
 

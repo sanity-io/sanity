@@ -1,3 +1,5 @@
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {type BaseImageInputProps} from './types'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -7,9 +9,6 @@ import {
 } from '@sanity/types'
 import {get} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
-
-import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {type BaseImageInputProps} from './types'
 
 function ImageInputAssetSourceComponent(
   props: Pick<BaseImageInputProps, 'value' | 'schemaType' | 'observeAsset' | 'isUploading'> & {

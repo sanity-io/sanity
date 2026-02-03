@@ -1,11 +1,10 @@
-import {describe, expect, test} from 'vitest'
-
 import {
   parseId,
   parseIds,
   parseTag,
   parseWorkspaceSchemaId,
 } from '../../../src/_internal/cli/actions/schema/utils/schemaStoreValidation'
+import {describe, expect, test} from 'vitest'
 
 const workspaceIdCases = [
   {

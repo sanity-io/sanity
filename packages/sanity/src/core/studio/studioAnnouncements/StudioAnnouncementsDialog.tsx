@@ -1,10 +1,3 @@
-/* eslint-disable camelcase */
-import {CloseIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Flex, Grid, Text} from '@sanity/ui'
-import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
-
 import {Button, Dialog} from '../../../ui-components'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../hooks'
 import {useTranslation} from '../../i18n'
@@ -16,6 +9,12 @@ import {
 } from './__telemetry__/studioAnnouncements.telemetry'
 import {Divider} from './Divider'
 import {type DialogMode, type StudioAnnouncementDocument} from './types'
+/* eslint-disable camelcase */
+import {CloseIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Box, Flex, Grid, Text} from '@sanity/ui'
+import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
+import {styled} from 'styled-components'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
@@ -42,9 +41,7 @@ const FloatingButtonBox = styled(Box)`
   right: 24px;
   z-index: 2;
 `
-const FloatingButton = styled(Button)`
-  
-`
+const FloatingButton = styled(Button)``
 
 interface AnnouncementProps {
   announcement: StudioAnnouncementDocument

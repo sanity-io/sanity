@@ -1,9 +1,8 @@
+import {useCalendar} from './contexts/useDatePicker'
 import {Card, Text, type Theme} from '@sanity/ui'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
-
-import {useCalendar} from './contexts/useDatePicker'
 
 interface CalendarDayProps {
   date: Date
@@ -28,21 +27,21 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
 
 const CustomCard = styled(Card)`
   position: relative;
-  
+
   &[data-focused='true'] {
     z-index: 1;
   }
-  
+
   &[data-start-date='true'] {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  
+
   &[data-end-date='true'] {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-  
+
   &[data-within-range='true'] {
     border-radius: 0;
   }

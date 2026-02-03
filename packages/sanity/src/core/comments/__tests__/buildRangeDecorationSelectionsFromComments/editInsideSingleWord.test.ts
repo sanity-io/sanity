@@ -1,7 +1,6 @@
-import {describe, expect, test} from 'vitest'
-
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
+import {describe, expect, test} from 'vitest'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
   test('expands the range correctly when text is added inside a single word range', () => {

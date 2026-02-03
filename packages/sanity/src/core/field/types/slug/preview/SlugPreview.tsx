@@ -1,8 +1,7 @@
+import {type FieldPreviewComponent} from '../../../preview'
 import {type Slug} from '@sanity/types'
 import {Box} from '@sanity/ui'
 import {styled} from 'styled-components'
-
-import {type FieldPreviewComponent} from '../../../preview'
 
 const SlugWrapper = styled.div`
   display: inline-block;

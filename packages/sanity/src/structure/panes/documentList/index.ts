@@ -1,6 +1,5 @@
-import {type ComponentProps} from 'react'
-
 import {PaneContainer} from './PaneContainer'
+import {type ComponentProps} from 'react'
 
 export {PaneContainer as DocumentListPane}
 /**

@@ -1,3 +1,5 @@
+import {PaneContent, PaneItem, usePaneLayout} from '../../components'
+import {type PaneListItem, type PaneListItemDivider} from '../../types'
 import {Box, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
@@ -8,9 +10,6 @@ import {
   useI18nText,
 } from 'sanity'
 import {styled} from 'styled-components'
-
-import {PaneContent, PaneItem, usePaneLayout} from '../../components'
-import {type PaneListItem, type PaneListItemDivider} from '../../types'
 
 interface ListPaneContentProps {
   childItemId?: string

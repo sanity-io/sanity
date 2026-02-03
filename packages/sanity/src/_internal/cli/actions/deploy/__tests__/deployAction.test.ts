@@ -1,10 +1,3 @@
-import type * as NodeWorkerThreads from 'node:worker_threads'
-
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import zlib from 'node:zlib'
-import tar from 'tar-fs'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
 import {
   type DeployStudioWorkerResult,
   type DeployStudioWorkerSuccess,
@@ -13,6 +6,11 @@ import buildSanityStudio from '../../build/buildAction'
 import deployStudioAction, {type DeployStudioActionFlags} from '../deployAction'
 import * as _helpers from '../helpers'
 import {type UserApplication} from '../helpers'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import type * as NodeWorkerThreads from 'node:worker_threads'
+import zlib from 'node:zlib'
+import tar from 'tar-fs'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 // Mock dependencies
 vi.mock('tar-fs')

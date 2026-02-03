@@ -1,10 +1,9 @@
-import {memo, type ReactNode, useMemo} from 'react'
-import {ActiveWorkspaceMatcherContext} from 'sanity/_singletons'
-
 import {type RouterHistory} from '../router'
 import {RouterHistoryProvider} from '../router/RouterHistoryContext'
 import {type WorkspacesContextValue} from '../workspaces'
 import {type ActiveWorkspaceMatcherContextValue} from './ActiveWorkspaceMatcherContext'
+import {memo, type ReactNode, useMemo} from 'react'
+import {ActiveWorkspaceMatcherContext} from 'sanity/_singletons'
 
 /** @internal */
 export const ActiveWorkspaceMatcherProvider = memo(function ActiveWorkspaceMatcherContextProvider({

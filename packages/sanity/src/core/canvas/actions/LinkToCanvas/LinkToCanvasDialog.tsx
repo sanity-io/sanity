@@ -1,9 +1,3 @@
-import {type SanityDocument} from '@sanity/client'
-import {ComposeSparklesIcon} from '@sanity/icons'
-import {Box, Card, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {useCallback, useId} from 'react'
-
 import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -11,6 +5,11 @@ import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {LinkToCanvasDiff} from './LinkToCanvasDiff'
 import {useLinkToCanvas} from './useLinkToCanvas'
+import {type SanityDocument} from '@sanity/client'
+import {ComposeSparklesIcon} from '@sanity/icons'
+import {Box, Card, Text} from '@sanity/ui'
+import {motion} from 'motion/react'
+import {useCallback, useId} from 'react'
 
 export const LinkToCanvasDialog = ({
   document,

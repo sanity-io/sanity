@@ -1,3 +1,5 @@
+import {Tooltip, type TooltipProps} from '..'
+import {Hotkeys} from '../../core/components/Hotkeys'
 /* eslint-disable no-restricted-imports */
 import {
   Badge,
@@ -11,9 +13,6 @@ import {
 import {forwardRef, type HTMLProps, isValidElement, type ReactNode, type Ref, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-
-import {Tooltip, type TooltipProps} from '..'
-import {Hotkeys} from '../../core/components/Hotkeys'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0

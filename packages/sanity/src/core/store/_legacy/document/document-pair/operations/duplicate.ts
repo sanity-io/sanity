@@ -1,10 +1,9 @@
-import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {omit} from 'lodash-es'
-
 import {getDraftId, getVersionFromId, getVersionId} from '../../../../../util'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type MapDocument, type OperationImpl} from './types'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {omit} from 'lodash-es'
 
 const omitProps = ['_createdAt', '_updatedAt']
 

@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {getCreateDocumentUrl} from '../createDocumentUrls'
 import {type CreateLinkMetadata} from '../types'
+import {describe, expect, it} from 'vitest'
 
 describe('createDocumentUrls', () => {
   describe('getCreateDocumentUrl', () => {

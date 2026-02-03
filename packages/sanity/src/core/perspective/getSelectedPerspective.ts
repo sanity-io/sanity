@@ -1,7 +1,6 @@
-import {type ReleaseDocument} from '@sanity/client'
-
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseId, type TargetPerspective} from './types'
+import {type ReleaseDocument} from '@sanity/client'
 
 export function getSelectedPerspective(
   selectedPerspectiveName: 'published' | ReleaseId | undefined,

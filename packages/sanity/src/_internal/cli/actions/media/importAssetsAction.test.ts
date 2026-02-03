@@ -1,11 +1,10 @@
+import {type AssetWithAspects, resolveSource, setAspects} from './importAssetsAction'
+import {createMockClient} from './test/createMockClient'
 import chalk from 'chalk'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {lastValueFrom, of, toArray} from 'rxjs'
 import {describe, expect, it} from 'vitest'
-
-import {type AssetWithAspects, resolveSource, setAspects} from './importAssetsAction'
-import {createMockClient} from './test/createMockClient'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

@@ -1,14 +1,4 @@
 import {
-  isArrayOfBlocksSchemaType,
-  isArrayOfObjectsSchemaType,
-  isArrayOfPrimitivesSchemaType,
-  isBooleanSchemaType,
-  isNumberSchemaType,
-  isObjectSchemaType,
-  isStringSchemaType,
-} from '@sanity/types'
-
-import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
@@ -18,6 +8,15 @@ import {
   type StringInputProps,
 } from './inputProps'
 import {type ItemProps, type ObjectItemProps} from './itemProps'
+import {
+  isArrayOfBlocksSchemaType,
+  isArrayOfObjectsSchemaType,
+  isArrayOfPrimitivesSchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isObjectSchemaType,
+  isStringSchemaType,
+} from '@sanity/types'
 
 /**
  * @hidden

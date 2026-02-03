@@ -1,3 +1,6 @@
+import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
+import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
+import {type Schedule, type ScheduleState} from '../../types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button,
@@ -5,10 +8,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
-
-import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
-import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
-import {type Schedule, type ScheduleState} from '../../types'
 
 interface Props {
   schedules: Schedule[]

@@ -1,8 +1,7 @@
+import {format, parse} from './legacyDateFormat'
 /* eslint-disable max-nested-callbacks */
 import {TZDateMini} from '@date-fns/tz'
 import {afterAll, beforeAll, describe, expect, test, vi} from 'vitest'
-
-import {format, parse} from './legacyDateFormat'
 
 describe('legacyDateFormat', () => {
   beforeAll(() => {

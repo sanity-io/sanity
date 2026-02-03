@@ -1,3 +1,21 @@
+import {Button, TooltipDelayGroupProvider} from '../../ui-components'
+import {ErrorCard} from '../components/ErrorCard'
+import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
+import {presentationLocaleNamespace} from '../i18n'
+import {type PresentationMachineRef} from '../machines/presentation-machine'
+import {type PreviewUrlRef} from '../machines/preview-url'
+import {
+  type ConnectionStatus,
+  type HeaderOptions,
+  type PresentationPerspective,
+  type PresentationViewport,
+} from '../types'
+import {useAllowPatterns} from '../useAllowPatterns'
+import {usePresentationNavigate} from '../usePresentationNavigate'
+import {usePresentationTool} from '../usePresentationTool'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
+import {IFrame} from './IFrame'
+import {PreviewHeader} from './PreviewHeader'
 /* eslint-disable react/no-unused-prop-types */
 import {createConnectionMachine, createController} from '@sanity/comlink'
 import {
@@ -38,25 +56,6 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-
-import {Button, TooltipDelayGroupProvider} from '../../ui-components'
-import {ErrorCard} from '../components/ErrorCard'
-import {MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
-import {presentationLocaleNamespace} from '../i18n'
-import {type PresentationMachineRef} from '../machines/presentation-machine'
-import {type PreviewUrlRef} from '../machines/preview-url'
-import {
-  type ConnectionStatus,
-  type HeaderOptions,
-  type PresentationPerspective,
-  type PresentationViewport,
-} from '../types'
-import {useAllowPatterns} from '../useAllowPatterns'
-import {usePresentationNavigate} from '../usePresentationNavigate'
-import {usePresentationTool} from '../usePresentationTool'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
-import {IFrame} from './IFrame'
-import {PreviewHeader} from './PreviewHeader'
 
 const MotionFlex = motion.create(Flex)
 

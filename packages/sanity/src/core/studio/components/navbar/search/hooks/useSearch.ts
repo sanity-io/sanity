@@ -1,3 +1,16 @@
+import {useClient} from '../../../../../hooks'
+import {
+  createSearch,
+  type SearchHit,
+  type SearchOptions,
+  type SearchTerms,
+} from '../../../../../search'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useWorkspace} from '../../../../workspace'
+import {type SearchState} from '../types'
+import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
 import {type Schema} from '@sanity/types'
 import {isEqual} from 'lodash-es'
 import {useCallback, useMemo, useState} from 'react'
@@ -13,20 +26,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
-
-import {useClient} from '../../../../../hooks'
-import {
-  createSearch,
-  type SearchHit,
-  type SearchOptions,
-  type SearchTerms,
-} from '../../../../../search'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useWorkspace} from '../../../../workspace'
-import {type SearchState} from '../types'
-import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
 
 interface SearchRequest {
   debounceTime?: number

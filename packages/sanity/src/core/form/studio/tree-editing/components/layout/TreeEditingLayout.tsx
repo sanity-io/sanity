@@ -1,13 +1,12 @@
-import {type Path} from '@sanity/types'
-import {Card, Container, Flex} from '@sanity/ui'
-import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
-
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type DialogItem} from '../../types'
 import {DialogBreadcrumbs} from '../breadcrumbs/DialogBreadcrumbs'
 import {FixedHeightFlex} from './styles'
 import {TreeEditingLayoutSidebar} from './TreeEditingLayoutSidebar'
+import {type Path} from '@sanity/types'
+import {Card, Container, Flex} from '@sanity/ui'
+import {memo, type ReactNode, useCallback, useRef, useState} from 'react'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 

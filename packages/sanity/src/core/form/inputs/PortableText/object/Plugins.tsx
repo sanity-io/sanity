@@ -1,3 +1,7 @@
+import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
+import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
+import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
@@ -6,11 +10,6 @@ import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
-
-import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
-import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
-import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
-import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>

@@ -1,9 +1,8 @@
+import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {type ReleaseEvent} from './types'
 import {type SanityClient} from '@sanity/client'
 import {BehaviorSubject, type Observable} from 'rxjs'
 import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-
-import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseEvent} from './types'
 
 export interface ReleaseEventsObservableValue {
   events: ReleaseEvent[]

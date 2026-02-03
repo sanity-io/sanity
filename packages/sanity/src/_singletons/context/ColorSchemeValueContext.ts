@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * Used to keep track of the internal value, which can be "system" in addition to "light" and "dark"

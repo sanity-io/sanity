@@ -1,3 +1,4 @@
+import {type VisualEditingConnection} from '../types'
 import {type ClientPerspective} from '@sanity/client'
 import {type PreviewSnapshot} from '@sanity/presentation-comlink'
 import {type FC, memo, useEffect, useMemo, useRef} from 'react'
@@ -21,8 +22,6 @@ import {
   useDocumentPreviewStore,
   useSchema,
 } from 'sanity'
-
-import {type VisualEditingConnection} from '../types'
 
 type Ref = {
   _id: string

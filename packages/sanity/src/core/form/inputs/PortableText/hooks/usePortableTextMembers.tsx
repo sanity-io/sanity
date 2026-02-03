@@ -1,8 +1,3 @@
-import {type Path} from '@sanity/types'
-import {isEqual, pathFor} from '@sanity/util/paths'
-import {type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
-import {PortableTextMemberItemsContext} from 'sanity/_singletons'
-
 import {pathToString} from '../../../../field'
 import {type FIXME} from '../../../../FIXME'
 import {FormInput} from '../../../components'
@@ -13,6 +8,10 @@ import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store
 import {type ObjectInputProps, type PortableTextInputProps} from '../../../types'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
+import {type Path} from '@sanity/types'
+import {isEqual, pathFor} from '@sanity/util/paths'
+import {type MutableRefObject, type ReactNode, useContext, useMemo, useRef} from 'react'
+import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 export function usePortableTextMemberItem(key: string): PortableTextMemberItem | undefined {
   const ctx = useContext(PortableTextMemberItemsContext)

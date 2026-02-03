@@ -1,3 +1,7 @@
+import {structureLocaleNamespace} from '../../i18n'
+import {CreateNewIncomingReference} from './CreateNewIncomingReference'
+import {LinkToExistingPreview} from './LinkToExistingPreview'
+import {type IncomingReferencesOptions} from './types'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
@@ -22,11 +26,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-
-import {structureLocaleNamespace} from '../../i18n'
-import {CreateNewIncomingReference} from './CreateNewIncomingReference'
-import {LinkToExistingPreview} from './LinkToExistingPreview'
-import {type IncomingReferencesOptions} from './types'
 
 interface ReferenceSearchState {
   hits: ReferenceSearchHit[]

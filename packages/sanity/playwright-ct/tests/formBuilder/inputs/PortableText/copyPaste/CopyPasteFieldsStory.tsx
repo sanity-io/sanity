@@ -1,8 +1,7 @@
-import {type SanityDocument} from '@sanity/client'
-import {defineField, defineType, type Path} from '@sanity/types'
-
 import {TestForm} from '../../../utils/TestForm'
 import {TestWrapper} from '../../../utils/TestWrapper'
+import {type SanityDocument} from '@sanity/client'
+import {defineField, defineType, type Path} from '@sanity/types'
 
 const SCHEMA_TYPES = [
   defineType({

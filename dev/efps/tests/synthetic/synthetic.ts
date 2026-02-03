@@ -1,10 +1,9 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import {measureFpsForInput} from '../../helpers/measureFpsForInput'
 import {defineEfpsTest} from '../../types'
 import {type Synthetic, type SyntheticObject} from './sanity.types'
+import fs from 'node:fs'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 

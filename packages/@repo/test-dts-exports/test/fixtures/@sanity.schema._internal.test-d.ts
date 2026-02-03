@@ -28,7 +28,6 @@ import type {
   ValidationError,
   ValidationResult,
 } from '@sanity/schema/_internal'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/schema/_internal', () => {

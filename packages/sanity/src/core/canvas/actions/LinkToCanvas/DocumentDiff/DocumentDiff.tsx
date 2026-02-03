@@ -1,13 +1,12 @@
-import {diffInput, wrap} from '@sanity/diff'
-import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
-import {useMemo} from 'react'
-import {DocumentChangeContext} from 'sanity/_singletons'
-
 import {ChangeList} from '../../../../field/diff/components/ChangeList'
 import {type ObjectDiff} from '../../../../field/types'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useSource} from '../../../../studio/source'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {diffInput, wrap} from '@sanity/diff'
+import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {useMemo} from 'react'
+import {DocumentChangeContext} from 'sanity/_singletons'
 
 const buildDocumentForDiffInput = (document: Partial<SanityDocument>) => {
   // Remove internal fields and undefined values

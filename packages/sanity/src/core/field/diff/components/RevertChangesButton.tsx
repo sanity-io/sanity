@@ -1,9 +1,8 @@
+import {Button, type ButtonProps} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
 import {RevertIcon} from '@sanity/icons'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
-
-import {Button, type ButtonProps} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
 
 const Root = styled(Button)`
   [data-ui='Text'] {

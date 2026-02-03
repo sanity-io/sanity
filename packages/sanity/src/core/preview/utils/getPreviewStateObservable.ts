@@ -1,3 +1,6 @@
+import {type PerspectiveStack} from '../../perspective/types'
+import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUtils'
+import {type DocumentPreviewStore} from '../documentPreviewStore'
 import {
   type PrepareViewOptions,
   type PreviewValue,
@@ -6,10 +9,6 @@ import {
 } from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
-
-import {type PerspectiveStack} from '../../perspective/types'
-import {getPublishedId, getVersionFromId, isVersionId} from '../../util/draftUtils'
-import {type DocumentPreviewStore} from '../documentPreviewStore'
 
 /**
  * @internal

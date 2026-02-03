@@ -1,8 +1,7 @@
-import {Inline} from '@sanity/ui'
-import {styled} from 'styled-components'
-
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
 import {type AssetAccessPolicy} from '../types'
+import {Inline} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 export const Wrapper = styled(Inline)`
   position: absolute;

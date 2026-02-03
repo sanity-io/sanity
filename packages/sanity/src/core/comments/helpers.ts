@@ -1,8 +1,7 @@
+import {type CommentContext, type CommentDocument, type CommentMessage} from './types'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash-es'
 import {useMemo, useState} from 'react'
-
-import {type CommentContext, type CommentDocument, type CommentMessage} from './types'
 
 export function useCommentHasChanged(message: CommentMessage): boolean {
   const [prevMessage] = useState<CommentMessage>(message)

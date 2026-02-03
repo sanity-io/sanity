@@ -1,7 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {type ComponentType, forwardRef, useMemo} from 'react'
-import {IntentLink} from 'sanity/router'
-
 import {Preview} from '../../../preview/components/Preview'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../../util/draftUtils'
@@ -12,6 +8,9 @@ import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
+import {type SchemaType} from '@sanity/types'
+import {type ComponentType, forwardRef, useMemo} from 'react'
+import {IntentLink} from 'sanity/router'
 
 interface Props {
   previewState: PaneItemPreviewState

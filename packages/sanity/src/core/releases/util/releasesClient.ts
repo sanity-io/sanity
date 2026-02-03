@@ -1,6 +1,5 @@
-import {type ClientPerspective} from '@sanity/client'
-
 import {type SourceClientOptions} from '../../config/types'
+import {type ClientPerspective} from '@sanity/client'
 
 /**
  * @internal This is the client options used for the releases studio client, using the `X` API version for now

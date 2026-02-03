@@ -1,3 +1,14 @@
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {useFormBuilder} from '../../useFormBuilder'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
+import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
+import {useSpellCheck} from './hooks/useSpellCheck'
+import {Decorator} from './text'
+import {ListItem} from './text/ListItem'
+import {Style} from './text/Style'
+import {Toolbar} from './toolbar'
 import {
   type BlockDecoratorRenderProps,
   type BlockListItemRenderProps,
@@ -19,18 +30,6 @@ import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer}
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
-
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useFormBuilder} from '../../useFormBuilder'
-import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
-import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
-import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
-import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text'
-import {ListItem} from './text/ListItem'
-import {Style} from './text/Style'
-import {Toolbar} from './toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 

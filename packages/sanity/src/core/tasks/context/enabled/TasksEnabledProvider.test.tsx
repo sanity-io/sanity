@@ -1,10 +1,9 @@
-import {renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {useFeatureEnabled} from '../../../hooks'
 import {useWorkspace} from '../../../studio/workspace'
 import {TasksEnabledProvider} from './TasksEnabledProvider'
 import {useTasksEnabled} from './useTasksEnabled'
+import {renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../../hooks')
 

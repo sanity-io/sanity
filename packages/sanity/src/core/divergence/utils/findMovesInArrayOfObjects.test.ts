@@ -1,8 +1,7 @@
-import {lastValueFrom} from 'rxjs'
-import {expect, test} from 'vitest'
-
 import {findMovesInArrayOfObjects} from './findMovesInArrayOfObjects'
 import {keyArray} from './keyArray'
+import {lastValueFrom} from 'rxjs'
+import {expect, test} from 'vitest'
 
 const cases: [a: string[], b: string[], expected: unknown][] = [
   [

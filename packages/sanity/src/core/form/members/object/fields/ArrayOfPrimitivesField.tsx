@@ -1,16 +1,3 @@
-import {
-  type BooleanSchemaType,
-  isBooleanSchemaType,
-  isNumberSchemaType,
-  isStringSchemaType,
-  type NumberSchemaType,
-  type SchemaType,
-  type StringSchemaType,
-} from '@sanity/types'
-import {type FocusEvent, useCallback, useMemo, useRef} from 'react'
-import {type Subscription} from 'rxjs'
-import {filter, map, tap} from 'rxjs/operators'
-
 import {type FIXME} from '../../../../FIXME'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -38,6 +25,18 @@ import {
   type UploadEvent,
 } from '../../../types'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {
+  type BooleanSchemaType,
+  isBooleanSchemaType,
+  isNumberSchemaType,
+  isStringSchemaType,
+  type NumberSchemaType,
+  type SchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {type FocusEvent, useCallback, useMemo, useRef} from 'react'
+import {type Subscription} from 'rxjs'
+import {filter, map, tap} from 'rxjs/operators'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()

@@ -1,12 +1,11 @@
-import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
-import {Fragment, useMemo} from 'react'
-import {styled} from 'styled-components'
-
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument, type TaskStatus} from '../../types'
 import {EmptyStatusListState, EmptyTasksListState} from './EmptyStates'
 import {TasksListItem} from './TasksListItem'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Fragment, useMemo} from 'react'
+import {styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 

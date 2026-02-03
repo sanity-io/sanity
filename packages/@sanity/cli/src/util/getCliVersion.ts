@@ -1,8 +1,7 @@
+import {type PackageJson} from '../types'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import pkgDir from 'pkg-dir'
-
-import {type PackageJson} from '../types'
 
 export async function getCliPkg(): Promise<PackageJson> {
   const cliPath = pkgDir.sync(__dirname)

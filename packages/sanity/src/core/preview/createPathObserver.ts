@@ -1,12 +1,11 @@
+import {isRecord} from '../util'
+import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
+import {props} from './utils/props'
 import {type StackablePerspective} from '@sanity/client'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
 import {uniq} from 'lodash-es'
 import {type Observable, of as observableOf} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-
-import {isRecord} from '../util'
-import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
-import {props} from './utils/props'
 
 function createEmpty(fields: FieldName[]) {
   return fields.reduce((result: Record<string, undefined>, field) => {

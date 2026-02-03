@@ -1,8 +1,3 @@
-import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
-import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {type ComponentType, Fragment, type ReactNode} from 'react'
-
 import {Tooltip} from '../../../../ui-components'
 import {type PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useListFormat} from '../../../hooks'
@@ -12,6 +7,10 @@ import {type RenderPreviewCallback} from '../../types'
 import {ReferencePreview} from './ReferencePreview'
 import {type ReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
+import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
+import {type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {type ComponentType, Fragment, type ReactNode} from 'react'
 
 export function PreviewReferenceValue(props: {
   layout?: PreviewLayoutKey

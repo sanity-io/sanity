@@ -1,10 +1,9 @@
-import {Card, Inline, Text} from '@sanity/ui'
-import {useBoolean} from '@sanity/ui-workshop'
-import {useCallback, useState} from 'react'
-
 import {CommonDateEqualInput} from '../components/filters/filter/inputs/date/CommonDateEqual'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {type OperatorDateEqualValue} from '../definitions/operators/dateOperators'
+import {Card, Inline, Text} from '@sanity/ui'
+import {useBoolean} from '@sanity/ui-workshop'
+import {useCallback, useState} from 'react'
 
 export default function CommonDateEqualStory() {
   const isDateTime = useBoolean('Datetime', true, 'Props')

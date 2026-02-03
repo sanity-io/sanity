@@ -1,3 +1,4 @@
+import {Tooltip} from '../../../../../ui-components'
 import {Card, Flex} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {
@@ -10,8 +11,6 @@ import {
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-
-import {Tooltip} from '../../../../../ui-components'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent

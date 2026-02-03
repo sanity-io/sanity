@@ -1,3 +1,12 @@
+import {Button} from '../../../ui-components/button/Button'
+import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from '../../panes/document/useDocumentPane'
+import {AddIncomingReference} from './AddIncomingReference'
+import {CreateNewIncomingReference} from './CreateNewIncomingReference'
+import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
+import {IncomingReferenceDocument} from './IncomingReferenceDocument'
+import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
+import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
 import {AddIcon} from '@sanity/icons'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
@@ -18,16 +27,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-
-import {Button} from '../../../ui-components/button/Button'
-import {structureLocaleNamespace} from '../../i18n'
-import {useDocumentPane} from '../../panes/document/useDocumentPane'
-import {AddIncomingReference} from './AddIncomingReference'
-import {CreateNewIncomingReference} from './CreateNewIncomingReference'
-import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
-import {IncomingReferenceDocument} from './IncomingReferenceDocument'
-import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
-import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
 
 export function IncomingReferencesType({
   type,

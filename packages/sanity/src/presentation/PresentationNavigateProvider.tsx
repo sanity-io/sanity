@@ -1,6 +1,3 @@
-import {type FunctionComponent, type PropsWithChildren, useCallback} from 'react'
-import {PresentationNavigateContext} from 'sanity/_singletons'
-
 import {
   type CombinedSearchParams,
   type PresentationNavigate,
@@ -8,6 +5,8 @@ import {
   type PresentationNavigateOptions,
   type PresentationStateParams,
 } from './types'
+import {type FunctionComponent, type PropsWithChildren, useCallback} from 'react'
+import {PresentationNavigateContext} from 'sanity/_singletons'
 
 export const PresentationNavigateProvider: FunctionComponent<
   PropsWithChildren<{

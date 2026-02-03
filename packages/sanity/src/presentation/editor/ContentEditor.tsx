@@ -1,3 +1,14 @@
+import {presentationLocaleNamespace} from '../i18n'
+import {
+  type MainDocumentState,
+  type PresentationNavigate,
+  type PresentationSearchParams,
+  type PresentationStateParams,
+  type StructureDocumentPaneParams,
+} from '../types'
+import {DocumentListPane} from './DocumentListPane'
+import {DocumentPanel} from './DocumentPanel'
+import usePreviewState from './usePreviewState'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
@@ -10,18 +21,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {StateLink} from 'sanity/router'
-
-import {presentationLocaleNamespace} from '../i18n'
-import {
-  type MainDocumentState,
-  type PresentationNavigate,
-  type PresentationSearchParams,
-  type PresentationStateParams,
-  type StructureDocumentPaneParams,
-} from '../types'
-import {DocumentListPane} from './DocumentListPane'
-import {DocumentPanel} from './DocumentPanel'
-import usePreviewState from './usePreviewState'
 
 export function ContentEditor(props: {
   documentId?: string

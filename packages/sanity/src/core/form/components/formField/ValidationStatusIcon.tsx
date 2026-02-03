@@ -1,7 +1,6 @@
+import {useTranslation} from '../../../i18n'
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {styled} from 'styled-components'
-
-import {useTranslation} from '../../../i18n'
 
 const StyledErrorOutlineIcon = styled(ErrorOutlineIcon)`
   --card-icon-color: var(--card-badge-critical-icon-color);

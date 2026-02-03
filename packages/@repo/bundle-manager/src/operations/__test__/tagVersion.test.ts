@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {currentUnixTime} from '../../utils'
 import {tagVersion} from '../tagVersion'
+import {describe, expect, it} from 'vitest'
 
 describe('tagVersion()', () => {
   it('sets a given tag to the given version', () => {

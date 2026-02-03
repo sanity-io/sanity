@@ -1,7 +1,6 @@
+import {type CommentInputContextValue} from './CommentInputProvider'
 import {useContext} from 'react'
 import {CommentInputContext} from 'sanity/_singletons'
-
-import {type CommentInputContextValue} from './CommentInputProvider'
 
 export function useCommentInput(): CommentInputContextValue {
   const ctx = useContext(CommentInputContext)

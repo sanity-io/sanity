@@ -1,8 +1,7 @@
+import {findNdjsonEntry, readNdjsonFile} from './findNdjsonEntry'
 import {EOL} from 'node:os'
 import {Readable} from 'node:stream'
 import {describe, expect, it} from 'vitest'
-
-import {findNdjsonEntry, readNdjsonFile} from './findNdjsonEntry'
 
 interface Entry {
   id: string

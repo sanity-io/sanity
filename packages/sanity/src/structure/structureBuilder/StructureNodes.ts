@@ -1,5 +1,3 @@
-import {type I18nTextRecord} from 'sanity'
-
 import {type ChildResolver} from './ChildResolver'
 import {type Component, type ComponentBuilder} from './Component'
 import {type DocumentBuilder} from './Document'
@@ -12,6 +10,7 @@ import {type ListItemBuilder} from './ListItem'
 import {type MenuItemBuilder} from './MenuItem'
 import {type MenuItemGroupBuilder} from './MenuItemGroup'
 import {type View} from './types'
+import {type I18nTextRecord} from 'sanity'
 
 /**
  * Interface for the structure builder node.

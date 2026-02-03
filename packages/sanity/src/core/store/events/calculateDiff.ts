@@ -1,10 +1,9 @@
-import {diffInput} from '@sanity/diff'
-import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch, incremental} from 'mendoza'
-
 import {type Annotation, type ObjectDiff} from '../../field'
 import {wrapValue} from '../_legacy/history/history/diffValue'
 import {type DocumentGroupEvent, isEditDocumentVersionEvent} from './types'
+import {diffInput} from '@sanity/diff'
+import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
+import {applyPatch, incremental} from 'mendoza'
 
 type EventMeta = {
   transactionIndex: number

@@ -1,23 +1,3 @@
-import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {
-  isImage,
-  type ObjectSchemaType,
-  type Path,
-  type PortableTextBlock,
-  type UploadState,
-} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
-import {isEqual} from '@sanity/util/paths'
-import {
-  type MouseEvent,
-  type PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-
 import {Tooltip} from '../../../../../ui-components'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
@@ -56,6 +36,25 @@ import {
 } from './BlockObject.styles'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {ObjectEditModal} from './modals/ObjectEditModal'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {
+  isImage,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type UploadState,
+} from '@sanity/types'
+import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
+import {
+  type MouseEvent,
+  type PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 interface BlockObjectProps extends PropsWithChildren {
   floatingBoundary: HTMLElement | null

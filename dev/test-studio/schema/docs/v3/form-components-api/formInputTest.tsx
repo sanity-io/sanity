@@ -1,7 +1,6 @@
-import {defineType} from '@sanity/types'
-
 import {FormInputExample} from '../../../../components/formBuilder/FormInputExample'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
+import {defineType} from '@sanity/types'
 
 export const formInputTest = defineType({
   name: 'formInputTest',

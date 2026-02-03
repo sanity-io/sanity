@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {getCursorPredicate, getNextCursor} from './getNextCursor'
+import {describe, expect, it} from 'vitest'
 
 describe('getNextCursor', () => {
   it('returns `undefined` if there is no `lastResult`', () => {

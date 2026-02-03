@@ -1,15 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {
-  type AssetFromSource,
-  type AssetSource,
-  type AssetSourceUploader,
-  type UploadState,
-} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {get} from 'lodash-es'
-import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
-import {type Observable} from 'rxjs'
-
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../core/form/inputs/files/common/assetSource'
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../core/form/members'
@@ -32,6 +20,17 @@ import {
 } from '../schemas/types'
 import {VideoAsset as VideoAssetComponent} from './VideoAsset'
 import {VideoInputAssetSource} from './VideoInputAssetSource'
+import {type SanityClient} from '@sanity/client'
+import {
+  type AssetFromSource,
+  type AssetSource,
+  type AssetSourceUploader,
+  type UploadState,
+} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {get} from 'lodash-es'
+import {Fragment, useCallback, useEffect, useRef, useState} from 'react'
+import {type Observable} from 'rxjs'
 
 export type VideoUploadState = UploadState & {
   _pendingProcessing?: boolean

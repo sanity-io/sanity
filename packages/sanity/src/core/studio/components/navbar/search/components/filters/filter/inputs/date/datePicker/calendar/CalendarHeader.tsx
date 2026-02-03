@@ -1,12 +1,11 @@
-import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Flex, Inline, Text} from '@sanity/ui'
-import {upperFirst} from 'lodash-es'
-import {useCallback} from 'react'
-
 import {Button} from '../../../../../../../../../../../../ui-components'
 import {useDateTimeFormat} from '../../../../../../../../../../../hooks/useDateTimeFormat'
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {useCalendar} from './contexts/useDatePicker'
+import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Flex, Inline, Text} from '@sanity/ui'
+import {upperFirst} from 'lodash-es'
+import {useCallback} from 'react'
 
 export function CalendarHeader(props: {
   moveFocusedDate: (by: number) => void

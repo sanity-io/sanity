@@ -1,3 +1,12 @@
+import {API_VERSIONS} from '../apiVersions'
+import {visionLocaleNamespace} from '../i18n'
+import {
+  hasPinnedPerspective,
+  SUPPORTED_PERSPECTIVES,
+  type SupportedPerspective,
+} from '../perspectives'
+import {PerspectivePopover} from './PerspectivePopover'
+import {Header, QueryCopyLink, StyledLabel} from './VisionGui.styled'
 import {CopyIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput, Tooltip} from '@sanity/ui'
 import {
@@ -10,16 +19,6 @@ import {
   useRef,
 } from 'react'
 import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
-
-import {API_VERSIONS} from '../apiVersions'
-import {visionLocaleNamespace} from '../i18n'
-import {
-  hasPinnedPerspective,
-  SUPPORTED_PERSPECTIVES,
-  type SupportedPerspective,
-} from '../perspectives'
-import {PerspectivePopover} from './PerspectivePopover'
-import {Header, QueryCopyLink, StyledLabel} from './VisionGui.styled'
 
 const PinnedReleasePerspectiveOption: ComponentType<{
   pinnedPerspective: PerspectiveContextValue

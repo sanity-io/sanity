@@ -1,3 +1,6 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
+import {useDocumentPane} from '../../useDocumentPane'
 import {diffInput, wrap} from '@sanity/diff'
 import {BoundaryElementProvider, Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
@@ -22,10 +25,6 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
-import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

@@ -1,11 +1,3 @@
-import {
-  isIndexSegment,
-  isIndexTuple,
-  isKeySegment,
-  type KeyedSegment,
-  type Path,
-} from '@sanity/types'
-
 import {type UserColor, type UserColorManager} from '../../../user-color'
 import {pathToString, stringToPath} from '../../paths/helpers'
 import {
@@ -17,6 +9,13 @@ import {
   type StringDiff,
   type StringDiffSegment,
 } from '../../types'
+import {
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
+  type KeyedSegment,
+  type Path,
+} from '@sanity/types'
 
 /** @internal */
 export function getAnnotationColor(

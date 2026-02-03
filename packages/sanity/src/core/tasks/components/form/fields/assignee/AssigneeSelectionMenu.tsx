@@ -1,3 +1,10 @@
+import {MenuButton} from '../../../../../../ui-components'
+import {LoadingBlock} from '../../../../../components'
+import {type UserWithPermission} from '../../../../../hooks'
+import {useTranslation} from '../../../../../i18n'
+import {useMentionUser} from '../../../../context'
+import {tasksLocaleNamespace} from '../../../../i18n'
+import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {UserIcon} from '@sanity/icons'
 import {
   Badge,
@@ -14,14 +21,6 @@ import {
 import {deburr} from 'lodash-es'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-
-import {MenuButton} from '../../../../../../ui-components'
-import {LoadingBlock} from '../../../../../components'
-import {type UserWithPermission} from '../../../../../hooks'
-import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
-import {tasksLocaleNamespace} from '../../../../i18n'
-import {TasksUserAvatar} from '../../../TasksUserAvatar'
 
 type SelectItemHandler = (id: string) => void
 

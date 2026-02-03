@@ -1,3 +1,4 @@
+import {findEnv, readBoolEnv, readEnv} from './helpers/envVars'
 import {
   defineConfig,
   devices,
@@ -6,8 +7,6 @@ import {
 } from '@playwright/test'
 import {loadEnvFiles} from '@repo/utils'
 import os from 'node:os'
-
-import {findEnv, readBoolEnv, readEnv} from './helpers/envVars'
 
 loadEnvFiles()
 

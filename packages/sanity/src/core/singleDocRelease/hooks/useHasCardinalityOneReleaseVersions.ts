@@ -1,10 +1,9 @@
-import {useMemo} from 'react'
-
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getVersionFromId} from '../../util/draftUtils'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
+import {useMemo} from 'react'
 
 /**
  * Checks if a document has any versions in scheduled draft (`metadata.cardinality: 'one'`) releases.

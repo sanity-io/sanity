@@ -1,3 +1,6 @@
+import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
@@ -17,10 +20,6 @@ import {
   useTranslation,
   useValidationStatus,
 } from 'sanity'
-
-import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',

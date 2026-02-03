@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {interpolateTemplate} from '../interpolateTemplate'
+import {describe, expect, it} from 'vitest'
 
 describe('interpolateTemplate', () => {
   it('should replace single variable', () => {

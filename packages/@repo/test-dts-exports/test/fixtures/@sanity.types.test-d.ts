@@ -354,7 +354,6 @@ import type {
   WidenInitialValue,
   WidenValidation,
 } from '@sanity/types'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/types', () => {

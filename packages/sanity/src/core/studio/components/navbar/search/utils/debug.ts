@@ -1,6 +1,5 @@
-import debug from 'debug'
-
 import {DEBUG_FRAGMENT} from '../constants'
+import debug from 'debug'
 
 const rootName = 'core:studio:navbar:search:'
 

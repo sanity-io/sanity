@@ -1,6 +1,3 @@
-import {type Image} from '@sanity/types'
-import {Box, Card, Text} from '@sanity/ui'
-
 import {type TFunction, useTranslation} from '../../../../i18n'
 import {
   ChangeList,
@@ -12,6 +9,8 @@ import {
 import {FromTo} from '../../../diff/components'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
+import {type Image} from '@sanity/types'
+import {Box, Card, Text} from '@sanity/ui'
 
 const IMAGE_META_FIELDS = ['crop', 'hotspot']
 const BASE_IMAGE_FIELDS = ['asset', 'media', ...IMAGE_META_FIELDS]

@@ -1,12 +1,11 @@
-import {type ConditionalPropertyCallbackContext, type TypedObject} from '@sanity/types'
-import {omit} from 'lodash-es'
-import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
-
 import {createSchema} from '../../../schema/createSchema'
 import {resolveSchemaTypeForPath} from '../resolveSchemaTypeForPath'
 import {transferValue} from '../transferValue'
 import {createMockClient} from './mockClient'
 import {schema} from './schema'
+import {type ConditionalPropertyCallbackContext, type TypedObject} from '@sanity/types'
+import {omit} from 'lodash-es'
+import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 beforeEach(() => {
   vi.resetModules()

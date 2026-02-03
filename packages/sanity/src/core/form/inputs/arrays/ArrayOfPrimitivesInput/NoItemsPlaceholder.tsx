@@ -1,7 +1,6 @@
+import {useTranslation} from '../../../../i18n'
 import {type ArraySchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
-
-import {useTranslation} from '../../../../i18n'
 
 /**
  * Shows a placeholder for an empty array of primitives.

@@ -1,12 +1,11 @@
-/* eslint-disable camelcase */
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {describe, expect, test} from 'vitest'
-
 import {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
 } from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema, createWorkspaceFromConfig} from '../../src/core'
+/* eslint-disable camelcase */
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {describe, expect, test} from 'vitest'
 
 describe('Extract studio manifest', () => {
   describe('extract workspace config', () => {

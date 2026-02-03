@@ -1,12 +1,11 @@
-import {type Path} from '@sanity/types'
-import {AvatarStack, Flex} from '@sanity/ui'
-import {AnimatePresence, motion} from 'motion/react'
-import {useCallback, useMemo} from 'react'
-
 import {Button} from '../../../../ui-components'
 import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
+import {type Path} from '@sanity/types'
+import {AvatarStack, Flex} from '@sanity/ui'
+import {AnimatePresence, motion} from 'motion/react'
+import {useCallback, useMemo} from 'react'
 
 interface TasksSubscriberProps {
   value: TaskDocument

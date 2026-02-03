@@ -1,13 +1,12 @@
-import {type ObjectSchemaType} from '@sanity/types'
-import {useEffect} from 'react'
-import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview} from 'sanity'
-
 import {LOADING_PANE} from '../../constants'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type Panes} from '../../structureResolvers'
 import {type DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {type ObjectSchemaType} from '@sanity/types'
+import {useEffect} from 'react'
+import {useEditState, usePerspective, useSchema, useTranslation, useValuePreview} from 'sanity'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']

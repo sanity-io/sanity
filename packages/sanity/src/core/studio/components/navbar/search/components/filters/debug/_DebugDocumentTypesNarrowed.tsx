@@ -1,6 +1,5 @@
-import {Card, Code, Stack} from '@sanity/ui'
-
 import {useSearchState} from '../../../contexts/search/useSearchState'
+import {Card, Code, Stack} from '@sanity/ui'
 
 export function DebugDocumentTypesNarrowed() {
   const {

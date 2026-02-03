@@ -1,9 +1,3 @@
-import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
-import {AddIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Stack, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {getVersionId} from '../../../util/draftUtils'
@@ -20,6 +14,11 @@ import {getDocumentTableColumnDefs} from './documentTable/DocumentTableColumnDef
 import {searchDocumentRelease} from './documentTable/searchDocumentRelease'
 import {type DocumentFilterType, documentMatchesFilter} from './releaseDocumentActions'
 import {type DocumentInRelease} from './useBundleDocuments'
+import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
+import {AddIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Card, Container, Stack, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 export type DocumentInReleaseDetail = DocumentInRelease & {
   // TODO: Get this value from the document, it can be calculated by checking if there is a corresponding document with no version attached

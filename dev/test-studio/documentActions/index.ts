@@ -1,5 +1,3 @@
-import {type DocumentActionsResolver} from 'sanity'
-
 import {createCustomDuplicateAction} from './actions/createCustomDuplicateAction'
 import {
   createCustomPublishAction,
@@ -11,6 +9,7 @@ import {useTestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {createTestCustomRestoreAction} from './actions/TestCustomRestoreAction'
 import {useTestModalDialogAction} from './actions/TestModalDialogAction'
 import {useTestPopoverDialogAction} from './actions/TestPopoverDialogAction'
+import {type DocumentActionsResolver} from 'sanity'
 
 export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaType}) => {
   if (schemaType === 'documentActionsTest') {

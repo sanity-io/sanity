@@ -1,7 +1,6 @@
+import {PerformanceINPMeasured} from '../__telemetry__/performance.telemetry'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect} from 'react'
-
-import {PerformanceINPMeasured} from '../__telemetry__/performance.telemetry'
 
 function getInterestingAttrs(node: Node | null): undefined | {ui?: string; testId?: string} {
   if (!node || !(node instanceof Element)) {

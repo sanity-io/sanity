@@ -1,11 +1,10 @@
-import {type ObjectSchemaType} from '@sanity/types'
-import {type ReactNode, useCallback, useMemo} from 'react'
-
 import {EnhancedObjectDialog, useEnhancedObjectDialog} from '../../../..'
 import {useTranslation} from '../../../../../i18n'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'
 import {PopoverEditDialog} from './PopoverModal'
+import {type ObjectSchemaType} from '@sanity/types'
+import {type ReactNode, useCallback, useMemo} from 'react'
 
 export function ObjectEditModal(props: {
   autoFocus?: boolean

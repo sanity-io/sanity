@@ -1,3 +1,12 @@
+import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball.ts'
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces.ts'
+import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment.ts'
+import {
+  createReporter,
+  type WorkerChannel,
+  type WorkerChannelEvent,
+  type WorkerChannelStream,
+} from '../util/workerChannels.ts'
 import {
   type ClientConfig,
   createClient,
@@ -13,16 +22,6 @@ import readline from 'node:readline'
 import {Readable} from 'node:stream'
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 import {isRecord, validateDocument} from 'sanity'
-
-import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball.ts'
-import {getStudioWorkspaces} from '../util/getStudioWorkspaces.ts'
-import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment.ts'
-import {
-  createReporter,
-  type WorkerChannel,
-  type WorkerChannelEvent,
-  type WorkerChannelStream,
-} from '../util/workerChannels.ts'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000

@@ -1,9 +1,8 @@
+import {type SystemBundle} from '../util/draftUtils'
 import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
 import {type MenuItem} from '@sanity/ui'
 import {type ComponentProps} from 'react'
-
-import {type SystemBundle} from '../util/draftUtils'
 
 /**
  * @beta

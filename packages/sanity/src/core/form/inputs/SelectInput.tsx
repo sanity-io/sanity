@@ -1,3 +1,8 @@
+import {Button} from '../../../ui-components'
+import {ChangeIndicator} from '../../changeIndicators'
+import {useTranslation} from '../../i18n'
+import {PatchEvent, set, unset} from '../patch'
+import {type StringInputProps} from '../types'
 import {ResetIcon} from '@sanity/icons'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
@@ -11,12 +16,6 @@ import {
   useId,
   useMemo,
 } from 'react'
-
-import {Button} from '../../../ui-components'
-import {ChangeIndicator} from '../../changeIndicators'
-import {useTranslation} from '../../i18n'
-import {PatchEvent, set, unset} from '../patch'
-import {type StringInputProps} from '../types'
 
 function toSelectItem(
   option: TitledListValue<string | number> | string | number,

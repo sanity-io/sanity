@@ -120,7 +120,6 @@ import type {
   ZIndexContext,
   zIndexContextDefaults,
 } from 'sanity/_singletons'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_singletons', () => {

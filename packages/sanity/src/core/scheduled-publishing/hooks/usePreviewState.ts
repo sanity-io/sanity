@@ -1,8 +1,7 @@
-import {type SchemaType} from '@sanity/types'
-import {useEffect, useState} from 'react'
-
 import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 import {getPreviewStateObservable, type PaneItemPreviewState} from '../utils/paneItemHelpers'
+import {type SchemaType} from '@sanity/types'
+import {useEffect, useState} from 'react'
 
 export default function usePreviewState(
   documentId: string,

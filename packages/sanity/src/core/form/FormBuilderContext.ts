@@ -1,5 +1,3 @@
-import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
-
 import {type PatchChannel} from './patch'
 import {type FormFieldGroup, type StateTree} from './store'
 import {
@@ -13,6 +11,7 @@ import {
   type RenderItemCallback,
   type RenderPreviewCallback,
 } from './types'
+import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
 
 /**
  *

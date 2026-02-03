@@ -1,10 +1,9 @@
-import {defineType} from '@sanity/types'
-import {screen} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
-
 import {renderObjectInput} from '../../../../../../test/form'
 import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
+import {defineType} from '@sanity/types'
+import {screen} from '@testing-library/react'
+import {describe, expect, it, vi} from 'vitest'
 
 const defs = {
   basic: defineType({

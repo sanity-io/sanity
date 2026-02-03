@@ -1,9 +1,8 @@
-import {Card, rem, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
-
 import {useTranslation} from '../../../i18n'
 import {type StringDiff, type StringDiffSegment} from '../../types'
 import {DiffCard} from './DiffCard'
+import {Card, rem, Text} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 const RoundedCard = styled.span`
   border-radius: ${({theme}) => rem(theme.sanity.radius[1])};
@@ -14,7 +13,7 @@ const ChangeSegment = styled(Text)`
     display: inline;
     line-height: calc(1.25em + 2px);
   }
-  
+
   &:hover {
     background-color: none !important;
     background-image: linear-gradient(

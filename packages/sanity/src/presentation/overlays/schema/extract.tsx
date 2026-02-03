@@ -1,4 +1,17 @@
 import {
+  gatherFields,
+  isArrayType,
+  isCrossDatasetReferenceType,
+  isFieldRequired,
+  isNumberType,
+  isObjectType,
+  isReferenceType,
+  isStringType,
+  lastType,
+  sortByDependencies,
+} from './helpers'
+import {SchemaIcon} from './SchemaIcon'
+import {
   type InsertMenuOptions,
   type SchemaArrayNode,
   type SchemaBooleanNode,
@@ -25,20 +38,6 @@ import {
 } from '@sanity/types'
 import {renderToString} from 'react-dom/server'
 import {type Workspace} from 'sanity'
-
-import {
-  gatherFields,
-  isArrayType,
-  isCrossDatasetReferenceType,
-  isFieldRequired,
-  isNumberType,
-  isObjectType,
-  isReferenceType,
-  isStringType,
-  lastType,
-  sortByDependencies,
-} from './helpers'
-import {SchemaIcon} from './SchemaIcon'
 
 const documentDefaultFields = (typeName: string): Record<string, SchemaObjectField> => ({
   _id: {

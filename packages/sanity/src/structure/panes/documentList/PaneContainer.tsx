@@ -1,15 +1,3 @@
-import {Card, Code} from '@sanity/ui'
-import {isEqual} from 'lodash-es'
-import {memo, useMemo, useState} from 'react'
-import {
-  EMPTY_ARRAY,
-  type GeneralDocumentListLayoutKey,
-  SourceProvider,
-  useI18nText,
-  useSource,
-} from 'sanity'
-import shallowEquals from 'shallow-equals'
-
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {assignId} from '../../structureResolvers/assignId'
@@ -22,6 +10,17 @@ import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
+import {Card, Code} from '@sanity/ui'
+import {isEqual} from 'lodash-es'
+import {memo, useMemo, useState} from 'react'
+import {
+  EMPTY_ARRAY,
+  type GeneralDocumentListLayoutKey,
+  SourceProvider,
+  useI18nText,
+  useSource,
+} from 'sanity'
+import shallowEquals from 'shallow-equals'
 
 /**
  * Type for custom menu item state storage.

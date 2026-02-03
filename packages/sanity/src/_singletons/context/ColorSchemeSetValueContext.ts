@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * The setter for ColorSchemeValueContext, in a separate context to avoid unnecessary re-renders

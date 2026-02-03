@@ -1,7 +1,6 @@
-import {describe, expect, test} from 'vitest'
-
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {Rule} from '../../src/core/validation'
+import {describe, expect, test} from 'vitest'
 
 describe('date', () => {
   describe('with default format', () => {

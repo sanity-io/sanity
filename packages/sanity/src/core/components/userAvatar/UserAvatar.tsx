@@ -1,3 +1,7 @@
+import {Tooltip} from '../../../ui-components'
+import {useUser} from '../../store'
+import {useUserColor} from '../../user-color'
+import {isRecord} from '../../util'
 import {type User} from '@sanity/types'
 import {
   Avatar,
@@ -11,11 +15,6 @@ import {
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useState} from 'react'
 import {css, styled} from 'styled-components'
-
-import {Tooltip} from '../../../ui-components'
-import {useUser} from '../../store'
-import {useUserColor} from '../../user-color'
-import {isRecord} from '../../util'
 
 interface AvatarSkeletonProps {
   $size?: AvatarSize

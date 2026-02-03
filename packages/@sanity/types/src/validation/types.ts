@@ -1,9 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {
-  type Asset as MediaLibraryAsset,
-  type AssetInstanceDocument,
-} from '@sanity/media-library-types'
-
 import {type SanityDocument} from '../documents'
 import {type ValidationMarker} from '../markers'
 import {type Path} from '../paths'
@@ -14,6 +8,11 @@ import {
   type SlugSchemaType,
 } from '../schema'
 import {type SlugParent} from '../slug'
+import {type SanityClient} from '@sanity/client'
+import {
+  type Asset as MediaLibraryAsset,
+  type AssetInstanceDocument,
+} from '@sanity/media-library-types'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'

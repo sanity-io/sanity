@@ -1,9 +1,8 @@
+import {type UserColor, type UserColorManager} from './types'
 import {useContext, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {EMPTY} from 'rxjs'
 import {UserColorManagerContext} from 'sanity/_singletons'
-
-import {type UserColor, type UserColorManager} from './types'
 
 /** @internal */
 export function useUserColorManager(): UserColorManager {

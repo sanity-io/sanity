@@ -1,11 +1,10 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
-import {useCallback, useMemo} from 'react'
-
 import {Button} from '../../../ui-components'
 import {type NavbarProps} from '../../config'
 import {useTranslation} from '../../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
+import {CheckmarkCircleIcon} from '@sanity/icons'
+import {useCallback, useMemo} from 'react'
 
 const EMPTY_ARRAY: [] = []
 

@@ -1,10 +1,9 @@
+import {getPreviewStateObservable} from '../../../../../../../preview'
+import {useDocumentPreviewStore} from '../../../../../../../store'
 import {type SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-
-import {getPreviewStateObservable} from '../../../../../../../preview'
-import {useDocumentPreviewStore} from '../../../../../../../store'
 
 export function ReferencePreviewTitle({
   documentId,

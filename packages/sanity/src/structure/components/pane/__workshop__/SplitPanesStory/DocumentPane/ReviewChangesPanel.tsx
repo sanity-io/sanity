@@ -1,9 +1,8 @@
-import {CloseIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
-
 import {Button} from '../../../../../../ui-components'
 import {PaneHeader} from '../../../PaneHeader'
 import {usePane} from '../../../usePane'
+import {CloseIcon} from '@sanity/icons'
+import {Flex} from '@sanity/ui'
 
 export function ReviewChangesPanel(props: {onClose: () => void}) {
   const {collapsed} = usePane()

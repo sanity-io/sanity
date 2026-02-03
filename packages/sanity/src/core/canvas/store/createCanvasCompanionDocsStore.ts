@@ -1,3 +1,7 @@
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
+import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
+import {getPublishedId} from '../../util/draftUtils'
+import {type CompanionDoc} from '../types'
 import {type SanityClient} from '@sanity/client'
 import {
   catchError,
@@ -11,11 +15,6 @@ import {
   timer,
 } from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {memoize} from '../../store/_legacy/document/utils/createMemoizer'
-import {getPublishedId} from '../../util/draftUtils'
-import {type CompanionDoc} from '../types'
 
 export interface CanvasCompanionDocsStore {
   getCompanionDocs: (documentId: string) => Observable<CompanionDocs>

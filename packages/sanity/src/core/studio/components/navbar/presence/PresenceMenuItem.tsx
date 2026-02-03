@@ -1,13 +1,12 @@
-import * as PathUtils from '@sanity/util/paths'
-import {orderBy} from 'lodash-es'
-import {memo, useCallback, useEffect, useState} from 'react'
-import {IntentLink} from 'sanity/router'
-
 import {MenuItem} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {type GlobalPresence} from '../../../../store'
 import {getPublishedId, getVersionFromId} from '../../../../util'
+import * as PathUtils from '@sanity/util/paths'
+import {orderBy} from 'lodash-es'
+import {memo, useCallback, useEffect, useState} from 'react'
+import {IntentLink} from 'sanity/router'
 
 interface PresenceListRowProps {
   focused: boolean

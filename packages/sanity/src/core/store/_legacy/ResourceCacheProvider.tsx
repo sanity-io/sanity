@@ -1,7 +1,6 @@
+import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
 import {type ReactNode, useContext, useState} from 'react'
 import {ResourceCacheContext} from 'sanity/_singletons'
-
-import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
 
 /** @internal */
 export interface ResourceCache {

@@ -1,9 +1,8 @@
+import {catchWithCount} from '../../../util/catchWithCount'
 import {type BifurClient} from '@sanity/bifur-client'
 import {observableCallback} from 'observable-callback'
 import {concat, fromEvent, merge, NEVER, type Observable, of, throwError, timer} from 'rxjs'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
-
-import {catchWithCount} from '../../../util/catchWithCount'
 
 /** @internal */
 export interface ConnectionStatusStore {

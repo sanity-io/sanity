@@ -1,7 +1,6 @@
+import {formatSchemaValidation} from '../formatSchemaValidation'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
-
-import {formatSchemaValidation} from '../formatSchemaValidation'
 
 // disables some terminal specific things that are typically auto detected
 vi.mock('node:tty', () => ({isatty: () => false}))

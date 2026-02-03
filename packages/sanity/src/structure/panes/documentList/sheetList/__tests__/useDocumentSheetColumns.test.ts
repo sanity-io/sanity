@@ -1,8 +1,7 @@
+import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
 import {type ObjectSchemaType} from '@sanity/types'
 import {renderHook} from '@testing-library/react'
 import {describe, expect, it, vi} from 'vitest'
-
-import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),

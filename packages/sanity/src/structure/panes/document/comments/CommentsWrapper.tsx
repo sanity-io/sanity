@@ -1,3 +1,5 @@
+import {usePaneRouter} from '../../../components'
+import {useDocumentPane} from '../useDocumentPane'
 import {useCallback, useLayoutEffect, useRef} from 'react'
 import {
   COMMENTS_INSPECTOR_NAME,
@@ -7,9 +9,6 @@ import {
   usePerspective,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-
-import {usePaneRouter} from '../../../components'
-import {useDocumentPane} from '../useDocumentPane'
 
 interface CommentsWrapperProps {
   children: React.ReactNode

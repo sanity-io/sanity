@@ -65,6 +65,7 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
   - '@portabletext/*'
@@ -74,6 +75,7 @@ minimumReleaseAgeExclude:
   - csstype
   - 'get-it'
   - 'groq-js'
+  - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'eslint-plugin-oxlint'

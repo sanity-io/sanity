@@ -1,9 +1,8 @@
-import {map} from 'rxjs/operators'
-
 import {debugRolesParam$} from '../../debugParams'
 import {type Grant} from '../types'
 import * as grants from './exampleGrants'
 import {type ExampleRoleName} from './exampleRoles'
+import {map} from 'rxjs/operators'
 
 const DEBUG_ROLE_GRANTS_MAP: Record<ExampleRoleName, Grant[]> = {
   // basic

@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {getFilterFieldName} from '../utils'
+import {expect, test} from 'vitest'
 
 test('#getFilterFieldName with no suffix argument', () => {
   expect(getFilterFieldName('foo')).toBe('fooFilter')

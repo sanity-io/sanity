@@ -1,6 +1,5 @@
-import {isString} from 'lodash-es'
-
 import {type Plugin, type PluginOptions} from './types'
+import {isString} from 'lodash-es'
 
 /**
  * @hidden

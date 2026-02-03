@@ -1,11 +1,10 @@
-import {type RangeDecoration} from '@portabletext/editor'
-import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
-import {type PortableTextBlock} from '@sanity/types'
-
 import {type TargetPerspective} from '../../../../perspective/types'
 import {computeStringDiffRangeDecorations} from '../../common/diff/string/computeStringDiffRangeDecorations'
 import {InsertedSegment} from '../../common/diff/string/segments'
 import {diffPortableTextFragment} from './diffPortableTextFragment'
+import {type RangeDecoration} from '@portabletext/editor'
+import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
+import {type PortableTextBlock} from '@sanity/types'
 
 export interface ComputeRangeDecorationsForPortableTextOtions {
   value?: PortableTextBlock[]

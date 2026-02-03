@@ -1,7 +1,3 @@
-import {CloseIcon, UnpublishIcon} from '@sanity/icons'
-import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
-
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useSchema} from '../../../../hooks'
@@ -13,6 +9,9 @@ import {UnpublishVersionDialog} from '../../../components/dialog/UnpublishVersio
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
+import {CloseIcon, UnpublishIcon} from '@sanity/icons'
+import {Box, Card, Label, Menu, MenuDivider} from '@sanity/ui'
+import {memo, useMemo, useState} from 'react'
 
 const DocumentActionsInner = memo(
   function DocumentActionsInner({

@@ -1,6 +1,5 @@
-import open from 'open'
-
 import {type CliCommandDefinition} from '../../types'
+import open from 'open'
 
 const learnCommand: CliCommandDefinition = {
   name: 'learn',

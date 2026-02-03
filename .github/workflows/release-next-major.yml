@@ -108,7 +108,7 @@ jobs:
 
       - name: Build bundles for staging
         env:
-          SANITY_INTERNAL_ENV: 'staging' # sets the __SANITY_STAGING__ global variable to true in built bundles
+          SANITY_INTERNAL_ENV: "staging" # sets the __SANITY_STAGING__ global variable to true in built bundles
         run: pnpm run build:bundle
 
       # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish

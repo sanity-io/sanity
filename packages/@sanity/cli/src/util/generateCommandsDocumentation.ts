@@ -1,7 +1,6 @@
-import {padEnd} from 'lodash-es'
-
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
 import {getNoSuchCommandText} from './noSuchCommandText'
+import {padEnd} from 'lodash-es'
 
 /**
  * Generate documentation for all commands within a given group

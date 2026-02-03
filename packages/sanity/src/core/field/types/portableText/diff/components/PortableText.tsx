@@ -1,13 +1,3 @@
-import {
-  isPortableTextSpan,
-  type ObjectSchemaType,
-  type PortableTextChild,
-  type PortableTextTextBlock,
-  type SpanSchemaType,
-} from '@sanity/types'
-import {uniq, xor} from 'lodash-es'
-import {type ReactNode, useMemo} from 'react'
-
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
 import {
@@ -34,6 +24,15 @@ import {Block} from './Block'
 import {Decorator} from './Decorator'
 import {InlineObject} from './InlineObject'
 import {Text} from './Text'
+import {
+  isPortableTextSpan,
+  type ObjectSchemaType,
+  type PortableTextChild,
+  type PortableTextTextBlock,
+  type SpanSchemaType,
+} from '@sanity/types'
+import {uniq, xor} from 'lodash-es'
+import {type ReactNode, useMemo} from 'react'
 
 const decoratorSymbolsStart = TextSymbols.DECORATOR_SYMBOLS.map((set) => set[0])
 const decoratorSymbolsEnd = TextSymbols.DECORATOR_SYMBOLS.map((set) => set[1])

@@ -1,10 +1,9 @@
-import {CopyIcon, SyncIcon} from '@sanity/icons'
-import {Inline} from '@sanity/ui'
-import {type ComponentProps, type ComponentType} from 'react'
-
 import {Button, Tooltip} from '../../../ui-components'
 import {strings} from './strings'
 import {useCopyErrorDetails} from './useCopyErrorDetails'
+import {CopyIcon, SyncIcon} from '@sanity/icons'
+import {Inline} from '@sanity/ui'
+import {type ComponentProps, type ComponentType} from 'react'
 
 /**
  * @internal

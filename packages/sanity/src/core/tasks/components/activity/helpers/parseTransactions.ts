@@ -1,8 +1,7 @@
-import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch} from 'mendoza'
-
 import {type TaskDocument} from '../../../types'
 import {groupChanges} from './groupChanges'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {applyPatch} from 'mendoza'
 
 export interface FieldChange {
   field: keyof TaskDocument

@@ -1,8 +1,7 @@
-import {type CliCommandContext} from '@sanity/cli'
-import {describe, expect, it, vi} from 'vitest'
-
 import extractAction, {type ExtractFlags} from '../extractAction'
 import {extractSchemaToFile} from '../schemaExtractorApi'
+import {type CliCommandContext} from '@sanity/cli'
+import {describe, expect, it, vi} from 'vitest'
 
 vi.mock('../schemaExtractorApi', () => ({
   extractSchemaToFile: vi.fn().mockResolvedValue([]),

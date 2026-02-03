@@ -1,9 +1,8 @@
-import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {STALE_UPLOAD_MS} from '../constants'
+import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
 type Props = {
   onClearStale?: () => void

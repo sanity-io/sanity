@@ -1,21 +1,3 @@
-/* eslint-disable complexity */
-import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
-import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {
-  type FocusEvent,
-  type KeyboardEvent,
-  useCallback,
-  useId,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard, ReferenceInputPreviewCard} from '../../../components'
@@ -37,6 +19,23 @@ import {ReferenceAutocomplete} from './ReferenceAutocomplete'
 import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit, type SearchState} from './types'
 import {type GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+/* eslint-disable complexity */
+import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
+import {Card, Flex, Inline, Menu, Stack, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useId,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {useObservableEvent} from 'react-rx'
+import {concat, type Observable, of} from 'rxjs'
+import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
 const INITIAL_SEARCH_STATE: SearchState = {
   hits: [],

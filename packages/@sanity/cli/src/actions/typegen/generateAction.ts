@@ -1,3 +1,6 @@
+import {type CliCommandArguments, type CliCommandContext} from '../../types'
+import {getCliConfig} from '../../util/getCliConfig'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {
   configDefinition,
   readConfig,
@@ -10,10 +13,6 @@ import {
 import chalk from 'chalk'
 import {omit, once} from 'lodash-es'
 import {stat} from 'node:fs/promises'
-
-import {type CliCommandArguments, type CliCommandContext} from '../../types'
-import {getCliConfig} from '../../util/getCliConfig'
-import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 
 export interface TypegenGenerateTypesCommandFlags {
   'config-path'?: string

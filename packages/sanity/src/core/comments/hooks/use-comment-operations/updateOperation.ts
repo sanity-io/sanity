@@ -1,8 +1,7 @@
+import {type CommentUpdatePayload} from '../../types'
 import {type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {throttle, type ThrottleSettings} from 'lodash-es'
-
-import {type CommentUpdatePayload} from '../../types'
 
 const THROTTLE_TIME_MS = 1000
 

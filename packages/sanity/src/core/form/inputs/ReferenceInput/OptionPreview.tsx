@@ -1,9 +1,8 @@
-import {type ReferenceSchemaType} from '@sanity/types'
-import {Stack} from '@sanity/ui'
-
 import {useTranslation} from '../../../i18n'
 import {type RenderPreviewCallback} from '../../types'
 import {ReferencePreview} from './ReferencePreview'
+import {type ReferenceSchemaType} from '@sanity/types'
+import {Stack} from '@sanity/ui'
 
 /**
  * Used to preview a referenced type

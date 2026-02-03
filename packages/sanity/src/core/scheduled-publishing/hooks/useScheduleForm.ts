@@ -1,6 +1,5 @@
-import {useState} from 'react'
-
 import {type Schedule, type ScheduleFormData} from '../types'
+import {useState} from 'react'
 
 export default function useScheduleForm(schedule?: Schedule) {
   const [isDirty, setIsDirty] = useState(false)

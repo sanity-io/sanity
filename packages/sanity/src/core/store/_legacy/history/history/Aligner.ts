@@ -1,9 +1,8 @@
-import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch} from 'mendoza'
-
 import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {type Timeline} from './Timeline'
 import {type CombinedDocument, type DocumentRemoteMutationVersionEvent} from './types'
+import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
+import {applyPatch} from 'mendoza'
 
 type VersionState = {
   id: string

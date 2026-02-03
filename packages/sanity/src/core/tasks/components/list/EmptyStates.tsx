@@ -1,13 +1,12 @@
-import {AddIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {styled} from 'styled-components'
-
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type SidebarTabsIds, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
+import {AddIcon} from '@sanity/icons'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {styled} from 'styled-components'
 
 const HEADING_BY_STATUS: Record<
   TaskStatus,

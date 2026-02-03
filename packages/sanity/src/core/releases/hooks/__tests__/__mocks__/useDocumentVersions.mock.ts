@@ -1,6 +1,5 @@
-import {type Mock, type Mocked} from 'vitest'
-
 import {type DocumentPerspectiveState, useDocumentVersions} from '../../useDocumentVersions'
+import {type Mock, type Mocked} from 'vitest'
 
 export const useDocumentVersionsReturn: Mocked<DocumentPerspectiveState> = {
   data: [],

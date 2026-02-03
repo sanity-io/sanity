@@ -1,6 +1,3 @@
-import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
-import {useCallback, useMemo} from 'react'
-
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
@@ -8,6 +5,8 @@ import {set, unset} from '../../patch'
 import {type StringInputProps} from '../../types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {getCalendarLabels} from './utils'
+import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
+import {useCallback, useMemo} from 'react'
 
 /**
  * @hidden

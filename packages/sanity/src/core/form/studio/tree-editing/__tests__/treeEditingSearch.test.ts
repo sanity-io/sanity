@@ -1,7 +1,6 @@
-import {describe, expect, test} from 'vitest'
-
 import {type SearchableTreeEditingMenuItem} from '../components/search/types'
 import {treeEditingSearch} from '../components/search/utils'
+import {describe, expect, test} from 'vitest'
 
 const NOOP_SCHEMA_TYPE = null as any
 

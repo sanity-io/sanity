@@ -1,9 +1,8 @@
+import {sortReleases} from '../hooks/utils'
+import {useReleasesStore} from './useReleasesStore'
 import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-
-import {sortReleases} from '../hooks/utils'
-import {useReleasesStore} from './useReleasesStore'
 
 /**
  * Gets all releases including archived and published releases

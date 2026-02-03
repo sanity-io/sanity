@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {getStructureNodeId} from '../getStructureNodeId'
+import {describe, expect, it} from 'vitest'
 
 describe('getStructureNodeId', () => {
   it('should return the id if provided', () => {

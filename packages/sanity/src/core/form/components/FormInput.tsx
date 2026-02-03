@@ -1,7 +1,3 @@
-import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
-import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
-import {memo, type ReactNode, useCallback, useMemo} from 'react'
-
 import {pathToString} from '../../field'
 import {Translate, useTranslation} from '../../i18n'
 import {ArrayOfObjectsItem, MemberField, MemberItemError} from '../members'
@@ -17,6 +13,9 @@ import {
   type RenderPreviewCallback,
 } from '../types'
 import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
+import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
+import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
 
 const pass = ({children}: {children: ReactNode}) => children
 

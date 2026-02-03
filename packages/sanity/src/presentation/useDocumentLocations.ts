@@ -1,3 +1,10 @@
+import {
+  type DocumentLocationResolver,
+  type DocumentLocationResolvers,
+  type DocumentLocationsState,
+  type DocumentLocationsStatus,
+} from './types'
+import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack'
 import {useEffect, useMemo, useState} from 'react'
 import {isObservable, map, of} from 'rxjs'
 import {
@@ -6,14 +13,6 @@ import {
   useDocumentPreviewStore,
   useDocumentStore,
 } from 'sanity'
-
-import {
-  type DocumentLocationResolver,
-  type DocumentLocationResolvers,
-  type DocumentLocationsState,
-  type DocumentLocationsStatus,
-} from './types'
-import {usePresentationPerspectiveStack} from './usePresentationPerspectiveStack'
 
 const INITIAL_STATE: DocumentLocationsState = {locations: []}
 

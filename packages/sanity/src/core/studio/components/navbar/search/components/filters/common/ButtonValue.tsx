@@ -1,6 +1,3 @@
-import {type Reference} from '@sanity/types'
-import {isValid} from 'date-fns'
-
 import {useSchema} from '../../../../../../../hooks'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
@@ -12,6 +9,8 @@ import {
 } from '../../../definitions/operators/dateOperators'
 import {type OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
+import {type Reference} from '@sanity/types'
+import {isValid} from 'date-fns'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 

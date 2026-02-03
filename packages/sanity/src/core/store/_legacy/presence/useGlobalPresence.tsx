@@ -1,9 +1,8 @@
+import {usePresenceStore} from '../datastores'
+import {type GlobalPresence} from './types'
 import {startTransition, useEffect, useReducer} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
-
-import {usePresenceStore} from '../datastores'
-import {type GlobalPresence} from './types'
 
 const initial: GlobalPresence[] = []
 const fallback = of(initial)

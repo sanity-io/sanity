@@ -1,7 +1,6 @@
+import {isNewDocument} from './isNewDocument'
 import {type SanityDocument} from '@sanity/types'
 import {expect, it} from 'vitest'
-
-import {isNewDocument} from './isNewDocument'
 
 const stubDocument: SanityDocument = {
   _id: 'x',

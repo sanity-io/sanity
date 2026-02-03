@@ -1,8 +1,7 @@
+import {type AuthStore} from './types'
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {of} from 'rxjs'
-
-import {type AuthStore} from './types'
 
 /** @internal */
 export interface MockAuthStoreOptions {

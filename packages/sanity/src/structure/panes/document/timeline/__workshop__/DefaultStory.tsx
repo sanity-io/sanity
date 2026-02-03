@@ -1,9 +1,8 @@
-import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
-
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProviderWrapper} from '../../DocumentPaneProviderWrapper'
 import {TimelineMenu} from '../timelineMenu'
+import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
 
 const DOCUMENT_ID = 'test'
 const DOCUMENT_TYPE = 'author'

@@ -1,5 +1,3 @@
-import {type ComponentType} from 'react'
-
 import {type PreviewProps} from '../../components'
 import {
   type BlockAnnotationProps,
@@ -9,6 +7,7 @@ import {
   type ItemProps,
   type PortableTextPluginsProps,
 } from '../../form'
+import {type ComponentType} from 'react'
 
 /**
  * @hidden

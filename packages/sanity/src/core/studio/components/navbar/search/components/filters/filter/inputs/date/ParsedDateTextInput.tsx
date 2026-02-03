@@ -1,3 +1,7 @@
+import {Tooltip} from '../../../../../../../../../../ui-components'
+import {useTranslation} from '../../../../../../../../../i18n'
+import {CustomTextInput} from '../../../../common/CustomTextInput'
+import {getDateISOString} from './utils/getDateISOString'
 import {format, isValid, parse} from 'date-fns'
 import {
   type ChangeEvent,
@@ -8,11 +12,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-
-import {Tooltip} from '../../../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../../../i18n'
-import {CustomTextInput} from '../../../../common/CustomTextInput'
-import {getDateISOString} from './utils/getDateISOString'
 
 interface ParsedDateTextInputProps extends Omit<
   ComponentProps<typeof CustomTextInput>,

@@ -1,6 +1,5 @@
-import {useMemo} from 'react'
-
 import {Image, type ImageSource} from '../Image'
+import {useMemo} from 'react'
 
 export default function ImageStory() {
   const assetId = 'image-7a450942c7845e53e1daddaffc2999f719352e16-3024x4032-jpg'

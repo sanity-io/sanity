@@ -1,7 +1,6 @@
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
-
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * Gets all the releases ids

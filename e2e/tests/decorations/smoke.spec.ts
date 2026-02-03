@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test.describe('Decorations - renderMembers', () => {
   test('should render decorations at all levels', async ({page, createDraftDocument}) => {

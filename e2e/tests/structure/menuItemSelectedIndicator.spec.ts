@@ -1,6 +1,5 @@
-import {expect, type Locator} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect, type Locator} from '@playwright/test'
 
 /**
  * Helper to check if a menu item has the checkmark icon (selected state)

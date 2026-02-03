@@ -1,6 +1,3 @@
-import {type FunctionComponent, type PropsWithChildren, useMemo} from 'react'
-import {PresentationContext} from 'sanity/_singletons'
-
 import {
   type PresentationContextValue,
   type PresentationNavigate,
@@ -8,6 +5,8 @@ import {
   type PresentationSearchParams,
   type StructureDocumentPaneParams,
 } from './types'
+import {type FunctionComponent, type PropsWithChildren, useMemo} from 'react'
+import {PresentationContext} from 'sanity/_singletons'
 
 export const PresentationProvider: FunctionComponent<
   PropsWithChildren<{

@@ -1,3 +1,4 @@
+import {useComlinkStore} from '../store/_legacy/datastores'
 import {
   type CanvasResource,
   type Events,
@@ -6,8 +7,6 @@ import {
 } from '@sanity/message-protocol'
 import {type DocumentHandle} from '@sanity/sdk'
 import {useCallback} from 'react'
-
-import {useComlinkStore} from '../store/_legacy/datastores'
 
 interface DocumentInteractionHistory {
   recordEvent: (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => void

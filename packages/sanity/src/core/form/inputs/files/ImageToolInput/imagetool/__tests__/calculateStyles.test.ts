@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {calculateStyles} from '../calculateStyles'
+import {describe, expect, it} from 'vitest'
 
 // Todo: write test for cropping container too
 

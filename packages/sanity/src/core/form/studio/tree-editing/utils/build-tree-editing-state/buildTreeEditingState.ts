@@ -1,3 +1,9 @@
+import {getValueAtPath} from '../../../../../field/paths/helpers'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
+import {type DialogItem} from '../../types'
+import {getRootPath} from '../getRootPath'
+import {getSchemaField} from '../getSchemaField'
+import {buildArrayState} from './buildArrayState'
 import {
   type ArraySchemaType,
   isArrayOfObjectsSchemaType,
@@ -5,13 +11,6 @@ import {
   type Path,
 } from '@sanity/types'
 import {toString} from '@sanity/util/paths'
-
-import {getValueAtPath} from '../../../../../field/paths/helpers'
-import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {type DialogItem} from '../../types'
-import {getRootPath} from '../getRootPath'
-import {getSchemaField} from '../getSchemaField'
-import {buildArrayState} from './buildArrayState'
 
 const EMPTY_ARRAY: [] = []
 

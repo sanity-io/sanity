@@ -53,7 +53,6 @@ import type {
   WithRouter,
   WithRouterProps,
 } from 'sanity/router'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/router', () => {

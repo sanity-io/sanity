@@ -1,9 +1,8 @@
+import {type PresentationSearchParams} from '../types'
+import {ChildLink} from './ChildLink'
 import {forwardRef} from 'react'
 import {getPublishedId, pathToString} from 'sanity'
 import {type ReferenceChildLinkProps} from 'sanity/structure'
-
-import {type PresentationSearchParams} from '../types'
-import {ChildLink} from './ChildLink'
 
 export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
   props: ReferenceChildLinkProps & {searchParams: PresentationSearchParams},

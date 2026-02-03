@@ -1,9 +1,8 @@
+import {createSchema} from '../../../schema'
+import {getFieldLevel} from './helpers'
 import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
-
-import {createSchema} from '../../../schema'
-import {getFieldLevel} from './helpers'
 
 describe('inputResolver/helpers', () => {
   const {onlyIndentationObject, noIndentationObject} = setupTest()

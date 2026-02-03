@@ -1,10 +1,9 @@
-import {useToast} from '@sanity/ui'
-import {type ComponentType, type PropsWithChildren} from 'react'
-import {type DocumentLayoutProps, useTranslation} from 'sanity'
-
 import {structureLocaleNamespace} from '../../i18n'
 import {DiffView} from '../components/DiffView'
 import {useDiffViewState} from '../hooks/useDiffViewState'
+import {useToast} from '@sanity/ui'
+import {type ComponentType, type PropsWithChildren} from 'react'
+import {type DocumentLayoutProps, useTranslation} from 'sanity'
 
 export const DiffViewDocumentLayout: ComponentType<
   PropsWithChildren<Pick<DocumentLayoutProps, 'documentId' | 'documentType'>>

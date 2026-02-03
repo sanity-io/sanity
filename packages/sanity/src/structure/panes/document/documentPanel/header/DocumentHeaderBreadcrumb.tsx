@@ -1,10 +1,9 @@
-import {ArrowRightIcon} from '@sanity/icons'
-import {Box, Flex, Text} from '@sanity/ui'
-import {Fragment} from 'react'
-
 import {LOADING_PANE} from '../../../../constants'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {DocumentHeaderBreadcrumbItem} from './DocumentHeaderBreadcrumbItem'
+import {ArrowRightIcon} from '@sanity/icons'
+import {Box, Flex, Text} from '@sanity/ui'
+import {Fragment} from 'react'
 
 export function DocumentHeaderBreadcrumb({
   paneDataItems,

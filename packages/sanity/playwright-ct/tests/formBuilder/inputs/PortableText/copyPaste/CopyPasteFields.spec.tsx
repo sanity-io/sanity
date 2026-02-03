@@ -1,8 +1,7 @@
-// import {expect, test} from '@playwright/experimental-ct-react'
-import {type Path, type SanityDocument} from '@sanity/types'
-
 import {expect, test} from '../../../../fixtures'
 import CopyPasteFieldsStory from './CopyPasteFieldsStory'
+// import {expect, test} from '@playwright/experimental-ct-react'
+import {type Path, type SanityDocument} from '@sanity/types'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 

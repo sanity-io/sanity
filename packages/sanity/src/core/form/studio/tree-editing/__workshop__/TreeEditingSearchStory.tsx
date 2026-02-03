@@ -1,9 +1,8 @@
+import {TreeEditingSearch} from '../components'
+import {buildTreeEditingState, type TreeEditingState} from '../utils'
 import {Schema} from '@sanity/schema'
 import {Container, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
-
-import {TreeEditingSearch} from '../components'
-import {buildTreeEditingState, type TreeEditingState} from '../utils'
 
 function noop() {
   // ...

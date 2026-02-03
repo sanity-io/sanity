@@ -1,3 +1,6 @@
+import {type StudioLocaleResourceKeys} from '../../../i18n/bundles/studio'
+import {type DocumentVersionEventType} from '../../../store/events/types'
+import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   AddCircleIcon,
   CalendarIcon,
@@ -11,10 +14,6 @@ import {
   UnpublishIcon,
 } from '@sanity/icons'
 import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-
-import {type StudioLocaleResourceKeys} from '../../../i18n/bundles/studio'
-import {type DocumentVersionEventType} from '../../../store/events/types'
-import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 
 export const TIMELINE_ICON_COMPONENTS: Record<DocumentVersionEventType, IconComponent> = {
   historyCleared: TimelineIcon,

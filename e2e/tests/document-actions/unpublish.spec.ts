@@ -1,11 +1,10 @@
-import {expect} from '@playwright/test'
-
 import {
   expectCreatedOrEditedStatus,
   expectPublishedStatus,
   expectUnpublishedStatus,
 } from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test(`should be able to unpublish a published document`, async ({page, createDraftDocument}) => {
   /** publish initial action */

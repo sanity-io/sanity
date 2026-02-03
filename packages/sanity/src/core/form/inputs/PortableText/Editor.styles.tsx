@@ -1,11 +1,10 @@
 /* eslint-disable camelcase */
 
+import {ScrollContainer} from '../../../components/scroll'
+import {createListName, TEXT_LEVELS} from './text'
 import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
-
-import {ScrollContainer} from '../../../components/scroll'
-import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {
@@ -35,7 +34,7 @@ export const EditableCard = styled(Card)`
   position: relative;
   overflow: hidden;
   overflow: clip;
-  
+
   & > [data-portal] {
     position: absolute;
     top: 0;
@@ -43,12 +42,12 @@ export const EditableCard = styled(Card)`
     right: 0;
     bottom: 0;
     pointer-events: none;
-  
+
     & > * {
       pointer-events: initial;
     }
   }
-  
+
   &::selection,
   *::selection {
     background-color: transparent;
@@ -61,7 +60,7 @@ export const Scroller = styled(ScrollContainer)`
   height: 100%;
   display: flex;
   flex-direction: column;
-  
+
   & > * {
     flex: 1;
     min-height: auto;

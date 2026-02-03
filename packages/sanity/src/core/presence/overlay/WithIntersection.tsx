@@ -1,7 +1,6 @@
+import {type ObservableIntersectionObserver} from './intersectionObserver'
 import {type HTMLProps, useEffect, useRef} from 'react'
 import {tap} from 'rxjs/operators'
-
-import {type ObservableIntersectionObserver} from './intersectionObserver'
 
 export interface WithIntersectionProps {
   onIntersection: (id: string, entry: IntersectionObserverEntry) => void

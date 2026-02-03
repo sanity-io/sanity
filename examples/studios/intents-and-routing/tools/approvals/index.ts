@@ -1,7 +1,6 @@
+import {Main} from './Main'
 import {Tool} from 'sanity'
 import {route} from 'sanity/router'
-
-import {Main} from './Main'
 
 export default {
   name: 'approval-tool',

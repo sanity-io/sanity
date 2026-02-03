@@ -1,16 +1,3 @@
-import {Box, Stack} from '@sanity/ui'
-import {
-  Fragment,
-  type HTMLAttributes,
-  startTransition,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
-import {DiffContext} from 'sanity/_singletons'
-
 import {useDocumentOperation} from '../../../hooks'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store'
@@ -25,6 +12,18 @@ import {ChangeResolver} from './ChangeResolver'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
 import {RevertChangesButton} from './RevertChangesButton'
 import {RevertChangesConfirmDialog} from './RevertChangesConfirmDialog'
+import {Box, Stack} from '@sanity/ui'
+import {
+  Fragment,
+  type HTMLAttributes,
+  startTransition,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import {DiffContext} from 'sanity/_singletons'
 
 /** @internal */
 export function GroupChange(

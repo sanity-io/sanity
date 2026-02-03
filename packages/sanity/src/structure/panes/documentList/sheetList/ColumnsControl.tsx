@@ -1,13 +1,12 @@
 'use no memo'
 // The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
 
+import {Button, MenuButton} from '../../../../ui-components'
+import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 import {Box, Checkbox, Flex, Menu, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {type SanityDocument, useTranslation} from 'sanity'
-
-import {Button, MenuButton} from '../../../../ui-components'
-import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {
   table: Table<SanityDocument>

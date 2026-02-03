@@ -1,3 +1,6 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {Banner} from './Banner'
 import {DocumentRemoveIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
@@ -12,10 +15,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Banner} from './Banner'
 
 export function DeletedDocumentBanners() {
   const {isDeleted, isDeleting, ready} = useDocumentPane()

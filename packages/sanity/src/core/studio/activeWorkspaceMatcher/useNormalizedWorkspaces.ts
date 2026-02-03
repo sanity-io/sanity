@@ -1,8 +1,7 @@
-import {escapeRegExp} from 'lodash-es'
-import {useMemo} from 'react'
-
 import {type WorkspacesContextValue} from '../workspaces'
 import {type NormalizedWorkspace} from './types'
+import {escapeRegExp} from 'lodash-es'
+import {useMemo} from 'react'
 
 /** @internal */
 export function useNormalizedWorkspaces(workspaces: WorkspacesContextValue): NormalizedWorkspace[] {

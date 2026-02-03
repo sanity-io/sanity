@@ -4,15 +4,15 @@ on:
   # Generate and upload TypeDoc on releases
   push:
     tags:
-      - 'v*'
+      - "v*"
   # Validate TypeDoc generation on PRs
   pull_request:
     paths:
-      - 'packages/sanity/src/**'
-      - 'packages/sanity/typedoc.config.json'
-      - 'packages/sanity/tsconfig.docs.json'
-      - 'packages/sanity/package.json'
-      - '.github/workflows/typedoc.yml'
+      - "packages/sanity/src/**"
+      - "packages/sanity/typedoc.config.json"
+      - "packages/sanity/tsconfig.docs.json"
+      - "packages/sanity/package.json"
+      - ".github/workflows/typedoc.yml"
   # Manual trigger
   workflow_dispatch:
     inputs:
@@ -88,7 +88,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.generate.outputs.success == 'true'
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         with:
-          comment-tag: 'typedoc-result'
+          comment-tag: "typedoc-result"
           message: |
             ## 📚 TypeDoc Generation Result
 
@@ -120,8 +120,8 @@ jobs:
         if: (startsWith(github.ref, 'refs/tags/v') || github.event.inputs.upload == 'true') && steps.generate.outputs.success == 'true'
         uses: sanity-io/reference-api-typedoc/.github/actions/typedoc-upload@main
         with:
-          packageName: 'sanity'
+          packageName: "sanity"
           version: ${{ steps.version.outputs.version }}
-          typedocJsonPath: 'packages/sanity/docs/sanity-typedoc-output.json'
+          typedocJsonPath: "packages/sanity/docs/sanity-typedoc-output.json"
         env:
           SANITY_DOCS_API_TOKEN: ${{ secrets.SANITY_DOCS_API_TOKEN }}

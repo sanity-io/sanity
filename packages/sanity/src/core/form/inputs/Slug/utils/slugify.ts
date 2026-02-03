@@ -1,7 +1,6 @@
+import {type FIXME} from '../../../../FIXME'
 import {type SlugSchemaType, type SlugSourceContext} from '@sanity/types'
 import speakingurl from 'speakingurl'
-
-import {type FIXME} from '../../../../FIXME'
 
 // Fallback slugify function if not defined in field options
 const defaultSlugify = (value: FIXME, type: SlugSchemaType): string => {

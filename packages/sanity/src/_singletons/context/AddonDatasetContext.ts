@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {AddonDatasetContextValue} from '../../core/studio/addonDataset/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @beta

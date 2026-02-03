@@ -1,3 +1,5 @@
+import {type CliApiClient} from '../types'
+import {getCliWorkerPath} from './cliWorker'
 import {
   type BaseSchemaDefinition,
   type DocumentDefinition,
@@ -7,9 +9,6 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import {Worker} from 'node:worker_threads'
 import {format} from 'prettier'
-
-import {type CliApiClient} from '../types'
-import {getCliWorkerPath} from './cliWorker'
 
 /**
  * A Journey schema is a server schema that is saved in the Journey API

@@ -1,8 +1,7 @@
+import {API_VERSION} from './constants'
 import {subscribeToVercelProtectionBypass} from '@sanity/preview-url-secret/toggle-vercel-protection-bypass'
 import {useEffect, useReducer, useState} from 'react'
 import {useClient} from 'sanity'
-
-import {API_VERSION} from './constants'
 
 type VercelProtectionBypassReadyState = 'loading' | 'ready'
 

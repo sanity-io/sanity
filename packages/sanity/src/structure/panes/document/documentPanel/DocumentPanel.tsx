@@ -1,29 +1,3 @@
-import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {useEffect, useMemo, useRef, useState} from 'react'
-import {
-  getSanityCreateLinkMetadata,
-  getVersionFromId,
-  isCardinalityOneRelease,
-  isDraftId,
-  isGoingToUnpublish,
-  isNewDocument,
-  isPausedCardinalityOneRelease,
-  isPerspectiveWriteable,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSanityCreateLinked,
-  isSystemBundle,
-  LegacyLayerProvider,
-  type ReleaseDocument,
-  ScrollContainer,
-  useFilteredReleases,
-  usePausedScheduledDraft,
-  usePerspective,
-  useWorkspace,
-  VirtualizerScrollInstanceProvider,
-} from 'sanity'
-import {css, styled} from 'styled-components'
-
 import {PaneContent, usePane, usePaneLayout, usePaneRouter} from '../../../components'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
@@ -51,6 +25,31 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {FormView} from './documentViews'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
+import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {useEffect, useMemo, useRef, useState} from 'react'
+import {
+  getSanityCreateLinkMetadata,
+  getVersionFromId,
+  isCardinalityOneRelease,
+  isDraftId,
+  isGoingToUnpublish,
+  isNewDocument,
+  isPausedCardinalityOneRelease,
+  isPerspectiveWriteable,
+  isReleaseDocument,
+  isReleaseScheduledOrScheduling,
+  isSanityCreateLinked,
+  isSystemBundle,
+  LegacyLayerProvider,
+  type ReleaseDocument,
+  ScrollContainer,
+  useFilteredReleases,
+  usePausedScheduledDraft,
+  usePerspective,
+  useWorkspace,
+  VirtualizerScrollInstanceProvider,
+} from 'sanity'
+import {css, styled} from 'styled-components'
 
 interface DocumentPanelProps {
   footerHeight: number | null

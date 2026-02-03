@@ -1,8 +1,3 @@
-import chalk from 'chalk'
-import {deburr} from 'lodash-es'
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
 import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'
 import {type CliCommandContext} from '../../types'
@@ -17,6 +12,10 @@ import {determineAppTemplate} from './determineAppTemplate'
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
 import {updateInitialTemplateMetadata} from './updateInitialTemplateMetadata'
+import chalk from 'chalk'
+import {deburr} from 'lodash-es'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 export interface BootstrapLocalOptions {
   packageName: string

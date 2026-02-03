@@ -1,3 +1,7 @@
+import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
+import {structureLocaleNamespace} from '../../i18n'
+import {IntentButton} from '../IntentButton'
+import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
@@ -13,11 +17,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-
-import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
-import {structureLocaleNamespace} from '../../i18n'
-import {IntentButton} from '../IntentButton'
-import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
 
 export type PaneHeaderIntentProps = ComponentProps<typeof IntentButton>['intent']
 

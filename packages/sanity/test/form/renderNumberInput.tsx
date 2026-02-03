@@ -1,8 +1,7 @@
-import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
-
 import {type NumberInputProps, type PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
+import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
 
 const noopRenderDefault = () => <></>
 

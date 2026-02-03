@@ -1,8 +1,7 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
-
 import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
+import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 export const DatePicker = forwardRef(function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {

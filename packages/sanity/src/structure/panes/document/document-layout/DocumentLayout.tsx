@@ -1,22 +1,3 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
-import {isHotkey} from 'is-hotkey-esm'
-import {useCallback, useMemo, useState} from 'react'
-import {
-  ChangeConnectorRoot,
-  type DocumentFieldActionNode,
-  type DocumentInspectorMenuItem,
-  FieldActionsProvider,
-  FieldActionsResolver,
-  GetFormValueProvider,
-  type Path,
-  useDocumentIdStack,
-  useGlobalCopyPasteElementHandler,
-  useTranslation,
-  useZIndex,
-} from 'sanity'
-import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
-
 import {Pane, usePaneLayout, usePaneRouter} from '../../../components'
 import {DocumentActionsProvider} from '../../../DocumentActionsProvider'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -35,6 +16,24 @@ import {getMenuItems} from '../menuItems'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {DocumentLayoutFooter} from './DocumentLayoutFooter'
+import {DialogProvider, type DialogProviderProps, Flex, useElementRect} from '@sanity/ui'
+import {isHotkey} from 'is-hotkey-esm'
+import {useCallback, useMemo, useState} from 'react'
+import {
+  ChangeConnectorRoot,
+  type DocumentFieldActionNode,
+  type DocumentInspectorMenuItem,
+  FieldActionsProvider,
+  FieldActionsResolver,
+  GetFormValueProvider,
+  type Path,
+  useDocumentIdStack,
+  useGlobalCopyPasteElementHandler,
+  useTranslation,
+  useZIndex,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
+import {styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 

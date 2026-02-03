@@ -8,19 +8,19 @@ export const Root = styled(Card)`
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   opacity: 0;
-  
+
   &:not([hidden]) {
     display: flex;
   }
-  
+
   &:not([data-collapsed]) {
     overflow: auto;
   }
-  
+
   &[data-mounted] {
     opacity: 1;
   }
-  
+
   &[data-resizing] {
     pointer-events: none;
   }

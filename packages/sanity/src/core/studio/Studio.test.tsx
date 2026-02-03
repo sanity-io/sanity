@@ -1,3 +1,6 @@
+import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
+import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
+import {Studio} from './Studio'
 /**
  * SSR Hydration is hard to get right.
  * It's not a concern when using `sanity dev`, `sanity build` or `sanity deploy` as we ship a client-only application
@@ -19,10 +22,6 @@ import {act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {describe, expect, it, vi} from 'vitest'
-
-import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
-import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
-import {Studio} from './Studio'
 
 const client = createMockSanityClient() as any as SanityClient
 const config = {

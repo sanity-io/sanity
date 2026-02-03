@@ -1,5 +1,4 @@
 import type {MutableRefObject} from 'react'
-
 import {createContext} from 'sanity/_createContext'
 
 /**

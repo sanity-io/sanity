@@ -1,11 +1,10 @@
+import {type DialogItem} from '../../types'
+import {TreeEditingMenuItem} from './TreeEditingMenuItem'
+import {getSiblingHasChildren} from './utils'
 import {type Path} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {memo} from 'react'
-
-import {type DialogItem} from '../../types'
-import {TreeEditingMenuItem} from './TreeEditingMenuItem'
-import {getSiblingHasChildren} from './utils'
 
 interface TreeEditingMenuProps {
   items: DialogItem[]

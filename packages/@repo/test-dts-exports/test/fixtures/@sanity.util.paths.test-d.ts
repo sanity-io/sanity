@@ -21,7 +21,6 @@ import type {
   trimLeft,
   trimRight,
 } from '@sanity/util/paths'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/util/paths', () => {

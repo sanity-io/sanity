@@ -1,6 +1,5 @@
-import {useEffect, useState} from 'react'
-
 import {useToken} from '../../../studio/assetSourceMediaLibrary/hooks/useToken'
+import {useEffect, useState} from 'react'
 
 /**
  * @internal

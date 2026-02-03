@@ -1,11 +1,10 @@
-import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
-import {type PortableTextBlock} from '@sanity/types'
-import {memo, useCallback, useEffect, useRef, useState} from 'react'
-
 import {CommentInlineHighlightSpan} from '../../components'
 import {applyInlineCommentIdAttr} from '../../hooks'
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
+import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
+import {type PortableTextBlock} from '@sanity/types'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 
 interface CommentRangeDecorationProps {
   children: React.ReactNode

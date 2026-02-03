@@ -1,6 +1,3 @@
-import {useEffect, useMemo} from 'react'
-import {useRouter} from 'sanity/router'
-
 import {
   DIFF_SEARCH_PARAM_DELIMITER,
   DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER,
@@ -8,6 +5,8 @@ import {
   DIFF_VIEW_SEARCH_PARAMETER,
 } from '../constants'
 import {type DiffViewMode, diffViewModes} from '../types/diffViewMode'
+import {useEffect, useMemo} from 'react'
+import {useRouter} from 'sanity/router'
 
 function isDiffViewMode(maybeDiffViewMode: unknown): maybeDiffViewMode is DiffViewMode {
   return diffViewModes.includes(maybeDiffViewMode as DiffViewMode)

@@ -1,7 +1,6 @@
+import {MetaInfo} from '../diff'
 import {ImageIcon} from '@sanity/icons'
 import {Box, Card} from '@sanity/ui'
-
-import {MetaInfo} from '../diff'
 
 export default function MetaInfoStory() {
   return (

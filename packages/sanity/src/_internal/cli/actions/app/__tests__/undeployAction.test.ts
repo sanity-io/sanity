@@ -1,9 +1,8 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
 import {type UserApplication} from '../../deploy/helpers'
 import * as _helpers from '../../deploy/helpers'
 import undeployAppAction from '../undeployAction'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 // Mock dependencies
 vi.mock('../../deploy/helpers')

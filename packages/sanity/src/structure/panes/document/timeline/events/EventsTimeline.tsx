@@ -1,3 +1,7 @@
+import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
+import {ListWrapper, Root} from '../timeline.styled'
+import {EventTimelineItem} from './EventTimelineItem'
+import {PublishedEventMenu} from './PublishedEventMenu'
 import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -13,11 +17,6 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
-
-import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
-import {ListWrapper, Root} from '../timeline.styled'
-import {EventTimelineItem} from './EventTimelineItem'
-import {PublishedEventMenu} from './PublishedEventMenu'
 
 interface TimelineProps {
   events: DocumentGroupEvent[]

@@ -1,12 +1,11 @@
 // oxlint-disable no-extend-native
 
+import {CommandList} from '../CommandList'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
 import {beforeEach, describe, expect, it} from 'vitest'
-
-import {CommandList} from '../CommandList'
 
 const COMMAND_LIST_TEST_ID = 'command-list'
 const CUSTOM_ACTIVE_ATTR = 'my-active-data-attribute'

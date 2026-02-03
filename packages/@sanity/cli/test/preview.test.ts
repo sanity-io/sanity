@@ -1,10 +1,9 @@
-import getPort from 'get-port'
-import path from 'node:path'
-import {describe, expect} from 'vitest'
-
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {testServerCommand} from './shared/devServer'
 import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
+import getPort from 'get-port'
+import path from 'node:path'
+import {describe, expect} from 'vitest'
 
 describeCliTest('CLI: `sanity preview`', () => {
   describe.each(studioNames)('%s', (name) => {

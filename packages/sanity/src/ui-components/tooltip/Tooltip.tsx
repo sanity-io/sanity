@@ -1,3 +1,5 @@
+import {Hotkeys} from '../../core/components/Hotkeys'
+import {TOOLTIP_DELAY_PROPS} from './constants'
 import {
   Box,
   Flex,
@@ -9,9 +11,6 @@ import {
   type TooltipProps as UITooltipProps,
 } from '@sanity/ui'
 import {type ForwardedRef, forwardRef} from 'react'
-
-import {Hotkeys} from '../../core/components/Hotkeys'
-import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */
 

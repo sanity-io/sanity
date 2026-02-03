@@ -1,3 +1,13 @@
+import {getValueAtPath} from '../../field/paths/helpers'
+import {type FIXME} from '../../FIXME'
+import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
+import {accepts} from '../../form/studio/uploads/accepts'
+import {randomKey} from '../../form/utils/randomKey'
+import {getIdPair} from '../../util/draftUtils'
+import {isRecord} from '../../util/isRecord'
+import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
+import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
+import {isEmptyValue, isPortableTextPreserveEmptyField} from './utils'
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
 import {isAssetObjectStub, isFileAssetId, isImageAssetId} from '@sanity/asset-utils'
@@ -35,17 +45,6 @@ import {
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {last} from 'lodash-es'
-
-import {getValueAtPath} from '../../field/paths/helpers'
-import {type FIXME} from '../../FIXME'
-import {resolveConditionalProperty} from '../../form/store/conditional-property/resolveConditionalProperty'
-import {accepts} from '../../form/studio/uploads/accepts'
-import {randomKey} from '../../form/utils/randomKey'
-import {getIdPair} from '../../util/draftUtils'
-import {isRecord} from '../../util/isRecord'
-import {documentMatchesGroqFilter} from './documentMatchesGroqFilter'
-import {resolveSchemaTypeForPath} from './resolveSchemaTypeForPath'
-import {isEmptyValue, isPortableTextPreserveEmptyField} from './utils'
 
 export interface TransferValueError {
   level: 'warning' | 'error'

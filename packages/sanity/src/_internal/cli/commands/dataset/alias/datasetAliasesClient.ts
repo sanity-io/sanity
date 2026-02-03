@@ -1,7 +1,6 @@
-import {type SanityClient} from '@sanity/client'
-
 import {validateDatasetAliasName} from '../../../actions/dataset/alias/validateDatasetAliasName'
 import {type DatasetAliasDefinition, type DatasetModificationResponse} from './types'
+import {type SanityClient} from '@sanity/client'
 
 export const ALIAS_PREFIX = '~'
 

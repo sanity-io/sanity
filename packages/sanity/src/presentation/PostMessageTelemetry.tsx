@@ -1,7 +1,6 @@
+import {type VisualEditingConnection} from './types'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type FC, memo, useEffect} from 'react'
-
-import {type VisualEditingConnection} from './types'
 
 export interface PostMessageTelemetryProps {
   comlink: VisualEditingConnection

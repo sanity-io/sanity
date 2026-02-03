@@ -1,7 +1,6 @@
+import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'
 import {Card, Flex, Menu} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-
-import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'
 
 export default function ResourcesMenuItemsStory() {
   const isLoading = useBoolean('Loading', false, 'Props') || false

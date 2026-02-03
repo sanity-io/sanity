@@ -1,9 +1,8 @@
+import {useMediaLibraryIds} from './useMediaLibraryIds'
+import {useSanityMediaLibraryConfig} from './useSanityMediaLibraryConfig'
 import {type PluginPayload} from '@sanity/media-library-types'
 import {useMemo} from 'react'
 import {encodeJsonParams} from 'sanity/router'
-
-import {useMediaLibraryIds} from './useMediaLibraryIds'
-import {useSanityMediaLibraryConfig} from './useSanityMediaLibraryConfig'
 
 export function usePluginFrameUrl(path: string, params: PluginPayload) {
   const pluginConfig = useSanityMediaLibraryConfig()

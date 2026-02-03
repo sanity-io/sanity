@@ -1,7 +1,3 @@
-/* eslint-disable camelcase */
-import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
-import {RouterContext} from 'sanity/_singletons'
-
 import {
   isNavigateOptions,
   type NavigateOptions,
@@ -10,6 +6,9 @@ import {
   type RouterState,
 } from './types'
 import {useRouter} from './useRouter'
+/* eslint-disable camelcase */
+import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
+import {RouterContext} from 'sanity/_singletons'
 
 function addScope(
   routerState: Record<string, any>,

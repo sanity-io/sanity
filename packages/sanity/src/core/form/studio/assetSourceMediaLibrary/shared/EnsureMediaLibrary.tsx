@@ -1,13 +1,12 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {useEffect} from 'react'
-
 import {useTranslation} from '../../../../i18n'
 import {
   useEnsureMediaLibrary,
   type useEnsureMediaLibraryProps,
 } from '../hooks/useEnsureMediaLibrary'
 import {type MediaLibraryIds} from './MediaLibraryProvider'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {useEffect} from 'react'
 
 export function EnsureMediaLibrary(props: {
   mediaLibraryInfo: useEnsureMediaLibraryProps

@@ -1,9 +1,8 @@
+import {focusRingStyle} from './styles'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Text, type Theme} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-
-import {focusRingStyle} from './styles'
 
 export interface FormFieldSetLegendProps {
   collapsed: boolean
@@ -62,7 +61,7 @@ const ToggleIconBox = styled(Box)`
   width: 9px;
   height: 9px;
   margin-right: 3px;
-  
+
   & svg {
     transition: transform 100ms;
   }

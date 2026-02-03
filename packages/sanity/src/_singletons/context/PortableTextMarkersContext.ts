@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {PortableTextMarker} from '../../core/form/types/_transitional'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

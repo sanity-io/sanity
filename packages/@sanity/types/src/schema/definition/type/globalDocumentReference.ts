@@ -1,8 +1,7 @@
-import {type ComponentType} from 'react'
-
 import {type PreviewConfig} from '../../preview'
 import {type BaseSchemaDefinition} from './common'
 import {type ReferenceOptions} from './reference'
+import {type ComponentType} from 'react'
 
 /** @public */
 export interface GlobalDocumentReferenceDefinition extends BaseSchemaDefinition {

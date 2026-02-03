@@ -1,3 +1,6 @@
+import {ASPECT_FILE_EXTENSIONS, MINIMUM_API_VERSION} from './constants'
+import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
+import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
 import {type CliCommandAction, type CliCommandContext, type SanityClient} from '@sanity/cli'
 import {validateMediaLibraryAssetAspect} from '@sanity/schema/_internal'
 import {
@@ -33,10 +36,6 @@ import {
   toArray,
   zip,
 } from 'rxjs'
-
-import {ASPECT_FILE_EXTENSIONS, MINIMUM_API_VERSION} from './constants'
-import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
-import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
 
 const require = createRequire(import.meta.url)
 

@@ -1,9 +1,8 @@
+import {createExternalFromImportMap} from './createExternalFromImportMap'
 import fs from 'node:fs'
 import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
-
-import {createExternalFromImportMap} from './createExternalFromImportMap'
 
 // Directory where vendor packages will be stored
 const VENDOR_DIR = 'vendor'

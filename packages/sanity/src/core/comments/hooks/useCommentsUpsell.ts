@@ -1,7 +1,6 @@
+import {type CommentsUpsellContextValue} from '../context/upsell/types'
 import {useContext} from 'react'
 import {CommentsUpsellContext} from 'sanity/_singletons'
-
-import {type CommentsUpsellContextValue} from '../context/upsell/types'
 
 export function useCommentsUpsell(): CommentsUpsellContextValue {
   const value = useContext(CommentsUpsellContext)

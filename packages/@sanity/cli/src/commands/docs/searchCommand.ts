@@ -1,8 +1,7 @@
-import chalk from 'chalk'
-
 import {searchDocs, type SearchResult} from '../../actions/docs/searchDocs'
 import {type CliCommandDefinition} from '../../types'
 import {isInteractive} from '../../util/isInteractive'
+import chalk from 'chalk'
 
 interface SearchCommandFlags {
   limit?: number

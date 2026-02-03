@@ -1,8 +1,7 @@
+import {createExtractionRunner, createSchemaWatcher} from '../watchExtract'
 import {type CliOutputter} from '@sanity/cli'
 import {type FSWatcher} from 'chokidar'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-
-import {createExtractionRunner, createSchemaWatcher} from '../watchExtract'
 
 // Mock chokidar
 vi.mock('chokidar', () => {

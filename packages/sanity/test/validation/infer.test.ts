@@ -1,15 +1,14 @@
-import {type SanityClient} from '@sanity/client'
-import {Schema as SchemaBuilder} from '@sanity/schema'
-import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
-import {has} from 'lodash-es'
-import {afterEach, describe, expect, test, vi} from 'vitest'
-
 import {type Workspace} from '../../src/core/config'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
+import {type SanityClient} from '@sanity/client'
+import {Schema as SchemaBuilder} from '@sanity/schema'
+import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {has} from 'lodash-es'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
 const client = createMockSanityClient()
 const getClient = (): SanityClient => client as unknown as SanityClient

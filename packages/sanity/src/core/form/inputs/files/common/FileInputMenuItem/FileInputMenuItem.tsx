@@ -1,3 +1,5 @@
+import {type MenuItemProps} from '../../../../../../ui-components'
+import {FileMenuItem} from './FileInputMenuItem.styled'
 import {
   type ChangeEvent,
   type ForwardedRef,
@@ -6,9 +8,6 @@ import {
   useCallback,
   useId,
 } from 'react'
-
-import {type MenuItemProps} from '../../../../../../ui-components'
-import {FileMenuItem} from './FileInputMenuItem.styled'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
   accept?: string

@@ -1,8 +1,7 @@
-import {type SanityDocument} from '@sanity/types'
-import {expect, it} from 'vitest'
-
 import {type EditStateFor} from './document-pair/editState'
 import {selectUpstreamVersion} from './selectUpstreamVersion'
+import {type SanityDocument} from '@sanity/types'
+import {expect, it} from 'vitest'
 
 const stubDocument: SanityDocument = {
   _id: 'x',

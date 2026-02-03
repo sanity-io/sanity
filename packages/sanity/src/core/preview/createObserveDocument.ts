@@ -1,12 +1,11 @@
+import {applyMutationEventEffects} from './utils/applyMendozaPatch'
+import {debounceCollect} from './utils/debounceCollect'
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {memoize, uniq} from 'lodash-es'
 import {type RawPatch} from 'mendoza'
 import {EMPTY, finalize, type Observable, of} from 'rxjs'
 import {concatMap, map, scan, shareReplay} from 'rxjs/operators'
-
-import {applyMutationEventEffects} from './utils/applyMendozaPatch'
-import {debounceCollect} from './utils/debounceCollect'
 
 export type ListenerMutationEventLike = Pick<
   MutationEvent,

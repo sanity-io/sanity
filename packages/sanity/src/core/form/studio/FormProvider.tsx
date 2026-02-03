@@ -1,6 +1,3 @@
-import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {type ReactNode, useCallback} from 'react'
-
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
@@ -25,6 +22,8 @@ import {
   type ItemProps,
   type RenderPreviewCallbackProps,
 } from '../types'
+import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
+import {type ReactNode, useCallback} from 'react'
 
 /**
  * @alpha This API might change.

@@ -1,7 +1,6 @@
+import {mustChooseNewDocumentDestination} from './mustChooseNewDocumentDestination'
 import {type SanityDocument} from 'sanity'
 import {expect, it} from 'vitest'
-
-import {mustChooseNewDocumentDestination} from './mustChooseNewDocumentDestination'
 
 const stubDocument: SanityDocument = {
   _id: 'x',

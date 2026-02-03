@@ -1,3 +1,5 @@
+import {structureLocaleNamespace} from './i18n'
+import {useDocumentPane} from './panes/document/useDocumentPane'
 import {useMemo, useRef} from 'react'
 import {
   type DocumentActionComponent,
@@ -12,9 +14,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
-
-import {structureLocaleNamespace} from './i18n'
-import {useDocumentPane} from './panes/document/useDocumentPane'
 
 interface ResolvedAction extends DocumentActionDescription {
   action?: DocumentActionComponent['action']

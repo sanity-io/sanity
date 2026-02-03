@@ -1,7 +1,6 @@
+import {searchDocumentRelease} from '../searchDocumentRelease'
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
-
-import {searchDocumentRelease} from '../searchDocumentRelease'
 
 const createTestDocument = (
   title: unknown,

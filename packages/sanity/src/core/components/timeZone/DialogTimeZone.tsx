@@ -1,12 +1,11 @@
-import {SearchIcon} from '@sanity/icons'
-import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
-
 import {Dialog} from '../../../ui-components'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'
+import {SearchIcon} from '@sanity/icons'
+import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {css, styled} from 'styled-components'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void

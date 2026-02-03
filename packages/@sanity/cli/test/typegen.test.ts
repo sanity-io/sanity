@@ -1,9 +1,3 @@
-import {once} from 'lodash-es'
-import {randomUUID} from 'node:crypto'
-import {access, readFile, unlink, writeFile} from 'node:fs/promises'
-import {join} from 'node:path'
-import {describe, expect, test} from 'vitest'
-
 import {describeCliTest} from './shared/describe'
 import {
   runSanityCmdCommand,
@@ -11,6 +5,11 @@ import {
   studioNames,
   studiosPath,
 } from './shared/environment'
+import {once} from 'lodash-es'
+import {randomUUID} from 'node:crypto'
+import {access, readFile, unlink, writeFile} from 'node:fs/promises'
+import {join} from 'node:path'
+import {describe, expect, test} from 'vitest'
 
 const workingTypegen = {
   schema: './working-schema.json',

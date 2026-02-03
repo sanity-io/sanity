@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {createMultiKeyWeakMap} from '../createMultiKeyWeakMap'
+import {describe, expect, it} from 'vitest'
 
 describe('createMultiKeyWeakMap', () => {
   it('returns a multi-key weakmap', () => {

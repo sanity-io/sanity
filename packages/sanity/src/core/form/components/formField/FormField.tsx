@@ -1,13 +1,12 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Stack} from '@sanity/ui'
-import {type HTMLProps, memo, type ReactNode} from 'react'
-
 import {type DocumentFieldActionNode} from '../../../config'
 import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'
 import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldHeaderText} from './FormFieldHeaderText'
+import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {Stack} from '@sanity/ui'
+import {type HTMLProps, memo, type ReactNode} from 'react'
 
 const EMPTY_ARRAY: never[] = []
 

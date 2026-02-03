@@ -1,9 +1,8 @@
+import getSimpleDummySchema from './schema/simpleDummySchema'
+import getSimpleFieldGroupSchema from './schema/simpleFieldGroupSchema'
 import {Schema} from '@sanity/schema'
 import {type Schema as SchemaSchema} from '@sanity/types'
 import {keyBy, mapValues} from 'lodash-es'
-
-import getSimpleDummySchema from './schema/simpleDummySchema'
-import getSimpleFieldGroupSchema from './schema/simpleFieldGroupSchema'
 
 export const DUMMY_DOCUMENT_ID = '10053a07-8647-4ebd-9d1d-33a512d30d3a'
 

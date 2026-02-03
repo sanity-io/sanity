@@ -1,10 +1,3 @@
-import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
-import {EllipsisHorizontalIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {RouterContext, useRouter} from 'sanity/router'
-
 import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
 import {type ReleaseActionDescription} from '../../../../config/releases/actions'
 import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
@@ -24,6 +17,12 @@ import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
 import {ReleaseMenu} from './ReleaseMenu'
 import {ReleasePreviewCard} from './ReleasePreviewCard'
+import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {RouterContext, useRouter} from 'sanity/router'
 
 export type ActionResult =
   | false

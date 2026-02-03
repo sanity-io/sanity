@@ -16,7 +16,6 @@ import type {
   SquashingBuffer,
   SubmissionResponder,
 } from '@sanity/mutator'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/mutator', () => {

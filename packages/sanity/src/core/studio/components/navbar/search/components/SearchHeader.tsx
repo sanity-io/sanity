@@ -1,14 +1,13 @@
-import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Card, Flex} from '@sanity/ui'
-import {forwardRef, type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
-import {keyframes, styled} from 'styled-components'
-
 import {Button} from '../../../../../../ui-components'
 import {StatusButton} from '../../../../../components'
 import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {CustomTextInput} from './common/CustomTextInput'
+import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
+import {Box, Card, Flex} from '@sanity/ui'
+import {forwardRef, type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
+import {keyframes, styled} from 'styled-components'
 
 const rotate = keyframes`
   from {

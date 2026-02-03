@@ -1,7 +1,6 @@
+import {useDidUpdate} from './useDidUpdate'
 import {useCallback} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
-
-import {useDidUpdate} from './useDidUpdate'
 
 /**
  * A hook to help make sure the parent element of a value edited in a dialog (or "out of band") stays

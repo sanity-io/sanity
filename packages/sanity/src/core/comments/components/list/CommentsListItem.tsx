@@ -1,17 +1,3 @@
-import {ChevronDownIcon} from '@sanity/icons'
-import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
-import {
-  type KeyboardEvent,
-  memo,
-  type MouseEvent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {css, styled} from 'styled-components'
-
 import {Button} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
@@ -32,6 +18,19 @@ import {SpacerAvatar} from '../avatars'
 import {CommentInput, type CommentInputHandle} from '../pte'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
+import {ChevronDownIcon} from '@sanity/icons'
+import {type CurrentUser} from '@sanity/types'
+import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {
+  type KeyboardEvent,
+  memo,
+  type MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {css, styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 

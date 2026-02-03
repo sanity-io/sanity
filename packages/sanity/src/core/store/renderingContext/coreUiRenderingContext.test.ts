@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import {coreUiRenderingContext} from './coreUiRenderingContext'
+import {expect, it} from 'vitest'
 
 const coreUiProductionContext = {
   mode: 'core-ui',

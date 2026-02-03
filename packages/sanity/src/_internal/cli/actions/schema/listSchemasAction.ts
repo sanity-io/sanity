@@ -1,7 +1,3 @@
-import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
-import chalk from 'chalk'
-import {sortBy} from 'lodash-es'
-
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type CreateManifest, type StoredWorkspaceSchema} from '../../../manifest/manifestTypes'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'
@@ -15,6 +11,9 @@ import {
   type SchemaStoreCommonFlags,
 } from './utils/schemaStoreValidation'
 import {uniqueProjectIdDataset} from './utils/uniqueProjectIdDataset'
+import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import chalk from 'chalk'
+import {sortBy} from 'lodash-es'
 
 export interface SchemaListFlags extends SchemaStoreCommonFlags {
   json?: boolean

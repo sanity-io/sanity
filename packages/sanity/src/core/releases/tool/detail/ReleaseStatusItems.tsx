@@ -1,7 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {Flex} from '@sanity/ui'
-import {useMemo} from 'react'
-
 import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {isNonNullable} from '../../../util/isNonNullable'
@@ -14,6 +10,9 @@ import {
   isUnarchiveReleaseEvent,
   type ReleaseEvent,
 } from './events/types'
+import {type ReleaseDocument} from '@sanity/client'
+import {Flex} from '@sanity/ui'
+import {useMemo} from 'react'
 
 const STATUS_TITLE_I18N = {
   createRelease: 'footer.status.created',

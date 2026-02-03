@@ -1,3 +1,7 @@
+import {type ValidationWorkerChannel} from '../../threads/validateDocuments'
+import {type WorkerChannelReceiver} from '../../util/workerChannels'
+import {reporters} from './reporters'
+import {validateDocuments} from './validateDocuments'
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -9,11 +13,6 @@ import chalk from 'chalk'
 import logSymbols from 'log-symbols'
 import fs from 'node:fs'
 import path from 'node:path'
-
-import {type ValidationWorkerChannel} from '../../threads/validateDocuments'
-import {type WorkerChannelReceiver} from '../../util/workerChannels'
-import {reporters} from './reporters'
-import {validateDocuments} from './validateDocuments'
 
 interface ValidateFlags {
   'workspace'?: string

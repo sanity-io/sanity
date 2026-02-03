@@ -1,8 +1,3 @@
-import {type CliOutputter} from '@sanity/cli'
-import {type ClientConfig, type SanityClient} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
-import {vi} from 'vitest'
-
 import {type SchemaStoreContext} from '../../../../src/_internal/cli/actions/schema/schemaStoreTypes'
 import {type ManifestJsonReader} from '../../../../src/_internal/cli/actions/schema/utils/manifestReader'
 import {
@@ -10,6 +5,10 @@ import {
   SANITY_WORKSPACE_SCHEMA_TYPE,
 } from '../../../../src/_internal/manifest/manifestTypes'
 import {type createSchemaStoreFixture} from './schemaStoreFixture'
+import {type CliOutputter} from '@sanity/cli'
+import {type ClientConfig, type SanityClient} from '@sanity/client'
+import {type SanityDocumentLike} from '@sanity/types'
+import {vi} from 'vitest'
 
 // test code :shrug:
 // oxlint-disable-next-line no-explicit-any

@@ -1,10 +1,9 @@
-import {type SanityDocument} from '@sanity/types'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {type DocumentRevision} from '../../../history'
 import {type OperationArgs} from '../operations/types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {restore} from './restore'
+import {type SanityDocument} from '@sanity/types'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../utils/isLiveEditEnabled', () => ({isLiveEditEnabled: vi.fn()}))
 

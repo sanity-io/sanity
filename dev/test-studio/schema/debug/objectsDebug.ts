@@ -1,3 +1,7 @@
+import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
+import {CustomEnhancedObjectField} from './customEnhancedObjectField'
+import {CustomEnhancedObjectInput} from './customEnhancedObjectInput'
+import {PageBlockAnchor} from './PageBlockAnchor'
 import {
   defineArrayMember,
   defineField,
@@ -5,11 +9,6 @@ import {
   type InputProps,
   type PortableTextInputProps,
 } from 'sanity'
-
-import {SideBySideObjectInput, SideBySideObjectItem} from './components/SideBySideObjectInput'
-import {CustomEnhancedObjectField} from './customEnhancedObjectField'
-import {CustomEnhancedObjectInput} from './customEnhancedObjectInput'
-import {PageBlockAnchor} from './PageBlockAnchor'
 
 const animal = defineField({
   type: 'object',

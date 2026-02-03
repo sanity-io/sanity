@@ -1,3 +1,7 @@
+import {getValueAtPath} from '../../field'
+import {resolveConditionalProperty} from '../../form'
+import {getSchemaTypeTitle} from '../../schema'
+import {type CommentListBreadcrumbs} from '../types'
 import {type SanityDocument} from '@sanity/client'
 import {
   type ArraySchemaType,
@@ -13,11 +17,6 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {findIndex} from 'lodash-es'
-
-import {getValueAtPath} from '../../field'
-import {resolveConditionalProperty} from '../../form'
-import {getSchemaTypeTitle} from '../../schema'
-import {type CommentListBreadcrumbs} from '../types'
 
 function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
   const paths = PathUtils.fromString(fieldPath)

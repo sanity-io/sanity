@@ -1,8 +1,7 @@
-import {isPlainObject} from 'lodash-es'
-
 import inspect from '../../inspect'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {validateComponent} from '../utils/validateComponent'
+import {isPlainObject} from 'lodash-es'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/
 const CONVENTIONAL_FIELD_RE = /^[A-Za-z_]+[0-9A-Za-z_]*$/

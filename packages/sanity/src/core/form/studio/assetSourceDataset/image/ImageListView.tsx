@@ -1,9 +1,8 @@
+import {AssetThumb} from './AssetThumb'
 import {type Asset} from '@sanity/types'
 import {Box, Flex, Grid, Spinner, Text} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
 import {styled} from 'styled-components'
-
-import {AssetThumb} from './AssetThumb'
 
 interface ImageListViewProps {
   isLoading?: boolean

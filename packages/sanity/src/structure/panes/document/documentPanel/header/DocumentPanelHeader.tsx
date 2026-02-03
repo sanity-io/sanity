@@ -1,21 +1,3 @@
-import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import {
-  type ForwardedRef,
-  forwardRef,
-  memo,
-  useCallback,
-  useDeferredValue,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
-import {css, styled} from 'styled-components'
-
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
   PaneContextMenuButton,
@@ -39,6 +21,23 @@ import {FocusDocumentPaneClicked, FocusDocumentPaneCollapsed} from './__telemetr
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
+import {ArrowLeftIcon, CloseIcon, CollapseIcon, ExpandIcon, SplitVerticalIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Box, Card, Flex} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {
+  type ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useDeferredValue,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {type DocumentActionDescription, useFieldActions, useTranslation} from 'sanity'
+import {css, styled} from 'styled-components'
 
 export interface DocumentPanelHeaderProps {
   menuItems: PaneMenuItem[]

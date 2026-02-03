@@ -1,8 +1,3 @@
-import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -31,6 +26,10 @@ import {
   useBundleDocumentsMockReturnWithResults,
 } from '../../../detail/__tests__/__mocks__/useBundleDocuments.mock'
 import {ReleaseMenuButton, type ReleaseMenuButtonProps} from '../ReleaseMenuButton'
+import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 vi.mock('../../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),

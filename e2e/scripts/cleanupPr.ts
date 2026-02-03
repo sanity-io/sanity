@@ -1,8 +1,7 @@
-import {startTimer} from '@repo/utils'
-
 /* eslint-disable no-console */
 import {readEnv} from '../envVars'
 import {createE2EClient} from './e2eClient'
+import {startTimer} from '@repo/utils'
 
 const prNumber = readEnv('PR_NUMBER')
 const studioE2EClient = createE2EClient('production')

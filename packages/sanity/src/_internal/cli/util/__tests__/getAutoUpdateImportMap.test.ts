@@ -1,6 +1,5 @@
-import {describe, expect, test} from 'vitest'
-
 import {getAutoUpdatesImportMap} from '../getAutoUpdatesImportMap'
+import {describe, expect, test} from 'vitest'
 
 describe('getAutoUpdateImportMap() without app id', () => {
   test('works with sanity package', () => {

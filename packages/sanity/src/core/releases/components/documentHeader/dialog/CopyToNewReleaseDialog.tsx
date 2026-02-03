@@ -1,8 +1,3 @@
-import {type EditableReleaseDocument} from '@sanity/client'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
-import {useState} from 'react'
-
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -22,6 +17,10 @@ import {getIsReleaseInvalid} from '../../../util/getIsReleaseInvalid'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
+import {type EditableReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {useState} from 'react'
 
 export function CopyToNewReleaseDialog(props: {
   onClose: () => void

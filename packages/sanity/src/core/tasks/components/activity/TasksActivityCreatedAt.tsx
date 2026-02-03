@@ -1,13 +1,12 @@
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
-import {memo} from 'react'
-import {styled} from 'styled-components'
-
 import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {tasksLocaleNamespace} from '../../i18n'
 import {NoWrap, useUpdatedTimeAgo} from './helpers'
 import {ActivityItem} from './TasksActivityItem'
+import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {memo} from 'react'
+import {styled} from 'styled-components'
 
 const UserSkeleton = styled(TextSkeleton)`
   max-width: 15ch;

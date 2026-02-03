@@ -1,12 +1,11 @@
-import {firstValueFrom, of, Subject} from 'rxjs'
-import {take, tap} from 'rxjs/operators'
-import {describe, expect, it} from 'vitest'
-
 import {type SanityClient} from '../../form/studio/assetSourceDataset/uploader'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../../util/const'
 import {chunkCombinedSelections, type ClientLike, createObserveFields} from '../observeFields'
 import {type InvalidationChannelEvent} from '../types'
 import {type CombinedSelection} from '../utils/optimizeQuery'
+import {firstValueFrom, of, Subject} from 'rxjs'
+import {take, tap} from 'rxjs/operators'
+import {describe, expect, it} from 'vitest'
 
 describe('chunkCombinedSelections', () => {
   it('should return a single chunk when IDs fit within the size limit', () => {

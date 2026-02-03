@@ -1,3 +1,15 @@
+import {debug as debugIt} from '../../debug'
+import {type DevServerOptions, startDevServer} from '../../server/devServer'
+import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
+import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
+import {isInteractive} from '../../util/isInteractive'
+import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
+import {upgradePackages} from '../../util/packageManager/upgradePackages'
+import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {getTimer} from '../../util/timing'
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -13,19 +25,6 @@ import semver from 'semver'
 import {version} from 'vite'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
-
-import {debug as debugIt} from '../../debug'
-import {type DevServerOptions, startDevServer} from '../../server/devServer'
-import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
-import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
-import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {getAppId} from '../../util/getAppId'
-import {isInteractive} from '../../util/isInteractive'
-import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
-import {upgradePackages} from '../../util/packageManager/upgradePackages'
-import {getSharedServerConfig, gracefulServerDeath} from '../../util/servers'
-import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-import {getTimer} from '../../util/timing'
 
 export interface StartDevServerCommandFlags {
   'host'?: string

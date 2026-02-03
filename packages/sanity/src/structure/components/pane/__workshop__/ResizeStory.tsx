@@ -1,13 +1,12 @@
-import {Box, Card, Code, Flex} from '@sanity/ui'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {PaneLayoutContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
-
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../constants'
 import {PaneDivider} from '../PaneDivider'
 import {createPaneLayoutController, type PaneLayoutState} from '../paneLayoutController'
 import {type PaneLayoutContextValue} from '../types'
 import {usePaneLayout} from '../usePaneLayout'
+import {Box, Card, Code, Flex} from '@sanity/ui'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {PaneLayoutContext} from 'sanity/_singletons'
+import {styled} from 'styled-components'
 
 const PaneLayoutRoot = styled(Flex)`
   &[data-resizing] {
@@ -215,11 +214,11 @@ interface PaneViewProps {
 
 const PaneViewRoot = styled(Card)`
   box-shadow: 0 0 0 1px var(--card-border-color) !important;
-  
+
   &[data-resizing] {
     pointer-events: none;
   }
-  
+
   & + & {
     margin-left: 1px;
   }

@@ -1,7 +1,6 @@
+import {type ComposableOption, type ConfigContext} from '../../types'
 import {type I18nTextRecord, type Path, type SchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
-
-import {type ComposableOption, type ConfigContext} from '../../types'
 
 /**
  * @hidden

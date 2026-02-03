@@ -1,11 +1,10 @@
-import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {type ExecutionProps, styled} from 'styled-components'
-
 import {useTranslation} from '../../../i18n'
 import {pathToString} from '../../paths'
 import {type FieldChangeNode} from '../../types'
 import {FromToArrow} from './FromToArrow'
+import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {type ExecutionProps, styled} from 'styled-components'
 
 /** @internal */
 export interface DiffInspectWrapperProps {

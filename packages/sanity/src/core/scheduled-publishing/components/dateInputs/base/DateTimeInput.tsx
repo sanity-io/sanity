@@ -1,3 +1,7 @@
+import {Popover} from '../../../../../ui-components/popover/Popover'
+import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
+import {type TimeZoneScope} from '../../../../hooks/useTimeZone'
+import {DatePicker} from './DatePicker'
 import {CalendarIcon} from '@sanity/icons'
 import {
   Box,
@@ -18,11 +22,6 @@ import {
   useState,
 } from 'react'
 import FocusLock from 'react-focus-lock'
-
-import {Popover} from '../../../../../ui-components/popover/Popover'
-import {LazyTextInput} from '../../../../components/inputs/DateInputs/LazyTextInput'
-import {type TimeZoneScope} from '../../../../hooks/useTimeZone'
-import {DatePicker} from './DatePicker'
 
 type Props = {
   value?: Date

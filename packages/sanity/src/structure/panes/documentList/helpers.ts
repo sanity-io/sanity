@@ -1,3 +1,4 @@
+import {type DocumentListPaneItem, type SortOrder} from './types'
 import {
   isIndexSegment,
   isKeySegment,
@@ -11,8 +12,6 @@ import {
 import * as PathUtils from '@sanity/util/paths'
 import {type ExprNode, parse} from 'groq-js'
 import {collate, getPublishedId} from 'sanity'
-
-import {type DocumentListPaneItem, type SortOrder} from './types'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
   return value._id ? getPublishedId(value._id) : `item-${index}`

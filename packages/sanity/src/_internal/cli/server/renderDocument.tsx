@@ -1,3 +1,7 @@
+import {BasicDocument} from './components/BasicDocument'
+import {DefaultDocument} from './components/DefaultDocument'
+import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
+import {debug as serverDebug} from './debug'
 import chalk from 'chalk'
 import importFresh from 'import-fresh'
 import {parse as parseHtml} from 'node-html-parser'
@@ -14,11 +18,6 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
 import {renderToStaticMarkup} from 'react-dom/server'
-
-import {BasicDocument} from './components/BasicDocument'
-import {DefaultDocument} from './components/DefaultDocument'
-import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
-import {debug as serverDebug} from './debug'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

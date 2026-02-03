@@ -1,9 +1,8 @@
+import {useSource} from '../../../../studio/source'
+import {EnhancedObjectDialogProvider, useEnhancedObjectDialog} from '../context'
 import {renderHook} from '@testing-library/react'
 import {type PropsWithChildren} from 'react'
 import {describe, expect, type Mock, test, vi} from 'vitest'
-
-import {useSource} from '../../../../studio/source'
-import {EnhancedObjectDialogProvider, useEnhancedObjectDialog} from '../context'
 
 // Mock the entire module
 vi.mock('../../../../studio/source')

@@ -1,8 +1,7 @@
-import {RocketIcon} from '@sanity/icons'
-import {range} from 'lodash-es'
-
 import {CustomInputWithDefaultPresence} from './components/CustomInputWithDefaultPresence'
 import {CustomInputWithDialogOverlay} from './components/CustomInputWithDialogOverlay'
+import {RocketIcon} from '@sanity/icons'
+import {range} from 'lodash-es'
 
 export const objectWithNestedArray = {
   type: 'object',

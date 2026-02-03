@@ -1,6 +1,5 @@
-import {useCallback, useEffect, useState} from 'react'
-
 import {type RovingFocusProps} from './types'
+import {useCallback, useEffect, useState} from 'react'
 
 const MUTATION_ATTRIBUTE_FILTER = ['aria-hidden', 'disabled', 'href']
 

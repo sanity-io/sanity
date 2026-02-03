@@ -1,5 +1,5 @@
 name: Load Vercel Env Vars into GITHUB_ENV
-description: 'Pulls environment variables from Vercel and loads them into GITHUB_ENV'
+description: "Pulls environment variables from Vercel and loads them into GITHUB_ENV"
 inputs:
   variables:
     required: false
@@ -9,20 +9,20 @@ inputs:
     description: 'List of environment variables to set as secrets. A whitespace or comma separated list of variables, e.g: "SECRET1 SECRET2"'
   environment:
     required: false
-    default: 'preview'
-    description: 'What vercel environment to pull variables from (production or preview)'
+    default: "preview"
+    description: "What vercel environment to pull variables from (production or preview)"
   org-id:
     required: true
-    description: 'Vercel organization id'
+    description: "Vercel organization id"
   project-id:
     required: true
-    description: 'Vercel project id'
+    description: "Vercel project id"
   token:
     required: true
-    description: 'Vercel access token with read access to variables'
+    description: "Vercel access token with read access to variables"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Pull Vercel environment variables
       shell: bash

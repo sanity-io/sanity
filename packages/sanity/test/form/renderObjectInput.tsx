@@ -1,6 +1,3 @@
-import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
-import {vi} from 'vitest'
-
 import {
   type ComplexElementProps,
   defaultRenderAnnotation,
@@ -16,6 +13,8 @@ import {
 } from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
+import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
+import {vi} from 'vitest'
 
 const noopRenderDefault = () => <></>
 

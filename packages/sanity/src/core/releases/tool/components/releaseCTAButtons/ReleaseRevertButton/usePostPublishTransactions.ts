@@ -1,12 +1,11 @@
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, from, map, of} from 'rxjs'
-
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, from, map, of} from 'rxjs'
 
 export const usePostPublishTransactions = (documents: DocumentInRelease[]) => {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)

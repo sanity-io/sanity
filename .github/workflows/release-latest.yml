@@ -166,7 +166,7 @@ jobs:
       - name: Build bundles for staging
         env:
           # sets the __SANITY_STAGING__ global variable to true in built bundles
-          SANITY_INTERNAL_ENV: 'staging'
+          SANITY_INTERNAL_ENV: "staging"
         run: pnpm run build:bundle
 
       - name: Upload bundles to staging bucket

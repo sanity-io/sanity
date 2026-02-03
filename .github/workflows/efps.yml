@@ -13,12 +13,12 @@ on:
   workflow_dispatch:
     inputs:
       enable_profiler:
-        description: 'Enable profiler'
+        description: "Enable profiler"
         required: true
         type: boolean
         default: false
       record_video:
-        description: 'Record video'
+        description: "Record video"
         required: true
         type: boolean
         default: false
@@ -153,7 +153,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment-tag: 'efps-report'
+          comment-tag: "efps-report"
           message: |
             ### ⚡️ Editor Performance Report
 
@@ -241,5 +241,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ always() && github.event_name == 'pull_request' }}
         with:
-          comment-tag: 'efps-report'
+          comment-tag: "efps-report"
           file-path: ${{ github.workspace }}/dev/efps/results/benchmark-results.md

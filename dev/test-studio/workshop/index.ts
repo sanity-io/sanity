@@ -1,9 +1,8 @@
+import {type WorkshopOptions} from './types'
+import {WorkshopTool} from './WorkshopTool'
 import {TerminalIcon} from '@sanity/icons'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
-
-import {type WorkshopOptions} from './types'
-import {WorkshopTool} from './WorkshopTool'
 
 export const workshopTool = definePlugin<WorkshopOptions>((options) => ({
   name: '@local/workshop',

@@ -1,13 +1,12 @@
+import {Button, MenuButton} from '../../../ui-components'
+import {type Intent} from '../../structureBuilder'
+import {PaneMenuButtonItem} from './PaneMenuButtonItem'
+import {type _PaneMenuGroup, type _PaneMenuItem} from './types'
 import {UnknownIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-
-import {Button, MenuButton} from '../../../ui-components'
-import {type Intent} from '../../structureBuilder'
-import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {type _PaneMenuGroup, type _PaneMenuItem} from './types'
 
 function getDisabledReason(node: _PaneMenuItem) {
   if (!node.disabled) {

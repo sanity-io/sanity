@@ -1,6 +1,3 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useMemo, useState} from 'react'
-
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -12,6 +9,8 @@ import {type UpsellData} from '../studio/upsell/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {interpolateTemplate} from '../util/interpolateTemplate'
 import {useClient, useProjectId} from './'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useEffect, useMemo, useState} from 'react'
 
 interface UpsellDataProps {
   dataUri: string

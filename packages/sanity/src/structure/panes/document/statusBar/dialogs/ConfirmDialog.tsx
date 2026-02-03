@@ -1,8 +1,7 @@
-import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
-
 import {ConfirmPopover} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
+import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps

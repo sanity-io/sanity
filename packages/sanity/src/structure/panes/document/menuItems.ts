@@ -1,3 +1,6 @@
+import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
+import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
+import {INSPECT_ACTION_PREFIX} from './constants'
 import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
 import {
   type DocumentIdStack,
@@ -5,10 +8,6 @@ import {
   type DocumentInspectorMenuItem,
   type TFunction,
 } from 'sanity'
-
-import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
-import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
-import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector

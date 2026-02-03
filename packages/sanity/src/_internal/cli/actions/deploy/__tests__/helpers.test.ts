@@ -1,12 +1,3 @@
-import {type CliCommandContext} from '@sanity/cli'
-import {type SanityClient} from '@sanity/client'
-// oxlint-disable no-explicit-any
-import {type Dirent, type Stats} from 'node:fs'
-import fs from 'node:fs/promises'
-import {Readable} from 'node:stream'
-import {type Gzip} from 'node:zlib'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
 import {
   checkDir,
   createDeployment,
@@ -19,6 +10,14 @@ import {
   normalizeUrl,
   validateUrl,
 } from '../helpers'
+import {type CliCommandContext} from '@sanity/cli'
+import {type SanityClient} from '@sanity/client'
+// oxlint-disable no-explicit-any
+import {type Dirent, type Stats} from 'node:fs'
+import fs from 'node:fs/promises'
+import {Readable} from 'node:stream'
+import {type Gzip} from 'node:zlib'
+import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 vi.mock('node:fs/promises')
 

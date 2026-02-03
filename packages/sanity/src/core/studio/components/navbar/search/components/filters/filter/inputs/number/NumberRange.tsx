@@ -1,10 +1,9 @@
-import {Box, Flex, TextInput} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useState} from 'react'
-
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorNumberRangeValue} from '../../../../../definitions/operators/common'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {Box, Flex, TextInput} from '@sanity/ui'
+import {type ChangeEvent, useCallback, useState} from 'react'
 
 export function SearchFilterNumberRangeInput({
   onChange,

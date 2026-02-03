@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {PresentationDocumentContextValue} from '../../presentation/document/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

@@ -1,3 +1,6 @@
+import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
+import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
+import {debug} from '../../debug'
 import {type CliCommandContext, type CliCommandDefinition, type CliOutputter} from '@sanity/cli'
 import {sanityImport} from '@sanity/import'
 import {getIt} from 'get-it'
@@ -7,10 +10,6 @@ import {createReadStream} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import prettyMs from 'pretty-ms'
-
-import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
-import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
-import {debug} from '../../debug'
 
 const yellow = (str: string) => `\u001b[33m${str}\u001b[39m`
 

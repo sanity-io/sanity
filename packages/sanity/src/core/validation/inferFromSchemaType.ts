@@ -1,6 +1,5 @@
-import {type Schema, type SchemaType} from '@sanity/types'
-
 import {normalizeValidationRules} from './util/normalizeValidationRules'
+import {type Schema, type SchemaType} from '@sanity/types'
 
 // NOTE: this overload is for TS API compatibility with a previous implementation
 export function inferFromSchemaType(

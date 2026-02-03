@@ -1,7 +1,3 @@
-import {Schema} from '@sanity/schema'
-import {type SchemaType} from '@sanity/types'
-import {describe, expect, it} from 'vitest'
-
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'
 import {createFilterDefinitionDictionary} from '../definitions/filters'
@@ -9,6 +5,9 @@ import {createOperatorDefinitionDictionary} from '../definitions/operators'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
 import {type SearchFilter} from '../types'
 import {generateFilterQuery, narrowDocumentTypes, validateFilter} from './filterUtils'
+import {Schema} from '@sanity/schema'
+import {type SchemaType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 const mockSchema = Schema.compile({
   name: 'default',

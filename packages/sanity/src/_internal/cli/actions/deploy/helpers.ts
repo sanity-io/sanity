@@ -1,3 +1,6 @@
+import {debug as debugIt} from '../../debug'
+import {determineIsApp} from '../../util/determineIsApp'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
 import FormData from 'form-data'
@@ -8,10 +11,6 @@ import {PassThrough} from 'node:stream'
 import {fileURLToPath} from 'node:url'
 import {type Gzip} from 'node:zlib'
 import readPkgUp from 'read-pkg-up'
-
-import {debug as debugIt} from '../../debug'
-import {determineIsApp} from '../../util/determineIsApp'
-import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

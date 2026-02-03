@@ -1,10 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
-import {omit} from 'lodash-es'
-import {asyncScheduler, type Observable} from 'rxjs'
-import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
-
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
 import {type DraftsModelDocumentAvailability} from '../../../../preview'
@@ -15,6 +8,12 @@ import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {editState} from './editState'
 import {memoizeKeyGen} from './memoizeKeyGen'
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {omit} from 'lodash-es'
+import {asyncScheduler, type Observable} from 'rxjs'
+import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
+import shallowEquals from 'shallow-equals'
 
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200

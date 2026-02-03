@@ -1,12 +1,11 @@
+import {describeCliTest} from './shared/describe'
+import {testServerCommand} from './shared/devServer'
+import {fixturesPath, studioNames, studiosPath} from './shared/environment'
 import getPort from 'get-port'
 import {createHash} from 'node:crypto'
 import {copyFile, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
 import {describe, expect, test} from 'vitest'
-
-import {describeCliTest} from './shared/describe'
-import {testServerCommand} from './shared/devServer'
-import {fixturesPath, studioNames, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity dev`', () => {
   describe.each(studioNames)('%s', (studioName) => {

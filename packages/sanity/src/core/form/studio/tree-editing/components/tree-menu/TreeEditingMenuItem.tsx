@@ -1,3 +1,10 @@
+import {useTranslation} from '../../../../../i18n'
+import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
+import {getSchemaTypeTitle} from '../../../../../schema/helpers'
+import {useValuePreviewWithFallback} from '../../hooks'
+import {type DialogItem} from '../../types'
+import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
+import {getSiblingHasChildren} from './utils'
 import {hues} from '@sanity/color'
 import {ChevronRightIcon, StackCompactIcon} from '@sanity/icons'
 import {type Path} from '@sanity/types'
@@ -17,14 +24,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import scrollIntoViewIfNeeded, {type StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 import {css, styled} from 'styled-components'
 
-import {useTranslation} from '../../../../../i18n'
-import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
-import {getSchemaTypeTitle} from '../../../../../schema/helpers'
-import {useValuePreviewWithFallback} from '../../hooks'
-import {type DialogItem} from '../../types'
-import {isArrayItemPath} from '../../utils/build-tree-editing-state/utils'
-import {getSiblingHasChildren} from './utils'
-
 function hasOpenChild(item: DialogItem, selectedPath: Path | null): boolean {
   return (
     item.children?.some(
@@ -41,7 +40,7 @@ const SCROLL_BEHAVIOR_OPTIONS: StandardBehaviorOptions = {
 
 const AnimateChevronIcon = styled(ChevronRightIcon)`
   transition: transform 0.2s ease;
-  
+
   &[data-expanded='true'] {
     transform: rotate(90deg);
   }

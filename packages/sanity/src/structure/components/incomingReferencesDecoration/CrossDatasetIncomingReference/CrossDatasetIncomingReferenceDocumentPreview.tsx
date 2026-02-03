@@ -1,8 +1,7 @@
-import {Box, Flex} from '@sanity/ui'
-import {CrossDatasetReferencePreview, PreviewCard} from 'sanity'
-
 import {type CrossDatasetIncomingReference} from '../types'
 import {type CrossDatasetIncomingReferenceDocument} from './getCrossDatasetIncomingReferences'
+import {Box, Flex} from '@sanity/ui'
+import {CrossDatasetReferencePreview, PreviewCard} from 'sanity'
 
 export function CrossDatasetIncomingReferenceDocumentPreview({
   type,

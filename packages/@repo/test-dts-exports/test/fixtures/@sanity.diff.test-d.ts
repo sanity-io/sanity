@@ -33,7 +33,6 @@ import type {
   ValueType,
   wrap,
 } from '@sanity/diff'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/diff', () => {

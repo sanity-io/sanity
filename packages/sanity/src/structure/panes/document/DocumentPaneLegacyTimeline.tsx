@@ -1,12 +1,11 @@
-import {type SanityDocument} from '@sanity/types'
-import {useMemo, useState} from 'react'
-import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
-
 import {usePaneRouter} from '../../components'
 import {EMPTY_PARAMS} from './constants'
 import {usePaneOptions} from './DocumentPane'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
+import {type SanityDocument} from '@sanity/types'
+import {useMemo, useState} from 'react'
+import {getPublishedId, useTimelineSelector, useTimelineStore} from 'sanity'
 
 export const DocumentPaneWithLegacyTimelineStore = (props: DocumentPaneProviderProps) => {
   const {pane} = props

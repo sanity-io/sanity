@@ -1,6 +1,5 @@
-import {defineScope} from '@sanity/ui-workshop'
-
 import ReferenceSchemaStory from './ReferenceSchemaStory'
+import {defineScope} from '@sanity/ui-workshop'
 
 export default defineScope({
   name: 'core/schema',

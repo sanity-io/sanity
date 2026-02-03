@@ -1,8 +1,7 @@
-import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
-
 import {Button} from '../button'
 import {MenuButton} from '../menuButton'
 import {MenuItem} from '../menuItem'
+import {Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
 
 export default function MenuButtonStory() {
   return (

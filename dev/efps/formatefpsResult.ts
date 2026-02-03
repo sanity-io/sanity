@@ -1,9 +1,8 @@
+import {type EfpsAbResult} from './types'
+import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import {type EfpsAbResult} from './types'
-import {formatPercentageChange, isSignificantlyDifferent} from './utils'
 
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 const REFERENCE_TAG = process.env.REFERENCE_TAG || 'latest'

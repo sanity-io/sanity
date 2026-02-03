@@ -1,3 +1,7 @@
+import {HISTORY_INSPECTOR_NAME} from '../constants'
+import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
+import {useDocumentPane} from '../useDocumentPane'
+import {DocumentStatusPulse} from './DocumentStatusPulse'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -21,11 +25,6 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
-
-import {HISTORY_INSPECTOR_NAME} from '../constants'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline'
-import {useDocumentPane} from '../useDocumentPane'
-import {DocumentStatusPulse} from './DocumentStatusPulse'
 
 const RELATIVE_TIME_OPTIONS = {
   minimal: true,

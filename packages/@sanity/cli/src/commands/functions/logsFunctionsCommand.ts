@@ -1,8 +1,7 @@
-import {FunctionsLogsCommand} from '@sanity/runtime-cli'
-import {logger} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 import {createErrorLogger, transformHelpText} from '../../util/runtimeCommandHelp'
+import {FunctionsLogsCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
 
 export interface FunctionsLogsFlags {
   limit?: number

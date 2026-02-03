@@ -1,11 +1,10 @@
-import {describe, expect, it} from 'vitest'
-
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   type UpdateLiveDocumentEvent,
 } from './types'
 import {addParentToEvents, sortEvents} from './utils'
+import {describe, expect, it} from 'vitest'
 
 describe('addParentToEvents', () => {
   it('should add the correct parentId to the events', () => {})

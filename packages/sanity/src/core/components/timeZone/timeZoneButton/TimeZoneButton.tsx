@@ -1,11 +1,10 @@
+import {Button, Tooltip} from '../../../../ui-components'
+import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {EarthAmericasIcon} from '@sanity/icons'
 import {Box, Inline, Text} from '@sanity/ui'
 import {noop} from 'lodash-es'
 import {type ReactNode} from 'react'
-
-import {Button, Tooltip} from '../../../../ui-components'
-import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
-import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 
 export interface TimeZoneButtonZoneProps {
   useElementQueries?: boolean

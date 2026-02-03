@@ -1,11 +1,10 @@
-import {type SanityClient} from '@sanity/client'
-import {describe, expect, it} from 'vitest'
-
 import {
   type CompatibleStudioAppId,
   fetchCreateCompatibleAppId,
   type StudioAppResponse,
 } from '../fetchCreateCompatibleAppId'
+import {type SanityClient} from '@sanity/client'
+import {describe, expect, it} from 'vitest'
 
 describe('fetchCreateCompatibleAppId', () => {
   it(`should return internal app matching origin`, async () => {

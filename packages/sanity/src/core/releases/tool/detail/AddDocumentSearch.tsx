@@ -1,8 +1,7 @@
-import {type SanityDocument} from '@sanity/client'
-import {LayerProvider, PortalProvider} from '@sanity/ui'
-
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
+import {type SanityDocument} from '@sanity/client'
+import {LayerProvider, PortalProvider} from '@sanity/ui'
 
 export type AddedDocument = Pick<SanityDocument, '_id' | '_type' | 'title'> &
   Partial<SanityDocument>

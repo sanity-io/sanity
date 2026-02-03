@@ -1,3 +1,5 @@
+import {type DocumentGroupEvent} from '../store/events'
+import {type FieldValueError} from './validation'
 import {
   type ArrayDiff as AgnosticArrayDiff,
   type BooleanDiff as AgnosticBooleanDiff,
@@ -24,9 +26,6 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type ComponentType} from 'react'
-
-import {type DocumentGroupEvent} from '../store/events'
-import {type FieldValueError} from './validation'
 
 /**
  * History timeline / chunking

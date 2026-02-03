@@ -5,7 +5,7 @@ export const InlineBox = styled(Box)`
   &:not([hidden]) {
     display: inline;
     align-items: center;
-  
+
     &[data-changed] {
       cursor: pointer;
     }

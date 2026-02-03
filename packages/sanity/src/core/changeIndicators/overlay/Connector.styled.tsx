@@ -1,6 +1,5 @@
-import {styled} from 'styled-components'
-
 import {ClampedRect} from './ClampedRect'
+import {styled} from 'styled-components'
 
 export const DebugRect = styled.rect`
   stroke: #ccc;
@@ -24,7 +23,7 @@ export const InteractivePath = styled.path`
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0;
-  
+
   &:hover {
     opacity: 0.2;
   }

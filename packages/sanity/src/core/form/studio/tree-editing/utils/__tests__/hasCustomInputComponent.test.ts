@@ -1,8 +1,7 @@
+import {hasCustomInputComponent} from '../hasCustomInputComponent'
 import {Schema} from '@sanity/schema'
 import {type ObjectField, type Path} from '@sanity/types'
 import {beforeEach, describe, expect, test} from 'vitest'
-
-import {hasCustomInputComponent} from '../hasCustomInputComponent'
 
 describe('hasCustomInputComponent', () => {
   let testSchema: ReturnType<typeof Schema.compile>

@@ -1,8 +1,7 @@
+import {applyOrderingFunctions, fieldExtendsType, findStaticTypesInFilter} from '../helpers'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
-
-import {applyOrderingFunctions, fieldExtendsType, findStaticTypesInFilter} from '../helpers'
 
 const mockSchema = Schema.compile({
   name: 'default',

@@ -1,8 +1,7 @@
-import {BlueprintsInfoCommand} from '@sanity/runtime-cli'
-import {logger} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 import {transformHelpText} from '../../util/runtimeCommandHelp'
+import {BlueprintsInfoCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
 
 export interface BlueprintsInfoFlags {
   id?: string

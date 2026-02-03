@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test.describe('In PTE - references in popover', () => {
   test.beforeEach(async ({page, createDraftDocument, browserName}, testInfo) => {

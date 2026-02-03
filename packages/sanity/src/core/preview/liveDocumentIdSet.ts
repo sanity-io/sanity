@@ -1,10 +1,9 @@
+import {type SourceClientOptions} from '../config/types'
+import {versionedClient} from '../studioClient'
 import {type QueryParams, type SanityClient} from '@sanity/client'
 import {sortedIndex} from 'lodash-es'
 import {of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
-
-import {type SourceClientOptions} from '../config/types'
-import {versionedClient} from '../studioClient'
 
 export type DocumentIdSetObserverState = {
   status: 'reconnecting' | 'connected'

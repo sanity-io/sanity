@@ -1,8 +1,7 @@
-import {describe, expect, it} from 'vitest'
-
 import {defineField} from '../schema'
 import {isAssetAspect} from './asserters'
 import {defineAssetAspect} from './defineAssetAspect'
+import {describe, expect, it} from 'vitest'
 
 describe('defineAssetAspect', () => {
   it('produces a valid aspect document', () => {

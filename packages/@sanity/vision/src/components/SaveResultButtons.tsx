@@ -1,9 +1,8 @@
+import {visionLocaleNamespace} from '../i18n'
 import {DocumentSheetIcon} from '@sanity/icons'
 import {Button, Tooltip} from '@sanity/ui'
 import {type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
-
-import {visionLocaleNamespace} from '../i18n'
 
 interface SaveButtonProps {
   blobUrl: string | undefined

@@ -1,7 +1,6 @@
+import {type TasksNavigationContextValue} from './types'
 import {useContext} from 'react'
 import {TasksNavigationContext} from 'sanity/_singletons'
-
-import {type TasksNavigationContextValue} from './types'
 
 export function useTasksNavigation(): TasksNavigationContextValue {
   const context = useContext(TasksNavigationContext)

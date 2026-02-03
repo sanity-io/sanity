@@ -1,15 +1,3 @@
-import {render, screen, waitFor} from '@testing-library/react'
-import {
-  defineConfig,
-  type SanityClient,
-  useActiveReleases,
-  useArchivedReleases,
-  useDocumentVersions,
-  useValuePreview,
-} from 'sanity'
-import {useRouter} from 'sanity/router'
-import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
-
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
@@ -21,6 +9,17 @@ import {
 import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../useDocumentPane'
 import {DocumentHeaderTitle} from '../../DocumentHeaderTitle'
+import {render, screen, waitFor} from '@testing-library/react'
+import {
+  defineConfig,
+  type SanityClient,
+  useActiveReleases,
+  useArchivedReleases,
+  useDocumentVersions,
+  useValuePreview,
+} from 'sanity'
+import {useRouter} from 'sanity/router'
+import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({

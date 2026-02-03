@@ -1,10 +1,9 @@
-import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useState} from 'react'
-
 import {LOADING_PANE} from '../constants'
 import {useResolvedPanes} from '../structureResolvers'
 import {StructureToolProvider} from '../StructureToolProvider'
 import {type RouterPanes} from '../types'
+import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
+import {type ChangeEvent, useCallback, useState} from 'react'
 
 const testPaths: RouterPanes[] = [
   [],

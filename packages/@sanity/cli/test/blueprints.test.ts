@@ -1,5 +1,3 @@
-import {describe, expect, it, vi} from 'vitest'
-
 import addBlueprintsCommand from '../src/commands/blueprints/addBlueprintsCommand'
 import configBlueprintsCommand from '../src/commands/blueprints/configBlueprintsCommand'
 import deployBlueprintsCommand from '../src/commands/blueprints/deployBlueprintsCommand'
@@ -11,6 +9,7 @@ import logsBlueprintsCommand from '../src/commands/blueprints/logsBlueprintsComm
 import planBlueprintsCommand from '../src/commands/blueprints/planBlueprintsCommand'
 import stacksBlueprintsCommand from '../src/commands/blueprints/stacksBlueprintsCommand'
 import {type CliCommandArguments, type CliCommandContext} from '../src/types'
+import {describe, expect, it, vi} from 'vitest'
 
 // Mock all blueprint cores
 const mockCores = {

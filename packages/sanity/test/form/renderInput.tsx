@@ -1,16 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {
-  defineType,
-  type FieldDefinition,
-  type FormNodeValidation,
-  type ObjectSchemaType,
-  type Path,
-  type SchemaType,
-} from '@sanity/types'
-import {render} from '@testing-library/react'
-import {type FocusEvent, type RefObject} from 'react'
-import {type MockInstance, vi} from 'vitest'
-
 import {
   createPatchChannel,
   EMPTY_ARRAY,
@@ -27,6 +14,18 @@ import {DocumentFieldActionsProvider} from '../../src/core/form/studio/contexts/
 import {createMockSanityClient} from '../mocks/mockSanityClient'
 import {createTestProvider} from '../testUtils/TestProvider'
 import {type TestRenderProps} from './types'
+import {type SanityClient} from '@sanity/client'
+import {
+  defineType,
+  type FieldDefinition,
+  type FormNodeValidation,
+  type ObjectSchemaType,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
+import {render} from '@testing-library/react'
+import {type FocusEvent, type RefObject} from 'react'
+import {type MockInstance, vi} from 'vitest'
 
 export interface TestRenderInputContext {
   client: SanityClient

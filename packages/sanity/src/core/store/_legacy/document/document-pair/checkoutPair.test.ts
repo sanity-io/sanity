@@ -1,9 +1,8 @@
+import {checkoutPair} from './checkoutPair'
 import {type SanityClient} from '@sanity/client'
 import {merge, of} from 'rxjs'
 import {delay} from 'rxjs/operators'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
-
-import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = vi.fn(() => of({}))
 const mockedActionRequest = vi.fn(() => of({}))

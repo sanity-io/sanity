@@ -1,9 +1,8 @@
+import {useTranslation} from '../../../../../../i18n'
+import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 import {type SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-
-import {useTranslation} from '../../../../../../i18n'
-import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 
 interface TypePillsProps {
   availableCharacters?: number

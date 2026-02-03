@@ -1,7 +1,6 @@
-import {useCallback, useEffect, useState} from 'react'
-
 import {type PluginPostMessage} from '../types'
 import {useToken} from './useToken'
+import {useCallback, useEffect, useState} from 'react'
 
 export const usePluginPostMessage = (
   origin: string,

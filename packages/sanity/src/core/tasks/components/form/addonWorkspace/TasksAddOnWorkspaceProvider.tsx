@@ -1,5 +1,3 @@
-import {useEffect, useMemo} from 'react'
-
 import {LoadingBlock} from '../../../../components'
 import {type Config, prepareConfig} from '../../../../config'
 import {useClient} from '../../../../hooks'
@@ -14,6 +12,7 @@ import {
 import {API_VERSION} from '../../../constants'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
+import {useEffect, useMemo} from 'react'
 
 function TasksAddonWorkspaceProviderInner({
   children,

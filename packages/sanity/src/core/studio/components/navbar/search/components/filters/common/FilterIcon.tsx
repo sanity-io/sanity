@@ -1,8 +1,7 @@
-import {UnknownIcon} from '@sanity/icons'
-
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {type SearchFilter} from '../../../types'
+import {UnknownIcon} from '@sanity/icons'
 
 interface FilterIconProps {
   filter: SearchFilter

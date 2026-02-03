@@ -1,14 +1,3 @@
-import {flatten, groupBy, orderBy, sortBy} from 'lodash-es'
-import {
-  type CSSProperties,
-  Fragment,
-  memo,
-  type ReactNode,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
-
 import {
   AVATAR_ARROW_HEIGHT,
   AVATAR_DISTANCE,
@@ -27,6 +16,16 @@ import {
 } from '../types'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 import {type ReportedPresenceData, usePresenceReportedValues} from './tracker'
+import {flatten, groupBy, orderBy, sortBy} from 'lodash-es'
+import {
+  type CSSProperties,
+  Fragment,
+  memo,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
 const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',

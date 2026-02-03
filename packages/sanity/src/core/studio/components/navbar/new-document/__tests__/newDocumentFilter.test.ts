@@ -1,8 +1,7 @@
-import {startCase} from 'lodash-es'
-import {describe, expect, it} from 'vitest'
-
 import {filterOptions} from '../filter'
 import {type NewDocumentOption} from '../types'
+import {startCase} from 'lodash-es'
+import {describe, expect, it} from 'vitest'
 
 const createNewDocumentOption = (name: string): NewDocumentOption => ({
   id: name,

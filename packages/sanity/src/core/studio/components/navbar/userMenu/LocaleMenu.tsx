@@ -1,9 +1,8 @@
+import {MenuItem} from '../../../../../ui-components'
+import {useLocale} from '../../../../i18n/hooks/useLocale'
 import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 import {useCallback} from 'react'
-
-import {MenuItem} from '../../../../../ui-components'
-import {useLocale} from '../../../../i18n/hooks/useLocale'
 
 // TODO: re-enable locale selection once schema localization is available
 const LOCALE_SELECTION_DISABLED = true

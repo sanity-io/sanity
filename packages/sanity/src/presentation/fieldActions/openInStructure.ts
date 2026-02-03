@@ -1,3 +1,4 @@
+import {DEFAULT_TOOL_NAME} from '../constants'
 import {MasterDetailIcon} from '@sanity/icons'
 import {useContext, useMemo} from 'react'
 import {
@@ -12,8 +13,6 @@ import {
 } from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
-
-import {DEFAULT_TOOL_NAME} from '../constants'
 
 function useOpenInStructureAction(
   props: DocumentFieldActionProps,

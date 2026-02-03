@@ -1,10 +1,3 @@
-import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
-import TrapFocus from 'react-focus-lock'
-import {styled} from 'styled-components'
-
 import {Button} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
@@ -19,6 +12,12 @@ import {WorkspaceMenuButton} from '../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {CloseIcon, LeaveIcon} from '@sanity/icons'
+import {Box, Card, Flex, Layer, Stack, Text} from '@sanity/ui'
+import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
+import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
+import TrapFocus from 'react-focus-lock'
+import {styled} from 'styled-components'
 
 const ANIMATION_TRANSITION: Transition = {
   bounce: 0,

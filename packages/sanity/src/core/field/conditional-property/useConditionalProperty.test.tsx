@@ -1,9 +1,8 @@
+import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {type ConditionalPropertyProps, useConditionalProperty} from './useConditionalProperty'
 import {type ConditionalPropertyCallback} from '@sanity/types'
 import {renderHook} from '@testing-library/react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
-
-import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {type ConditionalPropertyProps, useConditionalProperty} from './useConditionalProperty'
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',

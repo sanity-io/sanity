@@ -1,3 +1,10 @@
+import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
+import {useWorkspaces} from '../../../workspaces'
+import {useWorkspaceAuthStates} from './hooks'
+import {ManageMenu} from './ManageMenu'
+import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {
   Box,
@@ -10,14 +17,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
-
-import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
-import {useWorkspaces} from '../../../workspaces'
-import {useWorkspaceAuthStates} from './hooks'
-import {ManageMenu} from './ManageMenu'
-import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,

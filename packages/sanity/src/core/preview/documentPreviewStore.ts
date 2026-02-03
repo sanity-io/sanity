@@ -1,14 +1,3 @@
-import {
-  type MutationEvent,
-  type QueryParams,
-  type SanityClient,
-  type StackablePerspective,
-  type WelcomeEvent,
-} from '@sanity/client'
-import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
-import {combineLatest, type Observable} from 'rxjs'
-import {distinctUntilChanged, filter, map} from 'rxjs/operators'
-
 import {isRecord} from '../util'
 import {
   createDocumentStackAvailabilityObserver,
@@ -32,6 +21,16 @@ import {
   type PreviewableType,
   type PreviewPath,
 } from './types'
+import {
+  type MutationEvent,
+  type QueryParams,
+  type SanityClient,
+  type StackablePerspective,
+  type WelcomeEvent,
+} from '@sanity/client'
+import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {combineLatest, type Observable} from 'rxjs'
+import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 
 /**
  * @hidden

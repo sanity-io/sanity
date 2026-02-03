@@ -1,11 +1,10 @@
+import {renderFileInput} from '../../../../../../../test/form'
+import {BaseFileInput} from '../FileInput'
 import {type FileAsset, type FileSchemaType} from '@sanity/types'
 import {screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type Observable, of} from 'rxjs'
 import {describe, expect, it} from 'vitest'
-
-import {renderFileInput} from '../../../../../../../test/form'
-import {BaseFileInput} from '../FileInput'
 
 const observeAssetStub = (): Observable<FileAsset> =>
   of({

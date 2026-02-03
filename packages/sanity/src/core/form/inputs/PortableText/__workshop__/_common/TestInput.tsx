@@ -1,3 +1,8 @@
+import {useSource} from '../../../../../studio'
+import {createPatchChannel} from '../../../../patch/PatchChannel'
+import {applyAll} from '../../../../patch/simplePatch'
+import {type PortableTextMarker, type RenderCustomMarkers} from '../../../../types'
+import {type RenderBlockActionsCallback} from '../../../../types/_transitional'
 import {
   type ArraySchemaType,
   type Path,
@@ -5,12 +10,6 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-
-import {useSource} from '../../../../../studio'
-import {createPatchChannel} from '../../../../patch/PatchChannel'
-import {applyAll} from '../../../../patch/simplePatch'
-import {type PortableTextMarker, type RenderCustomMarkers} from '../../../../types'
-import {type RenderBlockActionsCallback} from '../../../../types/_transitional'
 
 interface TestInputProps {
   markers?: PortableTextMarker[]

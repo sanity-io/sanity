@@ -1,10 +1,9 @@
-import {LaunchIcon} from '@sanity/icons'
-import {type ForwardedRef, forwardRef} from 'react'
-
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {createLocaleNamespace} from '../i18n'
 import {createUserDocumentationUrl} from './constants'
+import {LaunchIcon} from '@sanity/icons'
+import {type ForwardedRef, forwardRef} from 'react'
 
 export const CreateLearnMoreButton = forwardRef(function CreateLearnMoreButton(
   props,

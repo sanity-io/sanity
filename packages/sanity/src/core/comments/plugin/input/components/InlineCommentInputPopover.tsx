@@ -1,12 +1,11 @@
+import {Popover, type PopoverProps} from '../../../../../ui-components'
+import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../../../components'
+import {hasCommentMessageValue} from '../../../helpers'
 import {type CurrentUser} from '@sanity/types'
 import {Stack, useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useRef} from 'react'
 import {styled} from 'styled-components'
-
-import {Popover, type PopoverProps} from '../../../../../ui-components'
-import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../../../components'
-import {hasCommentMessageValue} from '../../../helpers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 

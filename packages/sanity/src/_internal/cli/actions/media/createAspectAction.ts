@@ -1,10 +1,9 @@
+import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
 import {type CliCommandAction} from '@sanity/cli'
 import {createPublishedId} from '@sanity/id-utils'
 import {camelCase} from 'lodash-es'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
-import {withMediaLibraryConfig} from './lib/withMediaLibraryConfig'
 
 const createAspectAction: CliCommandAction = async (args, context) => {
   const {output, chalk, prompt, mediaLibrary} = withMediaLibraryConfig(context)

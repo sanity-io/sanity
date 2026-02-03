@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {ZIndexContextValue} from '../../core/components/zOffsets/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

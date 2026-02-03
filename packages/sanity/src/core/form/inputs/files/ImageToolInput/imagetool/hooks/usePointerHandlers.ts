@@ -1,5 +1,3 @@
-import {type RefObject, useCallback, useRef, useState} from 'react'
-
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from '../constants'
 import {
   type Crop,
@@ -16,6 +14,7 @@ import {
   handleHotspotMove,
   handleHotspotResize,
 } from '../utils'
+import {type RefObject, useCallback, useRef, useState} from 'react'
 
 interface UsePointerHandlersProps {
   value: Partial<CropAndHotspot>

@@ -1,7 +1,3 @@
-import {type ClientPerspective} from '@sanity/client'
-import {type SchemaType} from '@sanity/types'
-import {type ButtonTone, type CardTone} from '@sanity/ui'
-
 import {
   type SearchHit,
   type SearchOptions,
@@ -10,6 +6,9 @@ import {
 } from '../../../../search'
 import {type SearchFieldDefinition} from './definitions/fields'
 import {type SearchFilterDefinition} from './definitions/filters'
+import {type ClientPerspective} from '@sanity/client'
+import {type SchemaType} from '@sanity/types'
+import {type ButtonTone, type CardTone} from '@sanity/ui'
 
 export type DocumentTypeMenuItem =
   | DocumentTypeMenuDivider

@@ -1,13 +1,3 @@
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
-
-import {runTypegenGenerate, RunTypegenOptions, TypesGeneratedTrace} from '@sanity/codegen'
-import {noopLogger} from '@sanity/telemetry'
-import chalk from 'chalk'
-import logSymbols from 'log-symbols'
-import path from 'node:path'
-import {rimraf} from 'rimraf'
-import semver from 'semver'
-
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {baseUrl} from '../../util/baseUrl'
@@ -24,6 +14,14 @@ import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 import {BuildTrace} from './build.telemetry'
+import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {runTypegenGenerate, RunTypegenOptions, TypesGeneratedTrace} from '@sanity/codegen'
+import {noopLogger} from '@sanity/telemetry'
+import chalk from 'chalk'
+import logSymbols from 'log-symbols'
+import path from 'node:path'
+import {rimraf} from 'rimraf'
+import semver from 'semver'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean

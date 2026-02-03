@@ -1,7 +1,6 @@
+import {assetOperators} from './assetOperators'
 import {type ReferenceValue} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
-
-import {assetOperators} from './assetOperators'
 
 const fieldPath = 'asset'
 const valueFile: ReferenceValue = {

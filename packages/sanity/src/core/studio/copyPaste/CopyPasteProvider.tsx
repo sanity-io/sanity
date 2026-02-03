@@ -1,11 +1,3 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
-import {flatten, isEqual, last} from 'lodash-es'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
-import {CopyPasteContext} from 'sanity/_singletons'
-
 import {
   type FormDocumentValue,
   type FormPatch,
@@ -31,6 +23,13 @@ import {
   type SanityClipboardItem,
 } from './types'
 import {getClipboardItem, isEmptyValue, writeClipboardItem} from './utils'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
+import {flatten, isEqual, last} from 'lodash-es'
+import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {CopyPasteContext} from 'sanity/_singletons'
 /**
  * @beta
  * @hidden

@@ -1,3 +1,8 @@
+import {type SourceClientOptions} from '../config/types'
+import {type LocaleSource} from '../i18n/types'
+import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
+import {getVersionFromId} from '../util'
+import {validateDocumentObservable} from './validateDocument'
 import {type SanityClient} from '@sanity/client'
 import {
   isGlobalDocumentReference,
@@ -33,12 +38,6 @@ import {
   throttleTime,
 } from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-
-import {type SourceClientOptions} from '../config/types'
-import {type LocaleSource} from '../i18n/types'
-import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
-import {getVersionFromId} from '../util'
-import {validateDocumentObservable} from './validateDocument'
 
 /**
  * @hidden

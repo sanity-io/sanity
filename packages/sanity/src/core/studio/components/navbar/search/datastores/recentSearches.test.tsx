@@ -1,8 +1,3 @@
-import {Schema} from '@sanity/schema'
-import {defineType, type ObjectSchemaType} from '@sanity/types'
-import {act, renderHook} from '@testing-library/react'
-import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {type SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
@@ -11,6 +6,10 @@ import {type SearchFilter} from '../types'
 import {MAX_RECENT_SEARCHES, useRecentSearchesStore} from './recentSearches'
 import * as useStoredSearchModule from './useStoredSearch'
 import {RECENT_SEARCH_VERSION, type StoredSearch} from './useStoredSearch'
+import {Schema} from '@sanity/schema'
+import {defineType, type ObjectSchemaType} from '@sanity/types'
+import {act, renderHook} from '@testing-library/react'
+import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Mock useStoredSearch
 vi.mock('./useStoredSearch', async () => ({

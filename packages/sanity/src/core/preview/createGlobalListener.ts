@@ -1,8 +1,7 @@
-import {type SanityClient} from '@sanity/client'
-import {timer} from 'rxjs'
-
 import {LISTENER_RESET_DELAY} from './constants'
 import {shareReplayLatest} from './utils/shareReplayLatest'
+import {type SanityClient} from '@sanity/client'
+import {timer} from 'rxjs'
 
 /**
  * @internal

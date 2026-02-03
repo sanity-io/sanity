@@ -1,14 +1,13 @@
+import {usePaneLayout} from './usePaneLayout'
 import {Layer} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
-
-import {usePaneLayout} from './usePaneLayout'
 
 const Root = styled(Layer)`
   position: relative;
   width: 1px;
   min-width: 1px;
-  
+
   &:before {
     content: '';
     display: block;
@@ -19,17 +18,17 @@ const Root = styled(Layer)`
     width: 1px;
     background-color: var(--card-border-color);
   }
-  
+
   &:not([data-disabled]) {
     cursor: ew-resize;
     width: 9px;
     min-width: 9px;
     margin: 0 -4px;
-  
+
     &:before {
       left: 4px;
     }
-  
+
     &:after {
       content: '';
       display: block;
@@ -42,7 +41,7 @@ const Root = styled(Layer)`
       opacity: 0;
       transition: opacity 150ms;
     }
-  
+
     &[data-dragging]:after,
     &:hover:after {
       opacity: 0.2;

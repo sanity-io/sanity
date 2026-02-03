@@ -1,11 +1,10 @@
-import {TrashIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
-
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
+import {TrashIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
 
 interface Props {
   onDelete?: () => void

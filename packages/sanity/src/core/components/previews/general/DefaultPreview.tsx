@@ -1,14 +1,13 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-import classNames from 'classnames'
-import {styled} from 'styled-components'
-import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-
 import {useTranslation} from '../../../i18n'
 import {LinearProgress} from '../../progress/LinearProgress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import classNames from 'classnames'
+import {styled} from 'styled-components'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 /**
  * @hidden

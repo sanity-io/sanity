@@ -1,10 +1,9 @@
-import {render, screen} from '@testing-library/react'
-import {of} from 'rxjs'
-import {beforeEach, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {useRenderingContextStore} from '../store/_legacy/datastores'
 import {CapabilityGate} from './CapabilityGate'
+import {render, screen} from '@testing-library/react'
+import {of} from 'rxjs'
+import {beforeEach, expect, it, vi} from 'vitest'
 
 vi.mock('../store/_legacy/datastores.ts')
 

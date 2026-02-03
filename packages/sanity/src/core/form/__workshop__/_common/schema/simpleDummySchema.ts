@@ -1,6 +1,5 @@
-import {type Rule} from '@sanity/types'
-
 import {type WorkshopSchemaProps, wrapSchema} from '../data'
+import {type Rule} from '@sanity/types'
 
 export default function getSchema(props: WorkshopSchemaProps) {
   const {hiddenGroup = false} = props

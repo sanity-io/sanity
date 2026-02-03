@@ -1,6 +1,5 @@
-import {useMemo} from 'react'
-
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
+import {useMemo} from 'react'
 
 export function useSpellCheck(): boolean {
   const schemaTypes = usePortableTextMemberSchemaTypes()

@@ -1,9 +1,8 @@
-import {type Mock, type Mocked, vi} from 'vitest'
-
 import {
   type ScheduleDraftOperationsValue,
   useScheduleDraftOperations,
 } from '../useScheduleDraftOperations'
+import {type Mock, type Mocked, vi} from 'vitest'
 
 export const scheduleDraftOperationsMock: Mocked<ScheduleDraftOperationsValue> = {
   createScheduledDraft: vi.fn(),

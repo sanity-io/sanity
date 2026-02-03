@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test.describe('Presentation', () => {
   test.beforeEach(async ({page}) => {

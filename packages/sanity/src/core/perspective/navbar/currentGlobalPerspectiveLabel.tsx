@@ -1,3 +1,10 @@
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {RELEASES_INTENT} from '../../releases/plugin'
+import {isReleaseDocument} from '../../releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {oversizedButtonStyle} from '../styles'
+import {type TargetPerspective} from '../types'
 import {type ReleaseDocument} from '@sanity/client'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Box, Button, Text} from '@sanity/ui'
@@ -14,14 +21,6 @@ import {
 } from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {RELEASES_INTENT} from '../../releases/plugin'
-import {isReleaseDocument} from '../../releases/store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
-import {oversizedButtonStyle} from '../styles'
-import {type TargetPerspective} from '../types'
 
 const OversizedButton = styled(IntentLink)`
   ${oversizedButtonStyle}

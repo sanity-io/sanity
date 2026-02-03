@@ -1,15 +1,14 @@
-import {type SanityClient} from '@sanity/client'
-import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import {of} from 'rxjs'
-import {describe, expect, test, vi} from 'vitest'
-
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {defineConfig} from '../../../../config'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
 import {featureDisabledRequest, featureEnabledRequest} from './mocks'
+import {type SanityClient} from '@sanity/client'
+import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import {of} from 'rxjs'
+import {describe, expect, test, vi} from 'vitest'
 
 const AVAILABLE = {
   available: true,

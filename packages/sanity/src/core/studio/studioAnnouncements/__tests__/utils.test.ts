@@ -1,6 +1,5 @@
-import {describe, expect, test} from 'vitest'
-
 import {isValidAnnouncementAudience, isValidAnnouncementRole} from '../utils'
+import {describe, expect, test} from 'vitest'
 
 describe('isValidAnnouncementRole', () => {
   const userRoles = [

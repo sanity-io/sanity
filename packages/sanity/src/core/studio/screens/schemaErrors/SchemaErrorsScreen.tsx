@@ -1,13 +1,12 @@
-import {type Schema} from '@sanity/types'
-import {Card, Container, Flex, Heading, Stack, useToast} from '@sanity/ui'
-import {useEffect} from 'react'
-
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
 import {reportWarnings} from './reportWarnings'
 import {SchemaProblemGroups} from './SchemaProblemGroups'
+import {type Schema} from '@sanity/types'
+import {Card, Container, Flex, Heading, Stack, useToast} from '@sanity/ui'
+import {useEffect} from 'react'
 
 interface SchemaErrorsScreenProps {
   schema: Schema

@@ -1,7 +1,3 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import {describe, expect} from 'vitest'
-
 import {determineAppTemplate} from '../src/actions/init-project/determineAppTemplate'
 import templates from '../src/actions/init-project/templates'
 import {describeCliTest, testConcurrent} from './shared/describe'
@@ -12,6 +8,9 @@ import {
   runSanityCmdCommand,
   studioNames,
 } from './shared/environment'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import {describe, expect} from 'vitest'
 
 async function cleanOutputDirectory(outpath: string): Promise<void> {
   const fullPath = path.join(baseTestPath, outpath)

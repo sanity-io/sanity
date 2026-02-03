@@ -1,15 +1,3 @@
-import {
-  type CurrentUser,
-  defineField,
-  defineType,
-  isIndexTuple,
-  isKeySegment,
-  type ObjectSchemaType,
-  type Path,
-} from '@sanity/types'
-import {startsWith, toString} from '@sanity/util/paths'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
-
 import {createSchema} from '../../../schema/createSchema'
 import {
   createPrepareFormState,
@@ -29,6 +17,17 @@ import {
   type PrimitiveFormNode,
 } from '../types/nodes'
 import {type StateTree} from '../types/state'
+import {
+  type CurrentUser,
+  defineField,
+  defineType,
+  isIndexTuple,
+  isKeySegment,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
+import {startsWith, toString} from '@sanity/util/paths'
+import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 let prepareFormState!: PrepareFormState
 

@@ -1,8 +1,3 @@
-import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
-import {TextSkeleton} from '@sanity/ui'
-import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
-
 import {
   type RelativeTimeOptions,
   useDateTimeFormat,
@@ -16,6 +11,10 @@ import {TASK_STATUS} from '../../../constants'
 import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskTarget} from '../../../types'
 import {type FieldChange} from './parseTransactions'
+import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
+import {TextSkeleton} from '@sanity/ui'
+import {IntentLink} from 'sanity/router'
+import {styled} from 'styled-components'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   month: 'long',

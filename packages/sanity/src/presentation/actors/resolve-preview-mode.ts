@@ -1,10 +1,9 @@
-import {fromPromise, type PromiseActorLogic} from 'xstate'
-
 import {
   type PreviewUrlOption,
   type PreviewUrlPreviewMode,
   type PreviewUrlPreviewModeOptionContext,
 } from '../types'
+import {fromPromise, type PromiseActorLogic} from 'xstate'
 
 type Options = Omit<PreviewUrlPreviewModeOptionContext, 'origin'>
 

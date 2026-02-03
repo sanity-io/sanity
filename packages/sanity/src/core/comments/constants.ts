@@ -1,6 +1,5 @@
-import {type ColorHueKey} from '@sanity/color'
-
 import {type CommentReactionOption, type CommentReactionShortNames} from './types'
+import {type ColorHueKey} from '@sanity/color'
 
 /**
  * @internal

@@ -1,8 +1,7 @@
+import {type ThemerImportWorkerData} from './themerImportWorker'
 import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 import {describe, expect, test} from 'vitest'
-
-import {type ThemerImportWorkerData} from './themerImportWorker'
 
 function getImportWorker(importName: string) {
   const workerData: ThemerImportWorkerData = {

@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {DocumentFieldAction} from '../../core/config/document/fieldActions/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

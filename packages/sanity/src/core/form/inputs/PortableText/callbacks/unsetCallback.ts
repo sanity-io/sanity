@@ -1,7 +1,6 @@
-import {type PortableTextBlock} from '@sanity/types'
-
 import {PatchEvent, unset} from '../../../patch'
 import {type UnsetCallback} from './types'
+import {type PortableTextBlock} from '@sanity/types'
 
 export function createUnsetCallback(options: {
   block: PortableTextBlock

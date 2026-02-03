@@ -1,6 +1,3 @@
-import {expect} from '@playwright/test'
-import {type SanityDocument} from '@sanity/client'
-
 import {test} from '../../../studio-test'
 import {
   speciesDocumentNameASAP,
@@ -21,6 +18,8 @@ import {
   getRandomReleaseId,
   skipIfBrowser,
 } from '../utils/methods'
+import {expect} from '@playwright/test'
+import {type SanityDocument} from '@sanity/client'
 
 // for before all to work with single worker and run only once per tests and describe
 // this is to avoid issues with multiple releases being created per test

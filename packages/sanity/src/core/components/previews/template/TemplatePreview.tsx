@@ -1,12 +1,11 @@
+import {Media, type MediaProps} from '../_common/Media'
+import {PREVIEW_SIZES} from '../constants'
+import {type PreviewMediaDimensions} from '../types'
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-
-import {Media, type MediaProps} from '../_common/Media'
-import {PREVIEW_SIZES} from '../constants'
-import {type PreviewMediaDimensions} from '../types'
 
 /**
  * @hidden
@@ -29,12 +28,12 @@ const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
 
 const Root = styled(Box)`
   height: 100%;
-  
+
   a {
     color: currentColor;
     text-decoration: none;
   }
-  
+
   svg[data-sanity-icon] {
     margin: 0;
   }

@@ -1,3 +1,5 @@
+import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
+import {type SortOrder} from './types'
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
@@ -25,9 +27,6 @@ import {
   type SearchOptions,
   type SearchStrategy,
 } from 'sanity'
-
-import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
-import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
   client: SanityClient

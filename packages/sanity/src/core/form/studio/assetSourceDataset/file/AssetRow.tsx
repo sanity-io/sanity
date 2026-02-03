@@ -1,3 +1,13 @@
+import {Tooltip} from '../../../../../ui-components'
+import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
+import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
+import {AssetMenu} from '../shared/AssetMenu'
+import {AssetUsageDialog} from '../shared/AssetUsageDialog'
+import {type AssetMenuAction} from '../types'
+import {formatMimeType} from '../utils/mimeType'
 import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {type Asset as AssetType} from '@sanity/types'
 import {
@@ -15,17 +25,6 @@ import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useSt
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
 
-import {Tooltip} from '../../../../../ui-components'
-import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
-import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
-import {AssetMenu} from '../shared/AssetMenu'
-import {AssetUsageDialog} from '../shared/AssetUsageDialog'
-import {type AssetMenuAction} from '../types'
-import {formatMimeType} from '../utils/mimeType'
-
 interface RowProps {
   isMobile?: boolean
   asset: AssetType
@@ -41,9 +40,7 @@ const CardIconWrapper = styled.span`
 `
 
 // These are here because using vanilla UI components caused a type issue inside of styled-components
-const CustomFlex = styled(Flex)`
-  
-`
+const CustomFlex = styled(Flex)``
 
 const CustomCard = styled(Card)<RowProps>`
   ${(props) =>
@@ -103,11 +100,11 @@ const RowButton = styled(Button)<RowProps>`
       &:hover:before {
         background-color: var(--card-bg-color);
       }
-      
+
       &:focus:before {
         background-color: var(--card-code-bg-color);
       }
-      
+
       &:focus-within:before {
         background-color: var(--card-bg-color);
       }

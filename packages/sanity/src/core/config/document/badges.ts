@@ -1,7 +1,6 @@
-import {type ComponentType, type ReactNode} from 'react'
-
 import {type HookCollectionActionHook} from '../../components/hookCollection'
 import {type EditStateFor} from '../../store'
+import {type ComponentType, type ReactNode} from 'react'
 
 /**
  * @hidden

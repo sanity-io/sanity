@@ -1,3 +1,6 @@
+import {DocumentPaneProvider} from '../panes'
+import {StructureToolProvider} from '../StructureToolProvider'
+import {type DocumentPaneNode} from '../types'
 import {Box, Button, Code, Dialog, Stack} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -12,10 +15,6 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
-
-import {DocumentPaneProvider} from '../panes'
-import {StructureToolProvider} from '../StructureToolProvider'
-import {type DocumentPaneNode} from '../types'
 
 export default function InitialValueStory() {
   const documentId = 'test'

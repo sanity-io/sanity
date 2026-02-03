@@ -1,7 +1,6 @@
-import {type DecorationMember} from 'sanity'
-
 import {IncomingReferencesDecoration} from './IncomingReferencesDecoration'
 import {type IncomingReferencesOptions} from './types'
+import {type DecorationMember} from 'sanity'
 
 /**
  * Helper function to define an incoming references decoration.

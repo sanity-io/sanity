@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-import {type MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
-import {getPublishedId} from 'sanity'
-import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'
-
 import {
   type CombinedSearchParams,
   type FrameState,
@@ -13,6 +8,10 @@ import {
   type StructureDocumentPaneParams,
 } from './types'
 import {parseRouterState} from './util/parse'
+/* eslint-disable @typescript-eslint/no-shadow */
+import {type MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {getPublishedId} from 'sanity'
+import {type RouterContextValue, type RouterState, type SearchParam} from 'sanity/router'
 
 function pruneObject<T extends RouterState | PresentationParamsContextValue>(obj: T): T {
   return Object.fromEntries(

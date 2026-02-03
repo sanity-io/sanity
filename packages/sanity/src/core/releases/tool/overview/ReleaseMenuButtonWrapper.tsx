@@ -1,8 +1,7 @@
-import {type ReleaseDocument} from '@sanity/client'
-
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseMenuButton} from '../components/ReleaseMenuButton/ReleaseMenuButton'
 import {useBundleDocuments} from '../detail/useBundleDocuments'
+import {type ReleaseDocument} from '@sanity/client'
 
 export const ReleaseMenuButtonWrapper = ({
   release,

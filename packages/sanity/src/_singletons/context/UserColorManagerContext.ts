@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {UserColorManager} from '../../core/user-color/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

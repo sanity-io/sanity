@@ -1,8 +1,7 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {startCase} from 'lodash-es'
-
 import {IncomingReferencesList} from './IncomingReferencesList'
 import {type IncomingReferencesOptions} from './types'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {startCase} from 'lodash-es'
 
 /**
  * @beta

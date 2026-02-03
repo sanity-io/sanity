@@ -1,6 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {describe, expect, it} from 'vitest'
-
 import {
   activeScheduledRelease,
   archivedScheduledRelease,
@@ -11,6 +8,8 @@ import {
   getDocumentIsInPerspective,
   shouldShowReleaseInView,
 } from './util'
+import {type ReleaseDocument} from '@sanity/client'
+import {describe, expect, it} from 'vitest'
 
 // * - document: `summer.my-document-id`, perspective: `rsummer` : **true**
 // * - document: `my-document-id`, perspective: `rsummer` : **false**

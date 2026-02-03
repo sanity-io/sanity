@@ -1,9 +1,3 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
-import {type Bridge} from '@sanity/message-protocol'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
-
 import {useStudioAppIdStore} from '../../../create/studio-app/useStudioAppIdStore'
 import {useClient} from '../../../hooks/useClient'
 import {useWorkspaceSchemaId} from '../../../hooks/useWorkspaceSchemaId'
@@ -12,6 +6,11 @@ import {useRenderingContext} from '../../../store/renderingContext/useRenderingC
 import {useWorkspace} from '../../../studio/workspace'
 import {type CanvasDiff} from '../../types'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
+import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type Bridge} from '@sanity/message-protocol'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {catchError, combineLatest, map, type Observable, of, tap} from 'rxjs'
 
 const localeSettings = Intl.DateTimeFormat().resolvedOptions()
 

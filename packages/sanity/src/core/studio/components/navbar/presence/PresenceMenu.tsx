@@ -1,8 +1,3 @@
-import {AddUserIcon, UsersIcon} from '@sanity/icons'
-import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
@@ -12,6 +7,10 @@ import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsi
 import {useWorkspace} from '../../../workspace'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 import {PresenceMenuItem} from './PresenceMenuItem'
+import {AddUserIcon, UsersIcon} from '@sanity/icons'
+import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {styled} from 'styled-components'
 
 const StyledMenu = styled(Menu)`
   max-width: 260px;

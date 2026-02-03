@@ -1,9 +1,8 @@
+import {debug} from '../../debug'
+import {EDITOR_CONFIGS, type EditorName} from './editorConfigs'
 import {parse as parseJsonc, type ParseError} from 'jsonc-parser'
 import {existsSync} from 'node:fs'
 import fs from 'node:fs/promises'
-
-import {debug} from '../../debug'
-import {EDITOR_CONFIGS, type EditorName} from './editorConfigs'
 
 export interface Editor {
   name: EditorName

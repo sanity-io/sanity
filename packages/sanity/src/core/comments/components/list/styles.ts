@@ -1,9 +1,8 @@
+import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {hues} from '@sanity/color'
 import {Card, type CardProps} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
-
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
 interface ThreadCardProps extends Omit<CardProps, 'tone'> {
   theme: Theme

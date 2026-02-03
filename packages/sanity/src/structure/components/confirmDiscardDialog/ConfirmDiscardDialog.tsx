@@ -1,9 +1,8 @@
+import {Dialog} from '../../../ui-components'
+import {structureLocaleNamespace} from '../../i18n'
 import {Text} from '@sanity/ui'
 import {useId} from 'react'
 import {useTranslation} from 'sanity'
-
-import {Dialog} from '../../../ui-components'
-import {structureLocaleNamespace} from '../../i18n'
 
 interface ConfirmDiscardDialogProps {
   onCancel: () => void

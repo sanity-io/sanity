@@ -1,5 +1,3 @@
-import {useCallback, useRef} from 'react'
-
 import {
   DEFAULT_CROP,
   DEFAULT_HOTSPOT,
@@ -22,6 +20,7 @@ import {
   handleCropMove,
   handleHotspotResize,
 } from '../utils'
+import {useCallback, useRef} from 'react'
 
 interface UseKeyboardControlsProps {
   value: Partial<CropAndHotspot>

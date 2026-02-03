@@ -1,3 +1,7 @@
+import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
+import {visionLocaleNamespace} from '../i18n'
+import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
+import {type ParsedUrlState} from './VisionGui'
 import {AddIcon, SearchIcon, TrashIcon} from '@sanity/icons'
 import {
   Box,
@@ -16,11 +20,6 @@ import {
 import {isEqual} from 'lodash-es'
 import {type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, useDateTimeFormat, useTranslation} from 'sanity'
-
-import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
-import {visionLocaleNamespace} from '../i18n'
-import {FixedHeader, ScrollContainer} from './QueryRecall.styled'
-import {type ParsedUrlState} from './VisionGui'
 
 export function QueryRecall({
   url,

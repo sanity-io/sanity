@@ -1,5 +1,3 @@
-import {flatten} from 'lodash-es'
-
 import {isNonUnion} from '../helpers'
 import {
   type ConvertedField,
@@ -9,6 +7,7 @@ import {
   type InputFilterField,
   type InputObjectType,
 } from '../types'
+import {flatten} from 'lodash-es'
 
 type FilterCreator = (field: ConvertedField) => InputFilterField[]
 

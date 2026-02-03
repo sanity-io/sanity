@@ -1,6 +1,5 @@
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
-
 import {getSnapshot, setSnapshot, subscribe} from '../colorSchemeStore'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 describe('colorSchemeStore', () => {
   const mockLocalStorage = {

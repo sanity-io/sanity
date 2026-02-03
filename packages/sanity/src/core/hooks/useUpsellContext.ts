@@ -1,10 +1,9 @@
-import {useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-
 import {useTranslation} from '../i18n'
 import {type UpsellDialogViewedInfo} from '../studio'
 import {type UpsellData} from '../studio/upsell/types'
 import {useUpsellData} from './useUpsellData'
+import {useToast} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 
 interface UseUpsellContextOptions {
   dataUri: string

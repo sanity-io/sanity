@@ -1,16 +1,3 @@
-import {type DatasetAclMode, type SanityProject} from '@sanity/client'
-import {type Framework} from '@vercel/frameworks'
-import {type detectFrameworkRecord} from '@vercel/fs-detectors'
-import dotenv from 'dotenv'
-import execa, {type CommonOptions} from 'execa'
-import {deburr, noop} from 'lodash-es'
-import {existsSync} from 'node:fs'
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import pMap from 'p-map'
-import resolveFrom from 'resolve-from'
-import semver from 'semver'
-
 import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
 import {type InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
@@ -74,6 +61,18 @@ import {
   sanityFolder,
   sanityStudioTemplate,
 } from './templates/nextjs'
+import {type DatasetAclMode, type SanityProject} from '@sanity/client'
+import {type Framework} from '@vercel/frameworks'
+import {type detectFrameworkRecord} from '@vercel/fs-detectors'
+import dotenv from 'dotenv'
+import execa, {type CommonOptions} from 'execa'
+import {deburr, noop} from 'lodash-es'
+import {existsSync} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import pMap from 'p-map'
+import resolveFrom from 'resolve-from'
+import semver from 'semver'
 
 const isCI = Boolean(process.env.CI)
 

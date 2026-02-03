@@ -1,11 +1,10 @@
-import {describe, expect, it, vi} from 'vitest'
-
 import {type CliOutputter} from '../types'
 import {
   createErrorLogger,
   type RuntimeCliCommand,
   transformHelpText,
 } from '../util/runtimeCommandHelp'
+import {describe, expect, it, vi} from 'vitest'
 
 function createMockCommand(helpText: string, summary: string): RuntimeCliCommand {
   return {

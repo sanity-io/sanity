@@ -1,10 +1,9 @@
+import {Popover, Tooltip} from '../../../../../ui-components'
 import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Container, Flex, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {Chip, getPublishedId, getVersionFromId, useTranslation, VersionChip} from 'sanity'
-
-import {Popover, Tooltip} from '../../../../../ui-components'
 
 export function NonReleaseVersionsSelect(props: {
   nonReleaseVersions: string[]

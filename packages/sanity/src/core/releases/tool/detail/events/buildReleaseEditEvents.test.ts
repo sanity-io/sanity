@@ -1,8 +1,7 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {describe, expect, it} from 'vitest'
-
 import {RELEASE_STATE_CHANGE} from './__fixtures__/mock-translog-events'
 import {buildReleaseEditEvents} from './buildReleaseEditEvents'
+import {type ReleaseDocument} from '@sanity/client'
+import {describe, expect, it} from 'vitest'
 
 describe('buildReleaseEditEvents()', () => {
   it('should identify a metadata.releaseType change', () => {

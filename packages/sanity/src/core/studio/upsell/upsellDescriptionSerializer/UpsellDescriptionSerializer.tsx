@@ -1,3 +1,5 @@
+import {interpolateTemplate} from '../../../util/interpolateTemplate'
+import {transformBlocks} from './helpers'
 import {
   PortableText,
   type PortableTextComponents,
@@ -10,9 +12,6 @@ import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-
-import {interpolateTemplate} from '../../../util/interpolateTemplate'
-import {transformBlocks} from './helpers'
 
 /** @internal */
 export type InterpolationProp = {[key: string]: string | number}

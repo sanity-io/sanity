@@ -1,13 +1,12 @@
-import {type SanityClient} from '@sanity/client'
-import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
-import {BehaviorSubject, filter, map, type Observable} from 'rxjs'
-
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../_legacy/document/buffered-doc/types'
 import {remoteSnapshots, type WithVersion} from '../_legacy/document/document-pair'
 import {getEditEvents, getEffectState} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
+import {type SanityClient} from '@sanity/client'
+import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
+import {BehaviorSubject, filter, map, type Observable} from 'rxjs'
 
 interface GetRemoteTransactionsSubscriptionOptions {
   client: SanityClient

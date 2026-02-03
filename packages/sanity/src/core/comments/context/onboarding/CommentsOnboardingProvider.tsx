@@ -1,7 +1,6 @@
+import {type CommentsOnboardingContextValue} from './types'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {CommentsOnboardingContext} from 'sanity/_singletons'
-
-import {type CommentsOnboardingContextValue} from './types'
 
 const VERSION = 1
 const LOCAL_STORAGE_KEY = `sanityStudio:comments:inspector:onboarding:dismissed:v${VERSION}`

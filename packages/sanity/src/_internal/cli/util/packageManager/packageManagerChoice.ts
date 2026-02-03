@@ -1,9 +1,8 @@
+import {isInteractive} from '../isInteractive'
 import {type CliPrompter} from '@sanity/cli'
 import path from 'node:path'
 import preferredPM from 'preferred-pm'
 import which from 'which'
-
-import {isInteractive} from '../isInteractive'
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 

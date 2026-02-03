@@ -1,7 +1,6 @@
-import {Card, Container, Stack} from '@sanity/ui'
-
 import {CommentMessageSerializer} from '../components'
 import {type CommentMessage} from '../types'
+import {Card, Container, Stack} from '@sanity/ui'
 
 const BLOCKS: CommentMessage = [
   {

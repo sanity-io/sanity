@@ -1,6 +1,5 @@
-import {type ErrorInfo as ReactErrorInfo} from 'react'
-
 import {getSentryErrorReporter} from './sentry/sentryErrorReporter'
+import {type ErrorInfo as ReactErrorInfo} from 'react'
 
 /**
  * @internal

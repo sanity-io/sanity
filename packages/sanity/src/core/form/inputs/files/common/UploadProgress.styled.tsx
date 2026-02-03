@@ -1,7 +1,6 @@
+import {RatioBox} from '../ImageInput/ImagePreview.styled'
 import {Code, Flex, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
-
-import {RatioBox} from '../ImageInput/ImagePreview.styled'
 
 export const CardWrapper = styled(RatioBox)`
   box-sizing: border-box;
@@ -22,7 +21,7 @@ export const LeftSection = styled(Stack)`
 export const CodeWrapper = styled(Code)`
   position: relative;
   width: 100%;
-  
+
   code {
     overflow: hidden;
     overflow: clip;

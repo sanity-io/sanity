@@ -1,9 +1,8 @@
-import {type Tool, useClient} from 'sanity'
-
 import {DEFAULT_API_VERSION} from './apiVersions'
 import {VisionContainer} from './containers/VisionContainer'
 import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 import {type VisionConfig} from './types'
+import {type Tool, useClient} from 'sanity'
 
 interface SanityVisionProps {
   tool: Tool<VisionConfig>

@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {VisionLocaleResourceKeys, visionTool, VisionToolConfig} from '@sanity/vision'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/vision', () => {

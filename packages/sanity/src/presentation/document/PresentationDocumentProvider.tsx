@@ -1,3 +1,5 @@
+import {type PresentationPluginOptions} from '../types'
+import {type PresentationDocumentContextValue} from './types'
 import {
   type ReactNode,
   useCallback,
@@ -8,9 +10,6 @@ import {
   useState,
 } from 'react'
 import {PresentationDocumentContext} from 'sanity/_singletons'
-
-import {type PresentationPluginOptions} from '../types'
-import {type PresentationDocumentContextValue} from './types'
 
 /** @internal */
 export function PresentationDocumentProvider(props: {

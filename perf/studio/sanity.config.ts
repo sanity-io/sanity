@@ -1,8 +1,3 @@
-/// <reference types="vite/client" />
-import {useCallback} from 'react'
-import {defineConfig, defineDocumentFieldAction, type PluginOptions} from 'sanity'
-import {structureTool} from 'sanity/structure'
-
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'
 import {deepArray} from './schema/deepArray'
 import {deepArrayReferences} from './schema/deepArrayReferences'
@@ -10,6 +5,10 @@ import {deepArrayString} from './schema/deepArrayString'
 import {deepObject} from './schema/deepObject'
 import {largeDocument} from './schema/largeDocument'
 import {simple} from './schema/simple'
+/// <reference types="vite/client" />
+import {useCallback} from 'react'
+import {defineConfig, defineDocumentFieldAction, type PluginOptions} from 'sanity'
+import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
   plugins: [

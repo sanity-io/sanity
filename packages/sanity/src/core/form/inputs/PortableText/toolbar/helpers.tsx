@@ -1,3 +1,10 @@
+import {CustomIcon} from './CustomIcon'
+import {
+  type BlockItem,
+  type BlockStyleItem,
+  type PTEToolbarAction,
+  type PTEToolbarActionGroup,
+} from './types'
 import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {
@@ -17,14 +24,6 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {capitalize, get} from 'lodash-es'
 import {type ComponentType, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
-
-import {CustomIcon} from './CustomIcon'
-import {
-  type BlockItem,
-  type BlockStyleItem,
-  type PTEToolbarAction,
-  type PTEToolbarActionGroup,
-} from './types'
 
 function getPTEFormatActions(
   editor: PortableTextEditor,

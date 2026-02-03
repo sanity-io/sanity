@@ -1,3 +1,8 @@
+import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
+import {DateTimeInput} from '../../../components/inputs/DateInputs/DateTimeInput'
+import {type TimeZoneScope} from '../../../hooks/useTimeZone'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type ParseResult} from './types'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -8,12 +13,6 @@ import {
   useRef,
   useState,
 } from 'react'
-
-import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
-import {DateTimeInput} from '../../../components/inputs/DateInputs/DateTimeInput'
-import {type TimeZoneScope} from '../../../hooks/useTimeZone'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
   id: string

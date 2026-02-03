@@ -1,12 +1,3 @@
-/* eslint-disable max-statements */
-import {type ReleaseDocument} from '@sanity/client'
-import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
-import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
-import {isSameDay} from 'date-fns'
-import {AnimatePresence, motion} from 'motion/react'
-import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useRouter} from 'sanity/router'
-
 import {Tooltip} from '../../../../ui-components'
 import {Button} from '../../../../ui-components/button/Button'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
@@ -58,6 +49,14 @@ import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
 import {SchedulesUpsell} from './SchedulesUpsell'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
+/* eslint-disable max-statements */
+import {type ReleaseDocument} from '@sanity/client'
+import {AddIcon, ChevronDownIcon, EarthGlobeIcon} from '@sanity/icons'
+import {Box, type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {isSameDay} from 'date-fns'
+import {AnimatePresence, motion} from 'motion/react'
+import {type MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 const MotionButton = motion.create(Button)
 

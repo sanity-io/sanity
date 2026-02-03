@@ -1,3 +1,9 @@
+import {type ObjectDiff} from '../../field'
+import {calculateDiff} from './calculateDiff'
+import {getDocumentTransactions} from './getDocumentTransactions'
+import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
+import {type EventsStoreRevision, isCreateDocumentVersionEvent} from './types'
+import {type EventsObservableValue} from './useEventsStore'
 import {type SanityClient} from '@sanity/client'
 import {diffInput, wrap} from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
@@ -13,13 +19,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs'
-
-import {type ObjectDiff} from '../../field'
-import {calculateDiff} from './calculateDiff'
-import {getDocumentTransactions} from './getDocumentTransactions'
-import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision, isCreateDocumentVersionEvent} from './types'
-import {type EventsObservableValue} from './useEventsStore'
 
 const buildDocumentForDiffInput = (document?: Partial<SanityDocument> | null) => {
   if (!document) return {}

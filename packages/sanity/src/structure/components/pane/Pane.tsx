@@ -1,3 +1,6 @@
+import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
+import {PaneDivider} from './PaneDivider'
+import {usePaneLayout} from './usePaneLayout'
 import {BoundaryElementProvider, Card, type CardProps, Code, Flex} from '@sanity/ui'
 import {
   type ForwardedRef,
@@ -14,10 +17,6 @@ import {
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-
-import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
-import {PaneDivider} from './PaneDivider'
-import {usePaneLayout} from './usePaneLayout'
 
 interface PaneProps {
   children?: ReactNode

@@ -1,9 +1,3 @@
-import {isImageSource} from '@sanity/asset-utils'
-import {createImageUrlBuilder} from '@sanity/image-url'
-import {useCallback, useEffect, useMemo} from 'react'
-import deepEquals from 'react-fast-compare'
-import {useRouterState} from 'sanity/router'
-
 import {isDev} from '../../../../environment'
 import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
 import {useClient} from '../../../../hooks'
@@ -13,6 +7,11 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
+import {isImageSource} from '@sanity/asset-utils'
+import {createImageUrlBuilder} from '@sanity/image-url'
+import {useCallback, useEffect, useMemo} from 'react'
+import deepEquals from 'react-fast-compare'
+import {useRouterState} from 'sanity/router'
 
 export function getTaskURL(taskId: string, basePath?: string, toolName: string = ''): string {
   let path = window.location.origin

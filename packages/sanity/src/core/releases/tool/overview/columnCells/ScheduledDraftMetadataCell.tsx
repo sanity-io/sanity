@@ -1,10 +1,9 @@
-import {Flex, Skeleton, Stack, Text} from '@sanity/ui'
-
 import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {ReleaseTime} from '../../components/ReleaseTime'
 import {type VisibleColumn} from '../../components/Table/types'
 import {useReleaseCreator} from '../hooks/useReleaseCreator'
 import {type TableRelease} from '../ReleasesOverview'
+import {Flex, Skeleton, Stack, Text} from '@sanity/ui'
 
 export const ScheduledDraftMetadataCell: VisibleColumn<TableRelease>['cell'] = ({
   datum,

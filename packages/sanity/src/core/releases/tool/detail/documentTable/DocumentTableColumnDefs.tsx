@@ -1,10 +1,3 @@
-import {type ReleaseState} from '@sanity/client'
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Badge, Box, Flex, Text} from '@sanity/ui'
-// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
-import {type TFunction} from 'i18next'
-import {memo} from 'react'
-
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../../../components'
@@ -20,6 +13,12 @@ import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseD
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../useBundleDocuments'
 import {useReleaseHistory} from './useReleaseHistory'
+import {type ReleaseState} from '@sanity/client'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Badge, Box, Flex, Text} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
+import {type TFunction} from 'i18next'
+import {memo} from 'react'
 
 const MemoReleaseDocumentPreview = memo(
   function MemoReleaseDocumentPreview({

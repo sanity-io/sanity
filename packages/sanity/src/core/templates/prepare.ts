@@ -1,8 +1,7 @@
-import {type Schema, type SchemaType} from '@sanity/types'
-
 import {isBuilder} from './resolve'
 import {type Template} from './types'
 import {validateTemplates} from './validate'
+import {type Schema, type SchemaType} from '@sanity/types'
 
 function maybeSerialize(template: Template) {
   return isBuilder(template) ? template.serialize() : template

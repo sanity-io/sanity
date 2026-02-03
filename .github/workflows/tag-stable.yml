@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)'
+        description: "Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)"
         required: true
         type: string
 

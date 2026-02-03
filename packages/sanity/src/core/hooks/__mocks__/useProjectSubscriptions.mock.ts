@@ -1,6 +1,5 @@
-import {type Mock, type Mocked} from 'vitest'
-
 import {useProjectSubscriptions} from '../useProjectSubscriptions'
+import {type Mock, type Mocked} from 'vitest'
 
 export const useProjectSubscriptionsMockReturn: Mocked<ReturnType<typeof useProjectSubscriptions>> =
   {

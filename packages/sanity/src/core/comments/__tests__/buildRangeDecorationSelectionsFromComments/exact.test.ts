@@ -1,7 +1,6 @@
-import {describe, expect, test} from 'vitest'
-
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
+import {describe, expect, test} from 'vitest'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
   test('works when there is an exact match between the existing range and the comment document', () => {

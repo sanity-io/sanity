@@ -1,7 +1,6 @@
+import {type PerspectiveContextValue} from './types'
 import {useContext} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
-
-import {type PerspectiveContextValue} from './types'
 
 /**
  * @beta

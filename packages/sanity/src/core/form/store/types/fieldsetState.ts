@@ -1,7 +1,6 @@
-import {type Path} from '@sanity/types'
-
 import {type FieldError} from './memberErrors'
 import {type DecorationMember, type FieldMember} from './members'
+import {type Path} from '@sanity/types'
 
 /**
  * @hidden

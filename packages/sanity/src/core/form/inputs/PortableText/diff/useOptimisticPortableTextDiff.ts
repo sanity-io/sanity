@@ -1,3 +1,7 @@
+import {type TargetPerspective} from '../../../../perspective/types'
+import {type BaseInputProps} from '../../../types/inputProps'
+import {computeRangeDecorationsForPortableText} from './computeRangeDecorationsForPortableText'
+import {diffMatchPatchToPortableText} from './diffMatchPatchToPortableText'
 import {type RangeDecoration} from '@portabletext/editor'
 import {type DiffMatchPatch} from '@portabletext/patches'
 import {isPortableTextBlock} from '@portabletext/toolkit'
@@ -6,11 +10,6 @@ import {arrayToJSONMatchPath, extractWithPath} from '@sanity/mutator'
 import {type PortableTextBlock} from '@sanity/types'
 import {set} from 'lodash-es'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-
-import {type TargetPerspective} from '../../../../perspective/types'
-import {type BaseInputProps} from '../../../types/inputProps'
-import {computeRangeDecorationsForPortableText} from './computeRangeDecorationsForPortableText'
-import {diffMatchPatchToPortableText} from './diffMatchPatchToPortableText'
 
 export interface PortableTextOptimisticDiffOptions extends Pick<
   BaseInputProps,

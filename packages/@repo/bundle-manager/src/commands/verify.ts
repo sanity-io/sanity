@@ -1,8 +1,7 @@
-import {Storage} from '@google-cloud/storage'
-import {readEnv} from '@repo/utils'
-
 import {updateManifestWith} from '../helpers/updateManifestWith'
 import {type KnownEnvVar} from '../types'
+import {Storage} from '@google-cloud/storage'
+import {readEnv} from '@repo/utils'
 
 const storage = new Storage({
   projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),

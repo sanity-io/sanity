@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test.describe('Enhanced Object Dialog - schema with component item and input smoke test', () => {
   test.beforeEach(async ({createDraftDocument}) => {

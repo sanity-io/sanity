@@ -24,14 +24,13 @@ vi.mock('../PerformanceTelemetry', () => ({
   PerformanceTelemetryTracker: ({children}: {children: ReactNode}) => children,
 }))
 
-// Import mocked modules AFTER vi.mock declarations
-import {createBatchedStore, createSessionId} from '@sanity/telemetry'
-import {useRouterState} from 'sanity/router'
-
 import {useClient} from '../../../hooks'
 import {useProjectOrganizationId} from '../../../store/_legacy/project/useProjectOrganizationId'
 import {useWorkspace} from '../../workspace'
 import {StudioTelemetryProvider} from '../StudioTelemetryProvider'
+// Import mocked modules AFTER vi.mock declarations
+import {createBatchedStore, createSessionId} from '@sanity/telemetry'
+import {useRouterState} from 'sanity/router'
 /* eslint-enable import/first */
 
 describe('StudioTelemetryProvider', () => {

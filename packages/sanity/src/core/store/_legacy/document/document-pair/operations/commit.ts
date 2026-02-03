@@ -1,6 +1,5 @@
-import {EMPTY} from 'rxjs'
-
 import {type OperationImpl} from './types'
+import {EMPTY} from 'rxjs'
 
 export const commit: OperationImpl = {
   disabled: (): false => false,

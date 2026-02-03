@@ -1,6 +1,3 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useEffect, useState} from 'react'
-
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {
@@ -14,6 +11,8 @@ import {DialogContent} from './DialogContent'
 import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
 import {PopoverContent} from './PopoverContent'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useEffect, useState} from 'react'
 
 interface FreeTrialProps {
   type: 'sidebar' | 'topbar'

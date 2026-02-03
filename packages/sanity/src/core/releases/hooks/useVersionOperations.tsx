@@ -1,11 +1,10 @@
-import {type SingleActionResult} from '@sanity/client'
-import {useTelemetry} from '@sanity/telemetry/react'
-
 import {type ReleaseId} from '../../perspective/types'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
+import {type SingleActionResult} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 
 export interface VersionOperationsValue {
   createVersion: (releaseId: ReleaseId, documentId: string) => Promise<void>

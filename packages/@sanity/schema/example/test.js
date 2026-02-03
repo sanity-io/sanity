@@ -1,7 +1,6 @@
-import assert from 'node:assert'
-
 import {Schema} from '../src/legacy/Schema'
 import schemaDef from './schema-def'
+import assert from 'node:assert'
 
 const schema = new Schema(schemaDef)
 

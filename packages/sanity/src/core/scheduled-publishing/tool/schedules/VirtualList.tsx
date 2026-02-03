@@ -1,14 +1,13 @@
-import {CheckmarkCircleIcon} from '@sanity/icons'
-import {Box, Flex} from '@sanity/ui'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import {useEffect, useMemo, useRef} from 'react'
-
 import {Button} from '../../../../ui-components/button/Button'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule, type ScheduleSort} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
 import {type ListItem, VirtualListItem} from './VirtualListItem'
+import {CheckmarkCircleIcon} from '@sanity/icons'
+import {Box, Flex} from '@sanity/ui'
+import {useVirtualizer} from '@tanstack/react-virtual'
+import {useEffect, useMemo, useRef} from 'react'
 
 function getLocalizedDate(date: string) {
   return new Date(date).toLocaleString('default', {

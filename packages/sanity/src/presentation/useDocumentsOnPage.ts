@@ -1,9 +1,8 @@
+import {type FrameState, type PresentationPerspective} from './types'
+import {defineWarnOnce} from './util/warnOnce'
 import {validateApiPerspective} from '@sanity/client'
 import isEqual from 'fast-deep-equal'
 import {type MutableRefObject, useCallback, useMemo, useRef, useState} from 'react'
-
-import {type FrameState, type PresentationPerspective} from './types'
-import {defineWarnOnce} from './util/warnOnce'
 
 export type DocumentOnPage = {
   _id: string

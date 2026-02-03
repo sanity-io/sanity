@@ -1,7 +1,6 @@
+import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {type ReactNode} from 'react'
 import {PerspectiveProvider, usePerspective} from 'sanity'
-
-import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 
 /**
  * @internal

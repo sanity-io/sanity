@@ -1,9 +1,8 @@
+import {baseUrl} from './baseUrl'
 import {type CliOutputter} from '@sanity/cli'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
 import path from 'node:path'
-
-import {baseUrl} from './baseUrl'
 
 export function warnAboutMissingAppId({
   appType,

@@ -1,9 +1,8 @@
+import {renderStringInput} from '../../../../../../test/form'
+import {DateInput} from '../DateInput'
 import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import {expect, test} from 'vitest'
-
-import {renderStringInput} from '../../../../../../test/form'
-import {DateInput} from '../DateInput'
 
 // NOTE: for the tests to be deterministic we need this to ensure tests are run in a predefined time zone
 // see globalSetup in jest config for details about how this is set up

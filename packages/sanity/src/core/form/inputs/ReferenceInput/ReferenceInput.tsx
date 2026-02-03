@@ -1,10 +1,3 @@
-import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-
 import {Button} from '../../../../ui-components'
 import {ReferenceInputPreviewCard} from '../../../components'
 import {Translate, useTranslation} from '../../../i18n'
@@ -27,6 +20,12 @@ import {
 import {useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceItemRef} from './useReferenceItemRef'
+import {Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
+import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {useObservableEvent} from 'react-rx'
+import {concat, type Observable, of} from 'rxjs'
+import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
 const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   hits: [],

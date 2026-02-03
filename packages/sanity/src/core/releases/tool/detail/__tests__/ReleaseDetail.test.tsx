@@ -1,8 +1,3 @@
-import {render, screen, waitFor, within} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {route, RouterProvider} from 'sanity/router'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {mockUseRouterReturn} from '../../../../../../test/mocks/useRouter.mock'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useProjectSubscriptionsMockReturn} from '../../../../hooks/__mocks__/useProjectSubscriptions.mock'
@@ -33,6 +28,10 @@ import {
   useBundleDocumentsMockReturn,
 } from './__mocks__/useBundleDocuments.mock'
 import {useReleaseEventsMockReturn} from './__mocks__/useReleaseEvents.mock'
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {route, RouterProvider} from 'sanity/router'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('sanity/router', async (importOriginal) => {
   return {

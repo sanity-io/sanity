@@ -1,6 +1,3 @@
-import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
-import {map} from 'rxjs'
-
 import {
   type Groq2024SearchResults,
   type SearchStrategyFactory,
@@ -8,6 +5,8 @@ import {
 } from '../common/types'
 import {createSearchQuery} from './createSearchQuery'
 import {getNextCursor} from './getNextCursor'
+import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
+import {map} from 'rxjs'
 
 function getSearchTerms(
   searchParams: string | SearchTerms,

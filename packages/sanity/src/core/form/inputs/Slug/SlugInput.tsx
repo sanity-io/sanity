@@ -1,3 +1,12 @@
+import {Button} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {useGetFormValue} from '../../contexts/GetFormValue'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {PatchEvent, set, setIfMissing, unset} from '../../patch'
+import {type ObjectInputProps} from '../../types'
+import {slugify} from './utils/slugify'
+import {useAsync} from './utils/useAsync'
+import {type SlugContext, useSlugContext} from './utils/useSlugContext'
 import {
   type Path,
   type SanityDocument,
@@ -10,16 +19,6 @@ import {
 import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useGetFormValue} from '../../contexts/GetFormValue'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {PatchEvent, set, setIfMissing, unset} from '../../patch'
-import {type ObjectInputProps} from '../../types'
-import {slugify} from './utils/slugify'
-import {useAsync} from './utils/useAsync'
-import {type SlugContext, useSlugContext} from './utils/useSlugContext'
 
 /**
  *

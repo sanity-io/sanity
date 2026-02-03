@@ -1,7 +1,6 @@
+import runMigrationCommand from '../runMigrationCommand'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
-
-import runMigrationCommand from '../runMigrationCommand'
 
 // Mock all dependencies before importing the module under test
 vi.mock('@sanity/migrate', () => ({

@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import {defaultRenderingContext} from './defaultRenderingContext'
+import {expect, it} from 'vitest'
 
 it("emits the subject if it's not `undefined`", async () => {
   await expect(defaultRenderingContext).toMatchEmissions([

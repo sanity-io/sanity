@@ -1,8 +1,3 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import chalk from 'chalk'
-import {hideBin} from 'yargs/helpers'
-import yargs from 'yargs/yargs'
-
 import {startDevServer} from '../../server/devServer'
 import {gracefulServerDeath} from '../../util/servers'
 import {
@@ -10,6 +5,10 @@ import {
   getDevServerConfig,
   type StartDevServerCommandFlags,
 } from '../dev/devAction'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import chalk from 'chalk'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
 
 function parseCliFlags(args: {argv?: string[]}) {
   // Using slice(1) to remove the first argument, which is the command `dev` path to the CLI

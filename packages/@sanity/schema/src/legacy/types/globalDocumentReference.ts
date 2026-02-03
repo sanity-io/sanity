@@ -1,8 +1,7 @@
-import arrify from 'arrify'
-import {pick} from 'lodash-es'
-
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
+import arrify from 'arrify'
+import {pick} from 'lodash-es'
 
 export const REF_FIELD = {
   name: '_ref',

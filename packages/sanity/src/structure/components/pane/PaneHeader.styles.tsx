@@ -26,7 +26,7 @@ export const Root = styled(Layer)<RootProps>(({$border}) => {
 
 export const Layout = styled(Flex)`
   transform-origin: calc(51px / 2);
-  
+
   [data-collapsed] > div > & {
     transform: rotate(90deg);
   }

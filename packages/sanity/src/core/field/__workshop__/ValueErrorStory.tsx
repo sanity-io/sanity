@@ -1,8 +1,7 @@
-import {Box} from '@sanity/ui'
-import {useMemo} from 'react'
-
 import {ValueError} from '../diff/components/ValueError'
 import {type FieldValueError} from '../validation'
+import {Box} from '@sanity/ui'
+import {useMemo} from 'react'
 
 export default function ValueErrorStory() {
   const error: FieldValueError = useMemo(

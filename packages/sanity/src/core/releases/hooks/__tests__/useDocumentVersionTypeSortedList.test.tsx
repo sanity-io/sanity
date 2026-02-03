@@ -1,6 +1,3 @@
-import {renderHook} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {getVersionId} from '../../../util/draftUtils'
 import {
@@ -18,6 +15,8 @@ import {
   mockUseDocumentVersions,
   useDocumentVersionsReturn,
 } from './__mocks__/useDocumentVersions.mock'
+import {renderHook} from '@testing-library/react'
+import {describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),

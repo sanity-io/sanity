@@ -1,7 +1,6 @@
+import {type DecorationMember} from '../../store/types/members'
 import {isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
-
-import {type DecorationMember} from '../../store/types/members'
 
 export function MemberDecoration({member}: {member: DecorationMember}) {
   if (isValidElement(member.component)) {

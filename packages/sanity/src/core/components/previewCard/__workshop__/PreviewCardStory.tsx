@@ -1,10 +1,9 @@
-import {EditIcon, PublishIcon} from '@sanity/icons'
-import {Container, Flex} from '@sanity/ui'
-import {useBoolean} from '@sanity/ui-workshop'
-
 import {DocumentPreviewPresence} from '../../../presence'
 import {TextWithTone} from '../../textWithTone'
 import {PreviewCard} from '../PreviewCard'
+import {EditIcon, PublishIcon} from '@sanity/icons'
+import {Container, Flex} from '@sanity/ui'
+import {useBoolean} from '@sanity/ui-workshop'
 
 export default function PreviewCardStory() {
   const selected = useBoolean('Selected', true)

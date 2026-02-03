@@ -1,8 +1,7 @@
-import {type PreviewValue, type SchemaType} from '@sanity/types'
-import {useMemo} from 'react'
-
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useValuePreview} from '../../../../preview/useValuePreview'
+import {type PreviewValue, type SchemaType} from '@sanity/types'
+import {useMemo} from 'react'
 
 interface UseValuePreviewWithFallbackProps {
   schemaType?: SchemaType

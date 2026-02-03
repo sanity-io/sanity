@@ -1,5 +1,3 @@
-import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
-
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
 import {removeDupes} from '../../../../../../util/draftUtils'
 import {type RecentSearch} from '../../datastores/recentSearches'
@@ -21,6 +19,7 @@ import {
 } from '../../utils/filterUtils'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
+import {type CurrentUser, type SchemaType, type SearchStrategy} from '@sanity/types'
 
 interface PaginationState {
   cursor: string | null

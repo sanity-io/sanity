@@ -1,10 +1,9 @@
-import {type SanityClient} from '@sanity/client'
-import {render, screen} from '@testing-library/react'
-import {beforeAll, describe, expect, it, vi} from 'vitest'
-
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
+import {type SanityClient} from '@sanity/client'
+import {render, screen} from '@testing-library/react'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 vi.mock('use-hot-module-reload', () => ({
   useHotModuleReload: vi.fn(),

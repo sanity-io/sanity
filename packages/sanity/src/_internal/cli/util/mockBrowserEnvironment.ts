@@ -1,3 +1,5 @@
+import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables.ts'
+import {setupImportErrorHandler} from './importErrorHandler.ts'
 import {ResizeObserver} from '@juggle/resize-observer'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
 import jsdomGlobal from 'jsdom-global'
@@ -6,9 +8,6 @@ import {createRequire, register} from 'node:module'
 import {pathToFileURL} from 'node:url'
 import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
-
-import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables.ts'
-import {setupImportErrorHandler} from './importErrorHandler.ts'
 
 const require = createRequire(import.meta.url)
 

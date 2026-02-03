@@ -1,3 +1,11 @@
+import {type SourceClientOptions, type Workspace} from '../config'
+import {getFallbackLocaleSource} from '../i18n/fallback'
+import {type ValidationContext} from './types'
+import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
+import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
+import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
+import {typeString} from './util/typeString'
+import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 import {type SanityClient} from '@sanity/client'
 import {
   isKeyedObject,
@@ -13,15 +21,6 @@ import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {flatten, uniqBy} from 'lodash-es'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
-
-import {type SourceClientOptions, type Workspace} from '../config'
-import {getFallbackLocaleSource} from '../i18n/fallback'
-import {type ValidationContext} from './types'
-import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
-import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
-import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
-import {typeString} from './util/typeString'
-import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
 // the validation library from overwhelming our backend.

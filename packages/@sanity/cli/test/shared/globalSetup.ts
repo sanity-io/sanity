@@ -1,11 +1,3 @@
-import {createClient} from '@sanity/client'
-import Configstore from 'configstore'
-import {copy as copyCb} from 'cpx'
-import {execFileSync, spawnSync} from 'node:child_process'
-import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
-import {hostname} from 'node:os'
-import path from 'node:path'
-
 import {cleanupDangling} from './cleanupDangling'
 import {
   baseTestPath,
@@ -28,6 +20,13 @@ import {
   testClient,
   testIdPath,
 } from './environment'
+import {createClient} from '@sanity/client'
+import Configstore from 'configstore'
+import {copy as copyCb} from 'cpx'
+import {execFileSync, spawnSync} from 'node:child_process'
+import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
+import {hostname} from 'node:os'
+import path from 'node:path'
 
 const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.cjs')
 

@@ -1,6 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
-
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
@@ -8,6 +5,8 @@ import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getDocumentIsInPerspective} from '../releases/util/util'
 import {getVersionFromId} from '../util/draftUtils'
+import {type ReleaseDocument} from '@sanity/client'
+import {type SanityDocument, type StrictVersionLayeringOptions} from '@sanity/types'
 
 type FilterReleases = {
   notCurrentReleases: ReleaseDocument[]

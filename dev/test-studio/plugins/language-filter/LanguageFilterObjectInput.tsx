@@ -1,3 +1,6 @@
+import {_isPathCollapsed} from './_helpers'
+import {type LanguageFilterPluginOptions} from './types'
+import {usePaneLanguages} from './usePaneLanguages'
 import {pathFor} from '@sanity/util/paths'
 import {
   type FieldError,
@@ -8,10 +11,6 @@ import {
   type ObjectMember,
   useFormBuilder,
 } from 'sanity'
-
-import {_isPathCollapsed} from './_helpers'
-import {type LanguageFilterPluginOptions} from './types'
-import {usePaneLanguages} from './usePaneLanguages'
 
 export function LanguageFilterObjectInput(
   props: {options: LanguageFilterPluginOptions} & ObjectInputProps,

@@ -1,14 +1,13 @@
-import {ErrorOutlineIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
-import {debounce} from 'lodash-es'
-import {type RefObject, useCallback, useMemo} from 'react'
-import {type TFunction, useTranslation} from 'sanity'
-
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
 import {tryParseParams} from '../util/tryParseParams'
 import {type Params} from './VisionGui'
 import {InputBackgroundContainerLeft, StyledLabel} from './VisionGui.styled'
+import {ErrorOutlineIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text, Tooltip} from '@sanity/ui'
+import {debounce} from 'lodash-es'
+import {type RefObject, useCallback, useMemo} from 'react'
+import {type TFunction, useTranslation} from 'sanity'
 
 const defaultValue = `{\n  \n}`
 

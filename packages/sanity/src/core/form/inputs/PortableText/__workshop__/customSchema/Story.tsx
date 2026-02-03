@@ -1,7 +1,6 @@
+import {valueOptions, values} from './values'
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-
-import {valueOptions, values} from './values'
 
 export default function Story() {
   const readOnly = useBoolean('Read only', false)

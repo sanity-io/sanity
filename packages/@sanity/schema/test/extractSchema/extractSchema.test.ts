@@ -1,8 +1,3 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {type DocumentSchemaType} from 'groq-js'
-import assert, {strictEqual} from 'node:assert'
-import {describe, expect, test} from 'vitest'
-
 import {Schema} from '../../src/legacy/Schema'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {extractSchema} from '../../src/sanity/extractSchema'
@@ -10,6 +5,10 @@ import {groupProblems} from '../../src/sanity/groupProblems'
 import {validateSchema} from '../../src/sanity/validateSchema'
 import schemaFixtures from '../legacy/fixtures/schemas'
 import Block from './fixtures/block'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {type DocumentSchemaType} from 'groq-js'
+import assert, {strictEqual} from 'node:assert'
+import {describe, expect, test} from 'vitest'
 
 // taken from sanity/src/core/schema/createSchema.ts
 function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {

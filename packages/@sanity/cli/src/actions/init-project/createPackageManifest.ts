@@ -1,6 +1,5 @@
-import sortObject from 'deep-sort-object'
-
 import {type PackageJson, type SanityJson} from '../../types'
+import sortObject from 'deep-sort-object'
 
 const manifestPropOrder = [
   'name',

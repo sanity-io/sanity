@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {PresentationPanelsContextValue} from '../../presentation/panels/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

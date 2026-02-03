@@ -1,7 +1,3 @@
-import {LaunchIcon} from '@sanity/icons'
-import {Flex} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {getCreateDocumentUrl} from '../createDocumentUrls'
@@ -10,6 +6,9 @@ import {type CreateLinkedActionsProps} from '../types'
 import {useSanityCreateTelemetry} from '../useSanityCreateTelemetry'
 import {CreateUnlinkConfirmDialog} from './CreateUnlinkConfirmDialog'
 import {DialogPortalProvider} from './DialogPortalProvider'
+import {LaunchIcon} from '@sanity/icons'
+import {Flex} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 export function CreateLinkedActions(props: CreateLinkedActionsProps) {
   const {metadata, panelPortalElementId, onDocumentChange, documentTitle} = props

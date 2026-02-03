@@ -1,7 +1,6 @@
-import {type BadgeTone} from '@sanity/ui'
-
 import {type TimeZoneScope} from '../hooks/useTimeZone'
 import {type ScheduleAction, type ScheduleState} from './types'
+import {type BadgeTone} from '@sanity/ui'
 
 export const SCHEDULE_ACTION_DICTIONARY: Record<
   ScheduleAction,

@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {ResourceCache} from '../../core/store/_legacy/ResourceCacheProvider'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

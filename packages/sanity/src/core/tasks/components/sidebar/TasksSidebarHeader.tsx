@@ -1,3 +1,10 @@
+import {Button} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {useTasksEnabled, useTasksNavigation} from '../../context'
+import {tasksLocaleNamespace} from '../../i18n'
+import {type TaskDocument} from '../../types'
+import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
+import {TasksHeaderDraftsMenu} from './TasksHeaderDraftsMenu'
 import {AddIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
@@ -7,14 +14,6 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
-
-import {Button} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useTasksEnabled, useTasksNavigation} from '../../context'
-import {tasksLocaleNamespace} from '../../i18n'
-import {type TaskDocument} from '../../types'
-import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
-import {TasksHeaderDraftsMenu} from './TasksHeaderDraftsMenu'
 
 interface TasksSidebarHeaderProps {
   items: TaskDocument[]

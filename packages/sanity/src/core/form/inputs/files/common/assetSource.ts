@@ -1,6 +1,3 @@
-import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
-import {pickBy} from 'lodash-es'
-
 import {
   isVideoSchemaType,
   type VideoSchemaType,
@@ -13,6 +10,8 @@ import {
   type UploadOptions,
 } from '../../../studio/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
+import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {pickBy} from 'lodash-es'
 
 // We alias DOM File type here to distinguish it from the type of the File value
 type DOMFile = globalThis.File

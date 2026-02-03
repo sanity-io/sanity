@@ -1,18 +1,3 @@
-/* eslint-disable max-statements */
-import {type SanityDocument} from '@sanity/client'
-import {isActionEnabled} from '@sanity/schema/_internal'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type SanityDocumentLike,
-  type ValidationMarker,
-} from '@sanity/types'
-import {pathFor} from '@sanity/util/paths'
-import {throttle} from 'lodash-es'
-import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
-import deepEquals from 'react-fast-compare'
-
 import {
   type FormState,
   getExpandOperations,
@@ -65,6 +50,20 @@ import {
 } from '../util'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {useComlinkViewHistory} from './useComlinkViewHistory'
+/* eslint-disable max-statements */
+import {type SanityDocument} from '@sanity/client'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocumentLike,
+  type ValidationMarker,
+} from '@sanity/types'
+import {pathFor} from '@sanity/util/paths'
+import {throttle} from 'lodash-es'
+import {type RefObject, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
+import deepEquals from 'react-fast-compare'
 
 interface DocumentFormOptions {
   documentType: string

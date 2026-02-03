@@ -1,6 +1,5 @@
-import {type Schema} from '@sanity/types'
-
 import {renderPath} from './utils'
+import {type Schema} from '@sanity/types'
 
 export function reportWarnings(schema: Schema) {
   // oxlint-disable no-console

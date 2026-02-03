@@ -1,15 +1,14 @@
+import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {useTasksNavigation} from '../../context'
+import {tasksLocaleNamespace} from '../../i18n'
+import {type TaskDocument} from '../../types'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-
-import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {useTasksNavigation} from '../../context'
-import {tasksLocaleNamespace} from '../../i18n'
-import {type TaskDocument} from '../../types'
 
 interface TasksActiveTabNavigationProps {
   items: TaskDocument[]

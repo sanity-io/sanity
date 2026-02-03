@@ -1,8 +1,7 @@
-import {type SanityDocumentLike} from '@sanity/types'
-import {useSchema, useTranslation} from 'sanity'
-
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentTitle} from '../panes'
+import {type SanityDocumentLike} from '@sanity/types'
+import {useSchema, useTranslation} from 'sanity'
 
 export interface DocTitleProps {
   document: SanityDocumentLike

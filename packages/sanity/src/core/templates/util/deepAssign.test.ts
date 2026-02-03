@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import deepAssign from './deepAssign'
+import {expect, it} from 'vitest'
 
 it('ignores undefined values', () => {
   expect(deepAssign({foo: undefined}, {bar: undefined})).toStrictEqual({

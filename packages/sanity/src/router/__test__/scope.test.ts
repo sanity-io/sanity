@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {route} from '../route'
+import {expect, test} from 'vitest'
 
 test('toplevel', () => {
   const router = route.scope('omg', '/foo/:bar')

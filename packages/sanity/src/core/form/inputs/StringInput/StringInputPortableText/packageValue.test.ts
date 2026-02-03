@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import {packageValue} from './packageValue'
+import {expect, it} from 'vitest'
 
 it('produces a Portable Text value with the primitive value stored at the expected path', () => {
   expect(packageValue('a')).toMatchInlineSnapshot(`

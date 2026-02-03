@@ -1,7 +1,3 @@
-import {AddIcon} from '@sanity/icons'
-import {Menu} from '@sanity/ui'
-import {type HTMLProps, type RefObject} from 'react'
-
 import {
   Button,
   MenuButton,
@@ -13,6 +9,9 @@ import {InsufficientPermissionsMessage} from '../../../components'
 import {useGetI18nText, useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
 import {type CreateReferenceOption} from './types'
+import {AddIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
+import {type HTMLProps, type RefObject} from 'react'
 
 interface Props extends Omit<
   HTMLProps<HTMLButtonElement>,

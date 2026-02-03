@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {type OperatorNumberRangeValue} from './common'
 import {numberOperators} from './numberOperators'
+import {describe, expect, it} from 'vitest'
 
 const fieldPath = 'title'
 const value = 10

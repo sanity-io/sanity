@@ -1,10 +1,9 @@
+import {useKeyValueStore} from '../../../store/_legacy/datastores'
+import {type SeenAnnouncementsState, useSeenAnnouncements} from '../useSeenAnnouncements'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import {of, Subject} from 'rxjs'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
-
-import {useKeyValueStore} from '../../../store/_legacy/datastores'
-import {type SeenAnnouncementsState, useSeenAnnouncements} from '../useSeenAnnouncements'
 
 vi.mock('../../../store/_legacy/datastores', () => ({
   useKeyValueStore: vi.fn(),

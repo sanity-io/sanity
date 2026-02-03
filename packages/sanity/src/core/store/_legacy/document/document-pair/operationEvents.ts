@@ -1,23 +1,3 @@
-/* eslint-disable max-nested-callbacks */
-import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
-import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
-import {
-  catchError,
-  concatMap,
-  filter,
-  groupBy,
-  last,
-  map,
-  mergeMap,
-  mergeMapTo,
-  share,
-  switchMap,
-  take,
-  tap,
-  throttleTime,
-} from 'rxjs/operators'
-
 import {type HistoryStore} from '../../history'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
@@ -39,6 +19,25 @@ import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
 import {restore as serverRestore} from './serverOperations/restore'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
+/* eslint-disable max-nested-callbacks */
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
+import {
+  catchError,
+  concatMap,
+  filter,
+  groupBy,
+  last,
+  map,
+  mergeMap,
+  mergeMapTo,
+  share,
+  switchMap,
+  take,
+  tap,
+  throttleTime,
+} from 'rxjs/operators'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI

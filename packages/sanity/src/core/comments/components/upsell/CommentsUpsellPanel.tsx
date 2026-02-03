@@ -1,7 +1,6 @@
-import {Box, Container} from '@sanity/ui'
-
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
+import {Box, Container} from '@sanity/ui'
 
 interface CommentsUpsellPanelProps {
   data: UpsellData

@@ -1,13 +1,3 @@
-import {
-  type CrossDatasetReferenceValue,
-  type FileValue,
-  type GeopointValue,
-  type ImageValue,
-  type ReferenceValue,
-  type SlugValue,
-} from '@sanity/types'
-import {type ComponentType} from 'react'
-
 import {type PreviewProps} from '../../components'
 import {type FieldsetRenderMembersCallback} from '../store/types/members'
 import {type ObjectRenderMembersCallback} from '../store/types/nodes'
@@ -37,6 +27,15 @@ import {
   type StringInputProps,
 } from './inputProps'
 import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
+import {
+  type CrossDatasetReferenceValue,
+  type FileValue,
+  type GeopointValue,
+  type ImageValue,
+  type ReferenceValue,
+  type SlugValue,
+} from '@sanity/types'
+import {type ComponentType} from 'react'
 
 /* To avoid cyclic dependencies on Props, we extend all type definitions here, to add the correct component props */
 declare module '@sanity/types' {

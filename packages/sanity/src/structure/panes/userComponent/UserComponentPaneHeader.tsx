@@ -1,5 +1,3 @@
-import {ArrowLeftIcon} from '@sanity/icons'
-
 import {Button} from '../../../ui-components'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
 import {
@@ -8,6 +6,7 @@ import {
   type StructureToolPaneActionHandler,
 } from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {ArrowLeftIcon} from '@sanity/icons'
 
 interface UserComponentPaneHeaderProps {
   actionHandlers?: Record<string, StructureToolPaneActionHandler>

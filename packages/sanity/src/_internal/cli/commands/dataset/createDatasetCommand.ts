@@ -1,8 +1,7 @@
-import {type CliCommandDefinition, type CliOutputter, type CliPrompter} from '@sanity/cli'
-
 import {promptForDatasetName} from '../../actions/dataset/datasetNamePrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
+import {type CliCommandDefinition, type CliOutputter, type CliPrompter} from '@sanity/cli'
 
 const helpText = `
 Options

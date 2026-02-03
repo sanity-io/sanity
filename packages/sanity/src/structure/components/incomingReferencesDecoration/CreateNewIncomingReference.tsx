@@ -1,3 +1,6 @@
+import {usePaneRouter} from '../paneRouter'
+import {type IncomingReferenceCreationParams} from './isIncomingReferenceCreation'
+import {type IncomingReferencesOptions} from './types'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
 import {
@@ -8,10 +11,6 @@ import {
   useReferenceInputOptions,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-
-import {usePaneRouter} from '../paneRouter'
-import {type IncomingReferenceCreationParams} from './isIncomingReferenceCreation'
-import {type IncomingReferencesOptions} from './types'
 
 export function CreateNewIncomingReference({
   type,

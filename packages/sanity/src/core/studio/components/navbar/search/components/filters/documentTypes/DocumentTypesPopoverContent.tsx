@@ -1,9 +1,3 @@
-import {type Schema, type SchemaType} from '@sanity/types'
-import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
-import {partition} from 'lodash-es'
-import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Button} from '../../../../../../../../ui-components'
 import {
   CommandList,
@@ -18,6 +12,11 @@ import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
+import {type Schema, type SchemaType} from '@sanity/types'
+import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {partition} from 'lodash-es'
+import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 
 const ClearButtonBox = styled(Box)`
   border-top: 1px solid ${({theme}) => theme.sanity.color.base.border};

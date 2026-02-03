@@ -1,8 +1,7 @@
-import {useMemo} from 'react'
-import {type Observable, of} from 'rxjs'
-
 import {type LoadableState, useLoadable} from '../../../../util'
 import {useDocumentPreviewStore} from '../../datastores'
+import {useMemo} from 'react'
+import {type Observable, of} from 'rxjs'
 
 /** @internal */
 export function useDocumentValues<T = Record<string, unknown>>(

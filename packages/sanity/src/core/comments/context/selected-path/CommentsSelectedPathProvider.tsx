@@ -1,8 +1,7 @@
+import {type CommentsSelectedPath, type CommentsSelectedPathContextValue} from './types'
 import {isEqual} from 'lodash-es'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {CommentsSelectedPathContext} from 'sanity/_singletons'
-
-import {type CommentsSelectedPath, type CommentsSelectedPathContextValue} from './types'
 
 interface CommentsSelectedPathProviderProps {
   children: React.ReactNode

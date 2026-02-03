@@ -1,3 +1,6 @@
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {OpenReleaseToEditBanner} from '../OpenReleaseToEditBanner'
 import {render, screen} from '@testing-library/react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -6,10 +9,6 @@ import {
   useOnlyHasVersions,
 } from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
-import {OpenReleaseToEditBanner} from '../OpenReleaseToEditBanner'
 
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

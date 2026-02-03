@@ -1,13 +1,12 @@
-import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render, screen} from '@testing-library/react'
-import {type ComponentProps, type ReactNode} from 'react'
-import {describe, expect, it} from 'vitest'
-
 import {LocaleProviderBase} from '../components/LocaleProvider'
 import {useTranslation} from '../hooks/useTranslation'
 import {prepareI18n} from '../i18nConfig'
 import {Translate} from '../Translate'
 import {type LocaleResourceBundle, type LocaleResourceRecord} from '../types'
+import {studioTheme, ThemeProvider} from '@sanity/ui'
+import {render, screen} from '@testing-library/react'
+import {type ComponentProps, type ReactNode} from 'react'
+import {describe, expect, it} from 'vitest'
 
 type TestComponentProps = Omit<ComponentProps<typeof Translate>, 't'>
 

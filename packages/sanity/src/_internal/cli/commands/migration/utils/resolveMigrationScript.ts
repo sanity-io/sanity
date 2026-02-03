@@ -1,9 +1,8 @@
+import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from '../constants'
 import {type Migration} from '@sanity/migrate'
 import {isPlainObject} from 'lodash-es'
 import {createRequire} from 'node:module'
 import path from 'node:path'
-
-import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from '../constants'
 
 const require = createRequire(import.meta.url)
 

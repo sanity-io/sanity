@@ -1,13 +1,3 @@
-import {Box, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  type Chunk,
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-  useTranslation,
-} from 'sanity'
-
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
 import {TimelineItem} from './timelineItem'
@@ -17,6 +7,15 @@ import {
   isNonPublishChunk,
   isPublishChunk,
 } from './utils'
+import {Box, Text} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type Chunk,
+  CommandList,
+  type CommandListRenderItemCallback,
+  LoadingBlock,
+  useTranslation,
+} from 'sanity'
 
 interface TimelineProps {
   chunks: Chunk[]

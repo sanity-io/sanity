@@ -1,8 +1,7 @@
+import {MONOREPO_ROOT} from './constants'
 import dotenv from 'dotenv'
 import fs from 'node:fs'
 import path from 'node:path'
-
-import {MONOREPO_ROOT} from './constants'
 
 /**
  * Load environment variables from .env files, mirroring the behavior of Vite.

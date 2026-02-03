@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {extract} from '../src/jsonpath'
+import {expect, test} from 'vitest'
 
 test('basic extraction', () => {
   expect(extract('nums[3,5]', {nums: [0, 1, 2, 3, 4, 5]})).toEqual([3, 5])

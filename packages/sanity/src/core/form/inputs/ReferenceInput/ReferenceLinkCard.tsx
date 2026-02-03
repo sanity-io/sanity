@@ -7,7 +7,7 @@ export const StyledCard = styled(Card)`
          there's probably better ways of solving this */
   min-height: 33px;
   position: relative;
-  
+
   /* TextWithTone uses its own logic to set color, and we therefore need */
   /* to override this logic in order to set the correct color in different states */
   &[data-selected],

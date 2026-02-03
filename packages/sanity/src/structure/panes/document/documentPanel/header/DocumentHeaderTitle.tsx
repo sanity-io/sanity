@@ -1,11 +1,10 @@
-import {useMemo} from 'react'
-import {useTranslation} from 'sanity'
-
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {DocumentHeaderBreadcrumb} from './DocumentHeaderBreadcrumb'
+import {useMemo} from 'react'
+import {useTranslation} from 'sanity'
 
 export function DocumentHeaderTitle(): React.JSX.Element {
   const {connectionState, schemaType, title, value: documentValue, index} = useDocumentPane()

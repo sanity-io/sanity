@@ -1,9 +1,8 @@
+import {usePresenceStore} from '../datastores'
+import {type DocumentPresence} from './types'
 import {startTransition, useEffect, useReducer} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
-
-import {usePresenceStore} from '../datastores'
-import {type DocumentPresence} from './types'
 
 const initial: DocumentPresence[] = []
 const fallback = of(initial)

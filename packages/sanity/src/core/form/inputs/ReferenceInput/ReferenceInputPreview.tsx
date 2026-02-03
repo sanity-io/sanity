@@ -1,19 +1,3 @@
-import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
-import {type Reference} from '@sanity/types'
-import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type FocusEvent,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {IntentLink} from 'sanity/router'
-
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
@@ -29,6 +13,21 @@ import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAl
 import {type ReferenceInfo, type ReferenceInputProps} from './types'
 import {type Loadable, useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
+import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
+import {type Reference} from '@sanity/types'
+import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {
+  type ComponentProps,
+  type FocusEvent,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {IntentLink} from 'sanity/router'
 
 const WithFocusRingCard = withFocusRing(Card)
 

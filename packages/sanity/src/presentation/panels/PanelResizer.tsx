@@ -1,3 +1,4 @@
+import {usePanelId} from './usePanelId'
 import {
   type FunctionComponent,
   type MouseEvent as ReactMouseEvent,
@@ -9,8 +10,6 @@ import {
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-
-import {usePanelId} from './usePanelId'
 
 const Resizer = styled.div`
   position: relative;

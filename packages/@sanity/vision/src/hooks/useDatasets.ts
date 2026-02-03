@@ -1,9 +1,8 @@
+import {type VisionConfig} from '../types'
 import {type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of} from 'rxjs'
-
-import {type VisionConfig} from '../types'
 
 export function useDatasets({
   client,

@@ -1,7 +1,3 @@
-import {type Schema, type SchemaType} from '@sanity/types'
-import {type ButtonTone} from '@sanity/ui'
-import {difference, startCase} from 'lodash-es'
-
 import {type TFunction} from '../../../../../../../i18n'
 import {isNonNullable} from '../../../../../../../util'
 import {
@@ -21,6 +17,9 @@ import {
   type SearchFilter,
 } from '../../../types'
 import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
+import {type Schema, type SchemaType} from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
+import {difference, startCase} from 'lodash-es'
 
 /**
  * Creates a flat list of filter menu items based on the current filter text input.

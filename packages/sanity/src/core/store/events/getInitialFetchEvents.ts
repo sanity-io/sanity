@@ -1,7 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {BehaviorSubject, from, of} from 'rxjs'
-import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
-
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
@@ -12,6 +8,9 @@ import {
   isCreateDocumentVersionEvent,
 } from './types'
 import {addEventId, removeDupes} from './utils'
+import {type SanityClient} from '@sanity/client'
+import {BehaviorSubject, from, of} from 'rxjs'
+import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxjs/operators'
 
 export const HISTORY_CLEARED_EVENT_ID = 'history-cleared'
 export interface EventsObservableValue {

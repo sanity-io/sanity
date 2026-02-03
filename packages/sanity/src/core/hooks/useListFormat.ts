@@ -1,7 +1,6 @@
+import {intlCache} from '../i18n/intlCache'
 import {useContext} from 'react'
 import {LocaleContext} from 'sanity/_singletons'
-
-import {intlCache} from '../i18n/intlCache'
 
 /**
  * Options for the `useListFormat` hook

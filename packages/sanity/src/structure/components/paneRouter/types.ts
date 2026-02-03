@@ -1,8 +1,7 @@
+import {type RouterPanes, type RouterPaneSibling} from '../../types'
 import {type Path} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
 import {type ReleaseId} from 'sanity'
-
-import {type RouterPanes, type RouterPaneSibling} from '../../types'
 
 /**
  * @hidden

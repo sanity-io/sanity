@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {calculateDiff} from './calculateDiff'
 import {type DocumentGroupEvent} from './types'
+import {describe, expect, it} from 'vitest'
 
 describe('calculateDiff', () => {
   it('should calculate the diff between the initial and final document when adding values', () => {

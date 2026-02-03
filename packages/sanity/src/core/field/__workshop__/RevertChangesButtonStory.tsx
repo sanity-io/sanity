@@ -1,6 +1,5 @@
-import {Box} from '@sanity/ui'
-
 import {RevertChangesButton} from '../diff/components/RevertChangesButton'
+import {Box} from '@sanity/ui'
 
 export default function RevertChangesButtonStory() {
   return (

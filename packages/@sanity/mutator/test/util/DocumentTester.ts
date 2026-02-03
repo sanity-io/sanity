@@ -1,11 +1,10 @@
-// A test jig for the Document model
-import {type PatchMutationOperation} from '@sanity/types'
-import {expect} from 'vitest'
-
 import {Document, Mutation} from '../../src/document'
 import {type SubmissionResponder} from '../../src/document/Document'
 import {type Doc} from '../../src/document/types'
 import {extract} from '../../src/jsonpath'
+// A test jig for the Document model
+import {type PatchMutationOperation} from '@sanity/types'
+import {expect} from 'vitest'
 
 export class DocumentTester {
   onRebaseCalled = false

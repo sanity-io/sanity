@@ -1,6 +1,5 @@
-import {defineEvent} from '@sanity/telemetry'
-
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
+import {defineEvent} from '@sanity/telemetry'
 
 interface VersionInfo {
   /**

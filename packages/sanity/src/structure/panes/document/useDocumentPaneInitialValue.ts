@@ -1,9 +1,8 @@
-import {useMemo} from 'react'
-import {useInitialValue, useTemplates, useUnique} from 'sanity'
-
 import {type PaneRouterContextValue, usePaneRouter} from '../../components'
 import {type DocumentPaneNode} from '../../types'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+import {useMemo} from 'react'
+import {useInitialValue, useTemplates, useUnique} from 'sanity'
 
 export const useDocumentPaneInitialValue = ({
   paneOptions,

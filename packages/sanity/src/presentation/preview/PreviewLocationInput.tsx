@@ -1,3 +1,7 @@
+import {presentationLocaleNamespace} from '../i18n'
+import {type PreviewUrlRef} from '../machines/preview-url'
+import {useAllowPatterns} from '../useAllowPatterns'
+import {useTargetOrigin} from '../useTargetOrigin'
 import {ResetIcon} from '@sanity/icons'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
 import {
@@ -11,11 +15,6 @@ import {
   useState,
 } from 'react'
 import {useActiveWorkspace, useTranslation} from 'sanity'
-
-import {presentationLocaleNamespace} from '../i18n'
-import {type PreviewUrlRef} from '../machines/preview-url'
-import {useAllowPatterns} from '../useAllowPatterns'
-import {useTargetOrigin} from '../useTargetOrigin'
 
 export function PreviewLocationInput(props: {
   fontSize?: number

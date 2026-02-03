@@ -1,10 +1,9 @@
-import {useMemo} from 'react'
-
 import {type ToolMenuProps} from '../../../../config'
 import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../../../scheduledPublishing/constants'
 import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
+import {useMemo} from 'react'
 
 const HIDDEN_STUDIO_MENU_TOOLS = ['releases']
 

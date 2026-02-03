@@ -1,15 +1,3 @@
-import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
-import {
-  type Dispatch,
-  type MouseEventHandler,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {releasesLocaleNamespace} from '../../../i18n'
@@ -21,6 +9,17 @@ import {ReleasePublishAllButton} from '../releaseCTAButtons/ReleasePublishAllBut
 import {ReleaseScheduleButton} from '../releaseCTAButtons/ReleaseScheduleButton'
 import {type ReleaseAction} from './releaseActions'
 import {type ReleaseMenuButtonProps} from './ReleaseMenuButton'
+import {ArchiveIcon, CloseCircleIcon, CopyIcon, TrashIcon, UnarchiveIcon} from '@sanity/icons'
+import {
+  type Dispatch,
+  type MouseEventHandler,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 export type ReleaseMenuProps = Omit<ReleaseMenuButtonProps, 'documentsCount'> & {
   disabled: boolean

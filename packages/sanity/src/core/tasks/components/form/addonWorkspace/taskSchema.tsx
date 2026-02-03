@@ -1,5 +1,3 @@
-import {defineField, defineType} from '@sanity/types'
-
 import {type ArrayFieldProps, type ObjectFieldProps} from '../../../../form'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {type FormMode} from '../../../types'
@@ -13,6 +11,7 @@ import {
 import {FormCreate} from '../tasksFormBuilder/FormCreate'
 import {FormEdit} from '../tasksFormBuilder/FormEdit'
 import {TasksNotificationTarget} from '../tasksFormBuilder/TasksNotificationTarget'
+import {defineField, defineType} from '@sanity/types'
 
 const targetContentField = (mode: FormMode) =>
   defineField({

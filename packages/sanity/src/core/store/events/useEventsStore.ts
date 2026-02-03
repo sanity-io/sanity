@@ -1,8 +1,3 @@
-import {type ObjectSchemaType} from '@sanity/types'
-import {useCallback, useEffect, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {of} from 'rxjs'
-
 import {useClient, useSchema} from '../../hooks'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
@@ -17,6 +12,10 @@ import {
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
+import {type ObjectSchemaType} from '@sanity/types'
+import {useCallback, useEffect, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {of} from 'rxjs'
 
 export interface EventsObservableValue {
   events: DocumentGroupEvent[]

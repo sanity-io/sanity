@@ -1,8 +1,7 @@
-import {expect} from '@playwright/test'
-
 import {withDefaultClient} from '../../helpers'
 import {expectPublishedStatus, expectSavedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({

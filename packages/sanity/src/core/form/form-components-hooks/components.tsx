@@ -1,6 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {type ComponentType, useCallback} from 'react'
-
 import {type PreviewProps} from '../../components/previews'
 import {
   defaultResolveAnnotationComponent,
@@ -20,6 +17,8 @@ import {
   type InputProps,
   type ItemProps,
 } from '../types'
+import {type SchemaType} from '@sanity/types'
+import {type ComponentType, useCallback} from 'react'
 
 function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
   componentProps: Omit<T, 'renderDefault'>

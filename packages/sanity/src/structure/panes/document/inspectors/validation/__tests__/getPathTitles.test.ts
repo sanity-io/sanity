@@ -1,8 +1,7 @@
+import {getPathTitles} from '../getPathTitles'
 import {Schema} from '@sanity/schema'
 import {type SchemaType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
-
-import {getPathTitles} from '../getPathTitles'
 
 const mockSchema = Schema.compile({
   name: 'default',

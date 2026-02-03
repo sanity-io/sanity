@@ -1,6 +1,3 @@
-import {isKeySegment, type Path} from '@sanity/types'
-import {castArray} from 'lodash-es'
-
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
 import {
@@ -13,6 +10,8 @@ import {
   type ObjectMember,
 } from '../types'
 import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
+import {isKeySegment, type Path} from '@sanity/types'
+import {castArray} from 'lodash-es'
 
 /** @internal */
 export interface ExpandPathOperation {

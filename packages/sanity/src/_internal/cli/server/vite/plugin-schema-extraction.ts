@@ -1,16 +1,15 @@
-import {type CliCommandContext} from '@sanity/cli'
-import {debounce, mean, once} from 'lodash-es'
-import logSymbols from 'log-symbols'
-import path from 'node:path'
-import picomatch from 'picomatch'
-import {type Plugin} from 'vite'
-
 import {
   SchemaExtractedTrace,
   SchemaExtractionWatchModeTrace,
 } from '../../actions/schema/extractSchema.telemetry'
 import {formatSchemaValidation} from '../../actions/schema/formatSchemaValidation'
 import {extractSchemaToFile, SchemaExtractionError} from '../../actions/schema/schemaExtractorApi'
+import {type CliCommandContext} from '@sanity/cli'
+import {debounce, mean, once} from 'lodash-es'
+import logSymbols from 'log-symbols'
+import path from 'node:path'
+import picomatch from 'picomatch'
+import {type Plugin} from 'vite'
 
 /**
  * Default glob patterns to watch for schema changes.

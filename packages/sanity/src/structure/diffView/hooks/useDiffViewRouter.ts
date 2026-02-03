@@ -1,7 +1,3 @@
-import {fromPairs, toPairs} from 'lodash-es'
-import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
-
 import {
   DIFF_SEARCH_PARAM_DELIMITER,
   DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER,
@@ -9,6 +5,9 @@ import {
   DIFF_VIEW_SEARCH_PARAMETER,
 } from '../constants'
 import {type DiffViewMode} from '../types/diffViewMode'
+import {fromPairs, toPairs} from 'lodash-es'
+import {useCallback} from 'react'
+import {useRouter} from 'sanity/router'
 
 type NavigateDiffView = (
   options: {

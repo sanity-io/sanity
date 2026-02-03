@@ -1,9 +1,8 @@
+import {structureLocaleNamespace} from '../../../i18n'
 import {SearchIcon} from '@sanity/icons'
 import {TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback} from 'react'
 import {useTranslation} from 'sanity'
-
-import {structureLocaleNamespace} from '../../../i18n'
 
 export function Search(props: {onChange: (q: string) => void; query: string}) {
   const {onChange, query} = props

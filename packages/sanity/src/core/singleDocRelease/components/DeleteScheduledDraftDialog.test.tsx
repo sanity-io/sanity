@@ -1,7 +1,3 @@
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useSchema} from '../../hooks'
 import {scheduledRelease} from '../../releases/__fixtures__/release.fixture'
@@ -12,6 +8,9 @@ import {
 } from '../hooks/__mocks__/useScheduleDraftOperations.mock'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {DeleteScheduledDraftDialog} from './DeleteScheduledDraftDialog'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 vi.mock('../hooks/useScheduledDraftDocument')
 vi.mock('../hooks/useScheduleDraftOperations')

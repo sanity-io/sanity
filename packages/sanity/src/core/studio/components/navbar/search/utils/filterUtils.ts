@@ -1,6 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {intersection, isEmpty} from 'lodash-es'
-
 import {isNonNullable} from '../../../../../util'
 import {
   type SearchFieldDefinition,
@@ -17,6 +14,8 @@ import {
   type SearchOperatorDefinitionDictionary,
 } from '../definitions/operators'
 import {type SearchFilter} from '../types'
+import {type SchemaType} from '@sanity/types'
+import {intersection, isEmpty} from 'lodash-es'
 
 export function buildSearchFilter(
   filterDefinition: SearchFilterDefinition,

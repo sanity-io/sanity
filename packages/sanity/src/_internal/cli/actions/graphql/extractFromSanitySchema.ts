@@ -1,3 +1,13 @@
+import * as helpUrls from './helpUrls'
+import {SchemaError} from './SchemaError'
+import {
+  type ApiSpecification,
+  type ConvertedFieldDefinition,
+  type ConvertedInterface,
+  type ConvertedType,
+  type ConvertedUnion,
+  type Deprecation,
+} from './types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
 import {
@@ -14,17 +24,6 @@ import {
 } from '@sanity/types'
 import {startCase, uniqBy} from 'lodash-es'
 import oneline from 'oneline'
-
-import * as helpUrls from './helpUrls'
-import {SchemaError} from './SchemaError'
-import {
-  type ApiSpecification,
-  type ConvertedFieldDefinition,
-  type ConvertedInterface,
-  type ConvertedType,
-  type ConvertedUnion,
-  type Deprecation,
-} from './types'
 
 const skipTypes = ['document', 'reference']
 const allowedJsonTypes = ['object', 'array']

@@ -1,7 +1,6 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
-
 import {useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
+import {Box, Card, Stack, Text} from '@sanity/ui'
 
 export function CommentsInspectorError({error}: {error: Error}) {
   const {t} = useTranslation(commentsLocaleNamespace)

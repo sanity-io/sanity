@@ -1,12 +1,11 @@
-import {renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {useFeatureEnabled} from '../../hooks'
 import {useSource} from '../../studio/source'
 import {
   SingleDocReleaseEnabledProvider,
   useSingleDocReleaseEnabled,
 } from './SingleDocReleaseEnabledProvider'
+import {renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../hooks')
 

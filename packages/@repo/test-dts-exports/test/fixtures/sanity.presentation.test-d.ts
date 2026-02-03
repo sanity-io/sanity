@@ -40,7 +40,6 @@ import type {
   usePresentationParams,
   useSharedState,
 } from 'sanity/presentation'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/presentation', () => {

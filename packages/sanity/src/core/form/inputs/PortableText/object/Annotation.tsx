@@ -1,8 +1,3 @@
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
-import {isEqual} from '@sanity/util/paths'
-import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
-
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
@@ -29,6 +24,10 @@ import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {Root, TooltipBox} from './Annotation.styles'
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
+import {isEqual} from '@sanity/util/paths'
+import {type ComponentType, useCallback, useEffect, useMemo, useState} from 'react'
 
 interface AnnotationProps {
   children: React.JSX.Element

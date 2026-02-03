@@ -1,6 +1,3 @@
-import {Box, Flex, Text} from '@sanity/ui'
-import {memo, useCallback} from 'react'
-
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
@@ -8,6 +5,8 @@ import {useWorkspace} from '../../../../studio/workspace'
 import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
+import {Box, Flex, Text} from '@sanity/ui'
+import {memo, useCallback} from 'react'
 
 interface CopyToDraftsMenuItemProps {
   documentId: string

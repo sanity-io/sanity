@@ -1,8 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {filter, map} from 'rxjs/operators'
-
 import {type SourceClientOptions} from '../../../config'
 import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
@@ -35,6 +30,10 @@ import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} f
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'
+import {type SanityClient} from '@sanity/client'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type Observable} from 'rxjs'
+import {filter, map} from 'rxjs/operators'
 
 /**
  * @hidden

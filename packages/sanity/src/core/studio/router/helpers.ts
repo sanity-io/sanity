@@ -1,10 +1,9 @@
-import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
-
 import {type Tool} from '../../config'
 import {isDefaultRouteTool} from '../../config/isDefaultRouteTool'
 import {isRecord} from '../../util/isRecord'
 import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
+import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
 
 const WEIGHTED_CREATE_INTENT_PARAMS = ['mode', 'template']
 const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']

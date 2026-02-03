@@ -1,7 +1,3 @@
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {upperFirst} from 'lodash-es'
-import {memo, useCallback, useMemo} from 'react'
-
 import {type PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
@@ -9,6 +5,9 @@ import {useTranslation} from '../../../../i18n'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useFocusBlock} from './hooks'
 import {type BlockItem} from './types'
+import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {upperFirst} from 'lodash-es'
+import {memo, useCallback, useMemo} from 'react'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 

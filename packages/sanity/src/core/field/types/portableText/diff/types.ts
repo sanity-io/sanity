@@ -1,6 +1,5 @@
-import {type PortableTextTextBlock} from '@sanity/types'
-
 import {type ObjectDiff} from '../../../types'
+import {type PortableTextTextBlock} from '@sanity/types'
 
 export type PortableTextDiff = ObjectDiff & {
   displayValue: PortableTextTextBlock

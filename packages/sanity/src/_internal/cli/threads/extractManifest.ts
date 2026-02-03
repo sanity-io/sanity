@@ -1,8 +1,7 @@
-import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
-
 import {extractCreateWorkspaceManifest} from '../../manifest/extractWorkspaceManifest'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 /** @internal */
 export interface ExtractManifestWorkerData {

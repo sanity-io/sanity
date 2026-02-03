@@ -1,6 +1,5 @@
-import {type ClientError} from '@sanity/client'
-
 import {FORBIDDEN_RESPONSE_TEXT} from '../constants'
+import {type ClientError} from '@sanity/client'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc

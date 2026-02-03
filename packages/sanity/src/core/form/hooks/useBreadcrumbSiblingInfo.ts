@@ -1,3 +1,6 @@
+import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
+import {useFormValue} from '../contexts/FormValue'
+import {shouldSkipSiblingCount} from '../studio/tree-editing/utils/build-tree-editing-state/utils'
 import {
   isArrayOfBlocksSchemaType,
   isKeySegment,
@@ -6,10 +9,6 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {useMemo} from 'react'
-
-import {resolveSchemaTypeForPath} from '../../studio/copyPaste/resolveSchemaTypeForPath'
-import {useFormValue} from '../contexts/FormValue'
-import {shouldSkipSiblingCount} from '../studio/tree-editing/utils/build-tree-editing-state/utils'
 
 /**
  * Hook to get sibling info (index and count) for a breadcrumb item.

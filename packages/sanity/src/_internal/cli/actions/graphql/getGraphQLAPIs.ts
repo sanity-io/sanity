@@ -1,16 +1,15 @@
-import {type CliCommandContext} from '@sanity/cli'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {isMainThread, Worker} from 'node:worker_threads'
-import readPkgUp from 'read-pkg-up'
-import {createSchema} from 'sanity'
-
 import {
   type ResolvedGraphQLAPI,
   type ResolvedSourceProperties,
   type SchemaDefinitionish,
   type TypeResolvedGraphQLAPI,
 } from './types'
+import {type CliCommandContext} from '@sanity/cli'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {isMainThread, Worker} from 'node:worker_threads'
+import readPkgUp from 'read-pkg-up'
+import {createSchema} from 'sanity'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

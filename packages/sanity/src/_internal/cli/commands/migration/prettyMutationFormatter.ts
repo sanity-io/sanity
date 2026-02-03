@@ -1,9 +1,8 @@
+import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
 import {type Migration, type Mutation, type NodePatch, type Transaction} from '@sanity/migrate'
 import {type KeyedSegment} from '@sanity/types'
 import {type Chalk} from 'chalk'
 import {isatty} from 'node:tty'
-
-import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
 
 type ItemRef = string | number
 type Impact = 'destructive' | 'maybeDestructive' | 'incremental'

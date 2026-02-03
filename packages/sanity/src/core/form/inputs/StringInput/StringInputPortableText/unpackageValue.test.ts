@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import {unpackageValue} from './unpackageValue'
+import {expect, it} from 'vitest'
 
 it('extracts the primitive value from a Portable Text value', () => {
   expect(

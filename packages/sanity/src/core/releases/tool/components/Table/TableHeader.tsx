@@ -1,12 +1,11 @@
-import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {useMemo} from 'react'
-
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useTableContext} from './TableProvider'
 import {type HeaderProps, type TableHeaderProps} from './types'
+import {ArrowUpIcon, SearchIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {motion} from 'motion/react'
+import {useMemo} from 'react'
 
 const MotionIcon = motion.create(ArrowUpIcon)
 

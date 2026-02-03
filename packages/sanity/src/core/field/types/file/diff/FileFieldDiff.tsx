@@ -1,8 +1,3 @@
-import {DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import {useMemo} from 'react'
-import {styled} from 'styled-components'
-
 import {useUnitFormatter} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {ChangeList, DiffCard, DiffTooltip, FromTo, MetaInfo} from '../../../diff'
@@ -10,6 +5,10 @@ import {useRefValue} from '../../../diff/hooks'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
+import {DocumentIcon} from '@sanity/icons'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import {useMemo} from 'react'
+import {styled} from 'styled-components'
 
 const SizeDiff = styled.div`
   ${({theme}) => `

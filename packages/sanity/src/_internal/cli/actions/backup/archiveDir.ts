@@ -1,8 +1,7 @@
+import debug from './debug'
 import archiver, {type ProgressData} from 'archiver'
 import {createWriteStream} from 'node:fs'
 import zlib from 'node:zlib'
-
-import debug from './debug'
 
 // ProgressCb is a callback that is called with the number of bytes processed so far.
 type ProgressCb = (processedBytes: number) => void

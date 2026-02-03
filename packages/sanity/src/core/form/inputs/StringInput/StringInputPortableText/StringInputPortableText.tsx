@@ -1,18 +1,3 @@
-import {
-  type EditorConfig,
-  type EditorEmittedEvent,
-  EditorProvider,
-  PortableTextEditable,
-  useEditor,
-} from '@portabletext/editor'
-import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
-import {OneLinePlugin} from '@portabletext/plugin-one-line'
-import {type Path} from '@sanity/types'
-import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
-import {useCallback, useEffect, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types'
 import {DeletedSegment} from '../../common/diff/string/segments'
@@ -31,6 +16,20 @@ import {
   textInputRootStyle,
 } from './styles'
 import {unpackageValue} from './unpackageValue'
+import {
+  type EditorConfig,
+  type EditorEmittedEvent,
+  EditorProvider,
+  PortableTextEditable,
+  useEditor,
+} from '@portabletext/editor'
+import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
+import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
+import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {type Path} from '@sanity/types'
+import {Card, useArrayProp, useRootTheme} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
+import {styled} from 'styled-components'
 
 export const ROOT_PATH: Path = [{_key: 'root'}, 'children', {_key: 'root'}]
 const INVALID_CLASS_NAME = 'invalid'

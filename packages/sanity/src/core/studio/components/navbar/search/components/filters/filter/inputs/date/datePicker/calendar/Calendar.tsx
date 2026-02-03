@@ -1,3 +1,7 @@
+import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
+import {CalendarHeader} from './CalendarHeader'
+import {CalendarMonth} from './CalendarMonth'
+import {ARROW_KEYS} from './constants'
 import {Box, Flex} from '@sanity/ui'
 import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
 import {
@@ -10,11 +14,6 @@ import {
   useState,
 } from 'react'
 import {CalendarContext} from 'sanity/_singletons'
-
-import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
-import {CalendarHeader} from './CalendarHeader'
-import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS} from './constants'
 
 type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   date?: Date

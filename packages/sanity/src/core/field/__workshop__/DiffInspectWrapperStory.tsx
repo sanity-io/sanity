@@ -1,6 +1,5 @@
-import {Box} from '@sanity/ui'
-
 import {DiffInspectWrapper} from '../diff/components/DiffInspectWrapper'
+import {Box} from '@sanity/ui'
 
 /**
  * TODO

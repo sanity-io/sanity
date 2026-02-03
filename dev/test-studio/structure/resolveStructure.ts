@@ -1,3 +1,19 @@
+import {DebugPane} from '../components/panes/debug'
+import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
+import {PerspectiveExample} from '../components/PerspectiveExample'
+import {TranslateExample} from '../components/TranslateExample'
+import {_buildTypeGroup} from './_buildTypeGroup'
+import {delayValue} from './_helpers'
+import {
+  CI_INPUT_TYPES,
+  DEBUG_FIELD_GROUP_TYPES,
+  DEBUG_INPUT_TYPES,
+  EXTERNAL_PLUGIN_INPUT_TYPES,
+  PLUGIN_INPUT_TYPES,
+  STANDARD_INPUT_TYPES,
+  STANDARD_PORTABLE_TEXT_INPUT_TYPES,
+} from './constants'
+import {typesInOptionGroup} from './groupByOption'
 import {
   BinaryDocumentIcon,
   CheckmarkCircleIcon,
@@ -26,23 +42,6 @@ import {
   structureLocaleNamespace,
   type StructureResolver,
 } from 'sanity/structure'
-
-import {DebugPane} from '../components/panes/debug'
-import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
-import {PerspectiveExample} from '../components/PerspectiveExample'
-import {TranslateExample} from '../components/TranslateExample'
-import {_buildTypeGroup} from './_buildTypeGroup'
-import {delayValue} from './_helpers'
-import {
-  CI_INPUT_TYPES,
-  DEBUG_FIELD_GROUP_TYPES,
-  DEBUG_INPUT_TYPES,
-  EXTERNAL_PLUGIN_INPUT_TYPES,
-  PLUGIN_INPUT_TYPES,
-  STANDARD_INPUT_TYPES,
-  STANDARD_PORTABLE_TEXT_INPUT_TYPES,
-} from './constants'
-import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (
   S,

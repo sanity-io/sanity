@@ -1,3 +1,10 @@
+import {AssetLimitUpsellProvider} from '../../../../src/core/limits/context/assets/AssetLimitUpsellProvider'
+import {PerspectiveProvider} from '../../../../src/core/perspective/PerspectiveProvider'
+import {route} from '../../../../src/router'
+import {RouterProvider} from '../../../../src/router/RouterProvider'
+import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components/pane'
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
@@ -17,14 +24,6 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 import {styled} from 'styled-components'
-
-import {AssetLimitUpsellProvider} from '../../../../src/core/limits/context/assets/AssetLimitUpsellProvider'
-import {PerspectiveProvider} from '../../../../src/core/perspective/PerspectiveProvider'
-import {route} from '../../../../src/router'
-import {RouterProvider} from '../../../../src/router/RouterProvider'
-import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components/pane'
-import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
-import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
 interface TestWrapperProps {
   children?: ReactNode

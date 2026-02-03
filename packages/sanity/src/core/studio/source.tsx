@@ -1,8 +1,7 @@
-import {type ReactNode, useContext} from 'react'
-import {SourceContext} from 'sanity/_singletons'
-
 import {type Source} from '../config'
 import {useWorkspace} from './workspace'
+import {type ReactNode, useContext} from 'react'
+import {SourceContext} from 'sanity/_singletons'
 
 /** @internal */
 export type SourceProviderProps =

@@ -1,10 +1,9 @@
-import {Stack} from '@sanity/ui'
-import {startCase} from 'lodash-es'
-import {forwardRef, type Ref, useMemo} from 'react'
-
 import {Button} from '../../../../../ui-components'
 import {type Tool} from '../../../../config'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {Stack} from '@sanity/ui'
+import {startCase} from 'lodash-es'
+import {forwardRef, type Ref, useMemo} from 'react'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string

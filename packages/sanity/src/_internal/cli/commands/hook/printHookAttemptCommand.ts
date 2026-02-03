@@ -1,6 +1,5 @@
-import {type CliCommandDefinition} from '@sanity/cli'
-
 import {type DeliveryAttempt} from './types'
+import {type CliCommandDefinition} from '@sanity/cli'
 
 const printHookAttemptCommand: CliCommandDefinition = {
   name: 'attempt',

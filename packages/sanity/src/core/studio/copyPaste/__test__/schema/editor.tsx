@@ -1,6 +1,5 @@
-import {defineField, defineType} from '@sanity/types'
-
 import {arrayOfMultipleNestedTypes, arrayOfMultipleNestedTypesWithoutColor} from './objects'
+import {defineField, defineType} from '@sanity/types'
 
 export const editorDocument = defineType({
   name: 'editor',

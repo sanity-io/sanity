@@ -1,9 +1,8 @@
+import {ChipButton, ChipButtonContainer} from './documentHeader/styles'
 import {
   type Button, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef} from 'react'
-
-import {ChipButton, ChipButtonContainer} from './documentHeader/styles'
 
 /**
  * @internal

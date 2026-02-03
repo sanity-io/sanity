@@ -1,10 +1,3 @@
-import {type Path} from '@sanity/types'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'motion/react'
-import {useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
@@ -29,6 +22,12 @@ import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCommentItem} from './TasksActivityCommentItem'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
 import {TasksSubscribers} from './TasksSubscribers'
+import {type Path} from '@sanity/types'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
+import {useMemo, useState} from 'react'
+import {styled} from 'styled-components'
 
 const EMPTY_ARRAY: [] = []
 
@@ -37,9 +36,7 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, x: 0},
 }
 
-const MotionStack = styled(motion.create(Stack))`
-  
-`
+const MotionStack = styled(motion.create(Stack))``
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void

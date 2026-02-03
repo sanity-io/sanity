@@ -1,3 +1,19 @@
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
+import {versionedClient} from '../studioClient'
+import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
+import {getPublishedId, idMatchesPerspective, isVersionId} from '../util/draftUtils'
+import {INCLUDE_FIELDS} from './constants'
+import {
+  type ApiConfig,
+  type FieldName,
+  type Id,
+  type InvalidationChannelEvent,
+  type Selection,
+} from './types'
+import {debounceCollect} from './utils/debounceCollect'
+import {hasEqualFields} from './utils/hasEqualFields'
+import {isUniqueBy} from './utils/isUniqueBy'
+import {type CombinedSelection, combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 import {type SanityClient, type StackablePerspective} from '@sanity/client'
 import {difference, flatten, memoize} from 'lodash-es'
 import {
@@ -25,23 +41,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
-
-import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
-import {versionedClient} from '../studioClient'
-import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
-import {getPublishedId, idMatchesPerspective, isVersionId} from '../util/draftUtils'
-import {INCLUDE_FIELDS} from './constants'
-import {
-  type ApiConfig,
-  type FieldName,
-  type Id,
-  type InvalidationChannelEvent,
-  type Selection,
-} from './types'
-import {debounceCollect} from './utils/debounceCollect'
-import {hasEqualFields} from './utils/hasEqualFields'
-import {isUniqueBy} from './utils/isUniqueBy'
-import {type CombinedSelection, combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 
 /**
  * Chunks combined selections into smaller groups based on the total byte size of document IDs.

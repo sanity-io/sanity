@@ -1,3 +1,5 @@
+import {memoize} from '../document/utils/createMemoizer'
+import {type ProjectData, type ProjectGrants, type ProjectStore} from './types'
 import {type SanityClient} from '@sanity/client'
 import {
   catchError,
@@ -10,9 +12,6 @@ import {
   shareReplay,
   timer,
 } from 'rxjs'
-
-import {memoize} from '../document/utils/createMemoizer'
-import {type ProjectData, type ProjectGrants, type ProjectStore} from './types'
 
 const REFETCH_INTERVAL = 5 * 60 * 1000 // 5 minutes
 

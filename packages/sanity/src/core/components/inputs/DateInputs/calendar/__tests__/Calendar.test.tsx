@@ -1,12 +1,11 @@
-import {render, screen} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {of} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {useKeyValueStore} from '../../../../../store/_legacy/datastores'
 import {Calendar} from '../Calendar'
 import {type CalendarLabels} from '../types'
+import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {of} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 vi.mock('../../../../../store/_legacy/datastores', () => ({
   useKeyValueStore: vi.fn(),

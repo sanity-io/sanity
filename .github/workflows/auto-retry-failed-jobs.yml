@@ -6,11 +6,11 @@ on:
   # Trigger when test workflows complete with failure on first attempt
   workflow_run:
     workflows:
-      - 'Unit tests'
-      - 'End-to-End Tests'
-      - 'End-to-End Component Tests'
-      - 'CLI Unit tests'
-      - 'eFPS Test'
+      - "Unit tests"
+      - "End-to-End Tests"
+      - "End-to-End Component Tests"
+      - "CLI Unit tests"
+      - "eFPS Test"
     types: [completed]
 
 jobs:

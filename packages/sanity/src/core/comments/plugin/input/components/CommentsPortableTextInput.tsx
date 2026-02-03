@@ -1,21 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-nested-callbacks */
-import {
-  type EditorChange,
-  type EditorSelection,
-  type PortableTextBlock,
-  PortableTextEditor,
-  type RangeDecoration,
-  type RangeDecorationOnMovedDetails,
-} from '@portabletext/editor'
-import {isPortableTextTextBlock} from '@sanity/types'
-import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
-import {uuid} from '@sanity/uuid'
-import {debounce, isEqual} from 'lodash-es'
-import {AnimatePresence} from 'motion/react'
-import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-
 import {type PortableTextInputProps, useFieldActions} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
@@ -43,6 +25,23 @@ import {
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
+/* eslint-disable max-statements */
+/* eslint-disable max-nested-callbacks */
+import {
+  type EditorChange,
+  type EditorSelection,
+  type PortableTextBlock,
+  PortableTextEditor,
+  type RangeDecoration,
+  type RangeDecorationOnMovedDetails,
+} from '@portabletext/editor'
+import {isPortableTextTextBlock} from '@sanity/types'
+import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
+import {uuid} from '@sanity/uuid'
+import {debounce, isEqual} from 'lodash-es'
+import {AnimatePresence} from 'motion/react'
+import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 const EMPTY_ARRAY: [] = []
 

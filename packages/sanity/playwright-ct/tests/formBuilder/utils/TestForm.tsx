@@ -1,3 +1,7 @@
+import {applyAll} from '../../../../src/core/form/patch/applyPatch'
+import {PresenceProvider} from '../../../../src/core/form/studio/contexts/Presence'
+import {type FormDocumentValue} from '../../../../src/core/form/types'
+import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 import {
   isKeySegment,
   type Path,
@@ -29,11 +33,6 @@ import {
   type Workspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
-
-import {applyAll} from '../../../../src/core/form/patch/applyPatch'
-import {PresenceProvider} from '../../../../src/core/form/studio/contexts/Presence'
-import {type FormDocumentValue} from '../../../../src/core/form/types'
-import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 
 const NOOP = () => null
 

@@ -1,6 +1,5 @@
-import {Box} from '@sanity/ui'
-
 import {ChangeTitleSegment} from '../diff/components/ChangeTitleSegment'
+import {Box} from '@sanity/ui'
 
 export default function ChangeTitleSegmentStory() {
   return (

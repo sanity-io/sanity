@@ -1,8 +1,7 @@
+import {buildReleasesSearchParams, getInitialCardinalityView} from '../queryParamUtils'
 import {format} from 'date-fns'
 import {type RouterContextValue} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
-
-import {buildReleasesSearchParams, getInitialCardinalityView} from '../queryParamUtils'
 
 const createMockRouter = (searchParams: string): RouterContextValue =>
   ({

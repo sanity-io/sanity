@@ -1,7 +1,6 @@
+import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {type ForwardedRef, forwardRef, memo} from 'react'
-
-import {SelectAssetsDialog} from './SelectAssetsDialog'
 
 const DatasetAssetSourceComponent = function DatasetAssetSourceComponent(
   props: AssetSourceComponentProps,

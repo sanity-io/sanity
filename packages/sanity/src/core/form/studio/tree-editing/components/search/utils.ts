@@ -1,7 +1,6 @@
-import {deburr} from 'lodash-es'
-
 import {type DialogItem} from '../../types'
 import {type SearchableTreeEditingMenuItem} from './types'
+import {deburr} from 'lodash-es'
 
 /**
  * Flattens a list of items and their children into a single list.

@@ -1,9 +1,8 @@
+import {type Package} from '../types'
+import {getManifestPaths} from './getPackagePaths'
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-
-import {type Package} from '../types'
-import {getManifestPaths} from './getPackagePaths'
 
 const rootPath = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 

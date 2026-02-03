@@ -1,3 +1,11 @@
+import {Button, Tab, Tooltip} from '../../../../../ui-components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {HISTORY_INSPECTOR_NAME} from '../../constants'
+import {ChangesInspector} from './ChangesInspector'
+import {EventsInspector} from './EventsInspector'
+import {EventsSelector} from './EventsSelector'
+import {HistorySelector} from './HistorySelector'
 import {CloseIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
@@ -12,15 +20,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
-
-import {Button, Tab, Tooltip} from '../../../../../ui-components'
-import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {ChangesInspector} from './ChangesInspector'
-import {EventsInspector} from './EventsInspector'
-import {EventsSelector} from './EventsSelector'
-import {HistorySelector} from './HistorySelector'
 
 const FadeInFlex = styled(Flex)`
   opacity: 0;

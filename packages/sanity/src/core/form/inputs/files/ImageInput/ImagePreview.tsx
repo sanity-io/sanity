@@ -1,11 +1,10 @@
-import {WarningOutlineIcon} from '@sanity/icons'
-import {type Card, Text} from '@sanity/ui'
-import {type ComponentProps, useCallback, useEffect, useState} from 'react'
-
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {type AssetAccessPolicy} from '../types'
 import {ErrorIconWrapper, FlexOverlay, Overlay, RatioBox} from './ImagePreview.styled'
+import {WarningOutlineIcon} from '@sanity/icons'
+import {type Card, Text} from '@sanity/ui'
+import {type ComponentProps, useCallback, useEffect, useState} from 'react'
 
 interface ImagePreviewProps {
   alt: string

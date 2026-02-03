@@ -1,10 +1,9 @@
-import {red} from '@sanity/color'
-import {UnknownIcon} from '@sanity/icons'
-
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {type Schedule} from '../../types'
 import {FallbackContextMenu} from '../scheduleContextMenu/FallbackContextMenu'
 import PreviewWrapper from './PreviewWrapper'
+import {red} from '@sanity/color'
+import {UnknownIcon} from '@sanity/icons'
 
 const NoSchemaItem = ({schedule}: {schedule: Schedule}) => {
   return (

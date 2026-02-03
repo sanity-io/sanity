@@ -1,3 +1,7 @@
+import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
+import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
+import {listenSearchQuery} from './listenSearchQuery'
+import {type DocumentListPaneItem, type SortOrder} from './types'
 import {
   ChannelError,
   ClientError,
@@ -22,11 +26,6 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 import {catchWithCount, useSchema, useSearchMaxFieldDepth, useWorkspace} from 'sanity'
-
-import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
-import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
-import {listenSearchQuery} from './listenSearchQuery'
-import {type DocumentListPaneItem, type SortOrder} from './types'
 
 interface UseDocumentListOpts {
   client: SanityClient

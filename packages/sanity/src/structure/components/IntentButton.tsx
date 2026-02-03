@@ -1,8 +1,7 @@
-import {type ComponentProps, type ForwardedRef, forwardRef, type ReactNode, useMemo} from 'react'
-import {IntentLink} from 'sanity/router'
-
 import {Button, type ButtonProps} from '../../ui-components'
 import {type PaneMenuItem} from '../types'
+import {type ComponentProps, type ForwardedRef, forwardRef, type ReactNode, useMemo} from 'react'
+import {IntentLink} from 'sanity/router'
 
 type RouterIntent = NonNullable<PaneMenuItem['intent']>
 

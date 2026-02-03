@@ -1,12 +1,11 @@
-import {TaskIcon} from '@sanity/icons'
-import {Badge, useMediaIndex} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {styled} from 'styled-components'
-
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
 import {useTasks, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
+import {TaskIcon} from '@sanity/icons'
+import {Badge, useMediaIndex} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+import {styled} from 'styled-components'
 
 const ButtonContainer = styled.div`
   position: relative;

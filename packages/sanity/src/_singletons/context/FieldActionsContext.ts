@@ -1,9 +1,7 @@
-import type {ReactNode} from 'react'
-
-import {createContext} from 'sanity/_createContext'
-
 import type {DocumentFieldActionNode} from '../../core/config/document/fieldActions/types'
 import type {FieldCommentsProps} from '../../core/form/types/fieldProps'
+import type {ReactNode} from 'react'
+import {createContext} from 'sanity/_createContext'
 
 /** @internal */
 export interface FieldActionsContextValue {

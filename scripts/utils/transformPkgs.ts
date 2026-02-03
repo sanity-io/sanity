@@ -1,7 +1,6 @@
-import fs from 'node:fs'
-
 import {type PackageManifest} from '../types'
 import readPackages from './readPackages'
+import fs from 'node:fs'
 
 /**
  * @internal

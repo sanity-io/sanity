@@ -1,6 +1,5 @@
-import {type Schema} from '@sanity/types'
-
 import {useSource} from '../studio'
+import {type Schema} from '@sanity/types'
 
 /**
  * React hook that returns the schema registry for the current project

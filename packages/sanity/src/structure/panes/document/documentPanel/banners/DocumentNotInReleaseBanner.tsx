@@ -1,3 +1,5 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {Banner} from './Banner'
 import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
@@ -12,9 +14,6 @@ import {
   useTranslation,
   useVersionOperations,
 } from 'sanity'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {Banner} from './Banner'
 
 // How long to wait after user hit the "Add to release"-button before displaying the "waiting…" toast
 const TOAST_DELAY = 1000

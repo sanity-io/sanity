@@ -1,6 +1,5 @@
-import {expect, it} from 'vitest'
-
 import {flattenArray, flattenObject} from './flatten'
+import {expect, it} from 'vitest'
 
 it('should flatten simple objects', () => {
   expect([

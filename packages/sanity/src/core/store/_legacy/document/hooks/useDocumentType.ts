@@ -1,7 +1,6 @@
-import {useEffect, useMemo, useState} from 'react'
-
 import {getPublishedId} from '../../../../util'
 import {useDocumentStore} from '../../datastores'
+import {useEffect, useMemo, useState} from 'react'
 
 /** @internal */
 export interface DocumentTypeResolveState {

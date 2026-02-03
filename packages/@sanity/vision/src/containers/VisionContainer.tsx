@@ -1,10 +1,9 @@
-import {Flex} from '@sanity/ui'
-import {useClient} from 'sanity'
-
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
 import {type VisionProps} from '../types'
+import {Flex} from '@sanity/ui'
+import {useClient} from 'sanity'
 
 export function VisionContainer(props: VisionProps) {
   const datasetsClient = useClient({apiVersion: 'v2025-06-27'})

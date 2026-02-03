@@ -1,6 +1,5 @@
-import {uniqBy} from 'lodash-es'
-
 import {type ManifestWorkspaceFile} from '../../../../manifest/manifestTypes'
+import {uniqBy} from 'lodash-es'
 
 export function uniqueProjectIdDataset(workspaces: ManifestWorkspaceFile[]) {
   return uniqBy(

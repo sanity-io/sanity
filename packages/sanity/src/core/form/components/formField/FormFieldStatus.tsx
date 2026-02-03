@@ -15,15 +15,15 @@ const Root = styled.div`
   min-height: var(--avatar-height);
   width: 77px;
   margin-left: var(--small-padding);
-  
+
   &[data-max-avatars='1'] {
     max-width: 23px;
   }
-  
+
   &[data-position='top'] {
     align-self: flex-start;
   }
-  
+
   &[data-position='bottom'] {
     align-self: flex-end;
   }

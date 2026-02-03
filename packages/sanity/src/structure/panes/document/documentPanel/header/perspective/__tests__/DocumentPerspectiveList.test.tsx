@@ -1,3 +1,7 @@
+import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
+import {useDocumentPane} from '../../../../useDocumentPane'
+import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
 import {
@@ -22,11 +26,6 @@ import {
   type MockedFunction,
   vi,
 } from 'vitest'
-
-import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
-import {type DocumentPaneContextValue} from '../../../../DocumentPaneContext'
-import {useDocumentPane} from '../../../../useDocumentPane'
-import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),

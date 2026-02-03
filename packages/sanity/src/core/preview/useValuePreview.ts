@@ -1,3 +1,9 @@
+import {type PerspectiveStack} from '../perspective/types'
+import {usePerspective} from '../perspective/usePerspective'
+import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
+import {useDocumentPreviewStore} from '../store'
+import {getPublishedId} from '../util'
+import {type Previewable} from './types'
 import {
   type PreviewValue,
   type SanityDocument,
@@ -8,13 +14,6 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
-
-import {type PerspectiveStack} from '../perspective/types'
-import {usePerspective} from '../perspective/usePerspective'
-import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
-import {useDocumentPreviewStore} from '../store'
-import {getPublishedId} from '../util'
-import {type Previewable} from './types'
 
 /**
  * @internal

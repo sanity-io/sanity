@@ -1,15 +1,14 @@
-import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
-
 import {set, type StringInputProps} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
+import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {useCallback, useMemo} from 'react'
+import {css, styled} from 'styled-components'
 
 const FocusableCard = styled(Card)((props) => {
   const theme = getTheme_v2(props.theme)

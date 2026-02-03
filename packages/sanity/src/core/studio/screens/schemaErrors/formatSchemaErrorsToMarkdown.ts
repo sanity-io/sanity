@@ -1,8 +1,7 @@
+import {getTypeInfo} from './getTypeInfo'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {capitalize} from 'lodash-es'
-
-import {getTypeInfo} from './getTypeInfo'
 
 export function formatSchemaErrorsToMarkdown(groups: SchemaValidationProblemGroup[]): string {
   let text = '# Schema errors\n\n'

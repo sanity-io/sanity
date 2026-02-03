@@ -1,5 +1,3 @@
-import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
-
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -66,6 +64,7 @@ import tokensGroup from './tokens/tokensGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
+import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,

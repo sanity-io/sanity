@@ -1,9 +1,8 @@
-import {memo, useCallback, useMemo} from 'react'
-
 import {Panel} from './panels/Panel'
 import {PanelResizer} from './panels/PanelResizer'
 import {type NavigatorOptions} from './types'
 import {useLocalState} from './useLocalState'
+import {memo, useCallback, useMemo} from 'react'
 
 /** @internal */
 export interface UsePresentationNavigatorProps {

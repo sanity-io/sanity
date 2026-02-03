@@ -1,6 +1,3 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-
 import {useTranslation} from '../../../i18n'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
@@ -15,6 +12,8 @@ import {
   SubtitleSkeleton,
   TitleSkeleton,
 } from './DetailPreview.styled'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 /**
  * @hidden

@@ -1,9 +1,3 @@
-// import {expect, test} from '@playwright/experimental-ct-react'
-import {type Path, type SanityDocument} from '@sanity/types'
-/* eslint-disable max-nested-callbacks */
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import {expect, test} from '../../../../fixtures'
 import {testHelpers} from '../../../../utils/testHelpers'
 import CopyPasteStory from './CopyPasteStory'
@@ -14,6 +8,11 @@ import {
   REMOVED_INPUT_SNAPSHOT,
   UNICODE_TEXT,
 } from './input'
+// import {expect, test} from '@playwright/experimental-ct-react'
+import {type Path, type SanityDocument} from '@sanity/types'
+/* eslint-disable max-nested-callbacks */
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

@@ -1,5 +1,3 @@
-import {type Path, type PathSegment} from '@sanity/types'
-
 import {
   type FormDecPatch,
   type FormDiffMatchPatch,
@@ -10,6 +8,7 @@ import {
   type FormSetPatch,
   type FormUnsetPatch,
 } from './types'
+import {type Path, type PathSegment} from '@sanity/types'
 
 /** @internal */
 export const SANITY_PATCH_TYPE = Symbol.for('sanity.patch')

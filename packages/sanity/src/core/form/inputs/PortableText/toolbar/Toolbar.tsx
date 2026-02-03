@@ -1,15 +1,3 @@
-import {
-  type HotkeyOptions,
-  PortableTextEditor,
-  usePortableTextEditor,
-  usePortableTextEditorSelection,
-} from '@portabletext/editor'
-import {CollapseIcon, ExpandIcon} from '@sanity/icons'
-import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
-import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
-
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
@@ -21,6 +9,17 @@ import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups} from './hooks'
 import {InsertMenu} from './InsertMenu'
 import {type BlockItem, type BlockStyleItem, type PTEToolbarActionGroup} from './types'
+import {
+  type HotkeyOptions,
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@portabletext/editor'
+import {CollapseIcon, ExpandIcon} from '@sanity/icons'
+import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
+import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
+import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {css, styled} from 'styled-components'
 
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */

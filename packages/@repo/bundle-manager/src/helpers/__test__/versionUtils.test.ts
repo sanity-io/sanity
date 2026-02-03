@@ -1,8 +1,7 @@
-import {describe, expect, it} from 'vitest'
-
 import {STALE_TAGS_EXPIRY_SECONDS} from '../../constants'
 import {currentUnixTime} from '../../utils'
 import {cleanupVersions, sortAndCleanupVersions} from '../versionUtils'
+import {describe, expect, it} from 'vitest'
 
 describe('cleanupVersions()', () => {
   it('should keep all TTL versions and the most recent outside-TTL version per major', () => {

@@ -1,7 +1,6 @@
+import {type PortableTextMemberItem} from '../PortableTextInput'
 import {type ReactNode} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
-
-import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export function PortableTextMemberItemsProvider(props: {
   memberItems: PortableTextMemberItem[]

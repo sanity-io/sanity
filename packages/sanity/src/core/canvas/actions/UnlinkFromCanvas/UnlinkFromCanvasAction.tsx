@@ -1,7 +1,3 @@
-import {UnlinkIcon} from '@sanity/icons'
-import {useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-
 import {
   type DocumentActionComponent,
   type DocumentActionProps,
@@ -14,6 +10,9 @@ import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
 import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
+import {UnlinkIcon} from '@sanity/icons'
+import {useToast} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {

@@ -1,6 +1,5 @@
-import {type SanityDocument} from '@sanity/types'
-
 import {type EditStateFor} from './document-pair/editState'
+import {type SanityDocument} from '@sanity/types'
 
 /**
  * Given an `EditState` object targeting the upstream version, select the first relevant document

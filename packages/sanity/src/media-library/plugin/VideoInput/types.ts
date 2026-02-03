@@ -1,7 +1,6 @@
-import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
-
 import {type FileInfo} from '../../../core/form/inputs/files/common/styles'
 import {type BaseVideoInputProps} from './VideoInput'
+import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
 
 export interface VideoAssetProps extends Omit<BaseVideoInputProps, 'renderDefault'> {
   browseButtonElementRef: React.RefObject<HTMLButtonElement | null>

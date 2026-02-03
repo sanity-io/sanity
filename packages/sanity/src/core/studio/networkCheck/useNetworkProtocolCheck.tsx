@@ -1,14 +1,13 @@
-import {generateHelpUrl} from '@sanity/generate-help-url'
-import {LaunchIcon} from '@sanity/icons'
-import {Flex, Stack, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {of} from 'rxjs'
-
 import {Button} from '../../../ui-components'
 import {useConditionalToast} from '../../hooks'
 import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {isUsingLegacyHttp} from '../../network/isUsingLegacyHttp'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import {LaunchIcon} from '@sanity/icons'
+import {Flex, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {of} from 'rxjs'
 
 const HTTP_HELP_URL = generateHelpUrl('http1-performance-issues')
 

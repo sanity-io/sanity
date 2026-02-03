@@ -1,12 +1,11 @@
-import {type SanityClient} from '@sanity/client'
-import {EMPTY, merge, Observable, of, ReplaySubject, share, timer} from 'rxjs'
-import {mergeMap} from 'rxjs/operators'
-
 import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {checkoutPair, type Pair} from './checkoutPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
+import {type SanityClient} from '@sanity/client'
+import {EMPTY, merge, Observable, of, ReplaySubject, share, timer} from 'rxjs'
+import {mergeMap} from 'rxjs/operators'
 
 // How long to keep listener connected for after last unsubscribe
 const LISTENER_RESET_DELAY = 10_000

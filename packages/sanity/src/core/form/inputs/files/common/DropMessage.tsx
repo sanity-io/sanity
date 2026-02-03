@@ -1,12 +1,11 @@
-import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
-import {Box, Inline, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
-
 import {useTranslation} from '../../../../i18n'
 import {resolveUploadAssetSources} from '../../../studio/uploads/resolveUploadAssetSources'
 import {type FileLike} from '../../../studio/uploads/types'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
+import {type SchemaType} from '@sanity/types'
+import {Box, Inline, Text} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 interface Props {
   hoveringFiles: FileLike[]

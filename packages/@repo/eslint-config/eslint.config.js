@@ -1,6 +1,5 @@
-import {defineConfig} from 'eslint/config'
-
 import baseConfig from './index.js'
+import {defineConfig} from 'eslint/config'
 
 export default defineConfig([
   ...baseConfig,

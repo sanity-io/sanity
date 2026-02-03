@@ -1,11 +1,10 @@
-import {EllipsisHorizontalIcon} from '@sanity/icons'
-import {Card, Menu} from '@sanity/ui'
-import {memo, useCallback, useId, useMemo, useState} from 'react'
-
 import {Button, type ButtonProps, MenuButton, type MenuButtonProps} from '../../../../ui-components'
 import {type DocumentFieldActionGroup, type DocumentFieldActionNode} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
+import {EllipsisHorizontalIcon} from '@sanity/icons'
+import {Card, Menu} from '@sanity/ui'
+import {memo, useCallback, useId, useMemo, useState} from 'react'
 
 /** @internal */
 export interface FieldActionMenuProps {

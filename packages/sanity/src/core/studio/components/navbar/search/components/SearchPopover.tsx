@@ -1,10 +1,3 @@
-import {type StackablePerspective} from '@sanity/client'
-import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {useRef, useState} from 'react'
-import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
-
 import {supportsTouch} from '../../../../../util'
 import {
   POPOVER_INPUT_PADDING,
@@ -20,6 +13,12 @@ import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
 import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
+import {type StackablePerspective} from '@sanity/client'
+import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
+import {useRef, useState} from 'react'
+import FocusLock from 'react-focus-lock'
+import {styled} from 'styled-components'
 
 /**
  * @internal

@@ -1,9 +1,8 @@
+import {readPackageJson, readPackageManifest} from './readPackageManifest'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
-
-import {readPackageJson, readPackageManifest} from './readPackageManifest'
 
 interface PackageInfo {
   name: string

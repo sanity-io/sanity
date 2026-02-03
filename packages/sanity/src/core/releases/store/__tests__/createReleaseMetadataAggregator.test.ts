@@ -1,8 +1,7 @@
+import {createReleaseMetadataAggregator} from '../createReleaseMetadataAggregator'
 import {type SanityClient} from '@sanity/client'
 import {catchError, firstValueFrom, Observable, of, Subject, take, toArray} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
-import {createReleaseMetadataAggregator} from '../createReleaseMetadataAggregator'
 
 describe('createReleaseMetadataAggregator', () => {
   const mockClient = {

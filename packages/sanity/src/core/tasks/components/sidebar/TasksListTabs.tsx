@@ -1,11 +1,10 @@
-import {TabList, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {type CSSProperties} from 'styled-components'
-
 import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type SidebarTabsIds} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
+import {TabList, Text} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+import {type CSSProperties} from 'styled-components'
 
 const LIST_STYLES: CSSProperties = {
   marginLeft: '-0.5em',

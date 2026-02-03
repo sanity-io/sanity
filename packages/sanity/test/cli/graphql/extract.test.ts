@@ -1,10 +1,9 @@
-import {orderBy} from 'lodash-es'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import {type ApiSpecification} from '../../../src/_internal/cli/actions/graphql/types'
 import testStudioSchema from './fixtures/test-studio'
 import unionRefsSchema from './fixtures/union-refs'
+import {orderBy} from 'lodash-es'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 describe('GraphQL - Schema extraction', () => {
   beforeEach(() => {

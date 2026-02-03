@@ -1,13 +1,12 @@
+import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {set} from '../../../patch'
+import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput'
 import {type GlobalDocumentReferenceValue} from '@sanity/types'
 import {act, screen, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {of} from 'rxjs'
 import {describe, expect, test, vi} from 'vitest'
-
-import {renderGlobalDocumentReferenceInput} from '../../../../../../test/form'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {set} from '../../../patch'
-import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput'
 
 const AVAILABLE = {
   available: true,

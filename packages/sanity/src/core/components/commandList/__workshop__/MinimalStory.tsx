@@ -1,8 +1,7 @@
-import {useCallback, useRef} from 'react'
-import {styled} from 'styled-components'
-
 import {CommandList} from '../CommandList'
 import {type CommandListHandle, type CommandListRenderItemCallback} from '../types'
+import {useCallback, useRef} from 'react'
+import {styled} from 'styled-components'
 
 const ITEMS = [...Array(5000).keys()].map((i) => `Item ${i}`)
 

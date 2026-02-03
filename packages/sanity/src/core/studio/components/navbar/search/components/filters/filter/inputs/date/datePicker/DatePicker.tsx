@@ -1,6 +1,5 @@
-import {useCallback} from 'react'
-
 import {Calendar} from './calendar/Calendar'
+import {useCallback} from 'react'
 
 interface DatePickerProps {
   date?: Date

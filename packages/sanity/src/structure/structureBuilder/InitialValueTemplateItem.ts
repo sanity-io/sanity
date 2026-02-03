@@ -1,11 +1,10 @@
-import {AddIcon} from '@sanity/icons'
-import {type InitialValueTemplateItem} from 'sanity'
-
 import {type BaseIntentParams, type IntentParams} from './Intent'
 import {type MenuItem, MenuItemBuilder} from './MenuItem'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
+import {AddIcon} from '@sanity/icons'
+import {type InitialValueTemplateItem} from 'sanity'
 
 /**
  * A `InitialValueTemplateItemBuilder` is used to build a document node with an initial value set.

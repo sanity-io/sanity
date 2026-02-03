@@ -1,7 +1,3 @@
-import {type Bridge} from '@sanity/message-protocol'
-import {useToast} from '@sanity/ui'
-import {useCallback} from 'react'
-
 import {useClient} from '../hooks/useClient'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {useComlinkStore} from '../store/_legacy/datastores'
@@ -11,6 +7,9 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type OpenCanvasOrigin} from './__telemetry__/canvas.telemetry'
 import {canvasLocaleNamespace} from './i18n'
 import {useCanvasTelemetry} from './useCanvasTelemetry'
+import {type Bridge} from '@sanity/message-protocol'
+import {useToast} from '@sanity/ui'
+import {useCallback} from 'react'
 
 /**
  *

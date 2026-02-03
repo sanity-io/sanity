@@ -1,9 +1,8 @@
+import {type GlobalDocumentReferenceInfo} from './types'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
-
-import {type GlobalDocumentReferenceInfo} from './types'
 
 // eslint-disable-next-line no-empty-function
 const noop = () => {}

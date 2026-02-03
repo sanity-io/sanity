@@ -1,7 +1,3 @@
-import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
-import {combineLatest, of} from 'rxjs'
-import {catchError, map} from 'rxjs/operators'
-
 import {ErrorBoundary} from '../../../ui-components'
 import {
   ConfigResolutionError,
@@ -13,6 +9,9 @@ import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 import {SourceProvider} from '../source'
 import {WorkspaceProvider} from '../workspace'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
+import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {combineLatest, of} from 'rxjs'
+import {catchError, map} from 'rxjs/operators'
 
 // TODO: work on error handler
 // import {flattenErrors} from './flattenErrors'

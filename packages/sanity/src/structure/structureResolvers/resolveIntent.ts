@@ -1,6 +1,3 @@
-import {omit} from 'lodash-es'
-import {firstValueFrom, type Observable} from 'rxjs'
-
 import {type StructureContext} from '../structureBuilder'
 import {
   type PaneNode,
@@ -11,6 +8,8 @@ import {
 import {assignId} from './assignId'
 import {createPaneResolver, type PaneResolverMiddleware} from './createPaneResolver'
 import {memoBind} from './memoBind'
+import {omit} from 'lodash-es'
+import {firstValueFrom, type Observable} from 'rxjs'
 
 interface TraverseOptions {
   unresolvedPane: UnresolvedPaneNode | undefined

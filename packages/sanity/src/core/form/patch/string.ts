@@ -1,7 +1,6 @@
-import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
-
 import {type FIXME} from '../../FIXME'
 import {type FormPatch} from '../patch'
+import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 
 const OPERATIONS = {
   replace(currentValue: unknown, nextValue: unknown) {

@@ -1,3 +1,5 @@
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {type ReleasesMetadata} from './useReleasesMetadata'
 import {type SanityClient} from '@sanity/client'
 import {
   bufferTime,
@@ -11,9 +13,6 @@ import {
   startWith,
   switchMap,
 } from 'rxjs'
-
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
-import {type ReleasesMetadata} from './useReleasesMetadata'
 
 export type ReleasesMetadataMap = Record<string, ReleasesMetadata>
 

@@ -1,11 +1,10 @@
+import {type EditStateFor, type MapDocument} from '../../store/_legacy'
+import {type ActionComponent, type GroupableActionDescription} from '../types'
 import {
   type ButtonTone,
   type DialogProps, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
-
-import {type EditStateFor, type MapDocument} from '../../store/_legacy'
-import {type ActionComponent, type GroupableActionDescription} from '../types'
 
 /**
  * @hidden

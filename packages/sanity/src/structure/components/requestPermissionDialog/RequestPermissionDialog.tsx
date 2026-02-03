@@ -1,3 +1,7 @@
+import {Dialog} from '../../../ui-components'
+import {structureLocaleNamespace} from '../../i18n'
+import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
+import {type AccessRequest} from './useRoleRequestsStatus'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, DialogProvider, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useId, useMemo, useState} from 'react'
@@ -5,11 +9,6 @@ import {useObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
-
-import {Dialog} from '../../../ui-components'
-import {structureLocaleNamespace} from '../../i18n'
-import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
-import {type AccessRequest} from './useRoleRequestsStatus'
 
 const MAX_NOTE_LENGTH = 150
 

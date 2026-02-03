@@ -11,7 +11,6 @@ import type {
   ParseResult,
   sanitizeLocale,
 } from '@sanity/util/legacyDateFormat'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/util/legacyDateFormat', () => {

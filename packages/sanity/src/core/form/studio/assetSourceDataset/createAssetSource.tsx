@@ -1,9 +1,8 @@
+import {DatasetAssetSource} from './shared/DatasetAssetSource'
+import {createDatasetUploader} from './uploader'
 import {type SanityClient} from '@sanity/client'
 import {DocumentsIcon, ImageIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-
-import {DatasetAssetSource} from './shared/DatasetAssetSource'
-import {createDatasetUploader} from './uploader'
 
 // Note: Ideally this should be changed to 'sanity-dataset,
 // but of legacy reasons (studio configs) we are probably stuck with it.

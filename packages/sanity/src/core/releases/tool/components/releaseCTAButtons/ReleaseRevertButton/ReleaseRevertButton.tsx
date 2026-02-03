@@ -1,10 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {RestoreIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useRef, useState} from 'react'
-import {useRouter} from 'sanity/router'
-
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
@@ -20,6 +13,12 @@ import {getReleaseDefaults} from '../../../../util/util'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 import {useDocumentRevertStates} from './useDocumentRevertStates'
 import {usePostPublishTransactions} from './usePostPublishTransactions'
+import {type ReleaseDocument} from '@sanity/client'
+import {RestoreIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument

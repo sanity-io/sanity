@@ -1,8 +1,7 @@
-import {firstValueFrom, map, of} from 'rxjs'
-import {describe, expect, it} from 'vitest'
-
 import {type ErrorWithId} from './types'
 import {serializeError} from './useCopyErrorDetails'
+import {firstValueFrom, map, of} from 'rxjs'
+import {describe, expect, it} from 'vitest'
 
 describe('serializeError', () => {
   it('includes error properties if an instance of `Error` is provided', async () => {

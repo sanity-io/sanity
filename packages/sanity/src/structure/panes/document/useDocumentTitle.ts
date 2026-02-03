@@ -1,3 +1,5 @@
+import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from './useDocumentPane'
 import {useMemo} from 'react'
 import {
   isPublishedPerspective,
@@ -6,9 +8,6 @@ import {
   useTranslation,
   useValuePreview,
 } from 'sanity'
-
-import {structureLocaleNamespace} from '../../i18n'
-import {useDocumentPane} from './useDocumentPane'
 
 /**
  * useDocumentTitle hook return type.

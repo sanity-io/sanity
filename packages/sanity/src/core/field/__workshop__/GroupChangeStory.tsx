@@ -1,6 +1,5 @@
-import {Box} from '@sanity/ui'
-
 import {GroupChange} from '../diff/components/GroupChange'
+import {Box} from '@sanity/ui'
 
 /**
  * TODO

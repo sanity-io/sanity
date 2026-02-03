@@ -1,6 +1,5 @@
-import {type MouseEvent, type ReactNode} from 'react'
-
 import {type Middleware} from './types'
+import {type MouseEvent, type ReactNode} from 'react'
 
 const URL_REGEX = /\b(https?:\/\/[^\s,()]+(?:\.[^\s,()]+)*|www\.[^\s,()]+\.[^\s,()]{2,})\b/g
 

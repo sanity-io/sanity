@@ -1,5 +1,3 @@
-import {map, scan} from 'rxjs/operators'
-
 import {type FIXME} from '../../FIXME'
 import {
   type DocumentMutationEvent,
@@ -11,6 +9,7 @@ import {
 } from '../../store'
 import {type FormPatch} from '../patch'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
+import {map, scan} from 'rxjs/operators'
 
 interface LocalMutationEvent extends DocumentMutationEvent {
   patches: FormPatch[]

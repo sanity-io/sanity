@@ -1,7 +1,6 @@
+import {type BaseStructureToolPaneProps} from '../types'
 import {type Path, type SanityDocument} from '@sanity/types'
 import {type TimelineStore} from 'sanity'
-
-import {type BaseStructureToolPaneProps} from '../types'
 
 /** @internal */
 export type DocumentPaneProviderProps = {

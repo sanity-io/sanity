@@ -1,9 +1,8 @@
+import {createObserveDocument, type ListenerMutationEventLike} from '../createObserveDocument'
 import {createClient, type WelcomeEvent} from '@sanity/client'
 import {firstValueFrom, of, skip, Subject} from 'rxjs'
 import {take} from 'rxjs/operators'
 import {describe, expect, it, vi} from 'vitest'
-
-import {createObserveDocument, type ListenerMutationEventLike} from '../createObserveDocument'
 
 describe(createObserveDocument.name, () => {
   it('fetches the current version of the document when receiving welcome event', async () => {

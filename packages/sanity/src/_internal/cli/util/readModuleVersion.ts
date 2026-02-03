@@ -1,7 +1,6 @@
+import {readPackageManifest} from './readPackageManifest'
 import path from 'node:path'
 import resolveFrom from 'resolve-from'
-
-import {readPackageManifest} from './readPackageManifest'
 
 /**
  * Reads the version number of the _installed_ module, or returns `null` if not found

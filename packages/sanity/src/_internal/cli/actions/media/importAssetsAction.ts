@@ -1,3 +1,7 @@
+import {debug as baseDebug} from '../../debug'
+import {MINIMUM_API_VERSION} from './constants'
+import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
+import {readNdjsonFile} from './lib/findNdjsonEntry'
 import {
   type CliCommandAction,
   type CliCommandContext,
@@ -36,11 +40,6 @@ import {
 } from 'rxjs'
 import tar from 'tar-fs'
 import {glob} from 'tinyglobby'
-
-import {debug as baseDebug} from '../../debug'
-import {MINIMUM_API_VERSION} from './constants'
-import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
-import {readNdjsonFile} from './lib/findNdjsonEntry'
 
 interface ImportAssetsFlags {
   'media-library-id'?: string
@@ -477,7 +476,7 @@ function uploadAsset({
         filter((response) => response.type === 'response'),
         tap(() => debug(`[Asset ${asset}] Finished uploading new asset`)),
         // TODO: The `client.assets.upload` method should return `MediaLibraryUploadResponse` when operating on Media Library resources. When that occurs, this type assertion can be removed.
-        map((response) => (response as unknown as MediaLibraryUploadResponse).body),
+        map((response) => (response as MediaLibraryUploadResponse).body),
         map<MediaLibraryUploadResult, ResolvedAsset>((result) => ({
           assetIds: [result.asset._id],
           originalFilename: asset,

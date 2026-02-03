@@ -1,9 +1,8 @@
+import {ErrorActions} from '../../components'
+import {isDev, isProd} from '../../environment'
 /* eslint-disable i18next/no-literal-string */
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-
-import {ErrorActions} from '../../components'
-import {isDev, isProd} from '../../environment'
 
 const View = styled(Box)`
   align-items: center;

@@ -1,7 +1,6 @@
-import {describe, expect, it, vi} from 'vitest'
-
 import {generateStudioManifest, type GenerateStudioManifestOptions} from '../generateStudioManifest'
 import {type ManifestWorkspaceInput} from '../types'
+import {describe, expect, it, vi} from 'vitest'
 
 describe('generateStudioManifest', () => {
   /**

@@ -1,15 +1,14 @@
+import {run} from './run'
+import {book} from './templates/book'
+import {liveEdit} from './templates/liveEdit'
+import {species} from './templates/species'
+import {validation} from './templates/validation'
 import {readEnv} from '@repo/utils'
 import {createClient} from '@sanity/client'
 import path, {dirname} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {parseArgs} from 'node:util'
 import {tap} from 'rxjs'
-
-import {run} from './run'
-import {book} from './templates/book'
-import {liveEdit} from './templates/liveEdit'
-import {species} from './templates/species'
-import {validation} from './templates/validation'
 
 const {values: args} = parseArgs({
   args: process.argv.slice(2),

@@ -1,7 +1,6 @@
+import {type PresentationContextValue} from './types'
 import {useContext} from 'react'
 import {PresentationContext} from 'sanity/_singletons'
-
-import {type PresentationContextValue} from './types'
 
 export function usePresentationTool(throwOnMissingContext?: true): PresentationContextValue
 export function usePresentationTool(throwOnMissingContext: false): PresentationContextValue | null

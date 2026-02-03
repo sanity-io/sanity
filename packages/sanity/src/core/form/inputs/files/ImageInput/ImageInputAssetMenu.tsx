@@ -1,11 +1,3 @@
-import {isImageSource} from '@sanity/asset-utils'
-import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
-import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
-import {get, startCase} from 'lodash-es'
-import {memo, type ReactNode, useCallback, useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {type Observable} from 'rxjs'
-
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
@@ -15,6 +7,13 @@ import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
 import {type AssetAccessPolicy} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
+import {isImageSource} from '@sanity/asset-utils'
+import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
+import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
+import {get, startCase} from 'lodash-es'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {type Observable} from 'rxjs'
 
 function ImageInputAssetMenuComponent(
   props: Pick<

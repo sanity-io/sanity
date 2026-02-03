@@ -1,10 +1,9 @@
-import debugit from 'debug'
-import {type ReactNode, useEffect, useMemo, useState} from 'react'
-import {LiveUserApplicationContext} from 'sanity/_singletons'
-
 import {type UserApplication, useUserApplicationCache} from '../../store/userApplications'
 import {useWorkspaces} from '../workspaces'
 import {findUserApplication} from './liveUserApplication'
+import debugit from 'debug'
+import {type ReactNode, useEffect, useMemo, useState} from 'react'
+import {LiveUserApplicationContext} from 'sanity/_singletons'
 
 const debug = debugit('studio:live-user-application')
 

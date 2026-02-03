@@ -1,11 +1,10 @@
-import {useMemo} from 'react'
-
 import {useClient} from '../../hooks'
 import {useDocumentPreviewStore, useResourceCache} from '../../store'
 import {useWorkspace} from '../../studio'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
 import {createReleaseStore} from './createReleaseStore'
 import {type ReleaseStore} from './types'
+import {useMemo} from 'react'
 
 /** @internal */
 export function useReleasesStore(): ReleaseStore {

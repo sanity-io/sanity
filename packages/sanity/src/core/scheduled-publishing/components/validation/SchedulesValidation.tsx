@@ -1,10 +1,9 @@
-import {useEffect, useState} from 'react'
-
 import {useValidationStatus} from '../../../hooks/useValidationStatus'
 import {getDraftId} from '../../../util/draftUtils'
 import {useScheduleSchemaType} from '../../hooks/useSchemaType'
 import {type Schedule, type ValidationStatus} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
+import {useEffect, useState} from 'react'
 
 interface Props {
   schedule: Schedule

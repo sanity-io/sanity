@@ -1,7 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
-import {uuid} from '@sanity/uuid'
-
 import {type Tool} from '../../../config'
 import {
   type CommentContext,
@@ -11,6 +7,9 @@ import {
   type CommentPostPayload,
 } from '../../types'
 import {weakenReferencesInContentSnapshot} from '../../utils'
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 
 interface CreateOperationProps {
   activeTool: Tool | undefined

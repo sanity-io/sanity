@@ -1,10 +1,9 @@
-import {act, renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {useReleaseOperationsMockReturn} from '../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {useVersionOperations} from '../useVersionOperations'
+import {act, renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),

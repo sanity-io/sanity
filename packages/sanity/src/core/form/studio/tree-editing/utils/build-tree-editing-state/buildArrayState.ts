@@ -1,16 +1,3 @@
-import {
-  type ArraySchemaType,
-  isArrayOfBlocksSchemaType,
-  isArrayOfObjectsSchemaType,
-  isObjectSchemaType,
-  isPrimitiveSchemaType,
-  isReferenceSchemaType,
-  type ObjectField,
-  type ObjectSchemaType,
-  type Path,
-} from '@sanity/types'
-import {startsWith, toString} from '@sanity/util/paths'
-
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 import {EMPTY_ARRAY} from '../../../../../util/empty'
 import {getItemType} from '../../../../store/utils/getItemType'
@@ -28,6 +15,18 @@ import {
   shouldSkipSiblingCount,
   validateRelativePathExists,
 } from './utils'
+import {
+  type ArraySchemaType,
+  isArrayOfBlocksSchemaType,
+  isArrayOfObjectsSchemaType,
+  isObjectSchemaType,
+  isPrimitiveSchemaType,
+  isReferenceSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+} from '@sanity/types'
+import {startsWith, toString} from '@sanity/util/paths'
 
 interface BuildArrayState {
   /** The schema type of the array field  */

@@ -1,3 +1,5 @@
+import {Button} from '../../../ui-components'
+import {isDev} from '../../environment'
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons'
 import {Box, Card, Code, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
@@ -6,9 +8,6 @@ import {useObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {styled} from 'styled-components'
-
-import {Button} from '../../../ui-components'
-import {isDev} from '../../environment'
 
 const View = styled(Box)`
   align-items: center;

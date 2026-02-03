@@ -1,7 +1,3 @@
-import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
-import {type CrossDatasetType, type SchemaType} from '@sanity/types'
-import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash-es'
-
 import {
   deriveSearchWeightsFromType,
   type SearchFactoryOptions,
@@ -12,6 +8,9 @@ import {
   type SearchTerms,
 } from '../common'
 import {FINDABILITY_MVI} from '../constants'
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {type CrossDatasetType, type SchemaType} from '@sanity/types'
+import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash-es'
 
 export interface SearchParams {
   __types: string[]

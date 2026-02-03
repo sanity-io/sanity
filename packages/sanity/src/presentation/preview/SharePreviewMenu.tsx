@@ -1,3 +1,8 @@
+import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
+import {API_VERSION} from '../constants'
+import {presentationLocaleNamespace} from '../i18n'
+import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
+import {type PreviewProps} from './Preview'
 /* eslint-disable @typescript-eslint/no-shadow */
 import {type ClientPerspective, type SyncTag} from '@sanity/client'
 import {CopyIcon, ShareIcon} from '@sanity/icons'
@@ -24,12 +29,6 @@ import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-
-import {Button, MenuButton, MenuItem, Tooltip} from '../../ui-components'
-import {API_VERSION} from '../constants'
-import {presentationLocaleNamespace} from '../i18n'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
-import {type PreviewProps} from './Preview'
 
 const QRCodeSVG = lazy(() => import('./QRCodeSVG'))
 

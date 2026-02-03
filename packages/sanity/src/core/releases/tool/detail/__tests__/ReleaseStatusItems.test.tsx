@@ -1,6 +1,3 @@
-import {render, screen, within} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
-
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
@@ -10,6 +7,8 @@ import {
   unarchivedReleaseEvents,
 } from '../events/__fixtures__/release-events'
 import {ReleaseStatusItems} from '../ReleaseStatusItems'
+import {render, screen, within} from '@testing-library/react'
+import {describe, expect, it} from 'vitest'
 
 describe('ReleaseStatusItems', () => {
   it('renders fallback status item when no footer event is found', async () => {

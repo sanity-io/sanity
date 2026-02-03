@@ -1,8 +1,7 @@
-import {findIndex} from 'lodash-es'
-
 import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'
 import {arrayInsert} from './arrayInsert'
+import {findIndex} from 'lodash-es'
 
 const hasOwn = (obj: Record<string, unknown>, property: string) =>
   Object.prototype.hasOwnProperty.call(obj, property)

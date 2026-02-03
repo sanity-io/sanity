@@ -1,8 +1,7 @@
+import {shareReplayLatest} from './shareReplayLatest'
 import {concat, from, lastValueFrom, of, share, timer} from 'rxjs'
 import {concatMap, delay, mergeMap, take, toArray} from 'rxjs/operators'
 import {expect, test} from 'vitest'
-
-import {shareReplayLatest} from './shareReplayLatest'
 
 test('replayLatest() replays matching value to new subscribers', async () => {
   const observable = from(['foo', 'bar', 'baz']).pipe(

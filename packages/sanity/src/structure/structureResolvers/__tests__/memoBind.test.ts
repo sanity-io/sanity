@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {memoBind} from '../memoBind'
+import {describe, expect, it} from 'vitest'
 
 describe('memoBind', () => {
   it('takes in an object and a method key and binds the object to the `this` value of the method', () => {

@@ -1,10 +1,9 @@
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
-
 import {CommentsListItem, type CommentsListItemProps} from '../../../comments/components'
 import {useTasksEnabled} from '../../context'
 import {ActivityItem} from './TasksActivityItem'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {css, styled} from 'styled-components'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
   parentCommentAvatar: false,

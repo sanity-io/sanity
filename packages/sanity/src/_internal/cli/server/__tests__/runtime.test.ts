@@ -1,8 +1,7 @@
+import {toForwardSlashes, writeSanityRuntime} from '../runtime'
 import fs from 'node:fs/promises'
 import path, {win32} from 'node:path'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-
-import {toForwardSlashes, writeSanityRuntime} from '../runtime'
 
 vi.mock('node:fs/promises')
 vi.mock('chokidar', () => ({default: {watch: vi.fn(() => ({on: vi.fn()}))}}))

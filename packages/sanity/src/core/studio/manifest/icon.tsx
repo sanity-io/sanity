@@ -1,11 +1,10 @@
+import {createDefaultIcon} from '../../config/createDefaultIcon'
 import {ThemeProvider} from '@sanity/ui'
 import {type RootTheme} from '@sanity/ui/theme'
 import DOMPurify from 'isomorphic-dompurify'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {isValidElementType} from 'react-is'
-
-import {createDefaultIcon} from '../../config/createDefaultIcon'
 
 interface IconProps {
   icon?: ComponentType | ReactNode

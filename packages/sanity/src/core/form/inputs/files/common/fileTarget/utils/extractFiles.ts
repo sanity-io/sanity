@@ -4,9 +4,8 @@
  * Inspired by https://github.com/component/normalized-upload
  */
 
-import {flatten} from 'lodash-es'
-
 import {type FIXME} from '../../../../../../FIXME'
+import {flatten} from 'lodash-es'
 
 export function extractPastedFiles(dataTransfer: DataTransfer): Promise<File[]> {
   if (dataTransfer.files && dataTransfer.files.length > 0) {

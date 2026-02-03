@@ -1,7 +1,3 @@
-import {ClientError, type SanityClient} from '@sanity/client'
-import {type SanityDocumentLike} from '@sanity/types'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {MANIFEST_FILENAME} from '../../../src/_internal/cli/actions/manifest/extractManifestAction'
 import {
   deploySchemasAction,
@@ -19,6 +15,9 @@ import {
   createMockSanityClient,
   createMockSchemaStoreContext,
 } from './mocks/schemaStoreMocks'
+import {ClientError, type SanityClient} from '@sanity/client'
+import {type SanityDocumentLike} from '@sanity/types'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 const fixture = createSchemaStoreFixture(new Date().toISOString())
 const {testManifest, testSchema, testWorkspace, testMultiWorkspaceManifest, staticDate, workDir} =

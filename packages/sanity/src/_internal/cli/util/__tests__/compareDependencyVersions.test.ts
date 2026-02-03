@@ -1,8 +1,7 @@
-import resolveFrom from 'resolve-from'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {compareDependencyVersions} from '../compareDependencyVersions'
 import {readPackageManifest} from '../readPackageManifest'
+import resolveFrom from 'resolve-from'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('resolve-from')
 vi.mock('../readPackageManifest')

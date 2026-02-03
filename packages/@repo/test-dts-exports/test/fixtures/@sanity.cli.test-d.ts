@@ -36,7 +36,6 @@ import type {
   TelemetryUserProperties,
   UserViteConfig,
 } from '@sanity/cli'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/cli', () => {

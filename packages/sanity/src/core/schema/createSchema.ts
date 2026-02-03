@@ -1,8 +1,7 @@
+import {inferFromSchema as inferValidation} from '../validation'
 import {Schema as SchemaBuilder, type SchemaValidationResult} from '@sanity/schema'
 import {builtinTypes, groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-
-import {inferFromSchema as inferValidation} from '../validation'
 
 const isError = (problem: SchemaValidationResult) => problem.severity === 'error'
 

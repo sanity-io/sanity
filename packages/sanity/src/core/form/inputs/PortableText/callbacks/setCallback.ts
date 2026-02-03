@@ -1,8 +1,7 @@
-import {normalizeBlock} from '@portabletext/block-tools'
-import {type PortableTextBlock} from '@sanity/types'
-
 import {PatchEvent, set} from '../../../patch'
 import {type SetCallback} from './types'
+import {normalizeBlock} from '@portabletext/block-tools'
+import {type PortableTextBlock} from '@sanity/types'
 
 export function createSetCallback(options: {
   allowedDecorators: string[]

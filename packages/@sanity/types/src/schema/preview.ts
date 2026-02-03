@@ -1,6 +1,5 @@
-import {type ElementType, type ReactNode} from 'react'
-
 import {type SortOrdering} from './types'
+import {type ElementType, type ReactNode} from 'react'
 
 /** @public */
 export interface PrepareViewOptions {

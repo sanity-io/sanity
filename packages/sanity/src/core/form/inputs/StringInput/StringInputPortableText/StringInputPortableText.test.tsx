@@ -1,8 +1,7 @@
-import {waitFor} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
-
 import {renderStringInput} from '../../../../../../test/form/renderStringInput'
 import {StringInputPortableText} from './StringInputPortableText'
+import {waitFor} from '@testing-library/react'
+import {describe, expect, it} from 'vitest'
 
 const INPUT_SELECTOR = '[data-testid="string-input-portable-text"]'
 

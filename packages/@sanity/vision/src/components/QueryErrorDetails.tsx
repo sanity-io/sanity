@@ -1,8 +1,7 @@
-import {Box} from '@sanity/ui'
-import {useTranslation} from 'sanity'
-
 import {visionLocaleNamespace} from '../i18n'
 import {ErrorCode} from './QueryErrorDialog.styled'
+import {Box} from '@sanity/ui'
+import {useTranslation} from 'sanity'
 
 interface ContentLakeQueryError {
   details: {

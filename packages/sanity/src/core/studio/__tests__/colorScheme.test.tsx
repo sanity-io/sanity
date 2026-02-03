@@ -1,10 +1,9 @@
+import {Button} from '../../../ui-components'
+import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
-
-import {Button} from '../../../ui-components'
-import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {

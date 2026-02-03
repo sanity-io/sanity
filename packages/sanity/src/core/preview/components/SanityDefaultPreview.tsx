@@ -1,3 +1,11 @@
+import {Tooltip} from '../../../ui-components'
+import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
+import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
+import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
+import {useClient} from '../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {isString} from '../../util'
+import {_previewComponents} from './_previewComponents'
 import {isImageSource, isSanityImageUrl, parseImageAssetUrl} from '@sanity/asset-utils'
 import {type SanityClient} from '@sanity/client'
 import {DocumentIcon, WarningOutlineIcon} from '@sanity/icons'
@@ -18,15 +26,6 @@ import {
   useState,
 } from 'react'
 import {isValidElementType} from 'react-is'
-
-import {Tooltip} from '../../../ui-components'
-import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews'
-import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
-import {useImageUrl} from '../../form/inputs/files/ImageInput/useImageUrl'
-import {useClient} from '../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {isString} from '../../util'
-import {_previewComponents} from './_previewComponents'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />

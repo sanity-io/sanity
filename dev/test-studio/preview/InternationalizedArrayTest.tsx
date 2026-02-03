@@ -1,8 +1,7 @@
+import {useQuery} from './loader'
 import {Flex, Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {Fragment} from 'react'
-
-import {useQuery} from './loader'
 
 export function InternationalizedArrayTest(): React.JSX.Element {
   const {data, loading, error} = useQuery<

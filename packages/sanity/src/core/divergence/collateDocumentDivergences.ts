@@ -1,3 +1,10 @@
+import {
+  type Divergence,
+  type DivergenceAtPath,
+  type FindDivergencesContext,
+  readDocumentDivergences,
+} from './readDocumentDivergences'
+import {delayTask} from './utils/delayTask'
 import {isEqual} from 'lodash-es'
 import QuickLRU from 'quick-lru'
 import {
@@ -16,14 +23,6 @@ import {
   tap,
   toArray,
 } from 'rxjs'
-
-import {
-  type Divergence,
-  type DivergenceAtPath,
-  type FindDivergencesContext,
-  readDocumentDivergences,
-} from './readDocumentDivergences'
-import {delayTask} from './utils/delayTask'
 
 export interface CollatedDocumentDivergencesState {
   state: 'pending' | 'ready'

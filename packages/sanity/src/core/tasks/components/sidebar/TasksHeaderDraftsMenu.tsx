@@ -1,8 +1,3 @@
-import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
-import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-import {styled} from 'styled-components'
-
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
@@ -10,6 +5,10 @@ import {EMPTY_ARRAY} from '../../../util'
 import {useTasks, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
+import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
+import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
+import {useCallback} from 'react'
+import {styled} from 'styled-components'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,

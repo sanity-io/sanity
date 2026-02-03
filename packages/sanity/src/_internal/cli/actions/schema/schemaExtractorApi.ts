@@ -1,3 +1,9 @@
+import {
+  type ExtractSchemaWorkerData,
+  type ExtractSchemaWorkerMessage,
+} from '../../threads/extractSchema'
+import {formatSchemaValidation} from './formatSchemaValidation'
+import {createSchemaWatcher, DEFAULT_WATCH_PATTERNS} from './watchExtract'
 import {type CliOutputter} from '@sanity/cli'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {type FSWatcher} from 'chokidar'
@@ -7,13 +13,6 @@ import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 import readPkgUp from 'read-pkg-up'
-
-import {
-  type ExtractSchemaWorkerData,
-  type ExtractSchemaWorkerMessage,
-} from '../../threads/extractSchema'
-import {formatSchemaValidation} from './formatSchemaValidation'
-import {createSchemaWatcher, DEFAULT_WATCH_PATTERNS} from './watchExtract'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

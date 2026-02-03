@@ -1,11 +1,10 @@
-import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
-
 import {Translate, useTranslation} from '../../../i18n'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {type CrossDatasetReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
 
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReferenceValue

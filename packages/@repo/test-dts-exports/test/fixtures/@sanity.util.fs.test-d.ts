@@ -3,7 +3,6 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {absolutify, expandHome, pathIsEmpty} from '@sanity/util/fs'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/util/fs', () => {

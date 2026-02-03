@@ -1,8 +1,3 @@
-import {generateHelpUrl} from '@sanity/generate-help-url'
-import {AddIcon} from '@sanity/icons'
-import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type InitialValueTemplateItem} from 'sanity'
-
 import {type ChildResolver, type ChildResolverOptions, type ItemChild} from './ChildResolver'
 import {DocumentBuilder} from './Document'
 import {
@@ -15,6 +10,10 @@ import {HELP_URL, SerializeError} from './SerializeError'
 import {type Child, type SerializeOptions} from './StructureNodes'
 import {type StructureContext} from './types'
 import {resolveTypeForDocument} from './util/resolveTypeForDocument'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import {AddIcon} from '@sanity/icons'
+import {type SchemaType, type SortOrderingItem} from '@sanity/types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, type InitialValueTemplateItem} from 'sanity'
 
 const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
   const filter = spec.options?.filter.trim() || ''

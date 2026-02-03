@@ -1,7 +1,6 @@
+import {type AddonDatasetContextValue} from './types'
 import {useContext} from 'react'
 import {AddonDatasetContext} from 'sanity/_singletons'
-
-import {type AddonDatasetContextValue} from './types'
 
 /**
  * @beta

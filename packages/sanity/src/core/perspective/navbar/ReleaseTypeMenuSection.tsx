@@ -1,7 +1,3 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Flex, Label} from '@sanity/ui'
-import {useCallback} from 'react'
-
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -13,6 +9,9 @@ import {
 } from './GlobalPerspectiveMenuItem'
 import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {Flex, Label} from '@sanity/ui'
+import {useCallback} from 'react'
 
 const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
   asap: 'release.type.asap',

@@ -1,3 +1,6 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {Banner} from './Banner'
 import {UnpublishIcon} from '@sanity/icons'
 import {Stack, Text} from '@sanity/ui'
 import {
@@ -8,10 +11,6 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Banner} from './Banner'
 
 export function UnpublishedDocumentBanner() {
   const {value, editState} = useDocumentPane()

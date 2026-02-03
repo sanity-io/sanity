@@ -1,7 +1,6 @@
+import {type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
 import {type ElementType, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-
-import {type PreviewLayoutKey, type PreviewMediaDimensions} from './types'
 
 export function renderPreviewMedia<Layout = PreviewLayoutKey>(
   value: ReactNode | ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,

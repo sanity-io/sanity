@@ -1,7 +1,6 @@
-import {CommentsUpsellContext} from 'sanity/_singletons'
-
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
+import {CommentsUpsellContext} from 'sanity/_singletons'
 
 /**
  * @beta

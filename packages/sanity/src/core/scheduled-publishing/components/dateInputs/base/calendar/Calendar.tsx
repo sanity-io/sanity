@@ -1,3 +1,9 @@
+import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
+import {CalendarMonth} from './CalendarMonth'
+import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24, MONTH_NAMES} from './constants'
+import {features} from './features'
+import {formatTime} from './utils'
+import {YearInput} from './YearInput'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {
   Box,
@@ -20,13 +26,6 @@ import {
   useImperativeHandle,
   useRef,
 } from 'react'
-
-import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
-import {CalendarMonth} from './CalendarMonth'
-import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24, MONTH_NAMES} from './constants'
-import {features} from './features'
-import {formatTime} from './utils'
-import {YearInput} from './YearInput'
 
 export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean

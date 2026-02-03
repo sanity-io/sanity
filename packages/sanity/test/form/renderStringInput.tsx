@@ -1,9 +1,8 @@
-import {type FieldDefinition, type StringSchemaType} from '@sanity/types'
-
 import {type PrimitiveInputElementProps, type StringInputProps} from '../../src/core'
 import {prepareDiffProps} from '../../src/core/form/store/formState'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
+import {type FieldDefinition, type StringSchemaType} from '@sanity/types'
 
 const noopRenderDefault = () => <></>
 

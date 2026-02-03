@@ -1,14 +1,13 @@
-import {getPublishedId} from '@sanity/client/csm'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {combineLatest, of} from 'rxjs'
-import {map} from 'rxjs/operators'
-
 import {useDocumentPreviewStore} from '../../store'
 import {getDraftId, getVersionId} from '../../util'
 import {type VersionInfoDocumentStub} from './types'
 import {useActiveReleases} from './useActiveReleases'
 import {useReleasesIds} from './useReleasesIds'
+import {getPublishedId} from '@sanity/client/csm'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {combineLatest, of} from 'rxjs'
+import {map} from 'rxjs/operators'
 
 function exists(value: any) {
   return value?._rev

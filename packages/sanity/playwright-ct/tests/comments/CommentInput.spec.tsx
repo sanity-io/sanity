@@ -1,7 +1,6 @@
-import {expect, test} from '@playwright/experimental-ct-react'
-
 import {testHelpers} from '../utils/testHelpers'
 import {CommentsInputStory} from './CommentInputStory'
+import {expect, test} from '@playwright/experimental-ct-react'
 
 test.describe('Comments', () => {
   test.describe('CommentInput', () => {

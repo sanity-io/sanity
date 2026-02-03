@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {currentUnixTime} from '../../utils'
 import {addVersion} from '../addVersion'
+import {describe, expect, it} from 'vitest'
 
 describe('addVersion()', () => {
   it('adds a new version to the version array', () => {

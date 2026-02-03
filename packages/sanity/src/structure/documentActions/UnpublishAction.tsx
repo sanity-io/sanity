@@ -1,3 +1,5 @@
+import {ConfirmDeleteDialog} from '../components'
+import {structureLocaleNamespace} from '../i18n'
 import {UnpublishIcon} from '@sanity/icons'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -10,9 +12,6 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-
-import {ConfirmDeleteDialog} from '../components'
-import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
   NOT_PUBLISHED: 'action.unpublish.disabled.not-published',

@@ -1,12 +1,11 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {memo, type ReactNode, useEffect} from 'react'
-
 import {GetHookCollectionState} from '../../components/hookCollection'
 import {
   type ReleaseActionComponent,
   type ReleaseActionDescription,
 } from '../../config/releases/actions'
 import {type DocumentInRelease} from '../tool/detail/useBundleDocuments'
+import {type ReleaseDocument} from '@sanity/client'
+import {memo, type ReactNode, useEffect} from 'react'
 
 export interface ReleaseActionsResolverProps {
   actions: ReleaseActionComponent[]

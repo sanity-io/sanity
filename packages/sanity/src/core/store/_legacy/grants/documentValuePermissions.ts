@@ -1,10 +1,9 @@
-import {isEqual} from 'lodash-es'
-import {useEffect, useReducer, useRef} from 'react'
-import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
-
 import {type LoadingTuple, type PartialExcept} from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
+import {isEqual} from 'lodash-es'
+import {useEffect, useReducer, useRef} from 'react'
+import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
 
 /** @internal */
 export interface DocumentValuePermissionsOptions {

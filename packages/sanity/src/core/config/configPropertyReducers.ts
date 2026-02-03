@@ -1,12 +1,3 @@
-import {
-  type AssetSource,
-  isSearchStrategy,
-  type SchemaTypeDefinition,
-  searchStrategies,
-  type SearchStrategy,
-} from '@sanity/types'
-import {type ErrorInfo, type ReactNode} from 'react'
-
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
 import {getPrintableType} from '../util/getPrintableType'
@@ -34,6 +25,14 @@ import {
   type ResolveProductionUrlContext,
   type Tool,
 } from './types'
+import {
+  type AssetSource,
+  isSearchStrategy,
+  type SchemaTypeDefinition,
+  searchStrategies,
+  type SearchStrategy,
+} from '@sanity/types'
+import {type ErrorInfo, type ReactNode} from 'react'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 

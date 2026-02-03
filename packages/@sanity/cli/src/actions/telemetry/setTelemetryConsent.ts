@@ -1,5 +1,3 @@
-import {type ConsentStatus} from '@sanity/telemetry'
-
 import {
   telemetryLearnMoreMessage,
   telemetryStatusMessage,
@@ -12,6 +10,7 @@ import {
   TELEMETRY_CONSENT_CONFIG_KEY,
 } from '../../util/createTelemetryStore'
 import {getUserConfig} from '../../util/getUserConfig'
+import {type ConsentStatus} from '@sanity/telemetry'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 

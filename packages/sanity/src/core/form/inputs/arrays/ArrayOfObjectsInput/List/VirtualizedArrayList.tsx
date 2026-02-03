@@ -1,3 +1,8 @@
+import {ArrayOfObjectsItem} from '../../../../members'
+import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {Item, List} from '../../common/list'
+import {ErrorItem} from './ErrorItem'
+import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 import {type DragStartEvent} from '@dnd-kit/core'
 import {Card, useTheme} from '@sanity/ui'
 import {
@@ -8,12 +13,6 @@ import {
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
 import {useCallback, useRef} from 'react'
-
-import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
-import {Item, List} from '../../common/list'
-import {ErrorItem} from './ErrorItem'
-import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 
 interface VirtualizedArrayListProps<Item extends ObjectItem> {
   members: ArrayOfObjectsInputProps<Item>['members']

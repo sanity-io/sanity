@@ -1,13 +1,12 @@
+import {type CliCommandContext, type PackageJson} from '../../types'
+import {getCliVersion} from '../../util/getCliVersion'
+import {getLocalVersion} from '../../util/getLocalVersion'
 import getLatestVersion from 'get-latest-version'
 import {readFileSync} from 'node:fs'
 import {join as joinPath} from 'node:path'
 import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'
-
-import {type CliCommandContext, type PackageJson} from '../../types'
-import {getCliVersion} from '../../util/getCliVersion'
-import {getLocalVersion} from '../../util/getLocalVersion'
 
 /*
  * The `sanity upgrade` command should only be responsible for upgrading the

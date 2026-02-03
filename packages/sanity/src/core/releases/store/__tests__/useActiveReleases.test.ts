@@ -1,8 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {act, renderHook, waitFor} from '@testing-library/react'
-import {BehaviorSubject} from 'rxjs'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   activeASAPRelease,
@@ -10,6 +5,10 @@ import {
   archivedScheduledRelease,
 } from '../../__fixtures__/release.fixture'
 import {useActiveReleases} from '../useActiveReleases'
+import {type ReleaseDocument} from '@sanity/client'
+import {act, renderHook, waitFor} from '@testing-library/react'
+import {BehaviorSubject} from 'rxjs'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 interface ReleasesState {
   releases: Map<string, ReleaseDocument>

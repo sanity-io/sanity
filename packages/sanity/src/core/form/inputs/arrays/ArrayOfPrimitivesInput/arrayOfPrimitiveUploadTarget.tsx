@@ -1,3 +1,13 @@
+import {type FIXME} from '../../../../FIXME'
+import {useTranslation} from '../../../../i18n'
+import {withFocusRing} from '../../../components/withFocusRing'
+import {
+  type FileLike,
+  type ResolvedUploader,
+  type UploaderResolver,
+} from '../../../studio/uploads/types'
+import {type UploadEvent} from '../../../types'
+import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
 // This upload target is similar to the one in files/input, but uses resolveUploader instead of resolveUploadAssetSources
 // in order to keep backwards compatibility with existing uploaders and custom upload implementations.
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
@@ -16,17 +26,6 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
-
-import {type FIXME} from '../../../../FIXME'
-import {useTranslation} from '../../../../i18n'
-import {withFocusRing} from '../../../components/withFocusRing'
-import {
-  type FileLike,
-  type ResolvedUploader,
-  type UploaderResolver,
-} from '../../../studio/uploads/types'
-import {type UploadEvent} from '../../../types'
-import {type FileInfo, fileTarget} from '../../files/common/fileTarget'
 
 export interface UploadTargetProps {
   types: SchemaType[]

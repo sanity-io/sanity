@@ -1,7 +1,3 @@
-import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
-import {useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionComponent,
@@ -15,6 +11,9 @@ import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDi
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
+import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {useToast} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */

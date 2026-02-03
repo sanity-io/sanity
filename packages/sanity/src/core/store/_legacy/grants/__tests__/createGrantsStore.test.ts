@@ -1,10 +1,9 @@
+import {viewer} from '../debug/exampleGrants'
+import {createGrantsStore} from '../grantsStore'
 import {type SanityClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom} from 'rxjs'
 import {first} from 'rxjs/operators'
 import {describe, expect, it, type Mock, vi} from 'vitest'
-
-import {viewer} from '../debug/exampleGrants'
-import {createGrantsStore} from '../grantsStore'
 
 function createMockClient(data: {requests?: Record<string, any>} = {}): SanityClient {
   const mockConfig = {

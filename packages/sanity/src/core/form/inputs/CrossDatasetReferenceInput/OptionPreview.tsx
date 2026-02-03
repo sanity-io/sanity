@@ -1,13 +1,12 @@
-import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {Stack, Text, TextSkeleton} from '@sanity/ui'
-import {type Observable} from 'rxjs'
-
 import {useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'
 import {type CrossDatasetReferenceInfo} from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
+import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
+import {type Observable} from 'rxjs'
 
 /**
  * Used to preview a referenced type

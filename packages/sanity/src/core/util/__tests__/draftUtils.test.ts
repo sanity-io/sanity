@@ -1,6 +1,3 @@
-import {type SanityDocument} from '@sanity/types'
-import {describe, expect, it, test} from 'vitest'
-
 import {
   collate,
   documentIdEquals,
@@ -10,6 +7,8 @@ import {
   getVersionId,
   removeDupes,
 } from '../draftUtils'
+import {type SanityDocument} from '@sanity/types'
+import {describe, expect, it, test} from 'vitest'
 
 test('collate()', () => {
   const foo = {_type: 'foo', _id: 'foo'}

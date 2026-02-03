@@ -1,7 +1,6 @@
+import {CommentBreadcrumbs} from '../components'
 import {Flex} from '@sanity/ui'
 import {useNumber} from '@sanity/ui-workshop'
-
-import {CommentBreadcrumbs} from '../components'
 
 export default function CommentBreadcrumbsStory() {
   const maxLength = useNumber('Max length', 3, 'Props') || 3

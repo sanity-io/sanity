@@ -1,7 +1,6 @@
-import pMap from 'p-map'
-
 import {type CliCommandContext} from '../types'
 import {isInteractive} from './isInteractive'
+import pMap from 'p-map'
 
 export interface ProjectOrganization {
   id: string

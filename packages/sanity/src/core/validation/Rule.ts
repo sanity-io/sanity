@@ -1,14 +1,3 @@
-import {Rule as BaseRule} from '@sanity/schema'
-import {
-  type CustomValidator,
-  type Rule as IRule,
-  type RuleClass,
-  type SchemaType,
-  type ValidationMarker,
-  type Validator,
-} from '@sanity/types'
-import {get} from 'lodash-es'
-
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
@@ -19,6 +8,16 @@ import {genericValidators} from './validators/genericValidator'
 import {numberValidators} from './validators/numberValidator'
 import {objectValidators} from './validators/objectValidator'
 import {stringValidators} from './validators/stringValidator'
+import {Rule as BaseRule} from '@sanity/schema'
+import {
+  type CustomValidator,
+  type Rule as IRule,
+  type RuleClass,
+  type SchemaType,
+  type ValidationMarker,
+  type Validator,
+} from '@sanity/types'
+import {get} from 'lodash-es'
 
 const typeValidators = {
   Boolean: booleanValidators,

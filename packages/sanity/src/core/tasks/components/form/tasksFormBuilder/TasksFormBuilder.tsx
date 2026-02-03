@@ -1,11 +1,3 @@
-import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-import {Box, rem} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {motion, type Variants} from 'motion/react'
-import {useEffect, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {LoadingBlock} from '../../../../components'
 import {createPatchChannel, FormBuilder, useDocumentForm} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
@@ -14,6 +6,13 @@ import {MentionUserProvider, useMentionUser, useTasks, useTasksNavigation} from 
 import {type TaskDocument, type TaskTarget} from '../../../types'
 import {TasksAddonWorkspaceProvider} from '../addonWorkspace'
 import {getTargetValue} from '../utils'
+import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {Box, rem} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {motion, type Variants} from 'motion/react'
+import {useEffect, useMemo, useState} from 'react'
+import {styled} from 'styled-components'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},

@@ -1,11 +1,10 @@
+import {type StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
 import {
   type CliCommandArguments,
   type CliCommandContext,
   type CliCommandDefinition,
 } from '@sanity/cli'
 import {createRequire} from 'node:module'
-
-import {type StartPreviewServerCommandFlags} from '../../actions/preview/previewAction'
 
 const require = createRequire(import.meta.url)
 

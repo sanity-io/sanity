@@ -1,9 +1,3 @@
-import chalk from 'chalk'
-// oxlint-disable no-console
-import os from 'node:os'
-import resolveFrom from 'resolve-from'
-import semver from 'semver'
-
 import {CliCommand} from './__telemetry__/cli.telemetry'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
@@ -20,6 +14,11 @@ import {parseArguments} from './util/parseArguments'
 import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
+import chalk from 'chalk'
+// oxlint-disable no-console
+import os from 'node:os'
+import resolveFrom from 'resolve-from'
+import semver from 'semver'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 const knownEnvs = ['development', 'staging', 'production']

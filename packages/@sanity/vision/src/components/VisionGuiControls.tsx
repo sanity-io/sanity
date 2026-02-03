@@ -1,9 +1,8 @@
+import {visionLocaleNamespace} from '../i18n'
+import {ControlsContainer} from './VisionGui.styled'
 import {PlayIcon, StopIcon} from '@sanity/icons'
 import {Box, Button, Card, Flex, Hotkeys, Text, Tooltip} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-
-import {visionLocaleNamespace} from '../i18n'
-import {ControlsContainer} from './VisionGui.styled'
 
 export interface VisionGuiControlsProps {
   hasValidParams: boolean

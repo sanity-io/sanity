@@ -1,9 +1,8 @@
-import {Box, Grid, Text} from '@sanity/ui'
-import {isSameDay, isSameMonth} from 'date-fns'
-
 import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'
 import {CalendarDay} from './CalendarDay'
 import {useWeeksOfMonth} from './utils'
+import {Box, Grid, Text} from '@sanity/ui'
+import {isSameDay, isSameMonth} from 'date-fns'
 
 interface CalendarMonthProps {
   date: Date

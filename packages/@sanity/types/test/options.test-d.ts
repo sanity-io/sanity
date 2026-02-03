@@ -1,7 +1,6 @@
-import {assertType, describe, test} from 'vitest'
-
 import {type BaseSchemaTypeOptions} from '../src/schema/definition/type/common'
 import {type DocumentDefinition} from '../src/schema/definition/type/document'
+import {assertType, describe, test} from 'vitest'
 
 describe('SchemaType', () => {
   test('should  take canvas options in BaseSchemaTypeOptions', () => {

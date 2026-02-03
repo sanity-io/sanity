@@ -1,7 +1,6 @@
-import {expect} from '@playwright/test'
-
 import {createUniqueDocument, withDefaultClient} from '../../helpers'
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 withDefaultClient((context) => {
   test.describe('sanity/structure: document pane', () => {

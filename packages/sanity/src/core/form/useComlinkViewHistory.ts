@@ -1,9 +1,8 @@
-import {useEffect, useRef} from 'react'
-import {useObservable} from 'react-rx'
-
 import {useRecordDocumentHistoryEvent} from '../hooks/useRecordDocumentHistoryEvent'
 import {type EditStateFor, useRenderingContextStore} from '../store'
 import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWorkspace'
+import {useEffect, useRef} from 'react'
+import {useObservable} from 'react-rx'
 
 /**
  * Capture Comlink `viewed` event.

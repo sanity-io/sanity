@@ -1,8 +1,7 @@
-import {ColorWheelIcon} from '@sanity/icons'
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-
 import {TestForm} from '../../utils/TestForm'
 import {TestWrapper} from '../../utils/TestWrapper'
+import {ColorWheelIcon} from '@sanity/icons'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 
 const SCHEMA_TYPES = [
   defineType({

@@ -1,5 +1,3 @@
-import {type SearchStrategy} from '@sanity/types'
-
 import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
 import {
@@ -9,6 +7,7 @@ import {
 } from './common'
 import {createGroq2024Search} from './groq2024'
 import {createWeightedSearch} from './weighted'
+import {type SearchStrategy} from '@sanity/types'
 
 const searchStrategies = {
   groqLegacy: createWeightedSearch,

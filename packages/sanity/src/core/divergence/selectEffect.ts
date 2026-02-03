@@ -1,6 +1,5 @@
-import {fromString} from '@sanity/util/paths'
-
 import {type DivergenceEffect} from './readDocumentDivergences'
+import {fromString} from '@sanity/util/paths'
 
 interface SelectEffectContext {
   /**

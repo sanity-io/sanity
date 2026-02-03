@@ -1,10 +1,9 @@
-import {pick, startCase} from 'lodash-es'
-
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {ASSET_FIELD, CROP_FIELD, HOTSPOT_FIELD, MEDIA_LIBRARY_ASSET_FIELD} from './image/fieldDefs'
 import {createFieldsets} from './object'
 import {hiddenGetter, lazyGetter} from './utils'
+import {pick, startCase} from 'lodash-es'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 

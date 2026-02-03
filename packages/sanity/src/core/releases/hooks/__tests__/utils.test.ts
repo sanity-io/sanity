@@ -1,11 +1,10 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {describe, expect, it} from 'vitest'
-
 import {type ReleaseId} from '../../../perspective/types'
 import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
 import {createReleaseId} from '../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleasesPerspectiveStack, sortReleases} from '../utils'
+import {type ReleaseDocument} from '@sanity/client'
+import {describe, expect, it} from 'vitest'
 
 function createReleaseMock(
   value: Partial<

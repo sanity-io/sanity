@@ -1,6 +1,5 @@
-import {type ArraySchemaType, isTypedObject, type SchemaType} from '@sanity/types'
-
 import {type Diff} from '../types'
+import {type ArraySchemaType, isTypedObject, type SchemaType} from '@sanity/types'
 
 export function resolveTypeName(value: unknown): string {
   return isTypedObject(value) ? value._type : resolveJSType(value)

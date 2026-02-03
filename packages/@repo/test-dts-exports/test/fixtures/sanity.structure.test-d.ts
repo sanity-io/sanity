@@ -160,7 +160,6 @@ import type {
   View,
   ViewBuilder,
 } from 'sanity/structure'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/structure', () => {

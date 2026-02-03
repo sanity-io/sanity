@@ -2,29 +2,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-else-return */
 
-import {diffInput, wrap} from '@sanity/diff'
-import {
-  type ArraySchemaType,
-  type BooleanSchemaType,
-  type CurrentUser,
-  type FieldGroup,
-  isArrayOfObjectsSchemaType,
-  isArraySchemaType,
-  isKeyedObject,
-  isObjectSchemaType,
-  type KeyedObject,
-  type NumberSchemaType,
-  type ObjectField,
-  type ObjectSchemaType,
-  type Path,
-  type SchemaType,
-  type StringSchemaType,
-  type ValidationMarker,
-} from '@sanity/types'
-import {resolveTypeName} from '@sanity/util/content'
-import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
-import {castArray, isEqual as _isEqual} from 'lodash-es'
-
 import {type FIXME} from '../../FIXME'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
@@ -60,6 +37,28 @@ import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getId} from './utils/getId'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
+import {diffInput, wrap} from '@sanity/diff'
+import {
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type CurrentUser,
+  type FieldGroup,
+  isArrayOfObjectsSchemaType,
+  isArraySchemaType,
+  isKeyedObject,
+  isObjectSchemaType,
+  type KeyedObject,
+  type NumberSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+  type SchemaType,
+  type StringSchemaType,
+  type ValidationMarker,
+} from '@sanity/types'
+import {resolveTypeName} from '@sanity/util/content'
+import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
+import {castArray, isEqual as _isEqual} from 'lodash-es'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 

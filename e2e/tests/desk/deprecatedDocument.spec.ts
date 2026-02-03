@@ -1,6 +1,5 @@
-import {expect} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect} from '@playwright/test'
 
 test(`deprecated document type shows deprecated message`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/input-debug;deprecatedDocument')

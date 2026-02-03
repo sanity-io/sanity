@@ -1,9 +1,8 @@
+import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {VersionContextMenuItem} from '../VersionContextMenuItem'
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-
-import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {
   _id: '_.releases.1',

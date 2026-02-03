@@ -1,7 +1,3 @@
-import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {styled} from 'styled-components'
-
 import {
   Button,
   MenuButton,
@@ -16,6 +12,9 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
+import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
+import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {styled} from 'styled-components'
 
 const renderMenuButton = ({
   open,

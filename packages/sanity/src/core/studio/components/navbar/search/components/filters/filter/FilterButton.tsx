@@ -1,3 +1,12 @@
+import {Popover} from '../../../../../../../../ui-components'
+import {useTranslation} from '../../../../../../../i18n'
+import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {type SearchFilter} from '../../../types'
+import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
+import {FilterLabel} from '../../common/FilterLabel'
+import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {FilterPopoverContent} from './FilterPopoverContent'
 import {CloseIcon} from '@sanity/icons'
 import {
   // eslint-disable-next-line no-restricted-imports
@@ -8,16 +17,6 @@ import {
 } from '@sanity/ui'
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-
-import {Popover} from '../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../i18n'
-import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
-import {useSearchState} from '../../../contexts/search/useSearchState'
-import {type SearchFilter} from '../../../types'
-import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
-import {FilterLabel} from '../../common/FilterLabel'
-import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
   filter: SearchFilter

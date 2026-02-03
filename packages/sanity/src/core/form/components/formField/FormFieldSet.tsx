@@ -1,3 +1,14 @@
+import {TextWithTone} from '../../../components'
+import {type DocumentFieldActionNode} from '../../../config'
+import {useTranslation} from '../../../i18n'
+import {type FormNodePresence} from '../../../presence'
+import {useFieldActions} from '../../field'
+import {createDescriptionId} from '../../members/common/createDescriptionId'
+import {type FieldCommentsProps} from '../../types'
+import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {FormFieldSetLegend} from './FormFieldSetLegend'
+import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+import {AlignedBottomGrid, focusRingStyle} from './styles'
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
@@ -12,18 +23,6 @@ import {
   useRef,
 } from 'react'
 import {css, styled} from 'styled-components'
-
-import {TextWithTone} from '../../../components'
-import {type DocumentFieldActionNode} from '../../../config'
-import {useTranslation} from '../../../i18n'
-import {type FormNodePresence} from '../../../presence'
-import {useFieldActions} from '../../field'
-import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {type FieldCommentsProps} from '../../types'
-import {FormFieldBaseHeader} from './FormFieldBaseHeader'
-import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {AlignedBottomGrid, focusRingStyle} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {
@@ -69,7 +68,7 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
 
 const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
   border: none;
-  
+
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
   body:not(:-moz-handler-blocked) & {
     display: table-cell;

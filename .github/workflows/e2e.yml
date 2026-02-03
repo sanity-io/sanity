@@ -52,7 +52,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
         with:
-          comment-tag: 'e2e-preview-url'
+          comment-tag: "e2e-preview-url"
           message: |
             ### 🧪 E2E Preview environment
 
@@ -62,7 +62,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ github.event_name == 'pull_request' && steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' }}
         with:
-          comment-tag: 'playwright-e2e-report'
+          comment-tag: "playwright-e2e-report"
           message: |
             ### 📊 Playwright Test Report
 
@@ -209,7 +209,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true' && github.event_name == 'pull_request'
         with:
-          comment-tag: 'e2e-preview-url'
+          comment-tag: "e2e-preview-url"
           message: |
             ### 🧪 [E2E Preview environment](${{ steps.deploy.outputs.DEPLOY_URL }})
 
@@ -353,7 +353,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
         if: ${{ always() && steps.upload-playwright-report.conclusion == 'success' && github.event_name == 'pull_request' }}
         with:
-          comment-tag: 'playwright-e2e-report'
+          comment-tag: "playwright-e2e-report"
           message: |
             ### 📊 Playwright Test Report
 

@@ -14,7 +14,14 @@
   "packageRules": [
     {
       "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
-      "matchPackageNames": ["/^@sanity\\//", "/^@portabletext\\//", "/^react-rx$/", "/^groq-js$/"],
+      "matchPackageNames": [
+        "/^@sanity\\//",
+        "/^@portabletext\\//",
+        "/^react-rx$/",
+        "/^groq-js$/",
+        "/^@oxfmt\\//",
+        "/^oxfmt$/"
+      ],
       "minimumReleaseAge": "0 days"
     },
     {

@@ -1,9 +1,8 @@
+import {type Template, type TemplateParameter} from './types'
+import {isRecord} from './util/isRecord'
 import {type Schema} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
 import {toString as pathToString} from '@sanity/util/paths'
-
-import {type Template, type TemplateParameter} from './types'
-import {isRecord} from './util/isRecord'
 
 const ALLOWED_REF_PROPS = [
   '_dataset',

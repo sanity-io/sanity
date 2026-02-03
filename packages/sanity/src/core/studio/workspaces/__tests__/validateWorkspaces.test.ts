@@ -1,6 +1,5 @@
-import {describe, expect, it} from 'vitest'
-
 import {validateBasePaths, validateNames} from '../validateWorkspaces'
+import {describe, expect, it} from 'vitest'
 
 describe('validateBasePaths', () => {
   it('allows empty basePaths', () => {

@@ -1,10 +1,9 @@
+import {visionUsEnglishLocaleBundle} from './i18n'
+import {type VisionToolConfig} from './types'
 import {EyeOpenIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
-
-import {visionUsEnglishLocaleBundle} from './i18n'
-import {type VisionToolConfig} from './types'
 
 export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
   const {name, title, icon, ...config} = options || {}

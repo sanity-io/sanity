@@ -1,8 +1,3 @@
-import {type ReferenceValue, type SchemaType} from '@sanity/types'
-import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {Translate, useTranslation} from '../../../../../../../../../i18n'
@@ -13,6 +8,10 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {type ReferenceValue, type SchemaType} from '@sanity/types'
+import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, useCallback, useId, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 
 type AutocompleteSearchHit = {value: string} & SearchHit
 

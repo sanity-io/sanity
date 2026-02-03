@@ -1,9 +1,8 @@
-import {type AssetSource, type SchemaType} from '@sanity/types'
-
 import {type FormBuilderContextValue} from '../../FormBuilderContext'
 import * as is from '../../utils/is'
 import {accepts} from './accepts'
 import {type FileLike} from './types'
+import {type AssetSource, type SchemaType} from '@sanity/types'
 
 export function resolveUploadAssetSources(
   type: SchemaType,

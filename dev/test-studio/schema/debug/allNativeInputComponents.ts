@@ -1,5 +1,3 @@
-import {defineField, defineType} from 'sanity'
-
 import {
   DelegatedArrayOfObjectsInput,
   DelegatedArrayOfOptionsInput,
@@ -24,6 +22,7 @@ import {
   DelegatedUniversalArrayInput,
   DelegatedUrlInput,
 } from './components/DelegatedObjectInputs'
+import {defineField, defineType} from 'sanity'
 
 export const allNativeInputComponents = defineType({
   type: 'document',

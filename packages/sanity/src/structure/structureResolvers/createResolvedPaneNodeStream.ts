@@ -1,8 +1,3 @@
-import {generateHelpUrl} from '@sanity/generate-help-url'
-import {isEqual} from 'lodash-es'
-import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
-import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
-
 import {type StructureContext} from '../structureBuilder'
 import {
   type DocumentPaneNode,
@@ -21,6 +16,10 @@ import {
 } from './createPaneResolver'
 import {memoBind} from './memoBind'
 import {PaneResolutionError} from './PaneResolutionError'
+import {generateHelpUrl} from '@sanity/generate-help-url'
+import {isEqual} from 'lodash-es'
+import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
+import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
 
 /**
  * the fallback editor child that is implicitly inserted into the structure tree

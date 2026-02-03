@@ -1,9 +1,8 @@
+import {RenderActionCollectionState} from '../../../components'
+import {ActionStateDialog} from '../statusBar'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState} from 'react'
 import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
-
-import {RenderActionCollectionState} from '../../../components'
-import {ActionStateDialog} from '../statusBar'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null

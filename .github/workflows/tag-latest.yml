@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semver version to tag as latest (e.g., 3.2.1)'
+        description: "Semver version to tag as latest (e.g., 3.2.1)"
         required: true
         type: string
 

@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {route} from '../route'
+import {expect, test} from 'vitest'
 
 const router = route.create('/', [
   route.create('/animals/:animal'),

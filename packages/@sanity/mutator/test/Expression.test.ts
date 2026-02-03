@@ -1,9 +1,8 @@
-import {expect, test} from 'vitest'
-
 import {Expression} from '../src/jsonpath/Expression'
 import {parseJsonPath} from '../src/jsonpath/parse'
 import {PlainProbe} from '../src/jsonpath/PlainProbe'
 import {type PathExpr, type UnionExpr} from '../src/jsonpath/types'
+import {expect, test} from 'vitest'
 
 function parseAsPath(path: string): PathExpr | UnionExpr {
   const parsed = parseJsonPath(path)

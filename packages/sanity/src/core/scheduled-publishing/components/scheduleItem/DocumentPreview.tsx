@@ -1,6 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {useMemo} from 'react'
-
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
 import {useDocumentActionProps} from '../../contexts/documentActionProps'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
@@ -8,6 +5,8 @@ import {type Schedule} from '../../types'
 import {getScheduledDocumentId} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
+import {type SchemaType} from '@sanity/types'
+import {useMemo} from 'react'
 
 interface Props {
   schedule: Schedule

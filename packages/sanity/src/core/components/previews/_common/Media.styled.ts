@@ -1,8 +1,7 @@
-import {rem} from '@sanity/ui'
-import {css, styled} from 'styled-components'
-
 import {PREVIEW_SIZES} from '../constants'
 import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../types'
+import {rem} from '@sanity/ui'
+import {css, styled} from 'styled-components'
 
 export const MediaWrapper = styled.span<{
   $dimensions: PreviewMediaDimensions

@@ -1,3 +1,4 @@
+import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {
   Popover, // eslint-disable-line no-restricted-imports
   useClickOutsideEvent,
@@ -6,8 +7,6 @@ import {
 } from '@sanity/ui'
 import {useCallback, useRef} from 'react'
 import {type DocumentActionPopoverDialogProps} from 'sanity'
-
-import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 
 export function PopoverDialog(props: {
   dialog: DocumentActionPopoverDialogProps

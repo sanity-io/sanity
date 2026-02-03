@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {MentionUserContextValue} from '../../core/tasks/context/mentionUser/types'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

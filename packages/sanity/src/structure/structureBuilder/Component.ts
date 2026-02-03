@@ -1,5 +1,3 @@
-import {type I18nTextRecord} from 'sanity'
-
 import {type IntentChecker} from './Intent'
 import {maybeSerializeMenuItem, type MenuItem, type MenuItemBuilder} from './MenuItem'
 import {
@@ -17,6 +15,7 @@ import {
 import {type UserComponent} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {validateId} from './util/validateId'
+import {type I18nTextRecord} from 'sanity'
 
 /**
  * Interface for component

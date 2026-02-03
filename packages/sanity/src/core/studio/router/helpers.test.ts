@@ -1,8 +1,7 @@
-import {type RouterState} from 'sanity/router'
-import {describe, expect, it} from 'vitest'
-
 import {type Tool} from '../../config/types'
 import {resolveIntentState} from './helpers'
+import {type RouterState} from 'sanity/router'
+import {describe, expect, it} from 'vitest'
 
 describe('resolveIntentState', () => {
   const testTool: Tool = {

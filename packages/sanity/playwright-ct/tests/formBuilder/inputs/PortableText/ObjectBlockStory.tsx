@@ -1,10 +1,9 @@
+import {TestForm} from '../../utils/TestForm'
+import {TestWrapper} from '../../utils/TestWrapper'
 /* eslint-disable i18next/no-literal-string */
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {Box, Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
-
-import {TestForm} from '../../utils/TestForm'
-import {TestWrapper} from '../../utils/TestWrapper'
 
 // This is to emulate preview updates to the object without the preview store
 function CustomObjectPreview(props: PreviewProps) {

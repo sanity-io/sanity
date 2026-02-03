@@ -1,6 +1,5 @@
-import {beforeAll, describe, expect, it, vi} from 'vitest'
-
 import {getTaskURL} from './TasksNotificationTarget'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 describe('getTaskURL', () => {
   beforeAll(() => {

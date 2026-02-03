@@ -1,11 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {createMemoryHistory} from 'history'
-import {noop} from 'lodash-es'
-import {type ReactNode} from 'react'
-import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
-import {vi} from 'vitest'
-
 import {ResolvedPanesProvider} from '../../src/_singletons/context/ResolvedPanesContext'
 import {
   CopyPasteProvider,
@@ -27,6 +19,13 @@ import {ActiveWorkspaceMatcherProvider} from '../../src/core/studio/activeWorksp
 import {route, RouterProvider} from '../../src/router'
 import {type Panes} from '../../src/structure/structureResolvers'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
+import {type SanityClient} from '@sanity/client'
+import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {createMemoryHistory} from 'history'
+import {noop} from 'lodash-es'
+import {type ReactNode} from 'react'
+import {AddonDatasetContext, PerspectiveContext} from 'sanity/_singletons'
+import {vi} from 'vitest'
 
 // Mock the useUpsellData hook to prevent API calls in tests
 vi.mock('../../src/core/hooks/useUpsellData', () => ({

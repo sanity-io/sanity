@@ -1,7 +1,6 @@
-import {expect, test} from 'vitest'
-
 import {Schema} from '../../src/legacy/Schema'
 import rawSchemas from './fixtures/schemas'
+import {expect, test} from 'vitest'
 
 function parseSchema(schemaDef: any) {
   const schema = new Schema(schemaDef)

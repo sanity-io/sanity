@@ -1,12 +1,11 @@
+import {useFeatureEnabled} from '../../hooks'
+import {FEATURES} from '../../hooks/useFeatureEnabled'
+import {useScheduledDraftsEnabled} from '../hooks/useScheduledDraftsEnabled'
 import {useContext, useMemo} from 'react'
 import {
   SingleDocReleaseEnabledContext,
   type SingleDocReleaseEnabledContextValue,
 } from 'sanity/_singletons'
-
-import {useFeatureEnabled} from '../../hooks'
-import {FEATURES} from '../../hooks/useFeatureEnabled'
-import {useScheduledDraftsEnabled} from '../hooks/useScheduledDraftsEnabled'
 
 interface SingleDocReleaseEnabledProviderProps {
   children: React.ReactNode

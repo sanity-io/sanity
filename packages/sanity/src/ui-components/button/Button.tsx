@@ -1,10 +1,9 @@
 /* eslint-disable no-restricted-imports */
 
+import {Tooltip, type TooltipProps} from '..'
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
-
-import {Tooltip, type TooltipProps} from '..'
 
 type BaseButtonProps = Pick<
   UIButtonProps,

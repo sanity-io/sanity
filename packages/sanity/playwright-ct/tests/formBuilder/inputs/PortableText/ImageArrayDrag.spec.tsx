@@ -1,8 +1,7 @@
-import {expect, test} from '@playwright/experimental-ct-react'
-import {type SanityDocument} from '@sanity/types'
-
 import {testHelpers} from '../../../utils/testHelpers'
 import ImageArrayDragStory from './ImageArrayDragStory'
+import {expect, test} from '@playwright/experimental-ct-react'
+import {type SanityDocument} from '@sanity/types'
 
 const document: SanityDocument = {
   _id: '123',

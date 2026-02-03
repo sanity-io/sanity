@@ -1,6 +1,5 @@
-import {expect, type Request} from '@playwright/test'
-
 import {test} from '../../studio-test'
+import {expect, type Request} from '@playwright/test'
 
 function getListenEventType(request: Request): string | null | undefined {
   if (request.url().includes('data/listen')) {

@@ -1,22 +1,3 @@
-import {
-  type AssetFromSource,
-  type AssetSourceUploader,
-  type Path,
-  type SchemaType,
-} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {noop} from 'lodash-es'
-import {
-  type FocusEvent,
-  type ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {tap} from 'rxjs/operators'
-
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -51,6 +32,24 @@ import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {
+  type AssetFromSource,
+  type AssetSourceUploader,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {noop} from 'lodash-es'
+import {
+  type FocusEvent,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {tap} from 'rxjs/operators'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input

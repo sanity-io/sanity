@@ -1,8 +1,3 @@
-import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui'
-import * as PathUtils from '@sanity/util/paths'
-import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
-
 import {type DocumentInspectorProps} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
@@ -35,6 +30,10 @@ import {
 import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
+import {Flex, Layer, useClickOutsideEvent, useLayer, useToast} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {styled} from 'styled-components'
 
 interface CommentToDelete {
   commentId: string

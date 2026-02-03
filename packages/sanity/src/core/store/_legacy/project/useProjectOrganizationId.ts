@@ -1,8 +1,7 @@
+import {useProjectStore} from '../datastores'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map, startWith} from 'rxjs'
-
-import {useProjectStore} from '../datastores'
 
 const INITIAL_STATE = {value: null, loading: true}
 

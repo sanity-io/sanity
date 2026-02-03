@@ -1,7 +1,6 @@
+import {useTranslation} from '../..'
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
 import {css, styled} from 'styled-components'
-
-import {useTranslation} from '../..'
 
 // Enable to force debug background
 const DEBUG_MODE = false

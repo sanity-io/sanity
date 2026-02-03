@@ -1,7 +1,6 @@
-import {describe, expect} from 'vitest'
-
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioNames, testClient} from './shared/environment'
+import {describe, expect} from 'vitest'
 
 describeCliTest('CLI: `sanity cors`', () => {
   describe.each(studioNames)('%s', (studioName) => {

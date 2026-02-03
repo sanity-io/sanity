@@ -1,6 +1,5 @@
-import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
-
 import {Tab} from '../../../../../ui-components'
+import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
 
 interface GroupType {
   'aria-controls': string

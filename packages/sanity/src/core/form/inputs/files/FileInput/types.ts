@@ -1,13 +1,12 @@
+import {type FileInfo} from '../common/styles'
+import {type AssetAccessPolicy} from '../types'
+import {type BaseFileInputProps} from './FileInput'
 import {
   type AssetFromSource,
   type AssetSource,
   type AssetSourceUploader,
   type FileAsset,
 } from '@sanity/types'
-
-import {type FileInfo} from '../common/styles'
-import {type AssetAccessPolicy} from '../types'
-import {type BaseFileInputProps} from './FileInput'
 
 export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'> {
   accessPolicy?: AssetAccessPolicy

@@ -1,13 +1,12 @@
-import {renderHook, waitFor} from '@testing-library/react'
-import {defineConfig, prepareForPreview, type SanityClient, useValuePreview} from 'sanity'
-import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
-
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentPaneContextValue} from '../DocumentPaneContext'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentTitle} from '../useDocumentTitle'
+import {renderHook, waitFor} from '@testing-library/react'
+import {defineConfig, prepareForPreview, type SanityClient, useValuePreview} from 'sanity'
+import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 // Mock the useDocumentPane hook
 vi.mock('../useDocumentPane')

@@ -1,10 +1,9 @@
-import {Box} from '@sanity/ui'
-import {type ReactNode, useId, useRef, useState} from 'react'
-
 import {Dialog} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type ModalWidth} from './types'
+import {Box} from '@sanity/ui'
+import {type ReactNode, useId, useRef, useState} from 'react'
 
 interface DefaultEditDialogProps {
   children: ReactNode

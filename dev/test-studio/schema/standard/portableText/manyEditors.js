@@ -1,6 +1,5 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
-
 import {CalloutPreview} from './components/CalloutPreview'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 
 function extractTextFromBlocks(blocks) {
   if (!blocks) {

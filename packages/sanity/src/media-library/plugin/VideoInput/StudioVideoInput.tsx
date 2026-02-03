@@ -1,6 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {useCallback} from 'react'
-
 import {observeVideoAsset} from '../../../core/form/studio/inputs/client-adapters/assets'
 import {resolveUploader as defaultResolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
 import {type FileLike} from '../../../core/form/studio/uploads/types'
@@ -10,6 +7,8 @@ import {useDocumentPreviewStore} from '../../../core/store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {sourceName} from '../asset-source'
 import {BaseVideoInput, type BaseVideoInputProps} from './VideoInput'
+import {type SchemaType} from '@sanity/types'
+import {useCallback} from 'react'
 
 export type VideoInputProps = Omit<
   BaseVideoInputProps,

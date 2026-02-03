@@ -1,15 +1,3 @@
-import {
-  type Action,
-  type MultipleActionResult,
-  type SanityClient,
-  type SingleMutationResult,
-} from '@sanity/client'
-import {type Mutation} from '@sanity/mutator'
-import {type SanityDocument} from '@sanity/types'
-import {omit} from 'lodash-es'
-import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
-
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
   type BufferedDocumentEvent,
@@ -34,6 +22,17 @@ import {
 } from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
+import {
+  type Action,
+  type MultipleActionResult,
+  type SanityClient,
+  type SingleMutationResult,
+} from '@sanity/client'
+import {type Mutation} from '@sanity/mutator'
+import {type SanityDocument} from '@sanity/types'
+import {omit} from 'lodash-es'
+import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
+import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000

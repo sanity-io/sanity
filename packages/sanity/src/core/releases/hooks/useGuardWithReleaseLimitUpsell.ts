@@ -1,7 +1,6 @@
+import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
 import {noop} from 'lodash-es'
 import {useEffect, useState} from 'react'
-
-import {useReleasesUpsell} from '../contexts/upsell/useReleasesUpsell'
 
 export function useGuardWithReleaseLimitUpsell() {
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(true)

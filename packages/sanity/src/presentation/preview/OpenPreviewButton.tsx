@@ -1,14 +1,13 @@
-import {LaunchIcon} from '@sanity/icons'
-import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
-import {Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
-
 import {Button, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PresentationPerspective} from '../types'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type PreviewProps} from './Preview'
+import {LaunchIcon} from '@sanity/icons'
+import {urlSearchParamPreviewPerspective} from '@sanity/preview-url-secret/constants'
+import {Text} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
+import {useTranslation} from 'sanity'
 
 /** @internal */
 export function OpenPreviewButton(

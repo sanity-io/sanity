@@ -1,8 +1,7 @@
-import {diffInput, wrap} from '@sanity/diff'
-import {expect, it} from 'vitest'
-
 import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
 import {computeStringDiffRangeDecorations} from './computeStringDiffRangeDecorations'
+import {diffInput, wrap} from '@sanity/diff'
+import {expect, it} from 'vitest'
 
 const provenanceAnnotation: ProvenanceDiffAnnotation = {
   provenance: {

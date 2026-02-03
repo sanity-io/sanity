@@ -1,9 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type SanityDocument} from '@sanity/types'
-import {groupBy} from 'lodash-es'
-import {defer, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
-
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases'
 import {getVersionFromId} from '../../../util'
@@ -17,6 +11,11 @@ import {
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
+import {groupBy} from 'lodash-es'
+import {defer, merge, type Observable, of, throwError} from 'rxjs'
+import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 interface Snapshots {
   draft: SanityDocument | null

@@ -1,6 +1,5 @@
-import {type ReactNode} from 'react'
-
 import {type Size} from './types'
+import {type ReactNode} from 'react'
 
 export interface ResizeSVGProps {
   image: HTMLImageElement

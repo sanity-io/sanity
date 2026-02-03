@@ -1,3 +1,8 @@
+import {Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
+import {commentsLocaleNamespace} from '../../i18n'
+import {type CommentDocument} from '../../types'
 import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons'
@@ -5,12 +10,6 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-
-import {Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
-import {commentsLocaleNamespace} from '../../i18n'
-import {type CommentDocument} from '../../types'
 
 function truncate(str: string, length = 250) {
   if (str.length <= length) return str

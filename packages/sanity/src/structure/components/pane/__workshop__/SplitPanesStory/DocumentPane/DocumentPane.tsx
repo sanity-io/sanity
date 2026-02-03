@@ -1,11 +1,10 @@
-import {Flex} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback, useEffect, useState} from 'react'
-
 import {Pane} from '../../../Pane'
 import {usePaneLayout} from '../../../usePaneLayout'
 import {type DocumentPaneNode} from '../types'
 import {DocumentViewPanel} from './DocumentViewPanel'
 import {ReviewChangesPanel} from './ReviewChangesPanel'
+import {Flex} from '@sanity/ui'
+import {type Dispatch, type SetStateAction, useCallback, useEffect, useState} from 'react'
 
 export function DocumentPane(props: {
   index: number

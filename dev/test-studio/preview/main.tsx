@@ -1,8 +1,3 @@
-import {Box, Flex, studioTheme, Tab, TabList, TabPanel, ThemeProvider} from '@sanity/ui'
-import {enableVisualEditing} from '@sanity/visual-editing'
-import {Suspense, useEffect, useState} from 'react'
-import {createRoot} from 'react-dom/client'
-
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'
 import {InternationalizedArrayTest} from './InternationalizedArrayTest'
@@ -10,6 +5,10 @@ import {useLiveMode} from './loader'
 import {LongList} from './LongList'
 import {Markdown} from './Markdown'
 import {SimpleBlockPortableText} from './SimpleBlockPortableText'
+import {Box, Flex, studioTheme, Tab, TabList, TabPanel, ThemeProvider} from '@sanity/ui'
+import {enableVisualEditing} from '@sanity/visual-editing'
+import {Suspense, useEffect, useState} from 'react'
+import {createRoot} from 'react-dom/client'
 
 function Main() {
   const [id, setId] = useState<

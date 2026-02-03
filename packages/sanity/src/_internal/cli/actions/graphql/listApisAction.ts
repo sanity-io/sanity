@@ -1,6 +1,5 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-
 import {getClientUrl} from '../../util/getClientUrl'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 type ListApisResponse = {
   projectId: string

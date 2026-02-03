@@ -94,7 +94,6 @@ import type {
   unset,
   UnsetOp,
 } from 'sanity/migrate'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/migrate', () => {

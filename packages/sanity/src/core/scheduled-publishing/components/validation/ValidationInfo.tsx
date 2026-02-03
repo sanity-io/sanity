@@ -1,3 +1,8 @@
+import {Button} from '../../../../ui-components/button/Button'
+import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {usePublishedId} from '../../hooks/usePublishedId'
+import {useValidationState} from '../../utils/validationUtils'
+import {ValidationList} from './ValidationList'
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {
   type ObjectSchemaType,
@@ -9,12 +14,6 @@ import {type CardTone, Container, Menu, Stack} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'
-
-import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {usePublishedId} from '../../hooks/usePublishedId'
-import {useValidationState} from '../../utils/validationUtils'
-import {ValidationList} from './ValidationList'
 
 interface ValidationProps {
   documentId?: string

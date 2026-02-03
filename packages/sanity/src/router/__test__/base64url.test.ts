@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {decodeBase64Url, encodeBase64Url} from '../utils/base64url'
+import {expect, test} from 'vitest'
 
 test('base64url: "safe" strings', () => {
   expect(decodeBase64Url(encodeBase64Url('foo'))).toBe('foo')

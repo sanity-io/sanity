@@ -1,6 +1,5 @@
-import {defineType} from 'sanity'
-
 import {HooksBasedStringInput} from './components/HooksBasedStringInput'
+import {defineType} from 'sanity'
 
 export default defineType({
   name: 'stringsTest',

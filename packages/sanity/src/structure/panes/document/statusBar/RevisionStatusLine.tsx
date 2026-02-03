@@ -1,3 +1,4 @@
+import {useDocumentPane} from '../useDocumentPane'
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
 import {format} from 'date-fns'
@@ -6,11 +7,9 @@ import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
-import {useDocumentPane} from '../useDocumentPane'
-
 export const StatusText = styled(Text)`
   color: var(--card-muted-fg-color);
-  
+
   em {
     color: var(--card-fg-color);
     font-weight: 500;

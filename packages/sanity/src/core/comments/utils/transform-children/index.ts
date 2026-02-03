@@ -1,7 +1,6 @@
-import {type ReactNode} from 'react'
-
 import {linkMiddleware} from './linkMiddleware'
 import {type Middleware} from './types'
+import {type ReactNode} from 'react'
 
 const middlewares: Middleware[] = [linkMiddleware]
 

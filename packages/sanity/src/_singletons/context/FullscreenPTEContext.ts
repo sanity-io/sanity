@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {FullscreenPTEContextValue} from '../../core/form/inputs/PortableText/contexts/fullscreen/FullscreenPTEContext'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

@@ -1,7 +1,6 @@
+import {type VisualEditingConnection} from './types'
 import {type ClientPerspective} from '@sanity/client'
 import {type FC, memo, useEffect} from 'react'
-
-import {type VisualEditingConnection} from './types'
 
 export interface PostMessagePerspectiveProps {
   comlink: VisualEditingConnection

@@ -1,7 +1,6 @@
+import {type SearchContextValue} from './SearchContext'
 import {useContext} from 'react'
 import {SearchContext} from 'sanity/_singletons'
-
-import {type SearchContextValue} from './SearchContext'
 
 /**
  * @internal

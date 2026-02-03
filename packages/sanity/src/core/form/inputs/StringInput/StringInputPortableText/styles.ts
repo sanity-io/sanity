@@ -1,3 +1,4 @@
+import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'
 import {_responsive, type CardTone, rem, type ThemeProps} from '@sanity/ui'
 import {
   // eslint-disable-next-line camelcase
@@ -7,8 +8,6 @@ import {
 } from '@sanity/ui/theme'
 import {css, type CSSObject} from 'styled-components'
 
-import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'
-
 /**
  * Heavily based on the styling provided by Sanity UI.
  */
@@ -16,7 +15,7 @@ const ROOT_STYLE = css`
   &:not([hidden]) {
     display: flex;
   }
-  
+
   align-items: center;
 `
 

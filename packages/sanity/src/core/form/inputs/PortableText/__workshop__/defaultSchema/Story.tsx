@@ -1,9 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type Path} from '@sanity/types'
-import {Card, Container, Flex} from '@sanity/ui'
-import {useAction, useSelect} from '@sanity/ui-workshop'
-import {useCallback, useMemo, useRef, useState} from 'react'
-
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {defineConfig} from '../../../../../config'
 import {useSchema} from '../../../../../hooks'
@@ -13,6 +7,11 @@ import {applyAll} from '../../../../patch/applyPatch'
 import {createPatchChannel} from '../../../../patch/PatchChannel'
 import {type ArrayOfObjectsMember} from '../../../../store'
 import {valueOptions, values} from './values'
+import {type SanityClient} from '@sanity/client'
+import {type Path} from '@sanity/types'
+import {Card, Container, Flex} from '@sanity/ui'
+import {useAction, useSelect} from '@sanity/ui-workshop'
+import {useCallback, useMemo, useRef, useState} from 'react'
 
 const ptType = {
   type: 'array',

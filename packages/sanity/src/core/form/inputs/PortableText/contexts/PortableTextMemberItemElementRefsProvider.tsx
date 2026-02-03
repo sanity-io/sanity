@@ -1,11 +1,10 @@
+import {type PortableTextMemberItem} from '../PortableTextInput'
 import {useCallback, useContext} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type PortableTextEditorElement,
   PortableTextMemberItemElementRefsContext,
 } from 'sanity/_singletons'
-
-import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export type SetPortableTextMemberItemElementRef = ({
   key,

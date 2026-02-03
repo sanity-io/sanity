@@ -1,7 +1,6 @@
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {type SanityClient} from '@sanity/client'
 import debugit from 'debug'
-
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 
 const debug = debugit('sanity:store')
 

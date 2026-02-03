@@ -1,7 +1,3 @@
-import {fromPairs, partition, toPairs} from 'lodash-es'
-import {type ReactNode, useCallback, useMemo} from 'react'
-import {RouterContext} from 'sanity/_singletons'
-
 import {STICKY_PARAMS} from './stickyParams'
 import {
   type IntentParameters,
@@ -14,6 +10,9 @@ import {
   type RouterState,
   type SearchParam,
 } from './types'
+import {fromPairs, partition, toPairs} from 'lodash-es'
+import {type ReactNode, useCallback, useMemo} from 'react'
+import {RouterContext} from 'sanity/_singletons'
 
 /**
  * The props for the {@link RouterProvider} component.

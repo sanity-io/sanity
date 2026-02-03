@@ -1,3 +1,4 @@
+import {structureLocaleNamespace} from '../i18n'
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
@@ -13,8 +14,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
-
-import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
   NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothing-to-duplicate',

@@ -1,3 +1,4 @@
+import {type Source} from '../../../../config'
 import {type StackablePerspective} from '@sanity/client'
 import {
   type Path,
@@ -6,8 +7,6 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-
-import {type Source} from '../../../../config'
 
 export async function resolveUserDefinedFilter(ctx: {
   options: ReferenceOptions | undefined

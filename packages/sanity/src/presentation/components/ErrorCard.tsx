@@ -1,9 +1,8 @@
+import {Button} from '../../ui-components'
+import {presentationLocaleNamespace} from '../i18n'
 import {Box, Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-
-import {Button} from '../../ui-components'
-import {presentationLocaleNamespace} from '../i18n'
 
 export function ErrorCard(
   props: {

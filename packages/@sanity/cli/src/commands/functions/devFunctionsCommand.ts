@@ -1,9 +1,8 @@
+import {type CliCommandDefinition} from '../../types'
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 import {FunctionsDevCommand} from '@sanity/runtime-cli'
 import {logger} from '@sanity/runtime-cli/utils'
 import open from 'open'
-
-import {type CliCommandDefinition} from '../../types'
-import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface FunctionsDevFlags {
   open?: boolean

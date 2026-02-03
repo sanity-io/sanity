@@ -1,9 +1,8 @@
-import {describe, expect, test} from 'vitest'
-
 import {descend} from '../src/jsonpath/descend'
 import {parseJsonPath} from '../src/jsonpath/parse'
 import {toPath} from '../src/jsonpath/toPath'
 import {type Expr, type PathExpr} from '../src/jsonpath/types'
+import {describe, expect, test} from 'vitest'
 
 function headTailToStr(headTail: [Expr | null, PathExpr | null]): string {
   if (!headTail[0]) {

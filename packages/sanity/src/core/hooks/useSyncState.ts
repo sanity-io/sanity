@@ -1,9 +1,8 @@
+import {useDocumentStore} from '../store'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
-
-import {useDocumentStore} from '../store'
 
 /** @internal */
 export interface SyncState {

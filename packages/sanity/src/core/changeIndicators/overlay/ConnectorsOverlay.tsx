@@ -1,6 +1,3 @@
-import {type Path} from '@sanity/types'
-import {useCallback, useMemo, useState} from 'react'
-
 import {type Reported} from '../../components/react-track-elements'
 import {useOnScroll} from '../../components/scroll'
 import {useReviewChanges} from '../../hooks/useReviewChanges'
@@ -14,6 +11,8 @@ import {Connector} from './Connector'
 import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
+import {type Path} from '@sanity/types'
+import {useCallback, useMemo, useState} from 'react'
 
 export interface Rect {
   height: number

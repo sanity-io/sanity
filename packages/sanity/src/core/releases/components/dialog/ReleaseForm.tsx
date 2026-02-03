@@ -1,3 +1,12 @@
+import {MenuButton, Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
+import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {isReleaseType} from '../../store/types'
+import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
+import {ReleaseAvatar} from '../ReleaseAvatar'
+import {ScheduleDatePicker} from '../ScheduleDatePicker'
+import {TitleDescriptionForm} from './TitleDescriptionForm'
 import {type EditableReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
@@ -21,16 +30,6 @@ import {
   useId,
   useState,
 } from 'react'
-
-import {MenuButton, Tooltip} from '../../../../ui-components'
-import {useTranslation} from '../../../i18n'
-import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
-import {isReleaseType} from '../../store/types'
-import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
-import {ReleaseAvatar} from '../ReleaseAvatar'
-import {ScheduleDatePicker} from '../ScheduleDatePicker'
-import {TitleDescriptionForm} from './TitleDescriptionForm'
 
 /** @internal */
 export function ReleaseForm(props: {

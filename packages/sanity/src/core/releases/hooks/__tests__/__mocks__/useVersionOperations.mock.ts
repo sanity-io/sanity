@@ -1,6 +1,5 @@
-import {type Mock, type Mocked, vi} from 'vitest'
-
 import {useVersionOperations, type VersionOperationsValue} from '../../useVersionOperations'
+import {type Mock, type Mocked, vi} from 'vitest'
 
 export const useVersionOperationsReturn: Mocked<VersionOperationsValue> = {
   createVersion: vi.fn(),

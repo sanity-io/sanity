@@ -1,3 +1,5 @@
+import {buildArrayState} from '../buildArrayState'
+import {type TreeEditingState} from '../buildTreeEditingState'
 import {Schema} from '@sanity/schema'
 import {
   type ArraySchemaType,
@@ -6,9 +8,6 @@ import {
   type Path,
 } from '@sanity/types'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
-
-import {buildArrayState} from '../buildArrayState'
-import {type TreeEditingState} from '../buildTreeEditingState'
 
 // Mock schema for testing array state building
 const schema = Schema.compile({

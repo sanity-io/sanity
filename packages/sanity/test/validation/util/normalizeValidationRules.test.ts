@@ -1,8 +1,7 @@
-import {type NumberSchemaType, type SchemaType, type StringSchemaType} from '@sanity/types'
-import {describe, expect, it} from 'vitest'
-
 import {Rule as RuleClass} from '../../../src/core/validation'
 import {normalizeValidationRules} from '../../../src/core/validation/util/normalizeValidationRules'
+import {type NumberSchemaType, type SchemaType, type StringSchemaType} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 describe('normalizeValidationRules', () => {
   // see `infer.test.ts` for more related tests.

@@ -1,11 +1,10 @@
 // TODO: When we have timestamps on mutation notifications, we can reject incoming mutations that are older
 // than the document we are seeing.
 
-import {isEqual} from 'lodash-es'
-
 import {debug} from './debug'
 import {Mutation} from './Mutation'
 import {type Doc} from './types'
+import {isEqual} from 'lodash-es'
 
 /**
  * @internal

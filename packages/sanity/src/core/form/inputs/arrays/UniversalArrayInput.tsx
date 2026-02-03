@@ -1,5 +1,3 @@
-import {useMemo} from 'react'
-
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
@@ -8,6 +6,7 @@ import {
 import {ArrayOfObjectsInput} from './ArrayOfObjectsInput'
 import {ArrayOfOptionsInput} from './ArrayOfOptionsInput'
 import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput'
+import {useMemo} from 'react'
 
 /**
  * Universal array input that will introspect its schemaType and delegate to the right implementation

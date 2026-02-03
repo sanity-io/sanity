@@ -1,3 +1,4 @@
+import {type PaneItemPreviewState} from './types'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
 import {assignWith} from 'lodash-es'
@@ -5,8 +6,6 @@ import {type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import {type DocumentPreviewStore, getDraftId, getPublishedId} from 'sanity'
-
-import {type PaneItemPreviewState} from './types'
 
 export const isLiveEditEnabled = (schemaType: Pick<SchemaType, 'liveEdit'>) =>
   schemaType.liveEdit === true

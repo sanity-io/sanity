@@ -1,6 +1,5 @@
-import {customAlphabet} from 'nanoid'
-
 import {RELEASE_DOCUMENTS_PATH} from '../store/constants'
+import {customAlphabet} from 'nanoid'
 
 /**
  * ~24 years (or 7.54e+8 seconds) needed, in order to have a 1% probability of at least one collision if 10 ID's are generated every hour.

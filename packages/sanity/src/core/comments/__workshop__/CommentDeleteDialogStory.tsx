@@ -1,6 +1,5 @@
-import {useAction, useBoolean} from '@sanity/ui-workshop'
-
 import {CommentDeleteDialog} from '../components'
+import {useAction, useBoolean} from '@sanity/ui-workshop'
 
 export default function CommentDeleteDialogStory() {
   const isParent = useBoolean('Is parent', false, 'Props') || false

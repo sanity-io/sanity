@@ -1,7 +1,6 @@
-import {type Rule, type RuleTypeConstraint, type SchemaType} from '@sanity/types'
-
 import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
+import {type Rule, type RuleTypeConstraint, type SchemaType} from '@sanity/types'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
   array: true,

@@ -1,7 +1,3 @@
-import {isEqual} from 'lodash-es'
-import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {SearchContext} from 'sanity/_singletons'
-
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
@@ -19,6 +15,9 @@ import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {initialSearchState, searchReducer} from './reducer'
+import {isEqual} from 'lodash-es'
+import {type ReactNode, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {SearchContext} from 'sanity/_singletons'
 
 interface SearchProviderProps {
   children?: ReactNode

@@ -1,7 +1,6 @@
-import {type SanityClient} from '@sanity/client'
-
 import {type SourceClientOptions} from '../config'
 import {useSource} from '../studio'
+import {type SanityClient} from '@sanity/client'
 
 /**
  *

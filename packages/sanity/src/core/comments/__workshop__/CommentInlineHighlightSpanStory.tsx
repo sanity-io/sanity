@@ -1,6 +1,5 @@
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
-
 import {CommentInlineHighlightSpan} from '../components'
+import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 
 // [data-inline-comment-state='added'] - The comment has been added
 // [data-inline-comment-state='authoring'] - The comment is being authored

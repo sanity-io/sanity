@@ -1,3 +1,4 @@
+import {isNonNullable} from './isNonNullable'
 import {type StackablePerspective} from '@sanity/client'
 import {
   type DraftId,
@@ -13,8 +14,6 @@ import {
   VERSION_FOLDER,
 } from '@sanity/client/csm'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
-
-import {isNonNullable} from './isNonNullable'
 
 export {
   type DraftId,

@@ -1,7 +1,3 @@
-import {type Path} from '@sanity/types'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {type ReactNode} from 'react'
-
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
@@ -10,6 +6,9 @@ import {useUser} from '../../../store'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {Event} from '../components/Event'
+import {type Path} from '@sanity/types'
+import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {type ReactNode} from 'react'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {

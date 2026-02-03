@@ -1,9 +1,8 @@
-import {isReference, type SanityDocument} from '@sanity/types'
-import {omit} from 'lodash-es'
-
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {operationsApiClient} from '../utils/operationsApiClient'
 import {type OperationImpl} from './index'
+import {isReference, type SanityDocument} from '@sanity/types'
+import {omit} from 'lodash-es'
 
 function strengthenOnPublish<T>(obj: T): T {
   if (isReference(obj)) {

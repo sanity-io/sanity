@@ -1,30 +1,3 @@
-import DOMPurify from 'isomorphic-dompurify'
-import {startCase} from 'lodash-es'
-import {renderToString} from 'react-dom/server'
-import {
-  type ArraySchemaType,
-  type BlockDefinition,
-  type BooleanSchemaType,
-  ConcreteRuleClass,
-  createSchema,
-  type CrossDatasetReferenceSchemaType,
-  type FileSchemaType,
-  type GlobalDocumentReferenceSchemaType,
-  type MultiFieldSet,
-  type NumberSchemaType,
-  type ObjectField,
-  type ObjectSchemaType,
-  type ReferenceSchemaType,
-  type Rule,
-  type RuleSpec,
-  type Schema,
-  type SchemaType,
-  type SchemaValidationValue,
-  type SpanSchemaType,
-  type StringSchemaType,
-  type Workspace,
-} from 'sanity'
-
 import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
   getCustomFields,
@@ -51,6 +24,32 @@ import {
   type ManifestValidationRule,
 } from './manifestTypes'
 import {config} from './purifyConfig'
+import DOMPurify from 'isomorphic-dompurify'
+import {startCase} from 'lodash-es'
+import {renderToString} from 'react-dom/server'
+import {
+  type ArraySchemaType,
+  type BlockDefinition,
+  type BooleanSchemaType,
+  ConcreteRuleClass,
+  createSchema,
+  type CrossDatasetReferenceSchemaType,
+  type FileSchemaType,
+  type GlobalDocumentReferenceSchemaType,
+  type MultiFieldSet,
+  type NumberSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type Rule,
+  type RuleSpec,
+  type Schema,
+  type SchemaType,
+  type SchemaValidationValue,
+  type SpanSchemaType,
+  type StringSchemaType,
+  type Workspace,
+} from 'sanity'
 
 interface Context {
   schema: Schema

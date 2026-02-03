@@ -1,9 +1,8 @@
+import {RouterDebug} from './RouterDebug'
+import {type RouterDebugConfig} from './types'
 import {PinIcon} from '@sanity/icons'
 import {definePlugin} from 'sanity'
 import {route} from 'sanity/router'
-
-import {RouterDebug} from './RouterDebug'
-import {type RouterDebugConfig} from './types'
 
 /**
  * Router playground/debug plugin

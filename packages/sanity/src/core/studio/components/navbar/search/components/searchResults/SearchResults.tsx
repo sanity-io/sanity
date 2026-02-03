@@ -1,8 +1,3 @@
-import {type StackablePerspective} from '@sanity/client'
-import {Card, Flex} from '@sanity/ui'
-import {type MouseEvent, useCallback} from 'react'
-import {styled} from 'styled-components'
-
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
 import {useTranslation} from '../../../../../../i18n'
 import {type WeightedHit} from '../../../../../../search'
@@ -13,6 +8,10 @@ import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
+import {type StackablePerspective} from '@sanity/client'
+import {Card, Flex} from '@sanity/ui'
+import {type MouseEvent, useCallback} from 'react'
+import {styled} from 'styled-components'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4

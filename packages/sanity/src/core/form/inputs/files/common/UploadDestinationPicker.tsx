@@ -1,10 +1,9 @@
+import {Button, Dialog} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {type AssetSource} from '@sanity/types'
 import {Box, Flex, Stack, Text, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback} from 'react'
 import {isValidElementType} from 'react-is'
-
-import {Button, Dialog} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 
 interface UploadDestinationPickerProps {
   assetSources: AssetSource[]

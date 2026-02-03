@@ -1,6 +1,5 @@
-import {Observable, type Subscriber} from 'rxjs'
-
 import {isNonNullable} from '../../util'
+import {Observable, type Subscriber} from 'rxjs'
 
 interface QueueItem {
   args: any[]

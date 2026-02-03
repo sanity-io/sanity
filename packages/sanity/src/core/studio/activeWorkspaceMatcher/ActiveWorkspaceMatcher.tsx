@@ -1,10 +1,9 @@
-import {createBrowserHistory, createMemoryHistory} from 'history'
-import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
-
 import {type RouterHistory} from '../router'
 import {useWorkspaces} from '../workspaces'
 import {ActiveWorkspaceMatcherProvider} from './ActiveWorkspaceMatcherProvider'
 import {useSyncPathnameWithWorkspace} from './useSyncPathnameWithWorkspace'
+import {createBrowserHistory, createMemoryHistory} from 'history'
+import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 /** @internal */
 export interface ActiveWorkspaceMatcherProps {

@@ -1,8 +1,7 @@
-import {ChevronRightIcon} from '@sanity/icons'
-import {Breadcrumbs, Text} from '@sanity/ui'
-
 import {type ChangeTitlePath, type FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
+import {ChevronRightIcon} from '@sanity/icons'
+import {Breadcrumbs, Text} from '@sanity/ui'
 
 /** @internal */
 export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: ChangeTitlePath}) {

@@ -1,10 +1,9 @@
+import {buildVendorDependencies} from '../buildVendorDependencies'
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {type InlineConfig} from 'vite'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-
-import {buildVendorDependencies} from '../buildVendorDependencies'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

@@ -1,8 +1,7 @@
-/* eslint-disable max-nested-callbacks */
-import {expect} from '@playwright/test'
-
 import {createUniqueDocument, withDefaultClient} from '../../helpers'
 import {test} from '../../studio-test'
+/* eslint-disable max-nested-callbacks */
+import {expect} from '@playwright/test'
 
 withDefaultClient((context) => {
   test.describe.skip('sanity/structure: document inspectors', () => {

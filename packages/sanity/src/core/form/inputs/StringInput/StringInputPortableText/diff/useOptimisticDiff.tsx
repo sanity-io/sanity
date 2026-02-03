@@ -1,11 +1,10 @@
+import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
+import {type ComputeDiff} from '../../../../store/types/nodes'
+import {computeStringDiffRangeDecorations} from '../../../common/diff/string/computeStringDiffRangeDecorations'
 import {type RangeDecoration} from '@portabletext/editor'
 import {type Diff} from '@sanity/diff'
 import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-
-import {type ProvenanceDiffAnnotation} from '../../../../store/types/diff'
-import {type ComputeDiff} from '../../../../store/types/nodes'
-import {computeStringDiffRangeDecorations} from '../../../common/diff/string/computeStringDiffRangeDecorations'
 
 type InputOrigin = 'optimistic' | 'definitive'
 

@@ -1,32 +1,3 @@
-import {
-  type EditorChange,
-  type EditorEmittedEvent,
-  EditorProvider,
-  type EditorSelection,
-  type InvalidValue,
-  type Patch,
-  PortableTextEditor,
-  type RangeDecoration,
-  useEditor,
-  usePortableTextEditor,
-} from '@portabletext/editor'
-import {EventListenerPlugin} from '@portabletext/editor/plugins'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, useToast} from '@sanity/ui'
-import {randomKey} from '@sanity/util/content'
-import {
-  forwardRef,
-  type ReactNode,
-  startTransition,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util'
 import {pathToString} from '../../../validation/util/pathToString'
@@ -55,6 +26,34 @@ import {
   usePresenceCursorDecorations,
 } from './presence-cursors'
 import {usePatches} from './usePatches'
+import {
+  type EditorChange,
+  type EditorEmittedEvent,
+  EditorProvider,
+  type EditorSelection,
+  type InvalidValue,
+  type Patch,
+  PortableTextEditor,
+  type RangeDecoration,
+  useEditor,
+  usePortableTextEditor,
+} from '@portabletext/editor'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
+import {Box, useToast} from '@sanity/ui'
+import {randomKey} from '@sanity/util/content'
+import {
+  forwardRef,
+  type ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 function keyGenerator() {
   return randomKey(12)

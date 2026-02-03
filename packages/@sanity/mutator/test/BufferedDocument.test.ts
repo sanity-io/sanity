@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
+import {expect, test} from 'vitest'
 
 test('simple edit cycle', () => {
   new BufferedDocumentTester({

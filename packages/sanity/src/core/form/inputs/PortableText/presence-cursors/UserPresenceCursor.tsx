@@ -1,3 +1,4 @@
+import {useUserColor} from '../../../../user-color/hooks'
 import {type ColorTints} from '@sanity/color'
 import {type User} from '@sanity/types'
 import {Box, Text} from '@sanity/ui'
@@ -8,8 +9,6 @@ import {
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-
-import {useUserColor} from '../../../../user-color/hooks'
 
 const DOT_SIZE = 6
 

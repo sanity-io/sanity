@@ -1,8 +1,3 @@
-import {CalendarIcon} from '@sanity/icons'
-import {isValidationErrorMarker} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
-
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -22,6 +17,10 @@ import {useSingleDocReleaseUpsell} from '../../context/SingleDocReleaseUpsellPro
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {singleDocReleaseNamespace} from '../../i18n'
+import {CalendarIcon} from '@sanity/icons'
+import {isValidationErrorMarker} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */

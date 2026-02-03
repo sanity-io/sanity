@@ -1,6 +1,5 @@
-import {type BlockChildRenderProps, type RenderChildFunction} from '@portabletext/editor'
-
 import {MentionInlineBlock} from '../blocks'
+import {type BlockChildRenderProps, type RenderChildFunction} from '@portabletext/editor'
 
 export const renderChild: RenderChildFunction = (childProps: BlockChildRenderProps) => {
   const {children, value, selected} = childProps

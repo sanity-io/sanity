@@ -1,12 +1,11 @@
+import {type ProblemPath, type ProblemPathPropertySegment, type TypeWithProblems} from './typedefs'
+import {error} from './validation/createValidationResult'
 import {
   type SchemaType,
   type SchemaTypeDefinition,
   type SchemaValidationProblemGroup,
 } from '@sanity/types'
 import {flatten, get} from 'lodash-es'
-
-import {type ProblemPath, type ProblemPathPropertySegment, type TypeWithProblems} from './typedefs'
-import {error} from './validation/createValidationResult'
 
 /**
  * @internal

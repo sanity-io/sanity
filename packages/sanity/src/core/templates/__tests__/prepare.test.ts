@@ -1,7 +1,6 @@
-import {describe, expect, test} from 'vitest'
-
 import {defaultTemplatesForSchema, prepareTemplates} from '../'
 import {schema} from './schema'
+import {describe, expect, test} from 'vitest'
 
 describe('getTemplates', () => {
   test('returns defaults if part is not implemented', () => {

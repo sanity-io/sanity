@@ -1,11 +1,3 @@
-import {type SanityProject, type SanityProjectMember} from '@sanity/client'
-import {omit, pick} from 'lodash-es'
-import os from 'node:os'
-import path from 'node:path'
-import util from 'node:util'
-import promiseProps from 'promise-props-recursive'
-import xdgBasedir from 'xdg-basedir'
-
 import {
   findSanityModuleVersions,
   type ModuleVersionResult,
@@ -19,6 +11,13 @@ import {
 import {getCliToken} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {printResult as printVersionsResult} from '../versions/printVersionResult'
+import {type SanityProject, type SanityProjectMember} from '@sanity/client'
+import {omit, pick} from 'lodash-es'
+import os from 'node:os'
+import path from 'node:path'
+import util from 'node:util'
+import promiseProps from 'promise-props-recursive'
+import xdgBasedir from 'xdg-basedir'
 
 export const printDebugInfo: CliCommandAction = async (args, context) => {
   const flags = args.extOptions

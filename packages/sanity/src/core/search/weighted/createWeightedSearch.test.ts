@@ -1,11 +1,10 @@
+import {useClient} from '../../hooks'
+import {getSearchableTypes, type SearchTerms} from '../common'
+import {createWeightedSearch} from './createWeightedSearch'
 import {Schema} from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
-
-import {useClient} from '../../hooks'
-import {getSearchableTypes, type SearchTerms} from '../common'
-import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
 vi.mock('../../hooks', () => ({

@@ -1,6 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-
 import {checkStudioManifestExists} from './checkStudioManifestExists'
+import {type SanityClient} from '@sanity/client'
 
 export interface StudioAppResponse {
   id: string

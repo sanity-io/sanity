@@ -1,10 +1,9 @@
-import {type BadgeTone} from '@sanity/ui'
-
 import {type TargetPerspective} from '../../perspective/types'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {isReleaseDocument} from '../store/types'
 import {RELEASE_TYPES_TONES} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
+import {type BadgeTone} from '@sanity/ui'
 
 /** @internal */
 export function getReleaseTone(release: TargetPerspective): BadgeTone {

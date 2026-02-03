@@ -1,7 +1,6 @@
-import {pick} from 'lodash-es'
-
 import {warnIfPreviewHasFields, warnIfPreviewOnOptions} from './deprecationUtils'
 import guessPreviewConfig from './guessPreviewConfig'
+import {pick} from 'lodash-es'
 
 function parseSelection(selection: any) {
   return selection.reduce((acc: any, field: any) => {

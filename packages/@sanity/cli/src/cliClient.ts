@@ -1,7 +1,6 @@
-import {type ClientConfig, createClient, type SanityClient} from '@sanity/client'
-
 import {getSanityCliConfig} from './util/getCliConfig'
 import {resolveRootDir} from './util/resolveRootDir'
+import {type ClientConfig, createClient, type SanityClient} from '@sanity/client'
 
 /**
  * `getCliClient` accepts all options the `ClientConfig` does but provides

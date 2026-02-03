@@ -11,7 +11,6 @@ import type {
   getStudioEnvironmentVariables,
   StudioEnvVariablesOptions,
 } from 'sanity/cli'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/cli', () => {

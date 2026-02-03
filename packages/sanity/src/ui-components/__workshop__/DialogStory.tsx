@@ -1,8 +1,7 @@
-import {Box, Card, Container, Stack, Text} from '@sanity/ui'
-import {useState} from 'react'
-
 import {Button} from '../button'
 import {Dialog} from '../dialog'
+import {Box, Card, Container, Stack, Text} from '@sanity/ui'
+import {useState} from 'react'
 
 export default function DialogStory() {
   const [dialogDefaultOpen, setDialogDefaultOpen] = useState(false)

@@ -1,3 +1,13 @@
+import {type DocumentFieldAction} from '../../config'
+import {type FormNodePresence} from '../../presence'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
+} from './inputProps'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -15,17 +25,6 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type ReactNode} from 'react'
-
-import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
-import {
-  type ArrayOfObjectsInputProps,
-  type ArrayOfPrimitivesInputProps,
-  type BooleanInputProps,
-  type NumberInputProps,
-  type ObjectInputProps,
-  type StringInputProps,
-} from './inputProps'
 
 /** @internal @deprecated DO NOT USE */
 export interface FieldCommentsProps {

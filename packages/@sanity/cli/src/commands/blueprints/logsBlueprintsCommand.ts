@@ -1,8 +1,7 @@
-import {BlueprintsLogsCommand} from '@sanity/runtime-cli'
-import {logger} from '@sanity/runtime-cli/utils'
-
 import {type CliCommandDefinition} from '../../types'
 import {transformHelpText} from '../../util/runtimeCommandHelp'
+import {BlueprintsLogsCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
 
 export interface BlueprintsLogsFlags {
   watch?: boolean

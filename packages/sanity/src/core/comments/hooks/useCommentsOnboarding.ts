@@ -1,7 +1,6 @@
+import {type CommentsOnboardingContextValue} from '../context/onboarding/types'
 import {useContext} from 'react'
 import {CommentsOnboardingContext} from 'sanity/_singletons'
-
-import {type CommentsOnboardingContextValue} from '../context/onboarding/types'
 
 export function useCommentsOnboarding(): CommentsOnboardingContextValue {
   const ctx = useContext(CommentsOnboardingContext)

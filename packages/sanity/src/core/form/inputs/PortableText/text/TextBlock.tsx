@@ -1,9 +1,3 @@
-import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
-import {isEqual} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-
 import {Tooltip} from '../../../../../ui-components'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
@@ -42,6 +36,11 @@ import {
   TooltipBox,
 } from './TextBlock.styles'
 import {TextContainer} from './textStyles'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
+import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
 export interface TextBlockProps {
   children: ReactNode

@@ -1,8 +1,7 @@
+import {makeMediaLibraryRef, type MediaLibraryRef} from './refs'
 import {type SanityClient} from '@sanity/client'
 import DataLoader from 'dataloader'
 import QuickLRU from 'quick-lru'
-
-import {makeMediaLibraryRef, type MediaLibraryRef} from './refs'
 
 type AccessPolicyResult = 'public' | 'private' | undefined
 

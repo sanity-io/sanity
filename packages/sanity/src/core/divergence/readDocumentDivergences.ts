@@ -1,3 +1,11 @@
+import {isRecord} from '../util/isRecord'
+import {selectEffect} from './selectEffect'
+import {selectEffectFromHash} from './selectEffectFromHash'
+import {type ResolutionMarker} from './types/ResolutionMarker'
+import {delayTask} from './utils/delayTask'
+import {findMovesInArrayOfObjects} from './utils/findMovesInArrayOfObjects'
+import {type FlattenedPair, flattenObject, type PathWithTypes} from './utils/flatten'
+import {hashData} from './utils/hashData'
 import {isKeyedObject, type KeyedObject, type Path, type SanityDocument} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
 import {get} from 'lodash-es'
@@ -21,15 +29,6 @@ import {
   toArray,
   zipWith,
 } from 'rxjs'
-
-import {isRecord} from '../util/isRecord'
-import {selectEffect} from './selectEffect'
-import {selectEffectFromHash} from './selectEffectFromHash'
-import {type ResolutionMarker} from './types/ResolutionMarker'
-import {delayTask} from './utils/delayTask'
-import {findMovesInArrayOfObjects} from './utils/findMovesInArrayOfObjects'
-import {type FlattenedPair, flattenObject, type PathWithTypes} from './utils/flatten'
-import {hashData} from './utils/hashData'
 
 /**
  * @internal

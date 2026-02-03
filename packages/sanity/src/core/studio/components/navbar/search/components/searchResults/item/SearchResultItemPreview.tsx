@@ -1,9 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-import {Badge, Box, Flex} from '@sanity/ui'
-import {useMemo} from 'react'
-import {useObservable} from 'react-rx'
-import {styled} from 'styled-components'
-
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
@@ -16,6 +10,11 @@ import {
 } from '../../../../../../../preview'
 import {useDocumentVersionInfo} from '../../../../../../../releases'
 import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {type SchemaType} from '@sanity/types'
+import {Badge, Box, Flex} from '@sanity/ui'
+import {useMemo} from 'react'
+import {useObservable} from 'react-rx'
+import {styled} from 'styled-components'
 
 interface SearchResultItemPreviewProps {
   documentId: string

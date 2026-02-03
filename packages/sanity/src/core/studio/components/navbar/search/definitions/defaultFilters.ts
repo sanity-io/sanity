@@ -1,3 +1,4 @@
+import {defineSearchFilter, type SearchFilterDefinition} from './filters'
 import {
   BlockContentIcon,
   CalendarIcon,
@@ -10,8 +11,6 @@ import {
   StringIcon,
   UlistIcon,
 } from '@sanity/icons'
-
-import {defineSearchFilter, type SearchFilterDefinition} from './filters'
 
 export const filterDefinitions: SearchFilterDefinition[] = [
   // 'Pinned' filters

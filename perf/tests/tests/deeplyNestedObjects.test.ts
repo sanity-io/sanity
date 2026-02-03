@@ -1,8 +1,7 @@
-import {type Page} from '@playwright/test'
-import {uuid} from '@sanity/uuid'
-
 import {type PerformanceTestContext, type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
+import {type Page} from '@playwright/test'
+import {uuid} from '@sanity/uuid'
 
 export default {
   id: KNOWN_TEST_IDS['deeply-nested-objects-test'],

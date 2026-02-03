@@ -1,10 +1,9 @@
-import {useRootTheme} from '@sanity/ui'
-import debugit from 'debug'
-import {useEffect} from 'react'
-
 import {useLiveUserApplication} from '../liveUserApplication/useLiveUserApplication'
 import {useWorkspaces} from '../workspaces'
 import {registerStudioManifest} from './registerLiveStudioManifest'
+import {useRootTheme} from '@sanity/ui'
+import debugit from 'debug'
+import {useEffect} from 'react'
 
 const debug = debugit('sanity:manifest')
 

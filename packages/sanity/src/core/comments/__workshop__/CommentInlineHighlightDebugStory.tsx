@@ -1,3 +1,10 @@
+import {useCurrentUser} from '../../store'
+import {type CommentDocument} from '../types'
+import {
+  buildCommentRangeDecorations,
+  buildCommentThreadItems,
+  buildTextSelectionFromFragment,
+} from '../utils'
 /* eslint-disable max-nested-callbacks */
 import {
   type EditorEmittedEvent,
@@ -25,14 +32,6 @@ import {
   useRef,
   useState,
 } from 'react'
-
-import {useCurrentUser} from '../../store'
-import {type CommentDocument} from '../types'
-import {
-  buildCommentRangeDecorations,
-  buildCommentThreadItems,
-  buildTextSelectionFromFragment,
-} from '../utils'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 

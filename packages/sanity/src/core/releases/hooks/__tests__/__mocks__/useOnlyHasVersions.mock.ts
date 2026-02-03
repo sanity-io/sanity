@@ -1,6 +1,5 @@
-import {type Mock, type Mocked} from 'vitest'
-
 import {useOnlyHasVersions, type useOnlyHasVersionsState} from '../../useOnlyHasVersions'
+import {type Mock, type Mocked} from 'vitest'
 
 export const useOnlyHasVersionsReturn: Mocked<useOnlyHasVersionsState> = {
   onlyHasVersions: false,

@@ -1,7 +1,6 @@
+import {useTranslation} from '../../../../../../../../../../i18n'
 import {Flex, Stack, Switch, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-
-import {useTranslation} from '../../../../../../../../../../i18n'
 
 interface DateIncludeTimeFooterProps {
   onChange: () => void

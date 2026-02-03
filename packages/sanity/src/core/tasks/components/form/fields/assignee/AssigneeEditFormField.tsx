@@ -1,3 +1,10 @@
+import {Tooltip} from '../../../../../../ui-components'
+import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
+import {useTranslation} from '../../../../../i18n'
+import {useMentionUser} from '../../../../context'
+import {tasksLocaleNamespace} from '../../../../i18n'
+import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 import {type Path} from '@sanity/types'
 import {
   Badge,
@@ -10,14 +17,6 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
-
-import {Tooltip} from '../../../../../../ui-components'
-import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
-import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
-import {tasksLocaleNamespace} from '../../../../i18n'
-import {TasksUserAvatar} from '../../../TasksUserAvatar'
-import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 
 const StyledButton = styled(Button)`
   padding: 3px 6px;

@@ -1,3 +1,6 @@
+import {sanitizeFieldValue} from '../utils/sanitizeField'
+import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {getSupportedFieldTypes, type SearchFilterDefinition} from './filters'
 import {
   type ArrayDefinition,
   type ObjectDefinition,
@@ -6,10 +9,6 @@ import {
   type StringDefinition,
 } from '@sanity/types'
 import {startCase} from 'lodash-es'
-
-import {sanitizeFieldValue} from '../utils/sanitizeField'
-import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {getSupportedFieldTypes, type SearchFilterDefinition} from './filters'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
 

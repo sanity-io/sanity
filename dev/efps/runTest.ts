@@ -1,9 +1,8 @@
+import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 import {type SanityClient} from '@sanity/client'
 import fs from 'node:fs'
 import path from 'node:path'
 import {type Browser, chromium} from 'playwright'
-
-import {type EfpsResult, type EfpsTest, type EfpsTestRunnerContext} from './types'
 
 interface RunTestOptions {
   /** Optional browser instance to reuse. If not provided, a new browser will be launched. */

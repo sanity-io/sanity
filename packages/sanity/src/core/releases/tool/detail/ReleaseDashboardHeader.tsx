@@ -1,3 +1,7 @@
+import {useTranslation} from '../../../i18n'
+import {releasesLocaleNamespace} from '../../i18n'
+import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
+import {type ReleaseInspector} from './ReleaseDetail'
 import {type ReleaseDocument} from '@sanity/client'
 import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
 import {
@@ -10,11 +14,6 @@ import {
 } from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-
-import {useTranslation} from '../../../i18n'
-import {releasesLocaleNamespace} from '../../i18n'
-import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
-import {type ReleaseInspector} from './ReleaseDetail'
 
 export function ReleaseDashboardHeader(props: {
   inspector: ReleaseInspector | undefined

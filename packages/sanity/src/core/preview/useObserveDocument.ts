@@ -1,10 +1,9 @@
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
+import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
-
-import {useDocumentPreviewStore} from '../store/_legacy/datastores'
-import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 
 const INITIAL_STATE = {loading: true, document: null}
 

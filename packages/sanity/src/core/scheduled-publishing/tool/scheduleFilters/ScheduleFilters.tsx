@@ -1,8 +1,3 @@
-import {CheckmarkIcon, CloseIcon, SelectIcon} from '@sanity/icons'
-import {Box, Flex, Menu} from '@sanity/ui'
-import {format} from 'date-fns'
-import {useRouter} from 'sanity/router'
-
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -10,6 +5,10 @@ import {SCHEDULE_FILTERS, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
 import {useSchedules} from '../contexts/schedules'
 import ScheduleFilter from './ScheduleFilter'
+import {CheckmarkIcon, CloseIcon, SelectIcon} from '@sanity/icons'
+import {Box, Flex, Menu} from '@sanity/ui'
+import {format} from 'date-fns'
+import {useRouter} from 'sanity/router'
 
 export interface ScheduleFiltersProps {
   onClearDate: () => void

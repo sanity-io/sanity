@@ -1,8 +1,3 @@
-import {type Path} from '@sanity/types'
-import {orderBy} from 'lodash-es'
-import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {CommentsContext} from 'sanity/_singletons'
-
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
 import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store'
@@ -23,6 +18,10 @@ import {
 } from '../../types'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {type CommentsContextValue} from './types'
+import {type Path} from '@sanity/types'
+import {orderBy} from 'lodash-es'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {CommentsContext} from 'sanity/_singletons'
 
 const EMPTY_ARRAY: [] = []
 

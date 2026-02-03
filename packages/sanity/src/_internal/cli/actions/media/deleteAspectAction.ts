@@ -1,9 +1,8 @@
+import {MINIMUM_API_VERSION} from './constants'
+import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
 import {type CliCommandAction} from '@sanity/cli'
 import {MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME} from '@sanity/types'
 import {tap} from 'rxjs'
-
-import {MINIMUM_API_VERSION} from './constants'
-import {determineTargetMediaLibrary} from './lib/determineTargetMediaLibrary'
 
 interface DeleteAspectFlags {
   'media-library-id'?: string

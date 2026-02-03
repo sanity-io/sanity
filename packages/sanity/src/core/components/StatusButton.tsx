@@ -1,7 +1,6 @@
+import {Button, type ButtonProps} from '../../ui-components'
 import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-
-import {Button, type ButtonProps} from '../../ui-components'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {

@@ -1,9 +1,8 @@
+import {MenuItem} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
 import {CopyIcon, DownloadIcon, LaunchIcon, ResetIcon} from '@sanity/icons'
 import {MenuDivider, useToast} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
-
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 
 interface Props {
   browse: ReactNode

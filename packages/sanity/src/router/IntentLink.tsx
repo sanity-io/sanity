@@ -1,7 +1,6 @@
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
-
 import {type IntentParameters, type SearchParam} from './types'
 import {useIntentLink} from './useIntentLink'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /**
  * Props for the {@link IntentLink} component.

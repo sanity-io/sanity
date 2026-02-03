@@ -1,7 +1,3 @@
-import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
-import {forwardRef, memo, useMemo, useState} from 'react'
-
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {type CommentsSelectedPath} from '../../context'
 import {applyCommentsGroupAttr} from '../../hooks'
@@ -16,6 +12,9 @@ import {
 import {CommentsListItem} from './CommentsListItem'
 import {CommentsListStatus} from './CommentsListStatus'
 import {CommentThreadLayout} from './CommentThreadLayout'
+import {type CurrentUser} from '@sanity/types'
+import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
+import {forwardRef, memo, useMemo, useState} from 'react'
 
 interface GroupedComments {
   [field: string]: CommentThreadItem[]

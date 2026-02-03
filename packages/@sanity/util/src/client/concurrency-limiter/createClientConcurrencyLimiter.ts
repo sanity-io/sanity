@@ -1,7 +1,6 @@
+import {ConcurrencyLimiter} from '../../concurrency-limiter'
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
 import {finalize, from, switchMap} from 'rxjs'
-
-import {ConcurrencyLimiter} from '../../concurrency-limiter'
 
 /**
  * Decorates a sanity client to limit the concurrency of `client.fetch`

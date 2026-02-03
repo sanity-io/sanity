@@ -1,9 +1,8 @@
 // oxlint-disable-next-line no-unassigned-import
 import './App.css'
+import {ExampleComponent} from './ExampleComponent'
 import {type SanityConfig} from '@sanity/sdk'
 import {SanityApp} from '@sanity/sdk-react'
-
-import {ExampleComponent} from './ExampleComponent'
 
 const sanityConfigs: SanityConfig[] = [
   {

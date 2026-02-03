@@ -1,11 +1,10 @@
-import {render, screen, waitFor} from '@testing-library/react'
-import {type ComponentProps} from 'react'
-import {describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {activeASAPRelease, activeScheduledRelease} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../ReleaseDocumentPreview'
+import {render, screen, waitFor} from '@testing-library/react'
+import {type ComponentProps} from 'react'
+import {describe, expect, it, vi} from 'vitest'
 
 interface DocumentPresenceData {
   user: string

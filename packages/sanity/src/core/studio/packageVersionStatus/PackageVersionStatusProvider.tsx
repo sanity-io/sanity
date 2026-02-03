@@ -1,8 +1,3 @@
-import {memoize} from 'lodash-es'
-import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {PackageVersionInfoContext} from 'sanity/_singletons'
-import semver from 'semver'
-
 import {getSanityImportMapUrl} from '../../environment/importMap'
 import {SANITY_VERSION} from '../../version'
 import {
@@ -10,6 +5,10 @@ import {
   fetchLatestAvailableVersionForPackage,
 } from './fetchLatestVersions'
 import {parseImportMapModuleCdnUrl} from './utils'
+import {memoize} from 'lodash-es'
+import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {PackageVersionInfoContext} from 'sanity/_singletons'
+import semver from 'semver'
 
 // How often to check for new versions
 const POLL_INTERVAL_MS = 1000 * 60 * 15 // check every 15 minutes

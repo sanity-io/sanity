@@ -1,10 +1,9 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {useMemo} from 'react'
-
 import {usePerspective} from '../../perspective/usePerspective'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
+import {type ReleaseDocument} from '@sanity/client'
+import {useMemo} from 'react'
 
 /**
  * Hook to check if the current perspective is viewing a paused scheduled draft.

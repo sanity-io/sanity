@@ -1,3 +1,11 @@
+import {
+  isVideoSchemaType,
+  type VideoSchemaType,
+} from '../../../../../media-library/plugin/schemas/types'
+import {useClient} from '../../../../hooks'
+import {DEFAULT_API_VERSION} from '../constants'
+import {type AssetSelectionItem} from '../types'
+import {useMediaLibraryIds} from './useMediaLibraryIds'
 import {type SanityClient} from '@sanity/client'
 import {
   type AssetFromSource,
@@ -20,15 +28,6 @@ import {
   timer,
   toArray,
 } from 'rxjs'
-
-import {
-  isVideoSchemaType,
-  type VideoSchemaType,
-} from '../../../../../media-library/plugin/schemas/types'
-import {useClient} from '../../../../hooks'
-import {DEFAULT_API_VERSION} from '../constants'
-import {type AssetSelectionItem} from '../types'
-import {useMediaLibraryIds} from './useMediaLibraryIds'
 
 export function useLinkAssets({
   schemaType,

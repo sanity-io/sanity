@@ -1,6 +1,5 @@
-import {type SchemaType} from '@sanity/types'
-
 import {type TFunction} from '../../../../../i18n'
+import {type SchemaType} from '@sanity/types'
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 

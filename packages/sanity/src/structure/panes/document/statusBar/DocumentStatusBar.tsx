@@ -1,15 +1,3 @@
-import {Card, Flex} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {type Ref, useCallback, useMemo, useState} from 'react'
-import {
-  type CreateLinkMetadata,
-  isPublishedPerspective,
-  isReleaseDocument,
-  isSanityCreateLinked,
-  usePerspective,
-  useSanityCreateConfig,
-} from 'sanity'
-
 import {usePaneRouter} from '../../../components'
 import {SpacerButton} from '../../../components/spacerButton'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -21,6 +9,17 @@ import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatu
 import {DocumentStatusLine} from './DocumentStatusLine'
 import {RevisionStatusLine} from './RevisionStatusLine'
 import {useResizeObserver} from './useResizeObserver'
+import {Card, Flex} from '@sanity/ui'
+import {motion} from 'motion/react'
+import {type Ref, useCallback, useMemo, useState} from 'react'
+import {
+  type CreateLinkMetadata,
+  isPublishedPerspective,
+  isReleaseDocument,
+  isSanityCreateLinked,
+  usePerspective,
+  useSanityCreateConfig,
+} from 'sanity'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: Ref<HTMLDivElement>

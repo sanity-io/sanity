@@ -1,17 +1,3 @@
-import {
-  type BlockAnnotationRenderProps,
-  type BlockChildRenderProps as EditorChildRenderProps,
-  type BlockRenderProps as EditorBlockRenderProps,
-  type EditorSelection,
-  type HotkeyOptions,
-  type OnCopyFn,
-  type OnPasteFn,
-  type RangeDecoration,
-} from '@portabletext/editor'
-import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
-import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
-
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
@@ -31,6 +17,19 @@ import {CombinedAnnotationPopover} from './object/CombinedAnnotationPopover'
 import {InlineObject} from './object/InlineObject'
 import {AnnotationObjectEditModal} from './object/modals/AnnotationObjectEditModal'
 import {TextBlock} from './text'
+import {
+  type BlockAnnotationRenderProps,
+  type BlockChildRenderProps as EditorChildRenderProps,
+  type BlockRenderProps as EditorBlockRenderProps,
+  type EditorSelection,
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
+  type RangeDecoration,
+} from '@portabletext/editor'
+import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
+import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>

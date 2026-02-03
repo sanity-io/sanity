@@ -1,13 +1,3 @@
-import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {
-  type ObjectSchemaType,
-  type Path,
-  type PortableTextBlock,
-  type PortableTextChild,
-} from '@sanity/types'
-import {isEqual} from '@sanity/util/paths'
-import {useCallback, useMemo, useState} from 'react'
-
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths'
 import {useTranslation} from '../../../../i18n'
@@ -32,6 +22,15 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+} from '@sanity/types'
+import {isEqual} from '@sanity/util/paths'
+import {useCallback, useMemo, useState} from 'react'
 
 interface InlineObjectProps {
   floatingBoundary: HTMLElement | null

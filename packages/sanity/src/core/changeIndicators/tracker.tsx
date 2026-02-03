@@ -1,9 +1,3 @@
-import {memo, useContext} from 'react'
-import {
-  ChangeIndicatorTrackerContextGetSnapshot,
-  ChangeIndicatorTrackerContextStore,
-} from 'sanity/_singletons'
-
 import {
   type Reported,
   type ReporterHook,
@@ -12,6 +6,11 @@ import {
   useTrackerStoreReporter,
 } from '../components/react-track-elements'
 import {type ChangeIndicatorTrackerContextValue} from './types'
+import {memo, useContext} from 'react'
+import {
+  ChangeIndicatorTrackerContextGetSnapshot,
+  ChangeIndicatorTrackerContextStore,
+} from 'sanity/_singletons'
 
 export * from './types'
 

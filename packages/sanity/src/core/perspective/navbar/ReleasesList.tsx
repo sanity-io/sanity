@@ -1,8 +1,3 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type JSX, type RefObject, useMemo} from 'react'
-import {css, styled} from 'styled-components'
-
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
@@ -19,6 +14,10 @@ import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
+import {type JSX, type RefObject, useMemo} from 'react'
+import {css, styled} from 'styled-components'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
@@ -27,18 +26,19 @@ const StyledBox = styled(Box)`
   max-height: 75vh;
 `
 
-const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(
-  ({$reducePadding, $removePadding}) => {
-    const padding = $reducePadding ? '4px' : '16px'
-    return css`
+const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(({
+  $reducePadding,
+  $removePadding,
+}) => {
+  const padding = $reducePadding ? '4px' : '16px'
+  return css`
     position: sticky;
     top: 0;
     background-color: var(--card-bg-color);
     z-index: 10;
     padding-bottom: ${$removePadding ? '0px' : padding};
   `
-  },
-)
+})
 
 export function ReleasesList({
   areReleasesEnabled,

@@ -1,10 +1,9 @@
-import {type SanityDocument} from '@sanity/client/csm'
-import {lastValueFrom, map, type OperatorFunction, pipe, toArray} from 'rxjs'
-import {expect, it} from 'vitest'
-
 import {type DivergenceAtPath, readDocumentDivergences} from './readDocumentDivergences'
 import {hashData} from './utils/hashData'
 import {keyArray} from './utils/keyArray'
+import {type SanityDocument} from '@sanity/client/csm'
+import {lastValueFrom, map, type OperatorFunction, pipe, toArray} from 'rxjs'
+import {expect, it} from 'vitest'
 
 it('emits nothing if the required snapshots are missing', async () => {
   expect.assertions(1)

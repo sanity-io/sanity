@@ -1,8 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type Schema} from '@sanity/types'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
-
 import {getVersionFromId} from '../../../../util'
 import {createSWR} from '../../../../util/rxSwr'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -11,6 +6,10 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {snapshotPair} from './snapshotPair'
 import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type Schema} from '@sanity/types'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
 interface TransactionSyncLockState {
   enabled: boolean

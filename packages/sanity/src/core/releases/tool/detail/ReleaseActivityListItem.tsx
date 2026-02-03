@@ -1,8 +1,3 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {memo, type ReactNode, useMemo} from 'react'
-import {styled} from 'styled-components'
-
 import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -19,6 +14,10 @@ import {
   isScheduleReleaseEvent,
   type ReleaseEvent,
 } from './events/types'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {motion} from 'motion/react'
+import {memo, type ReactNode, useMemo} from 'react'
+import {styled} from 'styled-components'
 
 const StatusText = styled(Text)`
   strong {

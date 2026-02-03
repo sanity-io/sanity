@@ -1,6 +1,5 @@
-import {test} from 'node:test'
-
 import getExports from './exports.cjs'
+import {test} from 'node:test'
 
 const workspaces = getExports('import')
 

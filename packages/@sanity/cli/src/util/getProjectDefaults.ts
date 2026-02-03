@@ -1,11 +1,10 @@
+import {type CliCommandContext} from '../types'
+import {getCliToken} from './clientWrapper'
 import getGitConfig from '@rexxars/gitconfiglocal'
 import {getGitUserInfo} from 'git-user-info'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import promiseProps from 'promise-props-recursive'
-
-import {type CliCommandContext} from '../types'
-import {getCliToken} from './clientWrapper'
 
 export interface ProjectDefaults {
   license: string

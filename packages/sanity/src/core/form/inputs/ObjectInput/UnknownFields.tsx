@@ -1,13 +1,12 @@
-import {TrashIcon} from '@sanity/icons'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
-
 import {Button} from '../../../../ui-components'
 import {isDev} from '../../../environment'
 import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {type FormPatch, type PatchEvent, unset} from '../../patch'
+import {TrashIcon} from '@sanity/icons'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import {useCallback} from 'react'
 
 type Props = {
   fieldNames: string[]

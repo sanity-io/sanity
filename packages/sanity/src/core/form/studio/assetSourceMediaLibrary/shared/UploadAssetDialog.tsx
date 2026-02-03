@@ -1,12 +1,3 @@
-import {
-  type AssetFromSource,
-  type AssetSourceUploader,
-  type FileSchemaType,
-  type ImageSchemaType,
-} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-
 import {useTranslation} from '../../../../i18n'
 import {useAuthType} from '../hooks/useAuthType'
 import {useLinkAssets} from '../hooks/useLinkAssets'
@@ -15,6 +6,14 @@ import {usePluginPostMessage} from '../hooks/usePluginPostMessage'
 import {useSanityMediaLibraryConfig} from '../hooks/useSanityMediaLibraryConfig'
 import {type AssetSelectionItem, type PluginPostMessage} from '../types'
 import {Iframe} from './Iframe'
+import {
+  type AssetFromSource,
+  type AssetSourceUploader,
+  type FileSchemaType,
+  type ImageSchemaType,
+} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 
 export interface UploadAssetsDialogHandle {
   upload: (files: File[]) => Promise<void>

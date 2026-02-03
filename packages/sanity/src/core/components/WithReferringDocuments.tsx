@@ -1,7 +1,6 @@
-import {type SanityDocument} from '@sanity/types'
-
 import {useReferringDocuments} from '../hooks/useReferringDocuments'
 import {type DocumentStore} from '../store'
+import {type SanityDocument} from '@sanity/types'
 
 const EMPTY: never[] = []
 

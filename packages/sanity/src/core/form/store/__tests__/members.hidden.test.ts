@@ -1,13 +1,12 @@
-import {Schema} from '@sanity/schema'
-import {type ConditionalProperty, type ObjectSchemaType} from '@sanity/types'
-import {beforeEach, expect, test} from 'vitest'
-
 import {
   createCallbackResolver,
   type RootCallbackResolver,
 } from '../conditional-property/createCallbackResolver'
 import {createPrepareFormState, type PrepareFormState} from '../formState'
 import {DEFAULT_PROPS, MOCK_USER} from './shared'
+import {Schema} from '@sanity/schema'
+import {type ConditionalProperty, type ObjectSchemaType} from '@sanity/types'
+import {beforeEach, expect, test} from 'vitest'
 
 function getBookType(properties: {
   root?: {hidden?: ConditionalProperty; readOnly?: ConditionalProperty}

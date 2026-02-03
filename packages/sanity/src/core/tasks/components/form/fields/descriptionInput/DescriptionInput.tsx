@@ -1,9 +1,3 @@
-import {type PortableTextBlock} from '@sanity/types'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {startTransition, useCallback, useEffect, useState} from 'react'
-import {css, styled} from 'styled-components'
-
 import {CommentInput} from '../../../../../comments'
 import {type ArrayFieldProps, set} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n'
@@ -12,6 +6,11 @@ import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type FormMode} from '../../../../types'
 import {renderBlock} from './render'
+import {type PortableTextBlock} from '@sanity/types'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {startTransition, useCallback, useEffect, useState} from 'react'
+import {css, styled} from 'styled-components'
 
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)

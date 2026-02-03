@@ -1,8 +1,7 @@
-import {expect, test} from 'vitest'
-
 import {_resolvePathFromState} from '../_resolvePathFromState'
 import {route} from '../route'
 import {type Router} from '../types'
+import {expect, test} from 'vitest'
 
 test('resolves empty state to fixed base path', () => {
   const rootRoute: Router = route.create('/root', [

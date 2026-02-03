@@ -1,12 +1,3 @@
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {minutesToMilliseconds} from 'date-fns'
-import {createHash} from 'node:crypto'
-import {mkdir, writeFile} from 'node:fs/promises'
-import {dirname, join, resolve} from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {Worker} from 'node:worker_threads'
-import readPkgUp from 'read-pkg-up'
-
 import {
   type CreateManifest,
   type CreateWorkspaceManifest,
@@ -15,6 +6,14 @@ import {
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {minutesToMilliseconds} from 'date-fns'
+import {createHash} from 'node:crypto'
+import {mkdir, writeFile} from 'node:fs/promises'
+import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {Worker} from 'node:worker_threads'
+import readPkgUp from 'read-pkg-up'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

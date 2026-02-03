@@ -1,7 +1,6 @@
-import {startCase} from 'lodash-es'
-
 import * as types from './types'
 import {lazyGetter} from './types/utils'
+import {startCase} from 'lodash-es'
 
 interface ExtendHelper {
   /** Creates a new type based on the definition. */

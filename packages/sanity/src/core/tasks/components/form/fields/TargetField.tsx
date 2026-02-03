@@ -1,11 +1,3 @@
-import {CloseIcon, DocumentIcon} from '@sanity/icons'
-import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
-import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
-import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
-
 import {Button} from '../../../../../ui-components'
 import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
 import {useSchema} from '../../../../hooks'
@@ -23,6 +15,13 @@ import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {getTargetValue} from '../utils'
 import {FieldWrapperRoot} from './FieldWrapper'
+import {CloseIcon, DocumentIcon} from '@sanity/icons'
+import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
+import {IntentLink} from 'sanity/router'
+import {css, styled} from 'styled-components'
 
 const EmptyReferenceRoot = styled(Card)((props) => {
   const theme = getTheme_v2(props.theme)

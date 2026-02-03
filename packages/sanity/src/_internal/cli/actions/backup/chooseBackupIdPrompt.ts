@@ -1,7 +1,6 @@
-import {type CliCommandContext} from '@sanity/cli'
-
 import {defaultApiVersion} from '../../commands/backup/backupGroup'
 import resolveApiClient from './resolveApiClient'
+import {type CliCommandContext} from '@sanity/cli'
 
 // maxBackupIdsShown is the maximum number of backup IDs to show in the prompt.
 // Higher numbers will cause the prompt to be slow.

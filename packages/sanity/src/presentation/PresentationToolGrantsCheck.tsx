@@ -1,12 +1,11 @@
-import {useSelector} from '@xstate/react'
-import {type Tool} from 'sanity'
-
 import {PresentationSpinner} from './PresentationSpinner'
 import PresentationTool from './PresentationTool'
 import {type PresentationPluginOptions} from './types'
 import {usePreviewUrlActorRef} from './usePreviewUrlActorRef'
 import {useReportInvalidPreviewSearchParam} from './useReportInvalidPreviewSearchParam'
 import {useVercelBypassSecret} from './useVercelBypassSecret'
+import {useSelector} from '@xstate/react'
+import {type Tool} from 'sanity'
 
 export default function PresentationToolGrantsCheck({
   tool,

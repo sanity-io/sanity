@@ -1,8 +1,3 @@
-import {Flex} from '@sanity/ui'
-import {uniqBy} from 'lodash-es'
-import {memo, useCallback, useMemo} from 'react'
-import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
-
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {
   type PaneMenuItem,
@@ -12,6 +7,10 @@ import {
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
 import {PaneHeaderActionButton} from '../pane/PaneHeaderActionButton'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
+import {Flex} from '@sanity/ui'
+import {uniqBy} from 'lodash-es'
+import {memo, useCallback, useMemo} from 'react'
+import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined

@@ -1,3 +1,5 @@
+import {resolveSource} from './importAssetsAction'
+import {readNdjsonFile} from './lib/findNdjsonEntry'
 import chalk from 'chalk'
 import {createReadStream} from 'node:fs'
 import fs from 'node:fs/promises'
@@ -5,9 +7,6 @@ import {tmpdir} from 'node:os'
 import path from 'node:path'
 import {lastValueFrom, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
-
-import {resolveSource} from './importAssetsAction'
-import {readNdjsonFile} from './lib/findNdjsonEntry'
 
 /**
  * Integration tests for the ndjson caching fix.

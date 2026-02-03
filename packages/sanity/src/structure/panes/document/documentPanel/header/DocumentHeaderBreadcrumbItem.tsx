@@ -1,14 +1,13 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo} from 'react'
-import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
-import {useRouter, useRouterState} from 'sanity/router'
-
 import {Button} from '../../../../../ui-components/button/Button'
 import {LOADING_PANE} from '../../../../constants'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
 import {type RouterPanes} from '../../../../types'
 import {FocusDocumentPaneNavigated} from './__telemetry__/focus.telemetry'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
+import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {useRouter, useRouterState} from 'sanity/router'
 
 export function DocumentHeaderBreadcrumbItem({
   paneData,

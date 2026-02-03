@@ -1,3 +1,8 @@
+import {postTask} from '../util/postTask'
+import {type Template} from './types'
+import deepAssign from './util/deepAssign'
+import {isRecord} from './util/isRecord'
+import {validateInitialObjectValue} from './validate'
 import {
   type ArraySchemaType,
   type InitialValueProperty,
@@ -10,12 +15,6 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {isDeepEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
-
-import {postTask} from '../util/postTask'
-import {type Template} from './types'
-import deepAssign from './util/deepAssign'
-import {isRecord} from './util/isRecord'
-import {validateInitialObjectValue} from './validate'
 
 /** @internal */
 export type Serializeable<T> = {

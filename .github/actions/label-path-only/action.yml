@@ -3,10 +3,10 @@ description: Automatically add or remove a label based on whether only files in 
 
 inputs:
   path:
-    description: 'The directory path to check (e.g., examples/ or packages/@sanity/cli/)'
+    description: "The directory path to check (e.g., examples/ or packages/@sanity/cli/)"
     required: true
   label:
-    description: 'The label name to add/remove'
+    description: "The label name to add/remove"
     required: true
 
 runs:

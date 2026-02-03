@@ -1,8 +1,7 @@
-import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
-import {VirtualizerScrollInstanceProvider, type WorkspaceOptions} from 'sanity'
-
 import {TestForm} from '../utils/TestForm'
 import {TestWrapper} from '../utils/TestWrapper'
+import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
+import {VirtualizerScrollInstanceProvider, type WorkspaceOptions} from 'sanity'
 
 interface GetSchemaTypesOpts {
   legacyEditing?: boolean

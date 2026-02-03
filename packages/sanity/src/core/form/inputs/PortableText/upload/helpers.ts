@@ -1,5 +1,3 @@
-import {type SchemaType} from '@sanity/types'
-
 // import {PortableTextInputProps} from 'sanity/index'
 import {type FIXME} from '../../../../FIXME'
 import {
@@ -7,6 +5,7 @@ import {
   type ResolvedUploader,
   type UploaderResolver,
 } from '../../../studio/uploads/types'
+import {type SchemaType} from '@sanity/types'
 
 export function getUploadCandidates(
   types: SchemaType[],

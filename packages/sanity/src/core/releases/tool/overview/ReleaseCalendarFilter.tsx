@@ -1,8 +1,3 @@
-import {CloseIcon} from '@sanity/icons'
-import {format} from 'date-fns'
-import {AnimatePresence, motion} from 'motion/react'
-import {useMemo, useState} from 'react'
-
 import {Button} from '../../../../ui-components'
 import {
   CalendarDay,
@@ -13,6 +8,10 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {shouldShowReleaseInView} from '../../util/util'
 import {type CardinalityView} from './queryParamUtils'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
+import {CloseIcon} from '@sanity/icons'
+import {format} from 'date-fns'
+import {AnimatePresence, motion} from 'motion/react'
+import {useMemo, useState} from 'react'
 
 export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (props) => {
   const {data: releases} = useActiveReleases()

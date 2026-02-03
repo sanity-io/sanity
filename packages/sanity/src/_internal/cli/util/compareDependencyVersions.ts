@@ -1,9 +1,8 @@
+import {getModuleUrl} from './getAutoUpdatesImportMap'
+import {readPackageManifest} from './readPackageManifest'
 import path from 'node:path'
 import resolveFrom from 'resolve-from'
 import semver from 'semver'
-
-import {getModuleUrl} from './getAutoUpdatesImportMap'
-import {readPackageManifest} from './readPackageManifest'
 
 function getRemoteResolvedVersion(fetchFn: typeof fetch, url: string) {
   return fetchFn(url, {

@@ -1,12 +1,11 @@
-import {useEffect, useMemo, useState} from 'react'
-import {ReplaySubject} from 'rxjs'
-import {map} from 'rxjs/operators'
-import {type RouterState, useRouter} from 'sanity/router'
-
 import {LOADING_PANE} from '../constants'
 import {type PaneNode, type RouterPaneGroup, type RouterPanes} from '../types'
 import {useStructureTool} from '../useStructureTool'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
+import {useEffect, useMemo, useState} from 'react'
+import {ReplaySubject} from 'rxjs'
+import {map} from 'rxjs/operators'
+import {type RouterState, useRouter} from 'sanity/router'
 
 interface PaneData {
   active: boolean

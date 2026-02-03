@@ -1,7 +1,6 @@
+import {type Panes} from './useResolvedPanes'
 import {useContext} from 'react'
 import {ResolvedPanesContext} from 'sanity/_singletons'
-
-import {type Panes} from './useResolvedPanes'
 
 const DEFAULT_VALUE = {
   paneDataItems: [],

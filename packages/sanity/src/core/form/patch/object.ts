@@ -1,7 +1,6 @@
-import {clone, isObject, omit} from 'lodash-es'
-
 import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'
+import {clone, isObject, omit} from 'lodash-es'
 
 export function _objectApply(value: FIXME, patch: FIXME) {
   const nextValue = clone(value)

@@ -1,8 +1,7 @@
-import {type SanityClient} from 'sanity'
-import {assertType, describe, expectTypeOf, test} from 'vitest'
-
 import {presentationTool} from '../plugin'
 import {type PresentationPluginOptions, type PreviewUrlOption} from '../types'
+import {type SanityClient} from 'sanity'
+import {assertType, describe, expectTypeOf, test} from 'vitest'
 
 describe('presentationTool()', () => {
   type PresentationToolPluginType = ReturnType<typeof presentationTool>

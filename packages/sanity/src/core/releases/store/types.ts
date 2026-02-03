@@ -1,10 +1,9 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {type Dispatch} from 'react'
-import {type Observable} from 'rxjs'
-
 import {RELEASE_DOCUMENT_TYPE} from './constants'
 import {type MetadataWrapper} from './createReleaseMetadataAggregator'
 import {type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type Dispatch} from 'react'
+import {type Observable} from 'rxjs'
 
 /**
  * @beta

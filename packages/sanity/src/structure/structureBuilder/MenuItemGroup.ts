@@ -1,8 +1,7 @@
-import {type I18nTextRecord} from 'sanity'
-
 import {HELP_URL, SerializeError} from './SerializeError'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
+import {type I18nTextRecord} from 'sanity'
 
 /** @internal */
 export function maybeSerializeMenuItemGroup(

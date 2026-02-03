@@ -1,6 +1,5 @@
-import {expect, test} from 'vitest'
-
 import {parseDecoratedRefs} from '../utils/gitUtils'
+import {expect, test} from 'vitest'
 
 test('parseDecoratedRefs', () => {
   expect(parseDecoratedRefs('')).toEqual({branches: [], tags: []})

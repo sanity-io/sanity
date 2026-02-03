@@ -1,9 +1,3 @@
-import {type SanityClient} from '@sanity/client'
-import {type ObjectSchemaType} from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {act, renderHook} from '@testing-library/react'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../FIXME'
 import {PatchEvent} from '../../../form/patch/PatchEvent'
@@ -13,6 +7,11 @@ import {getClipboardItem} from '../utils'
 import {createMockClient} from './mockClient'
 import {mockTypes, schema} from './schema'
 import {setupClipboard, writeItemsToClipboard} from './viClipboard'
+import {type SanityClient} from '@sanity/client'
+import {type ObjectSchemaType} from '@sanity/types'
+import {useToast} from '@sanity/ui'
+import {act, renderHook} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 vi.mock('@sanity/ui', async () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports

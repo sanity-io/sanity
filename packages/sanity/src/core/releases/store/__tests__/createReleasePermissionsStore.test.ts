@@ -1,6 +1,5 @@
-import {describe, expect, it, vi} from 'vitest'
-
 import {createReleasePermissionsStore} from '../createReleasePermissionsStore'
+import {describe, expect, it, vi} from 'vitest'
 
 describe('useReleasePermissions', () => {
   describe('when content release feature is enabled', () => {

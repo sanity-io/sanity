@@ -11,7 +11,6 @@ import type {
   randomKey,
   resolveTypeName,
 } from '@sanity/util/content'
-
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/util/content', () => {

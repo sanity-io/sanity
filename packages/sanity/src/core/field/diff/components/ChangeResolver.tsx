@@ -1,12 +1,11 @@
-import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
-import {Text} from '@sanity/ui'
-import {Fragment} from 'react'
-
 import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
 import {useDocumentChange} from '../hooks'
 import {FieldChange} from './FieldChange'
 import {GroupChange} from './GroupChange'
+import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
+import {Text} from '@sanity/ui'
+import {Fragment} from 'react'
 
 /** @internal */
 export interface ChangeResolverProps {

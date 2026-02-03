@@ -1,6 +1,3 @@
-import {cloneDeep} from 'lodash-es'
-import {expect, test} from 'vitest'
-
 import {type Doc} from '../src/document/types'
 import {Patcher} from '../src/patch'
 // Test suites
@@ -11,6 +8,8 @@ import mixed from './patchExamples/mixed'
 import set from './patchExamples/set'
 import setIfMissing from './patchExamples/setIfMissing'
 import unset from './patchExamples/unset'
+import {cloneDeep} from 'lodash-es'
+import {expect, test} from 'vitest'
 
 const examples = [
   ...set,

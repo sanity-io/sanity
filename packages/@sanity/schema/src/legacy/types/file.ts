@@ -1,9 +1,8 @@
-import {pick, startCase} from 'lodash-es'
-
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {createFieldsets} from './object'
 import {hiddenGetter, lazyGetter} from './utils'
+import {pick, startCase} from 'lodash-es'
 
 export const ASSET_FIELD = {
   name: 'asset',

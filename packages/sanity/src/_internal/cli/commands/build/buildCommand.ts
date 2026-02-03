@@ -1,9 +1,7 @@
-import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
-
-import {createRequire} from 'node:module'
-
 import {BuildSanityStudioCommandFlags} from '../../actions/build/buildAction'
 import {determineIsApp} from '../../util/determineIsApp'
+import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import {createRequire} from 'node:module'
 
 const require = createRequire(import.meta.url)
 

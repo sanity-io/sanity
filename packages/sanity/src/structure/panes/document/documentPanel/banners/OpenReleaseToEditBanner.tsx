@@ -1,3 +1,5 @@
+import {structureLocaleNamespace} from '../../../../i18n'
+import {Banner} from './Banner'
 import {Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
@@ -14,9 +16,6 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
-
-import {structureLocaleNamespace} from '../../../../i18n'
-import {Banner} from './Banner'
 
 export function OpenReleaseToEditBanner({
   documentId,

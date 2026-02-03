@@ -1,6 +1,5 @@
-import {createContext} from 'sanity/_createContext'
-
 import type {PreviewCardContextValue} from '../../core/components/previewCard/PreviewCard'
+import {createContext} from 'sanity/_createContext'
 
 /**
  * @internal

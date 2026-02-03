@@ -1,7 +1,6 @@
+import {type CommentsEnabledContextValue} from '../context/enabled/types'
 import {useContext} from 'react'
 import {CommentsEnabledContext} from 'sanity/_singletons'
-
-import {type CommentsEnabledContextValue} from '../context/enabled/types'
 
 /**
  * @beta

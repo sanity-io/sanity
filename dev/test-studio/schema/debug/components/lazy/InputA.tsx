@@ -1,7 +1,6 @@
+import {LazyContainer} from './LazyContainer'
 import {type ComponentType} from 'react'
 import {type InputProps} from 'sanity'
-
-import {LazyContainer} from './LazyContainer'
 
 const InputA: ComponentType<InputProps> = (props) => (
   <LazyContainer name="Lazy input A">{props.renderDefault(props)}</LazyContainer>

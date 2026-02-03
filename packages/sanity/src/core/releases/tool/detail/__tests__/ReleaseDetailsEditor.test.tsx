@@ -1,8 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
-import {render, screen, waitFor} from '@testing-library/react'
-import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
-
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {
   mockUseReleasePermissions,
@@ -12,6 +7,10 @@ import {
 } from '../../../store/__tests__/__mocks/useReleasePermissions.mock'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
+import {type ReleaseDocument} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
 // Mock the dependencies
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn().mockReturnValue({

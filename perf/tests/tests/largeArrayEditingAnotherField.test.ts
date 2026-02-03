@@ -1,7 +1,6 @@
-import {range} from 'lodash-es'
-
 import {type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
+import {range} from 'lodash-es'
 
 export default {
   id: KNOWN_TEST_IDS['large-array-editing-another-field'],

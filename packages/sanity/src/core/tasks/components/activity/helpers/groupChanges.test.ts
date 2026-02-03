@@ -1,7 +1,6 @@
-import {describe, expect, it} from 'vitest'
-
 import {groupChanges} from './groupChanges'
 import {type FieldChange} from './parseTransactions'
+import {describe, expect, it} from 'vitest'
 
 describe('Tests grouping the changes', () => {
   it('Should group the changes done by the same user in the title field', () => {

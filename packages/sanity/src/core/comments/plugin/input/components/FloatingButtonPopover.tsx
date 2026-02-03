@@ -1,13 +1,12 @@
+import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n'
+import {CommentDisabledIcon} from '../../../components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {AddCommentIcon} from '@sanity/icons'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useRef} from 'react'
 import {styled} from 'styled-components'
-
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {CommentDisabledIcon} from '../../../components'
-import {commentsLocaleNamespace} from '../../../i18n'
 
 const MotionPopover = styled(motion.create(Popover))`
   user-select: none;

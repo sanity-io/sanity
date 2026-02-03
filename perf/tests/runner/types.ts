@@ -1,7 +1,6 @@
+import {type ValidTestId} from './utils/testIds'
 import {type Page} from '@playwright/test'
 import {type SanityClient} from '@sanity/client'
-
-import {type ValidTestId} from './utils/testIds'
 
 export interface Deployment {
   _id: string

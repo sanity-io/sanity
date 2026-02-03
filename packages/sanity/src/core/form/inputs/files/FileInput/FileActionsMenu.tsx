@@ -1,3 +1,9 @@
+import {Popover} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {useTranslation} from '../../../../i18n'
+import {formatBytes} from '../../common/helper'
+import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
+import {type AssetAccessPolicy} from '../types'
 import {BinaryDocumentIcon} from '@sanity/icons'
 import {
   Box,
@@ -10,13 +16,6 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
-
-import {Popover} from '../../../../../ui-components'
-import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {useTranslation} from '../../../../i18n'
-import {formatBytes} from '../../common/helper'
-import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
-import {type AssetAccessPolicy} from '../types'
 
 type Props = {
   accessPolicy?: AssetAccessPolicy

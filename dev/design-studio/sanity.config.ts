@@ -1,9 +1,8 @@
-import {defineConfig} from 'sanity'
-import {structureTool} from 'sanity/structure'
-
 import {schemaTypes} from './schemaTypes'
 import {resolveDocumentNode, structure} from './structure'
 import {templates} from './templates'
+import {defineConfig} from 'sanity'
+import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
   plugins: [

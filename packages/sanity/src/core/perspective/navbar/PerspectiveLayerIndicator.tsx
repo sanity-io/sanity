@@ -46,7 +46,7 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
       css`
         > [data-ui='MenuItem'] {
           position: relative;
-        
+
           &:before,
           &:after {
             content: '';
@@ -56,12 +56,12 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
             width: var(--indicator-width);
             background-color: var(--card-border-color);
           }
-        
+
           &:before {
             top: 0;
             height: var(--indicator-in-range-height);
           }
-        
+
           &:after {
             top: var(--indicator-in-range-height);
             bottom: 0;

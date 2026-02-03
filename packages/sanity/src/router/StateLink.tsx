@@ -1,6 +1,5 @@
-import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
-
 import {useStateLink} from './useStateLink'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /**
  * Props for the {@link StateLink} component.

@@ -1,9 +1,8 @@
-import {of, shareReplay} from 'rxjs'
-
 import {coreUiRenderingContext} from './coreUiRenderingContext'
 import {defaultRenderingContext} from './defaultRenderingContext'
 import {listCapabilities} from './listCapabilities'
 import {type RenderingContextStore} from './types'
+import {of, shareReplay} from 'rxjs'
 
 /**
  * Rendering Context Store provides information about where Studio is being rendered, and which

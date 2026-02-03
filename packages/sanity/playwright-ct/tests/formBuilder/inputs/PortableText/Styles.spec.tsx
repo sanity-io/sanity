@@ -1,8 +1,7 @@
-/* eslint-disable max-nested-callbacks */
-import {expect, test} from '@playwright/experimental-ct-react'
-
 import {testHelpers} from '../../../utils/testHelpers'
 import {StylesStory} from './StylesStory'
+/* eslint-disable max-nested-callbacks */
+import {expect, test} from '@playwright/experimental-ct-react'
 
 const DEFAULT_STYLE_NAMES = [
   'Normal',

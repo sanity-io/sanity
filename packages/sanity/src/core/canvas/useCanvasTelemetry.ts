@@ -1,6 +1,3 @@
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useMemo} from 'react'
-
 import {
   CanvasLinkCtaClicked,
   CanvasLinkDialogDiffsShown,
@@ -14,6 +11,8 @@ import {
   type OpenCanvasOrigin,
 } from './__telemetry__/canvas.telemetry'
 import {type CanvasDiff} from './types'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useMemo} from 'react'
 
 interface CanvasTelemetryHookValue {
   linkCtaClicked: () => void

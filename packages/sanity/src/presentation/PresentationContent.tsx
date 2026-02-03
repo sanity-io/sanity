@@ -1,11 +1,3 @@
-import {
-  type Dispatch,
-  type FunctionComponent,
-  type PropsWithChildren,
-  type SetStateAction,
-} from 'react'
-import {type CommentIntentGetter, CommentsIntentProvider, type SanityDocument} from 'sanity'
-
 import {ContentEditor} from './editor/ContentEditor'
 import {DisplayedDocumentBroadcasterProvider} from './loader/DisplayedDocumentBroadcaster'
 import {Panel} from './panels/Panel'
@@ -18,6 +10,13 @@ import {
   type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from './types'
+import {
+  type Dispatch,
+  type FunctionComponent,
+  type PropsWithChildren,
+  type SetStateAction,
+} from 'react'
+import {type CommentIntentGetter, CommentsIntentProvider, type SanityDocument} from 'sanity'
 
 export interface PresentationContentProps {
   documentId: PresentationParamsContextValue['id']

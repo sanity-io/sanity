@@ -1,7 +1,6 @@
+import {createHistoryStore, removeMissingReferences} from './createHistoryStore'
 import {type SanityClient} from '@sanity/client'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
-
-import {createHistoryStore, removeMissingReferences} from './createHistoryStore'
 
 const testDoc = {
   _id: 'foo',

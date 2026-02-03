@@ -1,3 +1,16 @@
+import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
+import {
+  type CrossDatasetIncomingReferenceDocument,
+  getCrossDatasetIncomingReferences,
+} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
+import {getIncomingReferences} from '../../../../components/incomingReferencesDecoration/getIncomingReferences'
+import {
+  INCOMING_REFERENCES_ITEM_HEIGHT,
+  IncomingReferencesListContainer,
+} from '../../../../components/incomingReferencesDecoration/shared'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
@@ -14,20 +27,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-
-import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
-import {
-  type CrossDatasetIncomingReferenceDocument,
-  getCrossDatasetIncomingReferences,
-} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/getCrossDatasetIncomingReferences'
-import {getIncomingReferences} from '../../../../components/incomingReferencesDecoration/getIncomingReferences'
-import {
-  INCOMING_REFERENCES_ITEM_HEIGHT,
-  IncomingReferencesListContainer,
-} from '../../../../components/incomingReferencesDecoration/shared'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
-import {IncomingReferenceDocument} from './IncomingReferenceDocument'
 
 interface TypeSectionProps<T> {
   type: string

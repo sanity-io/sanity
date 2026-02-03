@@ -1,7 +1,6 @@
-import {type ComponentType, type ReactNode} from 'react'
-
 import {type ConditionalProperty, type DeprecatedProperty, type I18nTextRecord} from '../../types'
 import {type ObjectOptions} from './object'
+import {type ComponentType, type ReactNode} from 'react'
 
 /** @public */
 export interface FieldsetDefinition {

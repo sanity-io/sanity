@@ -1,3 +1,5 @@
+import {useClient} from '../../../../hooks/useClient'
+import {type MediaLibrary} from '../types'
 import {type ObservableSanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -13,9 +15,6 @@ import {
   switchMap,
   take,
 } from 'rxjs'
-
-import {useClient} from '../../../../hooks/useClient'
-import {type MediaLibrary} from '../types'
 
 type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND' | 'ERROR_NO_LIBRARY_FOUND'
 

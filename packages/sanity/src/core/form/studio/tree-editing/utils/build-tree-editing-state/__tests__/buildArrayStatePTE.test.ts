@@ -1,3 +1,6 @@
+import {type DialogItem} from '../../../types'
+import {buildArrayStatePTE} from '../buildArrayStatePTE'
+import {type TreeEditingState} from '../buildTreeEditingState'
 import {Schema} from '@sanity/schema'
 import {
   type ArraySchemaType,
@@ -6,10 +9,6 @@ import {
   type Path,
 } from '@sanity/types'
 import {describe, expect, test, vi} from 'vitest'
-
-import {type DialogItem} from '../../../types'
-import {buildArrayStatePTE} from '../buildArrayStatePTE'
-import {type TreeEditingState} from '../buildTreeEditingState'
 
 // Mock schema for portable text with nested arrays
 const schema = Schema.compile({
