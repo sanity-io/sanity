@@ -103,7 +103,7 @@ const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 
 const RetryCardButton = styled(Card)`
   // Add not on hover
-      &:not(:hover) {
+          &:not(:hover) {
     background-color: transparent;
   }
 `

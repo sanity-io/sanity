@@ -10,7 +10,7 @@ import {PopoverContainer} from './PopoverContainer'
 const StyledPopover = styled(Popover)(() => {
   return css`
     // Make the popover scrollable if it overflows the viewport
-            [data-ui='Popover__wrapper'] {
+                    [data-ui='Popover__wrapper'] {
       overflow: auto;
     }
   `
