@@ -30,6 +30,7 @@
     "*.css",
     "*.snap",
     "*.md",
+    "examples/**",
     "packages/@sanity/cli/templates/**/*",
     "dev/test-studio/sanity.theme.mjs",
     "dev/test-studio/workshop/scopes.js"
