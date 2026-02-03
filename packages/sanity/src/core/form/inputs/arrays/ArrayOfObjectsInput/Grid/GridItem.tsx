@@ -25,6 +25,7 @@ import {
 import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
+import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
@@ -87,6 +88,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
 
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
@@ -201,12 +203,15 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       ),
       !disableActions.includes('add') &&
         !disableActions.includes('addBefore') &&
+        !arrayValidation?.maxReached &&
         insertBefore.menuItem,
       !disableActions.includes('add') &&
         !disableActions.includes('addAfter') &&
+        !arrayValidation?.maxReached &&
         insertAfter.menuItem,
     ].filter(Boolean)
   }, [
+    arrayValidation?.maxReached,
     disableActions,
     handleCopy,
     handleDuplicate,
