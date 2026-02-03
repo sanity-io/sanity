@@ -77,8 +77,7 @@ export function useResolvedPanes(): Panes {
       // Find the last pane that is a document with defaultPanes
       const lastPaneData = paneDataItems[paneDataItems.length - 1]
       const lastPane = lastPaneData?.pane
-
-      if (!isDocumentPaneNode(lastPane)) return
+      if (!lastPane || !isDocumentPaneNode(lastPane)) return
 
       // Check if defaultPanes is configured
       if (!lastPane.defaultPanes) return
@@ -159,14 +158,17 @@ export function useResolvedPanes(): Panes {
 
     const subscription = resolvedPanes$.subscribe({
       next: (result) => {
-        maybeOpenDefaultPanes(result)
         setData(result)
       },
       error: (e) => setError(e),
     })
 
     return () => subscription.unsubscribe()
-  }, [rootPaneNode, routerPanesStream, structureContext, maybeOpenDefaultPanes])
+  }, [rootPaneNode, routerPanesStream, structureContext])
+
+  useEffect(() => {
+    maybeOpenDefaultPanes(data)
+  }, [data, maybeOpenDefaultPanes])
 
   const paneDataItemsWithMaximized = useMemo(() => {
     return data.paneDataItems.map((item) => ({
