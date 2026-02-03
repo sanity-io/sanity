@@ -1,4 +1,3 @@
-// @ts-expect-error -- Type declaration in typings/ not resolved when type checking from monorepo root
 import humanize from 'humanize-list'
 import leven from 'leven'
 

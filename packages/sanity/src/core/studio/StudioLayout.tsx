@@ -28,7 +28,6 @@ const DetectViteDevServerStopped = lazy(() =>
   })),
 )
 
-// @ts-expect-error -- import.meta.hot from vite/client types not resolved when type checking from monorepo root
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
 const SearchFullscreenPortalCard = styled(Card)`

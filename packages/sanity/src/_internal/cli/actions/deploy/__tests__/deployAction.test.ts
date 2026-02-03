@@ -389,6 +389,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
+        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
         {
           argsWithoutOptions: [],
           extOptions: {external: true},
@@ -432,6 +433,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
+        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
         {
           argsWithoutOptions: [],
           extOptions: {external: true},
@@ -457,6 +459,7 @@ describe('deployStudioAction', () => {
       })
 
       await deployStudioAction(
+        // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
         {
           argsWithoutOptions: [],
           extOptions: {'external': true, 'schema-required': true},

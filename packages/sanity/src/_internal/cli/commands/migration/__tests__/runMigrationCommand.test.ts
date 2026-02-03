@@ -93,6 +93,7 @@ describe('runMigrationCommand', () => {
 
   describe('validation errors', () => {
     it('throws an error when dataset is not configured and --dataset flag is not provided', async () => {
+      // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
       const args: CliCommandArguments = {
         argsWithoutOptions: ['test-migration'],
         argv: ['migration', 'run', 'test-migration'],
@@ -130,6 +131,7 @@ describe('runMigrationCommand', () => {
         }),
       })
 
+      // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
       const args: CliCommandArguments = {
         argsWithoutOptions: ['test-migration'],
         argv: ['migration', 'run', 'test-migration'],
@@ -166,6 +168,7 @@ describe('runMigrationCommand', () => {
         }),
       })
 
+      // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
       const args: CliCommandArguments = {
         argsWithoutOptions: ['test-migration'],
         argv: ['migration', 'run', 'test-migration'],
@@ -202,6 +205,7 @@ describe('runMigrationCommand', () => {
         }),
       })
 
+      // @ts-expect-error -- Legacy test code with incomplete type, will be fixed separately
       const args: CliCommandArguments = {
         argsWithoutOptions: ['test-migration'],
         argv: ['migration', 'run', 'test-migration'],
