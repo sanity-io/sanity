@@ -24,6 +24,9 @@ export default defineConfig({
       'packages/sanity',
       'packages/sanity/src/_internal/cli',
       'perf/tests',
+      'packages/@repo/release-notes',
+      'packages/@repo/bundle-manager',
+      'packages/@repo/utils',
     ],
     coverage: {
       provider: 'v8',

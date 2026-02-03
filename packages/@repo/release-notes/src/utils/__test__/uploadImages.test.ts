@@ -100,6 +100,7 @@ describe('uploadImages()', () => {
         {
           "_key": "key-18",
           "_type": "image",
+          "alt": "Screenshot 2026-01-28 at 12 55 05",
           "asset": {
             "_ref": "mocked_image_id_0",
             "_type": "reference",
@@ -131,6 +132,7 @@ describe('uploadImages()', () => {
         {
           "_key": "key-20",
           "_type": "image",
+          "alt": "Image",
           "asset": {
             "_ref": "mocked_image_id_0",
             "_type": "reference",
