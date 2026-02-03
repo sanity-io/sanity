@@ -7,9 +7,13 @@ Sanity TypeGen (Beta)
 This command is currently in beta and may undergo significant changes. Feedback is welcome!
 
 Usage
-  sanity typegen generate [options]
+  sanity typegen generate [--watch] [--config-path <value>]
 
 Options:
+  --watch
+    Run the typegen in watch mode
+    Default: false
+
   --config-path <path>
     Specifies the path to the typegen configuration file. This file should be a JSON file that contains settings for the type generation process.
     Default: "sanity-typegen.json"

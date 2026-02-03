@@ -95,6 +95,10 @@ function getPort(): number {
   return 3333
 }
 
+function buffersToString(buffers: Buffer[]): string {
+  return Buffer.concat(buffers).toString('utf8')
+}
+
 export const testClient = createClient({
   apiVersion: '2022-09-09',
   projectId: cliProjectId,
@@ -140,6 +144,75 @@ export function runSanityCmdCommand(
     cwd: cwd(path.join(studiosPath, name)),
     env: {...sanityEnv, ...options.env},
   })
+}
+
+export function runSanityLongRunningCommand(
+  name: (typeof studioNames)[number] | 'cli-test-studio-custom-document',
+  args: string[],
+  options: {
+    env?: Record<string, string | undefined>
+    cwd?: (cwd: string) => string
+    timeout?: number
+  } = {},
+  expectedOutput: (result: {stdout: string; stderr: string}) => Promise<void> | void,
+) {
+  const cwd = options.cwd ?? ((currentCwd) => currentCwd)
+  const timeout = options.timeout || 10_000
+  const startedAt = Date.now()
+
+  const proc = spawn(process.argv[0], [cliBinPath, ...args], {
+    cwd: cwd(path.join(studiosPath, name)),
+    env: {...sanityEnv, ...options.env},
+    stdio: 'pipe',
+  })
+
+  const stderr: Buffer[] = []
+  const stdout: Buffer[] = []
+
+  const cmdResult = new Promise<{stdout: string; stderr: string}>((resolve, reject) => {
+    proc.stderr.on('data', (chunk) => {
+      stderr.push(chunk)
+      void check(null)
+    })
+
+    proc.stdout.on('data', (chunk) => {
+      stdout.push(chunk)
+      void check(null)
+    })
+
+    proc.once('close', (code) => check(code))
+
+    async function check(code: number | null) {
+      const stderrStr = buffersToString(stderr)
+      const stdoutStr = buffersToString(stdout)
+
+      if (code && code > 0) {
+        reject(
+          new Error(
+            `'sanity ${process.argv[0]}' failed with code ${code}:\n${stderrStr}\n${stdoutStr}`,
+          ),
+        )
+        return
+      }
+
+      try {
+        await expectedOutput?.({stderr: buffersToString(stderr), stdout: buffersToString(stdout)})
+        resolve({stderr: stderrStr, stdout: stdoutStr})
+      } catch (error) {
+        if (error.name !== 'AssertionError') {
+          throw error
+        }
+        if (Date.now() - startedAt > timeout) {
+          // assertion keeps failing for too long
+          reject(error)
+        } else {
+          setTimeout(check, 1000)
+        }
+      }
+    }
+  })
+
+  return cmdResult.finally(() => proc.kill())
 }
 
 export function exec(
