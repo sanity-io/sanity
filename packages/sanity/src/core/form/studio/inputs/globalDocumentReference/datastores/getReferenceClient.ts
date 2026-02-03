@@ -8,8 +8,8 @@ export function getReferenceClient(
   if (schemaType.resourceType === 'dataset') {
     const [projectId, datasetName] = schemaType.resourceId.split('.', 2)
     return client.withConfig({
-      'apiVersion': 'X',
-      '~experimental_resource': {
+      apiVersion: 'X',
+      resource: {
         type: 'dataset',
         id: `${projectId}.${datasetName}`,
       },
@@ -17,8 +17,8 @@ export function getReferenceClient(
   }
   if (schemaType.resourceType === 'media-library' || schemaType.resourceType === 'canvas') {
     return client.withConfig({
-      'apiVersion': '2025-02-19',
-      '~experimental_resource': {
+      apiVersion: '2025-02-19',
+      resource: {
         type: schemaType.resourceType,
         id: schemaType.resourceId,
       },
