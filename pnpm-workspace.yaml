@@ -15,10 +15,10 @@ catalog:
   '@playwright/test': 1.57.0
   '@sanity/client': ^7.14.1
   '@sanity/codegen': ^5.9.1
-  '@sanity/migrate': ^5.2.3
-  '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
+  '@sanity/migrate': ^5.2.3
   '@sanity/pkg-utils': ^10.4.2
+  '@sanity/telemetry': ^0.8.1
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
@@ -32,38 +32,21 @@ catalog:
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
+  jsdom: ^26.1.0
   playwright: 1.57.0
   prettier: ^3.8.1
   react: ^19.2.3
   react-dom: ^19.2.3
   react-is: ^19.2.3
-  # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
-  # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
-  # the workspace package.json.
-  # The test failure looks like this:
-  # × FileInput with empty state > renders the browse button with a tooltip when it has at least one element in assetSources
-  #     → Cannot create property 'border-width' on string '1px solid var(--card-border-color)'
-  jsdom: ^26.1.0
-  vite: ^7.3.1
-  vitest: ^4.0.18
   styled-components: npm:@sanity/styled-components@^6.1.24
   typescript: 5.9.3
+  vite: ^7.3.1
+  vitest: ^4.0.18
 
-overrides:
-  # The e2e-ui.yml workflow needs a @sanity/ui related override in the root package.json in order for it's pnpm add -w ./artifacts/sanity-ui-*.tgz to work its magic.
-  '@sanity/ui@3': '$@sanity/ui'
-  # temporary workaround for portabletext taking in @sanity/types v4
-  # can be removed once portable text dependency is on sanity@5
-  '@sanity/types': '^5.0.0'
-  # We are currently blocked from upgrading to jsdom 27 because of a strange build error related to the new version of
-  # cssstyle required by jsdom 27. If this error is no longer present, it's safe to remove the following override.
-  jsdom: 26.1.0
-  vitest: $vitest
-
-preferWorkspacePackages: true
 linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
+
 minimumReleaseAgeExclude:
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
@@ -72,15 +55,26 @@ minimumReleaseAgeExclude:
   - '@types/*'
   - '@typescript/*'
   - csstype
-  - 'get-it'
-  - 'groq-js'
-  - 'oxlint'
-  - 'oxlint-tsgolint'
-  - 'eslint-plugin-oxlint'
-  - 'react'
-  - 'react-dom'
-  - 'react-is'
-  - 'react-rx'
+  - get-it
+  - groq-js
+  - oxlint
+  - oxlint-tsgolint
+  - eslint-plugin-oxlint
+  - react
+  - react-dom
+  - react-is
+  - react-rx
+
+overrides:
+  '@sanity/types': ^5.0.0
+  '@sanity/ui@3': $@sanity/ui
+  jsdom: 26.1.0
+  vitest: $vitest
+
+patchedDependencies:
+  '@sanity/codegen@5.9.1': patches/@sanity__codegen@5.9.1.patch
+
+preferWorkspacePackages: true
 
 trustPolicy: no-downgrade
 

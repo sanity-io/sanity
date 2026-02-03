@@ -1,0 +1,74 @@
+diff --git a/dist/typescript/typeGenerator.js b/dist/typescript/typeGenerator.js
+index f3bf08daed7749b88b5798f3452ac9689ffc9c6e..4a4534c6ae736719cab5478e61a7dfe836d65aeb 100644
+--- a/dist/typescript/typeGenerator.js
++++ b/dist/typescript/typeGenerator.js
+@@ -200,16 +200,40 @@ import { QueryEvaluationError } from './types.js';
+         });
+         const program = t.program([]);
+         let code = '';
++        
++        // Check if ArrayOf is used in schema types
++        let arrayOfUsed = false;
++        const checkForArrayOf = (node) => {
++            if (!node) return;
++            if (t.isTSTypeReference(node) && t.isIdentifier(node.typeName) && node.typeName.name === 'ArrayOf') {
++                arrayOfUsed = true;
++                return;
++            }
++            // Recursively check child nodes
++            if (Array.isArray(node)) {
++                node.forEach(checkForArrayOf);
++            } else if (typeof node === 'object') {
++                Object.values(node).forEach(checkForArrayOf);
++            }
++        };
++        
+         for (const declaration of schemaTypeDeclarations){
+             program.body.push(declaration.ast);
+             code += declaration.code;
++            // Check if this declaration uses ArrayOf
++            checkForArrayOf(declaration.tsType);
+         }
+         program.body.push(allSanitySchemaTypesDeclaration.ast);
+         code += allSanitySchemaTypesDeclaration.code;
+         program.body.push(internalReferenceSymbol.ast);
+         code += internalReferenceSymbol.code;
+-        program.body.push(arrayOfDeclaration.ast);
+-        code += arrayOfDeclaration.code;
++        
++        // Only add ArrayOf if it's actually used
++        if (arrayOfUsed) {
++            program.body.push(arrayOfDeclaration.ast);
++            code += arrayOfDeclaration.code;
++        }
++        
+         const evaluatedModules = await TypeGenerator.getEvaluatedModules({
+             ...options,
+             schemaTypeDeclarations,
+@@ -219,6 +243,26 @@ import { QueryEvaluationError } from './types.js';
+             for (const query of queries){
+                 program.body.push(query.ast);
+                 code += query.code;
++                // Check if query result types use ArrayOf
++                if (!arrayOfUsed) {
++                    checkForArrayOf(query.tsType);
++                    if (arrayOfUsed) {
++                        // Insert ArrayOf declaration before query types if not already added
++                        const insertIndex = program.body.findIndex(node => node === query.ast);
++                        if (insertIndex > 0) {
++                            program.body.splice(insertIndex, 0, arrayOfDeclaration.ast);
++                            // Reconstruct code with ArrayOf inserted
++                            code = '';
++                            for (const node of program.body) {
++                                if (node === arrayOfDeclaration.ast) {
++                                    code += arrayOfDeclaration.code;
++                                } else {
++                                    code += generateCode(node);
++                                }
++                            }
++                        }
++                    }
++                }
+             }
+         }
+         const queryMapDeclaration = await TypeGenerator.getQueryMapDeclaration({
