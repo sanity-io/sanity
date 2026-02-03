@@ -140,14 +140,8 @@
       "oxfmt",
       "oxlint --disable-nested-config --type-aware --fix --quiet"
     ],
-    "*.{md,yml,yaml,css}": [
+    "*.{md,yml,yaml,css,json}": [
       "oxfmt"
-    ],
-    "*.json": [
-      "oxfmt"
-    ],
-    ".oxfmtrc.json": [
-      "echo 'Skipping oxfmt config file'"
     ]
   },
   "packageManager": "pnpm@10.28.2",
