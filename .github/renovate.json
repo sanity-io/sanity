@@ -19,7 +19,6 @@
         "/^@portabletext\\//",
         "/^react-rx$/",
         "/^groq-js$/",
-        "/^@oxfmt\\//",
         "/^oxfmt$/"
       ],
       "minimumReleaseAge": "0 days"
