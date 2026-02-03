@@ -61,7 +61,6 @@
     "@types/debug": "^4.1.12",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
