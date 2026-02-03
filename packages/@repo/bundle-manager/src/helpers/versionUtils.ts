@@ -1,4 +1,5 @@
 import {groupBy, partition, uniqBy} from 'lodash-es'
+// @ts-expect-error semver types not available in type checking context
 import semver from 'semver'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'

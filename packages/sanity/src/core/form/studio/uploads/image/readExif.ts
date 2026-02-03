@@ -1,4 +1,3 @@
-// @ts-expect-error Type declaration exists but not resolved when type checking from @sanity/vision package
 import exif from 'exif-component'
 import {from as observableFrom, Observable, of as observableOf} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'

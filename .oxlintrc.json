@@ -38,7 +38,16 @@
     "packages/@repo/*/dist/**",
     "packages/@repo/*/lib/**",
     "packages/@sanity/cli/codemods/**",
-    "packages/@sanity/cli/test/__fixtures__/**"
+    "packages/@sanity/cli/test/__fixtures__/**",
+    "dev/**",
+    "perf/**",
+    "packages/@repo/test-exports/**",
+    "packages/@repo/test-dts-exports/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.test.js",
+    "**/*.test.jsx",
+    "**/__tests__/**"
   ],
   "categories": {
     "correctness": "error",

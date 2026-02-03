@@ -15,7 +15,6 @@ export class ViteDevServerStoppedError extends Error {
     this.ViteDevServerStoppedError = true
   }
 }
-// @ts-expect-error import.meta.hot from vite/client not available when type checking from @sanity/vision package
 const serverHot = import.meta.hot
 const isViteServer = (hot: unknown): hot is ViteHotContext => Boolean(hot)
 
