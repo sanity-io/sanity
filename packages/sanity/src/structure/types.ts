@@ -12,7 +12,6 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
-import {LOADING_PANE} from './constants'
 import {
   type DefaultDocumentNodeResolver,
   type Intent,
