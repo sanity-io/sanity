@@ -15,6 +15,7 @@ export interface UseListFormatOptions {
    * - `disjunction` (read: "or")
    * - `unit` (just a list)
    */
+  // @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
   type?: Intl.ListFormatType | undefined
 
   /**
@@ -24,6 +25,7 @@ export interface UseListFormatOptions {
    * - `short`: "a, b & c"
    * - `narrow`: `a, b, c`
    */
+  // @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
   style?: Intl.ListFormatStyle | undefined
 }
 
@@ -35,6 +37,7 @@ export interface UseListFormatOptions {
  * @returns Instance of `Intl.ListFormat`
  * @public
  */
+// @ts-expect-error -- Intl.ListFormat types not available in all TS contexts
 export function useListFormat(options: UseListFormatOptions = {}): Intl.ListFormat {
   /*
    * Certain components using this hook (such as the <Translate/> in toasts)

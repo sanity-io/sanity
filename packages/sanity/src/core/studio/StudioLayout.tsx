@@ -28,6 +28,7 @@ const DetectViteDevServerStopped = lazy(() =>
   })),
 )
 
+// @ts-expect-error -- import.meta.hot from vite/client not available in all TS contexts
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
 
 const SearchFullscreenPortalCard = styled(Card)`
