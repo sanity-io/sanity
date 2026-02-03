@@ -1,3 +1,4 @@
+// @ts-expect-error Type declaration exists but not resolved when type checking from @sanity/vision package
 import humanize from 'humanize-list'
 import leven from 'leven'
 

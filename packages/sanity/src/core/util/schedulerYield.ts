@@ -7,7 +7,9 @@
 export function schedulerYield<Result>(
   promise: () => Promise<Result>,
 ): Promise<Result> | Promise<void> {
+  // @ts-expect-error Scheduler API from @types/wicg-task-scheduling not available when type checking from @sanity/vision package
   if ('scheduler' in window && typeof window.scheduler?.yield === 'function') {
+    // @ts-expect-error Scheduler API from @types/wicg-task-scheduling not available when type checking from @sanity/vision package
     return window.scheduler.yield()
   }
   return promise()

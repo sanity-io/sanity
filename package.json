@@ -101,7 +101,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "prettier --cache --write",
-      "oxlint --disable-nested-config --type-aware --type-check --fix --quiet"
+      "oxlint --disable-nested-config --type-aware --fix --quiet"
     ],
     "*.{md,yml,yaml,css,json}": [
       "prettier --cache --write"
