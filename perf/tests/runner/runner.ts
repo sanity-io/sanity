@@ -38,7 +38,7 @@ async function runAgainstUrl(
   const {context, test, client, page, token} = options
 
   // Add the cookie to our context
-  await context.addCookies([createSanitySessionCookie(client.config().projectId, token)])
+  await context.addCookies([createSanitySessionCookie(client.config().projectId!, token)])
 
   const testContext = {url: url, page, client}
   const {data, teardown} = await (test.setup
