@@ -55,6 +55,7 @@
     "**/packages/@repo/*/turbo.json",
     "**/packages/@sanity/*/turbo.json",
     "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
     "**/packages/sanity/playwright-ct/template/.cache/**/*"
   ]
 }
