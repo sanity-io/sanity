@@ -4,7 +4,7 @@ import {type RestEndpointMethodTypes} from '@octokit/rest'
 import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
-import {createId} from '../utils/ids'
+import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
 
@@ -43,10 +43,8 @@ export async function commentPrAfterMerge(options: {
   }
 
   const collaborators = await getCollaborators(pullRequest)
-  const baseVersionId = Buffer.from(options.baseVersion).toString('base64url')
-  const releaseId = `rstudio-${baseVersionId}`
 
-  const changelogDocumentId = createId(releaseId, `studio-${baseVersionId}`)
+  const {releaseId, changelogDocumentId} = getSanityDocumentIdsForBaseVersion(options.baseVersion)
 
   const entryKey = options.commit.slice(0, 8)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)
