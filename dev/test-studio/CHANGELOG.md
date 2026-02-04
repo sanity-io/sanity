@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
+
+### Features
+
+* add selection state (indicators) to all menu items (actions etc.) ([#12003](https://github.com/sanity-io/sanity/issues/12003)) ([81ede79](https://github.com/sanity-io/sanity/commit/81ede798df314f160156da46e514f2e4e60e8c32)) by RitaDias (rita@sanity.io)
+* built-in PTE `pasteLink` plugin enabled by default ([72a53b7](https://github.com/sanity-io/sanity/commit/72a53b72be1b92feeb733adbe366d7c6d9285334)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **core:** add media library internal config ([#12009](https://github.com/sanity-io/sanity/issues/12009)) ([394e246](https://github.com/sanity-io/sanity/commit/394e2468154625a84914e66bf453a209f607fcd4)) by James Warner (jmswrnr@users.noreply.github.com)
+* **core:** adds `path` to `ConditionalPropertyCallbackContext` ([#11947](https://github.com/sanity-io/sanity/issues/11947)) ([f16a4aa](https://github.com/sanity-io/sanity/commit/f16a4aa9b83365119fc881a4e00eb16e5b2c9f66)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** display validation icon for groups ([#11995](https://github.com/sanity-io/sanity/issues/11995)) ([7916f6e](https://github.com/sanity-io/sanity/commit/7916f6efbee5c4107b1c0d02a9281037108779e3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* display incoming references  ([#10761](https://github.com/sanity-io/sanity/issues/10761)) ([e5a945b](https://github.com/sanity-io/sanity/commit/e5a945bab4444077ef6e71a4b98b59f7250e6a02)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **form:** add disableNew option for image fields ([#12004](https://github.com/sanity-io/sanity/issues/12004)) ([0e650d3](https://github.com/sanity-io/sanity/commit/0e650d31b55d4a61bb02511626667b28f7497e47)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#11994](https://github.com/sanity-io/sanity/issues/11994)) ([6aaca20](https://github.com/sanity-io/sanity/commit/6aaca20134277be6d497ce99d41b428c23a655bf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12032](https://github.com/sanity-io/sanity/issues/12032)) ([0a871ec](https://github.com/sanity-io/sanity/commit/0a871eccac41eecbd4e09a6e099e89622f052cab)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 ### Bug Fixes

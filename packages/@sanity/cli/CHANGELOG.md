@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
+
+### Features
+
+* **cli:** add typegen to dev and build commands ([#11957](https://github.com/sanity-io/sanity/issues/11957)) ([dc6baae](https://github.com/sanity-io/sanity/commit/dc6baaed2d132e3d1fd020f0871d929fb9a34a5c)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **cli:** add watch mode for typegen generate command ([#11867](https://github.com/sanity-io/sanity/issues/11867)) ([c22e65e](https://github.com/sanity-io/sanity/commit/c22e65eb958f98c47e2cdfc028618aa2fe512760)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 ### Bug Fixes
