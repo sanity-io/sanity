@@ -66,7 +66,7 @@
     "@sanity/codegen": "catalog:",
     "@sanity/runtime-cli": "^13.1.0",
     "@sanity/telemetry": "catalog:",
-    "@sanity/template-validator": "^2.4.3",
+    "@sanity/template-validator": "^2.4.5",
     "@sanity/worker-channels": "^1.1.0",
     "chalk": "^4.1.2",
     "debug": "^4.4.3",
