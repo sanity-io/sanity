@@ -12,5 +12,8 @@
     "./src/**/*.test-d.ts",
     "./src/**/*.test-d.tsx",
     "./src/**/vitest.config.mts"
-  ]
+  ],
+  "compilerOptions": {
+    "customConditions": ["monorepo"]
+  }
 }
