@@ -10,8 +10,8 @@ test('media plugin should open from input', async ({page, createDraftDocument}) 
   await expect(page.getByTestId('change-bar__field-wrapper').nth(2)).toBeVisible()
 
   // wait for menu to be visible and click menu button
-  await expect(page.locator('#mainImage_assetImageButton')).toBeVisible()
-  await page.locator('#mainImage_assetImageButton').click()
+  await expect(page.locator('#sanity-form-mainImage_assetImageButton')).toBeVisible()
+  await page.locator('#sanity-form-mainImage_assetImageButton').click()
 
   // wait for menu to open, click the menu item for media
   await expect(page.getByTestId('file-input-browse-button-media')).toBeVisible()

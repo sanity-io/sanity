@@ -23,7 +23,9 @@ test(`file drop event should not propagate to dialog parent`, async ({
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })
-  const list = page.getByTestId('field-arrayOfMultipleTypes').locator('#arrayOfMultipleTypes')
+  const list = page
+    .getByTestId('field-arrayOfMultipleTypes')
+    .locator('#sanity-form-arrayOfMultipleTypes')
   const item = list.locator('[data-ui="Grid"] > div')
 
   const dataTransfer = await createFileDataTransferHandle(
@@ -239,7 +241,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 
 function createArrayFieldLocators(page: Page) {
   const field = page.getByTestId('field-arrayOfSoManyDifferentTypes')
-  const content = field.locator('#arrayOfSoManyDifferentTypes')
+  const content = field.locator('#sanity-form-arrayOfSoManyDifferentTypes')
   const items = content.locator('[data-ui="Grid"] > div')
   const addItemButton = field.getByRole('button', {name: 'Add item...'})
   const popover = page.getByTestId('document-panel-portal')

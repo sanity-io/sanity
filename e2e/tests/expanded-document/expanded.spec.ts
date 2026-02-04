@@ -42,8 +42,8 @@ test.describe('maximized document', () => {
 
     await page.getByTestId('focus-pane-button-focus').click()
 
-    await expect(page.locator('#selfOrEmpty-selectTypeMenuButton')).toBeVisible()
-    await page.locator('#selfOrEmpty-selectTypeMenuButton').click()
+    await expect(page.locator('#sanity-form-selfOrEmpty-selectTypeMenuButton')).toBeVisible()
+    await page.locator('#sanity-form-selfOrEmpty-selectTypeMenuButton').click()
     await expect(
       page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem'),
     ).toBeVisible()
@@ -76,8 +76,8 @@ test.describe('maximized document', () => {
     test.slow()
 
     // set first reference
-    await expect(page.locator('#selfOrEmpty-selectTypeMenuButton')).toBeVisible()
-    await page.locator('#selfOrEmpty-selectTypeMenuButton').click()
+    await expect(page.locator('#sanity-form-selfOrEmpty-selectTypeMenuButton')).toBeVisible()
+    await page.locator('#sanity-form-selfOrEmpty-selectTypeMenuButton').click()
     await expect(
       page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem'),
     ).toBeVisible()

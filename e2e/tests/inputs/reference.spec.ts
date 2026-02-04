@@ -37,7 +37,7 @@ withDefaultClient((context) => {
     const referenceInput = page.getByTestId('reference-input')
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')
-    const authorListbox = page.locator('#author-listbox')
+    const authorListbox = page.locator('#sanity-form-author-listbox')
     const popover = page.getByTestId('autocomplete-popover')
 
     // Select the first document in the list.
@@ -50,8 +50,8 @@ withDefaultClient((context) => {
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
-    await expect(page.locator('#author-option-authorA')).toBeVisible()
-    await page.locator('#author-option-authorA').click()
+    await expect(page.locator('#sanity-form-author-option-authorA')).toBeVisible()
+    await page.locator('#sanity-form-author-option-authorA').click()
 
     // wait for the edit to finish
     await expectSavedStatus(paneFooter, {timeout: 30_000})
@@ -63,7 +63,7 @@ withDefaultClient((context) => {
     await expectPublishedStatus(paneFooter, {timeout: 30_000})
 
     // Open the Author reference input.
-    await page.locator('#author-menuButton').click()
+    await page.locator('#sanity-form-author-menuButton').click()
     await page.getByRole('menuitem').getByText('Replace').click()
     // Select the first document in the list.
     await expect(page.getByTestId('autocomplete')).toBeVisible()
@@ -75,8 +75,8 @@ withDefaultClient((context) => {
     await expect(popover).toBeVisible()
     await expect(authorListbox).toBeVisible()
 
-    await expect(page.locator('#author-option-authorB')).toBeVisible()
-    await page.locator('#author-option-authorB').click()
+    await expect(page.locator('#sanity-form-author-option-authorB')).toBeVisible()
+    await page.locator('#sanity-form-author-option-authorB').click()
     await expect(paneFooter).toContainText('Saved', {timeout: 30_000})
 
     // wait for the edit to finish
