@@ -4,7 +4,6 @@ import {test} from '../../studio-test'
 
 test.describe('sanity/structure: document pane', () => {
   test('on document with defaultPanes, the panes should be expanded', async ({page}) => {
-    // await createDraftDocument('/content/input-debug;manyViews')
     await page.goto(`/content/input-debug;manyViews;foo-id`)
     // It should render the two panes
     await expect(page.getByTestId('document-pane')).toHaveCount(2)

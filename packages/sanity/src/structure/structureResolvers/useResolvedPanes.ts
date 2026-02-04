@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {ReplaySubject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {type RouterState, useRouter} from 'sanity/router'
