@@ -677,6 +677,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.remove-invalid-item': 'Remove',
   /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
+  /** Tooltip text explaining why adding items is disabled when array max is reached */
+  'inputs.array.action.max-reached': 'Maximum items reached',
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
   'inputs.array.error.can-delete-but-no-edit-description':
     'You can still move or delete this item, but it cannot be edited since the schema definition for its type is nowhere to be found.',
