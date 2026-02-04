@@ -1,17 +1,17 @@
 {
   "name": "test-app",
-  "private": true,
   "version": "1.0.0",
-  "main": "package.json",
-  "license": "UNLICENSED",
-  "scripts": {
-    "dev": "sanity dev",
-    "build": "sanity build",
-    "start": "sanity start"
-  },
+  "private": true,
   "keywords": [
     "sanity"
   ],
+  "license": "UNLICENSED",
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev",
+    "start": "sanity start"
+  },
   "dependencies": {
     "@sanity/sdk": "^2.1.2",
     "@sanity/sdk-react": "^0.0.3",
@@ -27,9 +27,9 @@
     "typescript": "^5.9.3"
   },
   "prettier": {
-    "semi": false,
-    "printWidth": 100,
     "bracketSpacing": false,
+    "printWidth": 100,
+    "semi": false,
     "singleQuote": true
   }
 }

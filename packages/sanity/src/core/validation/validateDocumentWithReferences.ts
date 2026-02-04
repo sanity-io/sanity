@@ -19,6 +19,7 @@ import {
   of,
   timer,
 } from 'rxjs'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   distinct,
   distinctUntilChanged,
@@ -31,7 +32,6 @@ import {
   skip,
   throttleTime,
 } from 'rxjs/operators'
-import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../config/types'

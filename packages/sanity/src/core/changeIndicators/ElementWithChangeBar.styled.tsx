@@ -42,29 +42,35 @@ export const ChangeBarWrapper = styled.div<RootProps>(
       }
 
       /* hide when field is not changed */
-      ${$hasFocus &&
-      css`
+      ${
+        $hasFocus &&
+        css`
         ${ChangeBarMarker}:after {
           opacity: 1;
         }
-      `}
+      `
+      }
 
       /* hide when field is not changed */
-      ${!$changed &&
-      css`
+      ${
+        !$changed &&
+        css`
         ${ChangeBarMarker}:after {
           opacity: 0;
           pointer-events: none;
         }
-      `}
+      `
+      }
 
       /* hide hover effect when review changes is open */
-      ${$isReviewChangeOpen &&
-      css`
+      ${
+        $isReviewChangeOpen &&
+        css`
         ${ChangeBarButton} {
           opacity: 0;
         }
-      `}
+      `
+      }
     `
   },
 )
@@ -127,11 +133,13 @@ export const ChangeBarButton = styled.button<{
     position: absolute;
     height: 100%;
 
-    ${$isInteractive &&
-    css`
-      cursor: pointer;
-      pointer-events: all;
-    `}
+    ${
+      $isInteractive &&
+      css`
+        cursor: pointer;
+        pointer-events: all;
+      `
+    }
 
     left: calc(-0.25rem + var(--change-bar-offset));
     width: calc(1rem - 1px);
@@ -147,13 +155,15 @@ export const ChangeBarButton = styled.button<{
       outline: 0;
     }
 
-    ${$withHoverEffect &&
-    css`
-      @media (hover: hover) {
-        &:hover {
-          opacity: 0.2;
+    ${
+      $withHoverEffect &&
+      css`
+        @media (hover: hover) {
+          &:hover {
+            opacity: 0.2;
+          }
         }
-      }
-    `}
+      `
+    }
   `
 })

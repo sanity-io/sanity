@@ -46,12 +46,12 @@ Examples
 
 interface CreateFlags {
   ['dry-run']?: boolean
-  concurrency?: number
+  'concurrency'?: number
   ['from-export']?: string
-  progress?: boolean
-  dataset?: string
-  project?: string
-  confirm?: boolean
+  'progress'?: boolean
+  'dataset'?: string
+  'project'?: string
+  'confirm'?: boolean
 }
 
 function parseCliFlags(args: {argv?: string[]}) {

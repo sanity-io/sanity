@@ -3,26 +3,31 @@
   "version": "5.8.0",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
+    "diff",
     "headless",
     "realtime",
-    "content",
-    "diff"
+    "sanity"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/diff"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -31,11 +36,12 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/diff/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -58,11 +64,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./package.json": "./package.json"
-    }
   }
 }

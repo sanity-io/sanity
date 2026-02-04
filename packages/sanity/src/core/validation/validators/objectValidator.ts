@@ -111,11 +111,12 @@ export const objectValidators: Validators = {
       const asset = await context
         .getClient({apiVersion: '2025-02-19'})
         .withConfig(resourceConfig)
-        .fetch<
-          (MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null
-        >(`*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`, {
-          id: documentId,
-        })
+        .fetch<(MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null>(
+          `*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`,
+          {
+            id: documentId,
+          },
+        )
       if (!asset) {
         console.warn(
           `${context.i18n.t('validation:object.media-not-found')}\nAsset ID: ${value.media._ref}`,

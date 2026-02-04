@@ -1,5 +1,5 @@
-import {documentEventHandler} from '@sanity/functions'
 import {createClient} from '@sanity/client'
+import {documentEventHandler} from '@sanity/functions'
 
 interface PagePayload {
   _id: string

@@ -3,26 +3,56 @@
   "version": "5.8.0",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content",
+    "sanity",
     "util"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/util"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "fs": [
+        "./lib/fs.d.ts"
+      ],
+      "client": [
+        "./lib/client.d.ts"
+      ],
+      "concurrency-limiter": [
+        "./lib/concurrency-limiter.d.ts"
+      ],
+      "content": [
+        "./lib/content.d.ts"
+      ],
+      "createSafeJsonParser": [
+        "./lib/createSafeJsonParser.d.ts"
+      ],
+      "legacyDateFormat": [
+        "./lib/legacyDateFormat.d.ts"
+      ],
+      "paths": [
+        "./lib/paths.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -67,36 +97,22 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "fs": [
-        "./lib/fs.d.ts"
-      ],
-      "client": [
-        "./lib/client.d.ts"
-      ],
-      "concurrency-limiter": [
-        "./lib/concurrency-limiter.d.ts"
-      ],
-      "content": [
-        "./lib/content.d.ts"
-      ],
-      "createSafeJsonParser": [
-        "./lib/createSafeJsonParser.d.ts"
-      ],
-      "legacyDateFormat": [
-        "./lib/legacyDateFormat.d.ts"
-      ],
-      "paths": [
-        "./lib/paths.d.ts"
-      ]
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./fs": "./lib/fs.js",
+      "./client": "./lib/client.js",
+      "./concurrency-limiter": "./lib/concurrency-limiter.js",
+      "./content": "./lib/content.js",
+      "./createSafeJsonParser": {
+        "require": "./lib/createSafeJsonParser.cjs",
+        "default": "./lib/createSafeJsonParser.js"
+      },
+      "./legacyDateFormat": "./lib/legacyDateFormat.js",
+      "./paths": "./lib/paths.js",
+      "./package.json": "./package.json"
     }
   },
-  "files": [
-    "lib"
-  ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/util/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -128,21 +144,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./fs": "./lib/fs.js",
-      "./client": "./lib/client.js",
-      "./concurrency-limiter": "./lib/concurrency-limiter.js",
-      "./content": "./lib/content.js",
-      "./createSafeJsonParser": {
-        "require": "./lib/createSafeJsonParser.cjs",
-        "default": "./lib/createSafeJsonParser.js"
-      },
-      "./legacyDateFormat": "./lib/legacyDateFormat.js",
-      "./paths": "./lib/paths.js",
-      "./package.json": "./package.json"
-    }
   }
 }

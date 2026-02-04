@@ -1,5 +1,5 @@
-import {useFormValue} from 'sanity'
 import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {useFormValue} from 'sanity'
 
 import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 

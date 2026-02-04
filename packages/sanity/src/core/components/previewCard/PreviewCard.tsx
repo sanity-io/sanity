@@ -59,6 +59,6 @@ export const PreviewCard = forwardRef(function PreviewCard(
  */
 export const ReferenceInputPreviewCard = styled(PreviewCard)`
   /* this is a hack to avoid layout jumps while previews are loading
-there's probably better ways of solving this */
+    there's probably better ways of solving this */
   min-height: 36px;
 `

@@ -3,25 +3,68 @@
   "version": "5.8.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content"
+    "sanity"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/sanity"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "dist",
+    "static",
+    "mock-browser-env-stub-loader.mjs"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "_internal": [
+        "./lib/_internal.d.ts"
+      ],
+      "_singletons": [
+        "./lib/_singletons.d.ts"
+      ],
+      "_createContext": [
+        "./lib/_createContext.d.ts"
+      ],
+      "cli": [
+        "./lib/cli.d.ts"
+      ],
+      "desk": [
+        "./lib/desk.d.ts"
+      ],
+      "migrate": [
+        "./lib/migrate.d.ts"
+      ],
+      "presentation": [
+        "./lib/presentation.d.ts"
+      ],
+      "router": [
+        "./lib/router.d.ts"
+      ],
+      "structure": [
+        "./lib/structure.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -80,49 +123,22 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ],
-      "_singletons": [
-        "./lib/_singletons.d.ts"
-      ],
-      "_createContext": [
-        "./lib/_createContext.d.ts"
-      ],
-      "cli": [
-        "./lib/cli.d.ts"
-      ],
-      "desk": [
-        "./lib/desk.d.ts"
-      ],
-      "migrate": [
-        "./lib/migrate.d.ts"
-      ],
-      "presentation": [
-        "./lib/presentation.d.ts"
-      ],
-      "router": [
-        "./lib/router.d.ts"
-      ],
-      "structure": [
-        "./lib/structure.d.ts"
-      ]
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./_singletons": "./lib/_singletons.js",
+      "./_createContext": "./lib/_createContext.js",
+      "./cli": "./lib/cli.js",
+      "./desk": "./lib/desk.js",
+      "./presentation": "./lib/presentation.js",
+      "./router": "./lib/router.js",
+      "./structure": "./lib/structure.js",
+      "./media-library": "./lib/media-library.js",
+      "./migrate": "./lib/migrate.js",
+      "./package.json": "./package.json"
     }
   },
-  "bin": {
-    "sanity": "./bin/sanity"
-  },
-  "files": [
-    "bin",
-    "lib",
-    "dist",
-    "static",
-    "mock-browser-env-stub-loader.mjs"
-  ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
@@ -346,21 +362,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./_internal": "./lib/_internal.js",
-      "./_singletons": "./lib/_singletons.js",
-      "./_createContext": "./lib/_createContext.js",
-      "./cli": "./lib/cli.js",
-      "./desk": "./lib/desk.js",
-      "./presentation": "./lib/presentation.js",
-      "./router": "./lib/router.js",
-      "./structure": "./lib/structure.js",
-      "./media-library": "./lib/media-library.js",
-      "./migrate": "./lib/migrate.js",
-      "./package.json": "./package.json"
-    }
   }
 }

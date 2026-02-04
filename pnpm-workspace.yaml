@@ -33,7 +33,6 @@ catalog:
   eslint: ^9.39.2
   globals: ^16.2.0
   playwright: 1.57.0
-  prettier: ^3.8.1
   react: ^19.2.3
   react-dom: ^19.2.3
   react-is: ^19.2.3
@@ -65,6 +64,7 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
   - '@portabletext/*'
@@ -74,6 +74,7 @@ minimumReleaseAgeExclude:
   - csstype
   - 'get-it'
   - 'groq-js'
+  - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'eslint-plugin-oxlint'
