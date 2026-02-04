@@ -34,12 +34,13 @@ export default defineType({
   ],
   validation: (Rule) =>
     Rule.custom((doc) => {
-      if (!doc || !doc.title) {
+      const d = doc as {title?: string; myUrlField?: string} | undefined
+      if (!d || !d.title) {
         return true
       }
 
-      const needsUrl = (doc.title[0] || '').toUpperCase() === doc.title[0]
-      return needsUrl && !doc.myUrlField
+      const needsUrl = (d.title[0] || '').toUpperCase() === d.title[0]
+      return needsUrl && !d.myUrlField
         ? 'When the first character of the title is uppercase, you will need to fill out the "Plain url"-field'
         : true
     }),
@@ -260,7 +261,7 @@ export default defineType({
       to: [{type: 'book'}],
       validation: (Rule) =>
         Rule.custom(
-          (value) =>
+          (value: {_ref?: string} | undefined) =>
             new Promise((resolve) => {
               if (!value || !value._ref) {
                 return resolve(true)
@@ -410,12 +411,12 @@ export default defineType({
       title: 'A geopoint',
       description: 'Required, must be in Norway somewhere',
       validation: (Rule) =>
-        Rule.custom((geoPoint) => {
+        Rule.custom((geoPoint: {lng?: number; lat?: number} | undefined) => {
           if (!geoPoint) {
             return true
           }
 
-          const location = points([[geoPoint.lng, geoPoint.lat]])
+          const location = points([[geoPoint.lng ?? 0, geoPoint.lat ?? 0]])
           const norwayFeature = featureCollection(norway)
           const ptsWithin = pointsWithinPolygon(location, norwayFeature)
           return ptsWithin.features.length > 0 ? true : 'Location must be in Norway'

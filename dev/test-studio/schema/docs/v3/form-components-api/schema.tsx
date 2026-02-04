@@ -1,4 +1,11 @@
-import {defineType} from 'sanity'
+import {
+  type ArrayOfObjectsInputProps,
+  defineType,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+  type PreviewProps,
+} from 'sanity'
 
 import {structureGroupOptions} from '../../../../structure/groupByOption'
 import {
@@ -27,8 +34,8 @@ export const formComponentsSchema = defineType({
       title: 'Boolean',
       description: 'Basic boolean',
       components: {
-        field: (props) => <CustomField {...props} testId="field-schema-boolean" />,
-        input: (props) => <CustomInput {...props} testId="input-schema-boolean" />,
+        field: (props: FieldProps) => <CustomField {...props} testId="field-schema-boolean" />,
+        input: (props: InputProps) => <CustomInput {...props} testId="input-schema-boolean" />,
       },
     },
     {
@@ -37,8 +44,8 @@ export const formComponentsSchema = defineType({
       title: 'String',
       description: 'Basic string',
       components: {
-        field: (props) => <CustomField {...props} testId="field-schema-string" />,
-        input: (props) => <CustomInput {...props} testId="input-schema-string" />,
+        field: (props: FieldProps) => <CustomField {...props} testId="field-schema-string" />,
+        input: (props: InputProps) => <CustomInput {...props} testId="input-schema-string" />,
       },
     },
     {
@@ -47,8 +54,8 @@ export const formComponentsSchema = defineType({
       title: 'Reference',
       description: 'Basic reference',
       components: {
-        input: (props) => <CustomInput {...props} testId="input-schema-reference" />,
-        field: (props) => <CustomField {...props} testId="field-schema-reference" />,
+        input: (props: InputProps) => <CustomInput {...props} testId="input-schema-reference" />,
+        field: (props: FieldProps) => <CustomField {...props} testId="field-schema-reference" />,
       },
       to: [
         {
@@ -65,8 +72,8 @@ export const formComponentsSchema = defineType({
       title: 'Image',
       description: 'Basic image',
       components: {
-        input: (props) => <CustomInput {...props} testId="input-schema-image" />,
-        field: (props) => <CustomField {...props} testId="field-schema-image" />,
+        input: (props: InputProps) => <CustomInput {...props} testId="input-schema-image" />,
+        field: (props: FieldProps) => <CustomField {...props} testId="field-schema-image" />,
       },
     },
     {
@@ -74,20 +81,24 @@ export const formComponentsSchema = defineType({
       title: 'Array of primitives',
       name: 'arrayOfPrimitives',
       components: {
-        input: (props) => <CustomInput {...props} testId="input-schema-array-primitives" />,
-        field: (props) => <CustomField {...props} testId="field-schema-array-primitives" />,
+        input: (props: ArrayOfObjectsInputProps) => (
+          <CustomInput {...props} testId="input-schema-array-primitives" />
+        ),
+        field: (props: FieldProps) => (
+          <CustomField {...props} testId="field-schema-array-primitives" />
+        ),
       },
       of: [
         {
           type: 'string',
           components: {
-            input: (props) => (
+            input: (props: InputProps) => (
               <CustomInput {...props} testId="input-schema-array-string-input-primitive" />
             ),
-            field: (props) => (
+            field: (props: FieldProps) => (
               <CustomField {...props} testId="field-schema-array-string-field-primitive" />
             ),
-            item: (props) => (
+            item: (props: ItemProps) => (
               <CustomItem {...props} testId="item-schema-array-string-item-primitive" />
             ),
           },
@@ -95,13 +106,13 @@ export const formComponentsSchema = defineType({
         {
           type: 'number',
           components: {
-            input: (props) => (
+            input: (props: InputProps) => (
               <CustomInput {...props} testId="input-schema-array-number-input-primitive" />
             ),
-            field: (props) => (
+            field: (props: FieldProps) => (
               <CustomField {...props} testId="field-schema-array-number-field-primitive" />
             ),
-            item: (props) => (
+            item: (props: ItemProps) => (
               <CustomItem {...props} testId="field-schema-array-number-item-primitive" />
             ),
           },
@@ -113,17 +124,29 @@ export const formComponentsSchema = defineType({
       title: 'Array of objects',
       type: 'array',
       components: {
-        input: (props) => <CustomInput {...props} testId="input-schema-array-objects" />,
-        field: (props) => <CustomField {...props} testId="field-schema-array-objects" />,
+        input: (props: ArrayOfObjectsInputProps) => (
+          <CustomInput {...props} testId="input-schema-array-objects" />
+        ),
+        field: (props: FieldProps) => (
+          <CustomField {...props} testId="field-schema-array-objects" />
+        ),
       },
       of: [
         {
           type: 'object',
           components: {
-            input: (props) => <CustomInput {...props} testId="input-schema-array-input-object" />,
-            field: (props) => <CustomField {...props} testId="field-schema-array-field-object" />,
-            item: (props) => <CustomItem {...props} testId="field-schema-array-item-object" />,
-            preview: (props) => <CustomPreview {...props} />,
+            input: (props: InputProps) => (
+              <CustomInput {...props} testId="input-schema-array-input-object" />
+            ),
+            field: (props: FieldProps) => (
+              <CustomField {...props} testId="field-schema-array-field-object" />
+            ),
+            item: (props: ItemProps) => (
+              <CustomItem {...props} testId="field-schema-array-item-object" />
+            ),
+            preview: (props: PreviewProps) => (
+              <CustomPreview {...props} testId="preview-schema-array-object" />
+            ),
           },
           fields: [
             {
@@ -158,8 +181,10 @@ export const formComponentsSchema = defineType({
       name: 'body',
       title: 'Body',
       components: {
-        input: (props) => <CustomInput {...props} testId="input-schema-pte" />,
-        field: (props) => <CustomField {...props} testId="field-schema-pte" />,
+        input: (props: ArrayOfObjectsInputProps) => (
+          <CustomInput {...props} testId="input-schema-pte" />
+        ),
+        field: (props: FieldProps) => <CustomField {...props} testId="field-schema-pte" />,
       },
       of: [
         {

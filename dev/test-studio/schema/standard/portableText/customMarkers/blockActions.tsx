@@ -4,14 +4,19 @@ import {Box, Button, Popover, Stack, Text, TextArea} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'
 
+type BlockWithComments = PortableTextBlock & {
+  comments?: string[]
+}
+
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {
   const {block, set} = props
 
-  return <CommentButton set={set} value={block} />
+  return <CommentButton set={set as (block: PortableTextBlock) => void} value={block} />
 }
 
 function CommentButton(props: {set: (block: PortableTextBlock) => void; value: PortableTextBlock}) {
-  const {set, value} = props
+  const {set, value: rawValue} = props
+  const value = rawValue as BlockWithComments
   const [open, setOpen] = useState(false)
   const [comment, setComment] = useState('')
 

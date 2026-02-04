@@ -80,7 +80,7 @@ function DocumentSheetListPaneInner({
     meta: {
       selectedAnchor,
       setSelectedAnchor,
-      patchDocument: (documentId, fieldId, value) => null,
+      patchDocument: (documentId: string, fieldId: string, value: unknown) => null,
     },
   })
 
