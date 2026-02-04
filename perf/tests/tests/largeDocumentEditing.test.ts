@@ -74,7 +74,9 @@ export default {
     // Wait for the form to render
     await page.waitForSelector('[data-testid="string-input"]')
 
-    const input = page.getByTestId('sanity-form-field-listContent.title').getByTestId('string-input')
+    const input = page
+      .getByTestId('sanity-form-field-listContent.title')
+      .getByTestId('string-input')
 
     await input.click()
 

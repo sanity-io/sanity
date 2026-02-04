@@ -15,7 +15,9 @@ test.describe('Array revert changes', () => {
     // Find the inlineEditingArray field
     await expect(page.getByTestId('sanity-form-field-inlineEditingArray')).toBeVisible()
     await expect(
-      page.getByTestId('sanity-form-field-inlineEditingArray').getByTestId('add-single-object-button'),
+      page
+        .getByTestId('sanity-form-field-inlineEditingArray')
+        .getByTestId('add-single-object-button'),
     ).toBeVisible()
     await page
       .getByTestId('sanity-form-field-inlineEditingArray')
@@ -126,7 +128,10 @@ test.describe('Array revert changes', () => {
     await expect(page.getByRole('button', {name: 'Item 3 description'})).toBeVisible()
 
     await expect(
-      page.getByTestId('sanity-form-field-inlineEditingArray').getByTestId('change-bar-wrapper').nth(1),
+      page
+        .getByTestId('sanity-form-field-inlineEditingArray')
+        .getByTestId('change-bar-wrapper')
+        .nth(1),
     ).toBeVisible()
     await expect(
       page

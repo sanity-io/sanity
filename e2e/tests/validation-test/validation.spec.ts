@@ -23,16 +23,25 @@ test.describe('Validation test', () => {
       })
 
       await createDraftDocument('/content/house')
-      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
-      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeEnabled()
-      await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill('Test House')
+      await expect(
+        page.getByTestId('sanity-form-field-name').getByTestId('string-input'),
+      ).toBeVisible()
+      await expect(
+        page.getByTestId('sanity-form-field-name').getByTestId('string-input'),
+      ).toBeEnabled()
+      await page
+        .getByTestId('sanity-form-field-name')
+        .getByTestId('string-input')
+        .fill('Test House')
       await expect(page.getByTestId('add-single-object-button')).toBeVisible()
       await expect(page.getByTestId('add-single-object-button')).toBeEnabled()
       await page.getByTestId('add-single-object-button').click()
 
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      const roomNameInput = page.getByTestId(/sanity-form-field-house\[.*\]\.name/).getByTestId('string-input')
+      const roomNameInput = page
+        .getByTestId(/sanity-form-field-house\[.*\]\.name/)
+        .getByTestId('string-input')
       await expect(roomNameInput).toBeVisible()
       await expect(roomNameInput).toBeEnabled()
       await roomNameInput.fill('Test Room')
@@ -76,9 +85,16 @@ test.describe('Validation test', () => {
 
       await createDraftDocument('/content/house')
       await expect(page.getByTestId('document-panel-scroller')).toBeVisible()
-      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
-      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeEnabled()
-      await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill('Test House')
+      await expect(
+        page.getByTestId('sanity-form-field-name').getByTestId('string-input'),
+      ).toBeVisible()
+      await expect(
+        page.getByTestId('sanity-form-field-name').getByTestId('string-input'),
+      ).toBeEnabled()
+      await page
+        .getByTestId('sanity-form-field-name')
+        .getByTestId('string-input')
+        .fill('Test House')
 
       // Wait for the add button to be ready and interactable
       const addButton = page.getByTestId('add-single-object-button')

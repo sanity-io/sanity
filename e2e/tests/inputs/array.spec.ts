@@ -23,7 +23,9 @@ test(`file drop event should not propagate to dialog parent`, async ({
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })
-  const list = page.getByTestId('sanity-form-field-arrayOfMultipleTypes').locator('#arrayOfMultipleTypes')
+  const list = page
+    .getByTestId('sanity-form-field-arrayOfMultipleTypes')
+    .locator('#arrayOfMultipleTypes')
   const item = list.locator('[data-ui="Grid"] > div')
 
   const dataTransfer = await createFileDataTransferHandle(

@@ -52,7 +52,9 @@ export default {
     await page.waitForSelector('[data-testid="string-input"]')
     await page.getByRole('button', {name: 'Item 1'}).click()
 
-    const input = page.getByTestId('sanity-form-field-deep[_key=="item-1"].text').getByTestId('string-input')
+    const input = page
+      .getByTestId('sanity-form-field-deep[_key=="item-1"].text')
+      .getByTestId('string-input')
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>

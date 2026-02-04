@@ -57,7 +57,9 @@ test(`deleted document shows the right name from last revision`, async ({
   const documentUrl = page.url()
 
   // Verify the name is displayed correctly before deletion
-  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(documentName)
+  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
+    documentName,
+  )
 
   // Publish the document, to allow deletion
   await publishButton.click()
@@ -76,7 +78,9 @@ test(`deleted document shows the right name from last revision`, async ({
 
   // Verify that the form still shows the correct name from the last revision
   // The form should display the last revision document content
-  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(documentName)
+  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
+    documentName,
+  )
 
   // Verify the document title in the header also shows the correct name
   await expect(page.getByTestId('document-panel-document-title')).toHaveText(documentName)

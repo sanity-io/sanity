@@ -50,7 +50,9 @@ test(`custom publish action can patch document before publication`, async ({
   const publishKeypress = () => page.locator('body').press('Control+Alt+p')
   const documentStatus = page.getByTestId('pane-footer-document-status')
   const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
-  const publishedAtInput = page.getByTestId('sanity-form-field-publishedAt').getByTestId('date-input')
+  const publishedAtInput = page
+    .getByTestId('sanity-form-field-publishedAt')
+    .getByTestId('date-input')
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
   await createDraftDocument('/content/input-debug;documentActionsTest')
