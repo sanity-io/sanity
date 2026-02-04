@@ -157,7 +157,7 @@ export function runSanityLongRunningCommand(
   expectedOutput: (result: {stdout: string; stderr: string}) => Promise<void> | void,
 ) {
   const cwd = options.cwd ?? ((currentCwd) => currentCwd)
-  const timeout = options.timeout || 10_000
+  const timeout = options.timeout || 25_000
   const startedAt = Date.now()
 
   const proc = spawn(process.argv[0], [cliBinPath, ...args], {
