@@ -70,42 +70,6 @@ export function useResolvedPanes(): Panes {
 
   const routerPanesStream = useRouterPanesStream()
 
-  const maybeOpenDefaultPanes = useCallback(
-    (result: ResolvedPanesData) => {
-      const {paneDataItems, routerPanes} = result
-
-      // Find the last pane that is a document with defaultPanes
-      const lastPaneData = paneDataItems[paneDataItems.length - 1]
-      const lastPane = lastPaneData?.pane
-      if (!lastPane || !isDocumentPaneNode(lastPane)) return
-
-      // Check if defaultPanes is configured
-      if (!lastPane.defaultPanes) return
-
-      const currentGroup = routerPanes[paneDataItems.length - 1]
-      // Only expand if currently single sibling (not already split)
-      if (!currentGroup || currentGroup.length !== 1) return
-
-      const currentParams = currentGroup[0].params
-      if (currentParams?.expanded) return
-
-      // Create expanded group with split panes (similar to duplicateCurrent + setView)
-      const expandedGroup: RouterPaneGroup = lastPane.defaultPanes.map((viewId, index) => ({
-        id: currentGroup[0].id,
-        params: {
-          ...currentParams,
-          view: viewId,
-          // Adds expanded to the first pane in the group to avoid re-expanding the group with every pane change
-          ...(index === 0 ? {expanded: 'true'} : {}),
-        },
-        payload: currentGroup[0].payload,
-      }))
-      // Navigate to expanded state (replace to avoid polluting history)
-      navigate({panes: [...routerPanes.slice(1, -1), expandedGroup]}, {replace: true})
-    },
-    [navigate],
-  )
-
   useEffect(() => {
     const resolvedPanes$ = createResolvedPaneNodeStream({
       rootPaneNode,
@@ -157,14 +121,48 @@ export function useResolvedPanes(): Panes {
     )
 
     const subscription = resolvedPanes$.subscribe({
-      next: (result) => {
-        setData(result)
-      },
+      next: (result) => setData(result),
       error: (e) => setError(e),
     })
 
     return () => subscription.unsubscribe()
   }, [rootPaneNode, routerPanesStream, structureContext])
+
+  const maybeOpenDefaultPanes = useCallback(
+    (result: ResolvedPanesData) => {
+      const {paneDataItems, routerPanes} = result
+
+      // Find the last pane that is a document with defaultPanes
+      const lastPaneData = paneDataItems[paneDataItems.length - 1]
+      const lastPane = lastPaneData?.pane
+      if (!lastPane || !isDocumentPaneNode(lastPane)) return
+
+      // Check if defaultPanes is configured
+      if (!lastPane.defaultPanes) return
+
+      const currentGroup = routerPanes[paneDataItems.length - 1]
+      // Only expand if currently single sibling (not already split)
+      if (!currentGroup || currentGroup.length !== 1) return
+
+      const currentParams = currentGroup[0].params
+      if (currentParams?.expanded) return
+
+      // Create expanded group with split panes (similar to duplicateCurrent + setView)
+      const expandedGroup: RouterPaneGroup = lastPane.defaultPanes.map((viewId, index) => ({
+        id: currentGroup[0].id,
+        params: {
+          ...currentParams,
+          view: viewId,
+          // Adds expanded to the first pane in the group to avoid re-expanding the group with every pane change
+          ...(index === 0 ? {expanded: 'true'} : {}),
+        },
+        payload: currentGroup[0].payload,
+      }))
+      // Navigate to expanded state (replace to avoid polluting history)
+      navigate({panes: [...routerPanes.slice(1, -1), expandedGroup]}, {replace: true})
+    },
+    [navigate],
+  )
 
   useEffect(() => {
     maybeOpenDefaultPanes(data)
