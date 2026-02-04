@@ -182,6 +182,7 @@ export const RELEASE_STATE_CHANGE: {
       id: 'HjgIO3PPq5URB0RPr1cN6P',
       timestamp: '2025-02-17T15:49:47.189728Z',
       author: 'p8xDvUMxC',
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       mutations: [
         {
           patch: {

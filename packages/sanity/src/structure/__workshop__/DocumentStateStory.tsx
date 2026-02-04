@@ -58,6 +58,7 @@ function Debug(props: {documentId: string; documentType: string}) {
 
   const editState = useEditState(documentId, documentType)
   const value = editState?.draft || editState?.published || initialValue.value
+  // @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
   const {validation} = useValidationStatus(documentId, documentType, value._id)
   const connectionState = useConnectionState(documentId, documentType)
 
@@ -130,6 +131,7 @@ function Debug(props: {documentId: string; documentType: string}) {
 function useDocumentActions(documentId: string, schemaType: string, editState: EditStateFor) {
   const {document} = useSource()
   const actions = useMemo(
+    // @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
     () => document.actions({schemaType, documentId}),
     [document, documentId, schemaType],
   )

@@ -17,7 +17,9 @@ export const useProjectSubscriptionsMockReturn: Mocked<ReturnType<typeof useProj
       status: 'active',
       startedAt: '2024-02-01T00:00:00Z',
       startedBy: 'user_303',
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       endedAt: null,
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       endedBy: null,
       trialUntil: '2024-02-15T00:00:00Z',
       plan: {
@@ -49,6 +51,7 @@ export const useProjectSubscriptionsMockReturn: Mocked<ReturnType<typeof useProj
                 maxRetentionDays: 123,
               },
               id: '',
+              // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
               variantId: null,
               name: '',
               price: 0,

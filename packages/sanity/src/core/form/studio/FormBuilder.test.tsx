@@ -79,6 +79,7 @@ describe('FormBuilder', () => {
 
       const [patchChannel] = useState(() => createPatchChannel())
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const formState = useFormState({
         schemaType,
         documentValue,
@@ -92,6 +93,7 @@ describe('FormBuilder', () => {
         validation: [],
       })
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const formBuilderProps: FormBuilderProps = useMemo(
         () => ({
           __internal_patchChannel: patchChannel,
@@ -176,6 +178,7 @@ describe('FormBuilder', () => {
 
       const [patchChannel] = useState(() => createPatchChannel())
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const formState = useFormState({
         schemaType,
         documentValue,
@@ -189,6 +192,7 @@ describe('FormBuilder', () => {
         validation: [],
       })
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const formBuilderProps: FormBuilderProps = useMemo(
         () => ({
           __internal_patchChannel: patchChannel,

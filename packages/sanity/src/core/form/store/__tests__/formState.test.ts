@@ -256,7 +256,9 @@ function* traverseForm(
       case 'fieldSet': {
         for (const fieldsetMember of member.fieldSet.members) {
           if (fieldsetMember.kind === 'error') continue
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           yield* traverseForm(fieldsetMember.field as FormNode, {
+            // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
             member: fieldsetMember,
             fieldset: member.fieldSet,
           })

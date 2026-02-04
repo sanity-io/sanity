@@ -6,12 +6,12 @@
   "main": "./src/package.bundle.ts",
   "types": "./src/package.bundle.ts",
   "scripts": {
-    "check:types": "(cd ../../.. && tsc --project packages/@repo/package.bundle/tsconfig.json --erasableSyntaxOnly)",
     "lint": "eslint ."
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "lodash-es": "^4.17.22",

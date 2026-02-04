@@ -114,6 +114,7 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'published'])
   })
@@ -127,6 +128,7 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toContainEqual(['perspective', 'rActive'])
   })
@@ -140,6 +142,7 @@ describe('ReleaseDocumentPreview', () => {
     })
 
     const link = container.querySelector('a')
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toBeNull()
   })

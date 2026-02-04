@@ -39,7 +39,6 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -59,7 +58,6 @@
     "@sanity/insert-menu": "3.0.4",
     "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "eslint": "catalog:",
     "react": "catalog:",

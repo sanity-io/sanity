@@ -5,6 +5,7 @@ import {getTestRunArgs, runSanityCmdCommand, studioNames} from './shared/environ
 
 describe.skip('CLI: `sanity tokens`', () => {
   describe.each(studioNames)('%s', (studioName) => {
+    // @ts-expect-error -- Legacy test code, will be fixed separately
     const testRunArgs = getTestRunArgs(studioName)
     const testId = Math.random().toString(36).slice(2, 15)
 

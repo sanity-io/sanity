@@ -24,6 +24,7 @@ export default function DocumentActionsStory() {
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={0}>
         <StructureToolProvider>
+          {/* @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking */}
           <DocumentPaneProvider index={1} itemId="test" pane={pane} paneKey="test">
             <DocumentStatusBarActions />
           </DocumentPaneProvider>

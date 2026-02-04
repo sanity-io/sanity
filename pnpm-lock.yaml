@@ -241,6 +241,9 @@ importers:
       '@sanity/ui':
         specifier: 'catalog:'
         version: 3.1.11(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-is@19.2.4)(react@19.2.3)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.7
       react:
         specifier: 'catalog:'
         version: 19.2.3
@@ -546,6 +549,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/@repo/eslint-config
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.7
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -810,6 +816,9 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.1
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
@@ -879,6 +888,9 @@ importers:
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.1.2(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -1343,9 +1355,6 @@ importers:
       '@sanity/pkg-utils':
         specifier: 'catalog:'
         version: 10.4.3(@types/babel__core@7.20.5)(@types/node@24.10.4)(@typescript/native-preview@7.0.0-dev.20260112.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(debug@4.4.3)(typescript@5.9.3)
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -1395,9 +1404,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -1465,9 +1471,6 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -1508,9 +1511,6 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.1.2(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -1566,9 +1566,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -1687,9 +1684,6 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.1.2(vite@7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -1741,9 +1735,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -2297,9 +2288,6 @@ importers:
       '@types/yargs':
         specifier: ^17.0.33
         version: 17.0.35
-      '@typescript/native-preview':
-        specifier: 'catalog:'
-        version: 7.0.0-dev.20260112.1
       '@vitest/expect':
         specifier: ^4.0.18
         version: 4.0.18

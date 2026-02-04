@@ -88,6 +88,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
@@ -110,6 +111,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
@@ -134,6 +136,7 @@ describe('VersionContextMenu', () => {
       isVersion: false,
     }
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...publishedProps} />, {wrapper})
 
     expect(screen.queryByTestId('discard')).not.toBeInTheDocument()
@@ -144,6 +147,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     await waitFor(() => {
@@ -160,6 +164,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
@@ -179,6 +184,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} />, {wrapper})
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
@@ -198,6 +204,7 @@ describe('VersionContextMenu', () => {
 
     const wrapper = await createTestProvider()
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render(<VersionContextMenu {...defaultProps} isGoingToUnpublish />, {wrapper})
 
     await waitFor(() => {

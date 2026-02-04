@@ -377,6 +377,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
               previewValues: {
                 isLoading: false,
                 values: undefined,
@@ -444,6 +445,7 @@ describe('ReleaseMenuButton', () => {
                 hasError: false,
                 validation: [],
               },
+              // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
               previewValues: {
                 isLoading: false,
                 values: undefined,

@@ -37,6 +37,7 @@ beforeEach(() => {
 })
 
 function renderPreview(media: unknown): void {
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   render(<SanityDefaultPreview layout="default" media={media} title="Test" />)
 }
 
@@ -45,6 +46,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
     const sanityUrl = 'https://cdn.sanity.io/images/project/dataset/abc123-1920x1080.jpg'
 
     vi.mocked(isSanityImageUrl).mockReturnValue(true)
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     vi.mocked(parseImageAssetUrl).mockReturnValue({
       assetId: 'image-abc123-1920x1080-jpg',
       projectId: 'project',
@@ -54,6 +56,7 @@ describe('SanityDefaultPreview - Sanity URL handling (fix/edx-1307)', () => {
       height: 1080,
     })
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     vi.mocked(_previewComponents.default).mockImplementation((props: {media?: unknown}) => {
       capturedMedia = props.media
       if (typeof capturedMedia === 'function') {

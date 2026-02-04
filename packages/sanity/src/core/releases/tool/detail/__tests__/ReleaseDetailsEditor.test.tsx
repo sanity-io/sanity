@@ -60,6 +60,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
         .updateRelease
 
@@ -95,6 +96,7 @@ describe('ReleaseDetailsEditor', () => {
         expect(input).not.toBeDisabled()
       })
 
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       const updateReleaseMock = (useReleaseOperations as unknown as vi.Mock).mock.results[0]?.value
         .updateRelease
 

@@ -36,6 +36,7 @@ describe('useDocumentRevertStates', () => {
     }
   }
 
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const mockUseClient = useClient as Mock<typeof useClient>
   const mockGetTransactionsLogs = getTransactionsLogs as Mock<typeof getTransactionsLogs>
 

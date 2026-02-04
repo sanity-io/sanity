@@ -31,6 +31,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -51,6 +52,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -71,6 +73,7 @@ describe('PrimitiveField', () => {
       // When
       render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -90,6 +93,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -128,6 +132,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -140,6 +145,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -159,6 +165,7 @@ describe('PrimitiveField', () => {
 
       const {rerender} = render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -177,6 +184,7 @@ describe('PrimitiveField', () => {
 
       rerender(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -195,6 +203,7 @@ describe('PrimitiveField', () => {
 
       render(
         <PrimitiveField
+          // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
           member={member}
           renderInput={defaultRenderInput}
           renderField={defaultRenderField}
@@ -204,7 +213,9 @@ describe('PrimitiveField', () => {
 
       // When
       const input = screen.getByTestId('number-input') as HTMLInputElement
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       await userEvent.paste(input!, (Number.MIN_SAFE_INTEGER - 1).toString())
+      // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
       await userEvent.paste(input!, (Number.MAX_SAFE_INTEGER + 1).toString())
 
       // Then
@@ -229,6 +240,7 @@ function setupTest(type: string, value: string | number | boolean | undefined) {
     open: true,
     groups: [],
     inSelectedGroup: false,
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     field: {
       id: 'id',
       schemaType,

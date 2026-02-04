@@ -50,6 +50,7 @@ export async function renderGlobalDocumentReferenceInput(options: {
   const result = await renderObjectInput({
     fieldDefinition: fieldDefinition as FieldDefinition<'object'>,
     props,
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 

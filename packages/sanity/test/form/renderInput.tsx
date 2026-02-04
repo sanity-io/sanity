@@ -125,6 +125,7 @@ export async function renderInput<ElementProps>(props: {
 
     if (!docType) throw new Error(`no document type: test`)
 
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     const formState = useFormState({
       schemaType: docType,
       comparisonValue: documentValue,
@@ -218,6 +219,7 @@ export async function renderInput<ElementProps>(props: {
 
   return {
     container,
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     focusRef,
     onBlur,
     onChange,

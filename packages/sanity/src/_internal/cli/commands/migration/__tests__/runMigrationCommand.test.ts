@@ -98,6 +98,7 @@ describe('runMigrationCommand', () => {
         argv: ['migration', 'run', 'test-migration'],
         extOptions: {},
         groupOrCommand: 'migration',
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         coreOptions: {},
         extraArguments: [],
       }
@@ -135,6 +136,7 @@ describe('runMigrationCommand', () => {
         argv: ['migration', 'run', 'test-migration'],
         extOptions: {},
         groupOrCommand: 'migration',
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         coreOptions: {},
         extraArguments: [],
       }
@@ -171,6 +173,7 @@ describe('runMigrationCommand', () => {
         argv: ['migration', 'run', 'test-migration'],
         extOptions: {},
         groupOrCommand: 'migration',
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         coreOptions: {},
         extraArguments: [],
       }
@@ -207,6 +210,7 @@ describe('runMigrationCommand', () => {
         argv: ['migration', 'run', 'test-migration'],
         extOptions: {},
         groupOrCommand: 'migration',
+        // @ts-expect-error -- Pre-existing type error with incomplete type, test file recently added to CI type checking
         coreOptions: {},
         extraArguments: [],
       }

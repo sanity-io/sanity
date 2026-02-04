@@ -9,6 +9,7 @@ export default function UploadPlaceholderStory() {
       <Container width={1}>
         <Card>
           <UploadPlaceholder
+            // @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
             accept="image/*"
             assetSources={[
               {

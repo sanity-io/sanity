@@ -113,6 +113,7 @@ const {mockNavigate, mockResolveIntentLink} = vi.hoisted(() => {
 vi.mock('sanity/router', async (importOriginal) => {
   const actual = await importOriginal()
   return {
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     ...actual,
     useRouter: vi.fn(() => ({
       state: {},

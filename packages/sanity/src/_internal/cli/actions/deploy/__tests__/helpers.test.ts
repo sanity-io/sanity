@@ -777,6 +777,7 @@ describe('dirIsEmptyOrNonExistent', () => {
 
   it('returns false if the directory is not empty', async () => {
     mockFsPromisesStat.mockResolvedValueOnce({isDirectory: () => true} as Stats)
+    // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
     mockFsPromisesReaddir.mockResolvedValueOnce([
       {name: 'file1'},
       {name: 'file2'},

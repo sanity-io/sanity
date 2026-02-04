@@ -170,6 +170,7 @@ export function TestForm(props: TestFormProps) {
     void validateStaticDocument(document, workspace, (result) => setValidation(result))
   }, [document, workspace])
 
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const formState = useFormState({
     schemaType,
     focusPath,
@@ -269,6 +270,7 @@ export function TestForm(props: TestFormProps) {
     })
   }, [schemaType, handleChange, setDocumentMeta])
 
+  // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
   const formBuilderProps: FormBuilderProps = useMemo(
     () => ({
       // eslint-disable-next-line camelcase

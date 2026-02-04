@@ -10,6 +10,7 @@ describe('#isKnownError', () => {
   test('should return true for SchemaError errors', () => {
     expect(
       isKnownError(
+        // @ts-expect-error -- Pre-existing type error, test file recently added to CI type checking
         new SchemaError({
           _registry: {},
           name: 'test',

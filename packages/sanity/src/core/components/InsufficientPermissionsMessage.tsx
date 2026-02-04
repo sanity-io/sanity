@@ -45,7 +45,7 @@ export function InsufficientPermissionsMessage({
       <>
         {list
           .formatToParts(roles.map((role) => role.title || startCase(role.name)))
-          .map((i, index) =>
+          .map((i: {type: string; value: string}, index: number) =>
             i.type === 'element' ? (
               <code key={`${i.value}-${index}`}>{i.value}</code>
             ) : (

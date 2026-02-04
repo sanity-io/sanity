@@ -4,6 +4,7 @@ import {Container, Flex} from '@sanity/ui'
 import {useState} from 'react'
 
 import {TreeEditingBreadcrumbsMenu} from '../components'
+// @ts-expect-error -- Pre-existing type error, workshop story file recently added to CI type checking
 import {type TreeEditingBreadcrumb} from '../types'
 
 const schema = Schema.compile({
