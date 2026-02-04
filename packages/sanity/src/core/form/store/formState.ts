@@ -60,6 +60,7 @@ import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getId} from './utils/getId'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
+import {getSafeDomId} from './utils/getSafeDomId.ts'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
@@ -1060,7 +1061,7 @@ export function createPrepareFormState({
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
-      id: toString(props.path),
+      id: getSafeDomId(toString(props.path)),
       level: props.level,
       focused: isEqual(props.path, props.focusPath),
       focusPath: trimChildPath(props.path, props.focusPath),
@@ -1114,7 +1115,7 @@ export function createPrepareFormState({
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
         perspective: props.perspective,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
@@ -1165,7 +1166,7 @@ export function createPrepareFormState({
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
@@ -1343,7 +1344,7 @@ export function createPrepareFormState({
         schemaType: props.schemaType,
         value: props.value,
         level: props.level,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         readOnly: props.readOnly === true || props.readOnly?.value,
         focused: isEqual(props.path, props.focusPath),
         path: props.path,
