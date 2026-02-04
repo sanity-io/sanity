@@ -8,8 +8,8 @@ import {
   type ObjectItem,
   type ObjectItemProps,
 } from '../../../../types'
-import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'

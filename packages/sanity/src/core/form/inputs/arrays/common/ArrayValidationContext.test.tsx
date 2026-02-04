@@ -1,7 +1,8 @@
-import {describe, expect, it} from 'vitest'
-import {render, screen} from '@testing-library/react'
-import {ArrayValidationProvider, useArrayValidation} from './ArrayValidationContext'
 import {type ArraySchemaType} from '@sanity/types'
+import {render, screen} from '@testing-library/react'
+import {describe, expect, it} from 'vitest'
+
+import {ArrayValidationProvider, useArrayValidation} from './ArrayValidationContext'
 
 // Helper component to test the hook
 function TestConsumer() {

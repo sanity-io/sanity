@@ -1,6 +1,7 @@
 export * from './context/ActiveWorkspaceMatcherContext'
 export * from './context/AddonDatasetContext'
 export * from './context/AppIdCacheContext'
+export * from './context/ArrayValidationContext'
 export * from './context/AssetLimitContext'
 export * from './context/CalendarContext'
 export * from './context/ChangeIndicatorTrackerContexts'
