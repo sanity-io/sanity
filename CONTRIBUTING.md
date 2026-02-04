@@ -69,6 +69,27 @@ When filing an issue, make sure to answer these six questions:
 
 If you find yourself wishing for a feature that doesn't exist in Sanity, you are probably not alone. There are bound to be others out there with similar needs. Many of the features that Sanity has today have been added because our users saw the need. Open an issue on our issues list on GitHub which describes the feature you would like to see, why you need it, and how it should work.
 
+## What to expect after filing an issue
+
+We're grateful for every issue you report and truly value your contributions to making Sanity better. To help us manage the community's needs effectively, we have a gentle automated follow-up process for issues where we need additional information from you.
+
+### If we need more details
+
+When we need more context or clarification, a team member will add the `needs-more-info` label and leave a comment explaining what would be helpful. Here's what happens next:
+
+- **After 10 days**: If we haven't received the information, you'll get a friendly automated reminder, and we'll add a `stale-warned` label to help us track the follow-up
+- **After 14 days total**: If we still haven't heard back, the issue will be automatically closed to keep our tracker organized
+
+**Please don't worry** - this isn't permanent! You're always welcome to reopen the issue or create a new one when you have the information ready. We understand that life gets busy and sometimes issues become less relevant over time.
+
+### If you respond
+
+As soon as you comment with the requested information, both labels are automatically removed, you'll receive a thank you message, and your issue moves back into our active review queue.
+
+### Need more time?
+
+If you need more time to gather information, just leave a quick comment letting us know - even a simple "I'm working on this" will reset the timer and keep your issue active.
+
 # Troubleshooting
 
 If you run into build issues, you might want to run `pnpm clean && pnpm clean:deps`, which will delete all `node_modules` folders, then run a fresh `pnpm bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
