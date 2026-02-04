@@ -3,7 +3,7 @@ name: Check for in-flight release
 on:
   pull_request:
     # synchronize is needed for check-pr-release-status
-    types: [opened, reopened, ready_for_review, converted_to_draft, synchronize]
+    types: [opened, closed, reopened, ready_for_review, converted_to_draft, synchronize]
 
 permissions:
   contents: read
