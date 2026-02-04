@@ -45,21 +45,34 @@ export function InsertMenuGroup(
     pos: 'before' | 'after'
     text: ComponentProps<typeof MenuItem>['text']
     icon: ComponentProps<typeof MenuItem>['icon']
+    disabled?: boolean
+    disabledReason?: string
   },
 ) {
-  const {types, onInsert, pos, text, icon} = props
+  const {types, onInsert, pos, text, icon, disabled, disabledReason} = props
 
   if (types?.length === 1) {
-    return <MenuItem key={pos} text={text} icon={icon} onClick={() => onInsert(pos, types[0])} />
+    return (
+      <MenuItem
+        key={pos}
+        text={text}
+        icon={icon}
+        onClick={() => onInsert(pos, types[0])}
+        disabled={disabled}
+        tooltipProps={disabledReason ? {content: disabledReason} : undefined}
+      />
+    )
   }
   return (
-    <MenuGroup key={pos} text={text} popover={MENU_POPOVER_PROPS}>
+    <MenuGroup key={pos} text={text} popover={MENU_POPOVER_PROPS} disabled={disabled}>
       {types?.map((insertableType) => (
         <MenuItem
           key={insertableType.name}
           icon={insertableType.icon}
           text={insertableType.title}
           onClick={() => onInsert(pos, insertableType)}
+          disabled={disabled}
+          tooltipProps={disabledReason ? {content: disabledReason} : undefined}
         />
       ))}
     </MenuGroup>
