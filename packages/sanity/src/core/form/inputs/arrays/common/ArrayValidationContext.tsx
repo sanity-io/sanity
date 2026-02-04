@@ -26,14 +26,16 @@ interface ArrayValidationProviderProps {
 export function ArrayValidationProvider(props: ArrayValidationProviderProps) {
   const {children, schemaType, itemCount} = props
 
+  // Extract max rule separately since schemaType is stable but itemCount may change frequently
+  const maxRule = useMemo(() => getValidationRule(schemaType, 'max'), [schemaType])
+
   const value = useMemo((): ArrayValidationState => {
-    const maxRule = getValidationRule(schemaType, 'max')
     const maxConstraint = maxRule?.constraint
 
     return {
       maxReached: typeof maxConstraint === 'number' && itemCount >= maxConstraint,
     }
-  }, [schemaType, itemCount])
+  }, [maxRule, itemCount])
 
   return <ArrayValidationContext.Provider value={value}>{children}</ArrayValidationContext.Provider>
 }
