@@ -170,6 +170,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: arrayValidation?.maxReached,
+    disabledReason: arrayValidation?.maxReached ? t('inputs.array.action.max-reached') : undefined,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
@@ -203,15 +205,12 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       ),
       !disableActions.includes('add') &&
         !disableActions.includes('addBefore') &&
-        !arrayValidation?.maxReached &&
         insertBefore.menuItem,
       !disableActions.includes('add') &&
         !disableActions.includes('addAfter') &&
-        !arrayValidation?.maxReached &&
         insertAfter.menuItem,
     ].filter(Boolean)
   }, [
-    arrayValidation?.maxReached,
     disableActions,
     handleCopy,
     handleDuplicate,
