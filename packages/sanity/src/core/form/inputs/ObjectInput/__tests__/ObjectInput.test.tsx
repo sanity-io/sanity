@@ -85,8 +85,8 @@ describe('ObjectInput', () => {
       ),
     })
 
-    expect(screen.getByTestId('sanity-form-field-first-field')).toBeInTheDocument()
-    expect(screen.getByTestId('sanity-form-input-first-field')).toBeInTheDocument()
+    expect(screen.getByTestId('field-first-field')).toBeInTheDocument()
+    expect(screen.getByTestId('input-first-field')).toBeInTheDocument()
     expect(renderField.mock.calls.length).toBe(1)
     expect(renderInput.mock.calls.length).toBe(1)
   })
