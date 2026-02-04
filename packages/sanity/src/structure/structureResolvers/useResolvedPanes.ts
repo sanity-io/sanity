@@ -128,9 +128,9 @@ export function useResolvedPanes(): Panes {
     return () => subscription.unsubscribe()
   }, [rootPaneNode, routerPanesStream, structureContext])
 
-  const maybeOpenDefaultPanes = useCallback(
-    (result: ResolvedPanesData) => {
-      const {paneDataItems, routerPanes} = result
+  useEffect(
+    function maybeOpenDefaultPanes() {
+      const {paneDataItems, routerPanes} = data
 
       // Find the last pane that is a document with defaultPanes
       const lastPaneData = paneDataItems[paneDataItems.length - 1]
@@ -161,12 +161,8 @@ export function useResolvedPanes(): Panes {
       // Navigate to expanded state (replace to avoid polluting history)
       navigate({panes: [...routerPanes.slice(1, -1), expandedGroup]}, {replace: true})
     },
-    [navigate],
+    [data, navigate],
   )
-
-  useEffect(() => {
-    maybeOpenDefaultPanes(data)
-  }, [data, maybeOpenDefaultPanes])
 
   const paneDataItemsWithMaximized = useMemo(() => {
     return data.paneDataItems.map((item) => ({
