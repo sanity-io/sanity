@@ -8,7 +8,7 @@ export function writeCheck({
   releasePr,
 }: {
   currentPrNumber: number
-  releasePr: PullRequest
+  releasePr?: PullRequest
   headSha: string
 }) {
   const canMerge =
@@ -31,7 +31,9 @@ export function writeCheck({
         ? '✅ There is no in-flight release, merging is OK.'
         : '‼️ Release in progress, merging is blocked.',
       summary: canMerge
-        ? `✅ The [release PR](${releasePr.html_url}) is still a draft, merging is OK.`
+        ? releasePr
+          ? `✅ The [release PR](${releasePr.html_url}) is still a draft, merging is OK.`
+          : `✅ There is no release PR, merging is OK`
         : `⚠️️ The [release PR](${releasePr.html_url}) is marked as ready for review. Please wait for the release to complete before merging.`,
     },
   })
