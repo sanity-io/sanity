@@ -47,6 +47,7 @@ export const DEBUG_INPUT_TYPES = [
   'decorations',
   'collapsibleObjects',
   'commentsDebug',
+  'domAttrsAsFieldNames',
   'conditionalFieldsTest',
   'conditionalFieldsWithPathTest',
   'customInputsTest',
