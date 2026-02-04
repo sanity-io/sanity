@@ -11,7 +11,7 @@ test.describe('Enhanced Object Dialog - open and close', () => {
   test(`opening - when creating new array item, the tree editing modal should open`, async ({
     page,
   }) => {
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
 
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
   })
@@ -23,7 +23,7 @@ test.describe('Enhanced Object Dialog - open and close', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
@@ -56,7 +56,7 @@ test.describe('Enhanced Object Dialog - when disabled', () => {
   test(`when enhancedObjectDialog is disabled, the tree editing modal should NOT open`, async ({
     page,
   }) => {
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
 
     await expect(page.getByTestId('edit-portal-dialog')).toBeVisible()
     // The enhanced dialog should not be visible
@@ -73,7 +73,7 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
     // wait for form to be attached
     await createDraftDocument('/content/input-debug;objectsDebug')
 
-    const addItemButton = page.getByTestId('field-animals').getByRole('button', {name: 'Add item'})
+    const addItemButton = page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'})
     await expect(addItemButton).toBeVisible()
     await addItemButton.click()
     const modal = page.getByTestId('nested-object-dialog')
@@ -89,7 +89,7 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
     await page.keyboard.press('Escape')
     await expect(modal).not.toBeVisible()
 
-    await page.getByTestId('field-animals').focus()
+    await page.getByTestId('sanity-form-field-animals').focus()
   })
 
   test(`when tab focusing on an array item, the tree editing modal should not open`, async ({
@@ -119,7 +119,7 @@ test.describe('Enhanced Object Dialog - popover dialog', () => {
     await createDraftDocument('/content/input-debug;objectsDebug')
 
     await page
-      .getByTestId('field-animalsWithPopover')
+      .getByTestId('sanity-form-field-animalsWithPopover')
       .getByRole('button', {name: 'Add item'})
       .click()
   })

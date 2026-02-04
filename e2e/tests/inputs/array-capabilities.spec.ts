@@ -36,9 +36,9 @@ test(`Scenario: Disabling all array capabilities`, async ({page, testDoc}) => {
   })
 
   const [objectArrayField, gridObjectArrayField, primitiveArrayField] = [
-    page.getByTestId('field-objectArray'),
-    page.getByTestId('field-objectArrayAsGrid'),
-    page.getByTestId('field-primitiveArray'),
+    page.getByTestId('sanity-form-field-objectArray'),
+    page.getByTestId('sanity-form-field-objectArrayAsGrid'),
+    page.getByTestId('sanity-form-field-primitiveArray'),
   ] as const
 
   for (const field of [objectArrayField, gridObjectArrayField]) {

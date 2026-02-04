@@ -15,8 +15,8 @@ test.skip('navigation - tree sidebar', () => {
     })
 
     // first element
-    await expect(page.getByTestId('field-animals')).toBeVisible()
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('sanity-form-field-animals')).toBeVisible()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     await page
@@ -31,8 +31,8 @@ test.skip('navigation - tree sidebar', () => {
     })
 
     // second element
-    await expect(page.getByTestId('field-animals')).toBeVisible()
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('sanity-form-field-animals')).toBeVisible()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     await page.getByTestId('tree-editing-dialog').getByTestId('string-input').fill('Lucy, the cat')
@@ -126,8 +126,8 @@ test.skip('navigation - breadcrumb', () => {
     })
 
     // first element
-    await expect(page.getByTestId('field-animals')).toBeVisible()
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('sanity-form-field-animals')).toBeVisible()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     await page
@@ -142,8 +142,8 @@ test.skip('navigation - breadcrumb', () => {
     })
 
     // second element
-    await expect(page.getByTestId('field-animals')).toBeVisible()
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await expect(page.getByTestId('sanity-form-field-animals')).toBeVisible()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
 
     await page.getByTestId('tree-editing-dialog').getByTestId('string-input').fill('Lucy, the cat')

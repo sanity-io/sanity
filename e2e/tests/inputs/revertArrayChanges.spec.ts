@@ -13,12 +13,12 @@ test.describe('Array revert changes', () => {
     await createDraftDocument('/content/input-standard;arraysTest')
 
     // Find the inlineEditingArray field
-    await expect(page.getByTestId('field-inlineEditingArray')).toBeVisible()
+    await expect(page.getByTestId('sanity-form-field-inlineEditingArray')).toBeVisible()
     await expect(
-      page.getByTestId('field-inlineEditingArray').getByTestId('add-single-object-button'),
+      page.getByTestId('sanity-form-field-inlineEditingArray').getByTestId('add-single-object-button'),
     ).toBeVisible()
     await page
-      .getByTestId('field-inlineEditingArray')
+      .getByTestId('sanity-form-field-inlineEditingArray')
       .getByTestId('add-single-object-button')
       .click()
 
@@ -54,7 +54,7 @@ test.describe('Array revert changes', () => {
 
     /** item 2 */
     await page
-      .getByTestId('field-inlineEditingArray')
+      .getByTestId('sanity-form-field-inlineEditingArray')
       .getByTestId('add-single-object-button')
       .click()
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
@@ -75,7 +75,7 @@ test.describe('Array revert changes', () => {
 
     /** item 3 */
     await page
-      .getByTestId('field-inlineEditingArray')
+      .getByTestId('sanity-form-field-inlineEditingArray')
       .getByTestId('add-single-object-button')
       .click()
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
@@ -126,17 +126,17 @@ test.describe('Array revert changes', () => {
     await expect(page.getByRole('button', {name: 'Item 3 description'})).toBeVisible()
 
     await expect(
-      page.getByTestId('field-inlineEditingArray').getByTestId('change-bar-wrapper').nth(1),
+      page.getByTestId('sanity-form-field-inlineEditingArray').getByTestId('change-bar-wrapper').nth(1),
     ).toBeVisible()
     await expect(
       page
-        .getByTestId('field-inlineEditingArray')
+        .getByTestId('sanity-form-field-inlineEditingArray')
         .getByTestId('change-bar-wrapper')
         .nth(1)
         .getByRole('button', {name: 'Item 2 description'}),
     ).toBeVisible()
     await expect(
-      page.getByTestId('field-inlineEditingArray').getByTestId('change-bar-wrapper'),
+      page.getByTestId('sanity-form-field-inlineEditingArray').getByTestId('change-bar-wrapper'),
     ).toHaveCount(3)
 
     await expect(page.getByTestId('alert-warning')).not.toBeVisible()

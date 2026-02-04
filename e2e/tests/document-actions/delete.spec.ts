@@ -7,7 +7,7 @@ const name = 'Test Name'
 
 test(`unpublished documents can be deleted`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/author')
-  await page.getByTestId('field-name').getByTestId('string-input').fill(name)
+  await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
   // Wait for the document to save before deleting.
@@ -22,7 +22,7 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
 
 test(`published documents can be deleted`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/content/author')
-  await page.getByTestId('field-name').getByTestId('string-input').fill(name)
+  await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill(name)
   const paneFooter = page.getByTestId('pane-footer-document-status')
   const publishButton = page.getByTestId('action-publish')
 
@@ -50,14 +50,14 @@ test(`deleted document shows the right name from last revision`, async ({
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
   await createDraftDocument('/content/author')
-  await page.getByTestId('field-name').getByTestId('string-input').fill(documentName)
+  await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill(documentName)
   await expectCreatedStatus(paneFooter)
 
   // Save the current URL before deletion
   const documentUrl = page.url()
 
   // Verify the name is displayed correctly before deletion
-  await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(documentName)
 
   // Publish the document, to allow deletion
   await publishButton.click()
@@ -76,7 +76,7 @@ test(`deleted document shows the right name from last revision`, async ({
 
   // Verify that the form still shows the correct name from the last revision
   // The form should display the last revision document content
-  await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(documentName)
+  await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(documentName)
 
   // Verify the document title in the header also shows the correct name
   await expect(page.getByTestId('document-panel-document-title')).toHaveText(documentName)

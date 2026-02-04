@@ -24,7 +24,7 @@ test.describe('Form Components API:', () => {
       page
         .getByTestId('child-parent-config-form-field')
         .getByTestId('parent-config-form-field')
-        .getByTestId('field-string'),
+        .getByTestId('sanity-form-field-string'),
     ).toBeVisible()
   })
 })

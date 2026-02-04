@@ -15,7 +15,7 @@ test.skip('basic - open and close', () => {
   test(`opening - when creating new array item, the tree editing modal should open`, async ({
     page,
   }) => {
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
 
     const modal = page.getByTestId('tree-editing-dialog')
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
@@ -29,7 +29,7 @@ test.skip('basic - open and close', () => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = page.getByTestId('tree-editing-dialog')
 
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
@@ -50,7 +50,7 @@ test.skip('basic - main document action', () => {
       timeout: 40000,
     })
 
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
 
     await expect(page.getByTestId('tree-editing-dialog')).toBeAttached()
   })

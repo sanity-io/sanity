@@ -8,9 +8,9 @@ test.describe('maximized document', () => {
     await createDraftDocument('/content/input-standard;referenceTest')
 
     await expect(page.getByTestId('focus-pane-button-focus')).toBeVisible()
-    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
+    await expect(page.getByTestId('sanity-form-field-title').getByTestId('string-input')).toBeVisible()
 
-    await page.getByTestId('field-title').getByTestId('string-input').fill('Test Author')
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input').fill('Test Author')
   })
 
   test(`focus pane button shows the pane breadcrumb`, async ({page}) => {
@@ -49,10 +49,10 @@ test.describe('maximized document', () => {
     ).toBeVisible()
     await page.getByTestId('create-new-document-select-reference-test-selectTypeMenuItem').click()
 
-    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
-    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeEnabled()
+    await expect(page.getByTestId('sanity-form-field-title').getByTestId('string-input')).toBeVisible()
+    await expect(page.getByTestId('sanity-form-field-title').getByTestId('string-input')).toBeEnabled()
 
-    await page.getByTestId('field-title').getByTestId('string-input').fill('Test Name')
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input').fill('Test Name')
 
     await expect(page.getByTestId('document-header-breadcrumb')).toBeVisible()
     await expect(
@@ -85,9 +85,9 @@ test.describe('maximized document', () => {
 
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toBeVisible()
 
-    await expect(page.getByTestId('field-title').getByTestId('string-input').nth(1)).toBeVisible()
+    await expect(page.getByTestId('sanity-form-field-title').getByTestId('string-input').nth(1)).toBeVisible()
 
-    await page.getByTestId('field-title').getByTestId('string-input').nth(1).fill('Test Name')
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input').nth(1).fill('Test Name')
 
     // Reopen the first document pane
     await page.getByTestId('pane-header').nth(3).click()
@@ -135,10 +135,10 @@ test.describe('maximized document - with enhanced object dialog', () => {
   }) => {
     await page.getByTestId('focus-pane-button-focus').click()
 
-    await expect(page.getByTestId('field-title').getByTestId('string-input')).toBeVisible()
-    await page.getByTestId('field-title').getByTestId('string-input').fill('Object')
+    await expect(page.getByTestId('sanity-form-field-title').getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input').fill('Object')
 
-    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    await page.getByTestId('sanity-form-field-animals').getByRole('button', {name: 'Add item'}).click()
     const modal = page.getByTestId('nested-object-dialog')
 
     await expect(modal).toBeVisible()
@@ -154,8 +154,8 @@ test.describe('maximized document - with enhanced object dialog', () => {
 
     await expect(page.getByTestId('document-panel-document-title')).toBeVisible()
 
-    await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
-    await page.getByTestId('field-name').getByTestId('string-input').fill('Species')
+    await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
+    await page.getByTestId('sanity-form-field-name').getByTestId('string-input').fill('Species')
 
     await expect(
       page.getByTestId('document-header-breadcrumb').getByText('Object').nth(1),

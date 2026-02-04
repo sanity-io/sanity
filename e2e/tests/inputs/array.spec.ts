@@ -23,7 +23,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
   await expect(page.getByTestId('document-panel-scroller')).toBeAttached({
     timeout: 40000,
   })
-  const list = page.getByTestId('field-arrayOfMultipleTypes').locator('#arrayOfMultipleTypes')
+  const list = page.getByTestId('sanity-form-field-arrayOfMultipleTypes').locator('#arrayOfMultipleTypes')
   const item = list.locator('[data-ui="Grid"] > div')
 
   const dataTransfer = await createFileDataTransferHandle(
@@ -78,7 +78,7 @@ test(`Scenario: Adding a new type from multiple options`, async ({page, createDr
   })
 
   // Given an empty array field allowing multiple types
-  const field = page.getByTestId('field-arrayOfMultipleTypes')
+  const field = page.getByTestId('sanity-form-field-arrayOfMultipleTypes')
   const noItemsLabel = field.getByText('No items')
   await expect(noItemsLabel).toBeVisible()
 
@@ -238,7 +238,7 @@ test(`Scenario: Adding new array item after using the context menu`, async ({
 })
 
 function createArrayFieldLocators(page: Page) {
-  const field = page.getByTestId('field-arrayOfSoManyDifferentTypes')
+  const field = page.getByTestId('sanity-form-field-arrayOfSoManyDifferentTypes')
   const content = field.locator('#arrayOfSoManyDifferentTypes')
   const items = content.locator('[data-ui="Grid"] > div')
   const addItemButton = field.getByRole('button', {name: 'Add item...'})

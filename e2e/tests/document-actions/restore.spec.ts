@@ -23,7 +23,7 @@ test(`documents can be restored to an earlier revision`, async ({page, createDra
 
   const timelineItemButton = page.getByTestId('timeline-item-button')
   const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
 
   await createDraftDocument('/content/book')
   await titleInput.fill(titleA)
@@ -78,7 +78,7 @@ test(`respects overridden restore action`, async ({page, createDraftDocument}) =
 
   const timelineItemButton = page.getByTestId('timeline-item-button')
   const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
 
   await createDraftDocument('/content/input-debug;documentActionsTest')
 
@@ -152,7 +152,7 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
 
   const timelineItemButton = page.getByTestId('timeline-item-button')
   const previousRevisionButton = timelineItemButton.nth(1)
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
 
   await createDraftDocument('/content/input-debug;removeRestoreActionTest')
   await titleInput.fill(titleA)

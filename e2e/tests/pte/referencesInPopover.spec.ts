@@ -12,7 +12,7 @@ test.describe('In PTE - references in popover', () => {
     // Also, it needs to have a shorter height as to force the popover to always go on top vs bottom (make tests consistent)
     await page.setViewportSize({width: 1920, height: 800})
 
-    const pteEditor = page.getByTestId('field-text')
+    const pteEditor = page.getByTestId('sanity-form-field-text')
     const textBlock = pteEditor.locator(
       '[data-testid="text-block__text"]:not([data-read-only="true"])',
     )

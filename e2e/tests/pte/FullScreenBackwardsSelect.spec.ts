@@ -10,7 +10,7 @@ test.skip('Portable Text Input - Fullscreen Backwards Select', () => {
     test.slow()
     await createDraftDocument('/content/input-standard;portable-text;pt_allTheBellsAndWhistles')
 
-    const pteEditor = page.getByTestId('field-text')
+    const pteEditor = page.getByTestId('sanity-form-field-text')
     // Wait for the text block to be editable
     await expect(
       pteEditor.locator('[data-testid="text-block__text"]:not([data-read-only="true"])'),
@@ -22,9 +22,9 @@ test.skip('Portable Text Input - Fullscreen Backwards Select', () => {
 
     // Make the editor fullscreen
     await expect(
-      page.getByTestId('field-text').getByTestId('fullscreen-button-expand'),
+      page.getByTestId('sanity-form-field-text').getByTestId('fullscreen-button-expand'),
     ).toBeVisible()
-    await page.getByTestId('field-text').getByTestId('fullscreen-button-expand').click()
+    await page.getByTestId('sanity-form-field-text').getByTestId('fullscreen-button-expand').click()
 
     // The collapse button should be visible when the editor is fullscreen
     await expect(page.getByTestId('fullscreen-button-collapse')).toBeVisible()

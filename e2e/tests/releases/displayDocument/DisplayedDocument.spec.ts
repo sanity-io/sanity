@@ -140,7 +140,7 @@ test.describe('displayedDocument', () => {
 
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -148,7 +148,7 @@ test.describe('displayedDocument', () => {
       )
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('draft')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('draft')
 
       // clean up
       await sanityClient.delete(customDraft._id)
@@ -165,13 +165,13 @@ test.describe('displayedDocument', () => {
       await page.goto(`/content/species;${publishedDocument._id}`)
 
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
         'published',
       )
     })
@@ -189,7 +189,7 @@ test.describe('displayedDocument', () => {
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(versionChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chilp
       await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
@@ -197,7 +197,7 @@ test.describe('displayedDocument', () => {
       await expect(versionChip).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
     })
 
     test('multiple version - shows first version displayed', async ({page, browserName}) => {
@@ -213,7 +213,7 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(asapChip).toBeVisible()
       await expect(undecidedChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).toBeDisabled()
@@ -221,7 +221,7 @@ test.describe('displayedDocument', () => {
       await expect(undecidedChip).not.toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
     })
 
     test(`displayed document is read only`, async ({page, browserName}) => {
@@ -229,12 +229,12 @@ test.describe('displayedDocument', () => {
       skipIfBrowser(browserName)
       // specific document set up for this test in mind
       await page.goto(`/content/species;${singleASAPVersionDocument._id}`)
-      const input = page.getByTestId('field-name').getByTestId('string-input')
+      const input = page.getByTestId('sanity-form-field-name').getByTestId('string-input')
       // wait to load
       await expect(input).toBeVisible()
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
       const isReadonly = (await input.getAttribute('readonly')) !== null
 
       expect(isReadonly).toBe(true)
@@ -251,7 +251,7 @@ test.describe('displayedDocument', () => {
 
       // Wait for document to load
       await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Published-chip')).toHaveAttribute(
@@ -259,7 +259,7 @@ test.describe('displayedDocument', () => {
       )
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
         'published',
       )
     })
@@ -276,7 +276,7 @@ test.describe('displayedDocument', () => {
 
       // wait to load
       await expect(page.getByTestId('document-header-Published-chip')).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Published-chip')).toHaveAttribute(
@@ -284,7 +284,7 @@ test.describe('displayedDocument', () => {
       )
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
         'published',
       )
     })
@@ -309,7 +309,7 @@ test.describe('displayedDocument', () => {
 
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -317,7 +317,7 @@ test.describe('displayedDocument', () => {
       )
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('draft')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('draft')
 
       // clean up
       await sanityClient.delete(customDraft._id)
@@ -340,7 +340,7 @@ test.describe('displayedDocument', () => {
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(asapChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -349,7 +349,7 @@ test.describe('displayedDocument', () => {
       await expect(asapChip).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
     })
 
     test('no draft, no publish, single different version as pinned - shows single existing document', async ({
@@ -368,7 +368,7 @@ test.describe('displayedDocument', () => {
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(asapChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -377,7 +377,7 @@ test.describe('displayedDocument', () => {
       await expect(asapChip).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
     })
 
     test('no draft, no publish, multiple different versions, one of them is pinned - shows pinned version', async ({
@@ -394,7 +394,7 @@ test.describe('displayedDocument', () => {
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       await expect(undecidedChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -403,7 +403,7 @@ test.describe('displayedDocument', () => {
       await expect(undecidedChip).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue(
         'Undecided A',
       )
     })
@@ -434,7 +434,7 @@ test.describe('displayedDocument', () => {
       // wait to load
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // chip
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(
@@ -443,7 +443,7 @@ test.describe('displayedDocument', () => {
       await expect(asapChip).toHaveAttribute('data-selected')
 
       // field
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue('ASAP A')
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toHaveValue('ASAP A')
 
       await archiveAndDeleteRelease({sanityClient, dataset, releaseId: scheduledId})
     })
@@ -480,7 +480,7 @@ test.describe('displayedDocument', () => {
       await expect(page.getByTestId('document-header-Draft-chip')).toBeVisible()
       const asapChip = page.getByTestId('document-header-ASAP-Release-A-chip')
       await expect(asapChip).toBeVisible()
-      await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
+      await expect(page.getByTestId('sanity-form-field-name').getByTestId('string-input')).toBeVisible()
 
       // Check that the version chip is selected
       await expect(page.getByTestId('document-header-Draft-chip')).not.toHaveAttribute(

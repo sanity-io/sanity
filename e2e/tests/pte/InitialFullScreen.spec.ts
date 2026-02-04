@@ -15,7 +15,7 @@ test.describe('Initial full screen', () => {
     await expect(page.getByTestId('fullscreen-button-collapse')).toBeVisible()
     await page.getByTestId('fullscreen-button-collapse').click()
     await expect(
-      page.getByTestId('field-text').getByTestId('fullscreen-button-expand'),
+      page.getByTestId('sanity-form-field-text').getByTestId('fullscreen-button-expand'),
     ).toBeVisible()
   })
 })

@@ -13,7 +13,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     page,
   }) => {
     const button = page
-      .getByTestId('field-arrayofObjectsWithItem')
+      .getByTestId('sanity-form-field-arrayofObjectsWithItem')
       .getByTestId('add-single-object-button')
     await expect(button).toBeEnabled()
     await button.click()
@@ -24,7 +24,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test(`opening - when clicking the internationalized array string field, the modal should not open`, async ({
     page,
   }) => {
-    const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
+    const input = page.getByTestId('sanity-form-field-greeting[_key=="en"].value').getByTestId('string-input')
     await expect(input).toBeEnabled()
     await input.click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
@@ -36,7 +36,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
   test(`opening - when clicking the internationalized array string field, and click the next one, the modal should not open`, async ({
     page,
   }) => {
-    const input = page.getByTestId('field-greeting[_key=="en"].value').getByTestId('string-input')
+    const input = page.getByTestId('sanity-form-field-greeting[_key=="en"].value').getByTestId('string-input')
     await expect(input).toBeVisible()
     await expect(input).toBeEnabled()
     await input.click()
@@ -46,7 +46,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     await page.getByRole('button', {name: 'FR'}).click()
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
 
-    const inputFr = page.getByTestId('field-greeting[_key=="fr"].value').getByTestId('string-input')
+    const inputFr = page.getByTestId('sanity-form-field-greeting[_key=="fr"].value').getByTestId('string-input')
     await expect(inputFr).toBeVisible()
     await expect(inputFr).toBeEnabled()
     await inputFr.click()
@@ -60,7 +60,7 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     page,
   }) => {
     const field = page
-      .getByTestId('field-arrayWithNoTitle_2')
+      .getByTestId('sanity-form-field-arrayWithNoTitle_2')
       .getByTestId('add-single-object-button')
     await expect(field).toBeEnabled()
     await field.click()
@@ -78,8 +78,8 @@ test.describe('Enhanced Object Dialog - schema with component item and input smo
     await expect(page.getByTestId('action-inlinechanges')).toBeVisible()
     await page.getByTestId('action-inlinechanges').click()
 
-    await page.getByTestId('field-title').getByTestId('string-input-portable-text').click()
-    await page.getByTestId('field-title').getByTestId('string-input-portable-text').fill('Test')
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input-portable-text').click()
+    await page.getByTestId('sanity-form-field-title').getByTestId('string-input-portable-text').fill('Test')
     await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
   })
 })

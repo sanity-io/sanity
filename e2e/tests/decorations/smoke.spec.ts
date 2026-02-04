@@ -20,7 +20,7 @@ test.describe('Decorations - renderMembers', () => {
     await expect(objectDecoration).toBeVisible()
 
     // Check that the location field is visible (contains image and file fields)
-    const locationField = page.getByTestId('field-location')
+    const locationField = page.getByTestId('sanity-form-field-location')
     await expect(locationField).toBeVisible()
 
     // Check that the image decoration is visible

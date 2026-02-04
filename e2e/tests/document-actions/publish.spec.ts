@@ -11,9 +11,9 @@ test(`document panel displays correct title for published document`, async ({
   const title = 'Test Title'
 
   await createDraftDocument('/content/book')
-  await expect(page.getByTestId('field-title')).toBeVisible()
-  await expect(page.getByTestId('field-title')).toBeEnabled()
-  await page.getByTestId('field-title').getByTestId('string-input').fill(title)
+  await expect(page.getByTestId('sanity-form-field-title')).toBeVisible()
+  await expect(page.getByTestId('sanity-form-field-title')).toBeEnabled()
+  await page.getByTestId('sanity-form-field-title').getByTestId('string-input').fill(title)
 
   // Ensure the correct title is displayed before publishing.
   await expect(page.getByTestId('document-panel-document-title')).toHaveText(title)
@@ -49,8 +49,8 @@ test(`custom publish action can patch document before publication`, async ({
 
   const publishKeypress = () => page.locator('body').press('Control+Alt+p')
   const documentStatus = page.getByTestId('pane-footer-document-status')
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-  const publishedAtInput = page.getByTestId('field-publishedAt').getByTestId('date-input')
+  const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
+  const publishedAtInput = page.getByTestId('sanity-form-field-publishedAt').getByTestId('date-input')
   const paneFooter = page.getByTestId('pane-footer-document-status')
 
   await createDraftDocument('/content/input-debug;documentActionsTest')

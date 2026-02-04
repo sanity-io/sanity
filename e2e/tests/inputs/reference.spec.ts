@@ -33,7 +33,7 @@ withDefaultClient((context) => {
     await createDraftDocument('/content/book')
 
     // Reference fields don't seem to be given a test id, so this selection can't be more specific
-    // at the moment e.g. `page.getByTestId('field-author')`.
+    // at the moment e.g. `page.getByTestId('sanity-form-field-author')`.
     const referenceInput = page.getByTestId('reference-input')
     const paneFooter = page.getByTestId('pane-footer')
     const publishButton = page.getByTestId('action-publish')

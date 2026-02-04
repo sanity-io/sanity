@@ -29,8 +29,8 @@ test.describe('inputs: text', () => {
       return doc ? doc.simple : null
     }
 
-    await expect(page.getByTestId('field-simple')).toBeVisible({timeout: 30_000})
-    const field = page.getByTestId('field-simple').getByRole('textbox')
+    await expect(page.getByTestId('sanity-form-field-simple')).toBeVisible({timeout: 30_000})
+    const field = page.getByTestId('sanity-form-field-simple').getByRole('textbox')
     const paneFooterDocumentStatusPulse = page.getByTestId('pane-footer-document-status-pulse')
 
     // Ensure the field is ready before filling
@@ -91,7 +91,7 @@ test.describe('inputs: text', () => {
     test.slow()
     await createDraftDocument('/content/book')
 
-    const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+    const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
     const paneFooter = page.getByTestId('pane-footer-document-status')
     const publishButton = page.getByTestId('action-publish')
 

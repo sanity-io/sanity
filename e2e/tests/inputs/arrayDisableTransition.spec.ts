@@ -32,7 +32,7 @@ test.describe('PR #11775 - disableTransition prop leak', () => {
     })
 
     // Add an item to the array to trigger the Item component render
-    const field = page.getByTestId('field-arrayOfMultipleTypes')
+    const field = page.getByTestId('sanity-form-field-arrayOfMultipleTypes')
     await expect(field).toBeVisible()
 
     const addItemButton = field.getByRole('button', {name: 'Add item...'})

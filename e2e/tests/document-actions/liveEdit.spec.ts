@@ -20,7 +20,7 @@ test(`liveEdited document can be created, edited, and deleted`, async ({
   await publishedButton.click()
 
   // Wait for the form field to be ready
-  const nameField = page.getByTestId('field-name').getByTestId('string-input')
+  const nameField = page.getByTestId('sanity-form-field-name').getByTestId('string-input')
   await expect(nameField).toBeVisible()
   await expect(nameField).toBeEnabled()
   await nameField.fill(name)

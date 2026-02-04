@@ -27,7 +27,7 @@ test('searching creates unique saved searches', async ({
   await page.reload({waitUntil: 'load'})
 
   // create a document with a searchable title and wait for it to be saved
-  const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+  const titleInput = page.getByTestId('sanity-form-field-title').getByTestId('string-input')
   await expect(titleInput).toBeVisible({timeout: 30_000})
   await expect(titleInput).toBeEnabled()
 
