@@ -67,7 +67,7 @@ jobs:
       - name: Fix lerna.json EOF formatting
         # lerna version formats lerna.json removing EOF line
         # this is needed to pass linter
-        run: npx prettier --write lerna.json
+        run: pnpm oxfmt --write lerna.json
 
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
