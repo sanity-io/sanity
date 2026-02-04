@@ -31,7 +31,7 @@ export const LazyTextInput = forwardRef(function LazyTextInput(
       const currentValue = event.currentTarget.value
       if (currentValue !== `${value}`) {
         if (onChange) {
-          onChange(event)
+          onChange(event as ChangeEvent<HTMLInputElement>)
         }
       }
       setInputValue(undefined)
