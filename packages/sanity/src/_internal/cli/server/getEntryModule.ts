@@ -13,7 +13,7 @@ import {renderStudio} from "sanity"
 renderStudio(
   document.getElementById("sanity"),
   studioConfig,
-  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%}
+  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%, localApplications: [{port: %STUDIO_PORT%, title: 'Sanity Studio', remoteEntryUrl: 'http://localhost:%STUDIO_PORT%/static/remoteEntry.js'}]}
 )
 `
 
@@ -27,7 +27,7 @@ const studioConfig = {missingConfigFile: true}
 renderStudio(
   document.getElementById("sanity"),
   studioConfig,
-  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%}
+  {reactStrictMode: %STUDIO_REACT_STRICT_MODE%, basePath: %STUDIO_BASE_PATH%, localApplications: [{port: %STUDIO_PORT%, title: 'Sanity Studio', remoteEntryUrl: 'http://localhost:%STUDIO_PORT%/static/remoteEntry.js'}]}
 )
 `
 
@@ -43,13 +43,15 @@ const element = createElement(App)
 root.render(element)
 `
 
-export function getEntryModule(options: {
+interface EntryModuleOptions {
   reactStrictMode: boolean
   relativeConfigLocation: string | null
   basePath?: string
   entry?: string
   isApp?: boolean
-}): string {
+}
+
+export function getEntryModule(options: EntryModuleOptions): string {
   const {reactStrictMode, relativeConfigLocation, basePath, entry, isApp} = options
 
   if (isApp) {
@@ -62,4 +64,31 @@ export function getEntryModule(options: {
     .replace(/%STUDIO_REACT_STRICT_MODE%/, JSON.stringify(Boolean(reactStrictMode)))
     .replace(/%STUDIO_CONFIG_LOCATION%/, JSON.stringify(relativeConfigLocation))
     .replace(/%STUDIO_BASE_PATH%/, JSON.stringify(basePath || '/'))
+    .replace(/%STUDIO_PORT%/g, JSON.stringify(3333))
+}
+
+export function getFederationModule(options: EntryModuleOptions): string {
+  const src = `
+// This file is auto-generated on 'sanity dev'
+// Modifications to this file are automatically discarded
+import {StrictMode} from 'react'
+import studioConfig from %STUDIO_CONFIG_LOCATION%
+import {Studio} from 'sanity'
+
+const App = (props) => {
+  if(%STUDIO_REACT_STRICT_MODE%){
+    return <StrictMode>
+      <Studio config={studioConfig} basePath="/studio/3334" {...props} unstable_globalStyles />
+    </StrictMode>
+  }
+    
+  return <Studio config={studioConfig} {...props} unstable_globalStyles />
+}
+
+export default App
+`
+    .replace(/%STUDIO_REACT_STRICT_MODE%/, JSON.stringify(Boolean(options.reactStrictMode)))
+    .replace(/%STUDIO_CONFIG_LOCATION%/, JSON.stringify(options.relativeConfigLocation))
+
+  return src
 }

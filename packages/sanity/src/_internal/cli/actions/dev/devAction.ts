@@ -16,7 +16,7 @@ import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
 import {debug as debugIt} from '../../debug'
-import {type DevServerOptions, startDevServer} from '../../server/devServer'
+import {startDevServer, type StudioDevServerOptions} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
@@ -172,7 +172,9 @@ export default async function startSanityDevServer(
     // Check local versions against deployed versions
     let result: Awaited<ReturnType<typeof compareDependencyVersions>> | undefined
     try {
-      result = await compareDependencyVersions(sanityDependencies, workDir, {appId})
+      result = await compareDependencyVersions(sanityDependencies, workDir, {
+        appId,
+      })
     } catch (err) {
       console.warn(
         new Error('Failed to compare local versions against auto-updating versions', {
@@ -184,7 +186,12 @@ export default async function startSanityDevServer(
       const message =
         `The following local package versions are different from the versions currently served at runtime.\n` +
         `When using auto updates, we recommend that you run with the same versions locally as will be used when deploying. \n\n` +
-        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
+        `${result
+          .map(
+            (mod) =>
+              ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`,
+          )
+          .join('\n')} \n\n`
 
       // mismatch between local and auto-updating dependencies
       if (isInteractive) {
@@ -227,7 +234,9 @@ export default async function startSanityDevServer(
     })
 
     try {
-      const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
+      const project = await client.request<SanityProject>({
+        uri: `/projects/${projectId}`,
+      })
       organizationId = project.organizationId
     } catch (err) {
       debug(`Failed to get organization Id from project Id: ${err}`)
@@ -239,7 +248,10 @@ export default async function startSanityDevServer(
   try {
     const startTime = Date.now()
     const spinner = output.spinner('Starting dev server').start()
-    const {server} = await startDevServer({...config, telemetryLogger: telemetry})
+    const {server} = await startDevServer({
+      ...config,
+      telemetryLogger: telemetry,
+    })
 
     const {info: loggerInfo} = server.config.logger
     const {port} = server.config.server
@@ -268,7 +280,7 @@ export default async function startSanityDevServer(
       )
     } else {
       const startupDuration = Date.now() - startTime
-      const url = `http://${httpHost || 'localhost'}:${port}${config.basePath}`
+      const url = `http://${httpHost || 'localhost'}:${port}/studio/${port}`
       const appType = 'Sanity Studio'
 
       loggerInfo(
@@ -294,7 +306,7 @@ export function getDevServerConfig({
   workDir: string
   cliConfig?: CliConfig
   output: CliOutputter
-}): Omit<DevServerOptions, 'spinner'> {
+}): Omit<StudioDevServerOptions, 'spinner'> {
   const configSpinner = output.spinner('Checking configuration files...')
   const baseConfig = getSharedServerConfig({
     flags: {

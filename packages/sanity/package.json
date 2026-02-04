@@ -162,6 +162,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@isaacs/ttlcache": "^1.4.1",
     "@juggle/resize-observer": "^3.4.0",
+    "@module-federation/enhanced": "^0.23.0",
+    "@module-federation/vite": "^1.11.0",
     "@mux/mux-player-react": "^3.10.2",
     "@portabletext/block-tools": "^5.0.1",
     "@portabletext/editor": "^4.3.7",

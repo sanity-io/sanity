@@ -10,13 +10,16 @@ import {debug} from './debug'
 import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 
-export interface DevServerOptions {
+interface DevServerOptions {
+  httpPort: number
+  httpHost?: string
+}
+
+export interface StudioDevServerOptions extends DevServerOptions {
   cwd: string
   basePath: string
   staticPath: string
 
-  httpPort: number
-  httpHost?: string
   projectName?: string
 
   reactStrictMode: boolean
@@ -42,7 +45,7 @@ export interface DevServer {
   close(): Promise<void>
 }
 
-export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
+export async function startDevServer(options: StudioDevServerOptions): Promise<DevServer> {
   const {
     cwd,
     httpPort,
@@ -58,7 +61,14 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   } = options
 
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, entry, isApp})
+  await writeSanityRuntime({
+    cwd,
+    reactStrictMode,
+    watch: true,
+    basePath,
+    entry,
+    isApp,
+  })
 
   debug('Resolving vite config')
   const mode = 'development'
@@ -87,7 +97,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   const {createServer} = await import('vite')
   const server = await createServer(viteConfig)
 
-  debug('Listening on specified port')
+  debug(`Listening on ${httpHost}:${viteConfig.server?.port}`)
   await server.listen()
 
   return {

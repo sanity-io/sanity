@@ -1,6 +1,7 @@
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {federation} from '@module-federation/vite'
 import {
   type CliCommandContext,
   type CliConfig,
@@ -113,7 +114,12 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
 
   const envVars = isApp
     ? getAppEnvironmentVariables({prefix: 'process.env.', jsonEncode: true})
-    : getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true})
+    : getStudioEnvironmentVariables({
+        prefix: 'process.env.',
+        jsonEncode: true,
+      })
+
+  const federatedModulePath = path.join(cwd, '.sanity', 'federation', 'remoteEntry.jsx')
 
   const viteConfig: InlineConfig = {
     // Define a custom cache directory so that sanity's vite cache
@@ -124,23 +130,16 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     build: {
       outDir: outputDir || path.resolve(cwd, 'dist'),
       sourcemap: sourceMap,
+      modulePreload: false,
     },
     server: {
       host: server?.host,
-      port: server?.port || 3333,
+      port: server?.port ?? 3333,
       // Only enable strict port for studio,
       // since apps can run on any port
       strictPort: isApp ? false : true,
-
-      /**
-       * Significantly speed up startup time,
-       * and most importantly eliminates the `new dependencies optimized: foobar. optimized dependencies changed. reloading`
-       * types of initial reload loops that otherwise happen as vite discovers deps that need to be optimized.
-       * This option starts the traversal up front, and warms up the dep tree required to render the userland sanity.config.ts file,
-       * and thus avoids frustrating reload loops.
-       */
       warmup: {
-        clientFiles: ['./.sanity/runtime/app.js'],
+        clientFiles: [federatedModulePath],
       },
     },
     configFile: false,
@@ -156,8 +155,12 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
             }
           : {},
       ),
-      sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
+      sanityFaviconsPlugin({
+        defaultFaviconsPath,
+        customFaviconsPath,
+        staticUrlPath: staticPath,
+      }),
       sanityBuildEntries({basePath, cwd, importMap, isApp}),
       // Add typegen plugin when enabled
       ...(typegen?.enabled
@@ -169,6 +172,25 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
             }),
           ]
         : []),
+
+      federation({
+        dts: false,
+        exposes: {
+          './App': federatedModulePath,
+        },
+        filename: 'static/remoteEntry.js',
+        name: 'sanity:dev-studio',
+        shared: {
+          'react': {
+            singleton: true,
+            requiredVersion: '^19.0.0',
+          },
+          'react-dom': {
+            singleton: true,
+            requiredVersion: '^19.0.0',
+          },
+        },
+      }),
     ],
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',

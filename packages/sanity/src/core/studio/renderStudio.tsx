@@ -2,11 +2,16 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 
 import {type Config} from '../config'
-import {Studio} from './Studio'
+import {App} from './orchestra/App'
 
 interface RenderStudioOptions {
   basePath?: string
   reactStrictMode?: boolean
+  localApplications?: Array<{
+    port: number
+    title: string
+    remoteEntryUrl: string
+  }>
 }
 
 /**
@@ -40,17 +45,17 @@ export function renderStudio(
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
-  const {reactStrictMode = false, basePath} = opts
+  const {reactStrictMode = false, basePath, localApplications = []} = opts
 
   const root = createRoot(rootElement)
 
   root.render(
     reactStrictMode ? (
       <StrictMode>
-        <Studio config={config} basePath={basePath} unstable_globalStyles />
+        <App localApplications={localApplications} />
       </StrictMode>
     ) : (
-      <Studio config={config} basePath={basePath} unstable_globalStyles />
+      <App localApplications={localApplications} />
     ),
   )
 

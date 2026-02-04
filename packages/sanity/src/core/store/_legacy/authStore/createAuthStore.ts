@@ -4,7 +4,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 import {isEqual, memoize} from 'lodash-es'
-import {defer} from 'rxjs'
+import {defer, of} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type AuthConfig, type LoginMethod} from '../../../config'
@@ -52,6 +52,12 @@ const getHashToken = (): string | null => {
   return tokenParam
 }
 
+const getWindowToken = () => {
+  return new Promise<{token: string}>((resolve) => {
+    window.dispatchEvent(new CustomEvent('sanity:auth.getToken', {detail: {resolve}}))
+  }).then(({token}) => token)
+}
+
 const getAuthOptions = (
   loginMethod: LoginMethod,
   token: string | null,
@@ -80,17 +86,20 @@ const getStoredToken = (projectId: string): string | null => {
   }
 }
 
-const getToken = (projectId: string): string | null => {
+const getToken = async (projectId: string): Promise<string | null> => {
   const storedToken = getStoredToken(projectId)
   const hashToken = getHashToken()
+  const windowToken = await getWindowToken()
+
+  return windowToken
 
   // Prefer hash token over stored token when available and different
-  if (hashToken && (!storedToken || hashToken !== storedToken)) {
-    saveToken({token: hashToken, projectId})
-    return hashToken
-  }
+  // if (hashToken && (!storedToken || hashToken !== storedToken)) {
+  //   saveToken({ token: hashToken, projectId });
+  //   return hashToken;
+  // }
 
-  return storedToken || null
+  // return storedToken || null;
 }
 
 const clearToken = (projectId: string): void => {
@@ -125,6 +134,7 @@ const getCurrentUser = async (
     // if the user came back with an id, assume it's a full CurrentUser
     return typeof user?.id === 'string' ? user : null
   } catch (err) {
+    console.error('Failed to get current user:', err)
     // 401 means the user had some kind of credentials, but failed to authenticate,
     // we should clear any local token in this case and treat it as if the used was
     // logged out
@@ -154,7 +164,9 @@ const getCurrentUser = async (
     // Some non-CORS error - is it one of those undefinable network errors?
     if (err.isNetworkError && !err.message && err.request && err.request.url) {
       const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
+      throw new Error(`Unknown network error attempting to reach ${host}`, {
+        cause: err,
+      })
     }
 
     // Some other error, just throw it
@@ -187,7 +199,14 @@ export function _createAuthStore({
   // const firstMessage = messages.pipe(first())
 
   const token$ = messages.pipe(
-    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
+    startWith(null),
+    switchMap((token) => {
+      if (token !== null) return of(token)
+      if (isCookielessCompatibleLoginMethod(loginMethod)) {
+        return defer(() => getToken(projectId))
+      }
+      return of(null)
+    }),
   )
 
   // Allow configuration of `apiHost` through source configuration
@@ -241,7 +260,7 @@ export function _createAuthStore({
     const sessionId = getSessionId()
 
     if (!sessionId) {
-      broadcast(loginMethod === 'cookie' ? null : getToken(projectId))
+      broadcast(loginMethod === 'cookie' ? null : await getToken(projectId))
       return
     }
 
