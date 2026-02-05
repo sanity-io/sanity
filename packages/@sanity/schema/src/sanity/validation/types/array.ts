@@ -186,7 +186,7 @@ export default (typeDef: any, visitorContext: any) => {
       if (types.length > 1) {
         const typeNames = types.map((t) => t.name || t.type)
         problems.push(
-          error(
+          warning(
             `Array cannot contain multiple members with JSON type "${jsonType}" (${humanizeList(typeNames.map(quote))}) as there is no way to distinguish between them`,
             HELP_IDS.ARRAY_OF_DUPLICATE_PRIMITIVE_JSON_TYPE,
           ),

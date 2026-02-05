@@ -34,7 +34,7 @@ describe('Validation test', () => {
   })
 
   describe('array with multiple primitive types of the same JSON type', () => {
-    test('errors when array contains both string and text types', () => {
+    test('warns when array contains both string and text types', () => {
       const schemaDef = [
         {
           type: 'array',
@@ -49,17 +49,17 @@ describe('Validation test', () => {
       const validation = validateSchema(schemaDef)
       const contentArray = validation.get('contentArray')
 
-      const errors = contentArray._problems.filter((p: any) => p.severity === 'error')
-      expect(errors.length).toBeGreaterThan(0)
-      expect(errors[0]).toMatchObject({
-        severity: 'error',
+      const warnings = contentArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        severity: 'warning',
         helpId: 'schema-array-of-duplicate-primitive-json-type',
       })
-      expect(errors[0].message).toContain('JSON type "string"')
-      expect(errors[0].message).toContain('no way to distinguish between them')
+      expect(warnings[0].message).toContain('JSON type "string"')
+      expect(warnings[0].message).toContain('no way to distinguish between them')
     })
 
-    test('errors when array contains multiple string-based types', () => {
+    test('warns when array contains multiple string-based types', () => {
       const schemaDef = [
         {
           type: 'array',
@@ -75,9 +75,9 @@ describe('Validation test', () => {
       const validation = validateSchema(schemaDef)
       const multiStringArray = validation.get('multiStringArray')
 
-      const errors = multiStringArray._problems.filter((p: any) => p.severity === 'error')
-      expect(errors.length).toBeGreaterThan(0)
-      expect(errors[0]).toMatchObject({
+      const warnings = multiStringArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
         helpId: 'schema-array-of-duplicate-primitive-json-type',
       })
     })
@@ -122,7 +122,7 @@ describe('Validation test', () => {
       expect(duplicateJsonTypeErrors).toHaveLength(0)
     })
 
-    test('errors when array contains email and string types (both resolve to JSON string)', () => {
+    test('warns when array contains email and string types (both resolve to JSON string)', () => {
       // Tests that date-like and text-like built-in types that resolve to JSON string are detected
       const schemaDef = [
         {
@@ -138,11 +138,12 @@ describe('Validation test', () => {
       const validation = validateSchema(schemaDef)
       const stringVariantsArray = validation.get('stringVariantsArray')
 
-      const errors = stringVariantsArray._problems.filter(
+      const warnings = stringVariantsArray._problems.filter(
         (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
       )
-      expect(errors.length).toBeGreaterThan(0)
-      expect(errors[0].message).toContain('JSON type "string"')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0].severity).toBe('warning')
+      expect(warnings[0].message).toContain('JSON type "string"')
     })
   })
 
