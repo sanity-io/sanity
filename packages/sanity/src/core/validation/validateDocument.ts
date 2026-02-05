@@ -304,8 +304,7 @@ type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
-  parentHidden?: boolean
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'parentHidden'>>
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(validateItemObservable(opts))
@@ -367,7 +366,6 @@ function validateItemObservable({
   const rules = normalizeValidationRules(type, {
     ...restOfContext,
     hidden,
-    parentHidden,
     environment,
     parent,
     path,
@@ -380,7 +378,6 @@ function validateItemObservable({
         ...restOfContext,
         environment,
         hidden,
-        parentHidden,
         parent,
         path,
         type,
@@ -434,7 +431,6 @@ function validateItemObservable({
                   type: fieldType,
                   environment,
                   hidden: nestedHidden,
-                  parentHidden: hidden,
                   __internal: {customValidationConcurrencyLimiter},
                 }),
               )
@@ -448,7 +444,6 @@ function validateItemObservable({
         validateItemObservable({
           ...restOfContext,
           hidden,
-          parentHidden: hidden,
           parent: value,
           value: isRecord(value) ? value[field.name] : undefined,
           path: path.concat(field.name),
@@ -472,7 +467,6 @@ function validateItemObservable({
         validateItemObservable({
           ...restOfContext,
           hidden,
-          parentHidden: hidden,
           parent: value,
           value: item,
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
