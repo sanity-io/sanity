@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
+
+### Bug Fixes
+
+* **sanity:** prevent input element ids from adding unsafe global variables ([#12085](https://github.com/sanity-io/sanity/issues/12085)) ([7a4041c](https://github.com/sanity-io/sanity/commit/7a4041cd60808623ce13111699997ec9c0351e58)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
 
 ### Features

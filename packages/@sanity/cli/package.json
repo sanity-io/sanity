@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "cli",

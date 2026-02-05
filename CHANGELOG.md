@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/template-validator to ^2.4.5 ([#12076](https://github.com/sanity-io/sanity/issues/12076)) ([6da793e](https://github.com/sanity-io/sanity/commit/6da793e90e421abeea39533dde344295c8b52ebf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/template-validator to v3 ([#12092](https://github.com/sanity-io/sanity/issues/12092)) ([d889072](https://github.com/sanity-io/sanity/commit/d88907264bf0ac667a89097299c41c83a257b12e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* enforce explicit loginMethod configuration ([#12077](https://github.com/sanity-io/sanity/issues/12077)) ([8c4206d](https://github.com/sanity-io/sanity/commit/8c4206d920df8ef785fcfff07621399936251864)) by Rupert Dunk (rupert@rupertdunk.com)
+* missing types in `sanity/structure` and `sanity/presentation` ([#12083](https://github.com/sanity-io/sanity/issues/12083)) ([cef5812](https://github.com/sanity-io/sanity/commit/cef58129bb58119a3a6cde38f8da1d6e03ecdf76)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+* **sanity:** prevent input element ids from adding unsafe global variables ([#12085](https://github.com/sanity-io/sanity/issues/12085)) ([7a4041c](https://github.com/sanity-io/sanity/commit/7a4041cd60808623ce13111699997ec9c0351e58)) by Bjørge Næss (bjoerge@gmail.com)
+
 ## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
 
 ### Features
