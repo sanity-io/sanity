@@ -8,7 +8,7 @@ test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {
     test(`Show call to action on focus`, async ({mount}) => {
       const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
       // Assertion: Show correct text on keyboard focus
@@ -18,7 +18,7 @@ test.describe('Portable Text Input', () => {
 
     test(`Show call to action on hover`, async ({mount}) => {
       const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
       // Assertion: Show correct text on pointer hover
@@ -29,7 +29,7 @@ test.describe('Portable Text Input', () => {
     test(`Immediately activate on mount when 'initialActive' is true`, async ({mount}) => {
       const component = await mount(<InputStory ptInputProps={{initialActive: true}} />)
 
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
       await expect($activeOverlay).not.toBeAttached()
     })
@@ -37,7 +37,7 @@ test.describe('Portable Text Input', () => {
     test(`Immediately activate on mount when 'initialActive' is unset`, async ({mount}) => {
       const component = await mount(<InputStory />)
 
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
       await expect($activeOverlay).not.toBeAttached()
     })
@@ -47,7 +47,7 @@ test.describe('Portable Text Input', () => {
     test(`Displays placeholder text and removes it when typed into`, async ({mount, page}) => {
       await mount(<InputStory />)
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers({page})
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
       const $placeholder = $pte.getByTestId('pt-input-placeholder')
       // Assertion: placeholder is there
       await expect($placeholder).toBeVisible()
@@ -75,7 +75,7 @@ test.describe('Portable Text Input', () => {
           }}
         />,
       )
-      await getFocusedPortableTextEditor('field-body')
+      await getFocusedPortableTextEditor('field-sanity-form-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
       expect(editorIstance?.schemaTypes.block).toBeDefined()
     })
@@ -87,7 +87,7 @@ test.describe('Portable Text Input', () => {
       const changes: EditorChange[] = []
       const pushChange = (change: EditorChange) => changes.push(change)
       await mount(<InputStory ptInputProps={{onEditorChange: pushChange}} />)
-      await getFocusedPortableTextEditor('field-body')
+      await getFocusedPortableTextEditor('field-sanity-form-body')
       expect(changes.length).toBeGreaterThan(0)
     })
   })

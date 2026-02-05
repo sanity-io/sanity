@@ -24,7 +24,9 @@ test.describe('Portable Text Input', () => {
       }) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<StylesStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
+        const $portableTextInput = await getFocusedPortableTextInput(
+          'field-sanity-form-defaultStyles',
+        )
         const $styleSelectButton = $portableTextInput.locator('button#block-style-select')
         await $styleSelectButton.click()
 
@@ -41,7 +43,7 @@ test.describe('Portable Text Input', () => {
       }) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<StylesStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-oneStyle')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-oneStyle')
         await expect($portableTextInput.locator('button#block-style-select')).not.toBeVisible()
       })
     })

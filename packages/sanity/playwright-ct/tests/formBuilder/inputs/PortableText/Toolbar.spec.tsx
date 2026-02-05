@@ -12,7 +12,7 @@ test.describe('Portable Text Input', () => {
       test('Overflow links should appear in the "Add" context menu', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
         // Adjust the viewport size to make the Inline Object button hidden
         await page.setViewportSize({width: 800, height: 1000})
@@ -44,7 +44,7 @@ test.describe('Portable Text Input', () => {
         }) => {
           const {getFocusedPortableTextInput} = testHelpers({page})
           await mount(<ToolbarStory id="root" />)
-          const $portableTextInput = await getFocusedPortableTextInput('field-body')
+          const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
           // Adjust viewport size to enable auto collapsing toolbar menus
           await page.setViewportSize({width: 450, height: 500})
@@ -75,7 +75,7 @@ test.describe('Portable Text Input', () => {
         }) => {
           const {getFocusedPortableTextInput} = testHelpers({page})
           await mount(<ToolbarStory id="inspector-panel" />)
-          const $portableTextInput = await getFocusedPortableTextInput('field-body')
+          const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
           await page.setViewportSize({width: 350, height: 500})
 
@@ -97,7 +97,7 @@ test.describe('Portable Text Input', () => {
       test('Toolbar should be hidden after activation', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory ptInputProps={{hideToolbar: true}} />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
         // Assertion: the toolbar should not be rendered in the DOM
@@ -110,7 +110,7 @@ test.describe('Portable Text Input', () => {
       test('on a simple editor', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
 
@@ -127,7 +127,7 @@ test.describe('Portable Text Input', () => {
       test('on a full screen simple editor', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
 
@@ -147,7 +147,7 @@ test.describe('Portable Text Input', () => {
       test('on a full screen multi nested PTE', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<ToolbarStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+        const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
 

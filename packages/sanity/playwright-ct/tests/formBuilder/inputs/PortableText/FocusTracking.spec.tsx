@@ -98,7 +98,7 @@ test.describe('Portable Text Input', () => {
       )
       test.slow()
 
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
 
@@ -125,7 +125,7 @@ test.describe('Portable Text Input', () => {
       test.slow()
       await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
 
@@ -141,7 +141,7 @@ test.describe('Portable Text Input', () => {
       const component = await mount(
         <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}]} />,
       )
-      const $portableTextInput = component.getByTestId('field-body')
+      const $portableTextInput = component.getByTestId('field-sanity-form-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect($pteTextbox).not.toBeFocused()
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
@@ -162,7 +162,7 @@ test.describe('Portable Text Input', () => {
     const pushPath = (path: Path) => paths.push(path)
     await mount(<FocusTrackingStory document={document} onPathFocus={pushPath} />)
     const {getFocusedPortableTextEditor} = testHelpers({page})
-    const $pte = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
     await expect($pte).toBeFocused()
     expect(paths.slice(-1)[0]).toEqual(['body', {_key: 'a'}, 'children', {_key: 'b'}, 'text'])
     const $inlineObject = page.getByTestId('inline-preview')

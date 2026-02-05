@@ -11,7 +11,7 @@ test.describe('Portable Text Input', () => {
         page,
       })
       await mount(<AnnotationsStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await insertPortableText('Now we should insert a link.', $pte)
 
@@ -81,7 +81,7 @@ test.describe('Portable Text Input', () => {
         page,
       })
       await mount(<AnnotationsStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await insertPortableText('Now we should insert a link.', $pte)
 
@@ -147,7 +147,7 @@ test.describe('Portable Text Input', () => {
         page,
       })
       await mount(<MultipleAnnotationsStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await insertPortableText('Text with multiple annotations.', $pte)
 

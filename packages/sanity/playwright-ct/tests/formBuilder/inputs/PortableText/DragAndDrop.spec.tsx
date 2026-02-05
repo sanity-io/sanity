@@ -56,7 +56,7 @@ test.describe('Portable Text Input', () => {
       )
       const {dragAndDrop, getFocusedPortableTextEditor} = testHelpers({page})
 
-      await getFocusedPortableTextEditor('field-body')
+      await getFocusedPortableTextEditor('field-sanity-form-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz'
       await dragAndDrop('.pt-editable [draggable="true"]', '.pt-block.pt-text-block:nth-child(3)')
@@ -73,7 +73,7 @@ test.describe('Portable Text Input', () => {
       )
       const {dragWithoutDrop, getFocusedPortableTextEditor} = testHelpers({page})
 
-      await getFocusedPortableTextEditor('field-body')
+      await getFocusedPortableTextEditor('field-sanity-form-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz' without dropping it
       await dragWithoutDrop(

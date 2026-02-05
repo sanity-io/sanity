@@ -13,7 +13,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextInput, insertPortableText} = testHelpers({page})
       await mount(<NestedInputStory />)
 
-      const $portableTextInput = await getFocusedPortableTextInput('field-body')
+      const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Inline Object'}).click()
 

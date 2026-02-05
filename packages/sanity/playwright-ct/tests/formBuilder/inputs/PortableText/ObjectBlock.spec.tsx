@@ -8,7 +8,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextInput} = testHelpers({page})
       await mount(<ObjectBlockStory />)
 
-      const $portableTextInput = await getFocusedPortableTextInput('field-body')
+      const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
@@ -19,7 +19,7 @@ test.describe('Portable Text Input', () => {
     test('Custom block preview components renders correctly', async ({mount, page}) => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
 
@@ -37,7 +37,7 @@ test.describe('Portable Text Input', () => {
       test.slow()
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
       const $locatorDialog = page.getByTestId('popover-edit-dialog')
       // Assertion: Object edit dialog should be visible
@@ -60,7 +60,7 @@ test.describe('Portable Text Input', () => {
       }
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
       await page.getByText('Custom preview block: Click').dblclick()
       await expect(page.getByTestId('popover-edit-dialog')).toBeVisible()
@@ -73,7 +73,7 @@ test.describe('Portable Text Input', () => {
       test.slow()
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).click()
 
       // Assertion: the annotation toolbar popover should be visible
@@ -88,7 +88,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
 
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
@@ -117,7 +117,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextInput} = testHelpers({page})
       await mount(<ObjectBlockStory />)
 
-      const $portableTextField = await getFocusedPortableTextInput('field-body')
+      const $portableTextField = await getFocusedPortableTextInput('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
@@ -175,7 +175,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
       await mount(<ObjectBlockStory />)
 
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await page.getByRole('button', {name: 'Insert Object (block)'}).click()
 
@@ -207,7 +207,7 @@ test.describe('Portable Text Input', () => {
       const {getFocusedPortableTextInput} = testHelpers({page})
       await mount(<ObjectBlockStory />)
 
-      const $portableTextInput = await getFocusedPortableTextInput('field-body')
+      const $portableTextInput = await getFocusedPortableTextInput('field-sanity-form-body')
       await expect(
         $portableTextInput.getByRole('button').filter({hasText: 'Object Without Title'}),
       ).toBeVisible()

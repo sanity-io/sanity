@@ -43,7 +43,7 @@ test.describe('Portable Text Input', () => {
 
       await mount(<CopyPasteStory document={document} />)
 
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await insertPortableTextCopyPaste(GDOCS_INPUT, $pte)
 
@@ -66,7 +66,7 @@ test.describe('Portable Text Input', () => {
 
       await mount(<CopyPasteStory document={document} />)
 
-      const $pte = await getFocusedPortableTextEditor('field-bodyNormalized')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-bodyNormalized')
 
       await insertPortableTextCopyPaste(GDOCS_INPUT, $pte)
 
@@ -88,7 +88,7 @@ test.describe('Portable Text Input', () => {
 
       await mount(<CopyPasteStory document={document} />)
 
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await insertPortableTextCopyPaste(UNICODE_TEXT, $pte)
 
@@ -116,7 +116,7 @@ test.describe('Portable Text Input', () => {
       await mount(<CopyPasteStory document={document} />)
 
       const imagePath = path.resolve(__dirname, 'static', 'dummy-image-1.jpg')
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await pasteFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
       await page.getByTestId('upload-destination-sanity-default').click()
@@ -132,7 +132,7 @@ test.describe('Portable Text Input', () => {
       await mount(<CopyPasteStory document={document} />)
 
       const imagePath = path.resolve(__dirname, 'static', 'dummy-image-1.jpg')
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await hoverFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
 
@@ -152,7 +152,7 @@ test.describe('Portable Text Input', () => {
       await mount(<CopyPasteStory document={document} />)
 
       const zipPath = path.resolve(__dirname, 'static', 'dummy.zip')
-      const $pte = await getFocusedPortableTextEditor('field-body')
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
       await hoverFileOverPortableTextEditor(zipPath, 'application/zip', $pte)
 

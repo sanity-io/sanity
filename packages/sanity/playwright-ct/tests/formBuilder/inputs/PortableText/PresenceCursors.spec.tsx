@@ -77,7 +77,7 @@ test.describe('Portable Text Input', () => {
 
       await mount(<PresenceCursorsStory document={DOCUMENT} presence={PRESENCE} />)
 
-      const editor$ = await getFocusedPortableTextEditor('field-body')
+      const editor$ = await getFocusedPortableTextEditor('field-sanity-form-body')
       const $cursorA = editor$.getByTestId('presence-cursor-User-A')
       const $cursorB = editor$.getByTestId('presence-cursor-User-B')
 

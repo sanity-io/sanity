@@ -54,8 +54,10 @@ test.describe('Portable Text Input', () => {
         page,
       })
       await mount(<DecoratorsStory />)
-      const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
-      const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
+      const $portableTextInput = await getFocusedPortableTextInput(
+        'field-sanity-form-defaultDecorators',
+      )
+      const $pte = await getFocusedPortableTextEditor('field-sanity-form-defaultDecorators')
       const modifierKey = getModifierKey({browserName})
 
       for (const decorator of DEFAULT_DECORATORS) {
@@ -92,7 +94,9 @@ test.describe('Portable Text Input', () => {
       test('Should display all default decorator buttons', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<DecoratorsStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
+        const $portableTextInput = await getFocusedPortableTextInput(
+          'field-sanity-form-defaultDecorators',
+        )
 
         // Assertion: All buttons in the menu bar should be visible and have icon
         for (const decorator of DEFAULT_DECORATORS) {
@@ -105,7 +109,9 @@ test.describe('Portable Text Input', () => {
       test('Should display custom decorator button and icon', async ({mount, page}) => {
         const {getFocusedPortableTextInput} = testHelpers({page})
         await mount(<DecoratorsStory />)
-        const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
+        const $portableTextInput = await getFocusedPortableTextInput(
+          'field-sanity-form-customDecorator',
+        )
         // Assertion: Button for highlight should exist
         const $highlightButton = $portableTextInput.getByRole('button', {name: 'Highlight'})
         await expect($highlightButton).toBeVisible()

@@ -31,7 +31,7 @@ test.describe('Portable Text Input - ImageArrayDrag', () => {
     await mount(<ImageArrayDragStory document={document} focusPath={['body']} />)
 
     // Get the focused portable text editor
-    const $pte = await getFocusedPortableTextEditor('field-body')
+    const $pte = await getFocusedPortableTextEditor('field-sanity-form-body')
 
     // Wait for the text block to be editable
     await expect(
