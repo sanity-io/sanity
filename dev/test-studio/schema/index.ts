@@ -34,6 +34,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
 import {fieldActionsTest} from './debug/fieldActionsTest'
@@ -217,6 +218,7 @@ export function createSchemaTypes(projectId: string) {
     tooltipAnnotationType,
     button,
     collapsibleObjects,
+    domAttrsAsFieldNames,
     commentsDebug,
     conditionalFields,
     conditionalFieldsWithPath,
