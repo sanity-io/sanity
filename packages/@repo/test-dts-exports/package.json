@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-dts-exports",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "private": true,
   "description": "Checks that we're exporting typings correctly",
   "exports": {
