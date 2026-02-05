@@ -35,13 +35,15 @@ function isHeading(block: PortableTextMarkdownBlock) {
 }
 
 export function shouldExcludeReleaseNotes(blocks: PortableTextMarkdownBlock[]): boolean {
-  if (blocks.length === 0) {
+  const [block] = blocks
+  if (!block) {
     // consider only when explicitly stating that no release notes needed
     return false
   }
-  const firstBlock = getBlockText(blocks[0]).toLowerCase().trim()
+  const firstBlock = getBlockText(block).toLowerCase().trim()
   return (
     firstBlock.startsWith('n/a') ||
+    firstBlock.startsWith('none') ||
     firstBlock.startsWith('not required') ||
     firstBlock.startsWith('not relevant') ||
     firstBlock.startsWith('not needed')
