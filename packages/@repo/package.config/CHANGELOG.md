@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
+
+### Bug Fixes
+
+* missing types in `sanity/structure` and `sanity/presentation` ([#12083](https://github.com/sanity-io/sanity/issues/12083)) ([cef5812](https://github.com/sanity-io/sanity/commit/cef58129bb58119a3a6cde38f8da1d6e03ecdf76)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
 
 **Note:** Version bump only for package @repo/package.config
