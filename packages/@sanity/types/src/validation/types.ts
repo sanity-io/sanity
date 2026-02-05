@@ -282,8 +282,10 @@ export interface ValidationContext {
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /**
+   * Whether this field is hidden for any reason (either itself or any of its ancestors).
+   */
   hidden?: boolean
-  parentHidden?: boolean
 }
 
 /**

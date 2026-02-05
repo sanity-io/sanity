@@ -91,15 +91,13 @@ export const hiddenFieldValidationTypes = [
             name: 'title',
             title: 'Title',
             type: 'string',
-            validation: (rule, context) =>
-              context?.parentHidden || context?.hidden ? rule.skip() : rule.required().min(5),
+            validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required().min(5)),
           }),
           defineField({
             name: 'subtitle',
             title: 'Subtitle',
             type: 'string',
-            validation: (rule, context) =>
-              context?.parentHidden || context?.hidden ? rule.skip() : rule.required().min(5),
+            validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required().min(5)),
           }),
           defineField({
             name: 'metadata',
@@ -116,8 +114,7 @@ export const hiddenFieldValidationTypes = [
                 name: 'publishDate',
                 title: 'Publish Date',
                 type: 'date',
-                validation: (rule, context) =>
-                  context?.parentHidden || context?.hidden ? rule.skip() : rule.required(),
+                validation: (rule, context) => (context?.hidden ? rule.skip() : rule.required()),
               }),
             ],
           }),
@@ -221,7 +218,9 @@ export const hiddenFieldValidationTypes = [
                         type: 'string',
                         description:
                           'This deeply nested field is required and causes validation errors even when top-level parent is hidden',
-                        validation: (rule) => rule.required(),
+                        validation: (rule, context) => {
+                          return context?.hidden ? rule.skip() : rule.min(10)
+                        },
                       }),
                     ],
                   }),

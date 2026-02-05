@@ -146,11 +146,10 @@ describe('validateDocument', () => {
 })
 
 describe('validateItem', () => {
-  it('passes hidden and parentHidden to validation for hidden parent objects', async () => {
+  it('passes hidden to validation for hidden parent objects', async () => {
     const contexts: Array<{
       path: ValidationContext['path']
       hidden?: boolean
-      parentHidden?: boolean
     }> = []
     const schema = createSchema({
       name: 'default',
@@ -172,9 +171,8 @@ describe('validateItem', () => {
                     contexts.push({
                       path: context?.path,
                       hidden: context?.hidden,
-                      parentHidden: context?.parentHidden,
                     })
-                    return context?.hidden || context?.parentHidden ? rule.skip() : rule.required()
+                    return context?.hidden ? rule.skip() : rule.required()
                   },
                 },
               ],
@@ -212,16 +210,14 @@ describe('validateItem', () => {
       {
         path: ['panel', 'title'],
         hidden: true,
-        parentHidden: true,
       },
     ])
   })
 
-  it('passes hidden without parentHidden for field-level hidden', async () => {
+  it('passes hidden for field-level hidden', async () => {
     const contexts: Array<{
       path: ValidationContext['path']
       hidden?: boolean
-      parentHidden?: boolean
     }> = []
     const schema = createSchema({
       name: 'default',
@@ -243,7 +239,6 @@ describe('validateItem', () => {
                     contexts.push({
                       path: context?.path,
                       hidden: context?.hidden,
-                      parentHidden: context?.parentHidden,
                     })
                     return context?.hidden ? rule.skip() : rule.required()
                   },
@@ -282,16 +277,14 @@ describe('validateItem', () => {
       {
         path: ['settings', 'details'],
         hidden: true,
-        parentHidden: false,
       },
     ])
   })
 
-  it('propagates parentHidden through hidden arrays', async () => {
+  it('propagates hidden through hidden arrays', async () => {
     const contexts: Array<{
       path: ValidationContext['path']
       hidden?: boolean
-      parentHidden?: boolean
     }> = []
     const schema = createSchema({
       name: 'default',
@@ -317,9 +310,8 @@ describe('validateItem', () => {
                         contexts.push({
                           path: context?.path,
                           hidden: context?.hidden,
-                          parentHidden: context?.parentHidden,
                         })
-                        return context?.parentHidden ? rule.skip() : rule.required()
+                        return context?.hidden ? rule.skip() : rule.required()
                       },
                     },
                   ],
@@ -359,7 +351,6 @@ describe('validateItem', () => {
       {
         path: ['items', {_key: 'a'}, 'name'],
         hidden: true,
-        parentHidden: true,
       },
     ])
   })
