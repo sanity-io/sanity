@@ -16,7 +16,7 @@ import {
 } from '@sanity/types'
 import {cloneDeep} from 'lodash-es'
 
-const FIELD_REF = Symbol('FIELD_REF')
+const FIELD_REF = Symbol.for('@sanity/schema/field-ref')
 const ruleConstraintTypes: RuleTypeConstraint[] = [
   'Array',
   'Boolean',
