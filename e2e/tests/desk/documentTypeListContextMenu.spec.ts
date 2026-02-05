@@ -118,6 +118,8 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
   test.skip(browserName !== 'chromium')
   test.slow()
 
+  await page.goto('/content/author')
+
   // Clear any existing layout key (ignore error if key doesn't exist)
   try {
     await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
@@ -127,9 +129,6 @@ test('clicking list view sets value in storage', async ({page, sanityClient, bro
   } catch {
     // Key doesn't exist, which is fine
   }
-
-  // Navigate after clearing to ensure UI is in sync with server state
-  await page.goto('/content/author')
 
   const contextMenuButton = page.getByTestId('pane').getByTestId('pane-context-menu-button')
   await expect(contextMenuButton).toBeVisible()
