@@ -1108,8 +1108,8 @@ importers:
         specifier: 'catalog:'
         version: 0.8.1(react@19.2.3)
       '@sanity/template-validator':
-        specifier: ^2.4.5
-        version: 2.4.5
+        specifier: ^3.0.0
+        version: 3.0.0
       '@sanity/worker-channels':
         specifier: ^1.1.0
         version: 1.1.0
@@ -2494,8 +2494,14 @@ packages:
   '@actions/core@1.11.1':
     resolution: {integrity: sha512-hXJCSrkwfA46Vd9Z3q4cpEpHB1rL5NG04+/rbqW9d3+CSvtB1tYe8UTpAlixa1vj0m/ULglfEK2UKxMGxCxv5A==}
 
+  '@actions/core@3.0.0':
+    resolution: {integrity: sha512-zYt6cz+ivnTmiT/ksRVriMBOiuoUpDCJJlZ5KPl2/FRdvwU3f7MPh9qftvbkXJThragzUZieit2nyHUyw53Seg==}
+
   '@actions/exec@1.1.1':
     resolution: {integrity: sha512-+sCcHHbVdk93a0XT19ECtO/gIXoxvdsgQLzb2fE2/5sIZmWQuluYyjPQtrtTHdU1YzTZ7bAPN4sITq2xi1679w==}
+
+  '@actions/exec@3.0.0':
+    resolution: {integrity: sha512-6xH/puSoNBXb72VPlZVm7vQ+svQpFyA96qdDBvhB8eNZOE8LtPf9L4oAsfzK/crCL8YZ+19fKYVnM63Sl+Xzlw==}
 
   '@actions/github@9.0.0':
     resolution: {integrity: sha512-yJ0RoswsAaKcvkmpCE4XxBRiy/whH2SdTBHWzs0gi4wkqTDhXMChjSdqBz/F4AeiDlP28rQqL33iHb+kjAMX6w==}
@@ -2506,8 +2512,14 @@ packages:
   '@actions/http-client@3.0.2':
     resolution: {integrity: sha512-JP38FYYpyqvUsz+Igqlc/JG6YO9PaKuvqjM3iGvaLqFnJ7TFmcLyy2IDrY0bI0qCQug8E9K+elv5ZNfw62ZJzA==}
 
+  '@actions/http-client@4.0.0':
+    resolution: {integrity: sha512-QuwPsgVMsD6qaPD57GLZi9sqzAZCtiJT8kVBCDpLtxhL5MydQ4gS+DrejtZZPdIYyB1e95uCK9Luyds7ybHI3g==}
+
   '@actions/io@1.1.3':
     resolution: {integrity: sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==}
+
+  '@actions/io@3.0.2':
+    resolution: {integrity: sha512-nRBchcMM+QK1pdjO7/idu86rbJI5YHUKCvKs0KxnSYbVe3F51UfGxuZX4Qy/fWlp6l7gWFwIkrOzN+oUK03kfw==}
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
@@ -5506,8 +5518,8 @@ packages:
     peerDependencies:
       react: ^18.2 || ^19.0.0
 
-  '@sanity/template-validator@2.4.5':
-    resolution: {integrity: sha512-yt9tfDcqblM4Y4acJ4SMs5yzCwjOKO0HKUd2Co89ZVbs0oxNvxRAN8tOmjkAszw6doiVaZZdPS2aMKcnOCBK4Q==}
+  '@sanity/template-validator@3.0.0':
+    resolution: {integrity: sha512-ej6bdYiMz+M3Z/kYlWnTgGy2KQcYQk3O2dwJog1xSI8l444T3IZSOICr9cFuQL/j41W9HcEHqcbg/LO+31L3KA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -13241,9 +13253,18 @@ snapshots:
       '@actions/exec': 1.1.1
       '@actions/http-client': 2.2.3
 
+  '@actions/core@3.0.0':
+    dependencies:
+      '@actions/exec': 3.0.0
+      '@actions/http-client': 4.0.0
+
   '@actions/exec@1.1.1':
     dependencies:
       '@actions/io': 1.1.3
+
+  '@actions/exec@3.0.0':
+    dependencies:
+      '@actions/io': 3.0.2
 
   '@actions/github@9.0.0':
     dependencies:
@@ -13265,7 +13286,14 @@ snapshots:
       tunnel: 0.0.6
       undici: 6.23.0
 
+  '@actions/http-client@4.0.0':
+    dependencies:
+      tunnel: 0.0.6
+      undici: 6.23.0
+
   '@actions/io@1.1.3': {}
+
+  '@actions/io@3.0.2': {}
 
   '@adobe/css-tools@4.4.4': {}
 
@@ -17002,9 +17030,9 @@ snapshots:
       rxjs: 7.8.2
       typeid-js: 0.3.0
 
-  '@sanity/template-validator@2.4.5':
+  '@sanity/template-validator@3.0.0':
     dependencies:
-      '@actions/core': 1.11.1
+      '@actions/core': 3.0.0
       '@actions/github': 9.0.0
       yaml: 2.8.2
 
