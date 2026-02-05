@@ -903,12 +903,18 @@ importers:
 
   packages/@repo/release-notes:
     dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.72.1
+        version: 0.72.1(zod@4.3.6)
       '@conventional-changelog/git-client':
         specifier: ^2.5.1
         version: 2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
       '@octokit/rest':
         specifier: ^22.0.0
         version: 22.0.1
+      '@portabletext/toolkit':
+        specifier: ^5.0.1
+        version: 5.0.1
       '@sanity/client':
         specifier: 'catalog:'
         version: 7.14.1(debug@4.4.3)
@@ -918,6 +924,9 @@ importers:
       '@sanity/mutate':
         specifier: ^0.16.1
         version: 0.16.1(debug@4.4.3)(xstate@5.25.1)
+      '@sanity/types':
+        specifier: ^5.0.0
+        version: link:../../@sanity/types
       conventional-commits-parser:
         specifier: ^6.2.1
         version: 6.2.1
@@ -927,6 +936,9 @@ importers:
       description-to-co-authors:
         specifier: ^0.3.0
         version: 0.3.0
+      lodash-es:
+        specifier: ^4.17.22
+        version: 4.17.23
       p-map:
         specifier: ^7.0.3
         version: 7.0.4
@@ -952,6 +964,9 @@ importers:
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/turndown':
         specifier: ^5.0.6
         version: 5.0.6
@@ -2526,6 +2541,15 @@ packages:
 
   '@algorithm.ts/lcs@4.0.5':
     resolution: {integrity: sha512-D01bfwAw7ambpU+qc0Bax/E86qGiMEqECHMjOcY8pO9tVYmf+woTqLMvBdtcjSnGQCaP+Ah4Zf7ownT0Zthtqg==}
+
+  '@anthropic-ai/sdk@0.72.1':
+    resolution: {integrity: sha512-MiUnue7qN7DvLIoYHgkedN2z05mRf2CutBzjXXY2krzOhG2r/rIfISS2uVkNLikgToB5hYIzw+xp2jdOtRkqYQ==}
+    hasBin: true
+    peerDependencies:
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
 
   '@architect/asap@7.0.10':
     resolution: {integrity: sha512-oJjYDranGTCkp21bziF/fIxJfLTucitqg/ar5mmLPHyroNG3XF3SUIMvuNd1GNIe4oy40wvGEXvTToKYvUeOLA==}
@@ -9837,6 +9861,10 @@ packages:
   json-schema-to-ts@1.6.4:
     resolution: {integrity: sha512-pR4yQ9DHz6itqswtHCm26mw45FSNfQ9rEQjosaZErhn5J3J2sIViQiz8rDaezjKAhFGpmsoczYVBgGHzFw/stA==}
 
+  json-schema-to-ts@3.1.1:
+    resolution: {integrity: sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==}
+    engines: {node: '>=16'}
+
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -12457,6 +12485,9 @@ packages:
     resolution: {integrity: sha512-gcANaAnd2QDZFmHFEOF4k7uc1J/6a6z3DJMd/QwEyxLoKGiptJRwid582r7QIsFlFMIZ3SnxfS52S4hm2DHkuQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  ts-algebra@2.0.0:
+    resolution: {integrity: sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==}
+
   ts-api-utils@2.4.0:
     resolution: {integrity: sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==}
     engines: {node: '>=18.12'}
@@ -13428,6 +13459,12 @@ snapshots:
   '@adobe/css-tools@4.4.4': {}
 
   '@algorithm.ts/lcs@4.0.5': {}
+
+  '@anthropic-ai/sdk@0.72.1(zod@4.3.6)':
+    dependencies:
+      json-schema-to-ts: 3.1.1
+    optionalDependencies:
+      zod: 4.3.6
 
   '@architect/asap@7.0.10':
     dependencies:
@@ -22002,6 +22039,11 @@ snapshots:
       '@types/json-schema': 7.0.15
       ts-toolbelt: 6.15.5
 
+  json-schema-to-ts@3.1.1:
+    dependencies:
+      '@babel/runtime': 7.28.4
+      ts-algebra: 2.0.0
+
   json-schema-traverse@0.4.1: {}
 
   json-schema-traverse@1.0.0: {}
@@ -24889,6 +24931,8 @@ snapshots:
   treeify@1.1.0: {}
 
   treeverse@3.0.0: {}
+
+  ts-algebra@2.0.0: {}
 
   ts-api-utils@2.4.0(typescript@5.9.3):
     dependencies:
