@@ -98,8 +98,7 @@ test.describe('Custom Release Actions', () => {
           // On overview page, wait for the releases table
           await expect(page.getByRole('table')).toBeVisible()
         } else {
-          // On individual release page, wait for the menu button which indicates
-          // the release data has loaded successfully
+          // On individual release page, wait for the menu button
           await expect(page.getByTestId('release-menu-button')).toBeVisible()
         }
       })
