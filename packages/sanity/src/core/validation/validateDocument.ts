@@ -319,20 +319,24 @@ function validateItemObservable({
   environment,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
-  const parentHidden = restOfContext.hidden === true
+  // Track whether any ancestor in the tree is hidden.
+  // It will be true if this field OR any ancestor is hidden.
+  // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
+  // without needing to know whether the field itself or an ancestor caused it to be hidden.
+  const ancestorHidden = restOfContext.hidden === true
   const resolveHiddenForType = (
     schemaType: SchemaType | undefined,
     schemaValue: unknown,
     schemaParent: unknown,
     schemaPath: ValidationContext['path'],
-    parentHiddenValue: boolean,
+    ancestorHiddenValue: boolean,
   ) => {
-    // If there is no schema type, fall back to the parent's hidden state.
+    // If there is no schema type, fall back to the ancestor's hidden state.
     if (!schemaType) {
-      return parentHiddenValue
+      return ancestorHiddenValue
     }
     return (
-      parentHiddenValue ||
+      ancestorHiddenValue ||
       resolveConditionalProperty(schemaType.hidden, {
         document: restOfContext.document,
         parent: schemaParent,
@@ -342,7 +346,7 @@ function validateItemObservable({
       })
     )
   }
-  const hidden = resolveHiddenForType(type, value, parent, path, parentHidden)
+  const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)
 
   // Note: this validator is added here because it's conditional based on the
   // environment.
