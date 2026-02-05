@@ -518,6 +518,23 @@ describe('hasValidationContext', () => {
       const validation = (_rule: Rule, _context: unknown) => _rule
       expect(hasValidationContext(validation)).toBe(true)
     })
+
+    test('arrow function with destructured context parameter', () => {
+      // Destructuring in parameter list should still report length === 2
+      const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('regular function with destructured context parameter', () => {
+      // Regular functions should behave the same as arrow functions
+      function validation(_rule: Rule, {hidden}: {hidden?: boolean}) {
+        return _rule
+      }
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
     test('function with rest parameters after rule', () => {
       const validation = (_rule: Rule, ..._args: unknown[]) => _rule
       expect(hasValidationContext(validation)).toBe(true)
