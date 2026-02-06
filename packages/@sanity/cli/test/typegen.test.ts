@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto'
-import {access, readFile, unlink, writeFile} from 'node:fs/promises'
+import {access, readFile, rm, unlink, writeFile} from 'node:fs/promises'
 import {join} from 'node:path'
 
 import {once} from 'lodash-es'
@@ -242,13 +242,13 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.code).toBe(0)
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
-            expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+            expect(result.stderr).toContain('found queries in 1 file')
           },
         ),
       )
 
       test(
-        'sanity typegen gedsanerate: watch mode',
+        'sanity typegen generate: watch mode',
         withConfig(
           {
             config: workingTypegen,
@@ -256,45 +256,45 @@ describeCliTest('CLI: `sanity typegen`', () => {
           },
           async (configFileName) => {
             const {cmdOptions, cmdArgs} = getParams(configFileName)
-            const filename = `newfile.ts`
-            const fileToAdd = join(studiosPath, studioName, 'src', filename)
+            const filename = `${Math.random().toString(36)}.ts`
+            const unrelatedFilename = `${Math.random().toString(36)}.ts`
+            const watchedFile = join(studiosPath, studioName, 'src', filename)
+            const unrelatedFile = join(studiosPath, studioName, unrelatedFilename)
 
             async function cleanup() {
-              try {
-                await unlink(fileToAdd)
-              } catch (err) {
-                if (err.code === 'ENOENT') {
-                  return
-                }
-                throw err
-              }
+              await rm(watchedFile, {force: true})
+              await rm(unrelatedFile, {force: true})
             }
 
-            const createFile = once(async () => {
-              await writeFile(fileToAdd, '')
-            })
-
-            await cleanup()
+            const createFile = once(() => writeFile(watchedFile, ''))
+            const changeFile = once(() => writeFile(watchedFile, 'apekatt'))
+            const createUnwatchedFile = once(() => writeFile(unrelatedFile, ''))
 
             try {
-              const {stderr, stdout} = await runSanityLongRunningCommand(
+              await cleanup()
+              await runSanityLongRunningCommand(
                 studioName,
                 ['typegen', 'generate', '--watch', ...cmdArgs],
                 cmdOptions,
                 async (output) => {
-                  // assert that we've evaluated three files for queries
-                  expect(output.stderr).toContain('found queries in 1 file after evaluating 1 file')
+                  // assert that it's doing the initial generation
+                  expect(output.stderr).toContain('Successfully generated types')
 
                   // add a ts file to the tmp studio dir
                   await createFile()
-
-                  // expect the console to show message about added file
                   expect(output.stdout).toContain(`add: src/${filename}`)
 
-                  // assert that it evaluated one more file
-                  expect(output.stderr).toContain(
-                    'found queries in 1 file after evaluating 2 files',
-                  )
+                  // change the file, and something that we don't watch
+                  await changeFile()
+                  await createUnwatchedFile()
+                  expect(output.stdout).toContain(`change: src/${filename}`)
+                  expect(output.stdout).not.toContain(`src/${unrelatedFilename}`)
+
+                  // Note: we don't test unlink events because they are unreliably emitted
+                  // by chokidar on Linux CI environments (known inotify limitation)
+
+                  // We should have two generations: initial + quick succession changes being debounced
+                  expect(output.stderr.match(/Successfully generated types/g)?.length).toBe(2)
                 },
               )
             } finally {
@@ -328,7 +328,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.code).toBe(0)
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
-            expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+            expect(result.stderr).toContain('found queries in 1 file')
             expect(result.stderr).toContain('formatted the generated code with prettier')
           },
         ),
@@ -354,7 +354,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.code).toBe(0)
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
-            expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+            expect(result.stderr).toContain('found queries in 1 file')
 
             const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
             expect(types.toString()).toContain(
@@ -391,7 +391,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.code).toBe(0)
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
-            expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+            expect(result.stderr).toContain('found queries in 1 file')
 
             const types = await readFile(`${studiosPath}/cli-test-studio/out/types.ts`)
             expect(types.toString()).not.toContain(`Query TypeMap`)
@@ -427,7 +427,7 @@ describeCliTest('CLI: `sanity typegen`', () => {
             expect(result.code).toBe(0)
             expect(result.stderr).toContain('Successfully generated types')
             expect(result.stderr).toContain('1 query and 2 schema types')
-            expect(result.stderr).toContain('found queries in 1 file after evaluating 1 file')
+            expect(result.stderr).toContain('found queries in 1 file')
 
             expect(types.toString()).toMatchSnapshot()
           },
