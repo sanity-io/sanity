@@ -80,6 +80,14 @@ jobs:
         env:
           RELEASE_AS: ${{ needs.build-and-validate.outputs.version}}
 
+  typedoc:
+    needs: [build-and-validate, git-operations]
+    uses: ./.github/workflows/typedoc.yml
+    with:
+      upload: true
+      version: ${{ needs.build-and-validate.outputs.version }}
+    secrets: inherit
+
   npm-publish:
     needs: [build-and-validate, git-operations]
     if: always() && needs.build-and-validate.result == 'success' && (needs.git-operations.result == 'success' || needs.git-operations.result == 'skipped')
