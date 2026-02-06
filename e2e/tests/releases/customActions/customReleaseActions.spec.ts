@@ -83,8 +83,15 @@ test.describe('Custom Release Actions', () => {
     test.describe(contextName, () => {
       test.beforeEach(async ({page}) => {
         test.slow()
-        await page.goto(setupPath)
-        await page.waitForLoadState('load', {timeout: 30000})
+
+        // Navigate and wait for the releases API response to complete
+        // This ensures the release data is fully loaded before interacting with the page
+        await Promise.all([
+          page.waitForResponse(
+            (response) => response.url().includes('/data/query/') && response.status() === 200,
+          ),
+          page.goto(setupPath),
+        ])
 
         // Wait for page-specific elements to be ready
         if (isOverview) {
@@ -116,8 +123,12 @@ test.describe('Custom Release Actions', () => {
         })
 
         await openReleaseMenu(page, isOverview)
-        const menuItem = await expectCustomActionInMenu(page)
-        await menuItem.click()
+        await expectCustomActionInMenu(page)
+        // Click the menu item directly to avoid stale element references
+        // The menu can re-render when release data updates, causing element detachment
+        await page
+          .getByRole('menuitem', {name: `E2E Test Action: ${uniqueReleaseTitle}`})
+          .click({force: true})
 
         // Wait for the action to execute
         await page.waitForTimeout(1000)
