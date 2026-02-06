@@ -838,6 +838,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.image.upload-error.title': 'Upload failed',
+  /** Cropped image dimensions: `{{width}}`×`{{height}}` */
+  'inputs.imagetool.crop-dimensions': 'Cropped image size: {{width}}×{{height}} px',
   /** Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible. */
   'inputs.imagetool.description':
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
