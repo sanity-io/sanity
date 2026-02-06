@@ -33,6 +33,120 @@ describe('Validation test', () => {
     expect(myObject.fields[2]._problems.length).toBeGreaterThan(0)
   })
 
+  describe('array with multiple primitive types of the same JSON type', () => {
+    test('warns when array contains both string and text types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'contentArray',
+          of: [
+            {type: 'string', name: 'heading'},
+            {type: 'text', name: 'paragraph'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const contentArray = validation.get('contentArray')
+
+      const warnings = contentArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        severity: 'warning',
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+      expect(warnings[0].message).toContain('JSON type "string"')
+      expect(warnings[0].message).toContain('no way to distinguish between them')
+    })
+
+    test('warns when array contains multiple string-based types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'multiStringArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'text', name: 'body'},
+            {type: 'url', name: 'link'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const multiStringArray = validation.get('multiStringArray')
+
+      const warnings = multiStringArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+    })
+
+    test('allows array with a single primitive type', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'singleStringArray',
+          of: [{type: 'string'}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const singleStringArray = validation.get('singleStringArray')
+
+      const errors = singleStringArray._problems.filter((p: any) => p.severity === 'error')
+      expect(errors).toHaveLength(0)
+    })
+
+    test('allows array with different primitive JSON types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'mixedPrimitivesArray',
+          of: [
+            {type: 'string', name: 'text'},
+            {type: 'number', name: 'count'},
+            {type: 'boolean', name: 'flag'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const mixedPrimitivesArray = validation.get('mixedPrimitivesArray')
+
+      // Should have errors because mixing primitives and objects is also not allowed,
+      // but no duplicate JSON type errors
+      const duplicateJsonTypeErrors = mixedPrimitivesArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(duplicateJsonTypeErrors).toHaveLength(0)
+    })
+
+    test('warns when array contains email and string types (both resolve to JSON string)', () => {
+      // Tests that date-like and text-like built-in types that resolve to JSON string are detected
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'stringVariantsArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'email', name: 'contactEmail'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const stringVariantsArray = validation.get('stringVariantsArray')
+
+      const warnings = stringVariantsArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0].severity).toBe('warning')
+      expect(warnings[0].message).toContain('JSON type "string"')
+    })
+  })
+
   test('validate standalone blocks', () => {
     const result = validateSchema([
       {
