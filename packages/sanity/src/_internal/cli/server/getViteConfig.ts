@@ -20,8 +20,8 @@ import {normalizeBasePath} from './helpers'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
-import {sanityTypegenPlugin} from './vite/plugin-typegen'
 import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
+import {sanityTypegenPlugin} from './vite/plugin-typegen'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -173,10 +173,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
               workDir: cwd,
               config: typegen,
               telemetryLogger,
-            })
+            }),
           ]
-        : []
-      ),
+        : []),
       // Add schema extraction when enabled
       ...(schemaExtraction?.enabled
         ? [

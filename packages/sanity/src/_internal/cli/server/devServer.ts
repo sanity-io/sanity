@@ -82,7 +82,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     isApp,
     typegen,
     telemetryLogger,
-    schemaExtraction
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config
