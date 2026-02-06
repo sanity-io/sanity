@@ -350,6 +350,6 @@ export function turboChargeResultIfSourceMap<T = unknown>(
       return null
     },
     mapChangedValue,
-    perspective,
+    Array.isArray(perspective) ? perspective.filter(Boolean) : perspective,
   )
 }
