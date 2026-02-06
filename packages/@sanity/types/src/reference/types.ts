@@ -48,6 +48,24 @@ export type ReferenceFilterResolver = (
 ) => ReferenceFilterSearchOptions | Promise<ReferenceFilterSearchOptions>
 
 /** @public */
+export interface ReferenceTypeOption {
+  type: string
+}
+
+/** @public */
+export interface ReferenceTypeFilterContext {
+  document: SanityDocument
+  parent?: Record<string, unknown> | Record<string, unknown>[]
+  parentPath: Path
+}
+
+/** @public */
+export type ReferenceTypeFilter = (
+  context: ReferenceTypeFilterContext,
+  toTypes: ReferenceTypeOption[],
+) => ReferenceTypeOption[]
+
+/** @public */
 export interface ReferenceFilterResolverOptions {
   filter?: ReferenceFilterResolver
   filterParams?: never
@@ -62,6 +80,20 @@ export interface ReferenceFilterQueryOptions {
 /** @public */
 export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
   disableNew?: boolean
+  /**
+   * Function to filter which types appear in the "Create new" type picker.
+   *
+   * @example
+   * ```ts
+   * filterTypes: ({document}, toTypes) => {
+   *   if (document?.role === 'editor') {
+   *     return toTypes.filter(t => t.type === 'article')
+   *   }
+   *   return toTypes
+   * }
+   * ```
+   */
+  filterTypes?: ReferenceTypeFilter
 }
 
 /** @public */
