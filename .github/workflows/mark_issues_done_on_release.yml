@@ -1,0 +1,23 @@
+name: Mark Linear Issues Done on Release
+
+on:
+  push:
+    tags:
+      - "production*"
+
+jobs:
+  mark-issues-done:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Mark Growth Linear issues Done
+        id: mark-growth-issues-done
+        uses: sanity-io/mark-issues-done-action@main
+        with:
+          linear_api_key: ${{secrets.LINEAR_API_TOKEN}}
+          repository_name: ${{github.event.repository.name}}
+          initial_state_id: "f39e3f44-58e1-4c01-8cb7-8497b7f27e52"
+          done_state_id: "c7fa599f-2b6e-4361-a229-d8db2a901f8a"
