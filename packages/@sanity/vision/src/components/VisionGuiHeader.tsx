@@ -80,16 +80,28 @@ export function VisionGuiHeader({
   const pinnedPerspective = usePerspective()
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
-  const handleCopyUrl = useCallback(() => {
+  const handleCopyUrl = useCallback(async () => {
     const el = operationUrlElement.current
     if (!el) return
 
-    try {
-      el.select()
-      document.execCommand('copy')
-    } catch {
-      console.error('Unable to copy to clipboard :(')
+    // The run().catch() syntax instead of try/catch is because of the React Compiler not fully supporting try/catch with async yet
+    const run = async () => {
+      // Use modern Clipboard API if available, fallback to execCommand
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(el.value)
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        el.select()
+        // TypeScript/oxlint flag execCommand as deprecated, but it's intentionally kept as a
+        // fallback for older browsers and non-secure contexts where Clipboard API isn't available
+        // @ts-expect-error - execCommand is deprecated but still needed for browser compatibility
+        // oxlint-disable-next-line typescript/no-deprecated
+        document.execCommand('copy')
+      }
     }
+    await run().catch((error) => {
+      console.error('Unable to copy to clipboard :(', error)
+    })
   }, [])
 
   return (
