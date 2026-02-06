@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-06)
+
+### Features
+
+* **cli:** add schema extraction to dev and build commands ([#11761](https://github.com/sanity-io/sanity/issues/11761)) ([c3a4cb1](https://github.com/sanity-io/sanity/commit/c3a4cb19e11147ba91a832420fed13504e8b58a4)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **structure:** add `defaultPanes` option to documents ([#12039](https://github.com/sanity-io/sanity/issues/12039)) ([c670cbb](https://github.com/sanity-io/sanity/commit/c670cbb372650768da6bc7324464f3af01e08e15)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* **presentation:** crash when switching to a perspective stack ([#12102](https://github.com/sanity-io/sanity/issues/12102)) ([77f86f0](https://github.com/sanity-io/sanity/commit/77f86f0dc5eb8588482efea5466574128576afa7)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
+
 ## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
 
 ### Bug Fixes

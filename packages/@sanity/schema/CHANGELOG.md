@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-06)
+
+### Bug Fixes
+
+* add warning for schema validation when an array contains multiple primitive types that resolve to same json type ([#12095](https://github.com/sanity-io/sanity/issues/12095)) ([31155be](https://github.com/sanity-io/sanity/commit/31155be6dbf86faeb41b77cea27cf9c765961234)) by RitaDias (rita@sanity.io)
+
 ## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
 
 **Note:** Version bump only for package @sanity/schema
