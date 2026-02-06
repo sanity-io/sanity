@@ -54,6 +54,11 @@ export interface DocumentNode extends StructureNode {
    * View array for the document pane. See {@link View}
    */
   views: View[]
+  /**
+   * View IDs to open as split panes by default when the document is opened.
+   * Only populated if 2+ valid view IDs are configured.
+   */
+  defaultPanes?: string[]
 }
 
 /**
