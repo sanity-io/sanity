@@ -28,6 +28,12 @@ describeCliTest('CLI: `sanity dev`', () => {
         basePath,
         expectedTitle: 'Sanity Studio',
         expectedFiles,
+        expectedOutput: ({stdout}) => {
+          expect(stdout).toContain('running at http://localhost')
+
+          // Verify schema extraction message is _not_ printed when not enabled
+          expect(stdout).not.toContain('Running dev server with schema extraction enabled')
+        },
       })
 
       expect(startHtml).toContain('id="sanity"')
@@ -168,5 +174,32 @@ describeCliTest('CLI: `sanity dev`', () => {
       },
       90_000,
     )
+
+    test('start with schema extraction', async () => {
+      const port = await getPort()
+      const randomSchemaName = `${Math.random().toString(30).slice(2)}.json`
+
+      await testServerCommand({
+        command: 'dev',
+        port,
+        args: ['--port', `${port}`],
+        cwd: path.join(studiosPath, studioName),
+        env: {
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION: '1',
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION_PATH: randomSchemaName,
+        },
+        basePath: '/config-base-path',
+        expectedTitle: 'Sanity Studio',
+        expectedOutput: ({stdout, stderr}) => {
+          // Verify schema extraction message is _not_ printed when not enabled
+          expect(stdout).toContain('Running dev server with schema extraction enabled')
+
+          expect(stdout + stderr).toContain(`Extracted schema to ${randomSchemaName}`)
+        },
+      })
+
+      // Assert that the
+      await expect(stat(path.join(studiosPath, studioName, randomSchemaName))).resolves.toBeTruthy()
+    }, 60_000)
   })
 })

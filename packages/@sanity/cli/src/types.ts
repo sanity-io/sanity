@@ -384,9 +384,14 @@ export interface CliConfig {
   }
 
   /**
-   * Configuration for schema extraction (`sanity schema extract`)
+   * Configuration for schema extraction
    */
   schemaExtraction?: {
+    /**
+     * Enable schema extraction as part of sanity dev and sanity build
+     */
+    enabled?: boolean
+
     /**
      * Output path for the extracted schema file.
      * Defaults to `schema.json` in the working directory.

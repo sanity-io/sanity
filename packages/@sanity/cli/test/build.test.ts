@@ -27,6 +27,9 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         // Verify no mention about typegen running
         expect(result.stdout + result.stderr).not.toContain('Generated types to')
 
+        // Verify schema extraction message is not printed when not configured
+        expect(result.stdout).not.toContain('Building with schema extraction enabled')
+
         const files = await readdir(path.join(studioPath, 'out', 'static'))
         const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
         const cssPath = files.find((file) => file.endsWith('.css'))
@@ -201,6 +204,35 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         await unlink(schemaPath).catch(() => {})
         await unlink(outputPath).catch(() => {})
       }
+    })
+
+    testConcurrent('build with schema extraction', async () => {
+      const absoluteSchemaPath = path.join(
+        studiosPath,
+        studioName,
+        `${Math.random().toString(36).slice(2)}.json`,
+      )
+
+      // Check that the file is not here before building
+      await expect(stat(absoluteSchemaPath)).rejects.toThrow()
+
+      const result = await runSanityCmdCommand(studioName, ['build'], {
+        env: {
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION: '1',
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION_PATH: absoluteSchemaPath,
+        },
+      })
+
+      expect(result.code).toBe(0)
+
+      // Verify schema extraction message is printed when configured
+      expect(result.stdout).toContain('Building with schema extraction enabled')
+
+      // Verify schema extraction is confirmed in build output
+      expect(result.stderr).toContain('✓ Extract schema')
+
+      // Check that the file is there after building
+      await expect(stat(absoluteSchemaPath)).resolves.toBeTruthy()
     })
 
     test.skip(

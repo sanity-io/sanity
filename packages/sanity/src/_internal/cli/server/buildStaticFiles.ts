@@ -12,7 +12,12 @@ import {
 import readPkgUp from 'read-pkg-up'
 
 import {debug as serverDebug} from './debug'
-import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
+import {
+  extendViteConfigWithUserConfig,
+  finalizeViteConfig,
+  getViteConfig,
+  type ViteOptions,
+} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 import {generateWebManifest} from './webManifest'
 
@@ -54,6 +59,9 @@ export interface StaticBuildOptions {
    * Telemetry logger for tracking plugin usage
    */
   telemetryLogger?: CliCommandContext['telemetry']
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export async function buildStaticFiles(
@@ -70,8 +78,8 @@ export async function buildStaticFiles(
     reactCompiler,
     entry,
     isApp,
-    typegen,
     telemetryLogger,
+    schemaExtraction,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -97,6 +105,7 @@ export async function buildStaticFiles(
     reactCompiler,
     isApp,
     telemetryLogger,
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config

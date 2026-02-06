@@ -7,8 +7,14 @@ import {
 import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
+
+export interface SchemaExtractionOptions {
+  enabled: boolean
+  outputPath?: string
+  workspaceName?: string
+}
 
 export interface DevServerOptions {
   cwd: string
@@ -35,6 +41,9 @@ export interface DevServerOptions {
    * Telemetry logger for tracking plugin usage
    */
   telemetryLogger?: CliCommandContext['telemetry']
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export interface DevServer {
@@ -55,6 +64,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     isApp,
     typegen,
     telemetryLogger,
+    schemaExtraction,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -72,6 +82,7 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     isApp,
     typegen,
     telemetryLogger,
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config
