@@ -47,12 +47,32 @@ export default defineType({
       name: 'aliasRef',
       type: referenceAlias.name,
     },
-    {
-      title: 'Reference to book or author',
+    defineField({
+      name: 'typeFilter',
+      type: 'string',
+      title: 'Type filter for reference below',
+      options: {list: ['both', 'book', 'author'], layout: 'radio'},
+      initialValue: 'both',
+    }),
+    defineField({
       name: 'multiTypeRef',
+      title: 'Book or author with filterTypes',
+      description: 'Available types depend on typeFilter above',
       type: 'reference',
       to: [{type: 'book'}, {type: 'author'}],
-    },
+      options: {
+        filterTypes: ({document}, toTypes) => {
+          const filter = document?.typeFilter as string | undefined
+          if (filter === 'book') {
+            return toTypes.filter((t) => t.type === 'book')
+          }
+          if (filter === 'author') {
+            return toTypes.filter((t) => t.type === 'author')
+          }
+          return toTypes
+        },
+      },
+    }),
     {
       name: 'array',
       type: 'array',
@@ -68,6 +88,48 @@ export default defineType({
         },
       ],
     },
+    defineField({
+      name: 'arrayWithConditionalTypes',
+      type: 'array',
+      title: 'Array with filterTypes using parent context',
+      of: [
+        {
+          type: 'object',
+          name: 'refWithRole',
+          fields: [
+            {
+              name: 'role',
+              type: 'string',
+              options: {list: ['book', 'author', 'either'], layout: 'radio'},
+              initialValue: 'either',
+            },
+            {
+              name: 'reference',
+              type: 'reference',
+              to: [{type: 'book'}, {type: 'author'}],
+              options: {
+                filterTypes: ({parent}, toTypes) => {
+                  const role = (parent as {role?: string})?.role
+                  if (role === 'book') {
+                    return toTypes.filter((t) => t.type === 'book')
+                  }
+                  if (role === 'author') {
+                    return toTypes.filter((t) => t.type === 'author')
+                  }
+                  return toTypes
+                },
+              },
+            },
+          ],
+          preview: {
+            select: {role: 'role', refTitle: 'reference.title'},
+            prepare({role, refTitle}) {
+              return {title: refTitle || '(No reference)', subtitle: role}
+            },
+          },
+        },
+      ],
+    }),
     {name: 'liveEditedDocument', type: 'reference', to: {type: 'thesis'}},
     defineField({
       title: 'Book with decade filter',
