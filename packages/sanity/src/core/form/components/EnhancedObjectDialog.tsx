@@ -107,7 +107,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
-      <Box ref={containerElement} style={{minHeight: 'min(calc(100vh - 200px), 500px)'}}>
+      <Box ref={containerElement}>
         {children}
       </Box>
     </PresenceOverlay>
