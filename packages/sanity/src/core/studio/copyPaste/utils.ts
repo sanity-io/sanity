@@ -113,6 +113,10 @@ export async function writeClipboardItem(copyActionResult: SanityClipboardItem):
     await navigator.clipboard.write([clipboardItem])
     return true
   } catch (error) {
+    // Re-throw permission errors so they can be handled specifically
+    if (error.name === 'NotAllowedError') {
+      throw error
+    }
     console.error(`Failed to write to clipboard: ${error.message}`, error)
     return false
   }
