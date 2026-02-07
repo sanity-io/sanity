@@ -132,14 +132,26 @@ export const CopyPasteProvider: React.FC<{
         schemaTypes: [schemaTypeAtPath.jsonType],
       })
 
-      const isWrittenToClipboard = await writeClipboardItem(payloadValue)
+      try {
+        const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
-      if (!isWrittenToClipboard) {
-        toast.push({
-          status: 'error',
-          title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
-          description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
-        })
+        if (!isWrittenToClipboard) {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        }
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        } else {
+          throw error
+        }
       }
     },
     [documentMeta, telemetry, toast, t],
