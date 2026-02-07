@@ -1,8 +1,9 @@
 import {type Schema} from '@sanity/types'
-import {Card, Container, Flex, Heading, Stack, useToast} from '@sanity/ui'
+import {Card, Code, Container, Flex, Heading, Stack, Text, useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {Button} from '../../../../ui-components'
+import {type SchemaErrorContext} from '../../../config/SchemaError'
 import {useTranslation} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
@@ -11,9 +12,11 @@ import {SchemaProblemGroups} from './SchemaProblemGroups'
 
 interface SchemaErrorsScreenProps {
   schema: Schema
+  /** Optional context about which source/workspace has the schema error */
+  context?: SchemaErrorContext
 }
 
-export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
+export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
   const groupsWithErrors =
     schema._validation?.filter((group) =>
       group.problems.some((problem) => problem.severity === 'error'),
@@ -26,7 +29,13 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   const {t: tCopyPaste} = useTranslation('copy-paste')
   const [, copy] = useCopyToClipboard()
   const handleCopyToClipboard = async () => {
-    const errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors)
+    let errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors)
+
+    // Include context information in the copied text
+    if (context) {
+      const contextText = `## Source Information\n\n- **Source:** ${context.sourceName}\n- **Project ID:** ${context.projectId}\n- **Dataset:** ${context.dataset}\n\n`
+      errorsText = contextText + errorsText
+    }
 
     try {
       const ok = await copy(errorsText)
@@ -72,6 +81,29 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
               onClick={handleCopyToClipboard}
             />
           </Flex>
+          {context && (
+            <Card padding={4} radius={2} shadow={1} tone="caution">
+              <Stack space={3}>
+                <Text weight="semibold">
+                  {t('schema-errors.source-info.title', 'Error location')}
+                </Text>
+                <Stack space={2}>
+                  <Text size={1}>
+                    <strong>{t('schema-errors.source-info.source', 'Source:')}</strong>{' '}
+                    <Code size={1}>{context.sourceName}</Code>
+                  </Text>
+                  <Text size={1}>
+                    <strong>{t('schema-errors.source-info.project', 'Project:')}</strong>{' '}
+                    <Code size={1}>{context.projectId}</Code>
+                  </Text>
+                  <Text size={1}>
+                    <strong>{t('schema-errors.source-info.dataset', 'Dataset:')}</strong>{' '}
+                    <Code size={1}>{context.dataset}</Code>
+                  </Text>
+                </Stack>
+              </Stack>
+            </Card>
+          )}
           <SchemaProblemGroups problemGroups={groupsWithErrors} />
         </Stack>
       </Container>

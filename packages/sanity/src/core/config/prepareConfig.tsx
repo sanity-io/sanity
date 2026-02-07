@@ -238,7 +238,11 @@ export function prepareConfig(
 
       if (schemaValidationProblemGroups && schemaErrors?.length) {
         // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
+        throw new SchemaError(schema, {
+          sourceName: source.name,
+          projectId,
+          dataset,
+        })
       }
 
       const auth = getAuthStore(source)
