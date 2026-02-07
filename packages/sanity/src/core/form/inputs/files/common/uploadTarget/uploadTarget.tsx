@@ -158,7 +158,11 @@ export function uploadTarget<Props>(
         )
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         if (ready.length === 0) {
-          alertRejectedFiles(filesAndAssetSources)
+          // Only show warning if there were actual files that couldn't be uploaded
+          // (avoid showing warning when pasting plain text which results in empty files array)
+          if (filesAndAssetSources.length > 0) {
+            alertRejectedFiles(filesAndAssetSources)
+          }
           return
         }
         const allAssetSources = types.flatMap(
