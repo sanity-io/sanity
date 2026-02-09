@@ -89,8 +89,12 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
-  const {DialogTimeZone, dialogProps, dialogTimeZoneShow, hide: dialogTimeZoneHide} =
-    useDialogTimeZone(timeZoneScope)
+  const {
+    DialogTimeZone,
+    dialogProps,
+    dialogTimeZoneShow,
+    hide: dialogTimeZoneHide,
+  } = useDialogTimeZone(timeZoneScope)
 
   const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
 
@@ -121,6 +125,11 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
 
+  // The popover must close before the timezone dialog opens because
+  // react-focus-lock (used by the popover) and Dialog's tab-sentinel focus
+  // trapping are incompatible when both are mounted simultaneously -
+  // react-focus-lock intercepts focus and pulls it back into the popover,
+  // breaking keyboard navigation in the dialog.
   const handleTimeZoneOpen = useCallback(() => {
     setPickerOpen(false)
     dialogTimeZoneShow()

@@ -102,11 +102,7 @@ export const Calendar = forwardRef(function Calendar(
     ]
   }, [focusedDate, timeZone?.name])
 
-  const {
-    DialogTimeZone,
-    dialogProps,
-    dialogTimeZoneShow,
-  } = useDialogTimeZone(timeZoneScope)
+  const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
   const handleTimeZoneOpen = onTimeZoneOpen ?? dialogTimeZoneShow
 
   const setFocusedDateMonth = useCallback(
@@ -423,9 +419,7 @@ export const Calendar = forwardRef(function Calendar(
               )}
             </>
           )}
-          {showTimeZone && !onTimeZoneOpen && DialogTimeZone && (
-            <DialogTimeZone {...dialogProps} />
-          )}
+          {showTimeZone && !onTimeZoneOpen && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
         </Flex>
       </Box>
     </Box>
