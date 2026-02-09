@@ -183,6 +183,8 @@ function LocationItem(props: {
     navigate?.({params: {preview: node.href}})
   }, [node.href, navigate])
 
+  const Icon = node.icon ?? DesktopIcon
+
   return (
     <Card
       key={node.href}
@@ -197,10 +199,7 @@ function LocationItem(props: {
       <Flex gap={3}>
         <Box flex="none">
           <Text size={1}>
-            {(() => {
-              const Icon = node.icon ?? DesktopIcon
-              return <Icon />
-            })()}
+            <Icon />
           </Text>
         </Box>
         <Stack flex={1} space={2}>
