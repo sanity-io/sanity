@@ -9,6 +9,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 const MAX_DESCRIPTION_HEIGHT = 200
+const MAX_TITLE_LENGTH = 100
 
 const TitleInput = styled.input((props) => {
   const {color, font} = getTheme_v2(props.theme)
@@ -170,6 +171,7 @@ export function TitleDescriptionForm({
         data-testid="release-form-title"
         readOnly={!isReleaseOpen}
         disabled={disabled}
+        maxLength={MAX_TITLE_LENGTH}
       />
       {shouldShowDescription && (
         <DescriptionTextArea
