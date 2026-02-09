@@ -1,11 +1,12 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Box, Card, Flex, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {isPast} from 'date-fns'
 import {
   type FocusEvent,
   type ForwardedRef,
   forwardRef,
   type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -17,6 +18,7 @@ import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {type TimeZoneScope, useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n'
 import {type CalendarProps} from './calendar/Calendar'
@@ -43,6 +45,21 @@ export interface DateTimeInputProps {
   isPastDisabled?: boolean
   showTimeZone?: boolean
   timeZoneScope: TimeZoneScope
+}
+
+function DatePickerPopoverContent({
+  popoverRef,
+  onClose,
+  children,
+}: {
+  popoverRef: {current: HTMLDivElement | null}
+  onClose: () => void
+  children: ReactNode
+}) {
+  const {isTopLayer} = useLayer()
+  useClickOutsideEvent(isTopLayer && onClose, () => [popoverRef.current])
+
+  return <>{children}</>
 }
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
@@ -72,6 +89,12 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   const ref = useRef<HTMLInputElement | null>(null)
   const buttonRef = useRef(null)
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {
+    DialogTimeZone,
+    dialogProps,
+    dialogTimeZoneShow,
+    hide: dialogTimeZoneHide,
+  } = useDialogTimeZone(timeZoneScope)
 
   const [referenceElement, setReferenceElement] = useState<HTMLInputElement | null>(null)
 
@@ -87,11 +110,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   useEffect(() => setReferenceElement(ref.current), [])
 
   const [isPickerOpen, setPickerOpen] = useState(false)
-
-  useClickOutsideEvent(
-    () => setPickerOpen(false),
-    () => [popoverRef.current],
-  )
+  const handleClose = useCallback(() => setPickerOpen(false), [])
 
   const handleDeactivation = useCallback(() => {
     ref.current?.focus()
@@ -105,6 +124,21 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   }, [])
 
   const handleClick = useCallback(() => setPickerOpen(true), [])
+
+  // The popover must close before the timezone dialog opens because
+  // react-focus-lock (used by the popover) and Dialog's tab-sentinel focus
+  // trapping are incompatible when both are mounted simultaneously -
+  // react-focus-lock intercepts focus and pulls it back into the popover,
+  // breaking keyboard navigation in the dialog.
+  const handleTimeZoneOpen = useCallback(() => {
+    setPickerOpen(false)
+    dialogTimeZoneShow()
+  }, [dialogTimeZoneShow])
+
+  const handleTimeZoneClose = useCallback(() => {
+    dialogTimeZoneHide()
+    setPickerOpen(true)
+  }, [dialogTimeZoneHide])
 
   const isDateInPastWarningShown = useMemo(
     () => inputValue && isPastDisabled && isPast(zoneDateToUtc(new Date(inputValue))),
@@ -128,59 +162,67 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   )
 
   return (
-    <LazyTextInput
-      ref={ref}
-      data-testid="date-input"
-      {...rest}
-      readOnly={disableInput || readOnly}
-      value={inputValue}
-      onChange={onInputChange}
-      suffix={
-        isPickerOpen ? (
-          // Note: we're conditionally inserting the popover here due to an
-          // issue with popovers rendering incorrectly on subsequent renders
-          // see https://github.com/sanity-io/design/issues/519
-          <LayerProvider zOffset={1000}>
-            <Popover
-              constrainSize={constrainSize}
-              data-testid="date-input-dialog"
-              referenceElement={referenceElement}
-              portal
-              content={
-                <Box overflow="auto">
-                  <FocusLock onDeactivation={handleDeactivation}>
-                    {isDateInPastWarningShown && (
-                      <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                        <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
-                      </Card>
-                    )}
-                    <DatePicker
-                      monthPickerVariant={monthPickerVariant}
-                      calendarLabels={calendarLabels}
-                      selectTime={selectTime}
-                      timeStep={timeStep}
-                      onKeyUp={handleKeyUp}
-                      value={value}
-                      isPastDisabled={isPastDisabled}
-                      onChange={onChange}
-                      padding={padding}
-                      showTimeZone={showTimeZone}
-                      timeZoneScope={timeZoneScope}
-                    />
-                  </FocusLock>
-                </Box>
-              }
-              open
-              placement="bottom"
-              ref={popoverRef}
-            >
-              <>{suffix}</>
-            </Popover>
-          </LayerProvider>
-        ) : (
-          suffix
-        )
-      }
-    />
+    <>
+      <LazyTextInput
+        ref={ref}
+        data-testid="date-input"
+        {...rest}
+        readOnly={disableInput || readOnly}
+        value={inputValue}
+        onChange={onInputChange}
+        suffix={
+          isPickerOpen ? (
+            // Note: we're conditionally inserting the popover here due to an
+            // issue with popovers rendering incorrectly on subsequent renders
+            // see https://github.com/sanity-io/design/issues/519
+            <LayerProvider zOffset={1000}>
+              <Popover
+                constrainSize={constrainSize}
+                data-testid="date-input-dialog"
+                referenceElement={referenceElement}
+                portal
+                content={
+                  <DatePickerPopoverContent popoverRef={popoverRef} onClose={handleClose}>
+                    <Box overflow="auto">
+                      <FocusLock onDeactivation={handleDeactivation}>
+                        {isDateInPastWarningShown && (
+                          <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
+                            <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
+                          </Card>
+                        )}
+                        <DatePicker
+                          monthPickerVariant={monthPickerVariant}
+                          calendarLabels={calendarLabels}
+                          selectTime={selectTime}
+                          timeStep={timeStep}
+                          onKeyUp={handleKeyUp}
+                          value={value}
+                          isPastDisabled={isPastDisabled}
+                          onChange={onChange}
+                          padding={padding}
+                          showTimeZone={showTimeZone}
+                          timeZoneScope={timeZoneScope}
+                          onTimeZoneOpen={handleTimeZoneOpen}
+                        />
+                      </FocusLock>
+                    </Box>
+                  </DatePickerPopoverContent>
+                }
+                open
+                placement="bottom"
+                ref={popoverRef}
+              >
+                <>{suffix}</>
+              </Popover>
+            </LayerProvider>
+          ) : (
+            suffix
+          )
+        }
+      />
+      {showTimeZone && DialogTimeZone && (
+        <DialogTimeZone {...dialogProps} onClose={handleTimeZoneClose} />
+      )}
+    </>
   )
 })
