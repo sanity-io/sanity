@@ -27,14 +27,18 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
     "@conventional-changelog/git-client": "^2.5.1",
     "@octokit/rest": "^22.0.0",
+    "@portabletext/toolkit": "^5.0.1",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.16.1",
+    "@sanity/types": "workspace:^",
     "conventional-commits-parser": "^6.2.1",
     "date-fns": "^4.1.0",
     "description-to-co-authors": "^0.3.0",
+    "lodash-es": "^4.17.22",
     "p-map": "^7.0.3",
     "turndown": "^7.2.2",
     "yargs": "^17.7.2"
@@ -45,6 +49,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
     "@types/turndown": "^5.0.6",
     "@types/yargs": "^17.0.33",
     "vitest": "catalog:"

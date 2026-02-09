@@ -21,7 +21,7 @@ import {STUDIO_PLATFORM_DOCUMENT_ID} from '../constants'
 import {type PullRequestInfo} from '../types'
 import {getCommits, getSemverTags} from '../utils/getCommits'
 import {getMergedPRForCommit} from '../utils/github'
-import {createId} from '../utils/ids'
+import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
 import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
 import {extractReleaseNotes} from '../utils/pullRequestReleaseNotes'
 import {stripPr} from '../utils/stripPrNumber'
@@ -36,7 +36,6 @@ export async function createOrUpdateChangelogDocs(args: {
   // We obfuscate the base version id so we can use in the changelog document ids
   // Without obfuscating, the document id for the changelog document would include the
   // previous (base) version, which would likely be confusing
-  const baseVersionId = Buffer.from(baseVersion).toString('base64url')
   const gitClient = new ConventionalGitClient(MONOREPO_ROOT)
 
   const commits = getCommits(gitClient, await getSemverTags(gitClient), {
@@ -47,10 +46,8 @@ export async function createOrUpdateChangelogDocs(args: {
 
   const commitsWithPrs = await fetchCommitPrs(allCommits)
 
-  const releaseId = `rstudio-${baseVersionId}`
-
-  const changelogDocumentId = createId(releaseId, `studio-${baseVersionId}`)
-  const apiVersionDocId = createId(releaseId, `${changelogDocumentId.published}-api-version`)
+  const {releaseId, changelogDocumentId, apiVersionDocId} =
+    getSanityDocumentIdsForBaseVersion(baseVersion)
 
   await ensureContentRelease(
     releaseId,
