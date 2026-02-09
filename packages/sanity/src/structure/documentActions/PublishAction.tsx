@@ -226,7 +226,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         publishState?.status === 'published'
           ? t('action.publish.published.label')
           : publishScheduled
-            ? t('action.publish.validation-in-progress.label')
+            ? t('action.publish.waiting')
             : publishState?.status === 'publishing'
               ? t('action.publish.running.label')
               : t('action.publish.draft.label'),
