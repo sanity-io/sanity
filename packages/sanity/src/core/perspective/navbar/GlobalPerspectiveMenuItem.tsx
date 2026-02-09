@@ -7,6 +7,7 @@ import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip'
+import {useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -17,11 +18,12 @@ import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
-  formatRelativeLocalePublishDate,
+  formatRelativeTzPublishDate,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../studio/constants'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
@@ -103,6 +105,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
+  const {formatDateTz} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const releaseId = isReleaseDocument(release)
     ? getReleaseIdFromReleaseDocumentId(release._id)
     : release
@@ -200,7 +203,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               release.metadata.releaseType === 'scheduled' &&
               (release.publishAt || release.metadata.intendedPublishAt) && (
                 <Text muted size={1}>
-                  {formatRelativeLocalePublishDate(release)}
+                  {formatRelativeTzPublishDate(release, formatDateTz)}
                 </Text>
               )}
           </Stack>

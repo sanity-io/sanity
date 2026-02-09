@@ -1,9 +1,11 @@
 import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
+import {useMemo} from 'react'
 
+import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'
 import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
@@ -21,6 +23,13 @@ export function ScheduleBanner(props: Props) {
   const {hasError} = useValidationState(markers)
   const {schedules} = usePollSchedules({documentId: publishedId, state: 'scheduled'})
   const {mode} = useScheduledPublishingEnabled()
+  const {formatDateTz, timeZone, getLocalTimeZone} = useTimeZone(
+    SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE,
+  )
+
+  const showTimeZoneAbbreviation = useMemo(() => {
+    return timeZone.abbreviation !== getLocalTimeZone().abbreviation
+  }, [timeZone.abbreviation, getLocalTimeZone])
 
   const hasSchedules = schedules.length > 0
   if (!hasSchedules) {
@@ -54,7 +63,8 @@ export function ScheduleBanner(props: Props) {
               <CalendarIcon />
             </Text>
             <Text muted size={1}>
-              <span style={{fontWeight: 600}}>Upcoming schedule</span> (local time)
+              <span style={{fontWeight: 600}}>Upcoming schedule</span>
+              {showTimeZoneAbbreviation && ` (${timeZone.abbreviation})`}
             </Text>
           </Flex>
 
@@ -63,7 +73,10 @@ export function ScheduleBanner(props: Props) {
               if (!schedule.executeAt) {
                 return null
               }
-              const formattedDateTime = format(new Date(schedule.executeAt), DATE_FORMAT.LARGE)
+              const formattedDateTime = formatDateTz({
+                date: new Date(schedule.executeAt),
+                format: DATE_FORMAT.LARGE,
+              })
               return (
                 <Inline key={schedule.id} space={2}>
                   <Text muted size={1}>

@@ -3,9 +3,11 @@ import {LockIcon} from '@sanity/icons'
 import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
+import {useTimeZone} from '../../../../hooks/useTimeZone'
 import {useTranslation} from '../../../../i18n'
+import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
+import {formatRelativeTzPublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
@@ -14,6 +16,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   const {release} = props
   const {t} = useTranslation()
   const isScheduled = isReleaseScheduledOrScheduling(release)
+  const {formatDateTz} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
 
   return (
     <Flex gap={3} justify="center" align="center">
@@ -26,9 +29,8 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
             (release.metadata.intendedPublishAt ? (
-              <>{formatRelativeLocalePublishDate(release)}</>
+              <>{formatRelativeTzPublishDate(release, formatDateTz)}</>
             ) : (
-              /** should not be allowed to do, but a fall back in case if somehow no date is added */
               <>{t('release.chip.tooltip.unknown-date')}</>
             ))}
           {release.metadata.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}

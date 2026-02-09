@@ -55,13 +55,16 @@ export type TimeZoneScope = ReleasesOrScheduledPublishingScope | InputScope
 
 const debug = debugWithName('useScheduleOperation')
 
-export const timeZoneLocalStorageNamespace = 'studio.timezone.'
+const timeZoneLocalStorageNamespace = 'studio.timezone.'
 
 const timeZoneCache = new Map<string, NormalizedTimeZone[]>()
 const offsetCache = new Map<
   string,
   {abbreviation: string; alternativeName: string; offset: string}
 >()
+
+// Internal export for core use only
+export {timeZoneLocalStorageNamespace}
 
 const offsetToMinutes = (offset: string): number => {
   if (!offset) return 0
@@ -158,11 +161,14 @@ function getGloballyCachedTimeZones(locale: string, relativeDate?: Date): Normal
   return computedTimeZones
 }
 
-export const TIME_ZONE_SCOPE_TYPE = {
+const TIME_ZONE_SCOPE_TYPE = {
   scheduledPublishing: 'scheduled-publishing',
   contentReleases: 'content-releases',
   input: 'input',
 }
+
+// Internal export for core use only
+export {TIME_ZONE_SCOPE_TYPE}
 
 export const useTimeZone = (scope: TimeZoneScope) => {
   const toast = useToast()

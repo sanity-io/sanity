@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../hooks/__mocks__/useTimeZone.mock'
 import {useExcludedPerspectiveMockReturn} from '../../../perspective/__mocks__/useExcludedPerspective.mock'
 import {usePerspectiveMockReturn} from '../../../perspective/__mocks__/usePerspective.mock'
 import {
@@ -64,6 +65,10 @@ vi.mock('sanity/router', async (importOriginal) => ({
   useRouterState: vi.fn().mockReturnValue(undefined),
 }))
 
+vi.mock('../../../hooks/useTimeZone', () => ({
+  useTimeZone: vi.fn(),
+}))
+
 let currentRenderedInstance: RenderResult<any, any, any> | undefined
 
 const renderTest = async () => {
@@ -80,6 +85,14 @@ describe('ReleasesNav', () => {
     vi.clearAllMocks()
 
     mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    mockUseTimeZone.mockReturnValue({
+      ...useTimeZoneMockReturn,
+      formatDateTz: vi.fn(({date}) => {
+        // Format date as MM/DD/YYYY to match test expectations
+        const d = new Date(date)
+        return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+      }),
+    })
   })
   it('should have link to releases tool', async () => {
     await renderTest()

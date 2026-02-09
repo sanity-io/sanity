@@ -1,7 +1,12 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
 import {type TargetPerspective} from '../../perspective/types'
-import {formatRelativeLocale, getVersionFromId, isVersionId} from '../../util'
+import {
+  formatRelativeLocale,
+  formatRelativeTz,
+  getVersionFromId,
+  isVersionId,
+} from '../../util'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView, type Mode} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'
@@ -51,7 +56,37 @@ export function getPublishDateFromRelease(release: ReleaseDocument): Date | null
   return new Date(dateString)
 }
 
-/** @internal */
+/**
+ * Format release publish date with timezone awareness.
+ * Uses relative formatting when appropriate (e.g., "tomorrow", "in 2 days"),
+ * falls back to formatted date in the studio's selected timezone.
+ * @internal
+ */
+export function formatRelativeTzPublishDate(
+  release: ReleaseDocument,
+  formatDateTz: (params: {date: Date; format?: string}) => string,
+  timeZoneInfo?: {
+    abbreviation: string
+    localAbbreviation: string
+  },
+): string {
+  const publishDate = getPublishDateFromRelease(release)
+
+  if (!publishDate) return ''
+
+  return formatRelativeTz({
+    date: publishDate,
+    formatDateTz,
+    includeTimeZone: Boolean(timeZoneInfo),
+    timeZoneAbbreviation: timeZoneInfo?.abbreviation,
+    localTimeZoneAbbreviation: timeZoneInfo?.localAbbreviation,
+  })
+}
+
+/**
+ * @deprecated Use formatRelativeTzPublishDate instead for timezone-aware formatting
+ * @internal
+ */
 export function formatRelativeLocalePublishDate(release: ReleaseDocument): string {
   const publishDate = getPublishDateFromRelease(release)
 

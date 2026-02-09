@@ -1,7 +1,8 @@
 import {Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
-  formatRelativeLocalePublishDate,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
+  formatRelativeTzPublishDate,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
@@ -27,6 +28,7 @@ import {
   useSchema,
   useSetPerspective,
   useSingleDocRelease,
+  useTimeZone,
   useTranslation,
   useWorkspace,
   VersionChip,
@@ -37,7 +39,18 @@ import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {NonReleaseVersionsSelect} from '../NonReleaseVersionsSelect'
 
-const TooltipContent = ({release}: {release: ReleaseDocument}) => {
+const TooltipContent = ({
+  release,
+  formatDateTz,
+  timeZoneInfo,
+}: {
+  release: ReleaseDocument
+  formatDateTz: (params: {date: Date; format?: string}) => string
+  timeZoneInfo: {
+    abbreviation: string
+    localAbbreviation: string
+  }
+}) => {
   const {t} = useTranslation()
 
   if (release.state === 'archived') {
@@ -57,7 +70,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.intended-for-date"
               values={{
-                date: formatRelativeLocalePublishDate(release),
+                date: formatRelativeTzPublishDate(release, formatDateTz, timeZoneInfo),
               }}
             />
           ) : (
@@ -65,7 +78,7 @@ const TooltipContent = ({release}: {release: ReleaseDocument}) => {
               t={t}
               i18nKey="release.chip.tooltip.scheduled-for-date"
               values={{
-                date: formatRelativeLocalePublishDate(release),
+                date: formatRelativeTzPublishDate(release, formatDateTz, timeZoneInfo),
               }}
             />
           )}
@@ -97,11 +110,20 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
   const {editState, displayed, documentType, documentId} = useDocumentPane()
   const isCreatingDocument = displayed && !displayed._createdAt
   const defaultPerspective = useGetDefaultPerspective()
+  const {formatDateTz, timeZone, getLocalTimeZone} = useTimeZone(CONTENT_RELEASES_TIME_ZONE_SCOPE)
   const filteredReleases = useFilteredReleases({
     historyVersion: params?.historyVersion,
     displayed,
     documentId,
   })
+
+  const timeZoneInfo = useMemo(
+    () => ({
+      abbreviation: timeZone.abbreviation,
+      localAbbreviation: getLocalTimeZone().abbreviation,
+    }),
+    [timeZone.abbreviation, getLocalTimeZone],
+  )
 
   const {data: documentVersions} = useDocumentVersions({documentId})
 
@@ -356,7 +378,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       )}
       {filteredReleases.inCreation && (
         <VersionChip
-          tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
+          tooltipContent={
+            <TooltipContent
+              release={filteredReleases.inCreation}
+              formatDateTz={formatDateTz}
+              timeZoneInfo={timeZoneInfo}
+            />
+          }
           selected
           onClick={() => {}}
           locked={false}
@@ -382,7 +410,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         filteredReleases.currentReleases?.map((release) => (
           <VersionChip
             key={release._id}
-            tooltipContent={<TooltipContent release={release} />}
+            tooltipContent={
+              <TooltipContent
+                release={release}
+                formatDateTz={formatDateTz}
+                timeZoneInfo={timeZoneInfo}
+              />
+            }
             {...getReleaseChipState(release)}
             onClick={() => handlePerspectiveChange(release)}
             text={release.metadata.title || t('release.placeholder-untitled-release')}
