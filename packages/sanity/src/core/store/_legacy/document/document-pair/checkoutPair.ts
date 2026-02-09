@@ -8,7 +8,7 @@ import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash-es'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
+import {filter, map, mergeMap, scan, share, take, tap, timeout, withLatestFrom} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -37,6 +37,14 @@ import {operationsApiClient} from './utils/operationsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
+
+/**
+ * Timeout for commit requests to prevent indefinite hangs on slow server responses.
+ * Normal commits complete in 1-2s. A 30s timeout gives 15-30x headroom while preventing
+ * the 95s+ hangs observed in production. Timeout triggers the existing retry logic in
+ * BufferedDocument._cycleCommitter() — no data loss, mutations stay in the local buffer.
+ */
+const COMMIT_TIMEOUT_MS = 30_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -210,6 +218,7 @@ function submitCommitRequest(
       ? commitActions(client, idPair, request.mutation.params)
       : commitMutations(client, idPair, request.mutation.params),
   ).pipe(
+    timeout(COMMIT_TIMEOUT_MS),
     tap({
       error: (error) => {
         const isBadRequest =
@@ -220,6 +229,8 @@ function submitCommitRequest(
         if (isBadRequest) {
           request.cancel(error)
         } else {
+          // Timeout errors and network errors both hit this path,
+          // triggering the existing retry logic in BufferedDocument._cycleCommitter()
           request.failure(error)
         }
       },
