@@ -31,20 +31,22 @@ export async function generateHumanReadableReleaseNotes({
 `)
 
   return [
-    {
-      _type: 'block',
-      _key: 'summary',
-      style: 'normal',
-      markDefs: [],
-      children: [
-        {
-          _type: 'span',
-          _key: 'summary-span',
-          text: summary.map((b) => (b.type == 'text' ? b.text : '')).join('\n'),
-          marks: [],
-        },
-      ],
-    },
+    summary
+      ? {
+          _type: 'block',
+          _key: 'summary',
+          style: 'normal',
+          markDefs: [],
+          children: [
+            {
+              _type: 'span',
+              _key: 'summary-span',
+              text: summary.map((b) => (b.type == 'text' ? b.text : '')).join('\n'),
+              marks: [],
+            },
+          ],
+        }
+      : [],
 
     features.length > 0
       ? features.flatMap((feature) => [
@@ -108,18 +110,23 @@ async function summarize(changes: string) {
     apiKey: readEnv<KnownEnvVar>('RELEASE_NOTES_CLAUDE_API_KEY'),
   })
 
-  const message = await client.messages.create({
-    // eslint-disable-next-line camelcase
-    max_tokens: 1024,
-    messages: [
-      {
-        role: 'user',
-        content: `Summarize the following changes in a concise manner, focusing on the most significant improvements and bug fixes. Be brief and limit the summary to a single sentence. Leave out stuff that looks technical or less important. Finish the sentence "This release…" The changes: ${changes}`,
-      },
-    ],
-    model: 'claude-haiku-4-5',
-    stream: false,
-  })
+  try {
+    const message = await client.messages.create({
+      // eslint-disable-next-line camelcase
+      max_tokens: 1024,
+      messages: [
+        {
+          role: 'user',
+          content: `Summarize the following changes in a concise manner, focusing on the most significant improvements and bug fixes. Be brief and limit the summary to a single sentence. Leave out stuff that looks technical or less important. Finish the sentence "This release…" The changes: ${changes}`,
+        },
+      ],
+      model: 'claude-haiku-4-5',
+      stream: false,
+    })
 
-  return message.content
+    return message.content
+  } catch (err) {
+    console.warn(new Error('Request to Claude API failed', {cause: err}))
+  }
+  return null
 }
