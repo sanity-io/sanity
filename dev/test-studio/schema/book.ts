@@ -26,6 +26,16 @@ export default defineType({
       type: 'string',
       validation: (rule: Rule) => rule.min(5).max(100),
     },
+    {
+      name: 'slug',
+      type: 'slug',
+      title: 'Normal slug',
+      description: 'This is a slug field that should update according to current title',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+    },
     // {
     //   type: 'markdown',
     //   name: 'descriptionMd',
@@ -133,6 +143,16 @@ export default defineType({
         {field: 'translations.se', direction: 'asc'},
         {field: 'title', direction: 'asc'},
       ],
+    },
+    {
+      title: 'Slug (A-Z)',
+      name: 'slugAsc',
+      by: [{field: 'slug.current', direction: 'asc'}],
+    },
+    {
+      title: 'Slug (Z-A)',
+      name: 'slugDesc',
+      by: [{field: 'slug.current', direction: 'desc'}],
     },
   ],
   preview: {

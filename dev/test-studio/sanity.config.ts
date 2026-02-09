@@ -243,6 +243,9 @@ const defaultWorkspace = defineConfig({
     locales: ['en-GB', 'en-US'],
     ages: ['20-29', '30-39'],
   },
+  search: {
+    strategy: 'groq2024',
+  },
   document: {
     actions: (prev, ctx) => {
       if (ctx.schemaType === 'book' && ctx.releaseId) {
