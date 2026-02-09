@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {
   isKeyedObject,
   isTypedObject,
+  type CurrentUser,
   type Rule,
   type SanityDocument,
   type Schema,
@@ -160,6 +161,13 @@ export interface ValidateDocumentOptions {
    * fullfil the custom validation. This is 25 by default.
    */
   maxFetchConcurrency?: number
+
+  /**
+   * The current user, when available. Used when resolving schema `hidden`
+   * conditionals so validation matches what the form shows. If omitted, hidden
+   * is resolved with no user (e.g. CLI or headless validation).
+   */
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /**
@@ -173,6 +181,7 @@ export function validateDocument({
   workspace,
   environment = 'studio',
   maxFetchConcurrency,
+  currentUser,
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
   const getClient = options.getClient || workspace.getClient
@@ -192,6 +201,7 @@ export function validateDocument({
         options.getDocumentExists ||
         createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
       environment,
+      currentUser,
     }),
   )
 }
@@ -208,6 +218,7 @@ export interface ValidateDocumentObservableOptions extends Pick<
   schema: Schema
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -224,6 +235,7 @@ export function validateDocumentObservable({
   getDocumentExists,
   environment,
   maxCustomValidationConcurrency,
+  currentUser,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validated a value without a '_type'`)
@@ -269,6 +281,7 @@ export function validateDocumentObservable({
     getDocumentExists,
     environment,
     customValidationConcurrencyLimiter,
+    currentUser,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
@@ -304,6 +317,7 @@ type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
+  currentUser?: Omit<CurrentUser, 'role'> | null
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
@@ -338,11 +352,11 @@ function validateItemObservable({
     return (
       ancestorHiddenValue ||
       resolveConditionalProperty(schemaType.hidden, {
-        document: restOfContext.document,
+        ...restOfContext,
         parent: schemaParent,
         value: schemaValue,
-        currentUser: null,
         path: schemaPath || [],
+        currentUser: restOfContext.currentUser ?? null,
       })
     )
   }
