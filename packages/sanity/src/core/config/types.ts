@@ -384,7 +384,9 @@ export interface DocumentLanguageFilterContext extends ConfigContext {
  * @hidden
  * @beta
  */
-export type DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+export type DocumentLanguageFilterComponent = ComponentType<{
+  schemaType: ObjectSchemaType
+}>
 
 /**
  *
@@ -1259,7 +1261,7 @@ export interface BetaFeatures {
   form?: {
     /**
      * Enhanced Object Dialog is a new dialog for editing objects in the studio.
-     * @beta
+     * @deprecated This property will be removed in a future release as we make the enhanced object dialog the default.
      */
     enhancedObjectDialog?: {
       enabled: boolean

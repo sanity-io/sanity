@@ -12,6 +12,9 @@ interface EnhancedObjectDialogProviderProps {
   legacyEditing?: boolean
 }
 
+/**
+ * @deprecated This provider is no longer used and will be removed in a future release as we make the enhanced object dialog the default.
+ */
 export function EnhancedObjectDialogProvider(
   props: EnhancedObjectDialogProviderProps,
 ): React.JSX.Element {

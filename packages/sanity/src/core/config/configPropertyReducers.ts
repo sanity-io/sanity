@@ -437,6 +437,9 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
+/**
+ * @deprecated This reducer is no longer used and will be removed in a future release as we make the enhanced object dialog the default.
+ */
 export const enhancedObjectDialogEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
@@ -674,7 +677,9 @@ export const searchStrategyReducer = ({
       // The strategy has been explicitly defined.
       if (typeof strategy !== 'undefined') {
         if (!isSearchStrategy(strategy)) {
-          const listFormatter = new Intl.ListFormat('en-US', {type: 'disjunction'})
+          const listFormatter = new Intl.ListFormat('en-US', {
+            type: 'disjunction',
+          })
           const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
           const received =
             typeof strategy === 'string' ? `"${strategy}"` : getPrintableType(strategy)
