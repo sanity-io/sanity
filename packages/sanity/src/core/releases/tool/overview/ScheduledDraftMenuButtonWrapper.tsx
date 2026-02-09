@@ -40,7 +40,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   })
 
   const displayedMenuItems = useMemo(() => {
-    if (release.state === 'archived') {
+    if (release.state === 'archived' || release.state === 'published') {
       return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
     }
 
@@ -52,7 +52,6 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       ]
     }
 
-    // Active mode
     return [
       <MenuItem key={'publish-now'} {...actions.publishNow} />,
       <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
