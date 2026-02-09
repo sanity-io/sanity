@@ -141,6 +141,49 @@ export class SquashingBuffer {
       return
     }
 
+    // Is this a setIfMissing patch for our document?
+    // setIfMissing is idempotent — if the target path already exists in the document,
+    // the operation is a no-op and can be safely dropped. This avoids flushing the
+    // optimization buffer, which would prevent subsequent set operations from being squashed.
+    if (
+      op.patch &&
+      op.patch.setIfMissing &&
+      'id' in op.patch &&
+      op.patch.id === this.PRESTAGE?._id &&
+      Object.keys(op.patch).length === 2 // `id` + `setIfMissing`
+    ) {
+      const setIfMissingPatch = op.patch.setIfMissing
+      let allRedundant = true
+
+      for (const path of Object.keys(setIfMissingPatch)) {
+        if (setIfMissingPatch.hasOwnProperty(path)) {
+          // Check if the path already has a value in the current document state.
+          // If it does, setIfMissing is a no-op and can be safely dropped.
+          const matches = extractWithPath(path, this.PRESTAGE)
+          if (matches.length === 0 || matches[0].value === undefined || matches[0].value === null) {
+            // Path doesn't exist or is nullish — this setIfMissing is needed
+            allRedundant = false
+            break
+          }
+        }
+      }
+
+      if (allRedundant) {
+        // All paths already exist in PRESTAGE — the entire setIfMissing is redundant.
+        // Drop it without flushing the optimization buffer.
+        debug('Dropping redundant setIfMissing (all paths already exist in document)')
+        return
+      }
+
+      // Some paths are genuinely new — we must keep this setIfMissing.
+      // Stage it WITHOUT calling stashStagedOperations(), so that subsequent
+      // set operations can still be optimized by the squasher.
+      // Update PRESTAGE so future path checks are accurate.
+      this.staged.push(op)
+      this.PRESTAGE = new Mutation({mutations: [op]}).apply(this.PRESTAGE) as Doc
+      return
+    }
+
     debug('Unoptimizable mutation detected, purging optimization buffer')
     // console.log("Unoptimizable operation, stashing", JSON.stringify(op))
     // Un-optimisable operations causes everything to be stashed

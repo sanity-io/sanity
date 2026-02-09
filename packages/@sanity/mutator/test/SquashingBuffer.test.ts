@@ -238,3 +238,135 @@ test('rebase with no local edits', () => {
     a: 'A rebased string value!',
   })
 })
+
+// --- setIfMissing optimization tests ---
+
+test('drops redundant setIfMissing when path already exists', () => {
+  const initial = {_id: '1', _type: 'test', a: 'existing value'}
+  const sb = new SquashingBuffer(initial)
+
+  // setIfMissing on an existing path should be dropped entirely
+  patch(sb, {id: '1', setIfMissing: {a: 'default value'}})
+
+  expect(sb.out).toHaveLength(0)
+  expect(sb.staged).toHaveLength(0)
+  expect(Object.keys(sb.setOperations)).toHaveLength(0)
+})
+
+test('keeps setIfMissing when path does not exist', () => {
+  const initial = {_id: '1', _type: 'test', a: 'existing value'}
+  const sb = new SquashingBuffer(initial)
+
+  // setIfMissing on a missing path should be kept
+  patch(sb, {id: '1', setIfMissing: {b: 'new value'}})
+
+  expect(sb.staged).toHaveLength(1)
+  // Verify PRESTAGE was updated
+  expect((sb.PRESTAGE as any).b).toBe('new value')
+})
+
+test('setIfMissing does not flush optimization buffer', () => {
+  const initial = {_id: '1', _type: 'test', a: 'hello', b: 'world'}
+  const sb = new SquashingBuffer(initial)
+
+  // First, add an optimizable set operation
+  patch(sb, {id: '1', set: {a: 'hello!'}})
+  expect(Object.keys(sb.setOperations)).toHaveLength(1) // in optimization buffer
+
+  // Now add a setIfMissing for a new path — should NOT flush the set operation
+  patch(sb, {id: '1', setIfMissing: {c: 'new field'}})
+
+  // The set operation should still be in the optimization buffer, not flushed to out
+  expect(Object.keys(sb.setOperations)).toHaveLength(1)
+  expect(sb.setOperations['a']).toBeTruthy()
+})
+
+test('redundant setIfMissing does not flush optimization buffer', () => {
+  const initial = {_id: '1', _type: 'test', a: 'hello', nested: {x: 1}}
+  const sb = new SquashingBuffer(initial)
+
+  // Add an optimizable set operation
+  patch(sb, {id: '1', set: {a: 'hello!'}})
+  expect(Object.keys(sb.setOperations)).toHaveLength(1)
+
+  // Redundant setIfMissing on existing path — should be dropped without flushing
+  patch(sb, {id: '1', setIfMissing: {nested: {}}})
+
+  // The set operation should still be in the optimization buffer
+  expect(Object.keys(sb.setOperations)).toHaveLength(1)
+  expect(sb.out).toHaveLength(0) // nothing flushed
+})
+
+test('setIfMissing chain followed by set produces correct result', () => {
+  // Simulates the real-world pattern: ObjectField wraps patches with
+  // setIfMissing + prefixAll at each nesting level
+  const initial = {
+    _id: '1',
+    _type: 'test',
+    content: {
+      blocks: {
+        text: 'original',
+      },
+    },
+  }
+  const sb = new SquashingBuffer(initial)
+
+  // Redundant setIfMissing for existing paths (the ObjectField chain)
+  patch(sb, {id: '1', setIfMissing: {content: {}}})
+  patch(sb, {id: '1', setIfMissing: {'content.blocks': {}}})
+
+  // The actual content change
+  patch(sb, {id: '1', set: {'content.blocks.text': 'updated'}})
+
+  const mut = sb.purge('txn_id')
+  const final = mut && mut.apply(initial)
+
+  expect(final).toEqual({
+    _id: '1',
+    _type: 'test',
+    _rev: 'txn_id',
+    content: {
+      blocks: {
+        text: 'updated',
+      },
+    },
+  })
+
+  // Key assertion: the redundant setIfMissing ops should have been dropped,
+  // leaving only the diffMatchPatch/set operation
+  const patchOps = mut!.mutations.filter((m) => m.patch)
+  expect(patchOps).toHaveLength(1) // Only the text change, no setIfMissing
+})
+
+test('setIfMissing for genuinely new path is preserved in output', () => {
+  const initial = {_id: '1', _type: 'test', a: 'value'}
+  const sb = new SquashingBuffer(initial)
+
+  // setIfMissing for a path that doesn't exist — must be kept
+  patch(sb, {id: '1', setIfMissing: {newField: {nested: true}}})
+
+  // Follow with a set on the new path
+  patch(sb, {id: '1', set: {'newField.name': 'test'}})
+
+  const mut = sb.purge('txn_id')
+  const final = mut && mut.apply(initial)
+
+  expect((final as any).newField).toBeTruthy()
+  expect((final as any).newField.nested).toBe(true)
+})
+
+test('mixed setIfMissing: some redundant, some new — keeps only new', () => {
+  const initial = {_id: '1', _type: 'test', existing: 'yes'}
+  const sb = new SquashingBuffer(initial)
+
+  // Redundant — path exists
+  patch(sb, {id: '1', setIfMissing: {existing: 'default'}})
+  // New — path doesn't exist
+  patch(sb, {id: '1', setIfMissing: {brand_new: 'value'}})
+
+  const mut = sb.purge('txn_id')
+  // Should contain only the setIfMissing for brand_new
+  const setIfMissingOps = mut!.mutations.filter((m) => m.patch && (m.patch as any).setIfMissing)
+  expect(setIfMissingOps).toHaveLength(1)
+  expect((setIfMissingOps[0].patch as any).setIfMissing).toHaveProperty('brand_new')
+})
