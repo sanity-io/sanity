@@ -151,10 +151,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             }}
             placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
-              boundaryElement:
-                timeZoneScope.type === 'input'
-                  ? (document.querySelector('#document-panel-scroller') as HTMLElement)
-                  : (document.querySelector('body') as HTMLElement),
+              boundaryElement: document.body,
               constrainSize: true,
               placement: 'bottom-start',
             }}
