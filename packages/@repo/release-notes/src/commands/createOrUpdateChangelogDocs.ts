@@ -87,7 +87,6 @@ export async function createOrUpdateChangelogDocs(args: {
     ]),
     patch(apiVersionDocId.version, [at('date', set(format(new Date(), 'yyyy-MM-dd')))]),
     patch(changelogDocumentId.version, [
-      at('title', setIfMissing(tentativeVersion)),
       at('releaseAutomation', setIfMissing({})),
       at('releaseAutomation.tentativeVersion', set(tentativeVersion)),
       at('releaseAutomation.source', set('studio')),
