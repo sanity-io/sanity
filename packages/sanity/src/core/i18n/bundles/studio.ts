@@ -512,6 +512,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error message shown when an action cannot be performed */
   'errors.unable-to-perform-action': 'Unable to perform this action',
 
+  /** Toast message shown when field link is successfully copied to clipboard */
+  'field-action.link-to-field.copied-toast.title': 'Field link copied to clipboard',
+  /** Toast message shown when copying field link fails */
+  'field-action.link-to-field.copy-failed-toast.title': 'Failed to copy field link',
+  /** Title for the "Link to field" field action */
+  'field-action.link-to-field.title': 'Copy link to field',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',

@@ -8,6 +8,7 @@ import {
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import scrollIntoViewIfNeeded from 'scroll-into-view-if-needed'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -58,6 +59,15 @@ import {usePreviewUrl} from './usePreviewUrl'
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
   historyStore: HistoryStoreProps
+}
+
+/**
+ * Generates a valid attribute value for use in data attributes.
+ * This must match the implementation in useCommentsScroll.ts
+ */
+function generateValidAttrValue(id: string): string {
+  const symbolsToRemove = /[[\]_"_=.]/g
+  return id.replace(symbolsToRemove, '')
 }
 
 /**
@@ -668,19 +678,59 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
       // trigger a focus when `params.path` changes
       if (path !== pathRef.current) {
-        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-        onProgrammaticFocus(pathFromUrl)
+        // Use requestAnimationFrame to ensure the DOM is ready before focusing
+        const raf = requestAnimationFrame(() => {
+          const parsedPath = pathFromString(path)
+          const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, parsedPath)
+          onPathOpen(pathFromUrl)
+          onProgrammaticFocus(pathFromUrl)
+
+          // Scroll the field into view using the same mechanism as comments
+          // This is necessary because useScrollIntoViewOnFocusWithin only triggers
+          // on focus transitions, not initial focus state
+          const fieldElement = document.querySelector(
+            `[data-comments-field-id="${generateValidAttrValue(path)}"]`,
+          )
+          if (fieldElement) {
+            scrollIntoViewIfNeeded(fieldElement, {
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'center',
+              scrollMode: 'if-needed',
+            })
+          }
+        })
+
+        pathRef.current = path
+
+        if (!enhancedObjectDialogEnabled) {
+          // remove the `path`-param from url after we have consumed it as the initial focus path
+          paneRouter.setParams(restParams)
+        }
+
+        return () => {
+          cancelAnimationFrame(raf)
+        }
       }
 
       if (!enhancedObjectDialogEnabled) {
         // remove the `path`-param from url after we have consumed it as the initial focus path
         paneRouter.setParams(restParams)
       }
+    } else {
+      pathRef.current = params.path
     }
-    pathRef.current = params.path
 
     return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
+  }, [
+    formStateRef,
+    onPathOpen,
+    onProgrammaticFocus,
+    paneRouter,
+    params,
+    ready,
+    enhancedObjectDialogEnabled,
+  ])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
