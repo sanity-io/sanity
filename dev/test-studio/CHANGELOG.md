@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-10)
+
+### Features
+
+* add hidden to validation context ([#12050](https://github.com/sanity-io/sanity/issues/12050)) ([26b665b](https://github.com/sanity-io/sanity/commit/26b665b540269d63a446bcfa361db5ddf0d561df)) by RitaDias (rita@sanity.io)
+* **structure:** add `defaultPanes` option to documents ([#12039](https://github.com/sanity-io/sanity/issues/12039)) ([c670cbb](https://github.com/sanity-io/sanity/commit/c670cbb372650768da6bc7324464f3af01e08e15)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* add warning for schema validation when an array contains multiple primitive types that resolve to same json type ([#12095](https://github.com/sanity-io/sanity/issues/12095)) ([31155be](https://github.com/sanity-io/sanity/commit/31155be6dbf86faeb41b77cea27cf9c765961234)) by RitaDias (rita@sanity.io)
+* **deps:** Update portabletext ([#12115](https://github.com/sanity-io/sanity/issues/12115)) ([757aa34](https://github.com/sanity-io/sanity/commit/757aa3418d9c10b187d969b55308a44f1d17a454)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12122](https://github.com/sanity-io/sanity/issues/12122)) ([4a36591](https://github.com/sanity-io/sanity/commit/4a36591b187d554148ea811abcd141f150640808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** stale publish actions ([#12132](https://github.com/sanity-io/sanity/issues/12132)) ([b3b2818](https://github.com/sanity-io/sanity/commit/b3b28182100f0cd32787425fc07618460fbb5bfb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
 ## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
 
 ### Bug Fixes
