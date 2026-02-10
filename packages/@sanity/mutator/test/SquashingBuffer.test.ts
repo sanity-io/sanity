@@ -265,7 +265,7 @@ test('keeps setIfMissing when path does not exist', () => {
   expect((sb.PRESTAGE as any).b).toBe('new value')
 })
 
-test('setIfMissing does not flush optimization buffer', () => {
+test('new path setIfMissing is staged without flushing the optimization buffer', () => {
   const initial = {_id: '1', _type: 'test', a: 'hello', b: 'world'}
   const sb = new SquashingBuffer(initial)
 
@@ -281,7 +281,7 @@ test('setIfMissing does not flush optimization buffer', () => {
   expect(sb.setOperations['a']).toBeTruthy()
 })
 
-test('redundant setIfMissing does not flush optimization buffer', () => {
+test('existing path setIfMissing is dropped without flushing the optimization buffer', () => {
   const initial = {_id: '1', _type: 'test', a: 'hello', nested: {x: 1}}
   const sb = new SquashingBuffer(initial)
 
@@ -297,7 +297,7 @@ test('redundant setIfMissing does not flush optimization buffer', () => {
   expect(sb.out).toHaveLength(0) // nothing flushed
 })
 
-test('setIfMissing chain followed by set produces correct result', () => {
+test('multiple redundant setIfMissing ops are dropped while preserving the final set operation', () => {
   // Simulates the real-world pattern: ObjectField wraps patches with
   // setIfMissing + prefixAll at each nesting level
   const initial = {
@@ -355,7 +355,7 @@ test('setIfMissing for genuinely new path is preserved in output', () => {
   expect((final as any).newField.nested).toBe(true)
 })
 
-test('setIfMissing for a different document ID falls through to generic handler', () => {
+test('setIfMissing targeting a different document is not optimized', () => {
   const initial = {_id: '1', _type: 'test', a: 'existing value'}
   const sb = new SquashingBuffer(initial)
 
