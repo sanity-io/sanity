@@ -124,6 +124,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     isValidating,
     validationStatus.isValidating,
     toast,
+    t,
   ])
 
   useEffect(() => {
