@@ -2,8 +2,11 @@ import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../../hooks/__mocks__/useTimeZone.mock'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {
+  mockUseTimeZone,
+  useTimeZoneMockReturn,
+} from '../../../../../hooks/__mocks__/useTimeZone.mock'
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {

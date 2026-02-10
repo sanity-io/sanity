@@ -1,12 +1,7 @@
 import {type EditableReleaseDocument, type ReleaseDocument, type ReleaseState} from '@sanity/client'
 
 import {type TargetPerspective} from '../../perspective/types'
-import {
-  formatRelativeLocale,
-  formatRelativeTz,
-  getVersionFromId,
-  isVersionId,
-} from '../../util'
+import {formatRelativeLocale, formatRelativeTz, getVersionFromId, isVersionId} from '../../util'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type CardinalityView, type Mode} from '../tool/overview/queryParamUtils'
 import {DEFAULT_RELEASE_TYPE, LATEST} from './const'

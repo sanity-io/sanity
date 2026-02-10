@@ -34,6 +34,7 @@ export * from './preview'
 export {
   Chip,
   formatRelativeLocalePublishDate,
+  formatRelativeTzPublishDate,
   getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
