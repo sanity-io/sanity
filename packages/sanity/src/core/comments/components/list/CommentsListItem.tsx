@@ -144,7 +144,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
-  const [didExpand, setDidExpand] = useState(false)
   const replyInputRef = useRef<CommentInputHandle>(null)
 
   const {isTopLayer} = useLayer()
@@ -230,7 +229,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const handleExpand = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setCollapsed(false)
-    setDidExpand(true)
   }, [])
 
   const splicedReplies = useMemo(() => {
@@ -246,10 +244,6 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
   const expandButtonText = `${replies?.length - MAX_COLLAPSED_REPLIES} more ${
     replies?.length - MAX_COLLAPSED_REPLIES === 1 ? 'comment' : 'comments'
   }`
-
-  if (replies.length > MAX_COLLAPSED_REPLIES && !didExpand) {
-    setCollapsed(true)
-  }
 
   return (
     <StyledThreadCard
@@ -300,7 +294,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           />
         </Stack>
 
-        {showCollapseButton && !didExpand && (
+        {showCollapseButton && collapsed && (
           <Flex gap={1} paddingY={1} sizing="border">
             <SpacerAvatar />
 
