@@ -108,8 +108,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     } else {
       // User tried to publish before validation was complete
       toast.push({
-        title: 'Validation errors',
-        description: 'Please fix the validation errors before publishing',
+        title: t('action.publish.validation-issues-toast.title'),
+        description: t('action.publish.validation-issues-toast.description'),
         status: 'error',
       })
     }
