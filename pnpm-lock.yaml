@@ -621,7 +621,7 @@ importers:
         version: 2.2.2(react@19.2.4)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)
+        version: 5.2.3(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)
       '@sanity/preview-url-secret':
         specifier: ^4.0.2
         version: 4.0.3(@sanity/client@7.14.1(debug@4.4.3))
@@ -1881,7 +1881,7 @@ importers:
         version: 0.19.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 5.2.3(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)
+        version: 5.2.3(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -5227,10 +5227,6 @@ packages:
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/telemetry': '>=0.8.1 <0.9.0'
-
-  '@sanity/cli-core@0.1.0-alpha.8':
-    resolution: {integrity: sha512-x6KNOG26XCTASfOofcYBPCfPR78lqN0Fz+Xy5SYs2iuvWN3vs8LZCYo0yiXR7MYpp+IpcV9JChzTM6yxeX7zMw==}
-    engines: {node: '>=20.19.1 <22 || >=22.12'}
 
   '@sanity/cli-test@0.0.2-alpha.7':
     resolution: {integrity: sha512-dPMz5KaTkJCavtVOrrPoUnf9dzQH/R8doU3NOmuMjzpCLZDiijIIdsYiu3mrF7p9XbNSP409JwVxIP1tMpK9aA==}
@@ -8813,9 +8809,6 @@ packages:
   get-symbol-description@1.1.0:
     resolution: {integrity: sha512-w9UMqWwJxHNOvoNzSJ2oPF5wvYcvP7jUvYzhp67yEhTi17ZDBBC1z9pTdGuzjD+EFIqLSYRweZjqfiPzQ06Ebg==}
     engines: {node: '>= 0.4'}
-
-  get-tsconfig@4.13.0:
-    resolution: {integrity: sha512-1VKTZJCwBrvbd+Wn3AOgQP/2Av+TfTCOlE4AcRJE72W1ksZXbAx8PPBR9RzgTeSPzlPMHrbANMH3LbltH73wxQ==}
 
   get-tsconfig@4.13.6:
     resolution: {integrity: sha512-shZT/QMiSHc/YBLxxOkMtgSid5HFoauqCE3/exfsEcwg1WkeqjG+V40yBbBrsD+jW2HDXcs28xOfcbm2jI8Ddw==}
@@ -16244,45 +16237,10 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@sanity/cli-core@0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
-    dependencies:
-      '@inquirer/prompts': 8.2.0(@types/node@24.10.4)
-      '@oclif/core': 4.8.0
-      '@sanity/client': 7.14.1(debug@4.4.3)
-      '@sanity/types': link:packages/@sanity/types
-      babel-plugin-react-compiler: 1.0.0
-      chalk: 5.6.2
-      configstore: 7.1.0
-      debug: 4.4.3(supports-color@8.1.1)
-      get-tsconfig: 4.13.0
-      import-meta-resolve: 4.2.0
-      jsdom: 26.1.0
-      json-lexer: 1.2.0
-      log-symbols: 7.0.1
-      ora: 9.1.0
-      tsx: 4.21.0
-      vite: 7.3.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - '@types/node'
-      - bufferutil
-      - canvas
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - utf-8-validate
-      - yaml
-
-  '@sanity/cli-test@0.0.2-alpha.7(@oclif/core@4.8.0)(@sanity/cli-core@0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2))(@sanity/client@7.14.1(debug@4.4.3))(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))':
+  '@sanity/cli-test@0.0.2-alpha.7(@oclif/core@4.8.0)(@sanity/cli-core@0.1.0-alpha.11(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2))(@sanity/client@7.14.1(debug@4.4.3))(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@oclif/core': 4.8.0
-      '@sanity/cli-core': 0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+      '@sanity/cli-core': 0.1.0-alpha.11(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/client': 7.14.1(debug@4.4.3)
       '@swc/core': 1.15.10
       ansis: 4.2.0
@@ -16357,7 +16315,7 @@ snapshots:
       '@babel/types': 7.29.0
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
-      '@sanity/cli-core': 0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+      '@sanity/cli-core': 0.1.0-alpha.11(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/telemetry': 0.8.1(react@19.2.4)
       '@sanity/worker-channels': 1.1.0
       chokidar: 3.6.0
@@ -16635,12 +16593,12 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.1
 
-  '@sanity/migrate@5.2.3(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)':
+  '@sanity/migrate@5.2.3(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(xstate@5.25.1)(yaml@2.8.2)':
     dependencies:
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
-      '@sanity/cli-core': 0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
-      '@sanity/cli-test': 0.0.2-alpha.7(@oclif/core@4.8.0)(@sanity/cli-core@0.1.0-alpha.8(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2))(@sanity/client@7.14.1(debug@4.4.3))(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@sanity/cli-core': 0.1.0-alpha.11(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+      '@sanity/cli-test': 0.0.2-alpha.7(@oclif/core@4.8.0)(@sanity/cli-core@0.1.0-alpha.11(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2))(@sanity/client@7.14.1(debug@4.4.3))(vitest@4.0.18(@edge-runtime/vm@3.2.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.31.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
       '@sanity/client': 7.14.1(debug@4.4.3)
       '@sanity/mutate': 0.16.1(debug@4.4.3)(xstate@5.25.1)
       '@sanity/types': link:packages/@sanity/types
@@ -16649,12 +16607,13 @@ snapshots:
       console-table-printer: 2.15.0
       debug: 4.4.3(supports-color@8.1.1)
       fast-fifo: 1.3.2
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
       groq-js: 1.26.0
       lodash-es: 4.17.23
       p-map: 7.0.4
       tsx: 4.21.0
     transitivePeerDependencies:
+      - '@sanity/telemetry'
       - '@swc/helpers'
       - '@types/node'
       - bufferutil
@@ -20099,7 +20058,7 @@ snapshots:
 
   eslint-import-context@0.1.9(unrs-resolver@1.11.1):
     dependencies:
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
       stable-hash-x: 0.2.0
     optionalDependencies:
       unrs-resolver: 1.11.1
@@ -20117,7 +20076,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       eslint: 9.39.2(jiti@2.6.1)
       eslint-import-context: 0.1.9(unrs-resolver@1.11.1)
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
       is-bun-module: 2.0.0
       stable-hash-x: 0.2.0
       tinyglobby: 0.2.15
@@ -20899,10 +20858,6 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
-
-  get-tsconfig@4.13.0:
-    dependencies:
-      resolve-pkg-maps: 1.0.0
 
   get-tsconfig@4.13.6:
     dependencies:
@@ -23715,7 +23670,7 @@ snapshots:
       ast-kit: 3.0.0-beta.1
       birpc: 4.0.0
       dts-resolver: 2.1.3
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
       obug: 2.1.1
       rolldown: 1.0.0-rc.2
     optionalDependencies:
@@ -23770,7 +23725,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       es-module-lexer: 1.7.0
       esbuild: 0.27.3
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
       rollup: 4.57.1
       unplugin-utils: 0.2.5
     transitivePeerDependencies:
@@ -24802,14 +24757,14 @@ snapshots:
   tsx@4.19.2:
     dependencies:
       esbuild: 0.23.1
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
     optionalDependencies:
       fsevents: 2.3.3
 
   tsx@4.21.0:
     dependencies:
       esbuild: 0.27.3
-      get-tsconfig: 4.13.0
+      get-tsconfig: 4.13.6
     optionalDependencies:
       fsevents: 2.3.3
 
