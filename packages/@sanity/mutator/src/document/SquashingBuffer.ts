@@ -158,9 +158,6 @@ export class SquashingBuffer {
 
       for (const path of Object.keys(setIfMissingPatch)) {
         if (setIfMissingPatch.hasOwnProperty(path)) {
-          // extractWithPath resolves the path against the current document state.
-          // If it finds a non-nullish value, the path exists and setIfMissing would
-          // be a no-op on the server — safe to drop.
           const matches = extractWithPath(path, this.PRESTAGE)
           if (matches.length === 0 || matches[0].value === undefined || matches[0].value === null) {
             // Path doesn't exist or is nullish — this setIfMissing is needed
@@ -171,16 +168,11 @@ export class SquashingBuffer {
       }
 
       if (allRedundant) {
-        // All paths already exist — the entire setIfMissing would be a no-op.
-        // Drop it without flushing the optimization buffer.
         debug('Dropping redundant setIfMissing (all paths already exist in document)')
         return
       }
 
-      // Some paths are genuinely new — we must keep this setIfMissing.
-      // Stage it WITHOUT calling stashStagedOperations(), so that subsequent
-      // set operations can still be optimized by the squasher.
-      // Update PRESTAGE so future path checks reflect the new paths.
+      // New paths — stage and update PRESTAGE so future checks see them.
       this.staged.push(op)
       this.PRESTAGE = new Mutation({mutations: [op]}).apply(this.PRESTAGE) as Doc
       return
