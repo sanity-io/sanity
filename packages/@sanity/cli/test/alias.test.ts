@@ -10,6 +10,8 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     const testRunArgs = getTestRunArgs()
 
     testConcurrent('dataset alias create', async () => {
+      await cleanupAlias(testRunArgs.alias)
+
       let result = await runSanityCmdCommand(studioName, [
         'dataset',
         'alias',
@@ -27,6 +29,8 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     })
 
     testConcurrent('dataset alias unlink', async () => {
+      await cleanupAlias(getAliasName('unlink'))
+
       const alias = await createAlias('unlink')
       let result = await runSanityCmdCommand(studioName, [
         'dataset',
@@ -44,6 +48,8 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     })
 
     testConcurrent('dataset alias link', async () => {
+      await cleanupAlias(getAliasName('link'))
+
       // Create an unlinked alias so we can... link it
       const alias = await unlinkAlias(await createAlias('link'))
       let result = await runSanityCmdCommand(studioName, [
@@ -62,6 +68,8 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     })
 
     testConcurrent('dataset alias delete', async () => {
+      await cleanupAlias(getAliasName('del'))
+
       const alias = await createAlias('del')
       let result = await runSanityCmdCommand(studioName, [
         'dataset',
@@ -78,8 +86,12 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     })
 
     // Helpers because we'll need some setup/teardown for each test
+    function getAliasName(aliasSuffix: string) {
+      return `${testRunArgs.alias}-${aliasSuffix}`
+    }
+
     async function createAlias(aliasSuffix: string) {
-      const alias = `${testRunArgs.alias}-${aliasSuffix}`
+      const alias = getAliasName(aliasSuffix)
       await runSanityCmdCommand(studioName, [
         'dataset',
         'alias',
@@ -93,6 +105,23 @@ describeCliTest('CLI: `sanity dataset alias`', () => {
     async function unlinkAlias(alias: string) {
       await runSanityCmdCommand(studioName, ['dataset', 'alias', 'unlink', alias, '--force'])
       return alias
+    }
+
+    /**
+     * Delete an alias if it exists. It does not throw an error if the alias does not exist.
+     */
+    async function cleanupAlias(alias: string) {
+      const isExpectedError = (message: string) =>
+        message.includes('does not exist') || message.includes('alias not found')
+
+      try {
+        await runSanityCmdCommand(studioName, ['dataset', 'alias', 'delete', alias, '--force'])
+      } catch (e) {
+        if (isExpectedError(e.message)) {
+          return
+        }
+        throw e
+      }
     }
   })
 })

@@ -236,6 +236,22 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
+
+  // Prevent default on mousedown to stop focus from shifting before click completes.
+  // This fixes a Safari issue where focus events trigger re-renders that interrupt the click.
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    event.preventDefault()
+  }, [])
+
+  // Handle click: open the dialog and stop propagation to prevent onClickOutside from firing.
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      onOpen()
+    },
+    [onOpen],
+  )
+
   const item = (
     <RowLayout
       menu={menu}
@@ -253,7 +269,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={1}
         disabled={resolvingInitialValue}
-        onClick={onOpen}
+        // Use mousedown to trigger open before focus events cause re-renders.
+        // This fixes a Safari-specific issue where the array container receives focus first,
+        // triggering a state update that causes a re-render before the click event completes.
+        // The click handler checks if already open and stops propagation to prevent
+        // the dialog's onClickOutside from detecting this as an "outside" click.
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing

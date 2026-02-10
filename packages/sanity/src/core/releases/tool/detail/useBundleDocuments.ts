@@ -4,6 +4,7 @@ import {uuid} from '@sanity/uuid'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, from, type Observable, of} from 'rxjs'
+import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   catchError,
   delay,
@@ -17,7 +18,6 @@ import {
   startWith,
   switchMap,
 } from 'rxjs/operators'
-import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {useSchema} from '../../../hooks'
 import {type LocaleSource} from '../../../i18n/types'

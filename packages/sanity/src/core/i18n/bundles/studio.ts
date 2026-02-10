@@ -638,6 +638,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Version text */
   'help-resources.version': 'v{{version}}',
+  /**Incoming references inspector title */
+  'incoming-references.title': 'Incoming references',
 
   /** Text for button to cancel an ongoing upload */
   'input.files.common.cancel-upload': 'Cancel',
@@ -742,6 +744,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.file.upload-failed.title': 'Upload failed',
+  /** Private access policy badge label */
+  'inputs.files.common.access-policy.private.label': 'Private asset',
+  /** Private access policy badge tooltip */
+  'inputs.files.common.access-policy.private.tooltip': 'CDN access limited to signed URLs',
   /** Clear field */
   'inputs.files.common.actions-menu.clear-field.label': 'Clear field',
   /** Copy URL */
@@ -812,6 +818,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.drag-overlay.drop-to-upload-image': 'Drop image to upload',
   /** This field is read only */
   'inputs.image.drag-overlay.this-field-is-read-only': 'This field is read only',
+  /** Image could not be loaded due to possible access restrictions */
+  'inputs.image.error.possible-access-restriction':
+    'Could not load image. This may be due to access restrictions.',
   /** Unknown member kind: `{{kind}}` */
   'inputs.image.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** Edit hotspot and crop */
@@ -870,6 +879,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.object.field-group-tabs.all-fields-title': 'All fields',
   /** Aria label for the "Field groups" select control on smaller screens */
   'inputs.object.field-group-tabs.aria-label': 'Field groups',
+  /** Text shown in field group select for a group with error validation */
+  'inputs.object.field-group-tabs.validation-error': 'error',
+  /** Text shown in field group select for a group with info validation */
+  'inputs.object.field-group-tabs.validation-info': 'info',
+  /** Text shown in field group select for a group with warning validation */
+  'inputs.object.field-group-tabs.validation-warning': 'warning',
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
     'This field is <strong>read only</strong> according to the document’s schema and cannot be unset. If you want to be able to unset this in Studio, make sure you remove the <code>readOnly</code> field from the enclosing type in the schema.',
@@ -1191,6 +1206,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.reference.strength-mismatch.title': 'Reference strength mismatch',
   /** Label for button that triggers the action that weakens a reference on strength mismatch */
   'inputs.reference.strength-mismatch.weaken-button-label': 'Convert to weak reference',
+  /** Label for action to clear the current value of the select field */
+  'inputs.select.action.clear': 'Clear',
   /** Action message for generating the slug */
   'inputs.slug.action.generate': 'Generate',
   /** Loading message for when the input is actively generating a slug */

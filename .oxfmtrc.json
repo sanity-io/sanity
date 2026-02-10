@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "semi": false,
+  "singleQuote": true,
+  "bracketSpacing": false,
+  "quoteProps": "consistent",
+  "experimentalSortImports": {
+    "groups": [
+      ["side-effect", "side-effect-style"],
+      ["builtin", "subpath"],
+      ["external"],
+      ["internal"],
+      "unknown",
+      ["parent", "sibling", "index", "style"]
+    ],
+    "newlinesBetween": true,
+    "sortSideEffects": false
+  },
+  "experimentalSortPackageJson": {},
+  "overrides": [
+    {
+      "files": ["*.yml", "*.yaml"],
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ],
+  "ignorePatterns": ["pnpm-workspace.yaml"]
+}

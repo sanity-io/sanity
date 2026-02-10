@@ -437,6 +437,9 @@ export const eventsAPIReducer = (opts: {
   return result
 }
 
+/**
+ * @deprecated This reducer is no longer used and will be removed in a future release as we make the enhanced object dialog the default.
+ */
 export const enhancedObjectDialogEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean
@@ -498,6 +501,29 @@ export const mediaLibraryLibraryIdReducer = (opts: {
 
     throw new Error(
       `Expected \`mediaLibrary.libraryId\` to be a string, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const mediaLibraryFrontendHostReducer = (opts: {
+  config: PluginOptions
+  initialValue: string | undefined
+}): string | undefined => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.mediaLibrary?.__internal?.frontendHost
+
+    if (!resolver && typeof resolver !== 'string') return acc
+    if (typeof resolver === 'string') return resolver
+
+    throw new Error(
+      `Expected \`mediaLibrary.__internal.frontendHost\` to be a string, but received ${getPrintableType(
         resolver,
       )}`,
     )
@@ -651,7 +677,9 @@ export const searchStrategyReducer = ({
       // The strategy has been explicitly defined.
       if (typeof strategy !== 'undefined') {
         if (!isSearchStrategy(strategy)) {
-          const listFormatter = new Intl.ListFormat('en-US', {type: 'disjunction'})
+          const listFormatter = new Intl.ListFormat('en-US', {
+            type: 'disjunction',
+          })
           const options = listFormatter.format(searchStrategies.map((value) => `"${value}"`))
           const received =
             typeof strategy === 'string' ? `"${strategy}"` : getPrintableType(strategy)

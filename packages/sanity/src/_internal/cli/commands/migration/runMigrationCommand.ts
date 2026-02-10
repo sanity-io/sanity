@@ -46,12 +46,12 @@ Examples
 
 interface CreateFlags {
   ['dry-run']?: boolean
-  concurrency?: number
+  'concurrency'?: number
   ['from-export']?: string
-  progress?: boolean
-  dataset?: string
-  project?: string
-  confirm?: boolean
+  'progress'?: boolean
+  'dataset'?: string
+  'project'?: string
+  'confirm'?: boolean
 }
 
 function parseCliFlags(args: {argv?: string[]}) {
@@ -179,8 +179,18 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       )
     }
 
+    const actualDataset =
+      dataset ||
+      (projectConfig.dataset === '~dummy-placeholder-dataset-' ? undefined : projectConfig.dataset)
+
+    if (!actualDataset) {
+      throw new Error(
+        'sanity.cli.js does not contain a dataset name ("api.dataset") and no --dataset option was provided.',
+      )
+    }
+
     const apiConfig = {
-      dataset: dataset ?? projectConfig.dataset!,
+      dataset: actualDataset,
       projectId: project ?? projectConfig.projectId!,
       apiHost: projectConfig.apiHost,
       token: projectConfig.token!,

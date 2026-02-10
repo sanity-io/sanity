@@ -20,6 +20,7 @@ export const STANDARD_INPUT_TYPES = [
 export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'pt_allTheBellsAndWhistles',
   'pt_customMarkersTest',
+  'pt_customWithDefaults',
   'blocksTest',
   // 'richTextObject',
   'customPlugins',
@@ -41,12 +42,16 @@ export const PLUGIN_INPUT_TYPES = [
 
 export const DEBUG_INPUT_TYPES = [
   'actionsTest',
+  'longValidationTest',
   'allFieldsGroupHidden',
   'allNativeInputComponents',
+  'manyViews',
   'decorations',
   'collapsibleObjects',
   'commentsDebug',
+  'domAttrsAsFieldNames',
   'conditionalFieldsTest',
+  'conditionalFieldsWithPathTest',
   'customInputsTest',
   'customInputsWithPatches',
   'dateValidation',
@@ -61,6 +66,7 @@ export const DEBUG_INPUT_TYPES = [
   'fieldsetsTest',
   'fieldValidationInferReproDoc',
   'focusTest',
+  'hiddenFieldValidationTest',
   'patchOnMountDebug',
   'formInputDebug',
   'initialValuesTest',
@@ -69,7 +75,6 @@ export const DEBUG_INPUT_TYPES = [
   'languageFilterDebug',
   'lazyComponents',
   'manyFieldsTest',
-  'manyViews',
   'noTitleField',
   'objectsDebug',
   'poppers',
@@ -97,6 +102,7 @@ export const DEBUG_INPUT_TYPES = [
   'validationTest',
   'virtualizationDebug',
   'virtualizationInObject',
+  'annotationCustomTypeTest',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest', 'commentsCI']

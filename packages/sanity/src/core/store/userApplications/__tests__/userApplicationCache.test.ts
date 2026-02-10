@@ -1,16 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {createUserApplicationCache, type UserApplication} from '../userApplicationCache'
-
-const DISABLE_TOGGLE = 'toggle.user-application.upload-live-manifest.disable'
-
-// Mock getFeatures to return empty array by default (feature enabled when disable toggle is absent)
-vi.mock('../../../hooks/useFeatureEnabled', () => ({
-  getFeatures: vi.fn(() => of([])),
-}))
 
 describe('userApplicationCache', () => {
   const mockRequest = vi.fn()
@@ -174,33 +166,6 @@ describe('userApplicationCache', () => {
       expect(result1Again).toEqual(appsProject1)
       expect(result2Again).toEqual(appsProject2)
       expect(mockRequest).toHaveBeenCalledTimes(2) // No additional calls
-    })
-  })
-
-  describe('feature toggle', () => {
-    it('should return empty array when feature is disabled (disable toggle present)', async () => {
-      const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
-      vi.mocked(getFeatures).mockReturnValueOnce(of([DISABLE_TOGGLE]))
-
-      const cache = createUserApplicationCache()
-      const result = await cache.get(mockClient)
-
-      expect(result).toEqual([])
-      expect(mockRequest).not.toHaveBeenCalled()
-    })
-
-    it('should fetch apps when feature is enabled (disable toggle absent)', async () => {
-      const {getFeatures} = await import('../../../hooks/useFeatureEnabled')
-      vi.mocked(getFeatures).mockReturnValueOnce(of([]))
-
-      const mockApps = [{id: 'app-1', type: 'studio', urlType: 'internal', appHost: 'studio-1'}]
-      mockRequest.mockResolvedValueOnce(mockApps)
-
-      const cache = createUserApplicationCache()
-      const result = await cache.get(mockClient)
-
-      expect(result).toEqual(mockApps)
-      expect(mockRequest).toHaveBeenCalled()
     })
   })
 })

@@ -20,6 +20,7 @@ function ImageInputAssetComponent(props: {
   inputProps: Omit<InputProps, 'renderDefault'>
   isStale: boolean
   readOnly: boolean | undefined
+  renderAssetAccessPolicy?: () => React.JSX.Element
   renderAssetMenu: () => React.JSX.Element
   renderPreview: () => React.JSX.Element
   renderUploadPlaceholder: () => React.JSX.Element
@@ -35,6 +36,7 @@ function ImageInputAssetComponent(props: {
     inputProps,
     isStale,
     readOnly,
+    renderAssetAccessPolicy,
     renderAssetMenu,
     renderPreview,
     renderUploadPlaceholder,
@@ -99,6 +101,7 @@ function ImageInputAssetComponent(props: {
             {!value?._upload && value?.asset && (
               <div style={{position: 'relative'}}>
                 {renderPreview()}
+                {renderAssetAccessPolicy?.()}
                 {renderAssetMenu()}
               </div>
             )}

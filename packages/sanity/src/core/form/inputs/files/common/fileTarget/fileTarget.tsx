@@ -144,6 +144,19 @@ export function fileTarget<ComponentProps>(
     useEffect(() => {
       if (pasteTarget) {
         const pasteTargetElementListener = (event: globalThis.ClipboardEvent) => {
+          // Check if this is Portable Text data - let it through for native PTE paste handling
+          const hasPortableText = event.clipboardData?.types.some((t) => {
+            const normalized = t.replace(/^web /, '')
+            return (
+              normalized === 'application/portable-text' ||
+              normalized === 'application/x-portable-text'
+            )
+          })
+          if (hasPortableText) {
+            // Let the PTE editor handle this paste event
+            return
+          }
+
           // Some applications may put both text and files on the clipboard when content is copied (Word, Excel etc).
           // If we have both text and html on the clipboard, the intention is probably to paste text, so ignore the files.
           const hasHtml = !!event.clipboardData?.getData('text/html')

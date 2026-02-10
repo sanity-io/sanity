@@ -1,16 +1,30 @@
 /* eslint-disable max-nested-callbacks */
 import {
-  type EditorChange,
+  type EditorEmittedEvent,
+  EditorProvider,
   PortableTextEditable,
   PortableTextEditor,
   type RangeDecoration,
+  useEditor,
+  usePortableTextEditor,
 } from '@portabletext/editor'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash-es'
-import {startTransition, useEffect, useEffectEvent, useMemo, useRef, useState} from 'react'
+import {
+  forwardRef,
+  startTransition,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {useCurrentUser} from '../../store'
 import {type CommentDocument} from '../types'
@@ -117,6 +131,29 @@ const schema = Schema.compile({
   ],
 })
 
+const EditorRefPlugin = forwardRef<PortableTextEditor | null>(function EditorRefPlugin(_, ref) {
+  const portableTextEditor = usePortableTextEditor()
+  const portableTextEditorRef = useRef(portableTextEditor)
+
+  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+
+  return null
+})
+EditorRefPlugin.displayName = 'EditorRefPlugin'
+
+function UpdateValuePlugin(props: {value: PortableTextBlock[] | undefined}) {
+  const editor = useEditor()
+
+  useEffect(() => {
+    editor.send({
+      type: 'update value',
+      value: props.value,
+    })
+  }, [editor, props.value])
+
+  return null
+}
+
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
@@ -206,70 +243,36 @@ export default function CommentInlineHighlightDebugStory() {
       },
     })
 
-  const handleChange = (change: EditorChange) => {
-    if (change.type === 'patch' && editorRef.current) {
-      const editorStateValue = PortableTextEditor.getValue(editorRef.current)
+  const handleEvent = useCallback(
+    (event: EditorEmittedEvent) => {
+      if (event.type === 'mutation') {
+        setValue(event.value || [])
+      }
 
-      setValue(editorStateValue || [])
-    }
+      if (event.type === 'selection') {
+        const overlapping = rangeDecorations.some((d) => {
+          if (!editorRef.current) return false
 
-    // if (change.type === 'rangeDecorationMoved') {
-    //   setRangeDecorations(buildRangeDecorationsCallback())
-    //   const commentId = change.rangeDecoration.payload?.commentId as undefined | string
-    //   const range = change.rangeDecoration.payload?.range as
-    //     | undefined
-    //     | {_key: string; text: string}
-    //   if (commentId && range) {
-    //     setCommentDocuments((prev) => {
-    //       return prev.map((comment) => {
-    //         if (comment._id === commentId) {
-    //           const newComment = {
-    //             ...comment,
-    //             target: {
-    //               ...comment.target,
-    //               path: {
-    //                 ...comment.target.path,
-    //                 selection: {
-    //                   type: 'text',
-    //                   value: [
-    //                     ...(comment.target.path.selection?.value
-    //                       .filter((r) => r._key !== range._key)
-    //                       .concat(range) || []),
-    //                   ],
-    //                 },
-    //               },
-    //             },
-    //           } as CommentDocument
-    //           return newComment
-    //         }
-    //         return comment
-    //       })
-    //     })
-    //   }
-    // }
+          return PortableTextEditor.isSelectionsOverlapping(
+            editorRef.current,
+            event.selection,
+            d.selection,
+          )
+        })
 
-    if (change.type === 'selection') {
-      const overlapping = rangeDecorations.some((d) => {
-        if (!editorRef.current) return false
+        const hasRange = event.selection?.anchor.offset !== event.selection?.focus.offset
 
-        return PortableTextEditor.isSelectionsOverlapping(
-          editorRef.current,
-          change.selection,
-          d.selection,
-        )
-      })
-
-      const hasRange = change.selection?.anchor.offset !== change.selection?.focus.offset
-
-      setCanAddComment(!overlapping && hasRange)
-    }
-  }
+        setCanAddComment(!overlapping && hasRange)
+      }
+    },
+    [rangeDecorations],
+  )
 
   const buildRangeDecorationsCallbackEvent = useEffectEvent(() => buildRangeDecorationsCallback())
   useEffect(() => {
+    const next = buildRangeDecorationsCallbackEvent()
     startTransition(() =>
       setRangeDecorations((prev) => {
-        const next = buildRangeDecorationsCallbackEvent()
         if (
           !isEqual(
             prev.map((d) => d.payload),
@@ -281,7 +284,7 @@ export default function CommentInlineHighlightDebugStory() {
         return prev
       }),
     )
-  }, [])
+  }, [comments])
 
   const handleAddComment = () => {
     if (!editorRef.current) return
@@ -340,12 +343,15 @@ export default function CommentInlineHighlightDebugStory() {
             <Stack space={2}>
               <Card padding={3} border style={{minHeight: 150}}>
                 <Text>
-                  <PortableTextEditor
-                    onChange={handleChange}
-                    value={value}
-                    schemaType={pteSchema.get('body')}
-                    ref={editorRef}
+                  <EditorProvider
+                    initialConfig={{
+                      schema: pteSchema.get('body'),
+                      initialValue: value,
+                    }}
                   >
+                    <EditorRefPlugin ref={editorRef} />
+                    <EventListenerPlugin on={handleEvent} />
+                    <UpdateValuePlugin value={value} />
                     <PortableTextEditable
                       spellCheck={false}
                       style={INLINE_STYLE}
@@ -358,7 +364,7 @@ export default function CommentInlineHighlightDebugStory() {
                       tabIndex={0}
                       rangeDecorations={rangeDecorations}
                     />
-                  </PortableTextEditor>
+                  </EditorProvider>
                 </Text>
               </Card>
 

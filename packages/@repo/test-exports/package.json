@@ -1,6 +1,6 @@
 {
   "name": "@repo/test-exports",
-  "version": "5.5.0",
+  "version": "5.9.0",
   "private": true,
   "description": "Ensures that all the monorepo packages that are published works in native node ESM and CJS runtimes",
   "exports": {
@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@sanity/cli": "workspace:*",
-    "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/schema": "workspace:*",

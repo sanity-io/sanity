@@ -3,9 +3,9 @@ import {fileURLToPath} from 'node:url'
 
 import baseConfig from '@repo/eslint-config'
 import i18nConfig from '@sanity/eslint-config-i18n'
-import {defineConfig} from 'eslint/config'
 import boundaries from 'eslint-plugin-boundaries'
 import testingLibrary from 'eslint-plugin-testing-library'
+import {defineConfig} from 'eslint/config'
 import globals from 'globals'
 
 const __filename = fileURLToPath(import.meta.url)

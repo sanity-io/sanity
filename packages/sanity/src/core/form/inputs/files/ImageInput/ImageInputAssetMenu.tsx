@@ -12,6 +12,7 @@ import {ActionsMenu} from '../common/ActionsMenu'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
+import {type AssetAccessPolicy} from '../types'
 import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {type BaseImageInputProps} from './types'
 
@@ -26,6 +27,7 @@ function ImageInputAssetMenuComponent(
     | 'schemaType'
     | 'value'
   > & {
+    accessPolicy?: AssetAccessPolicy
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
@@ -39,6 +41,7 @@ function ImageInputAssetMenuComponent(
   },
 ) {
   const {
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
@@ -105,6 +108,7 @@ function ImageInputAssetMenuComponent(
   return (
     <ImageInputAssetMenuWithReferenceAsset
       accept={accept}
+      accessPolicy={accessPolicy}
       assetSources={assetSources}
       browseMenuItem={browseMenuItem}
       directUploads={directUploads}
@@ -134,6 +138,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     'directUploads' | 'imageUrlBuilder' | 'observeAsset' | 'readOnly' | 'schemaType' | 'value'
   > & {
     accept: string
+    accessPolicy?: AssetAccessPolicy
     assetSources: AssetSource[]
     browseMenuItem: ReactNode
     handleOpenDialog: () => void
@@ -151,6 +156,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
 ) {
   const {
     accept,
+    accessPolicy,
     assetSources,
     browseMenuItem,
     directUploads,
@@ -216,7 +222,12 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   let copyUrl: string | undefined
   let downloadUrl: string | undefined
 
-  if (isImageSource(value)) {
+  if (
+    isImageSource(value) &&
+    // @todo Temporary check to prevent showing download and copy links for
+    // private assets until support is added
+    accessPolicy !== 'private'
+  ) {
     const filename = originalFilename || `download.${extension}`
     downloadUrl = imageUrlBuilder.image(_id).forceDownload(filename).url()
     copyUrl = imageUrlBuilder.image(_id).url()

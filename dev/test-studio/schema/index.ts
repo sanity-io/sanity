@@ -7,12 +7,20 @@ import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {
+  annotationCustomTypeTest,
+  ctaType,
+  tooltipAnnotationType,
+} from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
+import conditionalFieldsWithPath, {
+  conditionallyHiddenField,
+} from './debug/conditionalFieldsWithPath'
 import customInputs from './debug/customInputs'
 import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
@@ -26,6 +34,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
 import {fieldActionsTest} from './debug/fieldActionsTest'
@@ -46,6 +55,7 @@ import {
 import focus from './debug/focus'
 import {formInputDebug} from './debug/formInputDebug'
 import gallery from './debug/gallery'
+import {hiddenFieldValidationTypes} from './debug/hiddenFieldValidation'
 import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
@@ -54,6 +64,7 @@ import {languageFilterDebugType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
 import notitle from './debug/notitle'
@@ -115,6 +126,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import {customPlugins} from './standard/portableText/customPlugins'
+import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -183,6 +195,7 @@ export function createSchemaTypes(projectId: string) {
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,
+    ptCustomWithDefaultsType,
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
@@ -202,10 +215,16 @@ export function createSchemaTypes(projectId: string) {
 
     // Test documents for debugging
     actions,
+    annotationCustomTypeTest,
+    ctaType,
+    tooltipAnnotationType,
     button,
     collapsibleObjects,
+    domAttrsAsFieldNames,
     commentsDebug,
     conditionalFields,
+    conditionalFieldsWithPath,
+    conditionallyHiddenField,
     customInputs,
     customInputsWithPatches,
     customNumber,
@@ -219,6 +238,7 @@ export function createSchemaTypes(projectId: string) {
     experiment,
     fieldActionsTest,
     fieldComponentsTest,
+    ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
 
@@ -246,6 +266,7 @@ export function createSchemaTypes(projectId: string) {
     namedDeprecatedArray,
     notitle,
     objectsDebug,
+    longValidationTestType,
     poppers,
     presence,
     objectWithNestedArray,

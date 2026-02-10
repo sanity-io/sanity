@@ -1,27 +1,70 @@
 {
   "name": "sanity",
-  "version": "5.5.0",
+  "version": "5.9.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content"
+    "sanity"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/sanity"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "bin": {
+    "sanity": "./bin/sanity"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "dist",
+    "static",
+    "mock-browser-env-stub-loader.mjs"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "_internal": [
+        "./lib/_internal.d.ts"
+      ],
+      "_singletons": [
+        "./lib/_singletons.d.ts"
+      ],
+      "_createContext": [
+        "./lib/_createContext.d.ts"
+      ],
+      "cli": [
+        "./lib/cli.d.ts"
+      ],
+      "desk": [
+        "./lib/desk.d.ts"
+      ],
+      "migrate": [
+        "./lib/migrate.d.ts"
+      ],
+      "presentation": [
+        "./lib/presentation.d.ts"
+      ],
+      "router": [
+        "./lib/router.d.ts"
+      ],
+      "structure": [
+        "./lib/structure.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -80,55 +123,30 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ],
-      "_singletons": [
-        "./lib/_singletons.d.ts"
-      ],
-      "_createContext": [
-        "./lib/_createContext.d.ts"
-      ],
-      "cli": [
-        "./lib/cli.d.ts"
-      ],
-      "desk": [
-        "./lib/desk.d.ts"
-      ],
-      "migrate": [
-        "./lib/migrate.d.ts"
-      ],
-      "presentation": [
-        "./lib/presentation.d.ts"
-      ],
-      "router": [
-        "./lib/router.d.ts"
-      ],
-      "structure": [
-        "./lib/structure.d.ts"
-      ]
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./_singletons": "./lib/_singletons.js",
+      "./_createContext": "./lib/_createContext.js",
+      "./cli": "./lib/cli.js",
+      "./desk": "./lib/desk.js",
+      "./presentation": "./lib/presentation.js",
+      "./router": "./lib/router.js",
+      "./structure": "./lib/structure.js",
+      "./media-library": "./lib/media-library.js",
+      "./migrate": "./lib/migrate.js",
+      "./package.json": "./package.json"
     }
   },
-  "bin": {
-    "sanity": "./bin/sanity"
-  },
-  "files": [
-    "bin",
-    "lib",
-    "dist",
-    "static",
-    "mock-browser-env-stub-loader.mjs"
-  ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "check:types": "(cd ../.. && tsgo --project packages/sanity/tsconfig.check.json --erasableSyntaxOnly)",
     "clean": "rimraf _internal.js _singletons.js _createContext.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "vitest --coverage",
+    "docs:typedocs:cleanup": "rimraf docs",
+    "docs:typedocs:generate": "typedoc --options typedoc.config.json",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
@@ -136,6 +154,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
+    "@algorithm.ts/lcs": "^4.0.5",
     "@date-fns/tz": "^1.4.1",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^6.0.1",
@@ -144,19 +163,23 @@
     "@isaacs/ttlcache": "^1.4.1",
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.10.2",
-    "@portabletext/block-tools": "^5.0.0",
-    "@portabletext/editor": "^4.3.0",
+    "@portabletext/block-tools": "^5.0.1",
+    "@portabletext/editor": "^4.3.9",
     "@portabletext/patches": "^2.0.4",
-    "@portabletext/plugin-markdown-shortcuts": "^5.0.15",
-    "@portabletext/plugin-one-line": "^4.0.15",
-    "@portabletext/plugin-typography": "^5.0.15",
+    "@portabletext/plugin-markdown-shortcuts": "^5.0.24",
+    "@portabletext/plugin-one-line": "^4.0.24",
+    "@portabletext/plugin-paste-link": "^1.0.3",
+    "@portabletext/plugin-typography": "^5.0.24",
     "@portabletext/react": "^6.0.2",
+    "@portabletext/sanity-bridge": "^2.0.0",
+    "@portabletext/to-html": "^5.0.1",
     "@portabletext/toolkit": "^5.0.1",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^0.4.1",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "catalog:",
+    "@sanity/codegen": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/comlink": "^4.0.1",
     "@sanity/diff": "workspace:*",
@@ -167,15 +190,15 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.0.3",
-    "@sanity/import": "^4.1.0",
-    "@sanity/insert-menu": "^3.0.3",
+    "@sanity/import": "^4.1.1",
+    "@sanity/insert-menu": "^3.0.4",
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.2.0",
     "@sanity/message-protocol": "^0.19.0",
     "@sanity/migrate": "catalog:",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.0.1",
-    "@sanity/preview-url-secret": "^4.0.2",
+    "@sanity/preview-url-secret": "^4.0.3",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "2.1.2",
     "@sanity/telemetry": "^0.8.0",
@@ -212,7 +235,7 @@
     "fast-deep-equal": "3.1.3",
     "form-data": "^4.0.5",
     "get-it": "^8.7.0",
-    "groq-js": "^1.25.0",
+    "groq-js": "^1.26.0",
     "gunzip-maybe": "^1.4.2",
     "history": "^5.3.0",
     "i18next": "^23.16.8",
@@ -224,11 +247,12 @@
     "jsdom-global": "^3.0.2",
     "json-lexer": "^1.2.0",
     "json-reduce": "^3.0.0",
+    "json-stable-stringify": "^1.3.0",
     "json5": "^2.2.3",
     "lodash-es": "^4.17.22",
     "log-symbols": "^2.2.0",
     "mendoza": "^3.0.8",
-    "motion": "^12.26.2",
+    "motion": "^12.27.1",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.3.11",
     "node-html-parser": "^6.1.13",
@@ -287,13 +311,12 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/codegen": "workspace:*",
     "@sanity/descriptors": "^1.3.0",
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
     "@sanity/ui-workshop": "catalog:",
-    "@sanity/visual-editing-csm": "^3.0.4",
+    "@sanity/visual-editing-csm": "^3.0.5",
     "@sentry/types": "^8.55.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -315,8 +338,9 @@
     "@types/wicg-task-scheduling": "^2024.1.0",
     "@types/yargs": "^17.0.33",
     "@typescript/native-preview": "catalog:",
-    "@vitest/expect": "^4.0.16",
+    "@vitest/expect": "^4.0.18",
     "babel-plugin-react-compiler": "1.0.0",
+    "babel-plugin-styled-components": "catalog:",
     "blob-polyfill": "^9.0.20240710",
     "eslint": "catalog:",
     "eslint-plugin-boundaries": "^5.3.1",
@@ -338,21 +362,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./_internal": "./lib/_internal.js",
-      "./_singletons": "./lib/_singletons.js",
-      "./_createContext": "./lib/_createContext.js",
-      "./cli": "./lib/cli.js",
-      "./desk": "./lib/desk.js",
-      "./presentation": "./lib/presentation.js",
-      "./router": "./lib/router.js",
-      "./structure": "./lib/structure.js",
-      "./media-library": "./lib/media-library.js",
-      "./migrate": "./lib/migrate.js",
-      "./package.json": "./package.json"
-    }
   }
 }

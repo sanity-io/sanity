@@ -54,6 +54,20 @@ export default defineType({
       title: 'Title',
       type: 'string',
     },
+    // Example demonstrating schema validation error for issue #3631
+    // This array contains multiple types that resolve to JSON type "string"
+    // which is not allowed because there's no way to distinguish between them
+    {
+      name: 'duplicatePrimitiveJsonTypeExample',
+      title: 'Duplicate Primitive JSON Type Example (Issue #3631)',
+      description:
+        'This field demonstrates the validation error when an array contains multiple types that resolve to the same JSON primitive type',
+      type: 'array',
+      of: [
+        {type: 'string', name: 'heading', title: 'Heading'},
+        {type: 'text', name: 'paragraph', title: 'Paragraph'},
+      ],
+    },
     {
       name: 'arrayOfReferences',
       title: 'Array of references to authors',
@@ -166,6 +180,36 @@ export default defineType({
               group: ['c'],
             },
           ],
+        },
+      ],
+    },
+    {
+      name: 'arrayOfDescriptionObjects',
+      description:
+        'This array contains objects with a `description` field, to test copying between unnamed arrays',
+      type: 'array',
+      of: [
+        {
+          title: 'Has description',
+          type: 'object',
+          fields: [{name: 'description', title: 'Description', type: 'string'}],
+        },
+      ],
+    },
+    {
+      name: 'namedAndAnonymousObjects',
+      type: 'array',
+      of: [
+        {
+          title: 'Named object',
+          type: 'object',
+          name: 'namedObject',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          title: 'Anonymous object',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
         },
       ],
     },

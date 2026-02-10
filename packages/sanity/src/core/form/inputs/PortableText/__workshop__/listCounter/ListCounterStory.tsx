@@ -164,8 +164,8 @@ const BlockRoot = styled.div<{$level: number}>((props) => {
       & > span:before {
         content: ${`counter(list-level-${$level})`} '.';
         content: ${`counter(list-level-${$level}, ${
-            NUMBER_FORMATS[$level % NUMBER_FORMATS.length]
-          })`}
+          NUMBER_FORMATS[$level % NUMBER_FORMATS.length]
+        })`}
           '.';
       }
     }

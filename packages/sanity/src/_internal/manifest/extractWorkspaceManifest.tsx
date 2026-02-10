@@ -555,7 +555,7 @@ const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
     } satisfies ManifestTool
   })
 
-const resolveIcon = (props: SchemaIconProps): string | null => {
+export const resolveIcon = (props: SchemaIconProps): string | null => {
   try {
     const html = renderToString(<SchemaIcon {...props} />)
     return DOMPurify.sanitize(html.trim(), config)

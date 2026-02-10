@@ -25,6 +25,7 @@ import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
@@ -49,6 +50,7 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
+  mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
@@ -82,7 +84,6 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
-import {uploadSchema} from './uploadSchema'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -770,6 +771,9 @@ function resolveSource({
     mediaLibrary: {
       enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+      __internal: {
+        frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+      },
     },
 
     advancedVersionControl: {

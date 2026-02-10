@@ -3,17 +3,17 @@
   "version": "1.0.0",
   "description": "Sanity Function that automatically generates changelog entries for documents when meaningful changes are made",
   "keywords": [
-    "sanity",
-    "function",
-    "changelog",
     "ai",
-    "automation"
+    "automation",
+    "changelog",
+    "function",
+    "sanity"
   ],
   "license": "MIT",
   "author": "Sanity",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.14.0",
+    "@sanity/client": "^7.14.1",
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {

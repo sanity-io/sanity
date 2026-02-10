@@ -306,6 +306,96 @@ export const customPlugins = defineType({
     },
 
     /**
+     * Paste Link Disabled
+     *
+     * Disables the default behavior of converting selected text into a link
+     * when a URL is pasted.
+     */
+    {
+      type: 'array',
+      name: 'pasteLinkDisabled',
+      title: 'Paste Link Disabled',
+      description:
+        'The paste link behavior is disabled - pasting a URL on selected text will replace the text',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                pasteLink: {
+                  enabled: false,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * Custom Paste Link Annotation
+     *
+     * Uses a custom link matcher to support a different annotation type
+     * for links (e.g., 'customLink' instead of 'link').
+     */
+    {
+      type: 'array',
+      name: 'customPasteLinkAnnotation',
+      title: 'Custom Paste Link Annotation',
+      description:
+        'The paste link behavior uses a custom annotation called "customLink" with a "url" field instead of the default "link" with "href"',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            annotations: [
+              {
+                name: 'customLink',
+                title: 'Custom Link',
+                type: 'object',
+                fields: [
+                  {
+                    name: 'url',
+                    title: 'URL',
+                    type: 'url',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                pasteLink: {
+                  link: ({context, value}) => {
+                    const customLink = context.schema.annotations.find(
+                      (a) => a.name === 'customLink',
+                    )
+                    if (!customLink) return undefined
+                    return {_type: 'customLink', url: value.href}
+                  },
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
      * No Plugins
      *
      * Removes all plugins from the editor.

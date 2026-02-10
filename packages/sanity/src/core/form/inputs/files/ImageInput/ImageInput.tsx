@@ -35,6 +35,7 @@ import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {type InputProps} from '../../../types'
 import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../common/assetSource'
 import {UploadProgress} from '../common/UploadProgress'
+import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
 import {ImageInputAssetSource} from './ImageInputAssetSource'
@@ -44,6 +45,7 @@ import {ImageInputPreview} from './ImageInputPreview'
 import {ImageInputUploadPlaceholder} from './ImageInputUploadPlaceholder'
 import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
+import {useAccessPolicy} from './useAccessPolicy'
 
 export {BaseImageInputProps, BaseImageInputValue}
 
@@ -268,6 +270,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                   }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
+                  // Reset state to allow selecting again
+                  setSelectedAssetSource(null)
+                  setIsUploading(false)
                   break
                 }
                 default:
@@ -324,24 +329,34 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     menuButtonElement?.focus()
   }, [menuButtonElement])
 
+  const accessPolicy = useAccessPolicy({
+    client,
+    source: value,
+  })
+
   const renderPreview = useCallback<() => React.JSX.Element>(() => {
     if (!value) {
       return <></>
     }
     return (
       <ImageInputPreview
-        client={client}
+        accessPolicy={accessPolicy}
         handleOpenDialog={handleOpenDialog}
         imageUrlBuilder={imageUrlBuilder}
         readOnly={readOnly}
         value={value}
       />
     )
-  }, [client, handleOpenDialog, imageUrlBuilder, readOnly, value])
+  }, [accessPolicy, handleOpenDialog, imageUrlBuilder, readOnly, value])
+
+  const renderAssetAccessPolicy = useCallback(() => {
+    return <ImageAccessPolicy accessPolicy={accessPolicy} />
+  }, [accessPolicy])
 
   const renderAssetMenu = useCallback(() => {
     return (
       <ImageInputAssetMenu
+        accessPolicy={accessPolicy}
         assetSources={assetSources}
         directUploads={directUploads}
         handleOpenDialog={handleOpenDialog}
@@ -362,6 +377,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       />
     )
   }, [
+    accessPolicy,
     assetSources,
     directUploads,
     handleOpenDialog,
@@ -391,18 +407,29 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     )
   }, [assetSources, handleSelectImageFromAssetSource, id, readOnly, schemaType])
 
+  const disableNew = schemaType.options?.disableNew === true
+
   const renderUploadPlaceholder = useCallback(() => {
     return (
       <ImageInputUploadPlaceholder
         assetSources={assetSources}
         directUploads={directUploads}
+        disableNew={disableNew}
         onSelectFile={handleSelectFileToUpload}
         readOnly={readOnly}
         renderBrowser={renderBrowser}
         schemaType={schemaType}
       />
     )
-  }, [assetSources, directUploads, handleSelectFileToUpload, readOnly, renderBrowser, schemaType])
+  }, [
+    assetSources,
+    directUploads,
+    disableNew,
+    handleSelectFileToUpload,
+    readOnly,
+    renderBrowser,
+    schemaType,
+  ])
   const renderUploadState = useCallback(
     (uploadState: UploadState) => {
       return (
@@ -430,6 +457,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
           isStale={isStale}
           onSelectFile={handleSelectFileToUpload}
           readOnly={readOnly}
+          renderAssetAccessPolicy={renderAssetAccessPolicy}
           renderAssetMenu={renderAssetMenu}
           renderPreview={renderPreview}
           renderUploadPlaceholder={renderUploadPlaceholder}
@@ -449,6 +477,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
       handleSelectFileToUpload,
       isStale,
       readOnly,
+      renderAssetAccessPolicy,
       renderAssetMenu,
       renderPreview,
       renderUploadPlaceholder,

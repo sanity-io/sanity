@@ -1,7 +1,12 @@
 import {
   BinaryDocumentIcon,
+  CheckmarkCircleIcon,
   CogIcon,
+  DocumentIcon,
   EarthGlobeIcon,
+  EditIcon,
+  EmptyIcon,
+  FilterIcon,
   ImagesIcon,
   PlugIcon,
   RocketIcon,
@@ -9,6 +14,7 @@ import {
   TerminalIcon,
   ThListIcon,
   UsersIcon,
+  WarningFilledIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {type Observable, timer} from 'rxjs'
@@ -434,6 +440,76 @@ export const structure: StructureResolver = (
             .title('Species')
             .id('default-ordering-list')
             .filter('_type == $type'),
+        ),
+
+      // Example: Custom menu items with selected state indicator
+      // Just use .id() - clicking toggles the checkmark on/off automatically!
+      S.listItem()
+        .title('Menu item selected indicator')
+        .id('menu-item-selected-indicator')
+        .icon(FilterIcon)
+        .child(() =>
+          S.documentTypeList('book')
+            .title('Books')
+            .id('books-menu-indicator-demo')
+            .menuItems([
+              // Radio-button behavior: same id, different values - only one shows checkmark
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Default')
+                .icon(DocumentIcon)
+                .group('view')
+                .params({value: 'default'})
+                .action((params) => console.log('default', params?.isSelected, params)),
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Compact')
+                .icon(CogIcon)
+                .group('view')
+                .params({value: 'compact'})
+                .action(() => console.log('compact')),
+              S.menuItem()
+                .id('viewMode')
+                .title('View Mode: Expanded')
+                .icon(EditIcon)
+                .group('view')
+                .params({value: 'expanded'})
+                .action(() => console.log('expanded')),
+
+              // Checkbox behavior: different ids - each toggles independently
+              // Just .id() is enough!
+              S.menuItem()
+                .title('Show Archived')
+                .icon(CheckmarkCircleIcon)
+                .group('toggles')
+                .action(() => console.log('archived')),
+              S.menuItem()
+                .title('Show Featured')
+                .icon(CheckmarkCircleIcon)
+                .group('toggles')
+                .action(() => console.log('featured')),
+
+              S.menuItem()
+                .title('Alert action')
+                .icon(WarningFilledIcon)
+                // eslint-disable-next-line no-alert
+                .action(() => alert('you clicked!')),
+
+              S.menuItem()
+                .title('No selection indicator')
+                .icon(EmptyIcon)
+                .action(() => console.log('you clicked!'))
+                .params({hideSelectionIndicator: true}),
+
+              // Standard menu items (layout changes the view)
+              ...(S.documentTypeList('book').getMenuItems() || []),
+            ])
+            .menuItemGroups([
+              {id: 'view', title: 'View Mode (pick one)'},
+              {id: 'toggles', title: 'Toggles (each independent)'},
+              {id: 'sorting', title: 'Sort'},
+              {id: 'layout', title: 'Layout'},
+            ]),
         ),
 
       ...S.documentTypeListItems()

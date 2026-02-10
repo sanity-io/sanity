@@ -151,10 +151,10 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             }}
             placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
-              boundaryElement:
-                timeZoneScope.type === 'input'
-                  ? (document.querySelector('#document-panel-scroller') as HTMLElement)
-                  : (document.querySelector('body') as HTMLElement),
+              // Dialog is portaled to the document root, so its Autocomplete
+              // popover should be bounded by document.body rather than any
+              // panel-scoped scroll container.
+              boundaryElement: document.body,
               constrainSize: true,
               placement: 'bottom-start',
             }}

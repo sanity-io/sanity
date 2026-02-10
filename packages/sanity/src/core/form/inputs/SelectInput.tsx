@@ -1,3 +1,4 @@
+import {ResetIcon} from '@sanity/icons'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash-es'
@@ -11,7 +12,9 @@ import {
   useMemo,
 } from 'react'
 
+import {Button} from '../../../ui-components'
 import {ChangeIndicator} from '../../changeIndicators'
+import {useTranslation} from '../../i18n'
 import {PatchEvent, set, unset} from '../patch'
 import {type StringInputProps} from '../types'
 
@@ -136,26 +139,44 @@ const RadioSelect = forwardRef(function RadioSelect(
   ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
+  const {t} = useTranslation()
 
-  const Layout = direction === 'horizontal' ? Inline : Stack
+  const handleClear = useCallback(() => {
+    onChange(null)
+  }, [onChange])
+
+  const isHorizontal = direction === 'horizontal'
+  const Layout = isHorizontal ? Inline : Stack
+  const showClearButton = !readOnly && value
+
   return (
-    <Card border padding={3} radius={2}>
-      <Layout space={3} role="group">
-        {items.map((item, index) => (
-          <RadioSelectItem
-            // oxlint-disable-next-line no-array-index-key
-            key={index}
-            customValidity={customValidity}
-            inputId={inputId}
-            item={item}
-            onChange={onChange}
-            onFocus={onFocus}
-            readOnly={readOnly}
-            ref={index === 0 ? ref : null}
-            value={value}
+    <Card border paddingY={2} paddingX={3} radius={2}>
+      <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
+        <Layout space={3} role="group" paddingY={1}>
+          {items.map((item, index) => (
+            <RadioSelectItem
+              // oxlint-disable-next-line no-array-index-key
+              key={index}
+              customValidity={customValidity}
+              inputId={inputId}
+              item={item}
+              onChange={onChange}
+              onFocus={onFocus}
+              readOnly={readOnly}
+              ref={index === 0 ? ref : null}
+              value={value}
+            />
+          ))}
+        </Layout>
+        {showClearButton && (
+          <Button
+            icon={ResetIcon}
+            onClick={handleClear}
+            tooltipProps={{content: t('inputs.select.action.clear')}}
+            mode="bleed"
           />
-        ))}
-      </Layout>
+        )}
+      </Flex>
     </Card>
   )
 })
@@ -178,12 +199,12 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
   const handleChange = useCallback(() => {
     onChange(item)
   }, [item, onChange])
-
+  const checked = value === item
   return (
     <Flex as="label" align="center">
       <Radio
         ref={ref}
-        checked={value === item}
+        checked={checked}
         onChange={handleChange}
         onFocus={onFocus}
         readOnly={readOnly}
@@ -192,7 +213,7 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       />
 
       <Box marginLeft={2}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight={checked ? 'medium' : 'regular'}>
           {item.title}
         </Text>
       </Box>

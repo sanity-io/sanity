@@ -1,9 +1,20 @@
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {
+  type CliCommandContext,
+  type CliConfig,
+  type ReactCompilerConfig,
+  type UserViteConfig,
+} from '@sanity/cli'
 import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
+
+export interface SchemaExtractionOptions {
+  enabled: boolean
+  outputPath?: string
+  workspaceName?: string
+}
 
 export interface DevServerOptions {
   cwd: string
@@ -19,6 +30,20 @@ export interface DevServerOptions {
   vite?: UserViteConfig
   entry?: string
   isApp?: boolean
+
+  /**
+   * Typegen configuration. When enabled, types are generated on startup
+   * and when query files or schema.json change.
+   */
+  typegen?: CliConfig['typegen'] & {enabled?: boolean}
+
+  /**
+   * Telemetry logger for tracking plugin usage
+   */
+  telemetryLogger?: CliCommandContext['telemetry']
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export interface DevServer {
@@ -37,6 +62,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactCompiler,
     entry,
     isApp,
+    typegen,
+    telemetryLogger,
+    schemaExtraction,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -52,6 +80,9 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     cwd,
     reactCompiler,
     isApp,
+    typegen,
+    telemetryLogger,
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config

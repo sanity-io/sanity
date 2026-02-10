@@ -1,7 +1,7 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
@@ -66,6 +66,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
+  const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
@@ -96,7 +97,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
     const validationComplete =
-      !validationStatus.isValidating && validationStatus.revision !== revision
+      !validationStatus.isValidating && validationStatus.revision === revision
 
     if (!publishScheduled || isSyncing || !validationComplete) {
       return
@@ -104,6 +105,13 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     if (!hasValidationErrors) {
       doPublish()
+    } else {
+      // User tried to publish before validation was complete
+      toast.push({
+        title: t('action.publish.validation-issues-toast.title'),
+        description: t('action.publish.validation-issues-toast.description'),
+        status: 'error',
+      })
     }
     setPublishScheduled(false)
   }, [
@@ -115,6 +123,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     revision,
     isValidating,
     validationStatus.isValidating,
+    toast,
+    t,
   ])
 
   useEffect(() => {
@@ -215,9 +225,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       label:
         publishState?.status === 'published'
           ? t('action.publish.published.label')
-          : publishScheduled || publishState?.status === 'publishing'
-            ? t('action.publish.running.label')
-            : t('action.publish.draft.label'),
+          : publishScheduled
+            ? t('action.publish.validation-in-progress.label')
+            : publishState?.status === 'publishing'
+              ? t('action.publish.running.label')
+              : t('action.publish.draft.label'),
       // @todo: Implement loading state, to show a `<Button loading />` state
       // loading: publishScheduled || publishState === 'publishing',
       icon: PublishIcon,

@@ -1,8 +1,8 @@
-import {usePortableTextEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
 import {type ComponentType, useMemo} from 'react'
@@ -10,6 +10,7 @@ import {type ComponentType, useMemo} from 'react'
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
 import {type MarkdownConfig, type PortableTextPluginsProps} from '../../../types/blockProps'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 const markdownConfig: MarkdownConfig = {
   boldDecorator: ({schema}) =>
@@ -31,8 +32,8 @@ const markdownConfig: MarkdownConfig = {
 export const PortableTextEditorPlugins = (props: {
   schemaType: ArraySchemaType<PortableTextBlock>
 }) => {
-  const editor = usePortableTextEditor()
-  const isOneLineEditor = Boolean(editor.schemaTypes.block.options?.oneLine)
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const isOneLineEditor = Boolean(schemaTypes.block.options?.oneLine)
 
   const componentProps = useMemo(
     (): PortableTextPluginsProps => ({
@@ -40,6 +41,7 @@ export const PortableTextEditorPlugins = (props: {
         markdown: {
           config: markdownConfig,
         },
+        pasteLink: {},
         typography: {
           guard: createDecoratorGuard({
             decorators: ({context}) =>
@@ -86,6 +88,7 @@ function DefaultPortableTextEditorPlugins(props: Omit<PortableTextPluginsProps, 
   return (
     <>
       <DefaultMarkdownShortcutsPlugin {...props.plugins.markdown} />
+      <DefaultPasteLinkPlugin {...props.plugins.pasteLink} />
       <DefaultTypographyPlugin {...props.plugins.typography} />
     </>
   )
@@ -116,6 +119,16 @@ function DefaultMarkdownShortcutsPlugin(
       {...restMarkdownConfig}
     />
   )
+}
+
+function DefaultPasteLinkPlugin(props: PortableTextPluginsProps['plugins']['pasteLink']) {
+  const {enabled, ...pasteLinkPluginProps} = props ?? {}
+
+  if (enabled === false) {
+    return null
+  }
+
+  return <PasteLinkPlugin {...pasteLinkPluginProps} />
 }
 
 function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typography']) {

@@ -25,6 +25,7 @@ import {
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
@@ -82,11 +83,12 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
   } = props
   const {Markers} = useFormBuilder().__internal.components
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const {validation, hasError, hasInfo, hasWarning} = useMemberValidation(memberItem?.node)
-  const parentSchemaType = editor.schemaTypes.block
+  const parentSchemaType = schemaTypes.block
   const hasMarkers = markers.length > 0
   const selfSelection = useMemo(
     (): EditorSelection => ({

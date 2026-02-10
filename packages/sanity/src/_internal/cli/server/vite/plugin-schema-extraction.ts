@@ -1,4 +1,4 @@
-import path from 'node:path'
+import path, {isAbsolute} from 'node:path'
 
 import {type CliCommandContext} from '@sanity/cli'
 import {debounce, mean, once} from 'lodash-es'
@@ -124,7 +124,7 @@ export interface SchemaExtractionPluginOptions {
 export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOptions = {}) {
   const {
     workDir: workDirOption,
-    outputPath: outputPathOption,
+    outputPath: outputPathOption = 'schema.json',
     output = console,
     workspaceName,
     additionalPatterns = [],
@@ -180,7 +180,7 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
         // TODO: Remove when we have better control over progress reporting in build
         output.log('')
       }
-      output.log(logSymbols.success, `Extracted schema to ${resolvedOutputPath}`)
+      output.log(logSymbols.success, `Extracted schema to ${outputPathOption}`)
 
       // add stats for the successful extraction run to use later for telemetry
       stats.successfulDurations.push(Date.now() - extractionStartTime)
@@ -219,7 +219,12 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
     configResolved(config) {
       // Resolve workDir from option or Vite's project root
       resolvedWorkDir = workDirOption ?? config.root
-      resolvedOutputPath = outputPathOption ?? path.join(resolvedWorkDir, 'schema.json')
+
+      if (isAbsolute(outputPathOption)) {
+        resolvedOutputPath = outputPathOption
+      } else {
+        resolvedOutputPath = path.join(resolvedWorkDir, outputPathOption)
+      }
     },
 
     configureServer(server) {
@@ -293,7 +298,9 @@ export function sanitySchemaExtractionPlugin(options: SchemaExtractionPluginOpti
       trace?.start()
 
       try {
+        const start = Date.now()
         const schema = await extractSchema()
+        console.error(`✓ Extract schema (${Date.now() - start}ms)`)
 
         trace?.log({
           schemaAllTypesCount: schema.length,

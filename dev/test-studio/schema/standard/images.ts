@@ -1,5 +1,5 @@
 import {ImagesIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 // import petsAssetSource from '../../parts/assetSources/pets'
 // import noopAssetSource from '../../parts/assetSources/noop'
 
@@ -232,5 +232,37 @@ export default defineType({
         },
       },
     },
+    defineField({
+      name: 'imageWithDisabledUpload',
+      title: 'Image with disabled upload',
+      type: 'image',
+      description:
+        'Can only select existing assets from the media library, direct upload is disabled',
+      options: {
+        disableNew: true,
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'arrayOfImagesWithDisabledUpload',
+      title: 'Array of images (upload disabled)',
+      description: 'disableNew is true for all images in the array',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: {
+            disableNew: true,
+            hotspot: true,
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'arrayOfImagesWithEnabledUpload',
+      title: 'Array of images (upload enabled)',
+      type: 'array',
+      of: [{type: 'image'}],
+    }),
   ],
 })

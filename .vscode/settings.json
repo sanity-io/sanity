@@ -1,4 +1,7 @@
 {
   "typescript.experimental.useTsgo": true,
-  "oxc.typeAware": true
+  "oxc.typeAware": true,
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true
 }

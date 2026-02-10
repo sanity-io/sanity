@@ -12,9 +12,9 @@ import {
 } from 'react'
 import {styled} from 'styled-components'
 
+import {useFormBuilder} from '../..'
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
-import {useFormBuilder} from '../..'
 
 const StyledPopover = styled(Popover)`
   & > div {
@@ -29,6 +29,9 @@ const StyledText = styled(Text)`
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
+/**
+ * @internal
+ */
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   props: ComponentProps<typeof Autocomplete> & {
     path: Path

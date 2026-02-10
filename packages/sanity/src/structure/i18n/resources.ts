@@ -75,6 +75,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.published.label': 'Published',
   /** Label for the "Publish" document action while publish is being executed.*/
   'action.publish.running.label': 'Publishing…',
+  /** Label for the "Publish" document action while publish is being executed.*/
+  'action.publish.validation-in-progress.label': 'Validating document…',
+  /** Toast description when trying to publish with validation errors */
+  'action.publish.validation-issues-toast.description':
+    'Please fix the validation errors before publishing',
+  /** Toast title when trying to publish with validation errors */
+  'action.publish.validation-issues-toast.title': 'Validation errors',
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
   'action.publish.validation-issues.tooltip':
     'There are validation errors that need to be fixed before this document can be published',
@@ -452,6 +459,30 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'events.open.draft': 'Open <VersionBadge>draft</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
   'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
+  /** The text for the add reference item in the incoming references input */
+  'incoming-references-input.add-reference-item': 'Add item',
+  /** The aria-label for the incoming references list */
+  'incoming-references-input.list-label': 'Incoming references of type {{type}}',
+  /** The text for the no items in the incoming references input */
+  'incoming-references-input.no-items': 'No items',
+  /** The text for the reference from in the incoming references input */
+  'incoming-references-input.reference-from': 'Reference from {{type}}',
+  /** The text for the schema type not found in the incoming references input */
+  'incoming-references-input.schema-type-not-found': 'Schema type {{type}} not found',
+  /** The text for the type to search in the incoming references input */
+  'incoming-references-input.type-to-search': 'Type to search',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading': 'Loading documents...',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading-cross-dataset': 'Loading cross dataset documents...',
+  /** The text for the no references defined in the incoming references input */
+  'incoming-references-input.types-not-defined':
+    'No incoming references defined for this type, see the docs for more information.',
+
+  /** The text shown if there are no incoming references for a type */
+  'incoming-references-pane.no-references-found': 'No references of this type found.',
+  /** The text shown if there is no schema type found for a document in the incoming references pane */
+  'incoming-references-pane.schema-type-not-found': 'Schema type {{type}} not found',
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 

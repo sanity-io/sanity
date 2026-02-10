@@ -23,19 +23,68 @@ export function maybeSerializeMenuItem(
  * @public */
 export type MenuItemActionType =
   | string
-  | ((params: Record<string, string> | undefined, scope?: any) => void)
+  | ((params: Record<string, unknown> | undefined, scope?: unknown) => void)
 
 /**
- * Menu items parameters
+ * Known menu item parameters that control built-in behavior.
+ * These properties have specific meanings in the structure builder.
  *
  * @public */
-export type MenuItemParamsType = Record<string, string | unknown | undefined>
+export interface KnownMenuItemParams {
+  /**
+   * When true, hides all visual indicators showing this menu item is selected.
+   * This includes both the checkmark icon and the pressed/selected styling.
+   * The item can still be selected - this only affects the visual feedback.
+   * Useful when you want the menu item to perform an action without showing a selection state.
+   */
+  hideSelectionIndicator?: boolean
+
+  /**
+   * The value to associate with this menu item for tracking selected state.
+   * Used with the 'setMenuItemState' action for custom toggle behavior.
+   * When a menu item is clicked, this value is stored against the menu item's `id`.
+   * Defaults to `true` if not specified.
+   */
+  value?: unknown
+
+  /**
+   * Layout key for layout switching menu items.
+   * Used with the 'setLayout' action.
+   */
+  layout?: string
+
+  /**
+   * Sort ordering configuration for sort menu items.
+   * Used with the 'setSortOrder' action.
+   */
+  by?: SortOrderingItem[]
+
+  /**
+   * Extended projection string for sort ordering.
+   * Used internally for sort menu items.
+   */
+  extendedProjection?: string
+}
+
+/**
+ * Menu items parameters.
+ * Includes known parameters that control built-in behavior,
+ * plus allows additional custom parameters.
+ *
+ * @public */
+export type MenuItemParamsType = KnownMenuItemParams & Record<string, unknown>
 
 /**
  * Interface for menu items
  *
  * @public */
 export interface MenuItem {
+  /**
+   * Unique identifier for the menu item.
+   * Used for tracking selected state of custom menu items.
+   * Menu items with the same id will share selected state (like radio buttons).
+   */
+  id?: string
   /**
    * The i18n key and namespace used to populate the localized title. This is
    * the recommend way to set the title if you are localizing your studio.
@@ -87,6 +136,25 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   ) {
     this._context = _context
     this.spec = spec ? spec : {}
+  }
+
+  /**
+   * Set menu item id for tracking selected state.
+   * Menu items with the same id will share selected state (like radio buttons).
+   * Use with action 'setMenuItemState' to enable automatic selected state tracking.
+   * @param id - unique identifier for the menu item
+   * @returns menu item builder based on id provided. See {@link MenuItemBuilder}
+   */
+  id(id: string): MenuItemBuilder {
+    return this.clone({id})
+  }
+
+  /**
+   * Get menu item id
+   * @returns menu item id. See {@link PartialMenuItem}
+   */
+  getId(): PartialMenuItem['id'] {
+    return this.spec.id
   }
 
   /**
@@ -232,6 +300,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
    */
   serialize(options: SerializeOptions = {path: []}): MenuItem {
     const {title, action, intent} = this.spec
+
     if (!title) {
       const hint = typeof action === 'string' ? `action: "${action}"` : undefined
       throw new SerializeError(
@@ -242,6 +311,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
       ).withHelpUrl(HELP_URL.TITLE_REQUIRED)
     }
 
+    // Menu items with an id don't need an action - they toggle automatically
     if (!action && !intent) {
       throw new SerializeError(
         `\`action\` or \`intent\` required for menu item with title ${this.spec.title}`,

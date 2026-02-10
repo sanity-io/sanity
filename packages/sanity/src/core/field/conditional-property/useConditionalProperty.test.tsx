@@ -28,6 +28,7 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
   checkPropertyKey: 'testKey',
   document: dummyDocument,
   value: undefined,
+  path: [],
   parent: {
     parentTest: 'hello',
     siblingProp: true,
@@ -199,6 +200,7 @@ describe('Conditional property resolver', () => {
           document: dummyDocument,
           value: dummyDocument.venue.address,
           parent: dummyDocument.venue,
+          path: [],
           checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
         }),
       {wrapper: TestWrapper},

@@ -426,6 +426,11 @@ const releasesLocaleStrings = {
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
 
+  /** Filter tab label for all documents */
+  'filter-tab.all': 'All',
+  /** Filter tab label for documents with validation errors */
+  'filter-tab.errors': 'Errors',
+
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when creating new version of document in release failed */

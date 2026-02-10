@@ -1,0 +1,142 @@
+name: Generate and upload TypeDoc to Sanity Docs API
+
+on:
+  # Generate and upload TypeDoc on releases
+  push:
+    tags:
+      - "v*"
+  # Validate TypeDoc generation on PRs
+  pull_request:
+    paths:
+      - "packages/sanity/src/**"
+      - "packages/sanity/typedoc.config.json"
+      - "packages/sanity/tsconfig.docs.json"
+      - "packages/sanity/package.json"
+      - ".github/workflows/typedoc.yml"
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload generated TypeDoc file
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+    inputs:
+      upload:
+        description: Upload generated TypeDoc file
+        required: false
+        default: false
+        type: boolean
+      version:
+        description: Version to upload as
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  generate-typedoc:
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+
+      - name: Install project dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build --filter=sanity --output-logs=full --log-order=grouped
+
+      - name: Generate TypeDoc
+        id: generate
+        run: |
+          echo "🔄 Generating TypeDoc documentation..."
+          pnpm docs:typedocs:generate
+
+          # Check if the file was generated successfully
+          if [ -f "packages/sanity/docs/sanity-typedoc-output.json" ]; then
+            FILE_SIZE=$(du -h packages/sanity/docs/sanity-typedoc-output.json | cut -f1)
+            EXPORT_COUNT=$(jq '[.children[]?.children // empty | length] | add // 0' packages/sanity/docs/sanity-typedoc-output.json)
+            echo "✅ TypeDoc generated successfully"
+            echo "📄 File size: $FILE_SIZE"
+            echo "📊 Total exports: $EXPORT_COUNT"
+            echo "file_size=$FILE_SIZE" >> $GITHUB_OUTPUT
+            echo "export_count=$EXPORT_COUNT" >> $GITHUB_OUTPUT
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ TypeDoc file was not generated"
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Upload TypeDoc artifact
+        if: steps.generate.outputs.success == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sanity-typedoc-${{ github.sha }}
+          path: packages/sanity/docs/sanity-typedoc-output.json
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.generate.outputs.success == 'true'
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "typedoc-result"
+          message: |
+            ## 📚 TypeDoc Generation Result
+
+            ✅ **TypeDoc generated successfully!**
+
+            - **File size:** ${{ steps.generate.outputs.file_size }}
+            - **Total exports:** ${{ steps.generate.outputs.export_count }}
+            - **Artifact:** `sanity-typedoc-${{ github.sha }}`
+
+            The TypeDoc JSON file has been generated and validated. All documentation scripts completed successfully.
+
+      - name: Extract version from tag
+        if: (startsWith(github.ref, 'refs/tags/v') || inputs.upload) && steps.generate.outputs.success == 'true'
+        id: version
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then
+            VERSION="${{ inputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "📋 Using provided version: $VERSION"
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Extract version from git tag (e.g., refs/tags/v1.2.3 -> 1.2.3)
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "📋 Extracted version from tag: $VERSION"
+          else
+            # For manual dispatch, get version from package.json
+            VERSION=$(jq -r .version packages/sanity/package.json)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "📋 Using package.json version: $VERSION"
+          fi
+
+      - name: Upload TypeDoc to Sanity Docs API
+        if: (startsWith(github.ref, 'refs/tags/v') || inputs.upload) && steps.generate.outputs.success == 'true'
+        uses: sanity-io/reference-api-typedoc/.github/actions/typedoc-upload@main
+        with:
+          packageName: "sanity"
+          version: ${{ steps.version.outputs.version }}
+          typedocJsonPath: "packages/sanity/docs/sanity-typedoc-output.json"
+        env:
+          SANITY_DOCS_API_TOKEN: ${{ secrets.SANITY_DOCS_API_TOKEN }}

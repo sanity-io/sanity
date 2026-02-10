@@ -75,6 +75,7 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
@@ -91,6 +92,7 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,

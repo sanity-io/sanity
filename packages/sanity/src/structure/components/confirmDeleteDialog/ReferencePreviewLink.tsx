@@ -4,6 +4,7 @@ import {
   type FIXME,
   getPublishedId,
   PreviewCard,
+  type SanityDocument,
   useDocumentPresence,
   useDocumentPreviewStore,
 } from 'sanity'
@@ -16,7 +17,7 @@ const EMPTY_ARRAY: [] = []
 interface ReferencePreviewLinkProps {
   onClick?: () => void
   type: SchemaType & {icon?: any}
-  value: {_id: string; _type: string}
+  value: SanityDocument | {_id: string; _type: string}
 }
 
 export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
@@ -45,7 +46,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type?.icon}
-        layout={'default'}
+        layout="compact"
         presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
         schemaType={type}
         value={value}

@@ -18,12 +18,13 @@ test.describe('auto-updating studio behavior', () => {
     test.slow()
 
     // Set up route interception BEFORE navigating so all requests are caught
-    await page.route('https://sanity-cdn.**/v1/modules/sanity/default/**', (route) => {
+    await page.route('https://sanity-cdn.**/v1/modules/sanity/latest/**', (route) => {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           packageVersion: '4.2.0',
+          latest: '4.2.0',
         }),
       })
     })
@@ -53,5 +54,9 @@ test.describe('auto-updating studio behavior', () => {
 
     // Wait for menu to be visible before checking for the update item
     await expect(page.getByTestId('menu-item-update-studio-now')).toBeVisible({timeout: 10000})
+
+    // Verify the mock version is actually being displayed in the UI
+    // This proves the mock is working and not falling back to real API
+    await expect(page.getByTestId('menu-item-update-studio-now')).toContainText('4.2.0')
   })
 })

@@ -2,8 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents'
+import {type Path} from '../paths'
 import {type CurrentUser} from '../user'
-import {type Rule} from '../validation'
+import {type Rule, type ValidationContext} from '../validation'
 import {type SchemaTypeDefinition} from './definition/schemaDefinition'
 import {
   type BlockDecoratorDefinition,
@@ -136,6 +137,7 @@ export interface ConditionalPropertyCallbackContext {
   // oxlint-disable-next-line no-explicit-any
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
+  path: Path
 }
 
 /** @public */
@@ -207,7 +209,7 @@ export type SchemaValidationValue =
   | undefined
   | Rule
   | SchemaValidationValue[]
-  | ((rule: Rule) => SchemaValidationValue)
+  | ((rule: Rule, context?: ValidationContext) => SchemaValidationValue)
 
 /** @public */
 export type DeprecatedSchemaType<TSchemaType extends BaseSchemaType = BaseSchemaType> =

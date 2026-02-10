@@ -7,6 +7,7 @@ import {
   type ArraySchemaType,
   type BooleanSchemaType,
   type CurrentUser,
+  type FieldGroup,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isKeyedObject,
@@ -59,6 +60,7 @@ import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getId} from './utils/getId'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
+import {getSafeDomId} from './utils/getSafeDomId'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
@@ -845,7 +847,7 @@ export function createPrepareFormState({
       // All fields can't be hidden when review changes is open or if the all fields group is selected
       props.changesOpen || props.fieldGroupState?.value === ALL_FIELDS_GROUP.name
 
-    const isGroupHidden = (group: FormFieldGroup) =>
+    const isGroupHidden = (group: FieldGroup) =>
       shouldRenderAllFieldsGroup && group.name === ALL_FIELDS_GROUP.name
         ? false
         : props.hidden === true ||
@@ -888,6 +890,7 @@ export function createPrepareFormState({
               selected,
               title: group.title,
               i18n: group.i18n,
+              fields: group.fields || EMPTY_ARRAY,
             },
           ]
     })
@@ -1058,7 +1061,7 @@ export function createPrepareFormState({
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
-      id: toString(props.path),
+      id: getSafeDomId(toString(props.path)),
       level: props.level,
       focused: isEqual(props.path, props.focusPath),
       focusPath: trimChildPath(props.path, props.focusPath),
@@ -1112,7 +1115,7 @@ export function createPrepareFormState({
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
         perspective: props.perspective,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
@@ -1163,7 +1166,7 @@ export function createPrepareFormState({
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
@@ -1341,7 +1344,7 @@ export function createPrepareFormState({
         schemaType: props.schemaType,
         value: props.value,
         level: props.level,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         readOnly: props.readOnly === true || props.readOnly?.value,
         focused: isEqual(props.path, props.focusPath),
         path: props.path,

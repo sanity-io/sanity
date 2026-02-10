@@ -384,7 +384,9 @@ export interface DocumentLanguageFilterContext extends ConfigContext {
  * @hidden
  * @beta
  */
-export type DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+export type DocumentLanguageFilterComponent = ComponentType<{
+  schemaType: ObjectSchemaType
+}>
 
 /**
  *
@@ -1233,6 +1235,21 @@ export interface MediaLibraryConfig {
    * If not provided, the Media Library will be automatically detected.
    */
   libraryId?: string
+  /**
+   * Internal configuration for the Media Library.
+   * @internal
+   * @hidden
+   */
+  __internal?: {
+    /**
+     * Override the Media Library frontend host URL.
+     * Used for internal testing against local or custom environments.
+     * @example 'http://localhost:3001'
+     * @internal
+     * @hidden
+     */
+    frontendHost?: string
+  }
 }
 
 /**
@@ -1244,7 +1261,7 @@ export interface BetaFeatures {
   form?: {
     /**
      * Enhanced Object Dialog is a new dialog for editing objects in the studio.
-     * @beta
+     * @deprecated This property will be removed in a future release as we make the enhanced object dialog the default.
      */
     enhancedObjectDialog?: {
       enabled: boolean

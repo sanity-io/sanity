@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-10)
+
+### Features
+
+* add hidden to validation context ([#12050](https://github.com/sanity-io/sanity/issues/12050)) ([26b665b](https://github.com/sanity-io/sanity/commit/26b665b540269d63a446bcfa361db5ddf0d561df)) by RitaDias (rita@sanity.io)
+* **structure:** add `defaultPanes` option to documents ([#12039](https://github.com/sanity-io/sanity/issues/12039)) ([c670cbb](https://github.com/sanity-io/sanity/commit/c670cbb372650768da6bc7324464f3af01e08e15)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* add warning for schema validation when an array contains multiple primitive types that resolve to same json type ([#12095](https://github.com/sanity-io/sanity/issues/12095)) ([31155be](https://github.com/sanity-io/sanity/commit/31155be6dbf86faeb41b77cea27cf9c765961234)) by RitaDias (rita@sanity.io)
+* **deps:** Update portabletext ([#12115](https://github.com/sanity-io/sanity/issues/12115)) ([757aa34](https://github.com/sanity-io/sanity/commit/757aa3418d9c10b187d969b55308a44f1d17a454)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12122](https://github.com/sanity-io/sanity/issues/12122)) ([4a36591](https://github.com/sanity-io/sanity/commit/4a36591b187d554148ea811abcd141f150640808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** stale publish actions ([#12132](https://github.com/sanity-io/sanity/issues/12132)) ([b3b2818](https://github.com/sanity-io/sanity/commit/b3b28182100f0cd32787425fc07618460fbb5bfb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Reverts
+
+* rollback v5.9.0 version bump ([#12139](https://github.com/sanity-io/sanity/issues/12139)) ([4195d26](https://github.com/sanity-io/sanity/commit/4195d269f400347fb16765400842f765eb1625ec)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
+
+### Bug Fixes
+
+* **sanity:** prevent input element ids from adding unsafe global variables ([#12085](https://github.com/sanity-io/sanity/issues/12085)) ([7a4041c](https://github.com/sanity-io/sanity/commit/7a4041cd60808623ce13111699997ec9c0351e58)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
+
+### Features
+
+* add selection state (indicators) to all menu items (actions etc.) ([#12003](https://github.com/sanity-io/sanity/issues/12003)) ([81ede79](https://github.com/sanity-io/sanity/commit/81ede798df314f160156da46e514f2e4e60e8c32)) by RitaDias (rita@sanity.io)
+* built-in PTE `pasteLink` plugin enabled by default ([72a53b7](https://github.com/sanity-io/sanity/commit/72a53b72be1b92feeb733adbe366d7c6d9285334)) by Christian Hamburger Grøngaard (christian.groengaard@sanity.io)
+* **core:** add media library internal config ([#12009](https://github.com/sanity-io/sanity/issues/12009)) ([394e246](https://github.com/sanity-io/sanity/commit/394e2468154625a84914e66bf453a209f607fcd4)) by James Warner (jmswrnr@users.noreply.github.com)
+* **core:** adds `path` to `ConditionalPropertyCallbackContext` ([#11947](https://github.com/sanity-io/sanity/issues/11947)) ([f16a4aa](https://github.com/sanity-io/sanity/commit/f16a4aa9b83365119fc881a4e00eb16e5b2c9f66)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** display validation icon for groups ([#11995](https://github.com/sanity-io/sanity/issues/11995)) ([7916f6e](https://github.com/sanity-io/sanity/commit/7916f6efbee5c4107b1c0d02a9281037108779e3)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* display incoming references  ([#10761](https://github.com/sanity-io/sanity/issues/10761)) ([e5a945b](https://github.com/sanity-io/sanity/commit/e5a945bab4444077ef6e71a4b98b59f7250e6a02)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **form:** add disableNew option for image fields ([#12004](https://github.com/sanity-io/sanity/issues/12004)) ([0e650d3](https://github.com/sanity-io/sanity/commit/0e650d31b55d4a61bb02511626667b28f7497e47)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* **deps:** Update portabletext ([#11994](https://github.com/sanity-io/sanity/issues/11994)) ([6aaca20](https://github.com/sanity-io/sanity/commit/6aaca20134277be6d497ce99d41b428c23a655bf)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12032](https://github.com/sanity-io/sanity/issues/12032)) ([0a871ec](https://github.com/sanity-io/sanity/commit/0a871eccac41eecbd4e09a6e099e89622f052cab)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
+## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
+
+### Bug Fixes
+
+* **core:** support copy pasting anonymous objects ([#11961](https://github.com/sanity-io/sanity/issues/11961)) ([9d76742](https://github.com/sanity-io/sanity/commit/9d76742237e55595e6f40b00f160d79589ab07ae)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#11955](https://github.com/sanity-io/sanity/issues/11955)) ([70d4df1](https://github.com/sanity-io/sanity/commit/70d4df195e7f2e719e99147c6f9fef9697465881)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11960](https://github.com/sanity-io/sanity/issues/11960)) ([a85174d](https://github.com/sanity-io/sanity/commit/a85174dcdcd3c275fd15e956ad1ebe9f0c236675)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11973](https://github.com/sanity-io/sanity/issues/11973)) ([96a4200](https://github.com/sanity-io/sanity/commit/96a420065fc18d70e4b17a5b0eb150007554cbce)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **structure:** validation inspector displays path titles for anonymous objects ([#11968](https://github.com/sanity-io/sanity/issues/11968)) ([1af0e35](https://github.com/sanity-io/sanity/commit/1af0e35075376ec57432ce470a10e3a22b6622aa)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+## [5.6.0](https://github.com/sanity-io/sanity/compare/v5.5.0...v5.6.0) (2026-01-22)
+
+### Features
+
+* **core:** add `renderMembers` function to objects and fieldsets ([#11205](https://github.com/sanity-io/sanity/issues/11205)) ([452d356](https://github.com/sanity-io/sanity/commit/452d3560c978ac8566848bbc2ce09a5c2cb0e383)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **schema:** export DEFAULT_ANNOTATIONS and DEFAULT_DECORATORS ([#11916](https://github.com/sanity-io/sanity/issues/11916)) ([55cdb56](https://github.com/sanity-io/sanity/commit/55cdb56d5f55a6c21a38bd44ec45e69637bbffc6)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+
+### Bug Fixes
+
+* allow custom object types as portable text annotations ([#11893](https://github.com/sanity-io/sanity/issues/11893)) ([968005f](https://github.com/sanity-io/sanity/commit/968005f6f1fad512269c3b18787a9e0f25d76ea7)) by RitaDias (rita@sanity.io)
+* **core:** allows setting timezone to dates arrays ([#11866](https://github.com/sanity-io/sanity/issues/11866)) ([85bd87b](https://github.com/sanity-io/sanity/commit/85bd87b36f68b125a5fd6cbe1181f257318a4af8)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** deprecated label and validation icons overlap ([#11887](https://github.com/sanity-io/sanity/issues/11887)) ([b172d83](https://github.com/sanity-io/sanity/commit/b172d832c7dc01f2fa94a2dd60696ff0b98a9abb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **core:** show timezone button when `allowTimeZoneSwitch` is true ([#11861](https://github.com/sanity-io/sanity/issues/11861)) ([25ee194](https://github.com/sanity-io/sanity/commit/25ee19461bb5c43ce9970ac5d34cd197ceb7e259)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
+* **deps:** Update portabletext ([#11868](https://github.com/sanity-io/sanity/issues/11868)) ([c95b22a](https://github.com/sanity-io/sanity/commit/c95b22a25b97b8e28af8caa378113873dae92042)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#11912](https://github.com/sanity-io/sanity/issues/11912)) ([9c14402](https://github.com/sanity-io/sanity/commit/9c14402a54b45d51cfe016654a3f67d2adb9440a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.5.0](https://github.com/sanity-io/sanity/compare/v5.4.0...v5.5.0) (2026-01-19)
 
 **Note:** Version bump only for package sanity-test-studio

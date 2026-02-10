@@ -17,6 +17,7 @@ export interface EnhancedObjectDialogContextValue {
 
 /**
  * @internal
+ * @deprecated This hook is no longer used and will be removed in a future release as we make the enhanced object dialog the default.
  */
 export function useEnhancedObjectDialog(): EnhancedObjectDialogContextValue {
   return useContext(EnhancedObjectDialogContext)

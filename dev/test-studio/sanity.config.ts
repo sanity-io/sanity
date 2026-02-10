@@ -7,14 +7,14 @@ import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {DECISION_PARAMETERS_SCHEMA, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
-import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
-import {structureTool} from 'sanity/structure'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {markdownSchema} from 'sanity-plugin-markdown'
 import {media} from 'sanity-plugin-media'
 import {muxInput} from 'sanity-plugin-mux-input'
+import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
+import {structureTool} from 'sanity/structure'
 
 import {imageAssetSource} from './assetSources'
 import {
@@ -426,6 +426,24 @@ export default defineConfig([
     },
     mediaLibrary: {
       enabled: true,
+    },
+  },
+  {
+    name: 'media-library-playground-localdev',
+    title: 'Media Library Playground (localdev-staging)',
+    projectId: '5iedwjzw',
+    dataset: 'production',
+    ...envConfig.staging,
+    plugins: [sharedSettings({projectId: '5iedwjzw'})],
+    basePath: '/media-library-playground-localdev',
+    auth: {
+      loginMethod: 'token',
+    },
+    mediaLibrary: {
+      enabled: true,
+      __internal: {
+        frontendHost: 'http://localhost:3002',
+      },
     },
   },
   {

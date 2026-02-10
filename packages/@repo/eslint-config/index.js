@@ -3,7 +3,6 @@ import {dirname, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import js from '@eslint/js'
-import {defineConfig, globalIgnores} from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 import sanityImport from 'eslint-config-sanity/import.js'
 import sanityRecommended from 'eslint-config-sanity/index.js'
@@ -19,6 +18,7 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsdocPlugin from 'eslint-plugin-tsdoc'
 import unicorn from 'eslint-plugin-unicorn'
 import unusedImports from 'eslint-plugin-unused-imports'
+import {defineConfig, globalIgnores} from 'eslint/config'
 import globals from 'globals'
 import tsLint from 'typescript-eslint'
 
@@ -119,9 +119,9 @@ export default [
       'import/first': 'error',
       'import/newline-after-import': 'error',
       'import/consistent-type-specifier-style': ['error', 'prefer-inline'],
-      'import/order': 'off', // handled by simple-import-sort
-      'sort-imports': 'off', // handled by simple-import-sort
-      'simple-import-sort/imports': 'error',
+      'import/order': 'off', // handled by oxfmt
+      'sort-imports': 'off', // handled by oxfmt
+      'simple-import-sort/imports': 'off', // handled by oxfmt
       'simple-import-sort/exports': 'error',
       'no-undef': 'off',
       'no-dupe-class-members': 'off', // doesn't work with TS overrides

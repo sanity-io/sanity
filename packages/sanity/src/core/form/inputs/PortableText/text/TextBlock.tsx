@@ -25,6 +25,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -102,6 +103,7 @@ export function TextBlock(props: TextBlockProps) {
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
   const hoveredChange = useHoveredChange()
 
@@ -199,7 +201,7 @@ export function TextBlock(props: TextBlockProps) {
   }, [value])
 
   const isOpen = Boolean(memberItem?.member.open)
-  const parentSchemaType = editor.schemaTypes.portableText
+  const parentSchemaType = schemaTypes.portableText
   const referenceElement = divElement
 
   const componentProps: BlockProps = useMemo(

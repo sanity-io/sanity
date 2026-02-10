@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+
 import {CharacterCount} from '../../components/characterCount'
 
 export const platformConfig = {

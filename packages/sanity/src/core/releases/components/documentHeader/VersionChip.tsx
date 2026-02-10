@@ -268,6 +268,7 @@ export const VersionChip = memo(function VersionChip(props: {
           documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
           fromPerspective={text}
           documentType={documentType}
+          isGoingToUnpublish={isGoingToUnpublish}
         />
       )}
 

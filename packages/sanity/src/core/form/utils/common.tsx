@@ -14,7 +14,7 @@ const warningMap = new Map<string, boolean>()
 export function isTrueIsh(
   checkProperty: ConditionalProperty,
   checkPropertyName: string,
-  {document, parent, value, currentUser}: ConditionalPropertyCallbackContext,
+  {document, parent, value, currentUser, path}: ConditionalPropertyCallbackContext,
 ) {
   let result = false
 
@@ -28,6 +28,7 @@ export function isTrueIsh(
       parent,
       value,
       currentUser,
+      path,
     })
   } catch (err) {
     console.error(

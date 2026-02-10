@@ -1,28 +1,29 @@
 import path from 'node:path'
 
+import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {runTypegenGenerate, RunTypegenOptions, TypesGeneratedTrace} from '@sanity/codegen'
+import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
-import semver from 'semver'
-import {noopLogger} from '@sanity/telemetry'
 import {rimraf} from 'rimraf'
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import semver from 'semver'
 
 import {buildStaticFiles} from '../../server'
-import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
-import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
-import {getTimer} from '../../util/timing'
-import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
-import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
-import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
-import {upgradePackages} from '../../util/packageManager/upgradePackages'
-import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
-import {isInteractive} from '../../util/isInteractive'
-import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
-import {getAppId} from '../../util/getAppId'
 import {baseUrl} from '../../util/baseUrl'
+import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
+import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
+import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
+import {isInteractive} from '../../util/isInteractive'
+import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
+import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
+import {upgradePackages} from '../../util/packageManager/upgradePackages'
+import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {getTimer} from '../../util/timing'
 import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
+import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -157,6 +158,10 @@ export default async function buildSanityStudio(
     }
   }
 
+  if (cliConfig?.schemaExtraction?.enabled) {
+    output.print(`${logSymbols.info} Building with schema extraction enabled`)
+  }
+
   const envVarKeys = getSanityEnvVars()
   if (envVarKeys.length > 0) {
     output.print(
@@ -238,6 +243,9 @@ export default async function buildSanityStudio(
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      typegen: cliConfig?.typegen,
+      telemetryLogger: telemetry,
+      schemaExtraction: cliConfig?.schemaExtraction,
     })
 
     trace.log({
@@ -259,6 +267,36 @@ export default async function buildSanityStudio(
     spin.fail()
     trace.error(err)
     throw err
+  }
+
+  if (cliConfig?.typegen?.enabled) {
+    const typegenTrace = telemetry.trace(TypesGeneratedTrace)
+
+    try {
+      typegenTrace.start()
+      const typegenConfig = cliConfig?.typegen
+      const typegenOptions: RunTypegenOptions = {
+        workDir,
+        config: {
+          formatGeneratedCode: typegenConfig?.formatGeneratedCode ?? false,
+          generates: typegenConfig?.generates ?? 'sanity.types.ts',
+          overloadClientMethods: typegenConfig?.overloadClientMethods ?? false,
+          path: typegenConfig?.path ?? './src/**/*.{ts,tsx,js,jsx}',
+          schema: typegenConfig?.schema ?? 'schema.json',
+        },
+      }
+
+      const {code, ...stats} = await runTypegenGenerate(typegenOptions)
+      typegenTrace.log({
+        ...stats,
+        configMethod: 'cli',
+        configOverloadClientMethods: typegenConfig.overloadClientMethods ?? false,
+      })
+      typegenTrace.complete()
+    } catch (err) {
+      typegenTrace.error(err)
+      throw err
+    }
   }
 
   return {didCompile: true}

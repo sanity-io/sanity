@@ -115,9 +115,12 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
             })
           }),
         )
+      } else {
+        // No ancestor fullscreen path found, close all dialogs
+        closeAll()
       }
     },
-    [onPathOpen, findAncestorFullscreenPath],
+    [onPathOpen, findAncestorFullscreenPath, closeAll],
   )
 
   const close = useCallback(() => {

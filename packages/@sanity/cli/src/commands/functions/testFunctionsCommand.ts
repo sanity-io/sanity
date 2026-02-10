@@ -78,7 +78,7 @@ const testFunctionsCommand: CliCommandDefinition<FunctionsTestFlags> = {
     const log = logger.Logger(output.print)
 
     // Prefer projectId in blueprint
-    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint(log)
+    const {projectId: bpProjectId} = await blueprint.readLocalBlueprint(log, {resources: false})
     if (projectId && projectId !== bpProjectId) {
       output.print(
         chalk.yellow('WARNING'),

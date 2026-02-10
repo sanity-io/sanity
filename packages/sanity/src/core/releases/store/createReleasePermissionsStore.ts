@@ -52,10 +52,13 @@ export function createReleasePermissionsStore(
 
     if (permissions[action.name] === undefined) {
       try {
-        await action(...args, {
-          dryRun: true,
-          skipCrossDatasetReferenceValidation: true,
-        })
+        await action(
+          ...args,
+          {
+            dryRun: true,
+            skipCrossDatasetReferenceValidation: true,
+          },
+        )
         permissions = {...permissions, [action.name]: true}
 
         return true

@@ -26,8 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: main
           fetch-depth: 0
+          fetch-tags: true
+
+      - name: Ensure main exists locally
+        run: git checkout -B main origin/main && git switch -
 
       - uses: ./.github/actions/setup
 
@@ -45,6 +48,12 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+      - name: Get base version
+        # store the current version and use as base version when generating changelog documents
+        id: get-base-version
+        run: |
+          echo "base-version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
       - name: Update version
         run: |
           npx lerna version \
@@ -58,7 +67,7 @@ jobs:
       - name: Fix lerna.json EOF formatting
         # lerna version formats lerna.json removing EOF line
         # this is needed to pass linter
-        run: npx prettier --write lerna.json
+        run: pnpm oxfmt lerna.json
 
       - name: Sync workspace lockfile
         run: pnpm install --lockfile-only
@@ -74,17 +83,35 @@ jobs:
         id: release-as
         run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
 
-      - name: Fetch latest tags
-        run: git fetch --tags --force
-
-      - name: Generate release notes
+      - name: Prepare content release with release note document
         id: release-notes
         run: |
           {
             echo "notes<<EOF"
-            pnpm --silent release:notes
+            pnpm --silent release-notes generate-changelog \
+              --baseVersion=${{ steps.get-base-version.outputs.base-version }} \
+              --tentativeVersion="${{steps.release-as.outputs.version}}" \
+              --outputFormat=pr-description
             echo "EOF"
           } >> $GITHUB_OUTPUT
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Draft release notes for upcoming release
+        id: draft-release-notes
+        run: pnpm --silent release-notes draft-release-notes --baseVersion=${{ steps.get-base-version.outputs.base-version }}
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_CLAUDE_API_KEY: ${{ secrets.RELEASE_NOTES_CLAUDE_API_KEY }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
       - name: Create or update PR
         uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
         id: create-pull-request
@@ -92,17 +119,22 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
           title: "${{steps.version-commit.outputs.message}}"
           body: |
-            🤖 I have created a release **squib** **squob**
-
-            Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
-
-            ## Release Notes Template
-
             ${{steps.release-notes.outputs.notes}}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-main
           labels: "release:latest"
           sign-commits: true
           base: main
-          team-reviewers: "@sanity-io/studio"
           draft: true
+
+      - name: Post release notes reminder to the associated PR
+        run: |
+          pnpm --silent release-notes comment-pr-after-merge \
+          --baseVersion=${{ steps.get-base-version.outputs.base-version }} \
+          --commit=${{ github.sha }}
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

@@ -10,6 +10,7 @@ import {
   type ReactNode,
   type RefAttributes,
   useCallback,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -73,6 +74,14 @@ export function uploadTarget<Props>(
     const {t} = useTranslation()
 
     const formBuilder = useFormBuilder()
+
+    // Check if all image/file types in the types array have disableNew: true
+    // This centralizes the disableUpload logic so parent components don't need to compute it
+    const disableUpload = useMemo(() => {
+      const assetTypes = types.filter((type) => _isType(type, 'image') || _isType(type, 'file'))
+      // Only disable upload if there are asset types AND all of them have disableNew
+      return assetTypes.length > 0 && assetTypes.every((type) => type.options?.disableNew === true)
+    }, [types])
 
     const [filesToUpload, setFilesToUpload] = useState<File[]>([])
     const [showAssetSourceDestinationPicker, setShowAssetSourceDestinationPicker] = useState(false)
@@ -138,7 +147,7 @@ export function uploadTarget<Props>(
     // This is called when files are dropped or pasted onto the upload target. It may show the asset source destination picker if needed.
     const handleFiles = useCallback(
       (files: File[]) => {
-        if (isReadOnly || types.length === 0) {
+        if (isReadOnly || disableUpload || types.length === 0) {
           return
         }
         const filesAndAssetSources = getFilesAndAssetSources(
@@ -149,7 +158,11 @@ export function uploadTarget<Props>(
         )
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         if (ready.length === 0) {
-          alertRejectedFiles(filesAndAssetSources)
+          // Only show warning if there were actual files that couldn't be uploaded
+          // (avoid showing warning when pasting plain text which results in empty files array)
+          if (filesAndAssetSources.length > 0) {
+            alertRejectedFiles(filesAndAssetSources)
+          }
           return
         }
         const allAssetSources = types.flatMap(
@@ -165,14 +178,14 @@ export function uploadTarget<Props>(
         setFilesToUpload([])
         handleUploadFiles(ready.map((entry) => entry.file))
       },
-      [alertRejectedFiles, isReadOnly, types, formBuilder, handleUploadFiles],
+      [alertRejectedFiles, disableUpload, isReadOnly, types, formBuilder, handleUploadFiles],
     )
 
     const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
 
     const handleFilesOver = useCallback(
       (files: FileInfo[]) => {
-        if (isReadOnly) {
+        if (isReadOnly || disableUpload) {
           return
         }
         setHoveringFiles(files)
@@ -193,11 +206,11 @@ export function uploadTarget<Props>(
           onSetHoveringFiles(files)
         }
       },
-      [formBuilder, isReadOnly, onSetHoveringFiles, types],
+      [disableUpload, formBuilder, isReadOnly, onSetHoveringFiles, types],
     )
 
     const handleFilesOut = useCallback(() => {
-      if (isReadOnly) {
+      if (isReadOnly || disableUpload) {
         return
       }
       setHoveringFiles([])
@@ -206,7 +219,7 @@ export function uploadTarget<Props>(
         onSetHoveringFiles([])
       }
       setFilesToUpload([])
-    }, [isReadOnly, onSetHoveringFiles])
+    }, [disableUpload, isReadOnly, onSetHoveringFiles])
 
     const allAssetSourcesWithUpload = types.flatMap(
       (type) => resolveUploadAssetSources?.(type, formBuilder) ?? [],
