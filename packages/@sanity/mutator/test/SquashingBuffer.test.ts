@@ -355,6 +355,24 @@ test('setIfMissing for genuinely new path is preserved in output', () => {
   expect((final as any).newField.nested).toBe(true)
 })
 
+test('setIfMissing for a different document ID falls through to generic handler', () => {
+  const initial = {_id: '1', _type: 'test', a: 'existing value'}
+  const sb = new SquashingBuffer(initial)
+
+  // Add an optimizable set operation first
+  patch(sb, {id: '1', set: {a: 'updated value'}})
+  expect(Object.keys(sb.setOperations)).toHaveLength(1) // in optimization buffer
+
+  // setIfMissing with a different document ID should NOT be handled by the
+  // setIfMissing optimization — it should fall through to the generic handler,
+  // which flushes the optimization buffer
+  patch(sb, {id: 'different-doc', setIfMissing: {a: 'default'}})
+
+  // The generic handler calls stashStagedOperations(), flushing the buffer
+  expect(Object.keys(sb.setOperations)).toHaveLength(0) // flushed
+  expect(sb.out.length).toBeGreaterThan(0) // stashed to out
+})
+
 test('mixed setIfMissing: some redundant, some new — keeps only new', () => {
   const initial = {_id: '1', _type: 'test', existing: 'yes'}
   const sb = new SquashingBuffer(initial)

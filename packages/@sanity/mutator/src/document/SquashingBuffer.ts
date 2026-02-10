@@ -97,13 +97,22 @@ export class SquashingBuffer {
   }
 
   addOperation(op: Mut): void {
-    // Is this a set patch, and only a set patch, and does it apply to the document at hand?
+    // Is this a patch that only contains a `set` operation (plus `id`)?
+    // We check for the specific keys we can optimize rather than relying on key count,
+    // so that unexpected additional keys (e.g. `ifRevisionID`) safely fall through
+    // to the generic handler instead of being silently dropped.
     if (
       op.patch &&
       op.patch.set &&
       'id' in op.patch &&
       op.patch.id === this.PRESTAGE?._id &&
-      Object.keys(op.patch).length === 2 // `id` + `set`
+      !op.patch.setIfMissing &&
+      !op.patch.diffMatchPatch &&
+      !op.patch.unset &&
+      !op.patch.inc &&
+      !op.patch.dec &&
+      !op.patch.insert &&
+      !op.patch.merge
     ) {
       const setPatch = op.patch.set
       const unoptimizable: Record<string, unknown> = {}
@@ -141,24 +150,45 @@ export class SquashingBuffer {
       return
     }
 
-    // Is this a setIfMissing patch for our document?
-    // setIfMissing is idempotent — if the target path already exists in the document,
-    // the operation is a no-op and can be safely dropped. This avoids flushing the
-    // optimization buffer, which would prevent subsequent set operations from being squashed.
+    // Is this a patch that only contains a `setIfMissing` operation (plus `id`)?
+    //
+    // setIfMissing sets a value at a path only if that path doesn't already exist.
+    // When editing an existing document, most setIfMissing operations target paths
+    // that already have values — making them no-ops that the server would discard.
+    //
+    // Without this optimization, every setIfMissing falls through to the generic
+    // handler which calls stashStagedOperations(). That flushes the optimization
+    // buffer, preventing subsequent `set` operations from being squashed into
+    // efficient diffMatchPatch operations. On deeply nested schemas, this means
+    // each keystroke generates 8+ redundant actions instead of 1.
+    //
+    // The optimization:
+    // - If ALL paths already exist in PRESTAGE → drop the entire op (it's a no-op)
+    // - If some paths are new → stage it without flushing, so squashing continues
+    //
+    // We check for specific known keys rather than key count, so that patches with
+    // unexpected additional keys safely fall through to the generic handler.
     if (
       op.patch &&
       op.patch.setIfMissing &&
       'id' in op.patch &&
       op.patch.id === this.PRESTAGE?._id &&
-      Object.keys(op.patch).length === 2 // `id` + `setIfMissing`
+      !op.patch.set &&
+      !op.patch.diffMatchPatch &&
+      !op.patch.unset &&
+      !op.patch.inc &&
+      !op.patch.dec &&
+      !op.patch.insert &&
+      !op.patch.merge
     ) {
       const setIfMissingPatch = op.patch.setIfMissing
       let allRedundant = true
 
       for (const path of Object.keys(setIfMissingPatch)) {
         if (setIfMissingPatch.hasOwnProperty(path)) {
-          // Check if the path already has a value in the current document state.
-          // If it does, setIfMissing is a no-op and can be safely dropped.
+          // extractWithPath resolves the path against the current document state.
+          // If it finds a non-nullish value, the path exists and setIfMissing would
+          // be a no-op on the server — safe to drop.
           const matches = extractWithPath(path, this.PRESTAGE)
           if (matches.length === 0 || matches[0].value === undefined || matches[0].value === null) {
             // Path doesn't exist or is nullish — this setIfMissing is needed
@@ -169,7 +199,7 @@ export class SquashingBuffer {
       }
 
       if (allRedundant) {
-        // All paths already exist in PRESTAGE — the entire setIfMissing is redundant.
+        // All paths already exist — the entire setIfMissing would be a no-op.
         // Drop it without flushing the optimization buffer.
         debug('Dropping redundant setIfMissing (all paths already exist in document)')
         return
@@ -178,7 +208,7 @@ export class SquashingBuffer {
       // Some paths are genuinely new — we must keep this setIfMissing.
       // Stage it WITHOUT calling stashStagedOperations(), so that subsequent
       // set operations can still be optimized by the squasher.
-      // Update PRESTAGE so future path checks are accurate.
+      // Update PRESTAGE so future path checks reflect the new paths.
       this.staged.push(op)
       this.PRESTAGE = new Mutation({mutations: [op]}).apply(this.PRESTAGE) as Doc
       return
