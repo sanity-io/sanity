@@ -234,6 +234,9 @@ export function BaseFileInput(props: BaseFileInputProps) {
                     handleAssetLimitUpsellDialog('field_action')
                   }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
+                  // Reset state to allow selecting again
+                  setSelectedAssetSource(null)
+                  setIsUploading(false)
                   break
                 }
                 default:
