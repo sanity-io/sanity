@@ -3,26 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-10)
-
-### Features
-
-* add hidden to validation context ([#12050](https://github.com/sanity-io/sanity/issues/12050)) ([26b665b](https://github.com/sanity-io/sanity/commit/26b665b540269d63a446bcfa361db5ddf0d561df)) by RitaDias (rita@sanity.io)
-* **cli:** add schema extraction to dev and build commands ([#11761](https://github.com/sanity-io/sanity/issues/11761)) ([c3a4cb1](https://github.com/sanity-io/sanity/commit/c3a4cb19e11147ba91a832420fed13504e8b58a4)) by Kristoffer Brabrand (kristoffer@brabrand.no)
-* **structure:** add `defaultPanes` option to documents ([#12039](https://github.com/sanity-io/sanity/issues/12039)) ([c670cbb](https://github.com/sanity-io/sanity/commit/c670cbb372650768da6bc7324464f3af01e08e15)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
-
-### Bug Fixes
-
-* **deps:** update dependency @sanity/import to ^4.1.1 ([#12130](https://github.com/sanity-io/sanity/issues/12130)) ([6843d2b](https://github.com/sanity-io/sanity/commit/6843d2b2d04b09ae27604912692ef3f96f15b5f4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
-* **deps:** Update portabletext ([#12115](https://github.com/sanity-io/sanity/issues/12115)) ([757aa34](https://github.com/sanity-io/sanity/commit/757aa3418d9c10b187d969b55308a44f1d17a454)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
-* **deps:** Update portabletext ([#12122](https://github.com/sanity-io/sanity/issues/12122)) ([4a36591](https://github.com/sanity-io/sanity/commit/4a36591b187d554148ea811abcd141f150640808)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
-* **presentation:** crash when switching to a perspective stack ([#12102](https://github.com/sanity-io/sanity/issues/12102)) ([77f86f0](https://github.com/sanity-io/sanity/commit/77f86f0dc5eb8588482efea5466574128576afa7)) by Cody Olsen (81981+stipsan@users.noreply.github.com)
-* **releases:** hide publish option for already-published scheduled drafts ([#12113](https://github.com/sanity-io/sanity/issues/12113)) ([d3374ad](https://github.com/sanity-io/sanity/commit/d3374ad116fa176c51addf91183f291226e9ad8e)) by Eoin Falconer (eoin.falc@gmail.com)
-* resolving re-render loop when collapsing comments ([#12135](https://github.com/sanity-io/sanity/issues/12135)) ([81a5cf8](https://github.com/sanity-io/sanity/commit/81a5cf87fbf55ef26ae12bc6d8f46b66fac43816)) by Jordan Lawrence (jordanl17@me.com)
-* **structure:** stale publish actions ([#12132](https://github.com/sanity-io/sanity/issues/12132)) ([b3b2818](https://github.com/sanity-io/sanity/commit/b3b28182100f0cd32787425fc07618460fbb5bfb)) by Pedro Bonamin (46196328+pedrobonamin@users.noreply.github.com)
-* **studio:** show toast when clipboard access is denied on copy ([#12107](https://github.com/sanity-io/sanity/issues/12107)) ([3aff990](https://github.com/sanity-io/sanity/commit/3aff99079fb57fdb9f8f7aed77a3f185106fe5d0)) by Eoin Falconer (eoin.falc@gmail.com)
-* timezone cannot be changed when scheduling release of draft ([#12124](https://github.com/sanity-io/sanity/issues/12124)) ([e0033fe](https://github.com/sanity-io/sanity/commit/e0033fe32bc6d41566f179916d0e89a2d9076f54)) by Jordan Lawrence (jordanl17@me.com)
-
 ## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
 
 ### Bug Fixes
