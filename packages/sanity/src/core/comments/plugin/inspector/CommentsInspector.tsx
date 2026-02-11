@@ -343,7 +343,7 @@ function CommentsInspectorInner(
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
-      setSelectedPath({
+      handlePathSelect({
         fieldPath: commentToScrollTo.target.path?.field || null,
         origin: 'url',
         threadId: commentToScrollTo.threadId || null,
@@ -360,10 +360,10 @@ function CommentsInspectorInner(
     }
   }, [
     getComment,
+    handlePathSelect,
     loading,
     onClearSelectedComment,
     scrollToComment,
-    setSelectedPath,
     setStatus,
     telemetry,
   ])
