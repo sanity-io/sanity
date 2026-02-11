@@ -5,10 +5,11 @@ export const INCLUDE_FIELDS_QUERY = ['_id', '_rev', '_type']
 export const INCLUDE_FIELDS = [...INCLUDE_FIELDS_QUERY, '_key']
 
 /**
- * How long to wait after the last subscriber has unsubscribed before resetting the observable and disconnecting the listener
- * We want to keep the listener alive for a short while after the last subscriber has unsubscribed to avoid unnecessary reconnects
+ * How long to wait after the last subscriber has unsubscribed before resetting the observable and disconnecting the listener.
+ * We want to keep the listener alive for a short while after the last subscriber has unsubscribed to avoid unnecessary reconnects.
+ * Reduced from 10s to 5s to limit concurrent SSE connections during navigation-heavy sessions.
  */
-export const LISTENER_RESET_DELAY = 10_000
+export const LISTENER_RESET_DELAY = 5_000
 
 export const AVAILABILITY_READABLE = {
   available: true,
