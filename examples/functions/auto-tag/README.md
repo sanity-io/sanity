@@ -139,6 +139,89 @@ npx sanity functions dev
 - **Test without AI calls** first by setting `noWrite: true` in the function
 - **Create test content** - If you don't have posts without tags, create some test documents first
 
+## Deploying your function
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project
+- Node.js v22.x (matches production runtime)
+
+### Deploy to production
+
+1. **Verify your blueprint configuration**
+
+   Make sure your `sanity.blueprint.ts` file is properly configured with the auto-tag function:
+
+   ```ts
+   // sanity.blueprint.ts
+   import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: 'sanity.function.document',
+         name: 'auto-tag',
+         src: './functions/auto-tag',
+         memory: 2,
+         timeout: 30,
+         event: {
+           on: ['create', 'update'],
+           filter:
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
+           projection: '{_id}',
+         },
+       }),
+     ],
+   })
+   ```
+
+2. **Deploy your blueprint**
+
+   From your project root, run:
+
+   ```bash
+   npx sanity blueprints deploy
+   ```
+
+   This command will:
+   - Package your function code
+   - Upload it to Sanity's infrastructure
+   - Configure the event triggers for post publications
+   - Make your auto-tagging function live in production
+
+3. **Verify deployment**
+
+   After deployment, you can verify your function is active by:
+   - Checking the Sanity Manage console under "API > Functions"
+   - Publishing a new post without tags and confirming tags are generated
+   - Monitoring function logs in the CLI
+
+### Deployment best practices
+
+- **Test thoroughly first** - Always test your function locally before deploying
+- **Monitor AI usage** - Agent Actions have usage limits and costs. Visit Settings in your Manage console to learn more
+- **Avoid recursion** - The filter `!defined(tags)` prevents the function from re-triggering
+- **Use specific filters** - The current filter only targets posts without tags to avoid unnecessary executions
+
+### Troubleshooting deployment
+
+**Error: "Deploy Studio permission required"**
+
+- Cause: Your account doesn't have deployment permissions for this project
+- Solution: Ask a project admin to grant you Deploy Studio permissions
+
+**Function not generating tags after deployment**
+
+- Cause: Posts may already have tags, or the schema field may not be properly configured
+- Solution: Test with posts that don't have existing tags and verify the `tags` field exists in your schema
+
+For more details, see the [official function deployment documentation](https://www.sanity.io/docs/compute-and-ai/function-quickstart).
+
 ## Requirements
 
 - A Sanity project with Functions enabled

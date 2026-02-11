@@ -7,7 +7,9 @@
     "@sanity/functions": "^1.0.3"
   },
   "blueprintResourceItem": {
+    "type": "sanity.function.document",
     "name": "first-published",
+    "src": "./functions/first-published",
     "memory": 1,
     "timeout": 10,
     "event": {

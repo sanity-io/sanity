@@ -282,6 +282,100 @@ console.log('Result:', result)
 - **Test without external API calls** first when applicable
 - **Create test content** - If you don't have suitable documents, create some test documents first
 
+## Deploying your function
+
+<!-- 
+BEST PRACTICE:
+- Always include deployment steps after local testing
+- Mention prerequisites clearly
+- Include both blueprint configuration and deployment commands
+- Add troubleshooting for common deployment issues
+- Reference the official documentation
+-->
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project  
+- Node.js v22.x (matches production runtime)
+
+### Deploy to production
+
+1. **Verify your blueprint configuration**
+
+   Make sure your `sanity.blueprint.ts` file is properly configured with your function:
+
+   ```ts
+   // sanity.blueprint.ts
+   import { defineBlueprint, defineDocumentFunction } from "@sanity/blueprints";
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: "sanity.function.document",
+         name: "[function-name]",
+         src: "./functions/[function-name]",
+         memory: 2,
+         timeout: 30,
+         event: {
+           on: ["publish"],
+           filter: "_type == 'document-type' && condition",
+           projection: "{_id}",
+         },
+       }),
+     ],
+   });
+   ```
+
+2. **Deploy your blueprint**
+
+   From your project root, run:
+
+   ```bash
+   npx sanity blueprints deploy
+   ```
+
+   This command will:
+   - Package your function code
+   - Upload it to Sanity's infrastructure
+   - Configure the event triggers
+   - Make your function live in production
+
+3. **Verify deployment**
+
+   After deployment, you can verify your function is active by:
+   - Checking the Sanity Manage console under "API > Functions"
+   - Testing with a real document publish/update
+   - Monitoring function logs in the CLI
+
+### Deployment best practices
+
+- **Test thoroughly first** - Always test your function locally before deploying
+- **Use GROQ filters** - Add specific filters to avoid unnecessary function executions
+- **Monitor performance** - Functions run on Node.js v22.x with configurable memory and timeout
+- **Avoid recursion** - Be careful not to create functions that trigger themselves
+- **Check permissions** - Ensure your function has the necessary permissions for external APIs
+
+### Troubleshooting deployment
+
+**Error: "Deploy Studio permission required"**
+- Cause: Your account doesn't have deployment permissions for this project
+- Solution: Ask a project admin to grant you Deploy Studio permissions
+
+**Error: "Blueprint validation failed"**
+- Cause: Issues with your `sanity.blueprint.ts` configuration
+- Solution: Check the configuration matches the expected schema
+
+**Function not triggering after deployment**
+- Cause: GROQ filter might be too restrictive or event configuration incorrect
+- Solution: Review your event configuration and test with documents that match your filter
+
+For more details, see the [official function deployment documentation](https://www.sanity.io/docs/compute-and-ai/function-quickstart).
+
 ## Requirements
 
 <!-- 
