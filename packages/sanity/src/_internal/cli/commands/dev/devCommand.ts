@@ -1,3 +1,5 @@
+import {createRequire} from 'node:module'
+
 import {
   type CliCommandArguments,
   type CliCommandContext,
@@ -6,6 +8,8 @@ import {
 
 import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
 import {determineIsApp} from '../../util/determineIsApp'
+
+const require = createRequire(import.meta.url)
 
 // TODO: Add this once we are ready to release it.
 // --load-in-dashboard <boolean> Load the dev server in the Sanity dashboard. [default: false]
@@ -51,11 +55,11 @@ export async function getDevAction(
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   if (__DEV__) {
     if (isApp) {
-      // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+      // eslint-disable-next-line import/extensions
       const mod = require('../../actions/app/devAction.ts')
       return mod.default
     }
-    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
+    // eslint-disable-next-line import/extensions
     const mod = require('../../actions/dev/devAction.ts')
     return mod.default
   }

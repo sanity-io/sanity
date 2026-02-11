@@ -1,5 +1,6 @@
+/* eslint-disable max-nested-callbacks */
 import {SquareIcon} from '@sanity/icons'
-import {flatten} from 'lodash'
+import {flatten} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'
@@ -30,6 +31,120 @@ describe('Validation test', () => {
     const myObject = validation.get('myObject')
     expect(myObject.fields[0]._problems.length).toBeGreaterThan(0)
     expect(myObject.fields[2]._problems.length).toBeGreaterThan(0)
+  })
+
+  describe('array with multiple primitive types of the same JSON type', () => {
+    test('warns when array contains both string and text types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'contentArray',
+          of: [
+            {type: 'string', name: 'heading'},
+            {type: 'text', name: 'paragraph'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const contentArray = validation.get('contentArray')
+
+      const warnings = contentArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        severity: 'warning',
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+      expect(warnings[0].message).toContain('JSON type "string"')
+      expect(warnings[0].message).toContain('no way to distinguish between them')
+    })
+
+    test('warns when array contains multiple string-based types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'multiStringArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'text', name: 'body'},
+            {type: 'url', name: 'link'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const multiStringArray = validation.get('multiStringArray')
+
+      const warnings = multiStringArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+    })
+
+    test('allows array with a single primitive type', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'singleStringArray',
+          of: [{type: 'string'}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const singleStringArray = validation.get('singleStringArray')
+
+      const errors = singleStringArray._problems.filter((p: any) => p.severity === 'error')
+      expect(errors).toHaveLength(0)
+    })
+
+    test('allows array with different primitive JSON types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'mixedPrimitivesArray',
+          of: [
+            {type: 'string', name: 'text'},
+            {type: 'number', name: 'count'},
+            {type: 'boolean', name: 'flag'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const mixedPrimitivesArray = validation.get('mixedPrimitivesArray')
+
+      // Should have errors because mixing primitives and objects is also not allowed,
+      // but no duplicate JSON type errors
+      const duplicateJsonTypeErrors = mixedPrimitivesArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(duplicateJsonTypeErrors).toHaveLength(0)
+    })
+
+    test('warns when array contains email and string types (both resolve to JSON string)', () => {
+      // Tests that date-like and text-like built-in types that resolve to JSON string are detected
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'stringVariantsArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'email', name: 'contactEmail'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const stringVariantsArray = validation.get('stringVariantsArray')
+
+      const warnings = stringVariantsArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0].severity).toBe('warning')
+      expect(warnings[0].message).toContain('JSON type "string"')
+    })
   })
 
   test('validate standalone blocks', () => {
@@ -202,5 +317,241 @@ describe('Validation test', () => {
       (problem: any) => problem.severity === 'error',
     )
     expect(validationErrors).toHaveLength(0)
+  })
+
+  describe('block annotations with custom types', () => {
+    test('accepts custom object type used directly as annotation', () => {
+      // This is the pattern that was broken in issue #3782
+      // https://github.com/sanity-io/sanity/issues/3782
+      const schemaDef = [
+        {
+          name: 'ctaAnnotation',
+          type: 'object',
+          title: 'CTA',
+          fields: [
+            {name: 'url', type: 'url'},
+            {name: 'label', type: 'string'},
+          ],
+        },
+        {
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        type: 'ctaAnnotation',
+                        name: 'cta',
+                        title: 'CTA Link',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testDocument = validation.get('testDocument')
+
+      // Check document has no errors
+      expect(testDocument._problems).toHaveLength(0)
+
+      // Check the block field has no errors
+      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      expect(bodyField._problems).toHaveLength(0)
+
+      // Check the block type has no errors
+      const blockType = bodyField.of[0]
+      expect(blockType._problems).toHaveLength(0)
+
+      // Check the annotation has no errors
+      const annotation = blockType.marks.annotations[0]
+      expect(annotation._problems).toHaveLength(0)
+    })
+
+    test('accepts multiple custom object types as annotations', () => {
+      const schemaDef = [
+        {
+          name: 'linkAnnotation',
+          type: 'object',
+          fields: [{name: 'href', type: 'url'}],
+        },
+        {
+          name: 'tooltipAnnotation',
+          type: 'object',
+          fields: [{name: 'text', type: 'string'}],
+        },
+        {
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {type: 'linkAnnotation', name: 'link', title: 'Link'},
+                      {type: 'tooltipAnnotation', name: 'tooltip', title: 'Tooltip'},
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testDocument = validation.get('testDocument')
+      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const blockType = bodyField.of[0]
+
+      // Both annotations should have no errors
+      expect(blockType.marks.annotations[0]._problems).toHaveLength(0)
+      expect(blockType.marks.annotations[1]._problems).toHaveLength(0)
+    })
+
+    test('still accepts inline object annotations', () => {
+      const schemaDef = [
+        {
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        type: 'object',
+                        name: 'inlineLink',
+                        title: 'Inline Link',
+                        fields: [
+                          {name: 'href', type: 'url'},
+                          {name: 'blank', type: 'boolean'},
+                        ],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testDocument = validation.get('testDocument')
+      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const blockType = bodyField.of[0]
+
+      expect(blockType.marks.annotations[0]._problems).toHaveLength(0)
+    })
+
+    test('still rejects non-object types as annotations', () => {
+      const schemaDef = [
+        {
+          name: 'stringType',
+          type: 'string',
+        },
+        {
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      {
+                        type: 'stringType',
+                        name: 'invalidAnnotation',
+                        title: 'Invalid',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testDocument = validation.get('testDocument')
+      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const blockType = bodyField.of[0]
+      const annotation = blockType.marks.annotations[0]
+
+      // Should have an error because annotations must inherit from object
+      const errors = annotation._problems.filter((p: any) => p.severity === 'error')
+      expect(errors.length).toBeGreaterThan(0)
+      expect(errors[0].message).toContain('annotation types must inherit from object')
+    })
+
+    test('accepts mixed custom and inline annotations', () => {
+      const schemaDef = [
+        {
+          name: 'customLink',
+          type: 'object',
+          fields: [{name: 'url', type: 'url'}],
+        },
+        {
+          name: 'testDocument',
+          type: 'document',
+          fields: [
+            {
+              name: 'body',
+              type: 'array',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    annotations: [
+                      // Custom type reference
+                      {type: 'customLink', name: 'customLink', title: 'Custom Link'},
+                      // Inline object definition
+                      {
+                        type: 'object',
+                        name: 'inlineNote',
+                        title: 'Note',
+                        fields: [{name: 'text', type: 'text'}],
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const testDocument = validation.get('testDocument')
+      const bodyField = testDocument.fields.find((f: any) => f.name === 'body')
+      const blockType = bodyField.of[0]
+
+      // Both should work without errors
+      expect(blockType.marks.annotations[0]._problems).toHaveLength(0)
+      expect(blockType.marks.annotations[1]._problems).toHaveLength(0)
+    })
   })
 })

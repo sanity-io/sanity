@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.96.0",
+  "version": "5.9.0",
   "private": true,
   "keywords": [
     "sanity"
@@ -16,19 +16,24 @@
   },
   "dependencies": {
     "@repo/utils": "workspace:*",
-    "@sanity/color-input": "^4.0.3",
-    "@sanity/google-maps-input": "^4.1.0",
+    "@sanity/color-input": "^6.0.3",
+    "@sanity/google-maps-input": "^4.2.1",
     "@sanity/icons": "^3.7.4",
-    "@sanity/ui": "^2.16.2",
+    "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "babel-plugin-react-compiler": "1.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "sanity-plugin-markdown": "^5.1.1",
-    "sanity-plugin-media": "^3.0.3",
-    "sanity-plugin-mux-input": "^2.8.0",
+    "sanity-plugin-internationalized-array": "^3.2.2",
+    "sanity-plugin-markdown": "8.0.4",
+    "sanity-plugin-media": "^4.1.1",
+    "sanity-plugin-mux-input": "^2.12.1",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:"
   }
 }

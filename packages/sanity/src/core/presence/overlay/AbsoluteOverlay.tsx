@@ -1,4 +1,4 @@
-import {sortBy} from 'lodash'
+import {sortBy} from 'lodash-es'
 import {type CSSProperties} from 'react'
 
 const OVERLAY_STYLE: CSSProperties = {

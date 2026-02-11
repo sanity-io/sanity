@@ -8,7 +8,9 @@ import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
 import {useGlobalPresence} from '../../../../store'
 import {useColorSchemeValue} from '../../../colorScheme'
+import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
+import {useCanInviteProjectMembers} from '../useCanInviteMembers'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
 const StyledMenu = styled(Menu)`
@@ -27,6 +29,14 @@ export function PresenceMenu() {
   const scheme = useColorSchemeValue()
   const {t} = useTranslation()
   const hasPresence = presence.length > 0
+
+  const [open, setOpen] = useState(false)
+
+  const canInviteMembers = useCanInviteProjectMembers({
+    // Only enable the permission check when the menu is open
+    // to prevent unnecessary requests to the server.
+    enabled: open,
+  })
 
   /**
    * This id is used as a workaround to keep focus on the selected menu item
@@ -72,18 +82,20 @@ export function PresenceMenu() {
     [scheme],
   )
 
+  const envAwareWebsiteUrl = useEnvAwareSanityWebsiteUrl()
   return (
     <MenuButton
       button={button}
       aria-label={t('presence.aria-label')}
       id="global-presence-menu"
+      onOpen={() => setOpen(true)}
       menu={
         <StyledMenu>
           {hasPresence &&
             presence.map((item) => (
               <PresenceMenuItem
-                focused={focusedId === item.user.id}
                 key={item.user.id}
+                focused={focusedId === item.user.id}
                 onFocus={handleItemFocus}
                 locations={item.locations}
                 user={item.user}
@@ -104,19 +116,21 @@ export function PresenceMenu() {
             </Box>
           )}
 
-          <FooterStack space={1}>
-            <MenuDivider />
+          {canInviteMembers && (
+            <FooterStack space={1}>
+              <MenuDivider />
 
-            <MenuItem
-              as="a"
-              href={`https://www.sanity.io/manage/project/${projectId}/members?invite=true`}
-              icon={AddUserIcon}
-              onFocus={handleClearFocusedItem}
-              rel="noopener noreferrer"
-              target="_blank"
-              text={t('presence.action.manage-members')}
-            />
-          </FooterStack>
+              <MenuItem
+                as="a"
+                href={`${envAwareWebsiteUrl}/manage/project/${projectId}/members?invite=true`}
+                icon={AddUserIcon}
+                onFocus={handleClearFocusedItem}
+                rel="noopener noreferrer"
+                target="_blank"
+                text={t('presence.action.manage-members')}
+              />
+            </FooterStack>
+          )}
         </StyledMenu>
       }
       onClose={handleClose}

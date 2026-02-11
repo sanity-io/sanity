@@ -4,6 +4,6 @@ import {defineConfig} from '@sanity/pkg-utils'
 export default defineConfig({
   ...baseConfig,
   external: ['sanity'],
-  babel: {reactCompiler: true},
-  reactCompilerOptions: {target: '18'},
+  babel: {reactCompiler: true, styledComponents: true},
+  reactCompilerOptions: {target: '19'},
 })

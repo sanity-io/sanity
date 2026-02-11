@@ -8,6 +8,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
 
 import chalk from 'chalk'
@@ -19,12 +20,14 @@ import {BasicDocument} from './components/BasicDocument'
 import {DefaultDocument} from './components/DefaultDocument'
 import {TIMESTAMPED_IMPORTMAP_INJECTOR_SCRIPT} from './constants'
 import {debug as serverDebug} from './debug'
-import {getMonorepoAliases, type SanityMonorepo} from './sanityMonorepo'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const debug = serverDebug.extend('renderDocument')
 
 // Don't use threads in the jest world
-// eslint-disable-next-line no-process-env, turbo/no-undeclared-env-vars
+// eslint-disable-next-line turbo/no-undeclared-env-vars
 const useThreads = typeof process.env.JEST_WORKER_ID === 'undefined'
 const hasWarnedAbout = new Set<string>()
 
@@ -44,7 +47,6 @@ interface DocumentProps {
 }
 
 interface RenderDocumentOptions {
-  monorepo?: SanityMonorepo
   studioRootPath: string
   props?: DocumentProps
   importMap?: {
@@ -66,7 +68,6 @@ export function renderDocument(options: RenderDocumentOptions): Promise<string> 
     const worker = new Worker(__filename, {
       execArgv: __DEV__ ? ['-r', `${__dirname}/esbuild-register.js`] : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
-      // eslint-disable-next-line no-process-env
       env: process.env,
     })
 
@@ -171,7 +172,7 @@ export function _prefixUrlWithBasePath(url: string, basePath: string): string {
 }
 
 if (!isMainThread && parentPort) {
-  renderDocumentFromWorkerData()
+  void renderDocumentFromWorkerData()
 }
 
 async function renderDocumentFromWorkerData() {
@@ -179,12 +180,11 @@ async function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props, importMap, isApp}: RenderDocumentOptions =
-    workerData || {}
+  const {studioRootPath, props, importMap, isApp}: RenderDocumentOptions = workerData || {}
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     ;(global as any).__DEV__ = true
   }
 
@@ -199,35 +199,31 @@ async function renderDocumentFromWorkerData() {
   }
 
   // Require hook #1
-  // Alias monorepo modules
-  debug('Registering potential aliases')
-  if (monorepo) {
-    require('module-alias').addAliases(getMonorepoAliases(monorepo.path))
-  }
-
-  // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
+  const {register} = await import('esbuild-register/dist/node')
   const {unregister} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         jsx: 'automatic',
         extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
+        format: 'cjs',
       })
 
-  // Require hook #3
+  // Require hook #2
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
   debug('Registering esbuild for .js files using jsx loader')
   const {unregister: unregisterJs} = __DEV__
     ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
+    : register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
         extensions: ['.js'],
         jsx: 'automatic',
         loader: 'jsx',
+        format: 'cjs',
       })
 
   const html = getDocumentHtml(studioRootPath, props, importMap, isApp)
@@ -352,10 +348,8 @@ function tryLoadDocumentComponent(studioRootPath: string) {
     debug('Trying to load document component from %s', componentPath)
     try {
       return {
-        // eslint-disable-next-line import/no-dynamic-require
         component: importFresh<any>(componentPath),
         path: componentPath,
-        // eslint-disable-next-line no-sync
         modified: Math.floor(fs.statSync(componentPath)?.mtimeMs),
       }
     } catch (err) {

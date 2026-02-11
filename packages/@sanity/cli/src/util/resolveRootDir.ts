@@ -1,4 +1,3 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -11,7 +10,7 @@ export function resolveRootDir(cwd: string): string {
   try {
     return resolveProjectRoot(cwd) || cwd
   } catch (err) {
-    throw new Error(`Error occurred trying to resolve project root:\n${err.message}`)
+    throw new Error(`Error occurred trying to resolve project root:\n${err.message}`, {cause: err})
   }
 }
 
@@ -49,7 +48,7 @@ function isSanityV2StudioRoot(basePath: string): boolean {
       debug('Found Sanity v2 studio root at %s', basePath)
     }
     return isRoot
-  } catch (err) {
+  } catch {
     return false
   }
 }

@@ -1,23 +1,42 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useEffect} from 'react'
 
 import {useTranslation} from '../../../../i18n'
-import {useEnsureMediaLibrary} from '../hooks/useEnsureMediaLibrary'
+import {
+  useEnsureMediaLibrary,
+  type useEnsureMediaLibraryProps,
+} from '../hooks/useEnsureMediaLibrary'
+import {type MediaLibraryIds} from './MediaLibraryProvider'
 
 export function EnsureMediaLibrary(props: {
-  projectId: string
-  onSetMediaLibraryId: (id: string) => void
+  mediaLibraryInfo: useEnsureMediaLibraryProps
+  onSetMediaLibraryIds: (ids: MediaLibraryIds) => void
 }) {
-  const {onSetMediaLibraryId} = props
+  const {onSetMediaLibraryIds} = props
   const {t} = useTranslation()
-  const {id, status, error} = useEnsureMediaLibrary(props.projectId)
+  const {id, organizationId, status, error} = useEnsureMediaLibrary(props.mediaLibraryInfo)
 
   useEffect(() => {
-    if (status === 'active' && id) {
-      onSetMediaLibraryId(id)
+    if (status === 'active' && id && organizationId) {
+      onSetMediaLibraryIds({libraryId: id, organizationId})
     }
-  }, [id, onSetMediaLibraryId, status])
+  }, [id, onSetMediaLibraryIds, organizationId, status])
+
+  if (status === 'inactive') {
+    return (
+      <Card padding={4} radius={4} tone="caution" data-testid="media-library-absent-warning">
+        <Flex gap={3}>
+          <Text size={1}>
+            <ErrorOutlineIcon />
+          </Text>
+          <Text size={1} weight="semibold">
+            {t('asset-sources.media-library.error.no-media-library-provisioned')}
+          </Text>
+        </Flex>
+      </Card>
+    )
+  }
 
   if (status === 'error' && error) {
     const errorCodeTestId = error.code
@@ -37,21 +56,6 @@ export function EnsureMediaLibrary(props: {
       </Card>
     )
   }
-  if (status === 'provisioning') {
-    return (
-      <Card padding={4} radius={4} tone="caution">
-        <Flex gap={3}>
-          <Text size={1}>
-            <Spinner />
-          </Text>
-          <Stack space={4}>
-            <Text size={1} weight="semibold" data-testid="media-library-provisioning-message">
-              {t('asset-sources.media-library.info.provisioning')}
-            </Text>
-          </Stack>
-        </Flex>
-      </Card>
-    )
-  }
+
   return null
 }

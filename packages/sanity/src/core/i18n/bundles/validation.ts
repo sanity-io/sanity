@@ -57,7 +57,7 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   /** Object is missing a reference to an image asset document in its `asset` field */
   'object.asset-required_image': 'Image is required',
   /** Media can't be found in the Media Library */
-  'object.media-not-found': 'The asset could not found in the Media Library',
+  'object.media-not-found': 'The asset could not be found in the Media Library',
   /** Media object is missing a reference to a document in its `_ref` field */
   'object.not-media-library-asset': 'Must be a reference to a Media Library asset',
   /** Object is not a reference to a document (eg `{_ref: 'documentId'}`) */
@@ -70,6 +70,8 @@ const validationLocaleStrings = defineLocalesResources('validation', {
   'panel.no-errors-message': 'No validation errors',
   /** Title for the actual "Validation" panel/feature */
   'panel.title': 'Validation',
+  /** Message shown when the validation panel is opened but the document is going to unpublish */
+  'panel.unpublish-message': 'Document is going to unpublish, no validation errors are shown',
   /** Slug is an object, but is missing a `current` string property */
   'slug.missing-current': 'Slug must have a value',
   /** Slug is not an object (eg `{current: 'some-slug'}`) */

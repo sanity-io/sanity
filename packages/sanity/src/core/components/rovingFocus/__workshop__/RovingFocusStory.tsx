@@ -46,9 +46,9 @@ export default function RovingFocusStory() {
         >
           {OPTIONS.map((num) => (
             <Button
+              key={num}
               text={`Option ${num + 1}`}
               disabled={Boolean(withDisabled && num % 2)}
-              key={num}
               mode="ghost"
             />
           ))}

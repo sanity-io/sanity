@@ -163,7 +163,7 @@ export function createTelemetryStore<UserProperties>({
     }
     const inspectEvents = isTrueish(env.SANITY_TELEMETRY_INSPECT)
     if (inspectEvents) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.info(`SANITY_TELEMETRY_INSPECT is set, appending events to "${LOG_FILE_NAME}"`)
       await appendFile(LOG_FILE_NAME, `${batch.map((entry) => JSON.stringify(entry)).join('\n')}\n`)
     }

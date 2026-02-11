@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import {loadEnv} from '@sanity/cli'
 
 const envPrefix = 'SANITY_STUDIO_'

@@ -1,8 +1,9 @@
 {
   "name": "@repo/package.config",
-  "version": "3.96.0",
+  "version": "5.9.0",
   "private": true,
   "description": "Shared @sanity/pkg-utils configuration",
+  "type": "module",
   "main": "./src/package.config.ts",
   "types": "./src/package.config.ts",
   "scripts": {
@@ -11,6 +12,9 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/tsconfig": "workspace:*"
+    "@repo/tsconfig": "workspace:*",
+    "@sanity/pkg-utils": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:"
   }
 }

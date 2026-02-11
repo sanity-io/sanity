@@ -1,12 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {has} from 'lodash-es'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
+import {hasValidationContext} from '../../src/core/validation/inferFromSchemaType'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
@@ -58,7 +60,6 @@ describe('schema validation inference', () => {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       validation: (Rule: Rule) =>
         Rule.fields({
           stringField: (fieldRule) => fieldRule.required(),
@@ -110,7 +111,7 @@ describe('schema validation inference', () => {
               // Validate that the image is a summer image when the document topic is summer
               if (media.asset.assetType === 'sanity.imageAsset') {
                 const aspects = media.asset.aspects
-                if (aspects?.season === 'summer') {
+                if (has(aspects, 'season') && aspects.season === 'summer') {
                   return true
                 }
                 return 'Image must be a summer image'
@@ -161,10 +162,10 @@ describe('schema validation inference', () => {
       ).resolves.toEqual([
         {
           item: {
-            message: 'The asset could not found in the Media Library',
+            message: 'The asset could not be found in the Media Library',
           },
           level: 'error',
-          message: 'The asset could not found in the Media Library',
+          message: 'The asset could not be found in the Media Library',
           path: ['imageField'],
         },
       ])
@@ -188,6 +189,10 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toEqual([
         {
+          // eslint-disable-next-line camelcase
+          __internal_metadata: {
+            name: 'media',
+          },
           item: {
             message: 'Image must be a summer image',
           },
@@ -476,3 +481,73 @@ async function expectError(
   // This shouldn't actually be needed, but counts against an assertion in jest-terms
   expect(levelMatch.message).toMatch(message!)
 }
+
+describe('hasValidationContext', () => {
+  describe('returns false for non-context-aware validation', () => {
+    test('undefined', () => {
+      expect(hasValidationContext(undefined)).toBe(false)
+    })
+
+    test('false', () => {
+      expect(hasValidationContext(false)).toBe(false)
+    })
+
+    test('Rule instance', () => {
+      const rule = {} as Rule
+      expect(hasValidationContext(rule)).toBe(false)
+    })
+
+    test('function with 0 parameters', () => {
+      const validation = () => ({}) as Rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('function with 1 parameter (rule only)', () => {
+      const validation = (_rule: Rule) => _rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('array with no context-aware functions', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule) => _rule]
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+  })
+
+  describe('returns true for context-aware validation', () => {
+    test('function with 2 parameters (rule and context)', () => {
+      const validation = (_rule: Rule, _context: unknown) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('arrow function with destructured context parameter', () => {
+      // Destructuring in parameter list should still report length === 2
+      const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('regular function with destructured context parameter', () => {
+      // Regular functions should behave the same as arrow functions
+      function validation(_rule: Rule, {hidden}: {hidden?: boolean}) {
+        return _rule
+      }
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('function with rest parameters after rule', () => {
+      const validation = (_rule: Rule, ..._args: unknown[]) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('array containing at least one context-aware function', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule, _context: unknown) => _rule]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('nested array with context-aware function', () => {
+      const validation = [[(_rule: Rule, _context: unknown) => _rule]]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+  })
+})

@@ -1,26 +1,25 @@
+import {BlueprintsPlanCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Safe to run at any time. Will not modify any Resources.
-
-Examples:
-  # Show deployment plan for the current Blueprint
-  sanity blueprints plan
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsPlanFlags {
+  verbose?: boolean
+}
+
+const defaultFlags: BlueprintsPlanFlags = {
   //
 }
 
 const planBlueprintsCommand: CliCommandDefinition<BlueprintsPlanFlags> = {
   name: 'plan',
   group: 'blueprints',
-  helpText,
-  signature: '',
-  description: 'Enumerate Resources to be deployed',
+  ...transformHelpText(BlueprintsPlanCommand, 'sanity', 'blueprints plan'),
 
   async action(args, context) {
     const {apiClient, output} = context
+    const flags = {...defaultFlags, ...args.extOptions}
 
     const client = apiClient({
       requireUser: true,
@@ -34,7 +33,7 @@ const planBlueprintsCommand: CliCommandDefinition<BlueprintsPlanFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
     })
 
@@ -42,6 +41,9 @@ const planBlueprintsCommand: CliCommandDefinition<BlueprintsPlanFlags> = {
 
     const {success, error} = await blueprintPlanCore({
       ...cmdConfig.value,
+      flags: {
+        verbose: flags.verbose,
+      },
     })
 
     if (!success) throw new Error(error)

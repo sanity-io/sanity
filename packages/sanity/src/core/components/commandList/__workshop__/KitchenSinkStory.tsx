@@ -122,7 +122,6 @@ export default function KitchenSinkStory() {
           icon={isSelected ? CheckmarkIcon : DotIcon}
           justify="flex-start"
           mode="bleed"
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={() =>
             handleChildClick({
               index: item.index,

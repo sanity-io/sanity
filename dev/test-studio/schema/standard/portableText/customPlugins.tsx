@@ -1,5 +1,6 @@
 import {defineBehavior, effect, forward} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin, DecoratorShortcutPlugin} from '@portabletext/editor/plugins'
+import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {CharacterPairDecoratorPlugin} from '@portabletext/plugin-character-pair-decorator'
 import {defineArrayMember, defineType} from 'sanity'
 
 export const customPlugins = defineType({
@@ -35,14 +36,14 @@ export const customPlugins = defineType({
     /**
      * Custom Markdown Config
      *
-     * Uses `renderMarkdownPlugin` to reconfigure the `MarkdownPlugin`.
+     * Uses `components.portableText.plugins` to reconfigure the `MarkdownShortcutsPlugin`.
      */
     {
       type: 'array',
       name: 'customMarkdownConfig',
       title: 'Custom Markdown Config',
       description:
-        'Only a "bold" decorator is allowed and the <MarkdownPlugin /> has been reconfigured to support this',
+        'Only a "bold" decorator is allowed and the unordered list is called "dot", and the <MarkdownShortcutsPlugin /> has been reconfigured to support this',
       of: [
         {
           type: 'block',
@@ -55,6 +56,12 @@ export const customPlugins = defineType({
               },
             ],
           },
+          lists: [
+            {
+              value: 'dot',
+              title: 'Dot',
+            },
+          ],
         },
       ],
       components: {
@@ -63,11 +70,95 @@ export const customPlugins = defineType({
             return props.renderDefault({
               ...props,
               plugins: {
+                ...props.plugins,
+                markdown: {
+                  boldDecorator: ({schema}) =>
+                    schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                  unorderedList: ({schema}) =>
+                    schema.lists.find((list) => list.name === 'dot')?.name,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * Custom Markdown Config (the deprecated way)
+     *
+     * Uses `components.portableText.plugins` to reconfigure the `MarkdownShortcutsPlugin`.
+     */
+    {
+      type: 'array',
+      name: 'customMarkdownConfigDeprecated',
+      title: 'Custom Markdown Config (the deprecated way)',
+      description:
+        'Only a "bold" decorator is allowed and the unordered list is called "dot", and the <MarkdownShortcutsPlugin /> has been reconfigured to support this',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            decorators: [
+              {
+                value: 'bold',
+                title: 'Bold',
+                component: ({children}) => <strong>{children}</strong>,
+              },
+            ],
+          },
+          lists: [
+            {
+              value: 'dot',
+              title: 'Dot',
+            },
+          ],
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
                 markdown: {
                   config: {
                     boldDecorator: ({schema}) =>
-                      schema.decorators.find((decorator) => decorator.value === 'bold')?.value,
+                      schema.decorators.find((decorator) => decorator.name === 'bold')?.name,
+                    unorderedListStyle: ({schema}) =>
+                      schema.lists.find((list) => list.name === 'dot')?.name,
                   },
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * Markdown Shortcuts Disabled
+     */
+    {
+      type: 'array',
+      name: 'markdownShortcutsDisabled',
+      title: 'Markdown Shortcuts Disabled',
+      description: 'The markdown shortcuts are disabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                markdown: {
+                  enabled: false,
                 },
               },
             })
@@ -79,7 +170,7 @@ export const customPlugins = defineType({
     /**
      * Custom Decorator Shortcuts
      *
-     * Uses the `DecoratorShortcutPlugin` add custom decorator shortcuts in the
+     * Uses the `CharacterPairDecoratorPlugin` add custom decorator shortcuts in the
      * editor.
      */
     {
@@ -100,16 +191,17 @@ export const customPlugins = defineType({
                 {props.renderDefault({
                   ...props,
                   plugins: {
+                    ...props.plugins,
                     markdown: {
                       config: {
-                        ...props.plugins.markdown.config,
+                        ...props.plugins.markdown,
                         boldDecorator: undefined,
                         italicDecorator: undefined,
                       },
                     },
                   },
                 })}
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -118,7 +210,7 @@ export const customPlugins = defineType({
                     amount: 2,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'strong')?.name
                   }
@@ -127,7 +219,7 @@ export const customPlugins = defineType({
                     amount: 2,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -136,7 +228,7 @@ export const customPlugins = defineType({
                     amount: 1,
                   }}
                 />
-                <DecoratorShortcutPlugin
+                <CharacterPairDecoratorPlugin
                   decorator={({schema}) =>
                     schema.decorators.find((decorator) => decorator.name === 'em')?.name
                   }
@@ -147,6 +239,157 @@ export const customPlugins = defineType({
                 />
               </>
             )
+          },
+        },
+      },
+    },
+
+    /**
+     * All Typographic rules enabled
+     */
+    {
+      type: 'array',
+      name: 'allTypographicRulesEnabled',
+      title: 'All Typographic Rules Enabled',
+      description: 'All typographic rules are enabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                typography: {
+                  ...props.plugins.typography,
+                  preset: 'all',
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * No Typographic rules enabled
+     */
+    {
+      type: 'array',
+      name: 'noTypographicRulesEnabled',
+      title: 'No Typographic Rules Enabled',
+      description: 'No typographic rules are enabled',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                typography: {
+                  enabled: false,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * Paste Link Disabled
+     *
+     * Disables the default behavior of converting selected text into a link
+     * when a URL is pasted.
+     */
+    {
+      type: 'array',
+      name: 'pasteLinkDisabled',
+      title: 'Paste Link Disabled',
+      description:
+        'The paste link behavior is disabled - pasting a URL on selected text will replace the text',
+      of: [
+        {
+          type: 'block',
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                pasteLink: {
+                  enabled: false,
+                },
+              },
+            })
+          },
+        },
+      },
+    },
+
+    /**
+     * Custom Paste Link Annotation
+     *
+     * Uses a custom link matcher to support a different annotation type
+     * for links (e.g., 'customLink' instead of 'link').
+     */
+    {
+      type: 'array',
+      name: 'customPasteLinkAnnotation',
+      title: 'Custom Paste Link Annotation',
+      description:
+        'The paste link behavior uses a custom annotation called "customLink" with a "url" field instead of the default "link" with "href"',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            annotations: [
+              {
+                name: 'customLink',
+                title: 'Custom Link',
+                type: 'object',
+                fields: [
+                  {
+                    name: 'url',
+                    title: 'URL',
+                    type: 'url',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      components: {
+        portableText: {
+          plugins: (props) => {
+            return props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                pasteLink: {
+                  link: ({context, value}) => {
+                    const customLink = context.schema.annotations.find(
+                      (a) => a.name === 'customLink',
+                    )
+                    if (!customLink) return undefined
+                    return {_type: 'customLink', url: value.href}
+                  },
+                },
+              },
+            })
           },
         },
       },

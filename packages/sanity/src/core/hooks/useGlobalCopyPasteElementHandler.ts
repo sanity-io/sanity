@@ -1,9 +1,8 @@
 import {type Path} from '@sanity/types'
 import {isHotkey} from 'is-hotkey-esm'
-import {useEffect} from 'react'
-import {useEffectEvent} from 'use-effect-event'
+import {useEffect, useEffectEvent} from 'react'
 
-import {isFileTargetElement} from '../form/inputs/common/fileTarget/fileTarget'
+import {isFileTargetElement} from '../form/inputs/files/common/fileTarget/fileTarget'
 import {type FormDocumentValue} from '../form/types/formDocumentValue'
 import {useCopyPaste} from '../studio/copyPaste'
 import {hasSelection, isEmptyFocusPath, isNativeEditableElement} from '../studio/copyPaste/utils'
@@ -41,7 +40,7 @@ export function useGlobalCopyPasteElementHandler({
 
       event.preventDefault()
       event.stopPropagation()
-      onCopy(focusPath!, value, {
+      void onCopy(focusPath!, value, {
         context: {source: 'keyboardShortcut'},
       })
     }
@@ -57,7 +56,7 @@ export function useGlobalCopyPasteElementHandler({
 
       event.stopPropagation()
       event.preventDefault()
-      onPaste(focusPath!, value, {
+      void onPaste(focusPath!, value, {
         context: {source: 'keyboardShortcut'},
       })
     }

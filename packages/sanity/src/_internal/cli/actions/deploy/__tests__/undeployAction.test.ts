@@ -74,6 +74,87 @@ describe('undeployStudioAction', () => {
     expect(mockContext.output.print).toHaveBeenCalledWith('Nothing to undeploy.')
   })
 
+  it('resolves app using `appId` (preferred)', async () => {
+    helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
+
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      {
+        ...mockContext,
+        cliConfig: {
+          ...mockContext.cliConfig,
+          deployment: {appId: mockApplication.id},
+          studioHost: 'abc123',
+        },
+      },
+    )
+
+    expect(helpers.getUserApplication).toHaveBeenCalledWith({
+      appId: mockApplication.id,
+      client: expect.anything(),
+    })
+
+    expect(mockContext.prompt.single).toHaveBeenCalledWith({
+      type: 'confirm',
+      default: false,
+      message: expect.stringContaining('undeploy'),
+    })
+    expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+      appType: 'studio',
+    })
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('Studio undeploy scheduled.'),
+    )
+  })
+
+  it('resolves app using `studioHost` (fallback)', async () => {
+    helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
+    helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+    ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+      true,
+    ) // User confirms
+
+    await undeployStudioAction(
+      {
+        extOptions: {},
+      } as CliCommandArguments<UndeployStudioActionFlags>,
+      {
+        ...mockContext,
+        cliConfig: {
+          ...mockContext.cliConfig,
+          studioHost: 'abc123',
+        },
+      },
+    )
+
+    expect(helpers.getUserApplication).toHaveBeenCalledWith({
+      appHost: 'abc123',
+      client: expect.anything(),
+    })
+
+    expect(mockContext.prompt.single).toHaveBeenCalledWith({
+      type: 'confirm',
+      default: false,
+      message: expect.stringContaining('undeploy'),
+    })
+    expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+      client: expect.anything(),
+      applicationId: 'app-id',
+      appType: 'studio',
+    })
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('Studio undeploy scheduled.'),
+    )
+  })
+
   it('prompts the user for confirmation and undeploys if confirmed', async () => {
     helpers.getUserApplication.mockResolvedValueOnce(mockApplication)
     helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
@@ -169,5 +250,99 @@ describe('undeployStudioAction', () => {
     ).rejects.toThrow(errorMessage)
 
     expect(mockContext.output.spinner('').fail).toHaveBeenCalled()
+  })
+
+  describe('external studios', () => {
+    const mockExternalApplication: UserApplication = {
+      id: 'external-app-id',
+      appHost: 'https://my-studio.example.com',
+      organizationId: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      urlType: 'external',
+      projectId: 'example',
+      title: null,
+      type: 'studio',
+    }
+
+    it('displays full URL without .sanity.studio suffix for external studios', async () => {
+      helpers.getUserApplication.mockResolvedValueOnce(mockExternalApplication)
+      helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+      ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+        true,
+      )
+
+      await undeployStudioAction(
+        {
+          extOptions: {},
+        } as CliCommandArguments<UndeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should use "unregister" messaging for external studios
+      expect(mockContext.prompt.single).toHaveBeenCalledWith({
+        type: 'confirm',
+        default: false,
+        message: expect.stringContaining('unregister'),
+      })
+      // Should include the full URL without .sanity.studio
+      expect(mockContext.prompt.single).toHaveBeenCalledWith({
+        type: 'confirm',
+        default: false,
+        message: expect.stringContaining('https://my-studio.example.com'),
+      })
+    })
+
+    it('uses "Unregistering studio" spinner text for external studios', async () => {
+      helpers.getUserApplication.mockResolvedValueOnce(mockExternalApplication)
+      helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+      ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+        true,
+      )
+
+      await undeployStudioAction(
+        {
+          extOptions: {},
+        } as CliCommandArguments<UndeployStudioActionFlags>,
+        mockContext,
+      )
+
+      expect(mockContext.output.spinner).toHaveBeenCalledWith('Unregistering studio')
+    })
+
+    it('prints external-specific success message', async () => {
+      helpers.getUserApplication.mockResolvedValueOnce(mockExternalApplication)
+      helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+      ;(mockContext.prompt.single as Mock<typeof mockContext.prompt.single>).mockResolvedValueOnce(
+        true,
+      )
+
+      await undeployStudioAction(
+        {
+          extOptions: {},
+        } as CliCommandArguments<UndeployStudioActionFlags>,
+        mockContext,
+      )
+
+      expect(mockContext.output.print).toHaveBeenCalledWith('External studio unregistered.')
+    })
+
+    it('works with --yes flag for unattended mode', async () => {
+      helpers.getUserApplication.mockResolvedValueOnce(mockExternalApplication)
+      helpers.deleteUserApplication.mockResolvedValueOnce(undefined)
+
+      await undeployStudioAction(
+        {extOptions: {yes: true}} as CliCommandArguments<UndeployStudioActionFlags>,
+        mockContext,
+      )
+
+      expect(mockContext.prompt.single).not.toHaveBeenCalled()
+      expect(helpers.deleteUserApplication).toHaveBeenCalledWith({
+        client: expect.anything(),
+        applicationId: 'external-app-id',
+        appType: 'studio',
+      })
+      expect(mockContext.output.print).toHaveBeenCalledWith('External studio unregistered.')
+    })
   })
 })

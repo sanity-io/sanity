@@ -93,7 +93,7 @@ export function commentsReducer(
     }
 
     case 'COMMENT_RECEIVED': {
-      const nextCommentResult = action.payload as CommentDocument
+      const nextCommentResult = action.payload
 
       return {
         ...state,
@@ -105,7 +105,6 @@ export function commentsReducer(
     }
 
     case 'COMMENT_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restComments} = state.comments
 
       // Delete all replies to the deleted comment

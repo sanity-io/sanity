@@ -1,4 +1,6 @@
-import {type MarkdownPluginConfig} from '@portabletext/editor/plugins'
+import {type MarkdownShortcutsPluginProps} from '@portabletext/plugin-markdown-shortcuts'
+import {type PasteLinkPluginProps} from '@portabletext/plugin-paste-link'
+import {type TypographyPluginProps} from '@portabletext/plugin-typography'
 import {
   type ArraySchemaType,
   type BlockDecoratorDefinition,
@@ -444,5 +446,69 @@ export interface BlockProps {
  */
 export interface PortableTextPluginsProps {
   renderDefault: (props: PortableTextPluginsProps) => React.JSX.Element
-  plugins: {markdown: {config: MarkdownPluginConfig}}
+  plugins: {
+    markdown?:
+      | {
+          /**
+           * @deprecated - add the configuration directly to `markdown` instead
+           */
+          config: MarkdownConfig
+        }
+      | (MarkdownShortcutsPluginProps & {
+          config?: undefined
+          /**
+           * @defaultValue true
+           */
+          enabled?: boolean
+        })
+    pasteLink?: {
+      /**
+       * @defaultValue true
+       */
+      enabled?: boolean
+    } & PasteLinkPluginProps
+    typography?: {
+      /**
+       * @defaultValue true
+       */
+      enabled?: boolean
+    } & TypographyPluginProps
+  }
 }
+
+/**
+ * @beta
+ */
+export type MarkdownConfig = Omit<MarkdownShortcutsPluginProps, 'unorderedList' | 'orderedList'> &
+  (
+    | {
+        orderedList?: undefined
+        /**
+         * @deprecated - use `orderedList` instead
+         */
+        orderedListStyle?: MarkdownShortcutsPluginProps['orderedList']
+      }
+    | {
+        orderedList?: MarkdownShortcutsPluginProps['orderedList']
+        /**
+         * @deprecated - use `orderedList` instead
+         */
+        orderedListStyle?: undefined
+      }
+  ) &
+  (
+    | {
+        unorderedList?: undefined
+        /**
+         * @deprecated - use `unorderedList` instead
+         */
+        unorderedListStyle?: MarkdownShortcutsPluginProps['unorderedList']
+      }
+    | {
+        unorderedList?: MarkdownShortcutsPluginProps['unorderedList']
+        /**
+         * @deprecated - use `unorderedList` instead
+         */
+        unorderedListStyle?: undefined
+      }
+  )

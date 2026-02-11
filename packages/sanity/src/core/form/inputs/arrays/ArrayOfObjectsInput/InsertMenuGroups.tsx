@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {type ComponentProps, memo} from 'react'
@@ -54,7 +53,7 @@ export function InsertMenuGroup(
     return <MenuItem key={pos} text={text} icon={icon} onClick={() => onInsert(pos, types[0])} />
   }
   return (
-    <MenuGroup text={text} key={pos} popover={MENU_POPOVER_PROPS}>
+    <MenuGroup key={pos} text={text} popover={MENU_POPOVER_PROPS}>
       {types?.map((insertableType) => (
         <MenuItem
           key={insertableType.name}

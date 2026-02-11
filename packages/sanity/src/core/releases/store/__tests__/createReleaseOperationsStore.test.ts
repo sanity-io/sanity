@@ -168,7 +168,7 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap'},
+          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
         },
         undefined,
       )
@@ -211,7 +211,7 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap'},
+          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
         },
         undefined,
       )
@@ -272,15 +272,12 @@ describe('createReleaseOperationsStore', () => {
 
   it('should create a version of a document', async () => {
     const store = createStore()
-    mockClient.getDocument.mockResolvedValue({_id: 'doc-id', data: 'example'})
-    await store.createVersion('release-id', 'doc-id', {newData: 'value'})
+    mockClient.getDocument.mockResolvedValue({_id: 'doc-id', _rev: 'doc-rev-id', data: 'example'})
+    await store.createVersion('release-id', 'doc-id')
     expect(mockClient.createVersion).toHaveBeenCalledWith(
       {
-        document: {
-          _id: `versions.release-id.doc-id`,
-          data: 'example',
-          newData: 'value',
-        },
+        baseId: 'doc-id',
+        ifBaseRevisionId: 'doc-rev-id',
         publishedId: 'doc-id',
         releaseId: 'release-id',
       },
@@ -293,6 +290,7 @@ describe('createReleaseOperationsStore', () => {
 
     mockClient.getDocument.mockResolvedValue({
       _id: 'doc-id',
+      _rev: 'doc-rev-id',
       artist: {
         _ref: 'some-artist-id',
         _strengthenOnPublish: {
@@ -377,82 +375,8 @@ describe('createReleaseOperationsStore', () => {
 
     expect(mockClient.createVersion).toHaveBeenCalledWith(
       {
-        document: {
-          _id: `versions.release-id.doc-id`,
-          artist: {
-            _ref: 'some-artist-id',
-            _strengthenOnPublish: {
-              template: {
-                id: 'artist',
-              },
-              type: 'artist',
-            },
-            _type: 'reference',
-          },
-          expectedWeakReference: {
-            _ref: 'expected-weak-reference',
-            _type: 'reference',
-            _weak: true,
-            _strengthenOnPublish: {
-              template: {
-                id: 'some-document',
-              },
-              type: 'some-document',
-              weak: true,
-            },
-          },
-          plants: [
-            {
-              _ref: 'some-plant-id',
-              _strengthenOnPublish: {
-                template: {
-                  id: 'plant',
-                },
-                type: 'plant',
-              },
-              _type: 'reference',
-            },
-            {
-              _ref: 'some-plant-id',
-              _strengthenOnPublish: {
-                template: {
-                  id: 'plant',
-                },
-                type: 'plant',
-              },
-              _type: 'reference',
-            },
-          ],
-          stores: [
-            {
-              name: 'some-store',
-              inventory: {
-                products: [
-                  {
-                    _ref: 'some-product-id',
-                    _strengthenOnPublish: {
-                      template: {
-                        id: 'product',
-                      },
-                      type: 'product',
-                    },
-                    _type: 'reference',
-                  },
-                  {
-                    _ref: 'some-product-id',
-                    _strengthenOnPublish: {
-                      template: {
-                        id: 'product',
-                      },
-                      type: 'product',
-                    },
-                    _type: 'reference',
-                  },
-                ],
-              },
-            },
-          ],
-        },
+        baseId: 'doc-id',
+        ifBaseRevisionId: 'doc-rev-id',
         publishedId: 'doc-id',
         releaseId: 'release-id',
       },
@@ -482,6 +406,44 @@ describe('createReleaseOperationsStore', () => {
         publishedId: 'doc-id',
       },
       undefined,
+    )
+  })
+
+  it('should revert unpublish a version of a document', async () => {
+    const store = createStore()
+    const opts = {dryRun: true}
+
+    await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
+
+    expect(mockClient.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
+    )
+  })
+
+  it('should revert unpublish a version of a document with options', async () => {
+    const store = createStore()
+    const opts = {dryRun: true}
+
+    await store.revertUnpublishVersion('versions.release-id.doc-id', opts)
+
+    expect(mockClient.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'versions.release-id.doc-id',
+        publishedId: 'doc-id',
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
     )
   })
 

@@ -12,17 +12,14 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {findIndex} from 'lodash'
+import {findIndex} from 'lodash-es'
 
 import {getValueAtPath} from '../../field'
 import {resolveConditionalProperty} from '../../form'
 import {getSchemaTypeTitle} from '../../schema'
 import {type CommentListBreadcrumbs} from '../types'
 
-function getSchemaField(
-  schemaType: SchemaType,
-  fieldPath: string,
-): ObjectField<SchemaType> | undefined {
+function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
   const paths = PathUtils.fromString(fieldPath)
   const firstPath = paths[0]
 
@@ -76,7 +73,7 @@ export function buildCommentBreadcrumbs(
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentListBreadcrumbs = []
 
-  let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> = schemaType
+  let currentSchemaType: ArraySchemaType<SchemaType> | ObjectFieldType = schemaType
 
   paths.forEach((seg, index) => {
     const currentPath = paths.slice(0, index + 1)
@@ -93,6 +90,7 @@ export function buildCommentBreadcrumbs(
       currentUser,
       parent: parentValue,
       value: currentValue,
+      path: currentPath,
     }
 
     // If the field is a key segment and the parent value is an array, we'll
@@ -144,9 +142,7 @@ export function buildCommentBreadcrumbs(
 
       // Find the field in the object field's `fields` array
       // using the field name from the path segment.
-      const currentField = objectField?.fields?.find(
-        (f) => f.name === seg,
-      ) as ObjectField<SchemaType>
+      const currentField = objectField?.fields?.find((f) => f.name === seg) as ObjectField
 
       // If we don't find the `_type` property in the document value, that
       // means that the field is an anonymous object field and don't have a

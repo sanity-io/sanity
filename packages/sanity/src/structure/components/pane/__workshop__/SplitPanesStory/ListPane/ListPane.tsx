@@ -46,8 +46,8 @@ export function ListPane(props: {
         <Stack padding={2} space={1}>
           {node.items.map((item) => (
             <Card
-              as="button"
               key={item.id}
+              as="button"
               onClick={() => setPath((p) => p.slice(0, index + 1).concat([item.id]))}
               padding={3}
               radius={2}

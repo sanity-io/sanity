@@ -3,7 +3,8 @@ import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
-import {useReleasesToolAvailable} from '../../releases/hooks/useReleasesToolAvailable'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useWorkspace} from '../../studio/workspace'
 import {ReleasesToolLink} from '../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
@@ -20,7 +21,7 @@ const ReleasesNavContainer = styled(Card)`
   padding: 2px;
   margin: -3px 0;
 
-  // The children in button is rendered inside a span, we need to absolutely position the dot for the error.
+  /* The children in button is rendered inside a span, we need to absolutely position the dot for the error. */
   span:has(> [data-ui='error-status-icon']) {
     position: absolute;
     top: 6px;
@@ -45,15 +46,15 @@ interface Props {
  */
 export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
   const releasesToolAvailable = useReleasesToolAvailable()
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
-
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   return (
     <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
-        selectedReleaseId={selectedReleaseId}
-        areReleasesEnabled={releasesToolAvailable}
+        selectedPerspectiveName={selectedPerspectiveName}
+        areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
     </ReleasesNavContainer>

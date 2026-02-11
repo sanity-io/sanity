@@ -1,7 +1,7 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
@@ -85,6 +85,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
           const disabled = !optionType
 
           return (
+            // oxlint-disable-next-line no-array-index-key
             <Flex key={index} align="center" as="label" muted={disabled}>
               <Checkbox
                 disabled={disabled}

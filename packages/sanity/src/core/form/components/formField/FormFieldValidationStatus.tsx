@@ -1,4 +1,3 @@
-import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type FormNodeValidation} from '@sanity/types'
 import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
@@ -6,6 +5,7 @@ import {styled} from 'styled-components'
 import {Tooltip} from '../../../../ui-components'
 import {useListFormat} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {StatusIcon} from './ValidationStatusIcon'
 
 const StatusIconWrapper = styled.div`
   left: 8px;
@@ -27,37 +27,15 @@ export interface FormFieldValidationStatusProps {
    * @beta
    */
   __unstable_showSummary?: boolean
-  fontSize?: number | number
+  fontSize?: number
   placement?: Placement
 }
 
 const EMPTY_ARRAY: never[] = []
 
-const VALIDATION_ICONS = {
-  error: ValidationErrorIcon,
-  warning: ValidationWarningIcon,
-  info: ValidationInfoIcon,
-}
-
 const StyledStack = styled(Stack)`
   max-width: 200px;
 `
-
-const StatusText = styled(Text)<{$status: 'error' | 'warning' | 'info'}>(({$status}) => {
-  if ($status === 'error') {
-    return {'--card-icon-color': 'var(--card-badge-critical-icon-color)'}
-  }
-
-  if ($status === 'warning') {
-    return {'--card-icon-color': 'var(--card-badge-caution-icon-color)'}
-  }
-
-  if ($status === 'info') {
-    return {'--card-icon-color': 'var(--card-badge-primary-icon-color)'}
-  }
-
-  return {}
-})
 
 /** @internal */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
@@ -66,9 +44,7 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
 
-  // eslint-disable-next-line no-nested-ternary
   const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
-  const StatusIcon = VALIDATION_ICONS[status]
 
   return (
     <Tooltip
@@ -79,8 +55,8 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
           {!showSummary && (
             <>
               {validation.map((item, itemIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <FormFieldValidationStatusItem validation={item} key={itemIndex} />
+                // oxlint-disable-next-line no-array-index-key
+                <FormFieldValidationStatusItem key={itemIndex} validation={item} />
               ))}
             </>
           )}
@@ -91,9 +67,9 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
       fallbackPlacements={['bottom', 'right', 'left']}
     >
       <StatusIconWrapper>
-        <StatusText $status={status} size={fontSize} weight="medium">
-          {StatusIcon && <StatusIcon />}
-        </StatusText>
+        <Text size={fontSize} weight="medium">
+          <StatusIcon status={status} />
+        </Text>
       </StatusIconWrapper>
     </Tooltip>
   )
@@ -102,14 +78,12 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 function FormFieldValidationStatusItem(props: {validation: FormNodeValidation}) {
   const {validation} = props
 
-  const StatusIcon = VALIDATION_ICONS[validation.level]
-
   return (
     <Flex>
       <Box marginRight={2}>
-        <StatusText $status={validation.level} size={1}>
-          {StatusIcon && <StatusIcon />}
-        </StatusText>
+        <Text size={1} weight="medium">
+          <StatusIcon status={validation.level} />
+        </Text>
       </Box>
       <Box flex={1}>
         <Text size={1}>{validation.message}</Text>
@@ -146,41 +120,5 @@ function FormFieldValidationSummary({validation}: {validation: FormNodeValidatio
     <Text size={1}>{listFormatter.format([errorText, warningText])}</Text>
   ) : (
     <Text size={1}>{errorText || warningText}</Text>
-  )
-}
-
-function ValidationErrorIcon() {
-  const {t} = useTranslation()
-  return (
-    <ErrorOutlineIcon
-      data-testid="input-validation-icon-error"
-      aria-label={t('form.validation.has-error-aria-label')}
-      aria-hidden
-      role="presentation"
-    />
-  )
-}
-
-function ValidationWarningIcon() {
-  const {t} = useTranslation()
-  return (
-    <WarningOutlineIcon
-      data-testid="input-validation-icon-warning"
-      aria-label={t('form.validation.has-warning-aria-label')}
-      aria-hidden
-      role="presentation"
-    />
-  )
-}
-
-function ValidationInfoIcon() {
-  const {t} = useTranslation()
-  return (
-    <InfoOutlineIcon
-      data-testid="input-validation-icon-info"
-      aria-label={t('form.validation.has-info-aria-label')}
-      aria-hidden
-      role="presentation"
-    />
   )
 }

@@ -47,7 +47,6 @@ export function uploadImage(
       rotateImage(file, (exifData as Exif).orientation || DEFAULT_ORIENTATION),
     ),
     catchError((error) => {
-      // eslint-disable-next-line no-console
       console.warn(
         'Image preprocessing failed for "%s" with the error: %s',
         file.name,

@@ -89,8 +89,9 @@ function InputDebugger(props: InputProps) {
         .filter(Boolean)
         .join('')}`,
     ]
+    const key = `$['${sourcePath}']`
     const mappings = {
-      [`$['${sourcePath}']`]: {
+      [key]: {
         source: {
           document: 0,
           path: 0,
@@ -129,8 +130,8 @@ function InputDebugger(props: InputProps) {
 
               return (
                 <Button
-                  as="a"
                   key={href}
+                  as="a"
                   href={href}
                   tone="primary"
                   size={0}

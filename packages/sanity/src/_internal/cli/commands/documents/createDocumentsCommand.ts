@@ -13,7 +13,7 @@ import {uuid} from '@sanity/uuid'
 import chokidar from 'chokidar'
 import execa from 'execa'
 import json5 from 'json5'
-import {isEqual, isPlainObject, noop} from 'lodash'
+import {isEqual, isPlainObject, noop} from 'lodash-es'
 
 type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
 
@@ -58,7 +58,6 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
   signature: '[FILE]',
   helpText,
   description: 'Create one or more documents',
-  // eslint-disable-next-line complexity
   action: async (args, context) => {
     const {apiClient, output} = context
     const {replace, missing, watch, id, dataset} = args.extOptions
@@ -107,7 +106,7 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
         output.print('')
         return readAndPerformCreatesFromFile(tmpFile)
       })
-      execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
+      await execa(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
     } else {
       // While in normal mode, we just want to wait for the editor to close and run the thing once
       execa.sync(editor.bin, editor.args.concat(tmpFile), {stdio: 'inherit'})
@@ -146,7 +145,6 @@ const createDocumentsCommand: CliCommandDefinition<CreateFlags> = {
 function registerUnlinkOnSigInt(tmpFile: string) {
   process.on('SIGINT', async () => {
     await fs.unlink(tmpFile).catch(noop)
-    // eslint-disable-next-line no-process-exit
     process.exit(130)
   })
 }
@@ -256,7 +254,6 @@ function getResultMessage(
 
 function getEditor() {
   const defaultEditor = process.platform.startsWith('win') ? 'notepad' : 'vim'
-  // eslint-disable-next-line no-process-env
   const editor = process.env.VISUAL || process.env.EDITOR || defaultEditor
   const args = editor.split(/\s+/)
   const bin = args.shift() || ''

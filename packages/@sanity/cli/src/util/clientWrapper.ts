@@ -1,6 +1,7 @@
 import path from 'node:path'
 
 import {
+  type ClientConfig,
   type ClientError,
   createClient,
   requester as defaultRequester,
@@ -50,7 +51,6 @@ function isReqResError(err: Error): err is ClientError | ServerError {
 }
 
 export function getCliToken(): string | undefined {
-  // eslint-disable-next-line no-process-env
   const envAuthToken = process.env.SANITY_AUTH_TOKEN
   const userConfig = getUserConfig()
   return envAuthToken || userConfig.get('authToken')
@@ -78,20 +78,24 @@ export function getClientWrapper(
   return function (opts?: ClientRequirements) {
     // Read these environment variables "late" to allow `.env` files
 
-    /* eslint-disable no-process-env */
     const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
-    /* eslint-enable no-process-env */
+    const rateLimitBypass = process.env.SANITY_CLI_API_RATE_LIMIT_BYPASS
 
     const {requireUser, requireProject, api} = {...defaults, ...opts}
     const token = getCliToken()
     const apiHost = apiHosts[sanityEnv]
-    const apiConfig = {
+    const apiConfig: Partial<ClientConfig> = {
       ...cliApiConfig,
       ...api,
     }
 
     if (apiHost) {
       apiConfig.apiHost = apiHost
+    }
+
+    if (sanityEnv === 'staging' && rateLimitBypass) {
+      apiConfig.headers ??= {}
+      apiConfig.headers['x-sanity-ratelimit-bypass'] = rateLimitBypass
     }
 
     if (requireUser && !token) {

@@ -1,0 +1,119 @@
+name: Tag @latest
+run-name: Tag @latest - ${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver version to tag as latest (e.g., 3.2.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  get-version:
+    name: Determine version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Get version input
+        id: get-version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          echo "Using version: $version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate semver version
+        run: |
+          version="${{ steps.get-version.outputs.version }}"
+          echo "Validating version: $version"
+
+          # Validate semver format (basic check for X.Y.Z or X.Y.Z-prerelease)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "Error: Invalid semver format: $version"
+            echo "Expected format: X.Y.Z or X.Y.Z-prerelease (e.g., 3.2.1 or 3.2.1-next.1.abc)"
+            exit 1
+          fi
+
+          echo "✅ Version validation passed: $version"
+
+  npm-tagging:
+    name: Update NPM dist-tags
+    needs: get-version
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Update npm dist-tags to latest
+        run: |
+          # Get all published (non-private) packages in the workspace
+          packages=$(pnpx tsx scripts/listPublishedPackages.ts)
+          version="${{ needs.get-version.outputs.version }}"
+
+          echo "Using version: $version"
+          echo "Tagging the following packages as latest: $packages"
+
+          # Convert relative paths to package names and apply dist-tag
+          for pkg_dir in $packages; do
+            pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
+            echo "Tagging $pkg_name@$version as latest"
+            npm dist-tag add "$pkg_name@$version" latest
+          done
+
+          echo "✅ All packages tagged as latest"
+
+  update-manifest:
+    name: Update bundle manifest
+    needs: get-version
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Update manifest with latest tag (staging)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: |
+          version="${{ needs.get-version.outputs.version }}"
+          echo "Using version: $version"
+          pnpm bundle-manager tag --tag=latest --target-version="$version"
+
+      - name: Update manifest with latest tag (production)
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: |
+          version="${{ needs.get-version.outputs.version }}"
+          echo "Using version: $version"
+          pnpm bundle-manager tag --tag=latest --target-version="$version"

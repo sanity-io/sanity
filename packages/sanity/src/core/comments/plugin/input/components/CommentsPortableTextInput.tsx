@@ -1,7 +1,9 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 import {
   type EditorChange,
   type EditorSelection,
+  type PortableTextBlock,
   PortableTextEditor,
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
@@ -10,12 +12,13 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence} from 'framer-motion'
-import {debounce} from 'lodash'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {debounce, isEqual} from 'lodash-es'
+import {AnimatePresence} from 'motion/react'
+import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps} from '../../../../form'
+import {type PortableTextInputProps, useFieldActions} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
+import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components'
 import {isTextSelectionComment} from '../../../helpers'
 import {
@@ -47,6 +50,7 @@ const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
   const {enabled, mode} = useCommentsEnabled()
+  const fieldActions = useFieldActions()
 
   // This is a workaround solution to disable comments for the AI assist type.
   // The AI assist uses the official PTE input which is composed from the
@@ -54,8 +58,13 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   // will get the comments functionality as well, which  we don't want.
   // Therefore we disable the comments for the AI assist type.
   const isAiAssist = props.schemaType.name === AI_ASSIST_TYPE
-
-  if (!enabled || isAiAssist) {
+  /**
+   * Comments can be disabled at field level by passing the `__internal_comments: undefined` prop to the field.
+   * Even though is not recommended and tagged as internal, it works for all type of fields.
+   * This adds the same ability to disable inline comments in the Portable Text editor.
+   */
+  const isCommentsEnabledInField = Boolean(fieldActions.__internal_comments)
+  if (!enabled || isAiAssist || !isCommentsEnabledInField) {
     return props.renderDefault(props)
   }
 
@@ -71,12 +80,13 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
   const {comments, getComment, mentionOptions, onCommentsOpen, operation, setStatus, status} =
     useComments()
+  const {error: addonDatasetError} = useAddonDataset()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
   const {handleOpenDialog} = useCommentsUpsell()
+  const [mousePressed, setMousePressed] = useState<boolean>(false)
 
   const editorRef = useRef<PortableTextEditor | null>(null)
-  const mouseDownRef = useRef<boolean>(false)
 
   // A reference to the authoring decoration element that highlights the selected text
   // when starting to author a comment.
@@ -99,6 +109,12 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+  const [fragment, setFragment] = useState<PortableTextBlock[] | null>(null)
+
+  const getFragment = useCallback(() => {
+    if (!editorRef.current) return EMPTY_ARRAY
+    return PortableTextEditor.getFragment(editorRef.current)
+  }, [])
 
   const handleSetCurrentSelectionRect = useCallback(() => {
     const rect = getSelectionBoundingRect()
@@ -112,6 +128,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     setNextCommentValue(null)
     setCanSubmit(false)
     setAuthoringDecorationElement(null)
+    setFragment(null)
   }, [])
 
   // Set the next comment selection to the current selection so that we can
@@ -123,9 +140,10 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       handleOpenDialog('pte')
       return
     }
-
+    const currentFragment = getFragment() || null
+    setFragment(currentFragment)
     setNextCommentSelection(currentSelection)
-  }, [currentSelection, handleOpenDialog, mode])
+  }, [currentSelection, getFragment, handleOpenDialog, mode])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -139,28 +157,22 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       .map((c) => c.parentComment)
   }, [comments.data.open, stringFieldPath])
 
-  const getFragment = useCallback(() => {
-    if (!editorRef.current) return EMPTY_ARRAY
-    return PortableTextEditor.getFragment(editorRef.current)
-  }, [])
-
   const handleSubmit = useCallback(() => {
     if (!nextCommentSelection || !editorRef.current) return
 
-    const fragment = getFragment() || EMPTY_ARRAY
     const editorValue = PortableTextEditor.getValue(editorRef.current)
 
     if (!editorValue) return
 
     const textSelection = buildTextSelectionFromFragment({
-      fragment,
+      fragment: fragment || EMPTY_ARRAY,
       selection: nextCommentSelection,
       value: editorValue,
     })
 
     const threadId = uuid()
 
-    operation.create({
+    void operation.create({
       type: 'field',
       contentSnapshot: fragment,
       fieldPath: stringFieldPath,
@@ -193,7 +205,6 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     resetStates()
   }, [
     nextCommentSelection,
-    getFragment,
     operation,
     stringFieldPath,
     nextCommentValue,
@@ -203,6 +214,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     scrollToGroup,
     resetStates,
     setStatus,
+    fragment,
   ])
 
   const handleDecoratorClick = useCallback(
@@ -229,8 +241,8 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     (selection: EditorSelection | null) => {
       const isRangeSelected = selection?.anchor.offset !== selection?.focus.offset
 
-      const fragment = getFragment()
-      const isValidSelection = fragment?.every(isPortableTextTextBlock)
+      const selectedFragment = getFragment()
+      const isValidSelection = selectedFragment?.every(isPortableTextTextBlock)
 
       if (!isValidSelection || !isRangeSelected) {
         setCanSubmit(false)
@@ -248,27 +260,24 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       // If the mouse is not down, we want to set the current selection rect
       // when the selection changes. Otherwise, we want to wait until the mouse
       // is up to set the current selection rect (see `handleMouseUp`).
-      if (!mouseDownRef.current) {
+      if (!mousePressed) {
         handleSetCurrentSelectionRect()
       }
 
       setCurrentSelection(selection)
       setCanSubmit(true)
     },
-    [getFragment, handleSetCurrentSelectionRect],
+    [getFragment, handleSetCurrentSelectionRect, mousePressed],
   )
 
-  const debounceSelectionChange = useMemo(
-    () => debounce(handleSelectionChange, 200),
-    [handleSelectionChange],
-  )
+  const debounceSelectionChange = useDebounceSelectionChange(handleSelectionChange)
 
   const handleMouseDown = useCallback(() => {
-    mouseDownRef.current = true
+    startTransition(() => setMousePressed(true))
   }, [])
 
   const handleMouseUp = useCallback(() => {
-    mouseDownRef.current = false
+    startTransition(() => setMousePressed(false))
 
     // When the mouse is up, we want to set the current selection rect.
     handleSetCurrentSelectionRect()
@@ -327,7 +336,8 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
             ...(comment.target.path?.selection?.value
               .filter((r) => r._key !== nextRange[0]?._key)
               .concat(nextRange)
-              .flat() || EMPTY_ARRAY),
+              .flat()
+              .sort((a, b) => a._key.localeCompare(b._key)) || EMPTY_ARRAY),
           ]
         : EMPTY_ARRAY
 
@@ -345,7 +355,11 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         },
       }
 
-      operation.update(comment._id, nextComment)
+      const hasChanged = !isEqual(comment.target, nextComment.target)
+
+      if (hasChanged) {
+        void operation.update(comment._id, nextComment)
+      }
     })
 
     // Mark the range decorations as not dirty
@@ -424,37 +438,40 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   }, [nextCommentSelection])
 
   // All the range decorations
-  const rangeDecorations = useMemo((): RangeDecoration[] => {
-    return [
-      // Existing range decorations
-      ...(props?.rangeDecorations || EMPTY_ARRAY),
-      // The range decoration when adding a comment
-      ...(authoringDecoration ? [authoringDecoration] : EMPTY_ARRAY),
-      // The range decorations for existing comments
-      ...addedCommentsDecorations,
-    ]
-  }, [addedCommentsDecorations, authoringDecoration, props?.rangeDecorations])
+  const rangeDecorations: RangeDecoration[] = [
+    // Existing range decorations
+    ...(props?.rangeDecorations || EMPTY_ARRAY),
+    // The range decoration when adding a comment
+    ...(authoringDecoration ? [authoringDecoration] : EMPTY_ARRAY),
+    // The range decorations for existing comments
+    ...addedCommentsDecorations,
+  ]
 
-  const currentSelectionIsOverlapping = useMemo(() => {
-    if (!currentSelection || addedCommentsDecorations.length === 0) return false
+  const [currentSelectionIsOverlapping, setCurrentSelectionIsOverlapping] = useState<boolean>(false)
+  useEffect(() => {
+    startTransition(() =>
+      setCurrentSelectionIsOverlapping(() => {
+        if (!currentSelection || addedCommentsDecorations.length === 0) return false
 
-    return addedCommentsDecorations.some((d) => {
-      if (!editorRef.current) return false
+        return addedCommentsDecorations.some((d) => {
+          if (!editorRef.current) return false
 
-      const testA = PortableTextEditor.isSelectionsOverlapping(
-        editorRef.current,
-        currentSelection,
-        d.selection,
-      )
+          const testA = PortableTextEditor.isSelectionsOverlapping(
+            editorRef.current,
+            currentSelection,
+            d.selection,
+          )
 
-      const testB = PortableTextEditor.isSelectionsOverlapping(
-        editorRef.current,
-        d.selection,
-        currentSelection,
-      )
+          const testB = PortableTextEditor.isSelectionsOverlapping(
+            editorRef.current,
+            d.selection,
+            currentSelection,
+          )
 
-      return testA || testB
-    })
+          return testA || testB
+        })
+      }),
+    )
   }, [addedCommentsDecorations, currentSelection])
 
   // The scroll element used to update the reference element for the
@@ -506,26 +523,28 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     // the comment document. However, when receiving updates from the server,
     // the `dirty` flag will be removed. Therefore, we need to make sure
     // that the `dirty` flag is preserved so that we can update the comment.
-    setAddedCommentsDecorations((current) => {
-      return nextDecorations.map((nextDecoration) => {
-        const prevDecoration = current.find(
-          (p) => p.payload?.commentId === nextDecoration.payload?.commentId,
-        )
+    startTransition(() =>
+      setAddedCommentsDecorations((current) => {
+        return nextDecorations.map((nextDecoration) => {
+          const prevDecoration = current.find(
+            (p) => p.payload?.commentId === nextDecoration.payload?.commentId,
+          )
 
-        if (prevDecoration?.payload?.dirty) {
-          return {
-            ...nextDecoration,
-            payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
+          if (prevDecoration?.payload?.dirty) {
+            return {
+              ...nextDecoration,
+              payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
+            }
           }
-        }
 
-        return nextDecoration
-      })
-    })
+          return nextDecoration
+        })
+      }),
+    )
   }, [handleBuildRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(
-    currentSelection && canSubmit && selectionReferenceElement && !mouseDownRef.current,
+    currentSelection && canSubmit && selectionReferenceElement && !mousePressed,
   )
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
 
@@ -548,7 +567,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
-              disabled={currentSelectionIsOverlapping}
+              disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
               onClick={handleSelectCurrentSelection}
               onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}
@@ -558,14 +577,27 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
       </BoundaryElementProvider>
 
       <Stack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
-        {props.renderDefault({
-          ...props,
-          onEditorChange,
-          editorRef,
-          rangeDecorations,
-          onFullScreenChange: setIsFullScreen,
-        })}
+        <RenderDefaultCommentsPortableTextInputInner
+          {...props}
+          onEditorChange={onEditorChange}
+          editorRef={editorRef}
+          rangeDecorations={rangeDecorations}
+          onFullScreenChange={setIsFullScreen}
+        />
       </Stack>
     </>
   )
 })
+
+// Workaround for react compiler restrictions on refs triggered by the debounce wrapper
+function useDebounceSelectionChange(
+  handleSelectionChange: (selection: EditorSelection | null) => void,
+) {
+  return useMemo(() => debounce(handleSelectionChange, 200), [handleSelectionChange])
+}
+// Used to workaround restrictions on passing refs to functions in react compiler
+function RenderDefaultCommentsPortableTextInputInner(
+  props: React.ComponentProps<typeof CommentsPortableTextInputInner>,
+) {
+  return props.renderDefault(props)
+}

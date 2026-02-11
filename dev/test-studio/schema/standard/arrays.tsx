@@ -54,6 +54,20 @@ export default defineType({
       title: 'Title',
       type: 'string',
     },
+    // Example demonstrating schema validation error for issue #3631
+    // This array contains multiple types that resolve to JSON type "string"
+    // which is not allowed because there's no way to distinguish between them
+    {
+      name: 'duplicatePrimitiveJsonTypeExample',
+      title: 'Duplicate Primitive JSON Type Example (Issue #3631)',
+      description:
+        'This field demonstrates the validation error when an array contains multiple types that resolve to the same JSON primitive type',
+      type: 'array',
+      of: [
+        {type: 'string', name: 'heading', title: 'Heading'},
+        {type: 'text', name: 'paragraph', title: 'Paragraph'},
+      ],
+    },
     {
       name: 'arrayOfReferences',
       title: 'Array of references to authors',
@@ -61,6 +75,66 @@ export default defineType({
       of: [{type: 'reference', to: [{type: 'author'}]}],
     },
     predefinedStringArray,
+    defineField({
+      name: 'inlineEditingArray',
+      title: 'Inline Editing Array',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'itemWithInlineEditing',
+          title: 'Item with Inline Editing',
+          type: 'object',
+
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+            }),
+            defineField({
+              name: 'description',
+              type: 'string',
+            }),
+            defineField({
+              name: 'level2array',
+              title: 'Level 2 Array',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  name: 'level2item',
+                  title: 'Level 2 Item',
+                  type: 'object',
+                  fields: [
+                    defineField({
+                      name: 'title',
+                      type: 'string',
+                    }),
+                    defineField({
+                      name: 'description',
+                      type: 'string',
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              description: 'description',
+              level2array: 'level2array',
+            },
+            prepare({title, description, level2array}) {
+              return {
+                title: title,
+                subtitle: description,
+              }
+            },
+          },
+        }),
+      ],
+    }),
+
     {
       name: 'objectArrayWithPrefinedStringField',
       title: 'Array of objects',
@@ -106,6 +180,36 @@ export default defineType({
               group: ['c'],
             },
           ],
+        },
+      ],
+    },
+    {
+      name: 'arrayOfDescriptionObjects',
+      description:
+        'This array contains objects with a `description` field, to test copying between unnamed arrays',
+      type: 'array',
+      of: [
+        {
+          title: 'Has description',
+          type: 'object',
+          fields: [{name: 'description', title: 'Description', type: 'string'}],
+        },
+      ],
+    },
+    {
+      name: 'namedAndAnonymousObjects',
+      type: 'array',
+      of: [
+        {
+          title: 'Named object',
+          type: 'object',
+          name: 'namedObject',
+          fields: [{name: 'title', type: 'string'}],
+        },
+        {
+          title: 'Anonymous object',
+          type: 'object',
+          fields: [{name: 'title', type: 'string'}],
         },
       ],
     },
@@ -613,5 +717,31 @@ export default defineType({
         type,
       })),
     },
+    defineField({
+      name: 'slugs',
+      title: 'Slugs',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'slug',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'slugsWithObject',
+      title: 'Slugs with object',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'slug',
+              type: 'slug',
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
 })

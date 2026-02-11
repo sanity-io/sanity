@@ -1,28 +1,32 @@
 /* eslint-disable complexity */
-/* eslint-disable max-nested-callbacks */
 /* eslint-disable max-statements */
-/* eslint-disable camelcase, no-else-return */
+/* eslint-disable no-else-return */
 
+import {diffInput, wrap} from '@sanity/diff'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
   type CurrentUser,
+  type FieldGroup,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isKeyedObject,
   isObjectSchemaType,
+  type KeyedObject,
   type NumberSchemaType,
   type ObjectField,
   type ObjectSchemaType,
   type Path,
+  type SchemaType,
   type StringSchemaType,
   type ValidationMarker,
 } from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
-import {castArray, isEqual as _isEqual} from 'lodash'
+import {castArray, isEqual as _isEqual} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
+import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
 import {EMPTY_ARRAY, EMPTY_OBJECT, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
@@ -32,6 +36,7 @@ import {
   type HiddenField,
   type ObjectArrayFormNode,
   type PrimitiveFormNode,
+  type ProvenanceDiffAnnotation,
   type StateTree,
 } from './types'
 import {type FormFieldGroup} from './types/fieldGroup'
@@ -39,22 +44,27 @@ import {type FieldError} from './types/memberErrors'
 import {
   type ArrayOfObjectsMember,
   type ArrayOfPrimitivesMember,
+  type DecorationMember,
   type FieldMember,
   type ObjectMember,
 } from './types/members'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
+  type ComputeDiff,
+  type NodeChronologyProps,
+  type NodeDiffProps,
   type ObjectFormNode,
 } from './types/nodes'
 import {createMemoizer, type FunctionDecorator} from './utils/createMemoizer'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getId} from './utils/getId'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
+import {getSafeDomId} from './utils/getSafeDomId'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
-interface FormStateOptions<TSchemaType, T> {
+interface FormStateOptions<TSchemaType, T> extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   schemaType: TSchemaType
   path: Path
   value?: T
@@ -65,6 +75,7 @@ interface FormStateOptions<TSchemaType, T> {
   readOnly?: true | StateTree<boolean> | undefined
   openPath: Path
   focusPath: Path
+  perspective?: TargetPerspective
   presence: FormNodePresence[]
   validation: ValidationMarker[]
   fieldGroupState?: StateTree<string>
@@ -73,6 +84,7 @@ interface FormStateOptions<TSchemaType, T> {
   // nesting level
   level: number
   changesOpen?: boolean
+  displayInlineChanges?: boolean
 }
 
 type PrepareFieldMember = <T>(props: {
@@ -207,7 +219,7 @@ export interface CreatePrepareFormStateOptions {
   }
 }
 
-export interface RootFormStateOptions {
+export interface RootFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
@@ -222,6 +234,8 @@ export interface RootFormStateOptions {
   collapsedPaths: StateTree<boolean> | undefined
   collapsedFieldSets: StateTree<boolean> | undefined
   changesOpen?: boolean
+  perspective: TargetPerspective
+  displayInlineChanges?: boolean
 }
 
 export interface PrepareFormState {
@@ -272,6 +286,8 @@ export function createPrepareFormState({
           parent.readOnly?.value ||
           getId(parent.readOnly?.children?.[field.name]),
         schemaType: getId(parent.schemaType),
+        hasUpstreamVersion: parent.hasUpstreamVersion,
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -294,6 +310,9 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
+      hasUpstreamVersion: state.hasUpstreamVersion,
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -316,6 +335,9 @@ export function createPrepareFormState({
         hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
         readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
         schemaType: getId(state.schemaType),
+        perspective: getId(state.perspective),
+        hasUpstreamVersion: state.hasUpstreamVersion,
+        displayInlineChanges: state.displayInlineChanges,
       }),
     })
 
@@ -337,6 +359,9 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
+      hasUpstreamVersion: state.hasUpstreamVersion,
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -370,6 +395,9 @@ export function createPrepareFormState({
           parent.readOnly?.value ||
           getId(parent.readOnly?.children?.[key]),
         schemaType: getId(parent.schemaType),
+        perspective: getId(parent.perspective),
+        hasUpstreamVersion: parent.hasUpstreamVersion,
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -403,6 +431,9 @@ export function createPrepareFormState({
         schemaType: getId(parent.schemaType),
         value: `${arrayItem}`,
         comparisonValue: `${comparisonValue}`,
+        perspective: getId(parent.perspective),
+        hasUpstreamVersion: parent.hasUpstreamVersion,
+        displayInlineChanges: parent.displayInlineChanges,
       }
     },
   })
@@ -425,6 +456,9 @@ export function createPrepareFormState({
       hidden: state.hidden === true || state.hidden?.value || getId(state.hidden),
       readOnly: state.readOnly === true || state.readOnly?.value || getId(state.readOnly),
       schemaType: getId(state.schemaType),
+      perspective: getId(state.perspective),
+      hasUpstreamVersion: state.hasUpstreamVersion,
+      displayInlineChanges: state.displayInlineChanges,
     }),
   })
 
@@ -514,6 +548,8 @@ export function createPrepareFormState({
         value: fieldValue,
         changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue,
+        perspective: parent.perspective,
+        hasUpstreamVersion: parent.hasUpstreamVersion,
         presence: parent.presence,
         validation: parent.validation,
         fieldGroupState,
@@ -526,6 +562,7 @@ export function createPrepareFormState({
         hidden: scopedHidden,
         readOnly: scopedReadOnly,
         changesOpen: parent.changesOpen,
+        displayInlineChanges: parent.displayInlineChanges,
       })
 
       if (inputState === null) {
@@ -634,6 +671,8 @@ export function createPrepareFormState({
           fieldGroupState,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
+          perspective: parent.perspective,
+          hasUpstreamVersion: parent.hasUpstreamVersion,
           presence: parent.presence,
           validation: parent.validation,
           collapsedPaths: scopedCollapsedPaths,
@@ -643,6 +682,7 @@ export function createPrepareFormState({
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
           changesOpen: parent.changesOpen,
+          displayInlineChanges: parent.displayInlineChanges,
         })
 
         if (fieldState === null) {
@@ -702,6 +742,8 @@ export function createPrepareFormState({
           fieldGroupState,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
+          perspective: parent.perspective,
+          hasUpstreamVersion: parent.hasUpstreamVersion,
           presence: parent.presence,
           validation: parent.validation,
           collapsedPaths: scopedCollapsedPaths,
@@ -711,6 +753,7 @@ export function createPrepareFormState({
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
           changesOpen: parent.changesOpen,
+          displayInlineChanges: parent.displayInlineChanges,
         })
 
         if (fieldState === null) {
@@ -763,7 +806,7 @@ export function createPrepareFormState({
       const fieldState = preparePrimitiveInputState({
         ...parent,
         comparisonValue: fieldComparisonValue,
-        value: fieldValue as boolean | string | number | undefined,
+        value: fieldValue,
         schemaType: field.type as PrimitiveSchemaType,
         path: fieldPath,
         readOnly: scopedReadOnly,
@@ -799,37 +842,58 @@ export function createPrepareFormState({
     const readOnly = props.readOnly === true || props.readOnly?.value
 
     const schemaTypeGroupConfig = props.schemaType.groups || []
-    const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)
-      ?.name
 
-    const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap(
-      (group): FormFieldGroup[] => {
-        const groupHidden =
-          props.hidden === true ||
+    const shouldRenderAllFieldsGroup =
+      // All fields can't be hidden when review changes is open or if the all fields group is selected
+      props.changesOpen || props.fieldGroupState?.value === ALL_FIELDS_GROUP.name
+
+    const isGroupHidden = (group: FieldGroup) =>
+      shouldRenderAllFieldsGroup && group.name === ALL_FIELDS_GROUP.name
+        ? false
+        : props.hidden === true ||
           props.hidden?.value ||
           props.hidden?.children?.[`group:${group.name}`]?.value
-        const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
 
-        // Set the "all-fields" group as selected when review changes is open to enable review of all
-        // fields and changes together. When review changes is closed - switch back to the selected tab.
-        const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
-        // Also disable non-selected groups when review changes is open
-        const disabled = props.changesOpen ? !selected : false
-
-        return groupHidden
-          ? []
-          : [
-              {
-                disabled,
-                icon: group?.icon,
-                name: group.name,
-                selected,
-                title: group.title,
-                i18n: group.i18n,
-              },
-            ]
-      },
+    const hasCustomAllFieldsGroup = schemaTypeGroupConfig.some(
+      (g) => g.name === ALL_FIELDS_GROUP.name,
     )
+    const groupsConfig = hasCustomAllFieldsGroup
+      ? schemaTypeGroupConfig
+      : [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig]
+
+    const defaultGroup =
+      groupsConfig.find((g) => g.default) ||
+      // Use the first non-hidden group as default, if no default group is found.
+      groupsConfig.find((g) => !isGroupHidden(g)) ||
+      groupsConfig[0]
+
+    const defaultGroupName = defaultGroup.name
+
+    const groups = groupsConfig.flatMap((group): FormFieldGroup[] => {
+      const groupHidden = isGroupHidden(group)
+
+      const isSelected = group.name === (props.fieldGroupState?.value || defaultGroupName)
+
+      // Set the "all-fields" group as selected when review changes is open to enable review of all
+      // fields and changes together. When review changes is closed - switch back to the selected tab.
+      const selected = props.changesOpen ? group.name === ALL_FIELDS_GROUP.name : isSelected
+      // Also disable non-selected groups when review changes is open
+      const disabled = props.changesOpen ? !selected : false
+
+      return groupHidden
+        ? []
+        : [
+            {
+              disabled,
+              icon: group?.icon,
+              name: group.name,
+              selected,
+              title: group.title,
+              i18n: group.i18n,
+              fields: group.fields || EMPTY_ARRAY,
+            },
+          ]
+    })
 
     const selectedGroup = groups.find((group) => group.selected)
 
@@ -895,6 +959,7 @@ export function createPrepareFormState({
             key: `fieldset-${fieldSet.name}`,
             _inSelectedGroup: isFieldEnabledByGroupFilter(groups, fieldSet.group, selectedGroup),
             groups: fieldSet.group ? castArray(fieldSet.group) : [],
+            renderMembers: fieldSet.renderMembers,
             fieldSet: {
               path: pathFor(props.path.concat(fieldSet.name)),
               name: fieldSet.name,
@@ -924,7 +989,10 @@ export function createPrepareFormState({
       .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
     const visibleMembers = members.filter(
-      (member): member is ObjectMember => member.kind !== 'hidden',
+      (member): member is Exclude<ObjectMember, DecorationMember> =>
+        member.kind !== 'hidden' &&
+        // Decoration members are added in the ObjectInput component, they won't be added here.
+        member.kind !== 'decoration',
     )
 
     // Return null here only when enableHiddenCheck, or we end up with array members that have 'item: null' when they
@@ -936,7 +1004,7 @@ export function createPrepareFormState({
 
     const visibleGroups = hasFieldGroups
       ? groups.flatMap((group) => {
-          // The "all fields" group is always visible
+          // The "all fields" group is always visible, unless it's hidden by the user. (See above)
           if (group.name === ALL_FIELDS_GROUP.name) {
             return group
           }
@@ -952,7 +1020,9 @@ export function createPrepareFormState({
               member.groups.includes(group.name) ||
               member.fieldSet.members.some(
                 (fieldsetMember) =>
-                  fieldsetMember.kind !== 'error' && fieldsetMember.groups.includes(group.name),
+                  fieldsetMember.kind !== 'decoration' &&
+                  fieldsetMember.kind !== 'error' &&
+                  fieldsetMember.groups.includes(group.name),
               )
             )
           })
@@ -983,13 +1053,15 @@ export function createPrepareFormState({
       },
     )
 
+    const diffProps = prepareDiffProps(props)
+
     const node = {
       value: props.value as Record<string, unknown> | undefined,
-      changed: isChangedValue(props.value, props.comparisonValue),
+      compareValue: props.comparisonValue ?? undefined,
       schemaType: props.schemaType,
       readOnly,
       path: props.path,
-      id: toString(props.path),
+      id: getSafeDomId(toString(props.path)),
       level: props.level,
       focused: isEqual(props.path, props.focusPath),
       focusPath: trimChildPath(props.path, props.focusPath),
@@ -999,6 +1071,10 @@ export function createPrepareFormState({
       // (e.g. members not matching current group filter) in order to determine what to expand
       members: filtereredMembers,
       groups: visibleGroups,
+      __unstable_computeDiff: diffProps.__unstable_computeDiff,
+      changed: isChangedValue(props.value, props.comparisonValue),
+      hasUpstreamVersion: diffProps.hasUpstreamVersion,
+      displayInlineChanges: props.displayInlineChanges,
     }
     Object.defineProperty(node, '_allMembers', {
       value: members,
@@ -1028,20 +1104,27 @@ export function createPrepareFormState({
       const members = items.flatMap((item, index) =>
         prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
       )
+
+      const diffProps = prepareDiffProps(props)
+
       return {
-        // checks for changes not only on the array itself, but also on any of its items
-        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
         readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
-        id: toString(props.path),
+        perspective: props.perspective,
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
         members,
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        // checks for changes not only on the array itself, but also on any of its items
+        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
+        hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        displayInlineChanges: props.displayInlineChanges,
       }
     },
   )
@@ -1073,20 +1156,27 @@ export function createPrepareFormState({
         }),
       )
 
+      const diffProps = prepareDiffProps<KeyedObject[]>(props)
+
       return {
-        // checks for changes not only on the array itself, but also on any of its items
-        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         value: props.value,
+        perspective: props.perspective,
         readOnly: props.readOnly === true || props.readOnly?.value,
         schemaType: props.schemaType,
         focused: isEqual(props.path, props.focusPath),
         focusPath: trimChildPath(props.path, props.focusPath),
         path: props.path,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
         presence,
         members,
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        // checks for changes not only on the array itself, but also on any of its items
+        changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
+        compareValue: diffProps.compareValue,
+        hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        displayInlineChanges: props.displayInlineChanges,
       }
     },
   )
@@ -1142,6 +1232,8 @@ export function createPrepareFormState({
           comparisonValue,
           changed: isChangedValue(arrayItem, comparisonValue),
           path: itemPath,
+          perspective: parent.perspective,
+          hasUpstreamVersion: parent.hasUpstreamVersion,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
           currentUser: parent.currentUser,
@@ -1152,6 +1244,7 @@ export function createPrepareFormState({
           fieldGroupState,
           readOnly: scopedReadOnly,
           hidden: scopedHidden,
+          displayInlineChanges: parent.displayInlineChanges,
         },
         false,
       ) as ObjectArrayFormNode
@@ -1244,17 +1337,24 @@ export function createPrepareFormState({
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
         .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
+      const diffProps = prepareDiffProps(props)
+
       return {
         schemaType: props.schemaType,
-        changed: isChangedValue(props.value, props.comparisonValue),
         value: props.value,
         level: props.level,
-        id: toString(props.path),
+        id: getSafeDomId(toString(props.path)),
         readOnly: props.readOnly === true || props.readOnly?.value,
         focused: isEqual(props.path, props.focusPath),
         path: props.path,
+        perspective: props.perspective,
         presence,
         validation,
+        __unstable_computeDiff: diffProps.__unstable_computeDiff,
+        changed: isChangedValue(props.value, props.comparisonValue),
+        hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        displayInlineChanges: props.displayInlineChanges,
       } as PrimitiveFormNode
     },
   )
@@ -1269,11 +1369,14 @@ export function createPrepareFormState({
     focusPath,
     hidden,
     openPath,
+    perspective,
+    hasUpstreamVersion,
     presence,
     readOnly,
     schemaType,
     validation,
     changesOpen,
+    displayInlineChanges,
   }: RootFormStateOptions): ObjectFormNode | null {
     return prepareObjectInputState({
       collapsedFieldSets,
@@ -1285,6 +1388,8 @@ export function createPrepareFormState({
       focusPath,
       hidden: hidden === false ? EMPTY_OBJECT : hidden,
       openPath,
+      perspective,
+      hasUpstreamVersion,
       presence,
       readOnly: readOnly === false ? EMPTY_OBJECT : readOnly,
       schemaType,
@@ -1292,6 +1397,7 @@ export function createPrepareFormState({
       changesOpen,
       level: 0,
       path: [],
+      displayInlineChanges,
     })
   }
 
@@ -1305,4 +1411,68 @@ export function createPrepareFormState({
   prepareFormState._preparePrimitiveInputState = preparePrimitiveInputState
 
   return prepareFormState
+}
+
+/**
+ * A map of supported JSON types to valid empty values that may be used for diffing purposes when
+ * the node has no underlying value to be compared with.
+ */
+const emptyValuesByType = {
+  string: '',
+  number: 0,
+  boolean: false,
+  array: [],
+  object: {},
+} satisfies Record<SchemaType['jsonType'], unknown>
+
+/**
+ * This utility creates the diff-related properties that are assigned to each node.
+ *
+ * @internal
+ */
+export function prepareDiffProps<Value = unknown>({
+  comparisonValue,
+  value: definitiveValue,
+  schemaType,
+  perspective,
+  hasUpstreamVersion,
+}: Pick<
+  FormStateOptions<unknown, Value>,
+  'comparisonValue' | 'value' | 'schemaType' | 'perspective' | 'hasUpstreamVersion'
+>): Omit<NodeDiffProps<ProvenanceDiffAnnotation, Value>, 'changed'> {
+  const jsonType =
+    typeof schemaType === 'object' &&
+    schemaType !== null &&
+    'jsonType' in schemaType &&
+    typeof schemaType.jsonType === 'string' &&
+    schemaType.jsonType in emptyValuesByType
+      ? (schemaType.jsonType as keyof typeof emptyValuesByType)
+      : undefined
+
+  if (typeof jsonType === 'undefined') {
+    throw new Error('Expected `jsonType`')
+  }
+
+  const emptyValue = emptyValuesByType[jsonType]
+
+  const provenanceAnnotation: ProvenanceDiffAnnotation = {
+    provenance: {
+      bundle: perspective,
+    },
+  }
+
+  const computeDiff: ComputeDiff<ProvenanceDiffAnnotation> = (value) => {
+    return diffInput<ProvenanceDiffAnnotation>(
+      wrap(hasUpstreamVersion ? (comparisonValue ?? emptyValue) : emptyValue, provenanceAnnotation),
+      wrap(value ?? emptyValue, provenanceAnnotation),
+      {},
+    )
+  }
+
+  return {
+    __unstable_computeDiff: computeDiff,
+    // TODO: Establish consistent naming.
+    compareValue: comparisonValue ?? undefined,
+    hasUpstreamVersion,
+  }
 }

@@ -8,29 +8,23 @@ import {AddedVersion} from '../__telemetry__/releases.telemetry'
 import {useReleaseOperations} from '../store/useReleaseOperations'
 
 export interface VersionOperationsValue {
-  createVersion: (
-    releaseId: ReleaseId,
-    documentId: string,
-    initialValue?: Record<string, unknown>,
-  ) => Promise<void>
+  createVersion: (releaseId: ReleaseId, documentId: string) => Promise<void>
   discardVersion: (releaseId: string, documentId: string) => Promise<SingleActionResult>
   unpublishVersion: (documentId: string) => Promise<SingleActionResult>
+  revertUnpublishVersion: (documentId: string) => Promise<SingleActionResult>
 }
 
 /** @internal */
 export function useVersionOperations(): VersionOperationsValue {
   const telemetry = useTelemetry()
-  const {createVersion, discardVersion, unpublishVersion} = useReleaseOperations()
+  const {createVersion, discardVersion, unpublishVersion, revertUnpublishVersion} =
+    useReleaseOperations()
 
   const setPerspective = useSetPerspective()
 
-  const handleCreateVersion = async (
-    releaseId: ReleaseId,
-    documentId: string,
-    initialValue?: Record<string, unknown>,
-  ) => {
+  const handleCreateVersion = async (releaseId: ReleaseId, documentId: string) => {
     const origin = getDocumentVariantType(documentId)
-    await createVersion(releaseId, documentId, initialValue)
+    await createVersion(releaseId, documentId)
     setPerspective(releaseId)
     telemetry.log(AddedVersion, {
       documentOrigin: origin,
@@ -42,9 +36,13 @@ export function useVersionOperations(): VersionOperationsValue {
 
   const handleUnpublishVersion = async (documentId: string) => unpublishVersion(documentId)
 
+  const handleRevertUnpublishVersion = async (documentId: string) =>
+    revertUnpublishVersion(documentId)
+
   return {
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
+    revertUnpublishVersion: handleRevertUnpublishVersion,
   }
 }

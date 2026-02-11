@@ -1,4 +1,9 @@
-import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {
+  type PrepareViewOptions,
+  type SanityDocument,
+  type SchemaType,
+  type SortOrdering,
+} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
@@ -24,7 +29,8 @@ export interface PaneItemPreviewProps {
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
-  value: SanityDocument
+  sortOrder?: Pick<SortOrdering, 'by'>
+  value: SanityDocument | {_id: string; _type: string}
 }
 
 /**
@@ -35,19 +41,30 @@ export interface PaneItemPreviewProps {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, layout, presence, schemaType, value} = props
+  const {icon, layout, presence, schemaType, sortOrder, value} = props
 
   const versionsInfo = useDocumentVersionInfo(value._id)
 
   const {perspectiveStack} = usePerspective()
+  const viewOptions = useMemo((): PrepareViewOptions | undefined => {
+    if (!sortOrder) return undefined
+    return {
+      ordering: {
+        title: '',
+        name: '',
+        by: sortOrder.by,
+      },
+    }
+  }, [sortOrder])
   const previewStateObservable = useMemo(() => {
     return getPreviewStateObservable(
       props.documentPreviewStore,
       schemaType,
       value._id,
       perspectiveStack,
+      viewOptions,
     )
-  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack])
+  }, [props.documentPreviewStore, schemaType, value._id, perspectiveStack, viewOptions])
 
   const {
     snapshot,

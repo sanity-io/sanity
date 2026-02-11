@@ -1,80 +1,69 @@
-/**
- * @internal
- */
-export interface StudioAutoUpdatesImportMap {
-  'sanity': string
-  'sanity/': string
-  '@sanity/vision'?: string
-  '@sanity/vision/'?: string
-}
-
-export interface SanityAppAutoUpdatesImportMap extends Partial<StudioAutoUpdatesImportMap> {
-  '@sanity/sdk': string
-  '@sanity/sdk/': string
-  '@sanity/sdk-react': string
-  '@sanity/sdk-react/': string
-}
-
 const MODULES_HOST =
-  process.env.SANITY_INTERNAL_ENV === 'staging'
+  process.env.SANITY_MODULES_HOST ||
+  (process.env.SANITY_INTERNAL_ENV === 'staging'
     ? 'https://sanity-cdn.work'
-    : 'https://sanity-cdn.com'
+    : 'https://sanity-cdn.com')
 
-function getTimestamp(): string {
-  return `t${Math.floor(Date.now() / 1000)}`
+function currentUnixTime(): number {
+  return Math.floor(Date.now() / 1000)
 }
 
+type Package = {version: string; name: string}
 /**
  * @internal
  */
-export function getStudioAutoUpdateImportMap(
-  version: string,
-  includeVision = true,
-): StudioAutoUpdatesImportMap {
-  const timestamp = getTimestamp()
-
-  const autoUpdatesImports = {
-    'sanity': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}`,
-    'sanity/': `${MODULES_HOST}/v1/modules/sanity/default/${version}/${timestamp}/`,
-  }
-
-  if (includeVision) {
-    return {
-      ...autoUpdatesImports,
-      '@sanity/vision': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}`,
-      '@sanity/vision/': `${MODULES_HOST}/v1/modules/@sanity__vision/default/${version}/${timestamp}/`,
-    }
-  }
-
-  return autoUpdatesImports
+export function getAutoUpdatesImportMap<const Pkg extends Package>(
+  packages: Pkg[],
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
+) {
+  return Object.fromEntries(
+    packages.flatMap((pkg) => getAppAutoUpdateImportMapForPackage(pkg, options)),
+  ) as {[K in Pkg['name'] | `${Pkg['name']}/`]: string}
 }
 
-interface GetAppAutoUpdateImportMapOptions {
-  sdkVersion: string
-  sanityVersion?: string
+function getAppAutoUpdateImportMapForPackage<const Pkg extends Package>(
+  pkg: Pkg,
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
+): [[Pkg['name'], string], [`${Pkg['name']}/`, string]] {
+  const moduleUrl = getModuleUrl(pkg, options)
+
+  return [
+    [pkg.name, moduleUrl],
+    [`${pkg.name}/`, `${moduleUrl}/`],
+  ]
+}
+
+export function getModuleUrl(
+  pkg: Package,
+  options: {timestamp?: number; baseUrl?: string; appId?: string} = {},
+) {
+  const {timestamp = currentUnixTime()} = options
+  return options.appId
+    ? getByAppModuleUrl(pkg, {appId: options.appId, baseUrl: options.baseUrl, timestamp})
+    : getLegacyModuleUrl(pkg, {timestamp, baseUrl: options.baseUrl})
+}
+
+function getLegacyModuleUrl(pkg: Package, options: {timestamp: number; baseUrl?: string}) {
+  const encodedMinVer = encodeURIComponent(`^${pkg.version}`)
+  return `${options.baseUrl || MODULES_HOST}/v1/modules/${rewriteScopedPackage(pkg.name)}/default/${encodedMinVer}/t${options.timestamp}`
+}
+
+function getByAppModuleUrl(
+  pkg: Package,
+  options: {appId: string; baseUrl?: string; timestamp: number},
+) {
+  const encodedMinVer = encodeURIComponent(`^${pkg.version}`)
+  return `${options.baseUrl || MODULES_HOST}/v1/modules/by-app/${options.appId}/t${options.timestamp}/${encodedMinVer}/${rewriteScopedPackage(pkg.name)}`
 }
 
 /**
- * @internal
+ * replaces '/' with '__' similar to how eg `@types/scope__pkg` are rewritten
+ * scoped packages are stored this way both in the manifest and in the cloud storage bucket
  */
-export function getAppAutoUpdateImportMap(
-  options: GetAppAutoUpdateImportMapOptions,
-): SanityAppAutoUpdatesImportMap {
-  const timestamp = getTimestamp()
-
-  const {sdkVersion, sanityVersion} = options
-
-  const autoUpdatesImports: SanityAppAutoUpdatesImportMap = {
-    '@sanity/sdk': `${MODULES_HOST}/v1/modules/@sanity__sdk/default/${sdkVersion}/${timestamp}`,
-    '@sanity/sdk/': `${MODULES_HOST}/v1/modules/@sanity__sdk/default/${sdkVersion}/${timestamp}/`,
-    '@sanity/sdk-react': `${MODULES_HOST}/v1/modules/@sanity__sdk-react/default/${sdkVersion}/${timestamp}`,
-    '@sanity/sdk-react/': `${MODULES_HOST}/v1/modules/@sanity__sdk-react/default/${sdkVersion}/${timestamp}/`,
+function rewriteScopedPackage(pkgName: string) {
+  if (!pkgName.includes('@')) {
+    return pkgName
   }
-
-  if (sanityVersion) {
-    const sanityImportMap = getStudioAutoUpdateImportMap(sanityVersion, false)
-    return {...autoUpdatesImports, ...sanityImportMap}
-  }
-
-  return autoUpdatesImports
+  const [scope, ...pkg] = pkgName.split('/')
+  return `${scope}__${pkg.join('')}`
 }

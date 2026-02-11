@@ -45,10 +45,10 @@ export function runTest(props: TestOptions): () => boolean {
   // synchronously within the same call stack, and defer any re-render til the event handler completes
   // This means the first sample will be super fast because React will not re-render at all while it is running
   // For this reason we want to schedule the first sample async to escape the React event call stack
-  Promise.resolve().then(sampleNext)
+  void Promise.resolve().then(sampleNext)
 
   if (!handleRun) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     handleRun = console.log
   }
 
@@ -59,7 +59,6 @@ export function runTest(props: TestOptions): () => boolean {
     chars.forEach((char) => triggerInputEvent(inputElement, `Typing ${char}`))
     const duration = performance.now() - start
     total += duration
-    // eslint-disable-next-line callback-return
     handleRun(
       format(
         'Sample #{0}: {1}ms, avg: {2}ms',
@@ -71,7 +70,6 @@ export function runTest(props: TestOptions): () => boolean {
     if (remainingSamples > 0) {
       timer = setTimeout(sampleNext, gracePeriod)
     } else {
-      // eslint-disable-next-line callback-return
       handleRun(
         format('Average of {0} samples: {1}ms', sampleNo, (total / sampleNo).toPrecision(4)),
       )

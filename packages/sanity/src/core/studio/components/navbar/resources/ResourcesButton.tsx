@@ -1,14 +1,17 @@
 import {HelpCircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import semver from 'semver'
 import {styled} from 'styled-components'
 
-import {Button, MenuButton} from '../../../../../ui-components'
+import {MenuButton} from '../../../../../ui-components'
+import {StatusButton} from '../../../../components'
 import {useTranslation} from '../../../../i18n'
-import {SANITY_VERSION} from '../../../../version'
-import {AboutDialog} from './AboutDialog'
+import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
+import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
+import {StudioInfoDialog} from './StudioInfoDialog'
 
 const StyledMenu = styled(Menu)`
   max-width: 300px;
@@ -17,31 +20,48 @@ const StyledMenu = styled(Menu)`
 
 export function ResourcesButton() {
   const {t} = useTranslation()
+  const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
   const {value, error, isLoading} = useGetHelpResources()
-  const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
-  const handleAboutDialogClose = useCallback(() => {
-    setAboutDialogOpen(false)
+
+  const {
+    autoUpdatingVersion: autoUpdatingVersionStr,
+    currentVersion: currentVersionStr,
+    latestTaggedVersion: latestTaggedVersionStr,
+  } = usePackageVersionStatus()
+
+  const currentVersion = semver.parse(currentVersionStr)!
+  const autoUpdatingVersion = semver.parse(autoUpdatingVersionStr) || undefined
+  const latestTaggedVersion = semver.parse(latestTaggedVersionStr) || undefined
+
+  const newAutoUpdateVersionAvailable =
+    currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
+
+  const getButtonTone = () => {
+    if (newAutoUpdateVersionAvailable) return 'primary'
+    if (!isLoadingUserApplication && !userApplication) return 'caution'
+    return undefined
+  }
+
+  const [studioInfoDialogOpen, setStudioInfoDialogOpen] = useState(false)
+  const handleStudioInfoDialogClose = useCallback(() => {
+    setStudioInfoDialogOpen(false)
   }, [])
 
-  const handleAboutDialogOpen = useCallback(() => {
-    setAboutDialogOpen(true)
+  const handleOpenVersionDialog = useCallback(() => {
+    setStudioInfoDialogOpen(true)
   }, [])
 
   return (
     <>
-      {aboutDialogOpen && (
-        <AboutDialog
-          currentVersion={SANITY_VERSION}
-          latestVersion={value?.latestVersion || 'unknown'}
-          onClose={handleAboutDialogClose}
-        />
-      )}
+      {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
       <MenuButton
         button={
-          <Button
+          <StatusButton
+            tone={getButtonTone()}
             aria-label={t('help-resources.title')}
             icon={HelpCircleIcon}
+            data-testid="button-resources-menu"
             mode="bleed"
             tooltipProps={{content: t('help-resources.title')}}
           />
@@ -50,10 +70,13 @@ export function ResourcesButton() {
         menu={
           <StyledMenu data-testid="menu-button-resources">
             <ResourcesMenuItems
+              currentVersion={currentVersion}
+              latestTaggedVersion={latestTaggedVersion}
+              newAutoUpdateVersion={newAutoUpdateVersionAvailable ? autoUpdatingVersion : undefined}
               error={error}
               isLoading={isLoading}
               value={value}
-              onAboutDialogOpen={handleAboutDialogOpen}
+              onOpenStudioVersionDialog={handleOpenVersionDialog}
             />
           </StyledMenu>
         }

@@ -32,7 +32,10 @@ export function usePreviewUrlActorRef(
   const previewSearchParam = routerSearchParams.get('preview')
   const {push: pushToast} = useToast()
   const {t} = useTranslation(presentationLocaleNamespace)
-  const perspective = usePresentationPerspective()
+
+  // TODO: Do we need to pass the scheduled draft perspective here?
+  // Scheduled draft are a "local" perspective which applies only when the user is in the document pane and has selected the scheduled draft.
+  const perspective = usePresentationPerspective({scheduledDraft: undefined})
 
   const actorRef = useActorRef(
     previewUrlMachine.provide({
@@ -85,7 +88,6 @@ export function usePreviewUrlActorRef(
   }, [actorRef, previewSearchParam])
 
   const error = useSelector(actorRef, (state) =>
-    // eslint-disable-next-line no-nested-ternary
     state.status === 'error' ? state.error : state.hasTag('error') ? state.context.error : null,
   )
 

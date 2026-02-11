@@ -1,18 +1,9 @@
 import {isHotkey} from 'is-hotkey-esm'
-import {
-  type ElementType,
-  type HTMLProps,
-  memo,
-  type Ref,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react'
-import {type DocumentActionDescription, type DocumentActionProps, LegacyLayerProvider} from 'sanity'
+import {type ElementType, type HTMLProps, memo, type Ref, useCallback, useState} from 'react'
+import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
 
 import {RenderActionCollectionState} from '../../../components'
 import {ActionStateDialog} from '../statusBar'
-import {useDocumentPane} from '../useDocumentPane'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null
@@ -54,7 +45,6 @@ const KeyboardShortcutResponder = memo(function KeyboardShortcutResponder(
       const matchingState = matchingStates[0]
 
       if (matchingStates.length > 1) {
-        // eslint-disable-next-line no-console
         console.warn(
           `Keyboard shortcut conflict: More than one document action matches the shortcut "${matchingState.shortcut}"`,
         )
@@ -100,50 +90,26 @@ export interface DocumentActionShortcutsProps {
 export const DocumentActionShortcuts = memo(
   (props: DocumentActionShortcutsProps & Omit<HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
-    const {actions, editState, isInitialValueLoading, revisionId} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)
 
     const onActionStart = useCallback((idx: number) => {
       setActiveIndex(idx)
     }, [])
 
-    const actionProps: DocumentActionProps | null = useMemo(
-      () =>
-        editState && {
-          ...editState,
-
-          // @todo: what to call here?
-          onComplete: () => undefined,
-
-          revision: revisionId || undefined,
-          initialValueResolved: !isInitialValueLoading,
-        },
-      [editState, isInitialValueLoading, revisionId],
-    )
-
-    const renderDocumentActionShortcuts = useCallback<
-      (props: {states: DocumentActionDescription[]}) => React.ReactNode
-    >(
-      ({states}) => (
-        <KeyboardShortcutResponder
-          {...rest}
-          activeIndex={activeIndex}
-          actionsBoxElement={actionsBoxElement}
-          as={as}
-          onActionStart={onActionStart}
-          states={states}
-        >
-          {children}
-        </KeyboardShortcutResponder>
-      ),
-      [actionsBoxElement, activeIndex, as, children, onActionStart, rest],
-    )
-
-    if (!actionProps || !actions) return null
-
     return (
-      <RenderActionCollectionState actionProps={actionProps} actions={actions}>
-        {renderDocumentActionShortcuts}
+      <RenderActionCollectionState>
+        {({states}) => (
+          <KeyboardShortcutResponder
+            {...rest}
+            activeIndex={activeIndex}
+            actionsBoxElement={actionsBoxElement}
+            as={as}
+            onActionStart={onActionStart}
+            states={states}
+          >
+            {children}
+          </KeyboardShortcutResponder>
+        )}
       </RenderActionCollectionState>
     )
   },

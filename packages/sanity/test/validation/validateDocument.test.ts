@@ -24,6 +24,8 @@ type ConvertToValidationMarker =
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   typeof import('../../src/core/validation/util/convertToValidationMarker')
 
+type RuleWithSkip = Rule & {skip: () => Rule}
+
 vi.mock('../../src/core/validation/util/convertToValidationMarker', async () => {
   return {
     convertToValidationMarker: vi.fn(
@@ -36,8 +38,10 @@ vi.mock('../../src/core/validation/util/convertToValidationMarker', async () => 
   }
 })
 
+const convertToValidationMarkerMock = vi.mocked(convertToValidationMarker)
+
 beforeEach(() => {
-  convertToValidationMarker.mockClear()
+  convertToValidationMarkerMock.mockClear()
 })
 
 // mock client
@@ -142,6 +146,214 @@ describe('validateDocument', () => {
 })
 
 describe('validateItem', () => {
+  it('passes hidden to validation for hidden parent objects', async () => {
+    const contexts: Array<{
+      path: ValidationContext['path']
+      hidden?: boolean
+    }> = []
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'hiddenDoc',
+          type: 'document',
+          fields: [
+            {name: 'hidePanel', type: 'boolean'},
+            {
+              name: 'panel',
+              type: 'object',
+              hidden: ({document}: {document?: SanityDocument}) => document?.hidePanel === true,
+              fields: [
+                {
+                  name: 'title',
+                  type: 'string',
+                  validation: (rule: RuleWithSkip, context?: ValidationContext) => {
+                    contexts.push({
+                      path: context?.path,
+                      hidden: context?.hidden,
+                    })
+                    return context?.hidden ? rule.skip() : rule.required()
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'hidden-doc-id',
+      _type: 'hiddenDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'hidden-doc-rev',
+      hidePanel: true,
+      panel: {},
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('hiddenDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(contexts).toMatchObject([
+      {
+        path: ['panel', 'title'],
+        hidden: true,
+      },
+    ])
+  })
+
+  it('passes hidden for field-level hidden', async () => {
+    const contexts: Array<{
+      path: ValidationContext['path']
+      hidden?: boolean
+    }> = []
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'fieldHiddenDoc',
+          type: 'document',
+          fields: [
+            {
+              name: 'settings',
+              type: 'object',
+              fields: [
+                {name: 'showDetails', type: 'boolean'},
+                {
+                  name: 'details',
+                  type: 'string',
+                  hidden: ({parent}: {parent?: {showDetails?: boolean}}) => !parent?.showDetails,
+                  validation: (rule: RuleWithSkip, context?: ValidationContext) => {
+                    contexts.push({
+                      path: context?.path,
+                      hidden: context?.hidden,
+                    })
+                    return context?.hidden ? rule.skip() : rule.required()
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'field-hidden-doc-id',
+      _type: 'fieldHiddenDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'field-hidden-doc-rev',
+      settings: {showDetails: false},
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('fieldHiddenDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(contexts).toMatchObject([
+      {
+        path: ['settings', 'details'],
+        hidden: true,
+      },
+    ])
+  })
+
+  it('propagates hidden through hidden arrays', async () => {
+    const contexts: Array<{
+      path: ValidationContext['path']
+      hidden?: boolean
+    }> = []
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'hiddenArrayDoc',
+          type: 'document',
+          fields: [
+            {name: 'hideItems', type: 'boolean'},
+            {
+              name: 'items',
+              type: 'array',
+              hidden: ({document}: {document?: SanityDocument}) => document?.hideItems === true,
+              of: [
+                {
+                  type: 'object',
+                  name: 'item',
+                  fields: [
+                    {
+                      name: 'name',
+                      type: 'string',
+                      validation: (rule: RuleWithSkip, context?: ValidationContext) => {
+                        contexts.push({
+                          path: context?.path,
+                          hidden: context?.hidden,
+                        })
+                        return context?.hidden ? rule.skip() : rule.required()
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'hidden-array-doc-id',
+      _type: 'hiddenArrayDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'hidden-array-doc-rev',
+      hideItems: true,
+      items: [{_key: 'a'}],
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('hiddenArrayDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(contexts).toMatchObject([
+      {
+        path: ['items', {_key: 'a'}, 'name'],
+        hidden: true,
+      },
+    ])
+  })
   it("runs nested validation on an undefined value for object types if it's required", async () => {
     const validation = (rule: Rule) => [
       rule.required().error('This is required!'),
@@ -281,6 +493,120 @@ describe('validateItem', () => {
     ).resolves.toMatchObject([
       {
         item: {message: 'Expected type "String", got "Number"'},
+        level: 'error',
+        path: ['foo'],
+      },
+      {
+        item: {message: 'Required'},
+        level: 'error',
+        path: ['bar'],
+      },
+    ])
+  })
+
+  it('runs nested validation for Rule.fields() inside Rule.all() (issue #8290)', async () => {
+    // This tests that Rule.fields() works when nested inside Rule.all()
+    // Previously, _fieldRules were only extracted from top-level rules, not from nested ones
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          title: 'Test Object',
+          fields: [
+            {name: 'foo', type: 'string'},
+            {name: 'bar', type: 'string'},
+          ],
+          validation: (rule: Rule) =>
+            rule.all([
+              rule.required(),
+              rule.fields({
+                foo: (r) => r.required(),
+                bar: (r) => r.required(),
+              }),
+            ]),
+        },
+      ],
+    })
+
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
+
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {foo: 5},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toMatchObject([
+      {
+        item: {message: 'Expected type "String", got "Number"'},
+        level: 'error',
+        path: ['foo'],
+      },
+      {
+        item: {message: 'Required'},
+        level: 'error',
+        path: ['bar'],
+      },
+    ])
+  })
+
+  it('runs nested validation for Rule.fields() inside Rule.either()', async () => {
+    // This tests that Rule.fields() works when nested inside Rule.either()
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          title: 'Test Object',
+          fields: [
+            {name: 'foo', type: 'string'},
+            {name: 'bar', type: 'string'},
+          ],
+          validation: (rule: Rule) =>
+            rule.either([
+              rule.fields({
+                foo: (r) => r.required(),
+              }),
+              rule.fields({
+                bar: (r) => r.required(),
+              }),
+            ]),
+        },
+      ],
+    })
+
+    // ensures there are no schema formatting issues
+    expect(schema._validation).toHaveLength(0)
+
+    // When both foo and bar are missing, at least one of the either conditions should fail
+    // With our fix, the fields() validation inside either() should be found and executed
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toMatchObject([
+      {
+        item: {message: 'Required'},
         level: 'error',
         path: ['foo'],
       },
@@ -608,7 +934,7 @@ describe('validateItem', () => {
     })
 
     // ensures there are no schema formatting issues
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect((schema as any)._validation).toHaveLength(0)
 
     const value = {
@@ -676,9 +1002,11 @@ describe('validateItem', () => {
       },
     ])
 
-    const calls = convertToValidationMarker.mock.calls
+    const calls = convertToValidationMarkerMock.mock.calls
+    const findCall = (message: string) =>
+      calls.find((call: Parameters<typeof convertToValidationMarker>) => call[0] === message)
 
-    expect(calls.find((call) => call[0] === 'from root')).toMatchObject([
+    expect(findCall('from root')).toMatchObject([
       'from root',
       'error',
       {
@@ -688,7 +1016,7 @@ describe('validateItem', () => {
         type: rootType,
       },
     ])
-    expect(calls.find((call) => call[0] === 'from level 1 object')).toMatchObject([
+    expect(findCall('from level 1 object')).toMatchObject([
       'from level 1 object',
       'error',
       {
@@ -698,7 +1026,7 @@ describe('validateItem', () => {
         type: level1ObjectType,
       },
     ])
-    expect(calls.find((call) => call[0] === 'from level 2 via object')).toMatchObject([
+    expect(findCall('from level 2 via object')).toMatchObject([
       'from level 2 via object',
       'error',
       {
@@ -708,7 +1036,7 @@ describe('validateItem', () => {
         type: level2StringType,
       },
     ])
-    expect(calls.find((call) => call[0] === 'from level 1 array')).toMatchObject([
+    expect(findCall('from level 1 array')).toMatchObject([
       'from level 1 array',
       'error',
       {
@@ -718,7 +1046,7 @@ describe('validateItem', () => {
         type: level1ArrayType,
       },
     ])
-    expect(calls.find((call) => call[0] === 'from level 2 via array')).toMatchObject([
+    expect(findCall('from level 2 via array')).toMatchObject([
       'from level 2 via array',
       'error',
       {
@@ -750,7 +1078,7 @@ describe('validation behavior', () => {
     })
 
     // ensures there are no schema formatting issues
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect((schema as any)._validation).toHaveLength(0)
 
     const document: SanityDocument = {

@@ -1,5 +1,5 @@
 import {toPlainText} from '@portabletext/react'
-import {defineArrayMember, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {CalloutPreview} from './components/CalloutPreview'
 
@@ -56,6 +56,26 @@ export default defineType({
                       }).warning(
                         `This is not an external link. Consider using internal links instead.`,
                       ),
+                  },
+                  {
+                    name: 'url2',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url3',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url4',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url5',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url6',
+                    type: 'string',
                   },
                 ],
               },
@@ -174,5 +194,16 @@ export default defineType({
         },
       ],
     },
+
+    defineField({
+      name: 'slugs',
+      title: 'Slugs',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'slug',
+        }),
+      ],
+    }),
   ],
 })

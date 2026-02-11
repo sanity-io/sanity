@@ -24,7 +24,7 @@ export function validateStructure(structure: any): UnresolvedPaneNode {
     throw new SerializeError('The root structure cannot have value `edit` as `id`', [], 'root')
   }
 
-  warnOnUnknownExports(structure as any)
+  warnOnUnknownExports(structure)
 
   if (!isStructure(structure)) {
     throw new Error(
@@ -72,7 +72,6 @@ function warnOnUnknownExports(mod: Record<string, unknown>) {
 
     const hint = closest ? ` - did you mean "${closest}"` : ''
 
-    // eslint-disable-next-line
     console.warn(`Unknown structure export "${key}"${hint}`)
   }
 }

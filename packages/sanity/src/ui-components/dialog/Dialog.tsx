@@ -16,6 +16,7 @@ export type DialogProps = Pick<
   UIDialogProps,
   | '__unstable_autoFocus'
   | '__unstable_hideCloseButton'
+  | 'animate'
   | 'contentRef'
   | 'header'
   | 'id'
@@ -34,6 +35,7 @@ export type DialogProps = Pick<
    */
   bodyHeight?: BoxHeight
   children?: ReactNode
+  zOffset?: number
   footer?: {
     cancelButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
     confirmButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
@@ -55,10 +57,12 @@ export type DialogProps = Pick<
  */
 export const Dialog = forwardRef(function Dialog(
   {
+    animate = true,
     bodyHeight,
     children,
     footer,
     padding = true,
+    zOffset,
     ...props
   }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
   ref: Ref<HTMLDivElement>,
@@ -68,7 +72,8 @@ export const Dialog = forwardRef(function Dialog(
   return (
     <UIDialog
       {...props}
-      animate
+      animate={animate}
+      zOffset={zOffset}
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (

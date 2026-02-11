@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
-
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {flatten, groupBy, isEqual, omit, uniq} from 'lodash'
+import {flatten, groupBy, isEqual, omit, uniq} from 'lodash-es'
 import {nanoid} from 'nanoid'
 import {
   BehaviorSubject,
@@ -99,7 +97,7 @@ const generate = () => nanoid(16)
 function getSessionId() {
   try {
     return window.sessionStorage.getItem(KEY)
-  } catch (err) {
+  } catch {
     // We don't want to fail hard if session storage can't be accessed for some reason
   }
   return null
@@ -108,7 +106,7 @@ function getSessionId() {
 function setSessionId(id: string) {
   try {
     window.sessionStorage.setItem(KEY, id)
-  } catch (err) {
+  } catch {
     // We don't want to fail hard if session storage can't be accessed for some reason
   }
   return id
@@ -187,7 +185,7 @@ export function createPresenceStore(context: {
   const useMock$ = debugPresenceParam$.pipe(
     filter((args) => args.includes('fake_others')),
     tap(() => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
         'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )
@@ -265,12 +263,19 @@ export function createPresenceStore(context: {
       }))
     }),
     withLatestFrom(debugIntrospect$),
-    map(([userAndSessions, debugIntrospect]) => userAndSessions),
+    map(([userAndSessions, debugIntrospect]) =>
+      userAndSessions.filter(
+        (userAndSession) =>
+          debugIntrospect || !userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID),
+      ),
+    ),
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
         status: 'online',
-        lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
+        lastActiveAt: userAndSession.sessions.sort((a, b) =>
+          b.lastActiveAt.localeCompare(a.lastActiveAt),
+        )[0]?.lastActiveAt,
         locations: flatten(
           (userAndSession.sessions || []).map((session) => session.locations || []),
         )

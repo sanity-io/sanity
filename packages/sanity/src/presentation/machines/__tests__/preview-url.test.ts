@@ -87,7 +87,6 @@ const mockActors = ({
 describe('Preview URL machine', () => {
   describe('checks permissions', () => {
     test('the check permission actor is required', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
       const {'check permission': _, ...actors} = mockActors()
       const actor = createActor(previewUrlMachine.provide({actors}), {
         input: {previewSearchParam: null},
@@ -164,7 +163,6 @@ describe('Preview URL machine', () => {
 
   describe('resolves initial url', () => {
     test('the resolve initial url actor is required', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
       const {'resolve initial url': _, ...actors} = mockActors()
       const actor = createActor(previewUrlMachine.provide({actors}), {
         input: {previewSearchParam: null},
@@ -246,7 +244,6 @@ describe('Preview URL machine', () => {
 
   describe('resolves allow patterns', () => {
     test('the resolve allow patterns actor is required', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
       const {'resolve allow patterns': _, ...actors} = mockActors()
       const actor = createActor(previewUrlMachine.provide({actors}), {
         input: {previewSearchParam: null},
@@ -623,7 +620,6 @@ describe('Preview URL machine', () => {
   describe('preview mode', () => {
     describe('resolves preview mode options', () => {
       test('the resolve preview mode actor is required', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
         const {'resolve preview mode': _, ...actors} = mockActors()
         const actor = createActor(previewUrlMachine.provide({actors}), {
           input: {previewSearchParam: null},
@@ -764,7 +760,6 @@ describe('Preview URL machine', () => {
 
     describe('creates preview url secrets', () => {
       test('the create preview secret actor is required', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
         const {'create preview secret': _, ...actors} = mockActors({
           previewUrlOption: {previewMode: {enable: '/api/preview'}},
         })
@@ -897,7 +892,6 @@ describe('Preview URL machine', () => {
       )
 
       test('the read shared preview secret actor is required', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
         const {'read shared preview secret': _, ...actors} = mockActors({
           previewUrlOption: {previewMode: {enable: '/api/preview'}},
         })
@@ -936,7 +930,6 @@ describe('Preview URL machine', () => {
 
     describe('resolves preview mode url', () => {
       test('the resolve preview mode url actor is required', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
         const {'resolve preview mode url': _, ...actors} = mockActors({
           previewUrlOption: {previewMode: {enable: '/api/preview'}},
         })

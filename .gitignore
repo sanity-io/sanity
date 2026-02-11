@@ -50,9 +50,14 @@ jspm_packages
 /.vscode
 !/.vscode/extensions.json
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # Environment files
-# ignore all local .env files
+# ignore all .env files
 *.local
+.env
+.env.*
 
 # TypeScript
 tsconfig.tsbuildinfo
@@ -72,10 +77,6 @@ etc
 .tsdoc
 
 # Automated testing files
-/test/e2e/report
-/test/e2e/results
-/test/e2e/state
-blob-report
 /artifacts
 
 # Developer scratch

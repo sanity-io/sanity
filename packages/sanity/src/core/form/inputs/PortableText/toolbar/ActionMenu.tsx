@@ -10,6 +10,7 @@ import {type PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {getActionIcon} from './helpers'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
@@ -30,6 +31,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const focusBlock = useFocusBlock()
 
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const selection = usePortableTextEditorSelection()
   const {t} = useTranslation()
   const isSelectingMultipleBlocks =
@@ -40,7 +42,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
       : // In case of non-keyed segments
         selection?.anchor.path[0] !== selection?.focus.path[0]
 
-  const isVoidBlock = focusBlock?._type !== editor.schemaTypes.block.name
+  const isVoidBlock = focusBlock?._type !== schemaTypes.block.name
   const isEmptyTextBlock =
     !isVoidBlock &&
     Array.isArray(focusBlock.children) &&
@@ -89,6 +91,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
+            key={action.key}
             aria-label={t('toolbar.portable-text.action-button-aria-label', {
               action: action.title || action.key,
             })}
@@ -97,8 +100,6 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             mode="bleed"
             dividerBefore={action.firstInGroup}
             icon={getActionIcon(action, active)}
-            key={action.key}
-            // eslint-disable-next-line react/jsx-no-bind
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}

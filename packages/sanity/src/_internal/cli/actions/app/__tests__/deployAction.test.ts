@@ -58,6 +58,7 @@ describe('deployAppAction', () => {
       chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str)},
       output: {
         error: vi.fn((str) => str),
+        warn: vi.fn((str) => str),
         print: vi.fn(),
         spinner: vi.fn().mockReturnValue(spinnerInstance),
       },
@@ -117,7 +118,7 @@ describe('deployAppAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isApp: true,
+      isSdkApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
@@ -127,7 +128,6 @@ describe('deployAppAction', () => {
   it('builds and deploys the app if app ID is in config', async () => {
     const mockSpinner = mockContext.output.spinner('')
     mockContext.cliConfig = {
-      // eslint-disable-next-line camelcase
       app: {
         id: 'configured-app-id',
         organizationId: 'org-id',
@@ -169,7 +169,7 @@ describe('deployAppAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isApp: true,
+      isSdkApp: true,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
@@ -320,7 +320,6 @@ describe('deployAppAction', () => {
   it('suggests adding appId to config when not configured', async () => {
     // Create a context without appId in the config
     mockContext.cliConfig = {
-      // eslint-disable-next-line camelcase
       app: {
         organizationId: 'org-id',
       },
@@ -350,11 +349,13 @@ describe('deployAppAction', () => {
 
     // Verify the hint to add appId to config is shown
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining("Add id: 'app-id'"),
+      expect.stringContaining("Add appId: 'app-id'"),
     )
-    expect(mockContext.output.print).toHaveBeenCalledWith(expect.stringContaining('to `app`'))
     expect(mockContext.output.print).toHaveBeenCalledWith(
-      expect.stringContaining('to avoid prompting on next deploy'),
+      expect.stringContaining('to the `deployment` section'),
+    )
+    expect(mockContext.output.print).toHaveBeenCalledWith(
+      expect.stringContaining('to avoid prompting for appId on next deploy'),
     )
   })
 })

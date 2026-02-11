@@ -112,7 +112,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
           {!isSingleValidType && (
             <Stack as="ul" space={2}>
               {validTypes.map((validType) => (
-                <Text as="li" key={validType} muted size={1}>
+                <Text key={validType} as="li" muted size={1}>
                   <code>{validType}</code>
                 </Text>
               ))}

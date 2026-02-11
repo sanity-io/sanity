@@ -133,9 +133,9 @@ BEST PRACTICE:
          memory: 2,
          timeout: 30,
          event: {
-           on: ["publish"],
+           on: ["create", "update"],
            filter: "_type == 'document-type' && condition",
-           projection: "_id",
+           projection: "{_id}",
          },
        }),
      ],

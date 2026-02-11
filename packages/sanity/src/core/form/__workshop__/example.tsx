@@ -86,7 +86,6 @@ export default function ExampleStory() {
 
       return filter
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`Failed filtering`, error)
 
       return () => true

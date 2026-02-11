@@ -4,14 +4,33 @@ import {
   type ClientPerspective,
   type ListenEvent,
   type MutationEvent,
+  type ReleaseDocument,
   type StackablePerspective,
 } from '@sanity/client'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Button, Flex, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useClient, usePerspective, useTranslation} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
+import {
+  type ChangeEvent,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
+  type PerspectiveStack,
+  sortReleases,
+  useActiveReleases,
+  useClient,
+  usePerspective,
+  useScheduledDraftsEnabled,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -51,8 +70,8 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
 
-const sanityUrl =
-  /\.(?:api|apicdn)\.sanity\.(?:io|work)\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+// Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
+const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -70,7 +89,7 @@ export interface Params {
 interface QueryExecutionOptions {
   apiVersion?: string
   dataset?: string
-  perspective?: SupportedPerspective
+  perspective?: SupportedPerspective | undefined
   query?: string
   params?: Record<string, unknown>
 }
@@ -88,7 +107,7 @@ export interface ParsedUrlState {
   dataset: string
   apiVersion: string
   customApiVersion: string | false | undefined
-  perspective: SupportedPerspective
+  perspective: SupportedPerspective | undefined
   url: string
 }
 
@@ -97,8 +116,11 @@ export function VisionGui(props: VisionGuiProps) {
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack} = usePerspective()
+  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  const {data: releases = []} = useActiveReleases()
+  const workspace = useWorkspace()
+  const isDraftModelEnabled = workspace.document.drafts.enabled
 
-  const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
   const editorQueryRef = useRef<VisionCodeMirrorHandle>(null)
   const editorParamsRef = useRef<VisionCodeMirrorHandle>(null)
   const visionRootRef = useRef<HTMLDivElement | null>(null)
@@ -108,19 +130,17 @@ export function VisionGui(props: VisionGuiProps) {
 
   const [localStorage] = useState(() => getLocalStorage(projectId || 'default'))
 
-  const {storedDataset, storedApiVersion, storedQuery, storedParams, storedPerspective} =
-    useMemo(() => {
-      return {
-        storedDataset: localStorage.get('dataset', defaultDataset),
-        storedApiVersion: localStorage.get('apiVersion', defaultApiVersion),
-        storedQuery: localStorage.get('query', ''),
-        storedParams: localStorage.get('params', '{\n  \n}'),
-        storedPerspective: localStorage.get<SupportedPerspective | undefined>(
-          'perspective',
-          undefined,
-        ),
-      }
-    }, [defaultDataset, defaultApiVersion, localStorage])
+  const storedDataset = localStorage.get('dataset', defaultDataset)
+  const storedApiVersion = localStorage.get(
+    'apiVersion',
+    prefixApiVersion(`${config.defaultApiVersion}`),
+  )
+  const storedQuery = localStorage.get('query', '')
+  const storedParams = localStorage.get('params', '{\n  \n}')
+  const storedPerspective = localStorage.get<SupportedPerspective | undefined>(
+    'perspective',
+    undefined,
+  )
 
   const [dataset, setDataset] = useState<string>(() => {
     if (datasets.includes(storedDataset)) {
@@ -137,7 +157,7 @@ export function VisionGui(props: VisionGuiProps) {
   const [customApiVersion, setCustomApiVersion] = useState<string | false>(() =>
     API_VERSIONS.includes(storedApiVersion) ? false : storedApiVersion,
   )
-  const [perspective, setPerspectiveState] = useState<SupportedPerspective>(
+  const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
     storedPerspective || 'raw',
   )
   const isValidApiVersion = customApiVersion ? validateApiVersion(customApiVersion) : true
@@ -146,7 +166,8 @@ export function VisionGui(props: VisionGuiProps) {
   const [query, setQuery] = useState<string>(() =>
     typeof storedQuery === 'string' ? storedQuery : '',
   )
-  const [params, setParams] = useState<Params>(() => parseParams(storedParams, t))
+  const [rawParams, setRawParams] = useState<string>(storedParams)
+  const params = useMemo(() => parseParams(rawParams, t), [rawParams, t])
   const [queryResult, setQueryResult] = useState<unknown | undefined>(undefined)
   const [listenMutations, setListenMutations] = useState<MutationEvent[]>([])
   const [error, setError] = useState<Error | undefined>(undefined)
@@ -158,6 +179,22 @@ export function VisionGui(props: VisionGuiProps) {
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
+  // Compute scheduled drafts perspective stack
+  const scheduledDraftsStack = useMemo((): PerspectiveStack | undefined => {
+    if (!isScheduledDraftsEnabled) return undefined
+
+    const scheduledDraftReleases = releases.filter(
+      (release: ReleaseDocument) =>
+        isCardinalityOneRelease(release) && release.state === 'scheduled',
+    )
+    const sorted = sortReleases(scheduledDraftReleases)
+    const releaseIds = sorted.map((release: ReleaseDocument) =>
+      getReleaseIdFromReleaseDocumentId(release._id),
+    )
+    const defaultPerspective = isDraftModelEnabled ? ['drafts'] : ['published']
+    return [...releaseIds, ...defaultPerspective] as PerspectiveStack
+  }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
+
   // Client  with memoized initial value
   const _client = useClient({
     apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
@@ -165,12 +202,17 @@ export function VisionGui(props: VisionGuiProps) {
   const client = useMemo(() => {
     return _client.withConfig({
       apiVersion: isValidApiVersion && customApiVersion ? customApiVersion : apiVersion,
-      perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}),
+      perspective: getActivePerspective({
+        visionPerspective: perspective,
+        perspectiveStack,
+        scheduledDraftsStack,
+      }),
       dataset,
       allowReconfigure: true,
     })
   }, [
     perspectiveStack,
+    scheduledDraftsStack,
     perspective,
     customApiVersion,
     apiVersion,
@@ -212,8 +254,10 @@ export function VisionGui(props: VisionGuiProps) {
         dataset: options?.dataset || dataset,
         params: parseParams(JSON.stringify(options?.params || params.parsed, null, 2), t),
         perspective: getActivePerspective({
-          visionPerspective: options?.perspective || perspective,
+          visionPerspective:
+            options && 'perspective' in options ? options.perspective : perspective,
           perspectiveStack,
+          scheduledDraftsStack,
         }),
         apiVersion:
           options?.apiVersion ||
@@ -281,6 +325,7 @@ export function VisionGui(props: VisionGuiProps) {
       t,
       perspective,
       perspectiveStack,
+      scheduledDraftsStack,
       customApiVersion,
       isValidApiVersion,
       apiVersion,
@@ -297,7 +342,7 @@ export function VisionGui(props: VisionGuiProps) {
         return
       }
 
-      setPerspectiveState(newPerspective as SupportedPerspective)
+      setPerspectiveState(newPerspective)
       localStorage.set('perspective', newPerspective)
 
       handleQueryExecution({perspective: newPerspective})
@@ -415,9 +460,9 @@ export function VisionGui(props: VisionGuiProps) {
   ])
 
   const handleParamsChange = useCallback(
-    (value: Params) => {
-      setParams(value)
-      localStorage.set('params', value.raw)
+    (value: string) => {
+      setRawParams(value)
+      localStorage.set('params', value)
     },
     [localStorage],
   )
@@ -486,12 +531,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Update state with pasted values
       setDataset(parsedUrlObj.dataset)
       setQuery(parsedUrlObj.query)
-      setParams({
-        parsed: parsedUrlObj.params,
-        raw: parsedUrlObj.rawParams,
-        valid: true,
-        error: undefined,
-      })
+      setRawParams(parsedUrlObj.rawParams)
       setApiVersion(parsedUrlObj.apiVersion)
       if (parsedUrlObj.customApiVersion) {
         setCustomApiVersion(parsedUrlObj.customApiVersion)
@@ -582,13 +622,18 @@ export function VisionGui(props: VisionGuiProps) {
   const generateUrl = useCallback(
     (queryString: string, queryParams: Record<string, unknown>) => {
       const urlQueryOpts: Record<string, string | string[]> = {
-        perspective: getActivePerspective({visionPerspective: perspective, perspectiveStack}) ?? [],
+        perspective:
+          getActivePerspective({
+            visionPerspective: perspective,
+            perspectiveStack,
+            scheduledDraftsStack,
+          }) ?? [],
       }
       return client.getUrl(
         client.getDataUrl('query', encodeQueryString(queryString, queryParams, urlQueryOpts)),
       )
     },
-    [client, perspective, perspectiveStack],
+    [client, perspective, perspectiveStack, scheduledDraftsStack],
   )
 
   return (
@@ -613,6 +658,7 @@ export function VisionGui(props: VisionGuiProps) {
         onChangePerspective={handleChangePerspective}
         url={url}
         perspective={perspective}
+        isScheduledDraftsEnabled={isScheduledDraftsEnabled}
       />
 
       <SplitpaneContainer flex="auto">

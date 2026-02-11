@@ -52,7 +52,7 @@ export function getSharedServerConfig({
   isApp?: boolean
 } {
   // Order of preference: CLI flags, environment variables, user build config, default config
-  const env = process.env // eslint-disable-line no-process-env
+  const env = process.env
 
   const httpHost =
     flags.host || env.SANITY_STUDIO_SERVER_HOSTNAME || cliConfig?.server?.hostname || 'localhost'

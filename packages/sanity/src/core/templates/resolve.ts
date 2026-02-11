@@ -38,7 +38,6 @@ const cache = new WeakMap<
 
 /** @internal */
 // returns the "resolved" value from an initial value property (e.g. type.initialValue)
-// eslint-disable-next-line require-await
 export async function resolveValue<Params, InitialValue>(
   initialValueOpt: InitialValueProperty<Params, InitialValue>,
   params: Params | undefined,

@@ -1,5 +1,7 @@
 import {type SanityClient} from '@sanity/client'
+import {type TypeGenConfig} from '@sanity/codegen'
 import {type TelemetryLogger} from '@sanity/telemetry'
+import {type PluginOptions as ReactCompilerOptions} from 'babel-plugin-react-compiler'
 import type chalk from 'chalk'
 import {type Answers, type ChoiceCollection, type DistinctQuestion, type Separator} from 'inquirer'
 import {type Options, type Ora} from 'ora'
@@ -36,6 +38,7 @@ export interface PackageJson {
   peerDependencies?: Record<string, string>
 
   repository?: {type: string; url: string}
+  engines?: Record<string, string>
 }
 
 export interface CliCommandGroupDefinition {
@@ -77,22 +80,6 @@ export interface CliCommandArguments<F = Record<string, unknown>> {
   extraArguments: string[]
 }
 
-export type CliCommandContext = CliV2CommandContext | CliV3CommandContext
-
-export interface CliBaseCommandContext {
-  output: CliOutputter
-  prompt: CliPrompter
-  apiClient: CliApiClient
-  sanityMajorVersion: 2 | 3
-  cliConfigPath?: string
-  cliRoot: string
-  workDir: string
-  corePath?: string
-  chalk: typeof chalk
-  commandRunner: CliCommandRunner
-  fromInitCommand?: boolean
-}
-
 export interface TelemetryUserProperties {
   runtime: string
   runtimeVersion: string
@@ -103,15 +90,17 @@ export interface TelemetryUserProperties {
   dataset?: string
 }
 
-export interface CliV2CommandContext extends CliBaseCommandContext {
-  sanityMajorVersion: 2
-  cliConfig?: SanityJson
-  cliPackageManager?: CliPackageManager
-  telemetry: TelemetryLogger<TelemetryUserProperties>
-}
-
-export interface CliV3CommandContext extends CliBaseCommandContext {
-  sanityMajorVersion: 3
+export interface CliCommandContext {
+  output: CliOutputter
+  prompt: CliPrompter
+  apiClient: CliApiClient
+  cliConfigPath?: string
+  cliRoot: string
+  workDir: string
+  corePath?: string
+  chalk: typeof chalk
+  commandRunner: CliCommandRunner
+  fromInitCommand?: boolean
   cliConfig?: CliConfig
   cliPackageManager: CliPackageManager
   telemetry: TelemetryLogger<TelemetryUserProperties>
@@ -195,7 +184,6 @@ export interface SanityJson {
 
   api?: CliApiConfig
 
-  // eslint-disable-next-line camelcase
   __experimental_spaces?: {
     name: string
     title: string
@@ -288,35 +276,23 @@ export interface GraphQLAPIConfig {
 }
 
 /**
- * Until these types are on npm: https://github.com/facebook/react/blob/0bc30748730063e561d87a24a4617526fdd38349/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L39-L122
  * @beta
  */
-export interface ReactCompilerConfig {
-  /**
-   * @see https://react.dev/learn/react-compiler#existing-projects
-   */
-  sources?: Array<string> | ((filename: string) => boolean) | null
-
-  /**
-   * The minimum major version of React that the compiler should emit code for. If the target is 19
-   * or higher, the compiler emits direct imports of React runtime APIs needed by the compiler. On
-   * versions prior to 19, an extra runtime package react-compiler-runtime is necessary to provide
-   * a userspace approximation of runtime APIs.
-   * @see https://react.dev/learn/react-compiler#using-react-compiler-with-react-17-or-18
-   */
-  target: '18' | '19'
-
-  panicThreshold?: 'ALL_ERRORS' | 'CRITICAL_ERRORS' | 'NONE'
-
-  compilationMode?: 'infer' | 'syntax' | 'annotation' | 'all'
-}
+export type ReactCompilerConfig = Partial<ReactCompilerOptions>
 
 interface AppConfig {
+  /**
+   * The ID of your Sanity organization
+   */
   organizationId: string
   /**
-   * Defaults to './src/App'
+   * The entrypoint for your Sanity app. Defaults to './src/App'.
    */
   entry?: string
+
+  /**
+   * @deprecated - Moved to `deployment.appId`
+   */
   id?: string
 }
 
@@ -351,8 +327,14 @@ export interface CliConfig {
 
   vite?: UserViteConfig
 
+  /**
+   * @deprecated - Moved to deployment.autoUpdates
+   */
   autoUpdates?: boolean
 
+  /**
+   * @deprecated - Replaced by deployment.appId
+   */
   studioHost?: string
 
   /**
@@ -362,6 +344,24 @@ export interface CliConfig {
   app?: AppConfig
 
   /**
+   * Deployment configuration
+   */
+  deployment?: {
+    /**
+     * The ID of your Sanity studio or app. Generated when deploying your studio or app for the first time.
+     * Get the appId either by
+     * - Checking the output of `sanity deploy`.
+     * - Get it from your project's Studio tab in https://www.sanity.io/manage
+     */
+    appId?: string
+
+    /**
+     * Enable auto-updates for studios.
+     * {@link https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56}
+     */
+    autoUpdates?: boolean
+  }
+  /**
    * Configuration for Sanity media libraries.
    */
   mediaLibrary?: {
@@ -370,6 +370,53 @@ export interface CliConfig {
      * is the directory they will be read from and written to.
      */
     aspectsPath: string
+  }
+  /**
+   * Configuration for Sanity typegen
+   */
+  typegen?: Partial<TypeGenConfig> & {
+    /**
+     * Enable typegen as part of sanity dev and sanity build.
+     * When enabled, types are generated on startup and when files change.
+     * Defaults to `false`
+     */
+    enabled?: boolean
+  }
+
+  /**
+   * Configuration for schema extraction
+   */
+  schemaExtraction?: {
+    /**
+     * Enable schema extraction as part of sanity dev and sanity build
+     */
+    enabled?: boolean
+
+    /**
+     * Output path for the extracted schema file.
+     * Defaults to `schema.json` in the working directory.
+     */
+    path?: string
+
+    /**
+     * When true, schema fields marked as required will be non-optional in the output.
+     * Defaults to `false`
+     */
+    enforceRequiredFields?: boolean
+
+    /**
+     * Additional glob patterns to watch for schema changes in watch mode.
+     * These extend the default patterns:
+     * - `sanity.config.{js,jsx,ts,tsx,mjs}`
+     * - `schema*\/**\/*.{js,jsx,ts,tsx,mjs}`
+     */
+    watchPatterns?: string[]
+
+    /**
+     * The name of the workspace to generate a schema for. Required if your Sanity project has more than one
+     * workspace.
+     */
+    workspace?: string
   }
 }
 

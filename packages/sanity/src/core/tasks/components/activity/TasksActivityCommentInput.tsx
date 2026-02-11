@@ -47,7 +47,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
   }, [])
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<Element>) => {
+    (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault()
         e.stopPropagation()

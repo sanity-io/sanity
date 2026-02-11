@@ -12,22 +12,35 @@ const releasesLocaleStrings = {
   'action.archive.tooltip': 'Unschedule this release to archive it',
   /** Action text for showing the archived releases */
   'action.archived': 'Archived',
-  /** Action text for reverting a release by creating a new release */
-  'action.create-revert-release': 'Stage in new release',
+  /** Action text for showing the paused scheduled drafts */
+  'action.paused': 'Paused',
+  /** Action text for staging a new revert release */
+  'action.create-revert-release': 'Create a new release',
   /** Action text for deleting a release */
   'action.delete-release': 'Delete release',
+  /** Menu item label for showing scheduled drafts */
+  'action.drafts': 'Scheduled drafts',
   /** Action text for duplicating a release */
   'action.duplicate-release': 'Duplicate release',
   /** Action text for editing a release */
   'action.edit': 'Edit release',
   /** Action text for opening a release */
   'action.open': 'Active',
+  /** Menu item label for showing releases (multi-document releases) */
+  'action.releases': 'Releases',
   /** Action text for scheduling a release */
   'action.schedule': 'Schedule release...',
+  /** Action text for scheduling unpublish of a draft document */
+  'action.schedule-unpublish': 'Schedule Unpublish',
+  /** Tooltip text for when schedule unpublish is disabled because document is not published */
+  'action.schedule-unpublish.disabled.not-published':
+    'Document must be published to schedule unpublish',
   /** Action text for unpublishing a document in a release in the context menu */
   'action.unpublish': 'Unpublish',
   /** Action message for scheduling an unpublished of a document  */
   'action.unpublish-doc-actions': 'Unpublish when releasing',
+  /** Action message for when document is scheduled for unpublishing a document and you want to no longer unpublish it */
+  'action.revert-unpublish-actions': 'Revert unpublish when releasing',
   /** Action text for unscheduling a release */
   'action.unschedule': 'Unschedule release',
   /** Action text for publishing all documents in a release (and the release itself) */
@@ -88,7 +101,7 @@ const releasesLocaleStrings = {
   'archive-info.title': 'This release is archived',
   /** Description for information card on a published or archived release to description retention effects */
   'archive-info.description':
-    'Your plan supports a {{retentionDays}}-day retention period. After this period this release will be removed.',
+    'It will be available for {{retentionDays}} days, then automatically removed on {{removalDate}}. <Link>Learn about retention</Link>.',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -103,9 +116,9 @@ const releasesLocaleStrings = {
   'dashboard.details.published-on': 'Published on {{date}}',
 
   /** Text for the releases detail screen in the pin release button. */
-  'dashboard.details.pin-release': 'Pin release',
+  'dashboard.details.pin-release': 'Pin release to studio',
   /** Text for the releases detail screen in the unpin release button. */
-  'dashboard.details.unpin-release': 'Unpin release',
+  'dashboard.details.unpin-release': 'Unpin release from studio',
 
   /** Activity inspector button text */
   'dashboard.details.activity': 'Activity',
@@ -140,6 +153,14 @@ const releasesLocaleStrings = {
   /** Title for dialog for discarding a version of a document */
   'discard-version-dialog.title-release': 'Remove from release',
 
+  /** Title for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.title': 'Draft version already exists',
+  /** Description for dialog when copying version to draft that already exists */
+  'copy-to-draft-dialog.description':
+    'A draft version of this document already exists. Copy the current version to the draft and override the existing draft version.',
+  /** Confirm button text for overriding existing draft */
+  'copy-to-draft-dialog.confirm-button': 'Yes, override Draft',
+
   /** Label for when a document in a release has multiple validation warnings */
   'document-validation.error_other': '{{count}} validation errors',
   /** Label for when a document in a release has a single validation warning */
@@ -167,6 +188,10 @@ const releasesLocaleStrings = {
   'failed-publish-title': 'Failed to publish',
   /** Title text displayed for releases that failed to schedule  */
   'failed-schedule-title': 'Failed to schedule',
+  /** Tooltip text for releases that have passed their intended publish date */
+  'passed-intended-publish-date': 'This release has passed its intended publish date',
+  /** Tooltip text for scheduled drafts that have passed their intended publish date */
+  'passed-intended-publish-date-draft': 'This draft has passed its intended publish date',
 
   /**The text that will be shown in the footer to indicate the time the release was archived */
   'footer.status.archived': 'Archived',
@@ -198,6 +223,8 @@ const releasesLocaleStrings = {
 
   /** Text for when no archived releases are found */
   'no-archived-release': 'No archived releases',
+  /** Tooltip text when there are no paused scheduled drafts */
+  'no-paused-release': 'No paused scheduled drafts',
   /** Text for when no releases are found */
   'no-releases': 'No Releases',
   /** Text for when a release is not found */
@@ -258,7 +285,7 @@ const releasesLocaleStrings = {
   'publish-dialog.validation.error': 'Some documents have validation errors',
 
   /** Title for information card on a published release */
-  'publish-info.title': 'This release is published',
+  'publish-info.title': 'This release is published successfully.',
 
   /** Placeholder title for a release with no title */
   'release-placeholder.title': 'Untitled',
@@ -276,8 +303,7 @@ const releasesLocaleStrings = {
   /** Title for the dialog confirming the revert of a release */
   'revert-dialog.confirm-revert.title': "Are you sure you want to revert the '{{title}}' release?",
   /** Checkbox label to confirm whether to create a staged release for revert or immediately revert */
-  'revert-dialog.confirm-revert.stage-revert-checkbox-label':
-    'Stage revert actions in a new release',
+  'revert-dialog.confirm-revert.stage-revert-checkbox-label': 'Immediately revert the release',
   /** Warning card text for when immediately revert a release with history */
   'revert-dialog.confirm-revert.warning-card':
     'Changes were made to documents in this release after they were published. Reverting will overwrite these changes.',
@@ -322,8 +348,14 @@ const releasesLocaleStrings = {
   'unschedule-dialog.confirm-description':
     'The release will no longer be published on the scheduled date',
   /** Description for warning that the published schedule time is in the past */
-  'schedule-dialog.publish-date-in-past-warning':
-    'Schedule this release for a future time and date.',
+  'schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
+
+  /** Header for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.header': 'Schedule draft for Unpublish',
+  /** Description for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.description': 'Select when this document should be unpublished.',
+  /** Confirm button text for the schedule unpublish dialog */
+  'schedule-unpublish-dialog.confirm': 'Schedule Unpublish',
 
   /** Placeholder for search of documents in a release */
   'search-documents-placeholder': 'Search documents',
@@ -340,6 +372,22 @@ const releasesLocaleStrings = {
   /** Text for when the release is composed of multiple documents */
   'summary.document-count_other': '{{count}} documents',
 
+  /** Text for validation loading indicator */
+  'summary.validating-documents': 'Validating documents: {{validatedCount}} of {{totalCount}}',
+
+  /** Text for when the release has validated documents */
+  'summary.validated-documents': '{{validatedCount}} of {{totalCount}} documents validated',
+
+  /** Text for when the release has validated all documents */
+  'summary.all-documents-validated': 'All documents validated, no conflicts found',
+
+  /** Text for when the release has no errors found */
+  'summary.all-documents-errors-found': 'All documents validated, conflicts found',
+
+  /** Text for when the release has some errors found */
+  'summary.errors-found':
+    'In order to publish or schedule the release, please resolve the conflicts found in the documents',
+
   /** add action type that will be shown in the table*/
   'table-body.action.add': 'Add',
   /** Change action type that will be shown in the table*/
@@ -351,20 +399,37 @@ const releasesLocaleStrings = {
   'table-header.archivedAt': 'Archived',
   /** Header for the document table in the release tool - contributors */
   'table-header.contributors': 'Contributors',
-  /** Header for the document table in the release tool - type */
-  'table-header.type': 'Type',
-  /** Header for the document table in the release tool - release title */
-  'table-header.title': 'Release',
-  /** Header for the document table in the release tool - action */
-  'table-header.action': 'Action',
+  /** Header for the document table in the release tool - created by */
+  'table-header.created-by': 'Created by',
+  /** Header for the document table in the release tool - document preview */
+  'table-header.document': 'Document',
   /** Header for the document table in the release tool - title */
   'table-header.documents': 'Documents',
   /** Header for the document table in the release tool - edited */
   'table-header.edited': 'Edited',
   /** Header for the document table in the release tool - Published */
+  'table-header.published-at': 'Published',
+  /** Header for the document table in the release tool - Published */
   'table-header.publishedAt': 'Published',
+  /** Header for the scheduled drafts document table in the release tool - published at */
+  'table-header.scheduled-draft.published-at': 'Published at',
+  /** Header for the scheduled drafts document table in the release tool - scheduled for */
+  'table-header.scheduled-for': 'Scheduled for',
+  /** Header for the paused scheduled drafts table - intended for */
+  'table-header.intended-for': 'Intended for',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+  /** Header for the  document table in the release tool - release title */
+  'table-header.title': 'Release',
+  /** Header for the document table in the release tool - type */
+  'table-header.type': 'Type',
+  /** Header for the document table in the release tool - action */
+  'table-header.action': 'Action',
+
+  /** Filter tab label for all documents */
+  'filter-tab.all': 'All',
+  /** Filter tab label for documents with validation errors */
+  'filter-tab.errors': 'Errors',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
@@ -390,7 +455,6 @@ const releasesLocaleStrings = {
   'toast.unschedule.error': "Failed to unscheduled '<strong>{{title}}</strong>': {{error}}",
   /** Text for toast when release failed to unarchive */
   'toast.unarchive.error': "Failed to unarchive '<strong>{{title}}</strong>': {{error}}",
-  /** Description for toast when release deletion failed */
   /** Text for tooltip when a release has been scheduled */
   'type-picker.tooltip.scheduled': 'The release is scheduled, unschedule it to change type',
   /** Text for toast when release failed to revert */
@@ -418,6 +482,40 @@ const releasesLocaleStrings = {
   /** Description for unpublish dialog, explaining that all changes made to this document will be lost */
   'unpublish-dialog.description.lost-changes':
     'Any changes made to this document version will be lost.',
+
+  /** Banner text shown when scheduled drafts feature is disabled but there are still scheduled drafts */
+  'banner.scheduled-drafts-disabled':
+    'Scheduled drafts has been disabled but there are still scheduled drafts to be published.',
+  /** Banner text shown when drafts mode is disabled but there are still scheduled drafts */
+  'banner.drafts-mode-disabled':
+    'Drafts mode has been disabled but there are still scheduled drafts to be published.',
+  /** Text for when no scheduled drafts are found */
+  'no-scheduled-drafts': 'No Scheduled Drafts',
+
+  /** Banner text showing count of active scheduled drafts requiring confirmation with one draft */
+  'banner.confirm-active-scheduled-drafts_one':
+    'There is {{count}} Scheduled Draft that requires scheduling confirmation',
+  /** Banner text showing count of active scheduled drafts requiring confirmation with multiple drafts */
+  'banner.confirm-active-scheduled-drafts_other':
+    'There are {{count}} Scheduled Drafts that require scheduling confirmation',
+  /** Button text for confirming scheduling of active drafts */
+  'banner.confirm-active-scheduled-drafts.button': 'Resume scheduling',
+  /** Button text when confirming schedules from paused mode */
+  'banner.confirm-active-scheduled-drafts.button-paused': 'Resume all schedules',
+
+  /** Dialog title for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.title': 'Resume Scheduled Drafts',
+  /** Dialog description for confirming active scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.description':
+    'Schedule all paused Scheduled Drafts for their intended publish dates',
+  /** Dialog warning when some scheduled drafts have past dates */
+  'confirm-active-scheduled-drafts-dialog.past-dates-warning':
+    'Some of these Scheduled Drafts are scheduled for past dates. Confirming schedules will immediately publish those versions of documents.',
+  /** Dialog confirm button text for confirming all scheduled drafts */
+  'confirm-active-scheduled-drafts-dialog.confirm-button': 'Confirm Schedules',
+
+  /** Toast error message when bulk scheduling of active drafts fails */
+  'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
 }
 
 /**

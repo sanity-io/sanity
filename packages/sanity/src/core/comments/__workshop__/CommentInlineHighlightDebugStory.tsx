@@ -1,18 +1,30 @@
 /* eslint-disable max-nested-callbacks */
-/* eslint-disable no-restricted-imports */
-/* eslint-disable react/jsx-no-bind */
 import {
-  type EditorChange,
+  type EditorEmittedEvent,
+  EditorProvider,
   PortableTextEditable,
   PortableTextEditor,
   type RangeDecoration,
+  useEditor,
+  usePortableTextEditor,
 } from '@portabletext/editor'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {isEqual} from 'lodash-es'
+import {
+  forwardRef,
+  startTransition,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {useCurrentUser} from '../../store'
 import {type CommentDocument} from '../types'
@@ -119,6 +131,29 @@ const schema = Schema.compile({
   ],
 })
 
+const EditorRefPlugin = forwardRef<PortableTextEditor | null>(function EditorRefPlugin(_, ref) {
+  const portableTextEditor = usePortableTextEditor()
+  const portableTextEditorRef = useRef(portableTextEditor)
+
+  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+
+  return null
+})
+EditorRefPlugin.displayName = 'EditorRefPlugin'
+
+function UpdateValuePlugin(props: {value: PortableTextBlock[] | undefined}) {
+  const editor = useEditor()
+
+  useEffect(() => {
+    editor.send({
+      type: 'update value',
+      value: props.value,
+    })
+  }, [editor, props.value])
+
+  return null
+}
+
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
@@ -147,125 +182,85 @@ export default function CommentInlineHighlightDebugStory() {
     })
   }, [commentDocuments, currentUser, value])
 
-  const buildRangeDecorationsCallback = useCallback(
-    () =>
-      buildCommentRangeDecorations({
-        comments: comments.map((c) => c.parentComment),
-        value,
-        onDecorationHoverStart: setCurrentHoveredCommentId,
-        onDecorationHoverEnd: setCurrentHoveredCommentId,
-        currentHoveredCommentId,
-        onDecorationMoved: (details) => {
-          const {rangeDecoration, newSelection} = details
-          setRangeDecorations(buildRangeDecorationsCallback())
-          const commentId = rangeDecoration.payload?.commentId as undefined | string
-          const range = rangeDecoration.payload?.range as undefined | {_key: string; text: string}
-          if (commentId && range) {
-            let currentBlockKey = ''
-            const previousBlockKey =
-              rangeDecoration.selection &&
-              isKeySegment(rangeDecoration.selection?.focus.path[0]) &&
-              rangeDecoration.selection?.focus.path[0]?._key
+  const buildRangeDecorationsCallback = () =>
+    buildCommentRangeDecorations({
+      comments: comments.map((c) => c.parentComment),
+      value,
+      onDecorationHoverStart: setCurrentHoveredCommentId,
+      onDecorationHoverEnd: setCurrentHoveredCommentId,
+      currentHoveredCommentId,
+      onDecorationMoved: (details) => {
+        const {rangeDecoration, newSelection} = details
+        setRangeDecorations(buildRangeDecorationsCallback())
+        const commentId = rangeDecoration.payload?.commentId as undefined | string
+        const range = rangeDecoration.payload?.range as undefined | {_key: string; text: string}
+        if (commentId && range) {
+          let currentBlockKey = ''
+          const previousBlockKey =
+            rangeDecoration.selection &&
+            isKeySegment(rangeDecoration.selection?.focus.path[0]) &&
+            rangeDecoration.selection?.focus.path[0]?._key
 
-            // Find out if the range has been moved to a different block
-            if (
-              newSelection?.focus.path[0] &&
-              isKeySegment(newSelection.focus.path[0]) &&
-              rangeDecoration.selection?.focus.path[0]
-            ) {
-              currentBlockKey = newSelection.focus.path[0]._key
-            }
-            setCommentDocuments((prev) => {
-              return prev.map((comment) => {
-                if (comment._id === commentId) {
-                  const newComment = {
-                    ...comment,
-                    target: {
-                      ...comment.target,
-                      path: {
-                        ...comment.target.path,
-                        selection: {
-                          type: 'text',
-                          value: [
-                            ...(comment.target.path?.selection?.value
-                              .filter((r) => r._key !== range._key)
-                              .concat(currentBlockKey ? {...range, _key: currentBlockKey} : [])
-                              .flat() || []),
-                          ],
-                        },
+          // Find out if the range has been moved to a different block
+          if (
+            newSelection?.focus.path[0] &&
+            isKeySegment(newSelection.focus.path[0]) &&
+            rangeDecoration.selection?.focus.path[0]
+          ) {
+            currentBlockKey = newSelection.focus.path[0]._key
+          }
+          setCommentDocuments((prev) => {
+            return prev.map((comment) => {
+              if (comment._id === commentId) {
+                const newComment = {
+                  ...comment,
+                  target: {
+                    ...comment.target,
+                    path: {
+                      ...comment.target.path,
+                      selection: {
+                        type: 'text',
+                        value: [
+                          ...(comment.target.path?.selection?.value
+                            .filter((r) => r._key !== range._key)
+                            .concat(currentBlockKey ? {...range, _key: currentBlockKey} : [])
+                            .flat() || []),
+                        ],
                       },
                     },
-                  } as CommentDocument
-                  return newComment
-                }
-                return comment
-              })
+                  },
+                } as CommentDocument
+                return newComment
+              }
+              return comment
             })
-          }
-        },
-        selectedThreadId: null,
-        onDecorationClick: () => {
-          // ...
-        },
-      }),
-    [comments, currentHoveredCommentId, value],
-  )
+          })
+        }
+      },
+      selectedThreadId: null,
+      onDecorationClick: () => {
+        // ...
+      },
+    })
 
-  const handleChange = useCallback(
-    (change: EditorChange) => {
-      if (change.type === 'patch' && editorRef.current) {
-        const editorStateValue = PortableTextEditor.getValue(editorRef.current)
-
-        setValue(editorStateValue || [])
+  const handleEvent = useCallback(
+    (event: EditorEmittedEvent) => {
+      if (event.type === 'mutation') {
+        setValue(event.value || [])
       }
 
-      // if (change.type === 'rangeDecorationMoved') {
-      //   setRangeDecorations(buildRangeDecorationsCallback())
-      //   const commentId = change.rangeDecoration.payload?.commentId as undefined | string
-      //   const range = change.rangeDecoration.payload?.range as
-      //     | undefined
-      //     | {_key: string; text: string}
-      //   if (commentId && range) {
-      //     setCommentDocuments((prev) => {
-      //       return prev.map((comment) => {
-      //         if (comment._id === commentId) {
-      //           const newComment = {
-      //             ...comment,
-      //             target: {
-      //               ...comment.target,
-      //               path: {
-      //                 ...comment.target.path,
-      //                 selection: {
-      //                   type: 'text',
-      //                   value: [
-      //                     ...(comment.target.path.selection?.value
-      //                       .filter((r) => r._key !== range._key)
-      //                       .concat(range) || []),
-      //                   ],
-      //                 },
-      //               },
-      //             },
-      //           } as CommentDocument
-      //           return newComment
-      //         }
-      //         return comment
-      //       })
-      //     })
-      //   }
-      // }
-
-      if (change.type === 'selection') {
+      if (event.type === 'selection') {
         const overlapping = rangeDecorations.some((d) => {
           if (!editorRef.current) return false
 
           return PortableTextEditor.isSelectionsOverlapping(
             editorRef.current,
-            change.selection,
+            event.selection,
             d.selection,
           )
         })
 
-        const hasRange = change.selection?.anchor.offset !== change.selection?.focus.offset
+        const hasRange = event.selection?.anchor.offset !== event.selection?.focus.offset
 
         setCanAddComment(!overlapping && hasRange)
       }
@@ -273,22 +268,25 @@ export default function CommentInlineHighlightDebugStory() {
     [rangeDecorations],
   )
 
+  const buildRangeDecorationsCallbackEvent = useEffectEvent(() => buildRangeDecorationsCallback())
   useEffect(() => {
-    setRangeDecorations((prev) => {
-      const next = buildRangeDecorationsCallback()
-      if (
-        !isEqual(
-          prev.map((d) => d.payload),
-          next.map((d) => d.payload),
-        )
-      ) {
-        return next
-      }
-      return prev
-    })
-  }, [buildRangeDecorationsCallback])
+    const next = buildRangeDecorationsCallbackEvent()
+    startTransition(() =>
+      setRangeDecorations((prev) => {
+        if (
+          !isEqual(
+            prev.map((d) => d.payload),
+            next.map((d) => d.payload),
+          )
+        ) {
+          return next
+        }
+        return prev
+      }),
+    )
+  }, [comments])
 
-  const handleAddComment = useCallback(() => {
+  const handleAddComment = () => {
     if (!editorRef.current) return
     const fragment = PortableTextEditor.getFragment(editorRef.current) || []
     const editorSelection = PortableTextEditor.getSelection(editorRef.current)
@@ -335,7 +333,7 @@ export default function CommentInlineHighlightDebugStory() {
 
     setCommentDocuments((prev) => [...prev, comment])
     setRangeDecorations(buildRangeDecorationsCallback())
-  }, [buildRangeDecorationsCallback, currentUser?.id])
+  }
 
   return (
     <Flex align="center" justify="center" height="fill" sizing="border" overflow="hidden">
@@ -345,12 +343,15 @@ export default function CommentInlineHighlightDebugStory() {
             <Stack space={2}>
               <Card padding={3} border style={{minHeight: 150}}>
                 <Text>
-                  <PortableTextEditor
-                    onChange={handleChange}
-                    value={value}
-                    schemaType={pteSchema.get('body')}
-                    ref={editorRef}
+                  <EditorProvider
+                    initialConfig={{
+                      schema: pteSchema.get('body'),
+                      initialValue: value,
+                    }}
                   >
+                    <EditorRefPlugin ref={editorRef} />
+                    <EventListenerPlugin on={handleEvent} />
+                    <UpdateValuePlugin value={value} />
                     <PortableTextEditable
                       spellCheck={false}
                       style={INLINE_STYLE}
@@ -363,7 +364,7 @@ export default function CommentInlineHighlightDebugStory() {
                       tabIndex={0}
                       rangeDecorations={rangeDecorations}
                     />
-                  </PortableTextEditor>
+                  </EditorProvider>
                 </Text>
               </Card>
 

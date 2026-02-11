@@ -2,11 +2,12 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import {describe, expectTypeOf, test} from 'vitest'
 import type {
   ActiveWorkspaceMatcherContext,
   AddonDatasetContext,
   AppIdCacheContext,
+  AssetLimitUpsellContext,
+  AssetLimitUpsellContextValue,
   CalendarContext,
   ChangeIndicatorTrackerContextGetSnapshot,
   ChangeIndicatorTrackerContextStore,
@@ -23,13 +24,17 @@ import type {
   CopyPasteContext,
   DiffContext,
   DocumentActionPropsContext,
+  DocumentActionsStateContext,
   DocumentChangeContext,
   DocumentFieldActionsContext,
   DocumentFieldActionsContextValue,
   DocumentIdContext,
   DocumentIdContextValue,
+  DocumentLimitUpsellContext,
+  DocumentLimitUpsellContextValue,
   DocumentPaneContext,
   DocumentSheetListContext,
+  EnhancedObjectDialogContext,
   EventsContext,
   FieldActionsContext,
   FieldActionsContextValue,
@@ -38,16 +43,21 @@ import type {
   FormFieldPresenceContext,
   FormValueContext,
   FreeTrialContext,
+  FullscreenPTEContext,
   GetFormValueContext,
   GetFormValueContextValue,
   HoveredFieldContext,
   HoveredFieldContextValue,
   IsLastPaneContext,
+  LiveUserApplicationContext,
+  LiveUserApplicationContextValue,
   LocaleContext,
   LocaleContextValue,
-  MediaLibraryIdContext,
+  MediaLibraryIdsContext,
   MentionUserContext,
   NavbarContext,
+  PackageVersionInfoContext,
+  PackageVersionInfoContextValue,
   PaneContext,
   PaneLayoutContext,
   PaneRouterContext,
@@ -72,6 +82,8 @@ import type {
   ReferenceItemRefContext,
   ReleasesMetadataContext,
   ReleasesUpsellContext,
+  ResolvedPanesContext,
+  ResolvedPanesProvider,
   ResourceCacheContext,
   ReviewChangesContext,
   RouterContext,
@@ -81,8 +93,15 @@ import type {
   ScheduledPublishingEnabledContextValue,
   SchedulePublishUpsellContext,
   SchedulePublishUpsellContextValue,
+  SchedulesContext,
   ScrollContext,
   SearchContext,
+  SingleDocReleaseContext,
+  SingleDocReleaseContextValue,
+  SingleDocReleaseEnabledContext,
+  SingleDocReleaseEnabledContextValue,
+  SingleDocReleaseUpsellContext,
+  SingleDocReleaseUpsellContextValue,
   SortableItemIdContext,
   SourceContext,
   StructureToolContext,
@@ -92,7 +111,7 @@ import type {
   TasksEnabledContext,
   TasksNavigationContext,
   TasksUpsellContext,
-  TreeEditingEnabledContext,
+  UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
   VirtualizerScrollInstanceContext,
@@ -101,6 +120,7 @@ import type {
   ZIndexContext,
   zIndexContextDefaults,
 } from 'sanity/_singletons'
+import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_singletons', () => {
   test('ActiveWorkspaceMatcherContext', () => {
@@ -111,6 +131,12 @@ describe('sanity/_singletons', () => {
   })
   test('AppIdCacheContext', () => {
     expectTypeOf<typeof AppIdCacheContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContext', () => {
+    expectTypeOf<typeof AssetLimitUpsellContext>().not.toBeNever()
+  })
+  test('AssetLimitUpsellContextValue', () => {
+    expectTypeOf<AssetLimitUpsellContextValue>().toBeObject()
   })
   test('CalendarContext', () => {
     expectTypeOf<typeof CalendarContext>().not.toBeNever()
@@ -160,6 +186,9 @@ describe('sanity/_singletons', () => {
   test('DocumentActionPropsContext', () => {
     expectTypeOf<typeof DocumentActionPropsContext>().not.toBeNever()
   })
+  test('DocumentActionsStateContext', () => {
+    expectTypeOf<typeof DocumentActionsStateContext>().not.toBeNever()
+  })
   test('DocumentChangeContext', () => {
     expectTypeOf<typeof DocumentChangeContext>().not.toBeNever()
   })
@@ -175,11 +204,20 @@ describe('sanity/_singletons', () => {
   test('DocumentIdContextValue', () => {
     expectTypeOf<DocumentIdContextValue>().toBeObject()
   })
+  test('DocumentLimitUpsellContext', () => {
+    expectTypeOf<typeof DocumentLimitUpsellContext>().not.toBeNever()
+  })
+  test('DocumentLimitUpsellContextValue', () => {
+    expectTypeOf<DocumentLimitUpsellContextValue>().toBeObject()
+  })
   test('DocumentPaneContext', () => {
     expectTypeOf<typeof DocumentPaneContext>().not.toBeNever()
   })
   test('DocumentSheetListContext', () => {
     expectTypeOf<typeof DocumentSheetListContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
   test('EventsContext', () => {
     expectTypeOf<typeof EventsContext>().not.toBeNever()
@@ -205,6 +243,9 @@ describe('sanity/_singletons', () => {
   test('FreeTrialContext', () => {
     expectTypeOf<typeof FreeTrialContext>().not.toBeNever()
   })
+  test('FullscreenPTEContext', () => {
+    expectTypeOf<typeof FullscreenPTEContext>().not.toBeNever()
+  })
   test('GetFormValueContext', () => {
     expectTypeOf<typeof GetFormValueContext>().not.toBeNever()
   })
@@ -220,20 +261,32 @@ describe('sanity/_singletons', () => {
   test('IsLastPaneContext', () => {
     expectTypeOf<typeof IsLastPaneContext>().not.toBeNever()
   })
+  test('LiveUserApplicationContext', () => {
+    expectTypeOf<typeof LiveUserApplicationContext>().not.toBeNever()
+  })
+  test('LiveUserApplicationContextValue', () => {
+    expectTypeOf<LiveUserApplicationContextValue>().not.toBeNever()
+  })
   test('LocaleContext', () => {
     expectTypeOf<typeof LocaleContext>().not.toBeNever()
   })
   test('LocaleContextValue', () => {
     expectTypeOf<LocaleContextValue>().toBeObject()
   })
-  test('MediaLibraryIdContext', () => {
-    expectTypeOf<typeof MediaLibraryIdContext>().not.toBeNever()
+  test('MediaLibraryIdsContext', () => {
+    expectTypeOf<typeof MediaLibraryIdsContext>().not.toBeNever()
   })
   test('MentionUserContext', () => {
     expectTypeOf<typeof MentionUserContext>().not.toBeNever()
   })
   test('NavbarContext', () => {
     expectTypeOf<typeof NavbarContext>().not.toBeNever()
+  })
+  test('PackageVersionInfoContext', () => {
+    expectTypeOf<typeof PackageVersionInfoContext>().not.toBeNever()
+  })
+  test('PackageVersionInfoContextValue', () => {
+    expectTypeOf<PackageVersionInfoContextValue>().not.toBeNever()
   })
   test('PaneContext', () => {
     expectTypeOf<typeof PaneContext>().not.toBeNever()
@@ -307,6 +360,12 @@ describe('sanity/_singletons', () => {
   test('ReleasesUpsellContext', () => {
     expectTypeOf<typeof ReleasesUpsellContext>().not.toBeNever()
   })
+  test('ResolvedPanesContext', () => {
+    expectTypeOf<typeof ResolvedPanesContext>().not.toBeNever()
+  })
+  test('ResolvedPanesProvider', () => {
+    expectTypeOf<typeof ResolvedPanesProvider>().toBeFunction()
+  })
   test('ResourceCacheContext', () => {
     expectTypeOf<typeof ResourceCacheContext>().not.toBeNever()
   })
@@ -334,11 +393,32 @@ describe('sanity/_singletons', () => {
   test('SchedulePublishUpsellContextValue', () => {
     expectTypeOf<SchedulePublishUpsellContextValue>().toBeObject()
   })
+  test('SchedulesContext', () => {
+    expectTypeOf<typeof SchedulesContext>().not.toBeNever()
+  })
   test('ScrollContext', () => {
     expectTypeOf<typeof ScrollContext>().not.toBeNever()
   })
   test('SearchContext', () => {
     expectTypeOf<typeof SearchContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseContext', () => {
+    expectTypeOf<typeof SingleDocReleaseContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseContextValue', () => {
+    expectTypeOf<SingleDocReleaseContextValue>().toBeObject()
+  })
+  test('SingleDocReleaseEnabledContext', () => {
+    expectTypeOf<typeof SingleDocReleaseEnabledContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseEnabledContextValue', () => {
+    expectTypeOf<SingleDocReleaseEnabledContextValue>().not.toBeNever()
+  })
+  test('SingleDocReleaseUpsellContext', () => {
+    expectTypeOf<typeof SingleDocReleaseUpsellContext>().not.toBeNever()
+  })
+  test('SingleDocReleaseUpsellContextValue', () => {
+    expectTypeOf<SingleDocReleaseUpsellContextValue>().toBeObject()
   })
   test('SortableItemIdContext', () => {
     expectTypeOf<typeof SortableItemIdContext>().not.toBeNever()
@@ -367,8 +447,8 @@ describe('sanity/_singletons', () => {
   test('TasksUpsellContext', () => {
     expectTypeOf<typeof TasksUpsellContext>().not.toBeNever()
   })
-  test('TreeEditingEnabledContext', () => {
-    expectTypeOf<typeof TreeEditingEnabledContext>().not.toBeNever()
+  test('UserApplicationCacheContext', () => {
+    expectTypeOf<typeof UserApplicationCacheContext>().not.toBeNever()
   })
   test('UserColorManagerContext', () => {
     expectTypeOf<typeof UserColorManagerContext>().not.toBeNever()

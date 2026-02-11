@@ -206,5 +206,3 @@ export const Timeline = ({
     </Root>
   )
 }
-
-Timeline.displayName = 'Timeline'

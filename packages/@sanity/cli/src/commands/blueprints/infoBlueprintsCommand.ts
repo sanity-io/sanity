@@ -1,10 +1,8 @@
-import {type CliCommandDefinition} from '../../types'
+import {BlueprintsInfoCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
 
-const helpText = `
-Examples:
-  # Retrieve information about the current Stack
-  sanity blueprints info
-`
+import {type CliCommandDefinition} from '../../types'
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsInfoFlags {
   id?: string
@@ -17,9 +15,7 @@ const defaultFlags: BlueprintsInfoFlags = {
 const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
   name: 'info',
   group: 'blueprints',
-  helpText,
-  signature: '',
-  description: 'Retrieve information about a Blueprint Stack',
+  ...transformHelpText(BlueprintsInfoCommand, 'sanity', 'blueprints info'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -37,7 +33,7 @@ const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 

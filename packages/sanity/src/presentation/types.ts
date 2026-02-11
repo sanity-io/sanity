@@ -17,26 +17,35 @@ export type {PreviewUrlResolver}
 
 /**
  * Represents a document location
- * @param title - Title of the document
- * @param href - URL of the document location
  * @public
  */
 export interface DocumentLocation {
+  /**
+   * Title of the document
+   */
   title: string
+  /**
+   * URL of the document location
+   */
   href: string
 }
 
 /**
- * State for describing document locations or providing a message if no document
- * locations are unavailable
- * @param locations - Array of document locations
- * @param message - Message to display if locations are unavailable
- * @param tone - Tone of the message
+ * State for describing document locations or providing a message if locations are unavailable
  * @public
  */
 export interface DocumentLocationsState {
+  /**
+   * Array of document locations
+   */
   locations?: DocumentLocation[]
+  /**
+   * Message to display if locations are unavailable
+   */
   message?: string
+  /**
+   * Tone of the message
+   */
   tone?: 'positive' | 'caution' | 'critical'
 }
 
@@ -66,15 +75,36 @@ export type DocumentLocationResolver = (
   | undefined
   | Observable<DocumentLocationsState | null | undefined>
 
-/** @public */
+/**
+ * Configuration options for Presentation tool's optional navigator component
+ * The navigator appears as a resizable sidebar panel
+ *
+ * @public
+ */
 export interface NavigatorOptions {
+  /**
+   * Minimum width of the navigator panel in pixels
+   */
   minWidth?: number
+  /**
+   * Maximum width of the navigator panel in pixels
+   */
   maxWidth?: number
+  /**
+   * React component to render in the navigator panel
+   */
   component: ComponentType
 }
 
-/** @public */
+/**
+ * Configuration options for Presentation tool's optional custom preview header component
+ *
+ * @public
+ */
 export interface HeaderOptions {
+  /**
+   * React component to render as the preview header, receives PreviewHeaderProps
+   */
   component: ComponentType<PreviewHeaderProps>
 }
 
@@ -175,12 +205,12 @@ export interface PreviewUrlResolverOptions {
   previewMode?: PreviewUrlPreviewModeOption
   /**
    * @defaultValue `location.origin`
-   * @deprecated - use `previewMode.initial` instead
+   * @deprecated - use `initial` instead
    */
   origin?: string
   /**
    * @defaultValue '/'
-   * @deprecated - use `previewMode.initial` instead
+   * @deprecated - use `initial` instead
    */
   preview?: string
   /**
@@ -226,32 +256,94 @@ export type DocumentLocationResolvers = Record<
 
 /**
  * Document location resolver object
- * @param select - object for selecting document fields
- * @param resolve - function that accepts a document with the selected fields and returns an optional document location state
  * @public
  */
 export type DocumentLocationResolverObject<K extends string = string> = {
+  /**
+   * Object for selecting document fields
+   */
   select: Record<K, string>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  /**
+   * Function that accepts a document with the selected fields and returns an optional document location state
+   */
+  // oxlint-disable-next-line no-explicit-any
   resolve: (value: Record<K, any> | null) => DocumentLocationsState | null | undefined | void
 }
 
 /**
+ * Context object passed to functions used in `DocumentResolver` definitions.
+ * Contains information about the current URL being matched against route patterns.
+ *
+ * @example
+ * For a route pattern `/blog/:category/:slug` matching URL `https://example.com/blog/tech/hello-world`:
+ * ```ts
+ * {
+ *   origin: 'https://example.com',
+ *   params: { category: 'tech', slug: 'hello-world' },
+ *   path: '/blog/tech/hello-world'
+ * }
+ * ```
+ *
  * @public
  */
 export interface DocumentResolverContext {
-  origin: string | undefined
+  /**
+   * The origin (protocol + hostname + port) of the matched URL
+   */
+  origin: string
+  /**
+   * Extracted route parameters from URL path matching (e.g., `:slug` → `{slug: 'value'}`)
+   */
   params: Record<string, string>
+  /**
+   * The pathname of the matched URL (without query parameters)
+   */
   path: string
 }
 
 /**
+ * Generic function type used in `DocumentResolver` definitions that receives a `DocumentResolverContext` and returns a computed value.
+ * @param context - `DocumentResolverContext` containing route information (origin, params, path)
+ * @returns Computed value based on the context (typically a string for filters or an object for parameters)
  * @public
  */
 export type ContextFn<T> = (context: DocumentResolverContext) => T
 
 /**
- * Object for resolving a document for a given route pattern
+ * Configuration object for resolving documents based on URL route patterns.
+ * Used to define the main document when navigating to specific URLs in
+ * Presentation tool's preview iframe.
+ *
+ * Supports three different resolution strategies:
+ *
+ * **Simple type-based resolution:**
+ * ```ts
+ * {
+ *   route: '/blog',
+ *   type: 'blog'  // Useful for singleton documents
+ * }
+ * ```
+ *
+ * **GROQ filter-based resolution:**
+ * ```ts
+ * {
+ *   route: '/blog/:category/:slug',
+ *   filter: ({ params }) => `_type == "post" && slug.current == "${params.slug}"`,
+ *   params: ({ params }) => ({ category: params.category })
+ * }
+ * ```
+ *
+ * **Advanced resolution with custom logic:**
+ * ```ts
+ * {
+ *   route: '/products/:id',
+ *   resolve: ({ params }) => ({
+ *     filter: `_type == "product" && _id == $id`,
+ *     params: { id: params.id }
+ *   })
+ * }
+ * ```
+ *
  * @public
  */
 export type DocumentResolver =
@@ -284,6 +376,7 @@ export type DocumentResolver =
     }
 
 /**
+ * Configuration options for the Presentation tool.
  * @public
  */
 export interface PresentationPluginOptions {
@@ -339,11 +432,13 @@ export interface PresentationSearchParams {
  */
 export interface StructureDocumentPaneParams extends InspectorTab {
   inspect?: string
+  parentRefPath?: string
   path?: string
   rev?: string
   since?: string
   template?: string
   templateParams?: string
+  version?: string
   view?: string
 
   // assist
@@ -352,6 +447,8 @@ export interface StructureDocumentPaneParams extends InspectorTab {
 
   // comments
   comment?: string
+
+  scheduledDraft?: string
 }
 
 /**
@@ -367,9 +464,7 @@ export interface InspectorTab {
  * @public
  */
 export interface CombinedSearchParams
-  extends StructureDocumentPaneParams,
-    PresentationSearchParams,
-    InspectorTab {}
+  extends StructureDocumentPaneParams, PresentationSearchParams {}
 
 /**
  * All possible parameters that can be used to describe the state of the
@@ -377,16 +472,16 @@ export interface CombinedSearchParams
  * @public
  */
 export interface PresentationParamsContextValue
-  extends PresentationStateParams,
-    CombinedSearchParams,
-    InspectorTab {}
+  extends PresentationStateParams, CombinedSearchParams {}
 
 /** @public */
-export type PresentationNavigate = (
-  nextState: PresentationStateParams,
-  nextSearchState?: CombinedSearchParams,
-  forceReplace?: boolean,
-) => void
+export type PresentationNavigateOptions = (
+  | {state: PresentationStateParams; params?: CombinedSearchParams}
+  | {params: CombinedSearchParams; state?: PresentationStateParams}
+) & {replace?: boolean}
+
+/** @public */
+export type PresentationNavigate = (options: PresentationNavigateOptions) => void
 
 /** @public */
 export type PresentationPerspective = Exclude<ClientPerspective, 'raw'>
@@ -428,7 +523,10 @@ export type VisualEditingConnection = ChannelInstance<
  */
 export type LoaderConnection = ChannelInstance<LoaderControllerMsg, LoaderNodeMsg>
 
-/** @public */
+/**
+ * Represents the connection status between the Sanity Studio and Presentation's preview iframe.
+ * @public
+ */
 export type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'idle'
 
 /** @public */

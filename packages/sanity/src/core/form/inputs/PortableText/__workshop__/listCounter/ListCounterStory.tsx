@@ -121,7 +121,8 @@ export function ListCounterStory() {
       <Container width={1}>
         <EditableWrapper data-debug={debug ? '' : undefined} space={space}>
           {items.map((item, itemIndex) => (
-            <Block fontSize={fontSize} index={itemIndex} key={itemIndex} value={item} />
+            // oxlint-disable-next-line no-array-index-key
+            <Block key={itemIndex} fontSize={fontSize} index={itemIndex} value={item} />
           ))}
         </EditableWrapper>
       </Container>
@@ -163,8 +164,8 @@ const BlockRoot = styled.div<{$level: number}>((props) => {
       & > span:before {
         content: ${`counter(list-level-${$level})`} '.';
         content: ${`counter(list-level-${$level}, ${
-            NUMBER_FORMATS[$level % NUMBER_FORMATS.length]
-          })`}
+          NUMBER_FORMATS[$level % NUMBER_FORMATS.length]
+        })`}
           '.';
       }
     }

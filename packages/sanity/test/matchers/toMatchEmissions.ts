@@ -8,7 +8,6 @@ export async function toMatchEmissions(
   createOperator: () => OperatorFunction<unknown, unknown>,
   snapshots: [A: unknown, B: unknown][],
 ): AsyncExpectationResult {
-  const {equals} = this
   const input$ = new Subject()
 
   const expectedEmissions = snapshots
@@ -24,7 +23,7 @@ export async function toMatchEmissions(
   const actualEmissions = await emissions
 
   return {
-    pass: equals(actualEmissions, expectedEmissions),
+    pass: this.equals(actualEmissions, expectedEmissions),
     message: () => 'Observable emissions did not match',
     actual: actualEmissions,
     expected: expectedEmissions,

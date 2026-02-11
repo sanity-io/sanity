@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {type SanityClient} from 'sanity'
 import {assertType, describe, expectTypeOf, test} from 'vitest'
 

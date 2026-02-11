@@ -67,7 +67,6 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
     <StatusButton
       disabled={isDisabled}
       icon={node.icon}
-      // eslint-disable-next-line react/jsx-handler-names
       onClick={node.onAction}
       selected={node.selected}
       tone={node.tone}
@@ -140,9 +139,9 @@ function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonP
           {node.children.map((child, idx) => {
             return (
               <PaneMenuButtonItem
+                key={child.key}
                 disabled={Boolean(node.disabled)}
                 isAfterGroup={node.children[idx - 1]?.type === 'group'}
-                key={child.key}
                 node={child}
               />
             )

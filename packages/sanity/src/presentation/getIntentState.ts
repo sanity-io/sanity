@@ -17,7 +17,7 @@ export function getIntentState(
 ):
   | (PresentationStateParams & {_searchParams: SearchParam[]})
   | {intent: string; params: Record<string, string>; payload: unknown} {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   const {id, mode, path, presentation, type, ...searchParams} = params
 
   const preservedSearchParams = (routerState?._searchParams || [])

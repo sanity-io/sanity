@@ -1,7 +1,7 @@
-import {definePlugin} from '../config'
-import {EditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
-import {LinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
-import {UnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
+import {definePlugin, type DocumentActionComponent} from '../config'
+import {useEditInCanvasAction} from './actions/EditInCanvas/EditInCanvasAction'
+import {useLinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
+import {useUnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
 import {canvasUsEnglishLocaleBundle} from './i18n'
 
 export const CANVAS_INTEGRATION_NAME = 'sanity/canvas-integration'
@@ -14,12 +14,30 @@ export const canvasIntegration = definePlugin(() => {
     },
 
     document: {
-      actions: (prev) => {
-        return prev.flatMap((action) =>
-          action.action === 'publish'
-            ? [action, LinkToCanvasAction, UnlinkFromCanvasAction, EditInCanvasAction]
-            : action,
-        )
+      actions: (prev, context) => {
+        if (context.versionType === 'draft' || context.versionType === 'version') {
+          const deleteAndDiscardActionNames: DocumentActionComponent['action'][] = [
+            'delete',
+            'discardVersion',
+          ]
+
+          const deleteAndDiscardActions = prev.filter((action) =>
+            deleteAndDiscardActionNames.includes(action.action),
+          )
+          const otherActions = prev.filter(
+            (action) => !deleteAndDiscardActionNames.includes(action.action),
+          )
+
+          return [
+            ...otherActions,
+            useLinkToCanvasAction,
+            useUnlinkFromCanvasAction,
+            useEditInCanvasAction,
+            ...deleteAndDiscardActions,
+          ]
+        }
+
+        return prev
       },
     },
   }

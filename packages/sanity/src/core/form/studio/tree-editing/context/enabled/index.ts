@@ -1,2 +1,2 @@
-export * from './TreeEditingEnabledProvider'
-export * from './useTreeEditingEnabled'
+export * from './EnhancedObjectDialogProvider'
+export * from './useEnhancedObjectDialog'

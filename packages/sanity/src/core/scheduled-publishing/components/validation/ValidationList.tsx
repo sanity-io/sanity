@@ -56,7 +56,7 @@ export function ValidationList(props: ValidationListProps) {
       {hasErrors &&
         errors.map((_error, i) => (
           <ValidationListItem
-            // eslint-disable-next-line react/no-array-index-key
+            // oxlint-disable-next-line no-array-index-key
             key={i}
             truncate={truncate}
             path={resolvePathTitle(_error.path)}
@@ -67,7 +67,7 @@ export function ValidationList(props: ValidationListProps) {
       {hasWarnings &&
         warnings.map((_warning, i) => (
           <ValidationListItem
-            // eslint-disable-next-line react/no-array-index-key
+            // oxlint-disable-next-line no-array-index-key
             key={i}
             truncate={truncate}
             path={resolvePathTitle(_warning.path)}
@@ -78,7 +78,7 @@ export function ValidationList(props: ValidationListProps) {
       {hasInfo &&
         info.map((_info, i) => (
           <ValidationListItem
-            // eslint-disable-next-line react/no-array-index-key
+            // oxlint-disable-next-line no-array-index-key
             key={i}
             truncate={truncate}
             path={resolvePathTitle(_info.path)}

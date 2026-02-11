@@ -82,7 +82,8 @@ export function useRecordDocumentHistoryEvent({
 
   const recordEvent = useCallback(
     (eventType: 'viewed' | 'edited' | 'created' | 'deleted') => {
-      try {
+      // The run() wrapper is a workaround for React Compiler not yet fully supporting try/catch syntax
+      const run = () => {
         const message: Events.HistoryMessage = {
           type: 'dashboard/v1/events/history',
           data: {
@@ -100,8 +101,10 @@ export function useRecordDocumentHistoryEvent({
         }
 
         node?.post?.(message.type, message.data)
+      }
+      try {
+        run()
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Failed to record history event:', error)
         throw error
       }

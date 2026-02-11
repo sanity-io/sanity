@@ -50,6 +50,7 @@ export const deleteAliasHandler: CliCommandAction<DeleteAliasFlags> = async (arg
     })
   }
 
+  // oxlint-disable-next-line always-return -- this is supposed to be Promise<void>
   return aliasClient.removeAlias(client, aliasName).then(() => {
     output.print('Dataset alias deleted successfully')
   })

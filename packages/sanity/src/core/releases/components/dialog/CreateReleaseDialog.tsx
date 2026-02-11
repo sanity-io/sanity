@@ -8,8 +8,11 @@ import {useTranslation} from '../../../i18n'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {CreatedRelease, type OriginInfo} from '../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
+import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
+import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
+import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseDefaults} from '../../util/util'
 import {ReleaseForm} from './ReleaseForm'
@@ -28,20 +31,32 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const {t} = useTranslation()
   const telemetry = useTelemetry()
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const invalid = getIsReleaseInvalid(release)
+
+  const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const handleOnSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 
-      try {
-        setIsSubmitting(true)
+      setIsSubmitting(true)
+      const inQuota = await releasePromise
 
+      if (!inQuota) {
+        setIsSubmitting(false)
+        return
+      }
+
+      try {
         const releaseValue = createReleaseMetadata(release)
 
         await createRelease(releaseValue)
+        // Close the dialog after creating the release.
+        onCancel()
         telemetry.log(CreatedRelease, {origin})
 
         // TODO: Remove this! temporary fix to give some time for the release to be created and the releases store state updated before closing the dialog.
@@ -54,6 +69,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
       } catch (err) {
         if (isReleaseLimitError(err)) {
           onCancel()
+          clearReleaseDataFromStorage()
         } else {
           console.error(err)
           toast.push({
@@ -62,21 +78,23 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
             title: t('release.toast.create-release-error.title'),
           })
         }
-      } finally {
-        setIsSubmitting(false)
       }
+      setIsSubmitting(false)
+      clearReleaseDataFromStorage()
     },
     [
-      release,
-      toast,
+      releasePromise,
       createReleaseMetadata,
+      release,
       createRelease,
       telemetry,
       origin,
       setPerspective,
       onSubmit,
       onCancel,
+      toast,
       t,
+      clearReleaseDataFromStorage,
     ],
   )
 
@@ -87,12 +105,17 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const dialogTitle = t('release.dialog.create.title')
   const dialogConfirm = t('release.dialog.create.confirm')
 
+  const handleOnClose = useCallback(() => {
+    clearReleaseDataFromStorage()
+    onCancel()
+  }, [clearReleaseDataFromStorage, onCancel])
+
   return (
     <Dialog
       onClickOutside={onCancel}
       header={dialogTitle}
       id="create-release-dialog"
-      onClose={onCancel}
+      onClose={handleOnClose}
       width={1}
       padding={false}
     >
@@ -104,7 +127,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
           <Flex justify="flex-end" paddingTop={5}>
             <Button
               size="large"
-              disabled={isSubmitting}
+              disabled={isSubmitting || invalid}
               type="submit"
               text={dialogConfirm}
               loading={isSubmitting}

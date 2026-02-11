@@ -44,7 +44,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
 
       // The components property is removed from the schemaType object
       // in order to prevent that a component is render itself
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // oxlint-disable-next-line no-unused-vars
       const {components, ...restSchemaType} = parentTypeProps.schemaType
       const ParentTypeResolvedComponent = componentResolver(restSchemaType)
       return <ParentTypeResolvedComponent {...parentTypeProps} />
@@ -52,6 +52,7 @@ function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: 
     [componentResolver],
   )
 
+  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
   return <DefaultResolvedComponent {...componentProps} renderDefault={renderDefault} />
 }
 

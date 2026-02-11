@@ -4,12 +4,15 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks'
+import {usePerspective} from '../../perspective/usePerspective'
 import {getPreviewStateObservable} from '../../preview'
 import {useDocumentPreviewStore} from '../../store'
 
 interface PreviewHookOptions {
   documentId: string
   documentType: string
+  // to make sure that you can get the preview values for a document in a specific perspective stack
+  perspectiveStack: string[]
 }
 
 interface PreviewHookValue {
@@ -19,15 +22,24 @@ interface PreviewHookValue {
 
 /** @internal */
 export function useDocumentPreviewValues(options: PreviewHookOptions): PreviewHookValue {
-  const {documentId, documentType} = options || {}
+  const {documentId, documentType, perspectiveStack: perspectiveStackFromOptions} = options || {}
   const schemaType = useSchema().get(documentType)
 
   const documentPreviewStore = useDocumentPreviewStore()
-
+  // keeping it for now as to make sure that we can safely remove it later
+  // the reason to not remove it now is that it would cause a breaking change
+  // during run time and we want to avoid that for now (so we left the perspectiveStack in the props as mandatory)
+  // @TODO remove
+  const {perspectiveStack} = usePerspective()
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId)
-  }, [documentId, documentPreviewStore, schemaType])
+    return getPreviewStateObservable(
+      documentPreviewStore,
+      schemaType,
+      documentId,
+      perspectiveStackFromOptions ?? perspectiveStack,
+    )
+  }, [documentId, documentPreviewStore, schemaType, perspectiveStackFromOptions, perspectiveStack])
   const previewState = useObservable(previewStateObservable)
 
   const isLoading = previewState?.isLoading ?? true

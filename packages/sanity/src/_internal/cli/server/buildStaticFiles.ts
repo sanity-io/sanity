@@ -1,14 +1,27 @@
 import {constants as fsConstants} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {
+  type CliCommandContext,
+  type CliConfig,
+  type ReactCompilerConfig,
+  type UserViteConfig,
+} from '@sanity/cli'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as serverDebug} from './debug'
-import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
+import {
+  extendViteConfigWithUserConfig,
+  finalizeViteConfig,
+  getViteConfig,
+  type ViteOptions,
+} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 import {generateWebManifest} from './webManifest'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const debug = serverDebug.extend('static')
 
@@ -36,6 +49,19 @@ export interface StaticBuildOptions {
   reactCompiler: ReactCompilerConfig | undefined
   entry?: string
   isApp?: boolean
+
+  /**
+   * Typegen configuration. When enabled, types are generated during build.
+   */
+  typegen?: CliConfig['typegen'] & {enabled?: boolean}
+
+  /**
+   * Telemetry logger for tracking plugin usage
+   */
+  telemetryLogger?: CliCommandContext['telemetry']
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export async function buildStaticFiles(
@@ -52,6 +78,8 @@ export async function buildStaticFiles(
     reactCompiler,
     entry,
     isApp,
+    telemetryLogger,
+    schemaExtraction,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -76,6 +104,8 @@ export async function buildStaticFiles(
     importMap,
     reactCompiler,
     isApp,
+    telemetryLogger,
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config

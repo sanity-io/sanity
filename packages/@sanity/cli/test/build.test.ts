@@ -1,19 +1,17 @@
-import {readdir, readFile, stat} from 'node:fs/promises'
+import {copyFile, readdir, readFile, stat, unlink} from 'node:fs/promises'
 import path from 'node:path'
 
 import {describe, expect, test, vi} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'
+import {runSanityCmdCommand, studioNames, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
-  describe.each(studioVersions)('%s', (version) => {
-    const testConcurrentV3 = version === 'v3' ? testConcurrent : test.skip
-
+  describe.each(studioNames)('%s', (studioName) => {
     // Builds can take a bit of time with lots of concurrent tasks and slow CIs
     vi.setConfig({testTimeout: 240 * 1000})
 
-    const studioPath = path.join(studiosPath, version)
+    const studioPath = path.join(studiosPath, studioName)
 
     testConcurrent(
       'build',
@@ -21,75 +19,76 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
         // Build to a different output directory to avoid conflicting with
         // `sanity deploy` / `sanity start` tests
         const envTestId = `actual-env-${Math.random().toString(36).slice(2)}`
-        const result = await runSanityCmdCommand(version, ['build', 'out', '-y'], {
+        const result = await runSanityCmdCommand(studioName, ['build', 'out', '-y'], {
           env: {SANITY_STUDIO_FROM_ACTUAL_ENV: envTestId},
         })
         expect(result.code).toBe(0)
 
-        // These _could_ theoretically change, but is unlikely to with v2 being in support mode
-        if (version === 'v3') {
-          const files = await readdir(path.join(studioPath, 'out', 'static'))
-          const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
-          const cssPath = files.find((file) => file.endsWith('.css'))
-          const jsFiles = files.filter((file) => file.endsWith('.js'))
-          if (!jsPath) {
-            throw new Error('Could not find Sanity JS entry file (sanity-[hash].js)')
-          }
+        // Verify no mention about typegen running
+        expect(result.stdout + result.stderr).not.toContain('Generated types to')
 
-          if (!cssPath) {
-            throw new Error('Could not find Sanity CSS entry file (-[hash].css)')
-          }
+        // Verify schema extraction message is not printed when not configured
+        expect(result.stdout).not.toContain('Building with schema extraction enabled')
 
-          // Ensure favicons + web manifest
-          expect(
-            await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null),
-          ).toBeTruthy()
-          const favicons = files.filter((file) => /^favicon|^apple-touch-icon/.test(file))
-          expect(favicons).toHaveLength(6)
-          expect(files).toContain('manifest.webmanifest')
-
-          const builtHtml = await readFile(path.join(studioPath, 'out', 'index.html'), 'utf8')
-          const builtJs = await readFile(path.join(studioPath, 'out', 'static', jsPath), 'utf8')
-          const builtCss = await readFile(path.join(studioPath, 'out', 'static', cssPath), 'utf8')
-          expect(builtHtml).toContain('id="sanity"')
-          expect(builtJs).toMatch(/getElementById\(['"]sanity['"]\)/)
-          expect(builtCss).toMatch(/background:\s*green/)
-
-          // Test for environment variable support - through dotenv
-          // Because of chunk splitting, it's hard to know which JS file contains the string we
-          // want, so we need to loop through the chunks and look for it
-          let envFile: string | undefined
-          for (const jsFile of jsFiles) {
-            const content = await readFile(path.join(studioPath, 'out', 'static', jsFile), 'utf8')
-            if (content.includes('data-env-from-')) {
-              envFile = content
-              break
-            }
-          }
-
-          if (!envFile) {
-            throw new Error('Could not find JS file containing environment variables')
-          }
-
-          // Test that values from actual environment variables are passed down
-          expect(envFile).toContain(envTestId)
-
-          // Test that .env file is loaded
-          expect(envFile).toContain('set-in-dotenv')
-
-          // Test that .env.production file is loaded
-          expect(envFile).toContain('⏧ production')
+        const files = await readdir(path.join(studioPath, 'out', 'static'))
+        const jsPath = files.find((file) => file.startsWith('sanity-') && file.endsWith('.js'))
+        const cssPath = files.find((file) => file.endsWith('.css'))
+        const jsFiles = files.filter((file) => file.endsWith('.js'))
+        if (!jsPath) {
+          throw new Error('Could not find Sanity JS entry file (sanity-[hash].js)')
         }
+
+        if (!cssPath) {
+          throw new Error('Could not find Sanity CSS entry file (-[hash].css)')
+        }
+
+        // Ensure favicons + web manifest
+        expect(await stat(path.join(studioPath, 'out/favicon.ico')).catch(() => null)).toBeTruthy()
+        const favicons = files.filter((file) => /^favicon|^apple-touch-icon/.test(file))
+        expect(favicons).toHaveLength(6)
+        expect(files).toContain('manifest.webmanifest')
+
+        const builtHtml = await readFile(path.join(studioPath, 'out', 'index.html'), 'utf8')
+        const builtJs = await readFile(path.join(studioPath, 'out', 'static', jsPath), 'utf8')
+        const builtCss = await readFile(path.join(studioPath, 'out', 'static', cssPath), 'utf8')
+        expect(builtHtml).toContain('id="sanity"')
+        expect(builtJs).toMatch(/getElementById\(['"]sanity['"]\)/)
+        expect(builtCss).toMatch(/background:\s*green/)
+
+        // Test for environment variable support - through dotenv
+        // Because of chunk splitting, it's hard to know which JS file contains the string we
+        // want, so we need to loop through the chunks and look for it
+        let envFile: string | undefined
+        for (const jsFile of jsFiles) {
+          const content = await readFile(path.join(studioPath, 'out', 'static', jsFile), 'utf8')
+          if (content.includes('data-env-from-')) {
+            envFile = content
+            break
+          }
+        }
+
+        if (!envFile) {
+          throw new Error('Could not find JS file containing environment variables')
+        }
+
+        // Test that values from actual environment variables are passed down
+        expect(envFile).toContain(envTestId)
+
+        // Test that .env file is loaded
+        expect(envFile).toContain('set-in-dotenv')
+
+        // Test that .env.production file is loaded
+        expect(envFile).toContain('⏧ production')
       },
-      version === 'v3' ? 120 * 1000 : 240 * 1000,
+      120 * 1000,
     )
 
-    testConcurrentV3(
+    testConcurrent(
       'build with base path environment variable',
       async () => {
         // Build to a different output directory to avoid conflicting with
         // `sanity deploy` / `sanity start` / `sanity build` tests
-        const result = await runSanityCmdCommand(version, ['build', 'out-basepath', '-y'], {
+        const result = await runSanityCmdCommand(studioName, ['build', 'out-basepath', '-y'], {
           env: {SANITY_STUDIO_BASEPATH: '/custom-base-path'},
         })
         expect(result.code).toBe(0)
@@ -108,10 +107,10 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       120 * 1000,
     )
 
-    testConcurrentV3(
+    testConcurrent(
       'build with base path from config',
       async () => {
-        const result = await runSanityCmdCommand(version, ['build', 'out-config', '-y'])
+        const result = await runSanityCmdCommand(studioName, ['build', 'out-config', '-y'])
         expect(result.code).toBe(0)
 
         const builtHtml = await readFile(path.join(studioPath, 'out-config', 'index.html'), 'utf8')
@@ -121,10 +120,10 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       120 * 1000,
     )
 
-    testConcurrentV3(
+    testConcurrent(
       'build with base path from environment, overriding config file',
       async () => {
-        const result = await runSanityCmdCommand(version, ['build', 'out-env', '-y'], {
+        const result = await runSanityCmdCommand(studioName, ['build', 'out-env', '-y'], {
           env: {SANITY_STUDIO_BASEPATH: '/env-base-path'},
         })
         expect(result.code).toBe(0)
@@ -140,11 +139,12 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       120 * 1000,
     )
 
-    testConcurrentV3(
+    testConcurrent(
       'build with custom document, and custom basepath',
       async () => {
-        const customDocStudioPath = path.join(studiosPath, 'v3-custom-document')
-        const result = await runSanityCmdCommand('v3-custom-document', ['build', '-y'], {
+        const customDocStudioName = 'cli-test-studio-custom-document'
+        const customDocStudioPath = path.join(studiosPath, customDocStudioName)
+        const result = await runSanityCmdCommand(customDocStudioName, ['build', '-y'], {
           env: {SANITY_STUDIO_BASEPATH: '/env-base-path'},
         })
         expect(result.code).toBe(0)
@@ -168,11 +168,78 @@ describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
       120 * 1000,
     )
 
+    test.each([
+      {title: 'relative paths', absolute: false},
+      {title: 'absolute paths', absolute: true},
+    ])('build with typegen with $title', async ({absolute}) => {
+      const studioDir = path.join(studiosPath, studioName)
+      const randomId = Math.random().toString(36).slice(2)
+      const schemaPath = path.join(studioDir, `${randomId}schema.json`)
+      const outputPath = path.join(studioDir, `${randomId}.types.ts`)
+
+      // Copy working-schema.json to schema.json for typegen to use
+      await copyFile(path.join(studioDir, 'working-schema.json'), schemaPath)
+
+      try {
+        // Check that the output file does not exist before building
+        await expect(stat(outputPath)).rejects.toThrow()
+
+        const result = await runSanityCmdCommand(studioName, ['build', 'out-typegen', '-y'], {
+          env: {
+            SANITY_CLI_TEST_TYPEGEN: '1',
+            SANITY_CLI_TEST_TYPEGEN_SCHEMA_PATH: absolute ? schemaPath : path.basename(schemaPath),
+            SANITY_CLI_TEST_TYPEGEN_OUTPUT_PATH: absolute ? outputPath : path.basename(outputPath),
+          },
+        })
+
+        expect(result.code).toBe(0)
+
+        // Verify generation output is printed
+        expect(result.stderr).toContain('Successfully generated types')
+
+        // Check that the output file was created
+        await expect(stat(outputPath)).resolves.toBeTruthy()
+      } finally {
+        // Clean up created files
+        await unlink(schemaPath).catch(() => {})
+        await unlink(outputPath).catch(() => {})
+      }
+    })
+
+    testConcurrent('build with schema extraction', async () => {
+      const absoluteSchemaPath = path.join(
+        studiosPath,
+        studioName,
+        `${Math.random().toString(36).slice(2)}.json`,
+      )
+
+      // Check that the file is not here before building
+      await expect(stat(absoluteSchemaPath)).rejects.toThrow()
+
+      const result = await runSanityCmdCommand(studioName, ['build'], {
+        env: {
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION: '1',
+          SANITY_CLI_TEST_SCHEMA_EXTRACTION_PATH: absoluteSchemaPath,
+        },
+      })
+
+      expect(result.code).toBe(0)
+
+      // Verify schema extraction message is printed when configured
+      expect(result.stdout).toContain('Building with schema extraction enabled')
+
+      // Verify schema extraction is confirmed in build output
+      expect(result.stderr).toContain('✓ Extract schema')
+
+      // Check that the file is there after building
+      await expect(stat(absoluteSchemaPath)).resolves.toBeTruthy()
+    })
+
     test.skip(
       'deploy',
       async () => {
         // Build to different output directory to avoid conflicting with `sanity build`/`sanity start` tests
-        const result = await runSanityCmdCommand(version, ['deploy', '-y'])
+        const result = await runSanityCmdCommand(studioName, ['deploy', '-y'])
         expect(result.stdout).toContain('deployed to')
         expect(result.code).toBe(0)
       },

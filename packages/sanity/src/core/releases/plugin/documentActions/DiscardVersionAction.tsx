@@ -12,17 +12,18 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
+import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
-/**
- * @internal
- */
-export const DiscardVersionAction: DocumentActionComponent = (
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+/** @internal */
+export const useDiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
   const {selectedPerspective} = usePerspective()
+  const willUnpublish = version ? isGoingToUnpublish(version) : false
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -56,6 +57,7 @@ export const DiscardVersionAction: DocumentActionComponent = (
       type: 'custom',
       component: (
         <DiscardVersionDialog
+          isGoingToUnpublish={willUnpublish}
           documentId={version._id}
           documentType={type}
           onClose={() => setDialogOpen(false)}
@@ -70,5 +72,5 @@ export const DiscardVersionAction: DocumentActionComponent = (
   }
 }
 
-DiscardVersionAction.action = 'discardVersion'
-DiscardVersionAction.displayName = 'DiscardVersionAction'
+useDiscardVersionAction.action = 'discardVersion'
+useDiscardVersionAction.displayName = 'DiscardVersionAction'

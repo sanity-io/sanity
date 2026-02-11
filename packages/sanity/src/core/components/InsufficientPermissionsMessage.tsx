@@ -1,7 +1,7 @@
 import {AccessDeniedIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {Fragment, useCallback} from 'react'
 
 import {useListFormat} from '../hooks/useListFormat'
@@ -47,10 +47,8 @@ export function InsufficientPermissionsMessage({
           .formatToParts(roles.map((role) => role.title || startCase(role.name)))
           .map((i, index) =>
             i.type === 'element' ? (
-              // eslint-disable-next-line react/no-array-index-key
               <code key={`${i.value}-${index}`}>{i.value}</code>
             ) : (
-              // eslint-disable-next-line react/no-array-index-key
               <Fragment key={`${i.value}-${index}`}>{i.value}</Fragment>
             ),
           )}

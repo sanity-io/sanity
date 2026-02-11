@@ -35,7 +35,6 @@ describe('useVersionOperations', () => {
     expect(useReleaseOperationsMockReturn.createVersion).toHaveBeenCalledWith(
       'releaseId',
       'documentId',
-      undefined,
     )
     expect(mockedUseSetPerspective).toHaveBeenCalledWith('releaseId')
   })

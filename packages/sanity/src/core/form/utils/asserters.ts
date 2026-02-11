@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
-
 import {isArraySchemaType, isBooleanSchemaType, isObjectSchemaType} from '@sanity/types'
 
 import {type ArrayOfObjectsInputProps, type InputProps, type ObjectInputProps} from '../types'

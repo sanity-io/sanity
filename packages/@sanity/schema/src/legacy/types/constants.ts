@@ -20,3 +20,5 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
  * This is the set of properties which are _not_ inherited, but explicitly defined on this type.
  */
 export const OWN_PROPS_NAME = '_internal_ownProps'
+
+export const ALL_FIELDS_GROUP_NAME = 'all-fields'

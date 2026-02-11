@@ -8,7 +8,7 @@ import {decodeBase64Url, encodeBase64Url} from './base64url'
  * @internal
  * @hidden
  */
-export function decodeJsonParams(pathSegment = ''): Record<string, unknown> {
+export function decodeJsonParams(pathSegment = ''): any {
   const segment = decodeURIComponent(pathSegment)
 
   if (!segment) {
@@ -19,19 +19,19 @@ export function decodeJsonParams(pathSegment = ''): Record<string, unknown> {
   // since it also removes characters we'd rather not put in our URLs (eg '=' and '/')
   try {
     return JSON.parse(decodeBase64Url(segment))
-  } catch (err) {
+  } catch {
     // Fall-through: previously we used plain base64 encoding instead of base64url
   }
 
   try {
     return JSON.parse(atob(segment))
-  } catch (err) {
+  } catch {
     // Fall-through: before _that_, we used plain URI encoding
   }
 
   try {
     return JSON.parse(segment)
-  } catch (err) {
+  } catch {
     console.warn('Failed to parse JSON parameters')
   }
 
@@ -46,6 +46,6 @@ export function decodeJsonParams(pathSegment = ''): Record<string, unknown> {
  * @internal
  * @hidden
  */
-export function encodeJsonParams(params?: Record<string, unknown>): string {
+export function encodeJsonParams(params?: any): string {
   return params ? encodeBase64Url(JSON.stringify(params)) : ''
 }

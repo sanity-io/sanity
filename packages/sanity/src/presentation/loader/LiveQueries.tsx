@@ -18,7 +18,15 @@ import {
   type LoaderNodeMsg,
 } from '@sanity/presentation-comlink'
 import isEqual from 'fast-deep-equal'
-import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
+import {
+  memo,
+  startTransition,
+  useDeferredValue,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useState,
+} from 'react'
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
@@ -28,7 +36,6 @@ import {
   useDataset,
   useProjectId,
 } from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
@@ -78,7 +85,7 @@ export default function LiveQueries(props: LiveQueriesProps): React.JSX.Element 
         if (data.projectId === projectId && data.dataset === dataset) {
           onDocumentsOnPage(
             'loaders',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // oxlint-disable-next-line no-explicit-any
             data.perspective as unknown as any,
             data.documents,
           )
@@ -168,8 +175,10 @@ interface SharedProps {
   client: SanityClient
 }
 
-interface QuerySubscriptionProps
-  extends Pick<UseQuerySubscriptionProps, 'client' | 'liveDocument' | 'liveEventsMessages'> {
+interface QuerySubscriptionProps extends Pick<
+  UseQuerySubscriptionProps,
+  'client' | 'liveDocument' | 'liveEventsMessages'
+> {
   projectId: string
   dataset: string
   perspective: ClientPerspective
@@ -278,7 +287,6 @@ function useQuerySubscription(props: UseQuerySubscriptionProps) {
       })
       .then((response) => {
         startTransition(() => {
-          // eslint-disable-next-line max-nested-callbacks
           setResult((prev: unknown) => (isEqual(prev, response.result) ? prev : response.result))
           setResultSourceMap((prev) =>
             isEqual(prev, response.resultSourceMap) ? prev : response.resultSourceMap,
@@ -342,6 +350,6 @@ export function turboChargeResultIfSourceMap<T = unknown>(
       return null
     },
     mapChangedValue,
-    perspective,
+    Array.isArray(perspective) ? perspective.filter(Boolean) : perspective,
   )
 }

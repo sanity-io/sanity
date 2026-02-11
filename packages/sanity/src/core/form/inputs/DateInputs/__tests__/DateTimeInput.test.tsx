@@ -1,13 +1,13 @@
-import {defineField, type StringSchemaType} from '@sanity/types'
-import {fireEvent} from '@testing-library/react'
+import {defineField} from '@sanity/types'
+import {fireEvent, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {expect, test, vi} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 
 import {renderStringInput} from '../../../../../../test/form'
 import * as useTimeZoneModule from '../../../../hooks/useTimeZone'
 import {FormValueProvider} from '../../../contexts/FormValue'
 import {type StringInputProps} from '../../../types'
-import {DateTimeInput} from '../DateTimeInput'
+import {DateTimeInput, sanitizeTimeZoneKeyId} from '../DateTimeInput'
 import {
   mockUseTimeZoneDefault,
   mockUseTimeZoneWithOslo,
@@ -22,7 +22,7 @@ vi.mock('../../../../hooks/useTimeZone', () => ({
   useTimeZone: () => mockUseTimeZoneDefault(),
 }))
 
-const DateTimeInputWithFormValue = (inputProps: StringInputProps<StringSchemaType>) => (
+const DateTimeInputWithFormValue = (inputProps: StringInputProps) => (
   <FormValueProvider value={{_id: 'test123', _type: 'datetime'}}>
     <DateTimeInput {...inputProps} />
   </FormValueProvider>
@@ -45,7 +45,7 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   const input = result.container.querySelector('input')!
 
-  userEvent.type(input, 'this is invalid')
+  await userEvent.type(input, 'this is invalid')
   expect(input.value).toBe('this is invalid')
   expect(onChange.mock.calls.length).toBe(0)
 
@@ -67,7 +67,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
 
   // NOTE: the date is entered and displayed in local time zone
   // (which is hardcoded to America/Los_Angeles)
-  userEvent.type(input, '2021-03-28 10:23')
+  await userEvent.type(input, '2021-03-28 10:23')
   expect(input.value).toBe('2021-03-28 10:23')
 
   fireEvent.blur(input)
@@ -178,7 +178,7 @@ test('Make sure we are respecting the saved timezone in hook when displayTimeZon
 
     expect(input.value).toBe('2021-06-15 21:00')
 
-    const timeZoneButton = result.getAllByTestId('timezone-button')[0]
+    const timeZoneButton = screen.getAllByTestId('timezone-button')[0]
     expect(timeZoneButton).toHaveTextContent('Tokyo')
   } finally {
     spy.mockRestore()
@@ -219,10 +219,10 @@ test('the time zone can not be changed by the user if not allowed', async () => 
   })
 
   // click on the TimeZoneButton
-  const timeZoneButton = result.getByText('Oslo')
-  userEvent.click(timeZoneButton)
+  const timeZoneButton = screen.getByText('Oslo')
+  await userEvent.click(timeZoneButton)
   // ensure the dialog shows
-  expect(result.queryByText('Select time zone')).not.toBeInTheDocument()
+  expect(screen.queryByText('Select time zone')).not.toBeInTheDocument()
 
   spy.mockRestore()
 })
@@ -290,6 +290,16 @@ const expected = {
   SS: '00',
   SSS: '000',
   SSSS: '0000',
+  l: '3/28/2021',
+  ll: 'Mar 28, 2021',
+  lll: 'Mar 28, 2021, 10:23 AM',
+  llll: 'Sun, Mar 28, 2021, 10:23 AM',
+  L: '03/28/2021',
+  LL: 'March 28, 2021',
+  LLL: 'March 28, 2021 at 10:23 AM',
+  LLLL: 'Sunday, March 28, 2021 at 10:23 AM 10:23',
+  LT: '10:23 AM',
+  LTS: '10:23:00 AM',
 }
 
 Object.entries(expected).forEach(([format, expectedValue]) => {
@@ -311,5 +321,42 @@ Object.entries(expected).forEach(([format, expectedValue]) => {
     } else {
       expect(input.value).toContain(expectedValue)
     }
+  })
+})
+
+// Tests for sanitizeTimeZoneKeyId - fixes SAPP-2883
+// The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`
+describe('sanitizeTimeZoneKeyId', () => {
+  test('returns simple paths unchanged', () => {
+    expect(sanitizeTimeZoneKeyId('myField')).toBe('myField')
+    expect(sanitizeTimeZoneKeyId('nested.field.path')).toBe('nested.field.path')
+  })
+
+  test('sanitizes single array key segment', () => {
+    // e.g., dates[_key=="abc123"] becomes dates.key-abc123
+    expect(sanitizeTimeZoneKeyId('dates[_key=="abc123"]')).toBe('dates.key-abc123')
+  })
+
+  test('sanitizes array key segment followed by field name', () => {
+    // e.g., dates[_key=="abc123"].date becomes dates.key-abc123.date
+    expect(sanitizeTimeZoneKeyId('dates[_key=="abc123"].date')).toBe('dates.key-abc123.date')
+  })
+
+  test('sanitizes multiple array key segments', () => {
+    // e.g., items[_key=="a"].dates[_key=="b"].value becomes items.key-a.dates.key-b.value
+    expect(sanitizeTimeZoneKeyId('items[_key=="a"].dates[_key=="b"].value')).toBe(
+      'items.key-a.dates.key-b.value',
+    )
+  })
+
+  test('sanitizes keys with complex characters', () => {
+    // Real-world example from the bug report
+    expect(sanitizeTimeZoneKeyId('dates[_key=="8442376835fd"].date')).toBe(
+      'dates.key-8442376835fd.date',
+    )
+  })
+
+  test('handles empty string', () => {
+    expect(sanitizeTimeZoneKeyId('')).toBe('')
   })
 })

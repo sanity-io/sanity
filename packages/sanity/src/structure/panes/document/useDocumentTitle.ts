@@ -1,4 +1,11 @@
-import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
+import {useMemo} from 'react'
+import {
+  isPublishedPerspective,
+  prepareForPreview,
+  usePerspective,
+  useTranslation,
+  useValuePreview,
+} from 'sanity'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
@@ -9,7 +16,7 @@ import {useDocumentPane} from './useDocumentPane'
  * @beta
  * @hidden
  */
-interface UseDocumentTitle {
+export interface UseDocumentTitle {
   error?: string
   title?: string
 }
@@ -23,25 +30,56 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {connectionState, schemaType, title, displayed} = useDocumentPane()
+  const {connectionState, schemaType, editState, isDeleted, lastRevisionDocument} =
+    useDocumentPane()
+  const {selectedPerspectiveName} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
-  const subscribed = Boolean(displayed)
+  // follows the same logic as the StructureTitle component
+  const documentValue = useMemo(() => {
+    if (isDeleted) {
+      return lastRevisionDocument
+    }
+    // When viewing published perspective, prioritize published document
+    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
+      return editState?.published
+    }
+    return editState?.version || editState?.draft || editState?.published
+  }, [isDeleted, lastRevisionDocument, editState, selectedPerspectiveName])
+  const subscribed = Boolean(documentValue)
+
+  // For deleted documents, we need to handle the preview differently since useValuePreview
+  // will return null for deleted documents. Instead, we directly prepare the preview
+  // from the lastRevisionDocument data.
+  const deletedDocumentPreview = useMemo(() => {
+    if (isDeleted && lastRevisionDocument && schemaType) {
+      try {
+        const prepared = prepareForPreview(lastRevisionDocument, schemaType)
+        return prepared
+      } catch (error) {
+        console.warn('Failed to prepare preview for deleted document:', error)
+        return null
+      }
+    }
+    return null
+  }, [isDeleted, lastRevisionDocument, schemaType])
 
   const {error, value} = useValuePreview({
-    enabled: subscribed,
+    // disable useValuePreview for deleted documents
+    enabled: subscribed && !isDeleted,
     schemaType,
-    value: displayed,
+    value: documentValue,
   })
 
   if (connectionState === 'connecting' && !subscribed) {
     return {error: undefined, title: undefined}
   }
 
-  if (title) {
-    return {error: undefined, title}
+  // For deleted documents, use the directly prepared preview
+  if (isDeleted && deletedDocumentPreview) {
+    return {error: undefined, title: deletedDocumentPreview.title}
   }
 
-  if (!displayed) {
+  if (!value && !isDeleted) {
     return {
       error: undefined,
       title: t('panes.document-header-title.new.text', {

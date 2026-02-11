@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unused-prop-types,no-nested-ternary */
+/* eslint-disable react/no-unused-prop-types */
 import {createConnectionMachine, createController} from '@sanity/comlink'
 import {
   createCompatibilityActors,
@@ -23,12 +23,13 @@ import {
   useToast,
 } from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {AnimatePresence, motion, MotionConfig} from 'framer-motion'
+import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
   forwardRef,
   memo,
   useCallback,
   useEffect,
+  useEffectEvent,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -37,7 +38,6 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Button, TooltipDelayGroupProvider} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
@@ -171,11 +171,11 @@ export const Preview = memo(
 
       presentationRef.send({type: 'iframe reload'})
     }, [presentationRef, previewUrl])
+
+    const [continueAnyway, setContinueAnyway] = useState(false)
     const handleContinueAnyway = useCallback(() => {
       setContinueAnyway(true)
     }, [])
-
-    const [continueAnyway, setContinueAnyway] = useState(false)
     const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
     useEffect(() => {
       if (isLoading || isRefreshing) {
@@ -204,7 +204,6 @@ export const Preview = memo(
       if (overlaysConnection === 'connecting') {
         const timeout = setTimeout(() => {
           setTimedOut(true)
-          // eslint-disable-next-line no-console
           console.error(
             `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
           )
@@ -267,7 +266,6 @@ export const Preview = memo(
           typeof document.startViewTransition === 'function'
         ) {
           document.startViewTransition({
-            // @ts-expect-error - fix typings
             update: () => flushSync(() => update()),
             types: ['sanity-iframe-viewport'],
           })

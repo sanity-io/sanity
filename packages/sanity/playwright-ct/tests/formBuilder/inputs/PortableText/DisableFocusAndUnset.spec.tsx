@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
 

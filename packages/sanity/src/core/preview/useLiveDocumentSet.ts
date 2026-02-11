@@ -2,8 +2,8 @@ import {type QueryParams} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {map} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
+import {map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store'
 
@@ -30,7 +30,7 @@ export function useLiveDocumentSet(
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(() => {
     return documentPreviewStore.unstable_observeDocumentIdSet(groqFilter, params, options).pipe(
-      map((state) => (state.documentIds || []) as string[]),
+      map((state) => state.documentIds || []),
       mergeMapArray((id) =>
         documentPreviewStore.unstable_observeDocument(id, {apiVersion: options.apiVersion}),
       ),

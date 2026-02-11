@@ -8,7 +8,7 @@ import {
   type SlugSchemaType,
   type SlugValidationContext,
 } from '@sanity/types'
-import {memoize} from 'lodash'
+import {memoize} from 'lodash-es'
 
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId} from '../../util/draftUtils'
@@ -64,7 +64,6 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
 }
 
 function warnOnArraySlug(serializedPath: string) {
-  /* eslint-disable no-console */
   console.warn(
     [
       `Slug field at path ${serializedPath} is within an array and cannot be automatically checked for uniqueness`,
@@ -72,7 +71,6 @@ function warnOnArraySlug(serializedPath: string) {
       `To disable this message, set \`disableArrayWarning: true\` on the slug \`options\` field`,
     ].join('\n'),
   )
-  /* eslint-enable no-console */
 }
 
 /**

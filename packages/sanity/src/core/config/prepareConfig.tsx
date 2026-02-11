@@ -5,7 +5,7 @@ import {studioTheme} from '@sanity/ui'
 import debugit from 'debug'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
@@ -20,15 +20,19 @@ import {
 } from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {createSchema, DESCRIPTOR_CONVERTER} from '../schema'
+import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  decisionParametersSchemaReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
@@ -36,6 +40,7 @@ import {
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
+  enhancedObjectDialogEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -45,11 +50,14 @@ import {
   internalTasksReducer,
   legacySearchEnabledReducer,
   mediaLibraryEnabledReducer,
+  mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  releaseActionsReducer,
   resolveProductionUrlReducer,
+  scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
   serverDocumentActionsReducer,
@@ -65,6 +73,7 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
+  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
@@ -222,19 +231,6 @@ export function prepareConfig(
         types: schemaTypes,
       })
 
-      if (typeof process !== 'undefined' && process?.env?.SANITY_STUDIO_SCHEMA_DESCRIPTOR) {
-        const before = performance.now()
-        const sync = DESCRIPTOR_CONVERTER.get(schema)
-        const after = performance.now()
-        const duration = after - before
-        debug('Built schema for synchronization', {sync, duration})
-        if (duration > 1000) {
-          console.warn(
-            `Building schema for synchronization took more than 1 second (${duration}ms)`,
-          )
-        }
-      }
-
       const schemaValidationProblemGroups = schema._validation
       const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
         msg.problems.some(isError),
@@ -281,6 +277,7 @@ export function prepareConfig(
       auth: resolvedSources[0].auth,
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
+      apiHost: rootSource.apiHost,
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
@@ -365,6 +362,10 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
+    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
+      config,
+      initialValue: undefined,
+    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -726,6 +727,12 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
+      schemaDescriptorId: authenticated
+        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
+            debug('Uploading schema failed', {err})
+            return undefined
+          })
+        : Promise.resolve(undefined),
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -742,9 +749,10 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-      treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
+      form: {
+        enhancedObjectDialog: {
+          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: true}),
+        },
       },
       create: {
         startInCreateEnabled: false,
@@ -763,7 +771,38 @@ function resolveSource({
     mediaLibrary: {
       enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
       libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+      __internal: {
+        frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+      },
     },
+
+    advancedVersionControl: {
+      enabled: resolveConfigProperty({
+        config,
+        context,
+        reducer: advancedVersionControlEnabledReducer,
+        propertyName: 'advancedVersionControl.enabled',
+        initialValue: false,
+      }),
+    },
+    scheduledDrafts: {
+      enabled: scheduledDraftsEnabledReducer({config, initialValue: true}),
+    },
+
+    releases: config.releases
+      ? {
+          enabled: config.releases.enabled ?? true,
+          limit: config.releases.limit,
+          actions: (partialContext) =>
+            resolveConfigProperty({
+              config,
+              context: {...context, ...partialContext},
+              initialValue: [],
+              propertyName: 'releases.actions',
+              reducer: releaseActionsReducer,
+            }),
+        }
+      : {enabled: true},
   }
 
   return source
@@ -811,4 +850,13 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+/**
+ * Registers a catch to a promise (to prevent it from being caught by the
+ * "unhandled promise" handler) while returning the original promise.
+ */
+function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
+  promise.catch(cb)
+  return promise
 }

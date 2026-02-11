@@ -11,11 +11,14 @@
 </div>
 
 <div align="center">
-  <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/latest?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/next?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/stable?style=flat">
+  <br />
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
   <img alt="" src="https://img.shields.io/npm/l/sanity.svg?style=flat">
   <a aria-label="Join the Sanity community" href="https://www.sanity.io/community/join?utm_source=readme">
-    <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack&style=flat"></a>
+    <img alt="" src="https://img.shields.io/discord/1304483263171264613?label=Discord"></a>
   <a aria-label="Follow Sanity on Bluesky" href="https://bsky.app/profile/sanity.io">
     <img alt="" src="https://img.shields.io/badge/follow-@sanity.io-blue?logo=bluesky"></a>
 </div>

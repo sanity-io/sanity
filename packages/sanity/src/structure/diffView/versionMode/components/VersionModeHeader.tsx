@@ -1,5 +1,6 @@
 import {CloseIcon, LockIcon, TransferIcon} from '@sanity/icons'
 import {
+  Badge,
   Box,
   // eslint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
@@ -13,7 +14,7 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type ComponentProps, type ComponentType, useCallback, useMemo} from 'react'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {
   type DocumentLayoutProps,
   formatRelativeLocalePublishDate,
@@ -23,12 +24,12 @@ import {
   getReleaseTone,
   getVersionFromId,
   getVersionId,
-  isDraftId,
-  isPublishedId,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
+  isSystemBundleName,
   ReleaseAvatar,
   type ReleaseDocument,
+  type TargetPerspective,
   useActiveReleases,
   useDocumentVersions,
   useEditState,
@@ -41,6 +42,7 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
+import {findRelease} from '../../utils/findRelease'
 
 const VersionModeHeaderLayout = styled.header`
   display: grid;
@@ -62,7 +64,9 @@ const VersionModeHeaderLayoutSection = styled.div`
  * @internal
  */
 export const VersionModeHeader: ComponentType<
-  {state: 'pending' | 'ready' | 'error'} & Pick<DocumentLayoutProps, 'documentId'>
+  {
+    state: 'pending' | 'ready' | 'error'
+  } & Pick<DocumentLayoutProps, 'documentId'>
 > = ({documentId, state}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {data: documentVersions} = useDocumentVersions({documentId})
@@ -78,33 +82,29 @@ export const VersionModeHeader: ComponentType<
     })
   }, [activeReleases.data, releasesIds])
 
-  const onSelectPreviousRelease = useCallback(
-    (selectedDocumentId: string): void => {
-      if (typeof documents?.previous !== 'undefined') {
-        navigateDiffView({
-          previousDocument: {
-            ...documents.previous,
-            id: selectedDocumentId,
-          },
-        })
-      }
-    },
-    [documents?.previous, navigateDiffView],
-  )
+  const releasesState = fetchingState(activeReleases)
 
-  const onSelectNextRelease = useCallback(
-    (selectedDocumentId: string): void => {
-      if (typeof documents?.next !== 'undefined') {
-        navigateDiffView({
-          nextDocument: {
-            ...documents.next,
-            id: selectedDocumentId,
-          },
-        })
-      }
-    },
-    [documents?.next, navigateDiffView],
-  )
+  const onSelectPreviousRelease = (selectedDocumentId: string): void => {
+    if (typeof documents?.previous !== 'undefined') {
+      navigateDiffView({
+        previousDocument: {
+          ...documents.previous,
+          id: selectedDocumentId,
+        },
+      })
+    }
+  }
+
+  const onSelectNextRelease = (selectedDocumentId: string): void => {
+    if (typeof documents?.next !== 'undefined') {
+      navigateDiffView({
+        nextDocument: {
+          ...documents.next,
+          id: selectedDocumentId,
+        },
+      })
+    }
+  }
 
   return (
     <VersionModeHeaderLayout>
@@ -117,6 +117,7 @@ export const VersionModeHeader: ComponentType<
         {typeof documents?.previous !== 'undefined' && (
           <VersionMenu
             releases={releases}
+            releasesState={releasesState}
             onSelectRelease={onSelectPreviousRelease}
             role="previous"
             documentId={documentId}
@@ -134,6 +135,7 @@ export const VersionModeHeader: ComponentType<
         {typeof documents?.next !== 'undefined' && (
           <VersionMenu
             releases={releases}
+            releasesState={releasesState}
             onSelectRelease={onSelectNextRelease}
             role="next"
             documentId={documentId}
@@ -157,6 +159,7 @@ export const VersionModeHeader: ComponentType<
 interface VersionMenuProps {
   state: 'pending' | 'ready' | 'error'
   releases: ReleaseDocument[]
+  releasesState: 'pending' | 'ready' | 'error'
   role: 'previous' | 'next'
   onSelectRelease: (releaseId: string) => void
   documentId: string
@@ -168,6 +171,7 @@ interface VersionMenuProps {
 
 const VersionMenu: ComponentType<VersionMenuProps> = ({
   releases = [],
+  releasesState,
   onSelectRelease,
   role,
   documentId,
@@ -184,6 +188,14 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
     },
   } = useWorkspace()
 
+  if (releasesState === 'error') {
+    return (
+      <Badge tone="critical" radius={3}>
+        {tStructure('compare-version.error.loadReleases.title')}
+      </Badge>
+    )
+  }
+
   return (
     <MenuButton
       id={role}
@@ -195,7 +207,7 @@ const VersionMenu: ComponentType<VersionMenuProps> = ({
           paddingRight={3}
           radius="full"
           selected
-          {...getMenuButtonProps({selected, tCore, tStructure})}
+          {...getMenuButtonProps({selected, tCore, tStructure, releasesState})}
         />
       }
       menu={
@@ -256,7 +268,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
 
-  const onClick = useCallback(() => {
+  const onClick = () => {
     if (type === 'draft') {
       onSelect(getDraftId(documentId))
       return
@@ -270,7 +282,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     if (typeof release?._id !== 'undefined') {
       onSelect(getVersionId(documentId, getReleaseIdFromReleaseDocumentId(release._id)))
     }
-  }, [type, onSelect, documentId, release?._id])
+  }
 
   if (type) {
     const tone: ButtonTone = type === 'published' ? 'positive' : 'caution'
@@ -328,12 +340,14 @@ function getMenuButtonProps({
   selected,
   tCore,
   tStructure,
+  releasesState,
 }: {
-  selected?: ReleaseDocument | 'published' | 'draft'
+  releasesState: 'pending' | 'ready'
+  selected?: TargetPerspective
   tCore: TFunction
   tStructure: TFunction
 }): Pick<ComponentProps<typeof Button>, 'text' | 'tone' | 'icon' | 'iconRight' | 'disabled'> {
-  if (typeof selected === 'undefined') {
+  if (releasesState === 'pending') {
     return {
       text: tCore('common.loading'),
       tone: 'neutral',
@@ -352,33 +366,37 @@ function getMenuButtonProps({
     }
   }
 
-  const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+  if (isSystemBundleName(selected)) {
+    const tone: ButtonTone = selected === 'published' ? 'positive' : 'caution'
+
+    return {
+      text: tStructure(['compare-versions.status', selected].join('.')),
+      icon: <ReleaseAvatar padding={1} tone={tone} />,
+      tone,
+    }
+  }
 
   return {
-    text: tStructure(['compare-versions.status', selected].join('.')),
-    icon: <ReleaseAvatar padding={1} tone={tone} />,
-    tone,
+    text: selected,
+    icon: <ReleaseAvatar padding={1} tone="neutral" />,
+    tone: 'neutral',
   }
 }
 
-/**
- * If the provided document id represents a version, find and return the corresponding release
- * document. Otherwise, return a string literal signifying whether the document id represents a
- * published or draft document.
- */
-function findRelease(
-  documentId: string,
-  releases: ReleaseDocument[],
-): ReleaseDocument | 'published' | 'draft' | undefined {
-  if (isPublishedId(documentId)) {
-    return 'published'
+function fetchingState({
+  loading,
+  error,
+}: {
+  loading: boolean
+  error?: Error
+}): 'pending' | 'ready' | 'error' {
+  if (loading) {
+    return 'pending'
   }
 
-  if (isDraftId(documentId)) {
-    return 'draft'
+  if (typeof error !== 'undefined') {
+    return 'error'
   }
 
-  return releases.find(
-    ({_id}) => getReleaseIdFromReleaseDocumentId(_id) === getVersionFromId(documentId),
-  )
+  return 'ready'
 }

@@ -2,11 +2,13 @@ import {
   type CustomValidator,
   type FieldReference,
   type LocalizedValidationMessages,
+  type ValidationContext,
 } from '../validation'
 
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {
   required: () => T
+  skip: () => T
 
   // this generic allows callees to provide a type override
   custom: <LenientFieldValue extends FieldValue>(
@@ -25,4 +27,5 @@ export type RuleBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> 
 /** @public */
 export type ValidationBuilder<T extends RuleDef<T, FieldValue>, FieldValue = unknown> = (
   rule: T,
+  context?: ValidationContext,
 ) => RuleBuilder<T, FieldValue>

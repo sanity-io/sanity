@@ -3,11 +3,12 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {isEqual, memoize} from 'lodash'
+import {isEqual, memoize} from 'lodash-es'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {type AuthConfig} from '../../../config'
+import {type AuthConfig, type LoginMethod} from '../../../config'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
@@ -49,6 +50,21 @@ const getHashToken = (): string | null => {
   history.replaceState(null, '', newUrl)
 
   return tokenParam
+}
+
+const getAuthOptions = (
+  loginMethod: LoginMethod,
+  token: string | null,
+): {token: string} | {withCredentials: boolean} | null => {
+  if (loginMethod === 'cookie') {
+    return {withCredentials: true}
+  }
+
+  if (loginMethod === 'token') {
+    return token ? {token} : null
+  }
+
+  return token ? {token} : {withCredentials: true}
 }
 
 const getStoredToken = (projectId: string): string | null => {
@@ -129,13 +145,16 @@ const getCurrentUser = async (
 
     if (invalidCorsConfig) {
       // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-      throw new CorsOriginError({projectId: client.config()?.projectId})
+      throw new CorsOriginError({
+        isStaging: client.config().apiHost.endsWith('.work'),
+        projectId: client.config()?.projectId,
+      })
     }
 
     // Some non-CORS error - is it one of those undefinable network errors?
     if (err.isNetworkError && !err.message && err.request && err.request.url) {
       const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`)
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
     // Some other error, just throw it
@@ -190,11 +209,12 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...(token ? {token} : {withCredentials: true}),
+        ...getAuthOptions(loginMethod, token),
         perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
         ...hostOptions,
       }),
     ),
@@ -232,6 +252,7 @@ export function _createAuthStore({
       withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
@@ -273,9 +294,10 @@ export function _createAuthStore({
       projectId,
       dataset,
       useCdn: true,
-      ...(token ? {token} : {withCredentials: true}),
+      ...getAuthOptions(loginMethod, token),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
@@ -315,4 +337,4 @@ function hash(value: unknown): string {
 /**
  * @internal
  */
-export const createAuthStore = memoize(_createAuthStore, hash)
+export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)

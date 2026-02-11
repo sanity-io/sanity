@@ -5,8 +5,8 @@ import {
   type PortableTextTextBlock,
   type SpanSchemaType,
 } from '@sanity/types'
-import {uniq, xor} from 'lodash'
-import {type ReactNode, useCallback, useMemo} from 'react'
+import {uniq, xor} from 'lodash-es'
+import {type ReactNode, useMemo} from 'react'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
@@ -61,177 +61,8 @@ export function PortableText(props: Props): React.JSX.Element {
     [diff.origin],
   )
 
-  const renderChild = useCallback(
-    (ptDiffChild: PortableTextChild) => {
-      const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanSchemaType
-      let decoratorTypes: {title: string; value: string}[] = []
-      if (spanSchemaType) {
-        decoratorTypes = getDecorators(spanSchemaType)
-        const childrenDiff = diff.fields.children as ArrayDiff
-        const segments =
-          (childrenDiff.items[0].diff &&
-            childrenDiff.items[0].diff.type === 'object' &&
-            childrenDiff.items[0].diff.fields.text.type === 'string' &&
-            childrenDiff.items[0].diff.fields.text.segments) ||
-          []
-        const returnedChildren: ReactNode[] = []
-        const annotationSegments: Record<string, ReactNode[]> = {}
-        // Special case for new empty PT-block (single span child with empty text)
-        if (
-          isEmptyTextChange(block, diff) &&
-          (diff.origin.action === 'added' || diff.origin.action === 'removed')
-        ) {
-          const textDiff = findChildDiff(diff.origin, block.children[0]) || diff.origin
-          if (textDiff && textDiff.action !== 'unchanged') {
-            return (
-              <DiffCard
-                annotation={textDiff.annotation}
-                as={textDiff.action === 'removed' ? 'del' : 'ins'}
-                key={`empty-block-${block._key}`}
-                tooltip={{
-                  description: t('changes.portable-text.empty-text', {context: textDiff.action}),
-                }}
-              >
-                <span>{TextSymbols.EMPTY_BLOCK_SYMBOL}</span>
-              </DiffCard>
-            )
-          }
-        }
-        // Run through all the segments from the PortableTextDiff
-        let childToIndex = -1
-        let segIndex = -1
-        const activeAnnotations: {mark: string; object: PortableTextChild; symbols: string[]}[] = []
-        let endedAnnotation:
-          | {mark: string; object: PortableTextChild; symbols: string[]}
-          | undefined
-        const allMarkDefs = getAllMarkDefs(diff.origin)
-        segments.forEach((seg) => {
-          segIndex++
-          const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
-          const isMarkStart = allSymbolsStart.includes(seg.text)
-          const isMarkEnd = allSymbolsEnd.includes(seg.text)
-          const isChildStart = seg.text === TextSymbols.CHILD_SYMBOL
-          const isRemoved = seg.action === 'removed'
-          if (isChildStart) {
-            if (!isRemoved) {
-              childToIndex++
-            }
-            // No output
-          } else if (isMarkStart || isMarkEnd) {
-            if (isMarkStart && annotationSymbolsStart.includes(seg.text)) {
-              const object = allMarkDefs[annotationSymbolsStart.indexOf(seg.text)]
-              if (object) {
-                activeAnnotations.push({
-                  mark: object._key,
-                  symbols: [
-                    seg.text,
-                    annotationSymbolsEnd[annotationSymbolsStart.indexOf(seg.text)],
-                  ],
-                  object,
-                })
-              }
-            }
-            if (isMarkEnd && annotationSymbolsEnd.includes(seg.text)) {
-              endedAnnotation = activeAnnotations.pop()
-            }
-            // No output
-          } else if (isInline) {
-            // Render inline object
-            const indexOfSymbol = TextSymbols.INLINE_SYMBOLS.findIndex((sym) => sym === seg.text)
-            const key = inlineObjects[indexOfSymbol]?._key
-            const originChild = inlineObjects[indexOfSymbol]
-            if (key) {
-              const objectSchemaType = getChildSchemaType(schemaType.fields, originChild)
-              const objectDiff = findChildDiff(diff.origin, originChild)
-              returnedChildren.push(
-                <InlineObject
-                  key={`inline-object-${originChild._key}`}
-                  object={originChild}
-                  path={[{_key: block._key}, 'children', {_key: originChild._key}]}
-                  diff={objectDiff}
-                  schemaType={objectSchemaType}
-                />,
-              )
-            }
-          } else if (seg.text) {
-            // TODO: find a better way of getting a removed child
-            const getChildFromFromValue = () =>
-              diff.origin.fromValue?.children.find(
-                (cld: any) => cld.text && cld.text.match(escapeRegExp(seg.text)),
-              ) as PortableTextChild
-            const child = block.children[childToIndex] || getChildFromFromValue()
-            const childDiff = child && findSpanDiffFromChild(diff.origin, child)
-            if (!child) {
-              throw new Error('Could not find child')
-            }
-            const textDiff = childDiff?.fields?.text
-              ? (childDiff?.fields?.text as StringDiff)
-              : undefined
-            const text = (
-              <Text
-                diff={textDiff}
-                key={`text-${child._key}-${segIndex}`}
-                path={[{_key: block._key}, 'children', {_key: child._key}]}
-                childDiff={childDiff}
-                segment={seg}
-              >
-                {renderTextSegment({
-                  diff,
-                  child,
-                  decoratorTypes,
-                  seg,
-                  segIndex,
-                  spanSchemaType,
-                  t,
-                })}
-              </Text>
-            )
-
-            // Render annotations text changes within the annotation child
-            if (activeAnnotations.length > 0) {
-              activeAnnotations.forEach((active) => {
-                annotationSegments[active.mark] = annotationSegments[active.mark] || []
-                annotationSegments[active.mark].push(text)
-              })
-            }
-            if (endedAnnotation) {
-              const key = `annotation-${endedAnnotation.object._key}`
-              const lastChild = returnedChildren[returnedChildren.length - 1] as React.JSX.Element
-              if (lastChild && lastChild.key !== key) {
-                const annotationDiff = findAnnotationDiff(diff.origin, endedAnnotation.mark)
-                const objectSchemaType =
-                  endedAnnotation &&
-                  spanSchemaType.annotations &&
-                  spanSchemaType.annotations.find(
-                    (type) =>
-                      endedAnnotation &&
-                      endedAnnotation.object &&
-                      type.name === endedAnnotation.object._type,
-                  )
-                returnedChildren.push(
-                  <Annotation
-                    object={endedAnnotation.object}
-                    diff={annotationDiff}
-                    path={[{_key: block._key}, 'children', {_key: child._key}]}
-                    schemaType={objectSchemaType}
-                    key={key}
-                  >
-                    <>{annotationSegments[endedAnnotation.mark]}</>
-                  </Annotation>,
-                )
-              }
-              // delete annotationSegments[endedAnnotation.mark]
-              endedAnnotation = undefined
-            }
-            if (activeAnnotations.length === 0) {
-              returnedChildren.push(text)
-            }
-          } // end if seg.text
-        })
-        return <div key={block._key}>{returnedChildren}</div>
-      }
-      throw new Error("'span' schemaType not found")
-    },
+  const renderChild = useMemo(
+    () => defineRenderChild({block, diff, inlineObjects, schemaType, t}),
     [block, diff, inlineObjects, schemaType, t],
   )
 
@@ -290,8 +121,7 @@ function renderTextSegment({
     activeMarks.forEach((mark) => {
       if (isDecorator(mark, spanSchemaType)) {
         children = (
-          // eslint-disable-next-line react/no-array-index-key
-          <Decorator mark={mark} key={`decorator-${mark}-${child._key}-${segIndex}`}>
+          <Decorator key={`decorator-${mark}-${child._key}-${segIndex}`} mark={mark}>
             {children}
           </Decorator>
         )
@@ -378,8 +208,8 @@ function renderDecorators({
   ) {
     returned = (
       <DiffCard
-        annotation={marksAnnotation}
         key={`diffcard-annotation-${segIndex}-${marksChanged.join('-')}`}
+        annotation={marksAnnotation}
         as={'ins'}
         tooltip={{
           description: t('changes.portable-text.changed-formatting'),
@@ -400,4 +230,185 @@ function isEmptyTextChange(block: PortableTextTextBlock, diff: PortableTextDiff)
     block.children[0].text === '' &&
     diff.origin.action !== 'unchanged'
   )
+}
+
+function defineRenderChild({
+  block,
+  diff,
+  inlineObjects,
+  schemaType,
+  t,
+}: {
+  block: any
+  diff: any
+  inlineObjects: any
+  schemaType: any
+  t: any
+}) {
+  // eslint-disable-next-line react/display-name
+  return (ptDiffChild: PortableTextChild) => {
+    const spanSchemaType = getChildSchemaType(schemaType.fields, ptDiffChild) as SpanSchemaType
+    let decoratorTypes: {title: string; value: string}[] = []
+    if (spanSchemaType) {
+      decoratorTypes = getDecorators(spanSchemaType)
+      const childrenDiff = diff.fields.children as ArrayDiff
+      const segments =
+        (childrenDiff.items[0].diff &&
+          childrenDiff.items[0].diff.type === 'object' &&
+          childrenDiff.items[0].diff.fields.text.type === 'string' &&
+          childrenDiff.items[0].diff.fields.text.segments) ||
+        []
+      const returnedChildren: ReactNode[] = []
+      const annotationSegments: Record<string, ReactNode[]> = {}
+      // Special case for new empty PT-block (single span child with empty text)
+      if (
+        isEmptyTextChange(block, diff) &&
+        (diff.origin.action === 'added' || diff.origin.action === 'removed')
+      ) {
+        const textDiff = findChildDiff(diff.origin, block.children[0]) || diff.origin
+        if (textDiff && textDiff.action !== 'unchanged') {
+          return (
+            <DiffCard
+              key={`empty-block-${block._key}`}
+              annotation={textDiff.annotation}
+              as={textDiff.action === 'removed' ? 'del' : 'ins'}
+              tooltip={{
+                description: t('changes.portable-text.empty-text', {context: textDiff.action}),
+              }}
+            >
+              <span>{TextSymbols.EMPTY_BLOCK_SYMBOL}</span>
+            </DiffCard>
+          )
+        }
+      }
+      // Run through all the segments from the PortableTextDiff
+      let childToIndex = -1
+      let segIndex = -1
+      const activeAnnotations: {mark: string; object: PortableTextChild; symbols: string[]}[] = []
+      let endedAnnotation: {mark: string; object: PortableTextChild; symbols: string[]} | undefined
+      const allMarkDefs = getAllMarkDefs(diff.origin)
+      segments.forEach((seg) => {
+        segIndex++
+        const isInline = TextSymbols.INLINE_SYMBOLS.includes(seg.text)
+        const isMarkStart = allSymbolsStart.includes(seg.text)
+        const isMarkEnd = allSymbolsEnd.includes(seg.text)
+        const isChildStart = seg.text === TextSymbols.CHILD_SYMBOL
+        const isRemoved = seg.action === 'removed'
+        if (isChildStart) {
+          if (!isRemoved) {
+            childToIndex++
+          }
+          // No output
+        } else if (isMarkStart || isMarkEnd) {
+          if (isMarkStart && annotationSymbolsStart.includes(seg.text)) {
+            const object = allMarkDefs[annotationSymbolsStart.indexOf(seg.text)]
+            if (object) {
+              activeAnnotations.push({
+                mark: object._key,
+                symbols: [seg.text, annotationSymbolsEnd[annotationSymbolsStart.indexOf(seg.text)]],
+                object,
+              })
+            }
+          }
+          if (isMarkEnd && annotationSymbolsEnd.includes(seg.text)) {
+            endedAnnotation = activeAnnotations.pop()
+          }
+          // No output
+        } else if (isInline) {
+          // Render inline object
+          const indexOfSymbol = TextSymbols.INLINE_SYMBOLS.findIndex((sym) => sym === seg.text)
+          const key = inlineObjects[indexOfSymbol]?._key
+          const originChild = inlineObjects[indexOfSymbol]
+          if (key) {
+            const objectSchemaType = getChildSchemaType(schemaType.fields, originChild)
+            const objectDiff = findChildDiff(diff.origin, originChild)
+            returnedChildren.push(
+              <InlineObject
+                key={`inline-object-${originChild._key}`}
+                object={originChild}
+                path={[{_key: block._key}, 'children', {_key: originChild._key}]}
+                diff={objectDiff}
+                schemaType={objectSchemaType}
+              />,
+            )
+          }
+        } else if (seg.text) {
+          // TODO: find a better way of getting a removed child
+          const getChildFromFromValue = () =>
+            diff.origin.fromValue?.children.find(
+              (cld: any) => cld.text && cld.text.match(escapeRegExp(seg.text)),
+            ) as PortableTextChild
+          const child = block.children[childToIndex] || getChildFromFromValue()
+          const childDiff = child && findSpanDiffFromChild(diff.origin, child)
+          if (!child) {
+            throw new Error('Could not find child')
+          }
+          const textDiff = childDiff?.fields?.text
+            ? (childDiff?.fields?.text as StringDiff)
+            : undefined
+          const text = (
+            <Text
+              key={`text-${child._key}-${segIndex}`}
+              diff={textDiff}
+              path={[{_key: block._key}, 'children', {_key: child._key}]}
+              childDiff={childDiff}
+              segment={seg}
+            >
+              {renderTextSegment({
+                diff,
+                child,
+                decoratorTypes,
+                seg,
+                segIndex,
+                spanSchemaType,
+                t,
+              })}
+            </Text>
+          )
+
+          // Render annotations text changes within the annotation child
+          if (activeAnnotations.length > 0) {
+            activeAnnotations.forEach((active) => {
+              annotationSegments[active.mark] = annotationSegments[active.mark] || []
+              annotationSegments[active.mark].push(text)
+            })
+          }
+          if (endedAnnotation) {
+            const key = `annotation-${endedAnnotation.object._key}`
+            const lastChild = returnedChildren[returnedChildren.length - 1] as React.JSX.Element
+            if (lastChild && lastChild.key !== key) {
+              const annotationDiff = findAnnotationDiff(diff.origin, endedAnnotation.mark)
+              const objectSchemaType =
+                endedAnnotation &&
+                spanSchemaType.annotations &&
+                spanSchemaType.annotations.find(
+                  (type) =>
+                    endedAnnotation &&
+                    endedAnnotation.object &&
+                    type.name === endedAnnotation.object._type,
+                )
+              returnedChildren.push(
+                <Annotation
+                  key={key}
+                  object={endedAnnotation.object}
+                  diff={annotationDiff}
+                  path={[{_key: block._key}, 'children', {_key: child._key}]}
+                  schemaType={objectSchemaType}
+                >
+                  <>{annotationSegments[endedAnnotation.mark]}</>
+                </Annotation>,
+              )
+            }
+            // delete annotationSegments[endedAnnotation.mark]
+            endedAnnotation = undefined
+          }
+          if (activeAnnotations.length === 0) {
+            returnedChildren.push(text)
+          }
+        } // end if seg.text
+      })
+      return <div key={block._key}>{returnedChildren}</div>
+    }
+    throw new Error("'span' schemaType not found")
+  }
 }

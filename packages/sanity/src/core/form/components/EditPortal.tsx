@@ -22,7 +22,6 @@ interface DialogProps extends SharedProps {
 
 interface PopoverProps extends SharedProps {
   type: 'popover'
-  // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
   onClose: () => void
 }

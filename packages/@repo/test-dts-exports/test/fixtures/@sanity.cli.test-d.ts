@@ -2,11 +2,9 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import {describe, expectTypeOf, test} from 'vitest'
 import type {
   CliApiClient,
   CliApiConfig,
-  CliBaseCommandContext,
   CliClientOptions,
   CliCommandAction,
   CliCommandArguments,
@@ -19,8 +17,6 @@ import type {
   CliPrompter,
   CliStubbedYarn,
   CliUserConfig,
-  CliV2CommandContext,
-  CliV3CommandContext,
   CliYarnOptions,
   CommandRunnerOptions,
   createCliConfig,
@@ -40,6 +36,7 @@ import type {
   TelemetryUserProperties,
   UserViteConfig,
 } from '@sanity/cli'
+import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/cli', () => {
   test('CliApiClient', () => {
@@ -47,9 +44,6 @@ describe('@sanity/cli', () => {
   })
   test('CliApiConfig', () => {
     expectTypeOf<CliApiConfig>().toBeObject()
-  })
-  test('CliBaseCommandContext', () => {
-    expectTypeOf<CliBaseCommandContext>().toBeObject()
   })
   test('CliClientOptions', () => {
     expectTypeOf<CliClientOptions>().toBeObject()
@@ -61,7 +55,7 @@ describe('@sanity/cli', () => {
     expectTypeOf<CliCommandArguments<any>>().toBeObject()
   })
   test('CliCommandContext', () => {
-    expectTypeOf<CliCommandContext>().not.toBeNever()
+    expectTypeOf<CliCommandContext>().toBeObject()
   })
   test('CliCommandDefinition', () => {
     expectTypeOf<CliCommandDefinition<any>>().toBeObject()
@@ -86,12 +80,6 @@ describe('@sanity/cli', () => {
   })
   test('CliUserConfig', () => {
     expectTypeOf<CliUserConfig>().toBeObject()
-  })
-  test('CliV2CommandContext', () => {
-    expectTypeOf<CliV2CommandContext>().toBeObject()
-  })
-  test('CliV3CommandContext', () => {
-    expectTypeOf<CliV3CommandContext>().toBeObject()
   })
   test('CliYarnOptions', () => {
     expectTypeOf<CliYarnOptions>().toBeObject()
@@ -118,7 +106,7 @@ describe('@sanity/cli', () => {
     expectTypeOf<PackageJson>().toBeObject()
   })
   test('ReactCompilerConfig', () => {
-    expectTypeOf<ReactCompilerConfig>().toBeObject()
+    expectTypeOf<ReactCompilerConfig>().not.toBeNever()
   })
   test('ResolvedCliCommand', () => {
     expectTypeOf<ResolvedCliCommand>().toBeObject()

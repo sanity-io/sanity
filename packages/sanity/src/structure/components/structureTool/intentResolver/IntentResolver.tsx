@@ -39,7 +39,6 @@ export const IntentResolver = memo(function IntentResolver() {
       const {intent, params, payload} = maybeIntent
 
       let cancelled = false
-      // eslint-disable-next-line no-inner-declarations
       async function effect() {
         const {id, type} = await ensureDocumentIdAndType(
           documentStore,

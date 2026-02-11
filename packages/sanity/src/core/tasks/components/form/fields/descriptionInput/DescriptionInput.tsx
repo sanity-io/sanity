@@ -21,9 +21,11 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
     /* select CommentInputEditableWrap and change the padding */
     [data-ui='CommentInputEditableWrap'] {
       overflow: hidden;
-      padding: ${props.$mode === 'edit'
-        ? `${verticalPadding}px 0px`
-        : `${verticalPadding}px ${theme.space[2]}px`};
+      padding: ${
+        props.$mode === 'edit'
+          ? `${verticalPadding}px 0px`
+          : `${verticalPadding}px ${theme.space[2]}px`
+      };
       min-height: ${Math.max(props.$minHeight + verticalPadding, minHeight)}px !important;
     }
     #comment-input-root {
@@ -82,7 +84,6 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
         value={value ?? []}
         withAvatar={false}
         placeholder={t('form.input.description.placeholder')}
-        // eslint-disable-next-line react/jsx-no-bind
         onDiscardConfirm={() => null}
         renderBlock={renderBlock}
       />

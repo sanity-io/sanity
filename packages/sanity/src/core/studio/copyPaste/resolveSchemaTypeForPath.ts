@@ -14,10 +14,7 @@ import {getValueAtPath} from '../../field/paths/helpers'
 import {getItemType} from '../../form/store/utils/getItemType'
 import {type FormDocumentValue} from '../../form/types/formDocumentValue'
 
-export function getSchemaField(
-  schemaType: SchemaType,
-  fieldPath: string,
-): ObjectField<SchemaType> | undefined {
+export function getSchemaField(schemaType: SchemaType, fieldPath: string): ObjectField | undefined {
   if (!fieldPath) return undefined
 
   const paths = fromString(fieldPath)
@@ -43,11 +40,11 @@ export function getSchemaField(
 export function resolveSchemaTypeForPath(
   baseType: SchemaType,
   path: Path,
-  documentValue?: FormDocumentValue | undefined | unknown,
+  documentValue?: FormDocumentValue | unknown,
 ): SchemaType | undefined {
   if (!baseType) return undefined
 
-  let currentField: ObjectSchemaType | ArraySchemaType<unknown> | SchemaType = baseType
+  let currentField: ObjectSchemaType | ArraySchemaType | SchemaType = baseType
 
   path.forEach((segment, index) => {
     const nextPath = path.slice(0, index + 1)
@@ -56,7 +53,7 @@ export function resolveSchemaTypeForPath(
     if (isArrayItem) {
       // We know that the currentField is an array schema type
       // if the current segment is an array item.
-      const arraySchemaType = currentField as ArraySchemaType<unknown>
+      const arraySchemaType = currentField as ArraySchemaType
 
       // Get the value of the array item at the current path
       const itemValue = getValueAtPath(documentValue, nextPath) as unknown[]

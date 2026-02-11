@@ -23,7 +23,7 @@ import {
 import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
-import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
@@ -195,13 +195,13 @@ export function getSentryErrorReporter(): ErrorReporter {
   function enable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(true)
+      void transport.setConsent(true)
     }
   }
   function disable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(false)
+      void transport.setConsent(false)
     }
   }
 
@@ -244,7 +244,7 @@ function isError(thing: unknown): thing is Error & {cause?: Error} {
 function isInstanceOf(thing: unknown, base: any): boolean {
   try {
     return thing instanceof base
-  } catch (_e) {
+  } catch {
     return false
   }
 }
@@ -336,7 +336,7 @@ function sanityDedupeIntegration() {
           }
           return null
         }
-      } catch (_) {
+      } catch {
         /* empty */
       }
 

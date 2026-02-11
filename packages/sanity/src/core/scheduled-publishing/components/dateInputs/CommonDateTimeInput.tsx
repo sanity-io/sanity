@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {TextInput} from '@sanity/ui'
 import {
   type FocusEvent,

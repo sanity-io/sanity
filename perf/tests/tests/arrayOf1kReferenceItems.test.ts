@@ -1,4 +1,4 @@
-import {range} from 'lodash'
+import {range} from 'lodash-es'
 
 import {type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
@@ -57,7 +57,7 @@ export default {
     await page.waitForSelector('[data-testid="string-input"]')
     await page.getByRole('button', {name: 'Add item'}).click()
 
-    const input = await page.getByTestId('autocomplete')
+    const input = page.getByTestId('autocomplete')
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>

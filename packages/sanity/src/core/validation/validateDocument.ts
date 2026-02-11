@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {
   isKeyedObject,
   isTypedObject,
+  type CurrentUser,
   type Rule,
   type SanityDocument,
   type Schema,
@@ -10,11 +11,12 @@ import {
 } from '@sanity/types'
 import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
-import {flatten, uniqBy} from 'lodash'
+import {flatten, uniqBy} from 'lodash-es'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {type SourceClientOptions, type Workspace} from '../config'
+import {resolveConditionalProperty} from '../form/store/conditional-property/resolveConditionalProperty'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
@@ -47,6 +49,33 @@ const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> 
 
 const isNonNullable = <T>(value: T): value is NonNullable<T> =>
   value !== null && value !== undefined
+
+/**
+ * Recursively extracts all `_fieldRules` from a rule and its nested constraints.
+ * This handles cases where `Rule.fields()` is used inside `Rule.all()` or `Rule.either()`.
+ */
+function extractFieldRulesFromRule(rule: Rule): NonNullable<Rule['_fieldRules']>[] {
+  const results: NonNullable<Rule['_fieldRules']>[] = []
+
+  // Add direct _fieldRules if present
+  if (rule._fieldRules) {
+    results.push(rule._fieldRules)
+  }
+
+  // Check for nested rules in 'all' or 'either' constraints
+  for (const ruleSpec of rule._rules) {
+    if (ruleSpec.flag === 'all' || ruleSpec.flag === 'either') {
+      const childRules = ruleSpec.constraint
+      if (Array.isArray(childRules)) {
+        for (const childRule of childRules) {
+          results.push(...extractFieldRulesFromRule(childRule))
+        }
+      }
+    }
+  }
+
+  return results
+}
 
 /**
  * @internal
@@ -132,6 +161,13 @@ export interface ValidateDocumentOptions {
    * fullfil the custom validation. This is 25 by default.
    */
   maxFetchConcurrency?: number
+
+  /**
+   * The current user, when available. Used when resolving schema `hidden`
+   * conditionals so validation matches what the form shows. If omitted, hidden
+   * is resolved with no user (e.g. CLI or headless validation).
+   */
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /**
@@ -145,6 +181,7 @@ export function validateDocument({
   workspace,
   environment = 'studio',
   maxFetchConcurrency,
+  currentUser,
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
   const getClient = options.getClient || workspace.getClient
@@ -164,6 +201,7 @@ export function validateDocument({
         options.getDocumentExists ||
         createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
       environment,
+      currentUser,
     }),
   )
 }
@@ -171,13 +209,16 @@ export function validateDocument({
 /**
  * @internal
  */
-export interface ValidateDocumentObservableOptions
-  extends Pick<ValidationContext, 'getDocumentExists' | 'i18n'> {
+export interface ValidateDocumentObservableOptions extends Pick<
+  ValidationContext,
+  'getDocumentExists' | 'i18n'
+> {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -194,6 +235,7 @@ export function validateDocumentObservable({
   getDocumentExists,
   environment,
   maxCustomValidationConcurrency,
+  currentUser,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validated a value without a '_type'`)
@@ -239,6 +281,7 @@ export function validateDocumentObservable({
     getDocumentExists,
     environment,
     customValidationConcurrencyLimiter,
+    currentUser,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
@@ -273,7 +316,9 @@ type ExplicitUndefined<T> = {
 type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
-} & ExplicitUndefined<ValidationContext>
+  hidden?: boolean
+  currentUser?: Omit<CurrentUser, 'role'> | null
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(validateItemObservable(opts))
@@ -288,6 +333,35 @@ function validateItemObservable({
   environment,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
+  // Track whether any ancestor in the tree is hidden.
+  // It will be true if this field OR any ancestor is hidden.
+  // This allows validation rules to check `context.hidden` to skip validation for hidden fields,
+  // without needing to know whether the field itself or an ancestor caused it to be hidden.
+  const ancestorHidden = restOfContext.hidden === true
+  const resolveHiddenForType = (
+    schemaType: SchemaType | undefined,
+    schemaValue: unknown,
+    schemaParent: unknown,
+    schemaPath: ValidationContext['path'],
+    ancestorHiddenValue: boolean,
+  ) => {
+    // If there is no schema type, fall back to the ancestor's hidden state.
+    if (!schemaType) {
+      return ancestorHiddenValue
+    }
+    return (
+      ancestorHiddenValue ||
+      resolveConditionalProperty(schemaType.hidden, {
+        ...restOfContext,
+        parent: schemaParent,
+        value: schemaValue,
+        path: schemaPath || [],
+        currentUser: restOfContext.currentUser ?? null,
+      })
+    )
+  }
+  const hidden = resolveHiddenForType(type, value, parent, path, ancestorHidden)
+
   // Note: this validator is added here because it's conditional based on the
   // environment.
   const addUnknownFieldsValidator = (rule: Rule) => {
@@ -307,13 +381,21 @@ function validateItemObservable({
     return rule
   }
 
-  const rules = normalizeValidationRules(type)
+  const rules = normalizeValidationRules(type, {
+    ...restOfContext,
+    hidden,
+    environment,
+    parent,
+    path,
+    type,
+  })
   // run validation for the current value
   const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
     defer(() =>
       rule.validate(value, {
         ...restOfContext,
         environment,
+        hidden,
         parent,
         path,
         type,
@@ -341,10 +423,10 @@ function validateItemObservable({
     }, {})
 
     // Validation for rules set at the object level with `Rule.fields({/* ... */})`
+    // Use extractFieldRulesFromRule to handle Rule.fields() inside Rule.all() or Rule.either()
     nestedChecks = nestedChecks.concat(
       rules
-        .map((rule) => rule._fieldRules)
-        .filter(isNonNullable)
+        .flatMap((rule) => extractFieldRulesFromRule(rule))
         .flatMap((fieldResults) => Object.entries(fieldResults))
         .flatMap(([name, validation]) => {
           const fieldType = fieldTypes[name]
@@ -352,6 +434,13 @@ function validateItemObservable({
             .map(addUnknownFieldsValidator)
             .map((subRule) => {
               const nestedValue = isRecord(value) ? value[name] : undefined
+              const nestedHidden = resolveHiddenForType(
+                fieldType,
+                nestedValue,
+                value,
+                path.concat(name),
+                hidden,
+              )
               return defer(() =>
                 subRule.validate(nestedValue, {
                   ...restOfContext,
@@ -359,6 +448,7 @@ function validateItemObservable({
                   path: path.concat(name),
                   type: fieldType,
                   environment,
+                  hidden: nestedHidden,
                   __internal: {customValidationConcurrencyLimiter},
                 }),
               )
@@ -371,6 +461,7 @@ function validateItemObservable({
       type.fields.map((field) =>
         validateItemObservable({
           ...restOfContext,
+          hidden,
           parent: value,
           value: isRecord(value) ? value[field.name] : undefined,
           path: path.concat(field.name),
@@ -393,6 +484,7 @@ function validateItemObservable({
       value.map((item, index) =>
         validateItemObservable({
           ...restOfContext,
+          hidden,
           parent: value,
           value: item,
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
@@ -411,8 +503,8 @@ function validateItemObservable({
     map(flatten),
     map((results) => {
       // run `uniqBy` if `_fieldRules` are present because they can
-      // cause repeat markers
-      if (rules.some((rule) => rule._fieldRules)) {
+      // cause repeat markers (check recursively for nested rules)
+      if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
         return uniqBy(results, (rule) => JSON.stringify(rule))
       }
       return results

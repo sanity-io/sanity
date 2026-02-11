@@ -1,7 +1,7 @@
-/* eslint-disable no-process-env, no-process-exit, max-statements */
+/* eslint-disable max-statements */
 import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import oneline from 'oneline'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
@@ -48,11 +48,11 @@ export default async function deployGraphQLApiAction(
   const {
     force,
     dryRun,
-    'api': onlyApis,
-    'dataset': datasetFlag,
-    'tag': tagFlag,
-    'playground': playgroundFlag,
-    'generation': generationFlag,
+    api: onlyApis,
+    dataset: datasetFlag,
+    tag: tagFlag,
+    playground: playgroundFlag,
+    generation: generationFlag,
     'non-null-document-fields': nonNullDocumentFieldsFlag,
     withUnionCache,
   } = flags

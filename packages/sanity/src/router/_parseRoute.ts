@@ -14,7 +14,6 @@ function createSegment(segment: string): RouteSegment | null {
       const addendum = segment.includes('*')
         ? ' Splats are not supported. Consider using child routes instead'
         : ''
-      // eslint-disable-next-line no-console
       console.error(
         new Error(`Warning: Param segments "${segment}" includes invalid characters.${addendum}`),
       )

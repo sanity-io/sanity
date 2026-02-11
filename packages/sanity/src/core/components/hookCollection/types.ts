@@ -7,15 +7,12 @@ export interface HookCollectionActionHook<Args, State> {
 
 /** @public */
 export interface GetHookCollectionStateProps<Args, State> {
-  /**
-   * Arguments that will be received by the action hooks, `onComplete` will be added by the HookStateContainer component.
-   */
   args: Args
   children: (props: {states: State[]}) => React.ReactNode
-  hooks: HookCollectionActionHook<Args & {onComplete: () => void}, State>[]
-  onReset?: () => void
+  hooks: HookCollectionActionHook<Args, State>[]
+
   /**
-   * Name for the hook group. If provided, only hooks with the same group name will be included in the collection.
+   * Force hooks state to reset, this pattern is discouraged and only supported for Document Actions for backwards compatibility.
    */
-  group?: string
+  resetRef?: React.Ref<() => void>
 }

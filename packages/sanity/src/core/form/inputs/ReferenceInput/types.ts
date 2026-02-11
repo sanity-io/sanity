@@ -39,6 +39,9 @@ export interface EditReferenceEvent {
   version?: ReleaseId
 }
 
+/**
+ * @internal
+ */
 export interface CreateReferenceOption {
   id: string
   title: string
@@ -63,12 +66,13 @@ export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSea
 export interface ReferenceSearchHit {
   id: string
   type: string
-  draft?: {_id: string; _type: string}
-  published?: {_id: string; _type: string}
+  published: boolean
 }
 
-export interface ReferenceInputProps<Value = Reference>
-  extends ObjectInputProps<Value, ReferenceSchemaType> {
+export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps<
+  Value,
+  ReferenceSchemaType
+> {
   suffix?: ReactNode
   liveEdit?: boolean
   onSearch: ReferenceSearchFunction
@@ -83,5 +87,4 @@ export interface ReferenceInputProps<Value = Reference>
 
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
-  version?: string
 }

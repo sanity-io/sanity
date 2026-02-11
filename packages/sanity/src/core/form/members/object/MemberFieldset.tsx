@@ -1,5 +1,5 @@
-import {capitalize} from 'lodash'
-import {memo, useCallback} from 'react'
+import {capitalize} from 'lodash-es'
+import {memo, useCallback, useMemo} from 'react'
 
 import {FormFieldSet} from '../../components/formField'
 import {type FieldSetMember} from '../../store'
@@ -12,6 +12,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from '../../types'
+import {MemberDecoration} from './MemberDecoration'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 
@@ -47,6 +48,13 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
     onSetFieldSetCollapsed(member.fieldSet.path, false)
   }, [member.fieldSet.path, onSetFieldSetCollapsed])
 
+  const fieldsetMembers = useMemo(() => {
+    if (member.renderMembers) {
+      return member.renderMembers(member.fieldSet.members)
+    }
+    return member.fieldSet.members
+  }, [member])
+
   return (
     <FormFieldSet
       title={member.fieldSet.title || capitalize(member.fieldSet.name)}
@@ -60,12 +68,16 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
       data-testid={`fieldset-${member.fieldSet.name}`}
       inputId={member.fieldSet.name}
     >
-      {member.fieldSet.members.map((fieldsetMember) => {
+      {fieldsetMembers.map((fieldsetMember) => {
         if (fieldsetMember.kind === 'error') {
           return <MemberFieldError key={member.key} member={fieldsetMember} />
         }
+        if (fieldsetMember.kind === 'decoration') {
+          return <MemberDecoration key={fieldsetMember.key} member={fieldsetMember} />
+        }
         return (
           <MemberField
+            key={fieldsetMember.key}
             member={fieldsetMember}
             renderAnnotation={renderAnnotation}
             renderBlock={renderBlock}
@@ -74,7 +86,6 @@ export const MemberFieldSet = memo(function MemberFieldSet(props: {
             renderInput={renderInput}
             renderItem={renderItem}
             renderPreview={renderPreview}
-            key={fieldsetMember.key}
           />
         )
       })}

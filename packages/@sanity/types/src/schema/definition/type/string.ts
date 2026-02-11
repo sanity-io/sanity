@@ -10,9 +10,7 @@ import {
 
 /** @public */
 export interface StringOptions
-  extends EnumListProps<string>,
-    SearchConfiguration,
-    BaseSchemaTypeOptions {}
+  extends EnumListProps<string>, SearchConfiguration, BaseSchemaTypeOptions {}
 
 /** @public */
 export interface StringRule extends RuleDef<StringRule, string> {

@@ -40,7 +40,6 @@ export interface ParsedArguments<F = Record<string, string>> {
 }
 
 export function parseArguments(argv = process.argv): ParsedArguments {
-  /* eslint-disable id-length */
   // prettier-ignore
   const {
     _,
@@ -72,5 +71,4 @@ export function parseArguments(argv = process.argv): ParsedArguments {
       v, version,
     },
   }
-  /* eslint-enable id-length */
 }

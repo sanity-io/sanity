@@ -79,7 +79,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   // Immediately remove schedule from SWR cache and revalidate
   const handleDelete = useCallback(
     (event: CustomEvent<ScheduleDeleteEvent>) => {
-      mutate(
+      void mutate(
         (currentData) => ({
           schedules: currentData?.schedules?.filter(
             (schedule) => schedule.id !== event.detail.scheduleId,
@@ -94,7 +94,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   // Immediately remove schedules from SWR cache and revalidate
   const handleDeleteMultiple = useCallback(
     (event: CustomEvent<ScheduleDeleteMultipleEvent>) => {
-      mutate(
+      void mutate(
         (currentData) => ({
           schedules: currentData?.schedules?.filter(
             (schedule) => !event.detail.scheduleIds.includes(schedule.id),
@@ -109,7 +109,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   // Immediately publish schedule in SWR cache and revalidate
   const handlePublish = useCallback(
     (event: CustomEvent<SchedulePublishEvent>) => {
-      mutate(
+      void mutate(
         (currentData) => {
           const currentSchedules = currentData?.schedules || []
           const index = currentSchedules.findIndex(
@@ -136,7 +136,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   // Immediately update schedule in SWR cache and revalidate
   const handleUpdate = useCallback(
     (event: CustomEvent<ScheduleUpdateEvent>) => {
-      mutate(
+      void mutate(
         (currentData) => {
           const currentSchedules = currentData?.schedules || []
           const index = currentSchedules.findIndex(

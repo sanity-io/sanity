@@ -10,16 +10,25 @@ import {type CalendarLabels} from '../../../../components/inputs/DateInputs/cale
 import {DatePicker} from '../../../../components/inputs/DateInputs/DatePicker'
 import {type FormPatch, type PatchEvent, set, unset} from '../../../../form'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
-import {useDateTimeFormat} from '../../../../hooks'
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../../studio/constants'
 import {tasksLocaleNamespace} from '../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
-const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
+const deserialize = (value: string | undefined) => parse(value || '', DEFAULT_DATE_FORMAT)
 
+const DUE_BY_DATE_OPTIONS: UseDateTimeFormatOptions = {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+}
+const SHORT_DATE_OPTIONS: UseDateTimeFormatOptions = {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+}
 export function DateEditFormField(props: {
-  value: string
+  value: string | undefined
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
   path: Path
 }) {
@@ -30,13 +39,14 @@ export function DateEditFormField(props: {
   const [pickerOpen, setPickerOpen] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
-  const dateFormatter = useDateTimeFormat({dateStyle: 'long'})
+  const longDateFormatter = useDateTimeFormat(DUE_BY_DATE_OPTIONS)
+  const shortDateFormatter = useDateTimeFormat(SHORT_DATE_OPTIONS)
   const dueByeDisplayValue = useMemo(() => {
     if (!value) return {short: '----', full: '----'}
-    const dueFormated = dateFormatter.format(new Date(value))
-    const [monthAndDay] = dueFormated.split(',')
-    return {short: monthAndDay, full: dueFormated}
-  }, [dateFormatter, value])
+    const dueFormatted = longDateFormatter.format(new Date(value))
+    const shortDueFormatted = shortDateFormatter.format(new Date(value))
+    return {short: shortDueFormatted, full: dueFormatted}
+  }, [longDateFormatter, shortDateFormatter, value])
 
   useClickOutsideEvent(
     () => setPickerOpen(false),

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// oxlint-disable no-unused-vars
 // noinspection JSUnusedLocalSymbols
 import {
   type CrossDatasetReferenceValue,
@@ -666,5 +666,3 @@ describe('definitionExtensions', () => {
     })
   })
 })
-
-export {}

@@ -86,11 +86,11 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
           <Menu padding={1}>
             {actionStates.map((actionState, idx) => (
               <ActionMenuListItem
+                // oxlint-disable-next-line no-array-index-key
+                key={idx}
                 actionState={actionState}
                 disabled={disabled}
                 index={idx}
-                // eslint-disable-next-line react/no-array-index-key
-                key={idx}
                 onAction={handleAction}
               />
             ))}

@@ -1,12 +1,12 @@
 import {stegaClean} from '@sanity/client/stega'
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
-import Refractor from 'react-refractor'
-import markdown from 'refractor/lang/markdown'
+import {registerLanguage} from 'react-refractor'
+import markdown from 'refractor/markdown'
 
 import {useQuery} from './loader'
 
-Refractor.registerLanguage(markdown)
+registerLanguage(markdown)
 
 export function Markdown(): React.JSX.Element {
   const {data, loading, error} = useQuery<

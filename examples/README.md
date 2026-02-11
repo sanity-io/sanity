@@ -27,17 +27,23 @@ The `functions/` directory contains examples of [Sanity Functions](https://www.s
 
 ### Available Function Examples
 
+- **[auto-changelog](./functions/auto-changelog/README.md)** - AI-powered automatic changelog generation for document updates
 - **[auto-tag](./functions/auto-tag/README.md)** - AI-powered automatic tagging for blog posts
 - **[first-published](./functions/first-published/README.md)** - Automatic timestamp tracking for first publication
+- **[slack-notify](./functions/slack-notify/README.md)** - Automatic Slack notifications when content is published
+- **[brand-voice-validator](./functions/brand-voice-validator/README.md)** - AI-powered content analysis and improvement suggestions
+- **[capture-tone-of-voice](./functions/capture-tone-of-voice/README.md)** - AI-powered tone of voice analysis and capture for content
+- **[algolia-document-sync](./functions/algolia-document-sync/)** - Automatically sync documents into an Algolia search index
+- **[auto-summary](./functions/auto-summary/)** - AI-Powered summary generation for editorial content
 
 ## 🎨 Studios
 
 The `studios/` directory contains complete Sanity Studio configurations showcasing different use cases:
 
-- **[Blog Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/blog-studio)** - Content management for blogs and editorial sites
-- **[E-commerce Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/ecommerce-studio)** - Product catalogs and inventory management
-- **[Clean Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/clean-studio)** - Clean project with no predefined schema types
-- **[Movies Studio](https://github.com/sanity-io/sanity/tree/marketing/add-examples-folder/examples/studios/movies-studio)** - Movie database with sample content
+- **[Blog Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/blog-studio)** - Content management for blogs and editorial sites
+- **[E-commerce Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/ecommerce-studio)** - Product catalogs and inventory management
+- **[Clean Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/clean-studio)** - Clean project with no predefined schema types
+- **[Movies Studio](https://github.com/sanity-io/sanity/tree/main/examples/studios/movies-studio)** - Movie database with sample content
 
 Each studio example demonstrates schema design, custom components, and workflow configurations.
 

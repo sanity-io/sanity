@@ -5,7 +5,7 @@ import {
   type SchemaType,
   type TitledListValue,
 } from '@sanity/types'
-import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash'
+import {debounce, flatten, get, isPlainObject, pick, uniqBy} from 'lodash-es'
 
 import {isRecord} from '../../util'
 import {INVALID_PREVIEW_FALLBACK} from '../constants'
@@ -47,7 +47,7 @@ const errorCollector = (() => {
 })()
 
 const reportErrors = debounce(() => {
-  /* eslint-disable no-console */
+  // oxlint-disable no-console
   const errorsByType = errorCollector.getAll()
   const uniqueErrors = flatten(
     Object.keys(errorsByType).map((typeName) => {
@@ -96,7 +96,7 @@ const reportErrors = debounce(() => {
   })
   console.groupEnd()
   errorCollector.clear()
-  /* eslint-enable no-console */
+  // oxlint-enable no-console
 }, 1000)
 
 const isRenderable =

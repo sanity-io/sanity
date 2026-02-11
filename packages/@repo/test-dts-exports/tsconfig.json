@@ -2,6 +2,7 @@
   "extends": "@repo/tsconfig/build.json",
   "include": ["./test"],
   "compilerOptions": {
+    "lib": ["dom", "ESNext"],
     "rootDir": ".",
     "emitDeclarationOnly": false,
     "noEmit": true,

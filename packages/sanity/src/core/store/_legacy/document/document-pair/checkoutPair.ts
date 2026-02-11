@@ -6,7 +6,7 @@ import {
 } from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
@@ -21,10 +21,17 @@ import {
 import {
   type DocumentStoreExtraOptions,
   getPairListener,
+  type InitialSnapshotEvent,
   type LatencyReportEvent,
   type ListenerEvent,
 } from '../getPairListener'
-import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {
+  type IdPair,
+  type MutationEvent,
+  type PendingMutationsEvent,
+  type ReconnectEvent,
+  type WelcomeEvent,
+} from '../types'
 import {actionsApiClient} from './utils/actionsApiClient'
 import {operationsApiClient} from './utils/operationsApiClient'
 
@@ -33,10 +40,8 @@ const FETCH_SHARD_TIMEOUT = 20_000
 
 const isMutationEventForDocId =
   (id: string) =>
-  (
-    event: ListenerEvent,
-  ): event is Exclude<ListenerEvent, ReconnectEvent | PendingMutationsEvent> => {
-    return event.type !== 'reconnect' && event.type !== 'pending' && event.documentId === id
+  (event: ListenerEvent): event is MutationEvent | InitialSnapshotEvent => {
+    return (event.type === 'snapshot' || event.type === 'mutation') && event.documentId === id
   }
 
 /**
@@ -47,7 +52,9 @@ export type WithVersion<T> = T & {version: DocumentVariantType}
 /**
  * @hidden
  * @beta */
-export type DocumentVersionEvent = WithVersion<ReconnectEvent | BufferedDocumentEvent>
+export type DocumentVersionEvent = WithVersion<
+  ReconnectEvent | BufferedDocumentEvent | WelcomeEvent
+>
 
 /**
  * @hidden
@@ -246,9 +253,9 @@ export function checkoutPair(
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
-  const reconnect$ = listenerEvents$.pipe(
-    filter((ev) => ev.type === 'reconnect'),
-  ) as Observable<ReconnectEvent>
+  const connectionChangeEvents$ = listenerEvents$.pipe(
+    filter((ev) => ev.type === 'reconnect' || ev.type === 'welcome'),
+  )
 
   const draft = createBufferedDocument(
     draftId,
@@ -307,7 +314,9 @@ export function checkoutPair(
     transactionsPendingEvents$,
     draft: {
       ...draft,
-      events: merge(combinedEvents, reconnect$, draft.events).pipe(map(setVersion('draft'))),
+      events: merge(combinedEvents, connectionChangeEvents$, draft.events).pipe(
+        map(setVersion('draft')),
+      ),
       remoteSnapshot$: draft.remoteSnapshot$.pipe(map(setVersion('draft'))),
     },
     ...(typeof version === 'undefined'
@@ -315,7 +324,7 @@ export function checkoutPair(
       : {
           version: {
             ...version,
-            events: merge(combinedEvents, reconnect$, version.events).pipe(
+            events: merge(combinedEvents, connectionChangeEvents$, version.events).pipe(
               map(setVersion('version')),
             ),
             remoteSnapshot$: version.remoteSnapshot$.pipe(map(setVersion('version'))),
@@ -323,7 +332,7 @@ export function checkoutPair(
         }),
     published: {
       ...published,
-      events: merge(combinedEvents, reconnect$, published.events).pipe(
+      events: merge(combinedEvents, connectionChangeEvents$, published.events).pipe(
         map(setVersion('published')),
       ),
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),

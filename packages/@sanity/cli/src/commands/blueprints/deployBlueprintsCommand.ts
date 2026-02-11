@@ -1,16 +1,8 @@
+import {BlueprintsDeployCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --no-wait    Do not wait for deployment to complete
-
-Examples:
-  # Deploy the current blueprint
-  sanity blueprints deploy
-
-  # Deploy the current blueprint without waiting for completion
-  sanity blueprints deploy --no-wait
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsDeployFlags {
   'no-wait'?: boolean
@@ -23,9 +15,7 @@ const defaultFlags: BlueprintsDeployFlags = {
 const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
   name: 'deploy',
   group: 'blueprints',
-  helpText,
-  signature: '[--no-wait]',
-  description: 'Deploy a Blueprint to create or update a Stack',
+  ...transformHelpText(BlueprintsDeployCommand, 'sanity', 'blueprints deploy'),
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -43,7 +33,7 @@ const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print),
       token,
     })
 

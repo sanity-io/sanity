@@ -1,0 +1,29 @@
+{
+  "name": "mastodon-post",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@humanwhocodes/crosspost": "^0.1.1",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "mastodon-post",
+    "src": "./functions/mastodon-post",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'post' && defined(mastodonPost)",
+      "projection": "{title, mastodonPost, slug}"
+    },
+    "env": {
+      "COMMENT": "MASTODON_TOKEN and MASTODON_HOST are required",
+      "MASTODON_TOKEN": "MASTODON_TOKEN",
+      "MASTODON_HOST": "MASTODON_HOST"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

@@ -1,4 +1,4 @@
-import {type ThrottleSettings} from 'lodash'
+import {type ThrottleSettings} from 'lodash-es'
 import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
@@ -23,8 +23,7 @@ function mapHooksToStates<Args, State>(
 
 export function useHookCollectionStates<Args, State>({
   hooks,
-  group,
-}: Pick<GetHookCollectionStateProps<Args, State>, 'hooks' | 'group'>) {
+}: Pick<GetHookCollectionStateProps<Args, State>, 'hooks'>) {
   const [states] = useState(() => new Map<string, State>())
   const [snapshot, setSnapshot] = useState<NonNullable<State>[]>(() =>
     mapHooksToStates(states, {hooks}),
@@ -57,11 +56,10 @@ export function useHookCollectionStates<Args, State>({
   ) as typeof updateSnapshot
 
   const handleNext = useCallback(
-    (id: string, hookState: any) => {
+    (id: string, hookState: State | null) => {
       let shouldUpdateSnapshot = true
 
-      const hookGroup = hookState?.group || ['default']
-      if (hookState === null || (group && !hookGroup.includes(group))) {
+      if (hookState === null) {
         states.delete(id)
       } else {
         if (states.has(id)) {
@@ -75,7 +73,7 @@ export function useHookCollectionStates<Args, State>({
         requestUpdateSnapshot()
       }
     },
-    [group, requestUpdateSnapshot, states],
+    [requestUpdateSnapshot, states],
   )
 
   return {states: snapshot, handleNext}

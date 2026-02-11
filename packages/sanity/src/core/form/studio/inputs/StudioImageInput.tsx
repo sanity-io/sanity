@@ -1,5 +1,4 @@
-import imageUrlBuilder from '@sanity/image-url'
-import {type SchemaType} from '@sanity/types'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../../hooks'
@@ -9,7 +8,6 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {BaseImageInput, type BaseImageInputProps} from '../../inputs/files/ImageInput'
 import {useFormBuilder} from '../../useFormBuilder'
 import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
-import {type FileLike} from '../uploads/types'
 import {observeImageAsset} from './client-adapters/assets'
 
 /**
@@ -35,19 +33,9 @@ export function StudioImageInput(props: ImageInputProps) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const supportsImageUploads = imageConfig.directUploads
 
-  const resolveUploader = useCallback(
-    (type: SchemaType, file: FileLike) => {
-      if (!supportsImageUploads) {
-        return null
-      }
-      return defaultResolveUploader(type, file)
-    },
-    [supportsImageUploads],
-  )
-
   const assetSources = sourcesFromSchema || imageConfig.assetSources
 
-  const builder = useMemo(() => imageUrlBuilder(client), [client])
+  const builder = useMemo(() => createImageUrlBuilder(client), [client])
 
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),
@@ -64,7 +52,7 @@ export function StudioImageInput(props: ImageInputProps) {
       directUploads={supportsImageUploads}
       imageUrlBuilder={builder}
       observeAsset={observeAsset}
-      resolveUploader={resolveUploader}
+      resolveUploader={defaultResolveUploader}
     />
   )
 }

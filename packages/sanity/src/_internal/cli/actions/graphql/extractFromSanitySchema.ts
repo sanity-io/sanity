@@ -12,7 +12,7 @@ import {
   type Schema as CompiledSchema,
   type SchemaType,
 } from '@sanity/types'
-import {startCase, uniqBy} from 'lodash'
+import {startCase, uniqBy} from 'lodash-es'
 import oneline from 'oneline'
 
 import * as helpUrls from './helpUrls'
@@ -243,7 +243,7 @@ export function extractFromSanitySchema(
   function isArrayType(type: SchemaType | ObjectField): type is ArraySchemaType {
     return Boolean(
       ('jsonType' in type && type.jsonType === 'array') ||
-        (type.type && type.type.jsonType === 'array'),
+      (type.type && type.type.jsonType === 'array'),
     )
   }
 
@@ -309,7 +309,6 @@ export function extractFromSanitySchema(
     return !('jsonType' in def) || !def.jsonType
   }
 
-  // eslint-disable-next-line complexity
   function getObjectDefinition(def: SchemaType | ObjectField, parent?: string): ConvertedType {
     const isInline = isField(def)
     const isDocument = def.type ? def.type.name === 'document' : false
@@ -757,9 +756,7 @@ class HelpfulError extends Error {
   }
 }
 
-function getDeprecation(
-  type?: SchemaType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
-): Partial<Deprecation> {
+function getDeprecation(type?: SchemaType | ObjectFieldType | ObjectField): Partial<Deprecation> {
   return isDeprecationConfiguration(type)
     ? {
         deprecationReason: type.deprecated.reason,

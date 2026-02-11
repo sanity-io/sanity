@@ -42,7 +42,7 @@ export function useSyncPathnameWithWorkspace(
           case 'not-found':
             return true
           default:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS thinks this will never happen, but the point of the error is if it somehow did
+            // oxlint-disable-next-line no-explicit-any
             throw new Error(`Unknown type: ${(a as any).type}`)
         }
       },

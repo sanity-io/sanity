@@ -57,8 +57,8 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
               <Menu style={{minWidth: '175px'}}>
                 {SCHEDULE_FILTERS.map((filter) => (
                   <MenuItem
-                    iconRight={filter === scheduleState ? CheckmarkIcon : undefined}
                     key={filter}
+                    iconRight={filter === scheduleState ? CheckmarkIcon : undefined}
                     onClick={handleMenuClick.bind(undefined, {state: filter})}
                     text={SCHEDULE_STATE_DICTIONARY[filter].title}
                   />

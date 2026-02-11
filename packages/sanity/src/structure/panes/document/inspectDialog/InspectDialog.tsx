@@ -35,12 +35,12 @@ export function InspectDialog(props: InspectDialogProps) {
   /* based on the view mode it shows the right tab content */
   const viewMode = VIEW_MODES.find((mode) => mode.id === viewModeId)
 
-  const setParsedViewMode = useCallback(() => {
-    onViewModeChange(VIEW_MODE_PARSED.id)
+  const setParsedViewMode = useCallback(async () => {
+    await onViewModeChange(VIEW_MODE_PARSED.id)
   }, [onViewModeChange])
 
-  const setRawViewMode = useCallback(() => {
-    onViewModeChange(VIEW_MODE_RAW.id)
+  const setRawViewMode = useCallback(async () => {
+    await onViewModeChange(VIEW_MODE_RAW.id)
   }, [onViewModeChange])
 
   const {t} = useTranslation(structureLocaleNamespace)
@@ -122,7 +122,6 @@ export function InspectDialog(props: InspectDialogProps) {
               tabIndex={0}
               onKeyDown={maybeSelectAll}
               onDoubleClick={select}
-              onFocus={select}
               size={1}
             >
               {JSON.stringify(value, null, 2)}

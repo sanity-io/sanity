@@ -66,7 +66,14 @@ export const objectValidators: Validators = {
 
   assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
-      return message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''})
+      return {
+        // eslint-disable-next-line camelcase
+        __internal_metadata: {
+          name: 'assetRequired',
+        },
+        message:
+          message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''}),
+      }
     }
 
     return true
@@ -100,15 +107,16 @@ export const objectValidators: Validators = {
     try {
       const [type, libraryId, documentId] = value.media._ref.split(':', 3)
       // TODO: replace this with stable resource config when available
-      const resourceConfig = {'~experimental_resource': {type, id: libraryId}}
+      const resourceConfig = {resource: {type, id: libraryId}}
       const asset = await context
         .getClient({apiVersion: '2025-02-19'})
         .withConfig(resourceConfig)
-        .fetch<
-          (MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null
-        >(`*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`, {
-          id: documentId,
-        })
+        .fetch<(MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null>(
+          `*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`,
+          {
+            id: documentId,
+          },
+        )
       if (!asset) {
         console.warn(
           `${context.i18n.t('validation:object.media-not-found')}\nAsset ID: ${value.media._ref}`,
@@ -137,14 +145,32 @@ export const objectValidators: Validators = {
       clearTimeout(slowTimer)
     }
 
-    if (isLocalizedMessages(result)) {
-      return localizeMessage(result, context.i18n)
+    const validationErrorMetadata = {
+      // eslint-disable-next-line camelcase
+      __internal_metadata: {
+        name: 'media',
+      },
     }
 
-    if (typeof result === 'string') {
-      return message || result
+    // Valid, no errors
+    if (result === true) {
+      return result
     }
 
-    return result
+    // Ensure we always return ValidationMarker with metadata
+    return Array.isArray(result)
+      ? result
+      : [result].map((res) => {
+          if (typeof res === 'string') {
+            return {...validationErrorMetadata, message: message || res}
+          }
+          if (isLocalizedMessages(res)) {
+            return {
+              ...validationErrorMetadata,
+              message: message || localizeMessage(res, context.i18n),
+            }
+          }
+          return {...validationErrorMetadata, ...res, message: message || res.message}
+        })
   },
 }

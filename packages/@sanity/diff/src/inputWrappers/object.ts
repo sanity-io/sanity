@@ -10,9 +10,9 @@ export default class ObjectWrapper<A> implements ObjectInput<A> {
   private fields: Record<string, Input<A>> = {}
 
   constructor(value: Record<string, unknown>, annotation: A) {
-    this.value = value
+    this.value = filterUndefinedEntries(value)
     this.annotation = annotation
-    this.keys = Object.keys(value)
+    this.keys = Object.keys(this.value)
   }
 
   get(key: string): Input<A> | undefined {
@@ -28,4 +28,10 @@ export default class ObjectWrapper<A> implements ObjectInput<A> {
     const raw = this.value[key]
     return (this.fields[key] = wrap(raw, this.annotation))
   }
+}
+
+function filterUndefinedEntries(value: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(value).filter(([, entryValue]) => typeof entryValue !== 'undefined'),
+  )
 }

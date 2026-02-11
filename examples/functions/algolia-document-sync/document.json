@@ -1,0 +1,15 @@
+{
+  "_type": "post",
+  "_id": "test-post-123",
+  "title": "My First Blog Post",
+  "slug": {
+    "current": "my-first-blog-post"
+  },
+  "body": "This is the content of my first blog post. It contains valuable information that readers will find useful.",
+  "author": {
+    "_type": "reference",
+    "_ref": "author-123"
+  },
+  "publishedAt": "2024-01-15T10:00:00.000Z",
+  "hideFromSearch": false
+}

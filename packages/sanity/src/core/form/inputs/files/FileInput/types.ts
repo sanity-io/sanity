@@ -1,9 +1,16 @@
-import {type AssetFromSource, type AssetSource, type AssetSourceUploader} from '@sanity/types'
+import {
+  type AssetFromSource,
+  type AssetSource,
+  type AssetSourceUploader,
+  type FileAsset,
+} from '@sanity/types'
 
 import {type FileInfo} from '../common/styles'
+import {type AssetAccessPolicy} from '../types'
 import {type BaseFileInputProps} from './FileInput'
 
 export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'> {
+  accessPolicy?: AssetAccessPolicy
   browseButtonElementRef: React.RefObject<HTMLButtonElement | null>
   clearField: () => void
   hoveringFiles: FileInfo[]
@@ -12,6 +19,7 @@ export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'
   isUploading: boolean
   onCancelUpload?: () => void
   onClearUploadStatus: () => void
+  onOpenInSource: (assetSource: AssetSource, asset: FileAsset) => void
   onSelectAssets: (assetsFromSource: AssetFromSource[]) => void
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onStale: () => void

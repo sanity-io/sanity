@@ -124,9 +124,9 @@ function process(matcher: Matcher, accessor: ImmutableAccessor) {
 function isPatcher(payload: unknown): payload is PatchTypes {
   return Boolean(
     payload &&
-      typeof payload === 'object' &&
-      payload !== null &&
-      'apply' in payload &&
-      typeof (payload as PatchTypes).apply === 'function',
+    typeof payload === 'object' &&
+    payload !== null &&
+    'apply' in payload &&
+    typeof (payload as PatchTypes).apply === 'function',
   )
 }

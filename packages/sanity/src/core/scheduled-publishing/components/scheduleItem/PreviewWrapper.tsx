@@ -31,7 +31,6 @@ const StatusDotPlaceholder = styled(Box)`
 interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
-  // eslint-disable-next-line no-undef
   linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
   onClick?: () => void
   previewState?: PaneItemPreviewState

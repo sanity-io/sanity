@@ -14,6 +14,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when action button is disabled because the document does not exist */
   'action.delete.disabled.nothing-to-delete':
     "This document doesn't yet exist or is already deleted",
+  /** Tooltip when action button is disabled because the document exists in scheduled releases */
+  'action.delete.disabled.scheduled-release':
+    'This document cannot be deleted as it exists within scheduled releases',
   /** Label for the "Delete" document action button */
   'action.delete.label': 'Delete',
   /** Label for the "Delete" document action while the document is being deleted */
@@ -24,6 +27,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Message prompting the user to confirm discarding changes */
   'action.discard-changes.confirm-dialog.confirm-discard-changes':
     'Are you sure you want to discard all changes since last published?',
+  /** Message prompting the user to confirm discarding changes */
+  'action.discard-changes.confirm-dialog.confirm-discard-changes-draft':
+    'Are you sure you want to discard all changes and delete this draft document?',
+  /**Header for the confirm discard dialog */
+  'action.discard-changes.confirm-dialog.header.text': 'Discard changes?',
   /** Tooltip when action is disabled because the document has no unpublished changes */
   'action.discard-changes.disabled.no-change': 'This document has no unpublished changes',
   /** Tooltip when action is disabled because the document is not published */
@@ -67,6 +75,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.published.label': 'Published',
   /** Label for the "Publish" document action while publish is being executed.*/
   'action.publish.running.label': 'Publishing…',
+  /** Label for the "Publish" document action while publish is being executed.*/
+  'action.publish.validation-in-progress.label': 'Validating document…',
+  /** Toast description when trying to publish with validation errors */
+  'action.publish.validation-issues-toast.description':
+    'Please fix the validation errors before publishing',
+  /** Toast title when trying to publish with validation errors */
+  'action.publish.validation-issues-toast.title': 'Validation errors',
   /** Tooltip when the "Publish" document action is disabled due to validation issues */
   'action.publish.validation-issues.tooltip':
     'There are validation errors that need to be fixed before this document can be published',
@@ -95,6 +110,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Description for the archived release banner, rendered when viewing the history of a version document from the publihed view */
   'banners.archived-release.description':
     'This document version belongs to the archived <VersionBadge>{{title}}</VersionBadge> release',
+  /** Description for the archived scheduled draft banner, rendered when viewing the history of a cardinality one release document */
+  'banners.archived-scheduled-draft.description': 'This scheduled draft is archived',
   /** The explanation displayed when a user attempts to create a new draft document, but the draft model is not switched on */
   'banners.choose-new-document-destination.cannot-create-draft-document':
     'Cannot create a draft document.',
@@ -130,6 +147,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The warning displayed when editing a document that has an obsolete draft because the draft model is not switched on */
   'banners.obsolete-draft.draft-model-inactive.text':
     'The workspace does not have drafts enabled, but a draft version of this document exists.',
+  /** The text content for the paused scheduled draft banner */
+  'banners.paused-scheduled-draft.text':
+    'Schedule paused while editing. Press Schedule to reactivate or pick a new date.',
   /** The text for the permission check banner if the user only has one role, and it does not allow publishing this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permission to publish this document.',
@@ -180,6 +200,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The text for the banner that appears when a document is not part of any release
+   * @deprecated – no longer in use
+   * */
+  'banners.release.navigate-to-edit-description-none': 'This document is not part of any release',
   /** The text for the banner that appears when a document only has one version but is in a draft or published pinned release */
   'banners.release.navigate-to-edit-description-single':
     'This document is part of the <VersionBadge/> release',
@@ -193,10 +217,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the revision not found banner */
   'banners.revision-not-found.description':
     "We couldn't find the document revision selected, please select another entry from the history list.",
+  /** The text content for the scheduled draft override banner */
+  'banners.scheduled-draft-override-banner.text':
+    'A scheduled draft for this document exists. If you publish changes now they will be overwritten when the schedule runs.',
   /** The text content for the unpublished document banner when is part of a release */
   'banners.unpublished-release-banner.text':
-    'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release',
-
+    'This document will be unpublished as part of the <VersionBadge>{{title}}</VersionBadge> release.',
+  /** The text content for the unpublished document banner letting the user know that the current published version is being shown */
+  'banners.unpublished-release-banner.text-with-published':
+    'Showing the current <strong>published</strong> version:',
   /** Browser/tab title when creating a new document of a given type */
   'browser-document-title.new-document': 'New {{schemaType}}',
   /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */
@@ -207,6 +236,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The action menu button tooltip */
   'buttons.action-menu-button.tooltip': 'Document actions',
 
+  /** The aria-label for the collapse pane button on the document panel header */
+  'buttons.focus-pane-button.aria-label.collapse': 'Exit focus mode (show navigation)',
+  /** The aria-label for the focus pane button on the document panel header */
+  'buttons.focus-pane-button.aria-label.focus': 'Enter focus mode (hide navigation)',
+
+  /** The tooltip for the collapse pane button on the document panel header */
+  'buttons.focus-pane-button.tooltip.collapse': 'Exit focus mode',
+  /** The tooltip for the focus pane button on the document panel header */
+  'buttons.focus-pane-button.tooltip.focus': 'Enter focus mode',
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
   /** The tool tip for the split pane button on the document panel header */
@@ -215,9 +253,15 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'buttons.split-pane-close-button.title': 'Close split pane',
   /** The title for the close group button on the split pane on the document panel header */
   'buttons.split-pane-close-group-button.title': 'Close pane group',
-
   /** The text for the canvas linked banner action button */
   'canvas.banner.edit-in-canvas-action': 'Edit in Canvas',
+  /** The text for the canvas linked banner when the document in editable mode*/
+  'canvas.banner.editable.linked-text': 'This document can be edited in Canvas.',
+  /** The description for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-description':
+    'Canvas lets you write freely, then update content in Studio without manual field-by-field copying.',
+  /** The heading for the canvas linked banner popover in editable mode*/
+  'canvas.banner.editable.popover-heading': 'Free-form writing',
   /** The text for the canvas linked banner when the document is a draft */
   'canvas.banner.linked-text.draft': 'This draft document is linked to Canvas',
   /** The text for the canvas linked banner when the document is a live document */
@@ -256,6 +300,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The error message shown when the previous document for comparison could not be extracted from the URL */
   'compare-version.error.invalidPreviousDocumentParam':
     'The previous document parameter is invalid.',
+  /** The error message shown when releases failed to load */
+  'compare-version.error.loadReleases.title': 'Failed to load releases',
   /** The text for the tooltip when the "Compare versions" action for a document is disabled */
   'compare-versions.menu-item.disabled-reason':
     'There are no other versions of this document to compare.',
@@ -297,16 +343,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The header for the project ID column in the list of cross-dataset references found */
   'confirm-delete-dialog.cdr-table.project-id.label': 'Project ID',
   /** The text in the "Delete anyway" button in the confirm delete dialog that confirms the action */
-  'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete anyway',
+  'confirm-delete-dialog.confirm-anyway-button.text_delete': 'Delete all versions anyway',
   /** The text in the "Unpublish anyway" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-anyway-button.text_unpublish': 'Unpublish anyway',
   /** The text in the "Delete now" button in the confirm delete dialog that confirms the action */
-  'confirm-delete-dialog.confirm-button.text_delete': 'Delete now',
+  'confirm-delete-dialog.confirm-button.text_delete': 'Delete all versions',
   /** The text in the "Unpublish now" button in the confirm delete dialog that confirms the action */
   'confirm-delete-dialog.confirm-button.text_unpublish': 'Unpublish now',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_delete':
-    'Are you sure you want to delete “<DocumentTitle/>”?',
+    'Are you sure you want to delete all the versions of this document?',
   /** If no referring documents are found, this text appears above the cancel and confirmation buttons */
   'confirm-delete-dialog.confirmation.text_unpublish':
     'Are you sure you want to unpublish “<DocumentTitle/>”?',
@@ -413,6 +459,30 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'events.open.draft': 'Open <VersionBadge>draft</VersionBadge> document',
   /**The title for the menu items that will be shown when expanding a publish release event to inspect the release*/
   'events.open.release': 'Open <VersionBadge>{{releaseTitle}}</VersionBadge> release',
+  /** The text for the add reference item in the incoming references input */
+  'incoming-references-input.add-reference-item': 'Add item',
+  /** The aria-label for the incoming references list */
+  'incoming-references-input.list-label': 'Incoming references of type {{type}}',
+  /** The text for the no items in the incoming references input */
+  'incoming-references-input.no-items': 'No items',
+  /** The text for the reference from in the incoming references input */
+  'incoming-references-input.reference-from': 'Reference from {{type}}',
+  /** The text for the schema type not found in the incoming references input */
+  'incoming-references-input.schema-type-not-found': 'Schema type {{type}} not found',
+  /** The text for the type to search in the incoming references input */
+  'incoming-references-input.type-to-search': 'Type to search',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading': 'Loading documents...',
+  /** The text for the loading state in the incoming references input */
+  'incoming-references-input.types-loading-cross-dataset': 'Loading cross dataset documents...',
+  /** The text for the no references defined in the incoming references input */
+  'incoming-references-input.types-not-defined':
+    'No incoming references defined for this type, see the docs for more information.',
+
+  /** The text shown if there are no incoming references for a type */
+  'incoming-references-pane.no-references-found': 'No references of this type found.',
+  /** The text shown if there is no schema type found for a document in the incoming references pane */
+  'incoming-references-pane.schema-type-not-found': 'Schema type {{type}} not found',
   /** The loading messaging for when the tooltip is still loading permission info */
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
@@ -521,7 +591,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The document was successfully deleted',
   /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
-    'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+    'All changes has now been discarded. The discarded draft can still be recovered from history',
   /** The text when a duplicate operation succeeded  */
   'panes.document-operation-results.operation-success_duplicate':
     'The document was successfully duplicated',
@@ -632,6 +702,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for the published event menu tooltip when the release is not found */
   'timeline-item.not-found-release.tooltip': 'Release with id "{{releaseId}}" not found',
+
+  /** The text for the "Inline changes" action, which is used to toggle the visibility of content diffs inside inputs */
+  'toggle-inline-changes.menu-item.title': 'Inline changes',
 })
 
 /**

@@ -28,7 +28,7 @@ export default defineConfig({
         name: 'perf/test',
         useAction({documentId, documentType, path}) {
           const handleAction = useCallback(() => {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.log('test action', {documentId, documentType, path})
           }, [documentId, documentType, path])
 

@@ -54,7 +54,6 @@ function getPairPermissions({
   // be considered separately/explicitly in the permissions.
   const effectiveVersion = version || draft || published
   const effectiveVersionType =
-    // eslint-disable-next-line no-nested-ternary
     effectiveVersion === version ? version : effectiveVersion === draft ? 'draft' : 'published'
 
   const {checkDocumentPermission} = grantsStore

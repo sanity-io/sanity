@@ -3,7 +3,6 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
-  type Path,
   PreviewCard,
   SanityDefaultPreview,
   Translate,
@@ -15,7 +14,9 @@ import {StateLink} from 'sanity/router'
 import {presentationLocaleNamespace} from '../i18n'
 import {
   type MainDocumentState,
+  type PresentationNavigate,
   type PresentationSearchParams,
+  type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from '../types'
 import {DocumentListPane} from './DocumentListPane'
@@ -26,7 +27,8 @@ export function ContentEditor(props: {
   documentId?: string
   documentType?: string
   mainDocumentState?: MainDocumentState
-  onFocusPath: (path: Path) => void
+  onEditReference: PresentationNavigate
+  onFocusPath: (state: Required<PresentationStateParams>) => void
   onStructureParams: (params: StructureDocumentPaneParams) => void
   refs: {_id: string; _type: string}[]
   structureParams: StructureDocumentPaneParams
@@ -36,6 +38,7 @@ export function ContentEditor(props: {
     documentId,
     documentType,
     mainDocumentState,
+    onEditReference,
     onFocusPath,
     onStructureParams,
     refs,
@@ -77,7 +80,7 @@ export function ContentEditor(props: {
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({
           snapshot: previewState.snapshot,
-          fallback: mainDocumentState!.document,
+          fallback: mainDocumentState.document,
         })}
         schemaType={schemaType}
         status={
@@ -96,6 +99,7 @@ export function ContentEditor(props: {
       <DocumentPanel
         documentId={documentId}
         documentType={documentType}
+        onEditReference={onEditReference}
         onFocusPath={onFocusPath}
         onStructureParams={onStructureParams}
         searchParams={searchParams}
@@ -111,7 +115,7 @@ export function ContentEditor(props: {
           {mainDocumentState.document ? (
             <PreviewCard
               __unstable_focusRing
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // oxlint-disable-next-line no-explicit-any
               as={MainDocumentLink as any}
               data-as="a"
               radius={2}
@@ -146,6 +150,7 @@ export function ContentEditor(props: {
 
       <DocumentListPane
         mainDocumentState={mainDocumentState}
+        onEditReference={onEditReference}
         onStructureParams={onStructureParams}
         searchParams={searchParams}
         refs={refs}

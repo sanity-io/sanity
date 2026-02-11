@@ -137,12 +137,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       width: calc(

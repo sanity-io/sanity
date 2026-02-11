@@ -1,5 +1,7 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../../studioClient'
+
 type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
 
 export async function getJsonStream(
@@ -7,8 +9,8 @@ export async function getJsonStream(
   token: string | undefined,
 ): Promise<ReadableStream<StreamResult>> {
   const options: RequestInit = token
-    ? {headers: {Authorization: `Bearer ${token}`}}
-    : {credentials: 'include'}
+    ? {headers: {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}}
+    : {credentials: 'include', headers: DEFAULT_STUDIO_CLIENT_HEADERS}
   const response = await fetch(url, options)
   return getStream(response)
 }
@@ -61,7 +63,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
             } catch (err) {
               controller.error(err)
               cancelled = true
-              reader.cancel()
+              void reader.cancel()
               return
             }
           }
@@ -79,7 +81,7 @@ function getStream(response: Response): ReadableStream<StreamResult> {
 
     cancel(): void {
       cancelled = true
-      reader.cancel()
+      void reader.cancel()
     },
   })
 }

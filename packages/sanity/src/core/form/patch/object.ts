@@ -1,4 +1,4 @@
-import {clone, isObject, omit} from 'lodash'
+import {clone, isObject, omit} from 'lodash-es'
 
 import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'
@@ -9,7 +9,6 @@ export function _objectApply(value: FIXME, patch: FIXME) {
     // its directed to me
     if (patch.type === 'set') {
       if (!isObject(patch.value)) {
-        // eslint-disable-line max-depth
         throw new Error('Cannot set value of an object to a non-object')
       }
       return patch.value

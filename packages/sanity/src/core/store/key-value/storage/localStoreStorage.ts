@@ -6,7 +6,6 @@ function tryParse(val: string) {
   try {
     return JSON.parse(val)
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.warn(`Failed to parse settings: ${err.message}`)
     return null
   }

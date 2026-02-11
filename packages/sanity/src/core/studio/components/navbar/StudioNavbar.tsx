@@ -66,10 +66,7 @@ const NavGrid = styled(Grid)`
  * @hidden
  * @beta */
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
-  const {
-    // eslint-disable-next-line camelcase
-    __internal_actions: actions = EMPTY_ARRAY,
-  } = props
+  const {__internal_actions: actions = EMPTY_ARRAY} = props
 
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()
@@ -176,8 +173,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
         return (
           <Button
-            iconRight={action?.icon}
             key={action.name}
+            iconRight={action?.icon}
             mode="bleed"
             onClick={action?.onAction}
             selected={action.selected}
@@ -235,6 +232,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Center flex */}
             <Flex align="center" justify="center">
               {shouldRender.tools && (
+                // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}

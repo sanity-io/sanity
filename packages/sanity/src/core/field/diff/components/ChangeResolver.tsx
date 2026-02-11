@@ -2,7 +2,7 @@ import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {Fragment} from 'react'
 
-import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
+import {useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode} from '../../types'
 import {useDocumentChange} from '../hooks'
 import {FieldChange} from './FieldChange'
@@ -27,6 +27,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
     checkProperty: hidden || change.schemaType?.hidden,
     checkPropertyKey: 'hidden',
     value: change.type === 'field' ? change.diff.toValue : undefined,
+    path: change.path,
   })
 
   const isReadOnly = useConditionalProperty({
@@ -35,6 +36,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
     checkProperty: readOnly || change.schemaType?.readOnly,
     checkPropertyKey: 'readOnly',
     value: change.type === 'field' ? change.diff.toValue : undefined,
+    path: change.path,
   })
 
   if (isHidden) return null

@@ -19,6 +19,7 @@ export const createReleaseOperationsStoreReturn: Mocked<ReleaseOperationsStore> 
   revertRelease: vi.fn(),
   duplicateRelease: vi.fn(),
   unpublishVersion: vi.fn(),
+  revertUnpublishVersion: vi.fn(),
 }
 
 export const mockCreateReleaseOperationsStore = createReleaseOperationsStore as Mock<

@@ -5,10 +5,27 @@ import {type InitialValueProperty} from '../../types'
 import {type ObjectDefinition, type ObjectOptions} from './object'
 
 /** @public */
+export interface MediaLibraryFilter {
+  name: string
+  query: string
+}
+
+/** @public */
+export interface MediaLibraryOptions {
+  filters?: MediaLibraryFilter[]
+}
+
+/** @public */
 export interface FileOptions extends ObjectOptions {
   storeOriginalFilename?: boolean
   accept?: string
   sources?: AssetSource[]
+  mediaLibrary?: MediaLibraryOptions
+  /**
+   * When set to `true`, hides the upload UI, only allowing selection of existing assets from the media library.
+   * Useful for centralized asset management workflows where ad-hoc uploads should be prevented.
+   */
+  disableNew?: boolean
 }
 
 /** @public */
@@ -36,8 +53,10 @@ export interface FileValue {
 }
 
 /** @public */
-export interface FileDefinition
-  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
+export interface FileDefinition extends Omit<
+  ObjectDefinition,
+  'type' | 'fields' | 'options' | 'groups' | 'validation'
+> {
   type: 'file'
   fields?: ObjectDefinition['fields']
   options?: FileOptions

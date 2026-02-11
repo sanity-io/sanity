@@ -43,7 +43,6 @@ const portMap: Record<string, number> = {
   'parcel': 1234,
   'fasthtml': 8000,
   'sanity': 3333,
-  'sanity-v3': 3333,
   'storybook': 6006,
 }
 

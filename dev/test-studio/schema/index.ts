@@ -5,18 +5,28 @@ import {commentsCI} from './ci/comments'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import actions from './debug/actions'
+import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {
+  annotationCustomTypeTest,
+  ctaType,
+  tooltipAnnotationType,
+} from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
+import conditionalFieldsWithPath, {
+  conditionallyHiddenField,
+} from './debug/conditionalFieldsWithPath'
 import customInputs from './debug/customInputs'
 import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
+import {decorations} from './debug/decorations'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -24,6 +34,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
 import {fieldActionsTest} from './debug/fieldActionsTest'
@@ -44,6 +55,7 @@ import {
 import focus from './debug/focus'
 import {formInputDebug} from './debug/formInputDebug'
 import gallery from './debug/gallery'
+import {hiddenFieldValidationTypes} from './debug/hiddenFieldValidation'
 import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
@@ -52,6 +64,7 @@ import {languageFilterDebugType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
 import {manyViewsType} from './debug/manyViews'
 import notitle from './debug/notitle'
@@ -82,8 +95,11 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
+import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
+import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
@@ -102,6 +118,7 @@ import globalDocumentReference, {
   createGlobalDocumentReferenceSubtype,
 } from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
+import {initialFullScreenPTEType} from './standard/initialFullScreenPTE'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
@@ -109,6 +126,7 @@ import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import {customPlugins} from './standard/portableText/customPlugins'
+import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -121,6 +139,7 @@ import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
+import videos from './standard/videos'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -168,12 +187,15 @@ export function createSchemaTypes(projectId: string) {
     emails,
     files,
     images,
+    videos,
     numbers,
     objects,
     ptAllTheBellsAndWhistlesType,
+    initialFullScreenPTEType,
     blocks,
     ptCustomBlockEditors,
     ptCustomMarkersTestType,
+    ptCustomWithDefaultsType,
     richTextObject,
     ...Object.values(scrollBugTypes),
     customPlugins,
@@ -193,10 +215,16 @@ export function createSchemaTypes(projectId: string) {
 
     // Test documents for debugging
     actions,
+    annotationCustomTypeTest,
+    ctaType,
+    tooltipAnnotationType,
     button,
     collapsibleObjects,
+    domAttrsAsFieldNames,
     commentsDebug,
     conditionalFields,
+    conditionalFieldsWithPath,
+    conditionallyHiddenField,
     customInputs,
     customInputsWithPatches,
     customNumber,
@@ -204,11 +232,13 @@ export function createSchemaTypes(projectId: string) {
     dateValidation,
     deprecatedDocument,
     deprecatedFields,
+    decorations,
     documentActions,
     empty,
     experiment,
     fieldActionsTest,
     fieldComponentsTest,
+    ...hiddenFieldValidationTypes,
     fieldsets,
     removeRestoreAction,
 
@@ -236,6 +266,7 @@ export function createSchemaTypes(projectId: string) {
     namedDeprecatedArray,
     notitle,
     objectsDebug,
+    longValidationTestType,
     poppers,
     presence,
     objectWithNestedArray,
@@ -253,6 +284,7 @@ export function createSchemaTypes(projectId: string) {
     patchOnMountDebug,
     simpleArrayOfObjects,
     arrayCapabilities,
+    allFieldsGroupHidden,
     simpleReferences,
     reservedFieldNames,
     review,
@@ -283,11 +315,13 @@ export function createSchemaTypes(projectId: string) {
     // Test documents with 3rd party plugin inputs
     markdown,
     mux,
-
+    internationalizedArray,
+    documentInternationalizationTest,
     // Other documents
     author,
     book,
     species,
+    house,
     playlist,
     playlistTrack,
 

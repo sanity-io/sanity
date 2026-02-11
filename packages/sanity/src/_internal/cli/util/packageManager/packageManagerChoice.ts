@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import path from 'node:path'
 
 import {type CliPrompter} from '@sanity/cli'

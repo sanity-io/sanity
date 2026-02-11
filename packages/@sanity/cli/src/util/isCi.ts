@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import {isTrueish} from './isTrueish'
 
 export const isCi =

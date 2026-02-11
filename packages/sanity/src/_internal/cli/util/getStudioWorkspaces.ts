@@ -1,11 +1,14 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
+import {createRequire} from 'node:module'
 import path from 'node:path'
 
 import {firstValueFrom} from 'rxjs'
 import {type Config, resolveConfig, type Workspace, type WorkspaceOptions} from 'sanity'
 
-import {mockBrowserEnvironment} from './mockBrowserEnvironment'
+// eslint-disable-next-line import/extensions
+import {mockBrowserEnvironment} from './mockBrowserEnvironment.ts'
+
+const require = createRequire(import.meta.url)
 
 const candidates = [
   'sanity.config.js',

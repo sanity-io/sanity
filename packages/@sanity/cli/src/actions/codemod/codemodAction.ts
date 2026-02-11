@@ -1,4 +1,3 @@
-/* eslint-disable no-process-exit, no-sync */
 import childProcess from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'

@@ -1,18 +1,16 @@
-/* eslint-disable no-console, no-process-exit, no-sync */
-import {existsSync} from 'node:fs'
+// oxlint-disable no-console
 import os from 'node:os'
-import path from 'node:path'
 
 import chalk from 'chalk'
-import dotenv from 'dotenv'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 
 import {CliCommand} from './__telemetry__/cli.telemetry'
 import {getCliRunner} from './CommandRunner'
 import {baseCommands} from './commands'
 import {debug} from './debug'
 import {getInstallCommand} from './packageManager'
-import {type CommandRunnerOptions, type TelemetryUserProperties} from './types'
+import {type CommandRunnerOptions, type PackageJson, type TelemetryUserProperties} from './types'
 import {createTelemetryStore} from './util/createTelemetryStore'
 import {detectRuntime} from './util/detectRuntime'
 import {type CliConfigResult, getCliConfig} from './util/getCliConfig'
@@ -24,7 +22,7 @@ import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
 
-const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
+const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production'
 const knownEnvs = ['development', 'staging', 'production']
 
 function wait(ms: number) {
@@ -35,15 +33,13 @@ function installProcessExitHack(finalTask: () => Promise<unknown>) {
   const originalProcessExit = process.exit
 
   // @ts-expect-error ignore TS2534
-  process.exit = (exitCode?: number | undefined): never => {
-    finalTask().finally(() => originalProcessExit(exitCode))
+  process.exit = (exitCode?: number): never => {
+    void finalTask().finally(() => originalProcessExit(exitCode))
   }
 }
 
-export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}): Promise<void> {
+export async function runCli(cliRoot: string, {cliPkg}: {cliPkg: PackageJson}): Promise<void> {
   installUnhandledRejectionsHandler()
-
-  const pkg = {name: '@sanity/cli', version: cliVersion}
 
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
@@ -57,7 +53,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   }
 
   // Check if there are updates available for the CLI, and notify if there is
-  await runUpdateCheck({pkg, cwd, workDir}).notify()
+  await runUpdateCheck({pkg: {name: cliPkg.name, version: cliPkg.version}, cwd, workDir}).notify()
 
   // If the telemetry disclosure message has not yet been shown, show it.
   telemetryDisclosure()
@@ -92,7 +88,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   telemetry.updateUserProperties({
     runtimeVersion: process.version,
     runtime: detectRuntime(),
-    cliVersion: pkg.version,
+    cliVersion: cliPkg.version,
     machinePlatform: process.platform,
     cpuArchitecture: process.arch,
     projectId: cliConfig?.config?.api?.projectId,
@@ -107,14 +103,20 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     telemetry,
   }
 
+  warnOnNUnsupportedRuntime(cliPkg)
   warnOnNonProductionEnvironment()
+  warnOnCliConfigName()
   warnOnInferredProjectDir(isInit, cwd, workDir)
 
   const core = args.coreOptions
-  const commands = await mergeCommands(baseCommands, options.corePath, {cliVersion, cwd, workDir})
+  const commands = await mergeCommands(baseCommands, options.corePath, {
+    cliVersion: cliPkg.version,
+    cwd,
+    workDir,
+  })
 
   if (core.v || core.version) {
-    console.log(`${pkg.name} version ${pkg.version}`)
+    console.log(`${cliPkg.name} version ${cliPkg.version}`)
     process.exit()
   }
 
@@ -144,7 +146,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     },
     ...(!args.groupOrCommand && {emptyCommand: true}), // user did not entry a command
   })
-
+  debug('Starting cli runner with options:', JSON.stringify(options, null, 2))
   cliCommandTrace.start()
   cliRunner
     .runCommand(args.groupOrCommand, args, {
@@ -155,12 +157,10 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     .catch(async (err) => {
       await flushTelemetry()
       const error = typeof err.details === 'string' ? err.details : err
-      // eslint-disable-next-line no-console
       console.error(`\n${error.stack ? neatStack(err) : error}`)
       if (err.cause) {
         console.error(`\nCaused by:\n\n${err.cause.stack ? neatStack(err.cause) : err.cause}`)
       }
-      // eslint-disable-next-line no-process-exit
       cliCommandTrace.error(error)
       process.exit(1)
     })
@@ -170,47 +170,13 @@ async function getCoreModulePath(
   workDir: string,
   cliConfig: CliConfigResult | null,
 ): Promise<string | undefined> {
-  const corePath = resolveFrom.silent(workDir, '@sanity/core')
   const sanityPath = resolveFrom.silent(workDir, 'sanity/_internal')
-
-  if (corePath && sanityPath) {
-    const closest = corePath.startsWith(workDir) ? corePath : sanityPath
-    const assumedVersion = closest === corePath ? 'v2' : 'v3'
-
-    console.warn(
-      chalk.yellow(
-        `Both \`@sanity/core\` AND \`sanity\` installed - assuming Sanity ${assumedVersion} project.`,
-      ),
-    )
-
-    return closest
-  }
-
   if (sanityPath) {
-    // On v3 and everything installed
+    // Everything is installed
     return sanityPath
   }
 
-  if (corePath && cliConfig && cliConfig?.version < 3) {
-    // On v2 and everything installed
-    return corePath
-  }
-
-  const isInstallCommand = process.argv.indexOf('install') === -1
-
-  if (cliConfig && cliConfig?.version < 3 && !corePath && !isInstallCommand) {
-    const installCmd = await getInstallCommand({workDir})
-    console.warn(
-      chalk.yellow(
-        [
-          'The `@sanity/core` module is not installed in current project',
-          `Project-specific commands not available until you run \`${installCmd}\``,
-        ].join('\n'),
-      ),
-    )
-  }
-
-  if (cliConfig && cliConfig.version >= 3 && !sanityPath) {
+  if (cliConfig && !sanityPath) {
     const installCmd = await getInstallCommand({workDir})
     console.warn(
       chalk.yellow(
@@ -269,17 +235,50 @@ function warnOnInferredProjectDir(isInit: boolean, cwd: string, workDir: string)
   console.log(`Not in project directory, assuming context of project at ${workDir}`)
 }
 
+function warnOnNUnsupportedRuntime(cliPkg: PackageJson): void {
+  const engines = cliPkg.engines
+  if (!engines) {
+    return
+  }
+
+  const currentNodeVersion = process.versions.node
+  if (!semver.satisfies(currentNodeVersion, engines.node))
+    console.warn(
+      chalk.red(`\n[WARN] The current Node.js version (${`v${currentNodeVersion}`}) is not supported
+Please upgrade to a version that satisfies the range ${chalk.green.bold(engines.node)}\n`),
+    )
+}
+
 function warnOnNonProductionEnvironment(): void {
   if (sanityEnv === 'production') {
     return
   }
 
+  if (process.env.TEST !== 'true') {
+    console.warn(
+      chalk.yellow(
+        knownEnvs.includes(sanityEnv)
+          ? `[WARN] Running in ${sanityEnv} environment mode\n`
+          : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
+      ),
+    )
+  }
+}
+
+function warnOnCliConfigName(): void {
+  if (!process.env.SANITY_CLI_TEST_CONFIG_NAME) {
+    return
+  }
+
+  if (process.env.TEST !== 'true') {
+    console.warn(
+      chalk.yellow('[WARN] Ignored SANITY_CLI_TEST_CONFIG_NAME. It can only be used in tests.'),
+    )
+    return
+  }
+
   console.warn(
-    chalk.yellow(
-      knownEnvs.includes(sanityEnv)
-        ? `[WARN] Running in ${sanityEnv} environment mode\n`
-        : `[WARN] Running in ${chalk.red('UNKNOWN')} "${sanityEnv}" environment mode\n`,
-    ),
+    chalk.yellow(`[WARN] Loading CLI config from ${process.env.SANITY_CLI_TEST_CONFIG_NAME}.ts/js`),
   )
 }
 
@@ -292,24 +291,6 @@ function loadAndSetEnvFromDotEnvFiles({
   cmd: string
   isApp: boolean
 }) {
-  /* eslint-disable no-process-env */
-
-  // Do a cheap lookup for a sanity.json file. If there is one, assume it is a v2 project,
-  // and apply the old behavior for environment variables. Otherwise, use the Vite-style
-  // behavior. We need to do this "cheap" lookup because when loading the v3 config, env vars
-  // may be used in the configuration file, meaning we'd have to load the config twice.
-  if (existsSync(path.join(workDir, 'sanity.json'))) {
-    // v2
-    debug('sanity.json exists, assuming v2 project and loading .env files using old behavior')
-    const env = process.env.SANITY_ACTIVE_ENV || process.env.NODE_ENV || 'development'
-    debug('Loading environment files using %s mode', env)
-    dotenv.config({path: path.join(workDir, `.env.${env}`)})
-    return
-  }
-
-  // v3+
-  debug('No sanity.json exists, assuming v3 project and loading .env files using new behavior')
-
   // Use `production` for `sanity build` / `sanity deploy`,
   // but default to `development` for everything else unless `SANITY_ACTIVE_ENV` is set
   const isProdCmd = ['build', 'deploy'].includes(cmd)
@@ -328,7 +309,6 @@ function loadAndSetEnvFromDotEnvFiles({
 
   const studioEnv = loadEnv(mode, workDir, [isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_'])
   process.env = {...process.env, ...studioEnv}
-  /* eslint-disable no-process-env */
 }
 
 /**
@@ -342,9 +322,7 @@ function loadAndSetEnvFromDotEnvFiles({
  * which several commands does (`sanity login`, `sanity docs` etc)
  */
 function maybeFixMissingWindowsEnvVar() {
-  /* eslint-disable no-process-env */
   if (os.platform() === 'win32' && !('SYSTEMROOT' in process.env) && 'SystemRoot' in process.env) {
     process.env.SYSTEMROOT = process.env.SystemRoot
   }
-  /* eslint-enable no-process-env */
 }

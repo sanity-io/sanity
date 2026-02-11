@@ -1,10 +1,33 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
+// oxlint-disable-next-line import/no-unassigned-import
 import '@vitest/coverage-v8'
 
 import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   test: {
+    forceRerunTriggers: [
+      '**/package.json/**',
+      '**/vitest.config.*/**',
+      '**/vite.config.*/**',
+      '**/pnpm-workspace.yaml',
+      '**/pnpm-lock.yaml',
+      '**/turbo.json',
+      '**/.github/workflows/test.yml',
+    ],
+    projects: [
+      'packages/@sanity/cli',
+      'packages/@sanity/mutator',
+      'packages/@sanity/schema',
+      'packages/@sanity/types',
+      'packages/@sanity/util',
+      'packages/@sanity/vision',
+      'packages/sanity',
+      'packages/sanity/src/_internal/cli',
+      'perf/tests',
+      'packages/@repo/release-notes',
+      'packages/@repo/bundle-manager',
+      'packages/@repo/utils',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['html', 'json', 'json-summary'],

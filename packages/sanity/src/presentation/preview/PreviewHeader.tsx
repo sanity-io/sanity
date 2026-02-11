@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
@@ -62,9 +61,8 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       }
       presentationRef.send({type: 'iframe reload'})
       // Funky way to reload an iframe without CORS issues
-      // eslint-disable-next-line no-self-assign
       // ref.current.src = ref.current.src
-      Object.assign(iframeRef.current, {src: `${targetOrigin}${previewUrl || '/'}`})
+      Object.assign(iframeRef.current, {src: new URL(previewUrl || '/', targetOrigin).toString()})
     })
   }
 
@@ -217,7 +215,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       <Flex align="center" flex="none" gap={1}>
         <Tooltip
           animate
-          // eslint-disable-next-line react/jsx-no-bind
           ref={(node) => {
             node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
           }}

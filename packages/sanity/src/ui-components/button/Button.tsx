@@ -1,14 +1,10 @@
 /* eslint-disable no-restricted-imports */
 
 import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
-import {
-  ConditionalWrapper,
-  type ConditionalWrapperRenderWrapperCallback,
-} from '../conditionalWrapper'
 
 type BaseButtonProps = Pick<
   UIButtonProps,
@@ -19,6 +15,7 @@ type BaseButtonProps = Pick<
   | 'loading'
   | 'mode'
   | 'paddingY'
+  | 'paddingLeft'
   | 'selected'
   | 'tone'
   | 'type'
@@ -68,29 +65,35 @@ export const Button = forwardRef(function Button(
     size = 'default',
     mode = 'default',
     paddingY,
+    paddingLeft,
     tone = 'default',
     tooltipProps,
     ...rest
   }: ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'as' | 'size' | 'title'>,
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
-    (children) => {
-      return (
-        <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
-          {/* This span is needed to make the tooltip work in disabled buttons */}
-          <TooltipButtonWrapper>{children}</TooltipButtonWrapper>
-        </Tooltip>
-      )
-    },
-    [tooltipProps],
-  )
-
   const sizeProps = size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS
 
-  return (
-    <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
-      <UIButton {...rest} {...sizeProps} paddingY={paddingY} ref={ref} mode={mode} tone={tone} />
-    </ConditionalWrapper>
+  const children = (
+    <UIButton
+      {...rest}
+      {...sizeProps}
+      paddingY={paddingY}
+      paddingLeft={paddingLeft}
+      ref={ref}
+      mode={mode}
+      tone={tone}
+    />
   )
+
+  if (tooltipProps) {
+    return (
+      <Tooltip content={tooltipProps?.content} portal {...tooltipProps}>
+        {/* This span is needed to make the tooltip work in disabled buttons */}
+        <TooltipButtonWrapper>{children}</TooltipButtonWrapper>
+      </Tooltip>
+    )
+  }
+
+  return children
 })

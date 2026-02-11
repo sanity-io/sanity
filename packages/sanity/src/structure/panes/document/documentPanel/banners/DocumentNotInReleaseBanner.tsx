@@ -5,7 +5,8 @@ import {
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
-  type ReleaseDocument,
+  type SystemBundle,
+  type TargetPerspective,
   Translate,
   useConditionalToast,
   useTranslation,
@@ -26,31 +27,31 @@ type VersionCreateState = {
 export function DocumentNotInReleaseBanner({
   documentId,
   currentRelease,
-  value,
   isScheduledRelease,
 }: {
   documentId: string
-  currentRelease: ReleaseDocument
-  value?: Record<string, unknown>
+  currentRelease: Exclude<TargetPerspective, SystemBundle>
   isScheduledRelease?: boolean
-}): React.JSX.Element {
+}) {
   const tone = getReleaseTone(currentRelease ?? LATEST)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
 
   const {createVersion} = useVersionOperations()
 
+  const isAnonymousBundle = typeof currentRelease === 'string'
   const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
   const handleAddToRelease = useCallback(async () => {
-    if (currentRelease._id) {
+    if (isAnonymousBundle || currentRelease._id) {
       setVersionCreateState({status: 'creating', lastUpdate: new Date()})
+
+      const bundleId = isAnonymousBundle
+        ? currentRelease
+        : getReleaseIdFromReleaseDocumentId(currentRelease._id)
+
       try {
-        await createVersion(
-          getReleaseIdFromReleaseDocumentId(currentRelease._id),
-          documentId,
-          value,
-        )
+        await createVersion(bundleId, documentId)
         setVersionCreateState({status: 'created', lastUpdate: new Date()})
       } catch (err) {
         toast.push({
@@ -66,7 +67,7 @@ export function DocumentNotInReleaseBanner({
         setVersionCreateState(undefined)
       }
     }
-  }, [createVersion, currentRelease._id, documentId, t, toast, value])
+  }, [createVersion, currentRelease, isAnonymousBundle, documentId, t, toast])
 
   const now = useCurrentTime(200)
 
@@ -75,7 +76,7 @@ export function DocumentNotInReleaseBanner({
     id: 'add-document-to-release',
     enabled: Boolean(
       versionCreateState?.status === 'created' &&
-        now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
+      now.getTime() - versionCreateState.lastUpdate.getTime() > TOAST_DELAY,
     ),
     closable: true,
     title: t('banners.release.waiting.title'),
@@ -91,8 +92,9 @@ export function DocumentNotInReleaseBanner({
             i18nKey="banners.release.not-in-release"
             t={t}
             values={{
-              title:
-                currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
+              title: isAnonymousBundle
+                ? currentRelease
+                : currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
             }}
             components={{
               VersionBadge: getVersionInlineBadge(currentRelease),

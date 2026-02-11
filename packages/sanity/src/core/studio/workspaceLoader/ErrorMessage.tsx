@@ -1,6 +1,6 @@
-/* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'
 
@@ -42,7 +42,8 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
 
       <Flex as="ul" direction="column" gap={2}>
         {path.map(({name, type}, index) => (
-          <ListItem forwardedAs="li" gap={2} align="center" key={index}>
+          // oxlint-disable-next-line no-array-index-key
+          <ListItem key={index} forwardedAs="li" gap={2} align="center">
             <Box>
               <Code>{name}</Code>
             </Box>

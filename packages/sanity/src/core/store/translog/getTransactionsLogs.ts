@@ -95,7 +95,6 @@ export async function getTransactionsLogs(
 
   const reader = stream.getReader()
   for (;;) {
-    // eslint-disable-next-line no-await-in-loop
     const result = await reader.read()
     if (result.done) break
 

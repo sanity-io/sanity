@@ -1,7 +1,7 @@
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
@@ -100,10 +100,10 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [imageError, setImageError] = useState<SyntheticEvent<HTMLImageElement, Event>>()
+  const [imageError, setImageError] = useState<SyntheticEvent<HTMLImageElement>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
   const dimensions = getImageDimensions(id)
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
 
   // undefined = still loading, null = its gone
   const assetIsDeleted = asset === null

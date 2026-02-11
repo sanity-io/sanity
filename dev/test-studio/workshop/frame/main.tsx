@@ -3,20 +3,20 @@ import {WorkshopFrame} from '@sanity/ui-workshop'
 import {createMemoryHistory} from 'history'
 import {useState} from 'react'
 import {createRoot} from 'react-dom/client'
-import Refractor from 'react-refractor'
-import javascript from 'refractor/lang/javascript'
-import json from 'refractor/lang/json'
-import jsx from 'refractor/lang/jsx'
-import typescript from 'refractor/lang/typescript'
+import {registerLanguage} from 'react-refractor'
+import javascript from 'refractor/javascript'
+import json from 'refractor/json'
+import jsx from 'refractor/jsx'
+import typescript from 'refractor/typescript'
 import {StudioProvider} from 'sanity'
 
 import sanityConfig from '../../sanity.config'
 import {config} from '../config'
 
-Refractor.registerLanguage(javascript)
-Refractor.registerLanguage(json)
-Refractor.registerLanguage(jsx)
-Refractor.registerLanguage(typescript)
+registerLanguage(javascript)
+registerLanguage(json)
+registerLanguage(jsx)
+registerLanguage(typescript)
 
 const history = createMemoryHistory({initialEntries: [{pathname: '/test'}]})
 

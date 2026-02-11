@@ -4,7 +4,6 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
-import {format as prettierFormat, resolveConfig as resolvePrettierConfig} from 'prettier'
 import {Project} from 'ts-morph'
 
 const diagnosticsEnvFlag = process.env.TEST_DTS_EXPORTS_DIAGNOSTICS || 'none'
@@ -41,8 +40,6 @@ for (const packageName of Object.keys(dependencies)) {
     }
   }
 }
-
-const prettierConfig = await resolvePrettierConfig(path.join(fixturesDir, 'mock.test-d.ts'))
 
 for (const [bareIdentifier, [dtsFilePath, fixturePath]] of fixtures) {
   const project = new Project()
@@ -119,13 +116,7 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
   testContent += `})
 `
 
-  await writeFile(
-    fixturePath,
-    await prettierFormat(testContent, {
-      ...prettierConfig,
-      parser: 'typescript',
-    }),
-  )
+  await writeFile(fixturePath, testContent)
 }
 
 function getTestContent(syntaxKindName, exportName, genericParams) {

@@ -1,15 +1,19 @@
 import {type ReleaseDocument, type SingleActionResult} from '@sanity/client'
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
+import {Menu, MenuDivider, Spinner, Stack, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {type SetStateAction, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {RouterContext, useRouter} from 'sanity/router'
 
-import {Button, Dialog, Popover} from '../../../../../ui-components'
+import {Button, Dialog, MenuItem, Popover} from '../../../../../ui-components'
+import {type ReleaseActionDescription} from '../../../../config/releases/actions'
 import {Translate, type TranslateComponentMap, useTranslation} from '../../../../i18n'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {useWorkspace} from '../../../../studio/workspace'
+import {ReleaseActionsResolver} from '../../../components/ReleaseActionsResolver'
 import {useReleasesUpsell} from '../../../contexts/upsell/useReleasesUpsell'
+import {useCustomReleaseActions} from '../../../hooks/useCustomReleaseActions'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
@@ -67,6 +71,18 @@ export const ReleaseMenuButton = ({
   const releaseMenuRef = useRef<HTMLDivElement | null>(null)
   const [openPopover, setOpenPopover] = useState(false)
 
+  const customActions = useCustomReleaseActions(release, documents ?? [])
+  const [customActionDescriptions, setCustomActionDescriptions] = useState<
+    ReleaseActionDescription[]
+  >([])
+
+  const handleCustomActionsUpdate = useCallback(
+    (actions: Array<ReleaseActionDescription | null>) => {
+      setCustomActionDescriptions(actions.filter(Boolean) as ReleaseActionDescription[])
+    },
+    [],
+  )
+
   const releaseMenuDisabled = !release
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
@@ -74,6 +90,10 @@ export const ReleaseMenuButton = ({
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
   const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const handleDelete = useCallback(async () => {
     await deleteRelease(release._id)
@@ -90,7 +110,7 @@ export const ReleaseMenuButton = ({
     const duplicateReleaseId = createReleaseId()
 
     await guardWithReleaseLimitUpsell(async () => {
-      const releaseDocuments = documents?.map((document) => document.document)
+      const releaseDocuments = documents?.map((doc) => doc.document)
       const duplicatedMetadata = {
         ...release.metadata,
         title: `${release.metadata.title} (${t('copy-suffix')})`,
@@ -115,14 +135,15 @@ export const ReleaseMenuButton = ({
       }
       const actionValues = RELEASE_ACTION_MAP[action]
 
-      try {
+      // The .catch/.finally syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+      const run = async () => {
         if (
           (action === 'archive' || action === 'delete') &&
           selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)
         ) {
           // Reset the perspective to drafts when the release is archived or deleted
           // To avoid showing the release archived / deleted toast.
-          setPerspective('drafts')
+          setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
         }
         setIsPerformingOperation(true)
         const actionResult = await actionLookup[action](release._id)
@@ -150,28 +171,31 @@ export const ReleaseMenuButton = ({
             ),
           })
         }
-      } catch (actionError) {
-        if (isReleaseLimitError(actionError)) return
-
-        if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
-          toast.push({
-            status: 'error',
-            title: (
-              <Text muted size={1}>
-                <Translate
-                  t={t}
-                  i18nKey={actionValues.toastFailureI18nKey}
-                  values={{title: releaseTitle, error: actionError.toString()}}
-                />
-              </Text>
-            ),
-          })
-        }
-        console.error(actionError)
-      } finally {
-        setIsPerformingOperation(false)
-        setSelectedAction(undefined)
       }
+      await run()
+        .catch((actionError) => {
+          if (isReleaseLimitError(actionError)) return
+
+          if (typeof actionValues.toastFailureI18nKey !== 'undefined') {
+            toast.push({
+              status: 'error',
+              title: (
+                <Text muted size={1}>
+                  <Translate
+                    t={t}
+                    i18nKey={actionValues.toastFailureI18nKey}
+                    values={{title: releaseTitle, error: actionError.toString()}}
+                  />
+                </Text>
+              ),
+            })
+          }
+          console.error(actionError)
+        })
+        .finally(() => {
+          setIsPerformingOperation(false)
+          setSelectedAction(undefined)
+        })
     },
     [
       releaseMenuDisabled,
@@ -184,8 +208,9 @@ export const ReleaseMenuButton = ({
       release._id,
       telemetry,
       setPerspective,
-      router,
+      isDraftModelEnabled,
       toast,
+      router,
       t,
       releaseTitle,
     ],
@@ -195,7 +220,7 @@ export const ReleaseMenuButton = ({
   useEffect(() => {
     if (!selectedAction || isActionPublishOrSchedule) return
 
-    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) handleAction(selectedAction)
+    if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) void handleAction(selectedAction)
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {
@@ -251,14 +276,14 @@ export const ReleaseMenuButton = ({
     handleAction,
   ])
 
-  const handleOnButtonClick = () => {
+  const closePopover = useCallback(() => {
+    setOpenPopover(false)
+  }, [])
+
+  const handleOnButtonClick = useCallback(() => {
     if (openPopover) closePopover()
     else setOpenPopover(true)
-  }
-
-  const closePopover = () => {
-    setOpenPopover(false)
-  }
+  }, [closePopover, openPopover])
 
   useClickOutsideEvent(
     () => {
@@ -274,11 +299,42 @@ export const ReleaseMenuButton = ({
       if (!action) closePopover()
       setSelectedAction(action)
     },
-    [],
+    [closePopover],
   )
+
+  // Create menu items for custom actions
+  const customActionMenuItems = useMemo(() => {
+    const handleOnActionClick = (action: ReleaseActionDescription) => () => {
+      if (action.onHandle) {
+        action.onHandle()
+        closePopover()
+      }
+    }
+
+    return customActionDescriptions.map((action, index) => (
+      <MenuItem
+        key={`custom-action-${index}`}
+        icon={action.icon}
+        text={action.label}
+        disabled={action.disabled || isPerformingOperation}
+        onClick={handleOnActionClick(action)}
+        tooltipProps={action.title ? {content: action.title} : undefined}
+      />
+    ))
+  }, [customActionDescriptions, isPerformingOperation, closePopover])
+
+  const hasCustomActions = customActions.length > 0
 
   return (
     <>
+      {hasCustomActions && (
+        <ReleaseActionsResolver
+          actions={customActions}
+          release={release}
+          documents={documents ?? []}
+          onActions={handleCustomActionsUpdate}
+        />
+      )}
       <Popover
         content={
           <Menu ref={releaseMenuRef}>
@@ -289,6 +345,12 @@ export const ReleaseMenuButton = ({
               disabled={isPerformingOperation}
               documents={documents ?? []}
             />
+            {hasCustomActions && (
+              <>
+                <MenuDivider />
+                {customActionMenuItems}
+              </>
+            )}
           </Menu>
         }
         open={openPopover}

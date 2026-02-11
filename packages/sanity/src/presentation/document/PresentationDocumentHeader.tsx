@@ -45,6 +45,7 @@ export function PresentationDocumentHeader(props: {
     <LocationStack>
       {contextOptions.map((_options, idx) => (
         <LocationsBanner
+          // oxlint-disable-next-line no-array-index-key
           key={idx}
           documentId={documentId}
           options={_options}

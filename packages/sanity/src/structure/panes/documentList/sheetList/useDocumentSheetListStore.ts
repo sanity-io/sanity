@@ -54,7 +54,7 @@ function documentsReducer(
     }
 
     case 'DOCUMENT_RECEIVED': {
-      const nextDocumentResult = action.payload as SanityDocument
+      const nextDocumentResult = action.payload
 
       return {
         ...state,
@@ -66,7 +66,6 @@ function documentsReducer(
     }
 
     case 'DOCUMENT_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restDocuments} = state.documents
 
       return {
@@ -77,7 +76,7 @@ function documentsReducer(
 
     case 'DOCUMENT_UPDATED': {
       const updatedDocument = action.payload
-      const id = updatedDocument._id as string
+      const id = updatedDocument._id
       const document = state.documents[id]
 
       const nextDocument = {

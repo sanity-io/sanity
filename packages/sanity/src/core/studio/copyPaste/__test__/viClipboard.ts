@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unassigned-import
+// oxlint-disable-next-line no-unassigned-import
 import 'blob-polyfill'
 
 export interface ClipboardItemJest extends ClipboardItem {
@@ -10,8 +10,8 @@ class Clipboard {
 
   async write(data: ClipboardItems): Promise<void> {
     for (const clipboardItem of data) {
-      // eslint-disable-next-line guard-for-in, @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
-      for (const type in clipboardItem) {
+      // eslint-disable-next-line guard-for-in
+      for (const _type in clipboardItem) {
         this.clipboardItems = [clipboardItem]
       }
     }

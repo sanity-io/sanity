@@ -1,5 +1,5 @@
 import arrify from 'arrify'
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
@@ -66,13 +66,7 @@ export const GlobalDocumentReferenceType = {
     )
 
     lazyGetter(parsed, 'fields', () => {
-      return REFERENCE_FIELDS.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: createMemberType(type),
-        }
-      })
+      return REFERENCE_FIELDS.map((fieldDef) => createMemberType.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'to', () => {

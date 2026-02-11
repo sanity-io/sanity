@@ -10,6 +10,7 @@ import {type ComponentType, type ReactNode, useCallback, useContext, useState} f
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
+import {usePaneRouter} from 'sanity/structure'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -134,10 +135,10 @@ export function LocationsBanner(props: {
 
                 return (
                   <LocationItem
+                    key={l.href}
                     active={active}
                     documentId={documentId}
                     documentType={schemaType.name}
-                    key={l.href}
                     node={l}
                     toolName={options.name || DEFAULT_TOOL_NAME}
                   />
@@ -163,6 +164,7 @@ function LocationItem(props: {
   const currentPresentationToolName = useCurrentPresentationToolName()
   const isCurrentTool = toolName === currentPresentationToolName
   const navigate = presentation?.navigate
+  const {params: paneParams} = usePaneRouter()
 
   const presentationLinkProps = useIntentLink({
     intent: 'edit',
@@ -172,19 +174,20 @@ function LocationItem(props: {
       mode: 'presentation',
       presentation: toolName,
       ...presentation?.structureParams,
+      ...paneParams,
       preview: node.href,
     },
   })
 
   const handleCurrentToolClick = useCallback(() => {
-    navigate?.({}, {preview: node.href})
+    navigate?.({params: {preview: node.href}})
   }, [node.href, navigate])
 
   return (
     <Card
+      key={node.href}
       {...(isCurrentTool ? {} : presentationLinkProps)}
       as="a"
-      key={node.href}
       onClick={isCurrentTool ? handleCurrentToolClick : presentationLinkProps.onClick}
       padding={3}
       radius={1}

@@ -1,6 +1,6 @@
 /* eslint-disable @sanity/i18n/no-i18next-import */
 import {createInstance, type Resource} from 'i18next'
-import {memoize} from 'lodash'
+import {memoize} from 'lodash-es'
 
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
@@ -25,7 +25,7 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {
     const i18n = getFallbackI18nInstance()
-    i18n.init()
+    void i18n.init()
     return {
       currentLocale: defaultLocale,
       locales: fallbackLocales,

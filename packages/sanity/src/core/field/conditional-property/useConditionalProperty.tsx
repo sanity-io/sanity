@@ -1,4 +1,4 @@
-import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
+import {type ConditionalProperty, type Path, type SanityDocument} from '@sanity/types'
 
 import {useCurrentUser} from '../../store'
 import {useUnique} from '../../util'
@@ -13,6 +13,7 @@ export interface ConditionalPropertyProps {
   document?: SanityDocument
   checkProperty: ConditionalProperty
   checkPropertyKey: string
+  path: Path
 }
 
 /**
@@ -20,8 +21,8 @@ export interface ConditionalPropertyProps {
  *
  * @internal Not yet a stable API
  */
-const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
-  const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp} = props
+export const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
+  const {checkProperty = false, checkPropertyKey, document, parent, value: valueProp, path} = props
   const value = useUnique(valueProp)
   const currentUser = useCurrentUser()
 
@@ -30,9 +31,8 @@ const useConditionalProperty = (props: ConditionalPropertyProps): boolean => {
     document,
     parent,
     value,
+    path,
   })
 
   return isPropertyTruthy
 }
-
-export {useConditionalProperty as unstable_useConditionalProperty}

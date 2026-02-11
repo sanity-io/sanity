@@ -3,12 +3,12 @@ import {Stack} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {memo} from 'react'
 
-import {type TreeEditingMenuItem as TreeEditingMenuItemType} from '../../types'
+import {type DialogItem} from '../../types'
 import {TreeEditingMenuItem} from './TreeEditingMenuItem'
 import {getSiblingHasChildren} from './utils'
 
 interface TreeEditingMenuProps {
-  items: TreeEditingMenuItemType[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path | null
 }
@@ -25,8 +25,8 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
 
         return (
           <TreeEditingMenuItem
-            item={item}
             key={toString(item.path)}
+            item={item}
             onPathSelect={onPathSelect}
             selectedPath={selectedPath}
             siblingHasChildren={siblingHasChildren}

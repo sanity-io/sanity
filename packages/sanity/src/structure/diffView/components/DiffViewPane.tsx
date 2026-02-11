@@ -6,7 +6,7 @@ import {
   DialogProvider,
   PortalProvider,
 } from '@sanity/ui'
-import {noop} from 'lodash'
+import {noop} from 'lodash-es'
 import {
   type ComponentType,
   type CSSProperties,
@@ -27,6 +27,8 @@ import {
   isPublishedId,
   isVersionId,
   LoadingBlock,
+  type TargetPerspective,
+  useActiveReleases,
   useDocumentForm,
   useEditState,
   useMiddlewareComponents,
@@ -38,6 +40,7 @@ import {styled} from 'styled-components'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
+import {findRelease} from '../utils/findRelease'
 import {Scroller} from './Scroller'
 
 const DiffViewPaneLayout = styled(Card)`
@@ -125,6 +128,7 @@ export const DiffViewPane = forwardRef<HTMLDivElement, DiffViewPaneProps>(functi
                 <PortalProvider element={portalElement}>
                   <DialogProvider position="absolute">
                     <Container ref={containerElement} padding={4} width={1}>
+                      {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                       <DocumentLayout documentId={documentId} documentType={documentType} />
                     </Container>
                   </DialogProvider>
@@ -147,7 +151,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   compareDocument,
 }) => {
   const compareValue = useCompareValue({compareDocument})
+  const {data: releases} = useActiveReleases()
   const [patchChannel] = useState(() => createPatchChannel())
+  const perspective = useMemo(() => findRelease(documentId, releases), [documentId, releases])
 
   const {
     formState,
@@ -163,13 +169,15 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     schemaType,
     value,
     onProgrammaticFocus,
-    ...documentForm
+    openPath,
+    onPathOpen: onPathOpenFromForm,
   } = useDocumentForm({
     documentId: getPublishedId(documentId),
     documentType,
     selectedPerspectiveName: perspectiveName(documentId),
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
+    displayInlineChanges: true,
   })
 
   const isLoading = formState === null || !ready
@@ -181,16 +189,19 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
 
   const onPathOpen = useCallback(
     (path: Path) => {
-      documentForm.onPathOpen(path)
+      onPathOpenFromForm(path)
       pathSyncChannel.push({source: role, path})
     },
-    [documentForm, pathSyncChannel, role],
+    [onPathOpenFromForm, pathSyncChannel, role],
   )
 
   useEffect(() => {
-    const subscription = pathSyncChannel.path.subscribe(onProgrammaticFocus)
+    const subscription = pathSyncChannel.path.subscribe((path) => {
+      onPathOpenFromForm(path)
+      onProgrammaticFocus(path)
+    })
     return () => subscription.unsubscribe()
-  }, [onProgrammaticFocus, pathSyncChannel.path])
+  }, [onPathOpenFromForm, onProgrammaticFocus, pathSyncChannel.path, role])
 
   return isLoading ? (
     <LoadingBlock showText />
@@ -202,7 +213,6 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
       }}
     >
       <FormBuilder
-        // eslint-disable-next-line camelcase
         __internal_patchChannel={patchChannel}
         id={`diffView-pane-${role}`}
         onChange={onChange}
@@ -215,14 +225,18 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         collapsedPaths={collapsedPaths}
         collapsedFieldSets={collapsedFieldSets}
         focusPath={formState.focusPath}
+        openPath={openPath}
         changed={formState.changed}
         focused={formState.focused}
         groups={formState.groups}
         validation={formState.validation}
         members={formState.members}
+        perspective={sanitizeBundleName(perspective)}
+        hasUpstreamVersion={formState.hasUpstreamVersion}
         presence={formState.presence}
         schemaType={schemaType}
         value={value}
+        compareValue={compareValue}
       />
     </CommentsEnabledContext.Provider>
   )
@@ -273,4 +287,13 @@ function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocum
     compareDocumentEditState.published,
     compareDocumentEditState.version,
   ])
+}
+
+// TODO: Refactor `findRelease` to return a type compatible with `TargetPerspective` (`"draft"` must be `"drafts"`), so that `sanitizeBundleName` can be removed.
+function sanitizeBundleName(bundle: ReturnType<typeof findRelease>): TargetPerspective | undefined {
+  if (bundle === 'draft') {
+    return 'drafts'
+  }
+
+  return bundle
 }

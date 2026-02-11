@@ -1,0 +1,31 @@
+{
+  "name": "e2e",
+  "version": "4.11.0",
+  "private": true,
+  "description": "Studio e2e test runner",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "cleanup:pr": "tsx -r dotenv-flow/config scripts/cleanupPr",
+    "codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
+    "dev": "pnpm --filter studio-e2e-testing dev",
+    "preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",
+    "setup": "tsx -r dotenv-flow/config scripts/setup",
+    "start": "pnpm --filter studio-e2e-testing preview",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
+    "@sanity/uuid": "^3.0.2",
+    "eslint": "catalog:",
+    "tsx": "^4.21.0"
+  },
+  "engines": {
+    "node": ">=20.19 <22 || >=22.12"
+  }
+}

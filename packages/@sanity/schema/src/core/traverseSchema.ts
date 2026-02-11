@@ -1,4 +1,4 @@
-import {flatten, uniq} from 'lodash'
+import {flatten, uniq} from 'lodash-es'
 
 import {getDupes} from '../sanity/validation/utils/getDupes'
 

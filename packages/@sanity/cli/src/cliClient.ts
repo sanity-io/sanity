@@ -1,16 +1,20 @@
-import {createClient, type SanityClient} from '@sanity/client'
+import {type ClientConfig, createClient, type SanityClient} from '@sanity/client'
 
-import {getCliConfigSync} from './util/getCliConfig'
+import {getSanityCliConfig} from './util/getCliConfig'
 import {resolveRootDir} from './util/resolveRootDir'
 
-export interface CliClientOptions {
+/**
+ * `getCliClient` accepts all options the `ClientConfig` does but provides
+ * `projectId` and `dataset` from the `sanity.cli.ts` configuration file along
+ * with a token in certain scenarios (e.g. `sanity exec SCRIPT --with-user-token`)
+ */
+export interface CliClientOptions extends ClientConfig {
+  /**
+   * If no `projectId` or `dataset` is provided, `getCliClient` will try to
+   * resolve these from the `sanity.cli.ts` configuration file. Use this option
+   * to specify the directory to look for this file.
+   */
   cwd?: string
-
-  projectId?: string
-  dataset?: string
-  useCdn?: boolean
-  token?: string
-  apiVersion?: string
 }
 
 interface GetCliClient {
@@ -29,21 +33,21 @@ function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
   }
 
   const {
-    // eslint-disable-next-line no-process-env
     cwd = process.env.SANITY_BASE_PATH || process.cwd(),
     useCdn = false,
     apiVersion = '2022-06-06',
     projectId,
     dataset,
     token = getCliClient.__internal__getToken(),
+    ...restOfOptions
   } = options
 
   if (projectId && dataset) {
-    return createClient({projectId, dataset, apiVersion, useCdn, token})
+    return createClient({projectId, dataset, apiVersion, useCdn, token, ...restOfOptions})
   }
 
   const rootDir = resolveRootDir(cwd)
-  const {config} = getCliConfigSync(rootDir) || {}
+  const {config} = getSanityCliConfig(rootDir) || {}
   if (!config) {
     throw new Error('Unable to resolve CLI configuration')
   }
@@ -59,6 +63,7 @@ function getCliClientImpl(options: CliClientOptions = {}): SanityClient {
     apiVersion,
     useCdn,
     token,
+    ...restOfOptions,
   })
 }
 

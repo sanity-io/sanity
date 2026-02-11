@@ -19,7 +19,7 @@ import {styled} from 'styled-components'
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
-import {type DocumentListPaneItem, type LoadingVariant} from './types'
+import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
 
 const RootBox = styled(Box)<{$opacity?: number}>`
   position: relative;
@@ -58,6 +58,7 @@ interface DocumentListPaneContentProps {
   paneTitle: string
   searchInputElement: HTMLInputElement | null
   showIcons: boolean
+  sortOrder?: SortOrder
 }
 
 const SKELETON_ITEMS = [...Array(30).keys()]
@@ -68,7 +69,7 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   return (
     <Stack paddingX={3} paddingY={2} paddingTop={0} space={1}>
       {SKELETON_ITEMS.map((num) => (
-        <SanityDefaultPreview isPlaceholder layout={layout} key={num} />
+        <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
     </Stack>
   )
@@ -98,6 +99,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     paneTitle,
     searchInputElement,
     showIcons,
+    sortOrder,
   } = props
 
   const schema = useSchema()
@@ -138,13 +140,14 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <>
           <PaneItem
-            icon={showIcons === false ? false : undefined}
+            icon={showIcons ? undefined : false}
             id={publishedId}
             layout={layout}
             marginBottom={1}
             pressed={pressed}
             schemaType={schema.get(item._type)}
             selected={selected}
+            sortOrder={sortOrder}
             value={item}
           />
 
@@ -160,7 +163,18 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </>
       )
     },
-    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading, t],
+    [
+      childItemId,
+      isActive,
+      items.length,
+      layout,
+      schema,
+      showIcons,
+      sortOrder,
+      hasMaxItems,
+      isLazyLoading,
+      t,
+    ],
   )
 
   const noDocumentsContent = useMemo(() => {
@@ -267,13 +281,13 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
+            key={key}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
-            key={key}
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}

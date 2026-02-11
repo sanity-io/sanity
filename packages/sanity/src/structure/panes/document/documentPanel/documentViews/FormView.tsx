@@ -1,6 +1,13 @@
-/* eslint-disable no-nested-ternary */
 import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type FormEvent,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useState,
+} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -17,7 +24,6 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Delay} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -55,8 +61,10 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
     openPath,
+    compareValue,
+    hasUpstreamVersion,
   } = useDocumentPane()
-  const {selectedReleaseId} = usePerspective()
+  const {selectedReleaseId, selectedPerspective} = usePerspective()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()
@@ -192,6 +200,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 changed={formState.changed}
                 collapsedFieldSets={collapsedFieldSets}
                 collapsedPaths={collapsedPaths}
+                compareValue={compareValue ?? undefined}
                 focused={formState.focused}
                 focusPath={formState.focusPath}
                 groups={formState.groups}
@@ -205,6 +214,8 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onSetFieldSetCollapsed={onSetCollapsedFieldSet}
                 onSetPathCollapsed={onSetCollapsedPath}
                 openPath={openPath}
+                perspective={selectedPerspective}
+                hasUpstreamVersion={hasUpstreamVersion}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

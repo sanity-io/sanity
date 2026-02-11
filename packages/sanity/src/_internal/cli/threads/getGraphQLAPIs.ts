@@ -1,8 +1,8 @@
 import {isMainThread, type MessagePort, parentPort, workerData} from 'node:worker_threads'
 
-import {type CliV3CommandContext, type GraphQLAPIConfig} from '@sanity/cli'
+import {type CliCommandContext, type GraphQLAPIConfig} from '@sanity/cli'
 import {type Schema} from '@sanity/types'
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash-es'
 import oneline from 'oneline'
 import {type Workspace} from 'sanity'
 
@@ -17,7 +17,7 @@ async function main() {
   await getGraphQLAPIsForked(parentPort)
 }
 
-main().then(() => process.exit())
+void main().then(() => process.exit())
 
 async function getGraphQLAPIsForked(parent: MessagePort): Promise<void> {
   const {cliConfig, cliConfigPath, workDir} = workerData
@@ -29,7 +29,7 @@ async function resolveGraphQLApis({
   cliConfig,
   cliConfigPath,
   workDir,
-}: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
+}: Pick<CliCommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
   TypeResolvedGraphQLAPI[]
 > {
   const workspaces = await getStudioWorkspaces({basePath: workDir})

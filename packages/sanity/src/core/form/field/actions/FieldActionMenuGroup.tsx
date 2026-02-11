@@ -25,10 +25,10 @@ export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
 
         {group.children.map((item, idx) => (
           <FieldActionMenuNode
+            // oxlint-disable-next-line no-array-index-key
+            key={idx}
             action={item}
             isFirst={idx === 0}
-            // eslint-disable-next-line react/no-array-index-key
-            key={idx}
             prevIsGroup={group.children[idx - 1]?.type === 'group'}
           />
         ))}
@@ -40,10 +40,10 @@ export function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
     <MenuGroup icon={group.icon} popover={POPOVER_PROPS} text={title} tone={group.tone}>
       {group.children.map((item, idx) => (
         <FieldActionMenuNode
+          // oxlint-disable-next-line no-array-index-key
+          key={idx}
           action={item}
           isFirst={idx === 0}
-          // eslint-disable-next-line react/no-array-index-key
-          key={idx}
           prevIsGroup={group.children[idx - 1]?.type === 'group'}
         />
       ))}

@@ -43,11 +43,11 @@ export function ListPane(props: ListPaneProps) {
       />
 
       <ListPaneContent
+        key={paneKey}
         childItemId={childItemId}
         isActive={isActive}
         items={items}
         layout={defaultLayout}
-        key={paneKey}
         showIcons={showIcons}
         title={title}
       />

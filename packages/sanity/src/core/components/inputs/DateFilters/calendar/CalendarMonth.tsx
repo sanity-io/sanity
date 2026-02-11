@@ -50,12 +50,11 @@ export function CalendarMonth(props: CalendarMonthProps) {
 
             return (
               <CalendarDay
+                key={`${weekIdx}-${dayIdx}`}
                 date={dayDate}
                 focused={focused}
                 isCurrentMonth={isCurrentMonth}
                 isToday={isToday}
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${weekIdx}-${dayIdx}`}
                 onSelect={props.onSelect}
                 selected={selected}
                 disabled={disabled}

@@ -37,9 +37,9 @@ export const DocumentTypeFilterItem = memo(function TypeFilterItem({
   return (
     <Box {...rest}>
       <Button
+        key={type.title ?? type.name}
         iconRight={selected && CheckmarkIcon}
         justify="flex-start"
-        key={type.title ?? type.name}
         mode="bleed"
         onClick={handleClick}
         width="fill"

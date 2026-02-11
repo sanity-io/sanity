@@ -1,5 +1,5 @@
 import {memo, startTransition, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, type SanityDocument, useEditState} from 'sanity'
+import {getPublishedId, type SanityDocument, useEditState, usePerspective} from 'sanity'
 
 import {type ConnectionStatus, type VisualEditingConnection} from '../types'
 
@@ -14,7 +14,8 @@ export interface PostMessageRefreshMutationsProps {
 function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): React.ReactNode {
   const {comlink, type, previewKitConnection, loadersConnection} = props
   const id = useMemo(() => getPublishedId(props.id), [props.id])
-  const {draft, published, ready} = useEditState(id, type, 'low')
+  const {selectedReleaseId} = usePerspective()
+  const {draft, published, ready, version} = useEditState(id, type, 'low', selectedReleaseId)
   const livePreviewEnabled =
     previewKitConnection === 'connected' || loadersConnection === 'connected'
 
@@ -26,6 +27,7 @@ function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): R
         draft={draft}
         livePreviewEnabled={livePreviewEnabled}
         published={published}
+        version={version}
       />
     )
   }
@@ -33,18 +35,32 @@ function PostMessageRefreshMutations(props: PostMessageRefreshMutationsProps): R
   return null
 }
 
-interface PostMessageRefreshMutationsInnerProps
-  extends Pick<PostMessageRefreshMutationsProps, 'comlink'> {
+interface PostMessageRefreshMutationsInnerProps extends Pick<
+  PostMessageRefreshMutationsProps,
+  'comlink'
+> {
   livePreviewEnabled: boolean
   draft: SanityDocument | null
   published: SanityDocument | null
+  version: SanityDocument | null
 }
 function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInnerProps) {
-  const {comlink, draft, published, livePreviewEnabled} = props
+  const {comlink, draft, published, livePreviewEnabled, version} = props
   const [prevDraft, setPrevDraft] = useState(draft)
   const [prevPublished, setPrevPublished] = useState(published)
+  const [prevVersion, setPrevVersion] = useState(version)
 
   useEffect(() => {
+    if (prevVersion?._rev !== version?._rev) {
+      startTransition(() => setPrevVersion(version))
+      if (version) {
+        comlink?.post('presentation/refresh', {
+          source: 'mutation',
+          livePreviewEnabled,
+          document: parseDocument(version),
+        })
+      }
+    }
     if (prevDraft?._rev !== draft?._rev) {
       startTransition(() => setPrevDraft(draft))
       if (draft) {
@@ -65,7 +81,16 @@ function PostMessageRefreshMutationsInner(props: PostMessageRefreshMutationsInne
         })
       }
     }
-  }, [comlink, draft, livePreviewEnabled, prevDraft?._rev, prevPublished?._rev, published])
+  }, [
+    comlink,
+    draft,
+    livePreviewEnabled,
+    prevDraft?._rev,
+    prevPublished?._rev,
+    published,
+    prevVersion?._rev,
+    version,
+  ])
 
   return null
 }

@@ -52,7 +52,6 @@ export function DefaultMarkers(props: MarkersProps) {
     <Stack space={1}>
       {validation.length > 0 &&
         validation.map(({message, level}, index) => (
-          // eslint-disable-next-line react/no-array-index-key
           <Flex key={`validationItem-${index}`}>
             <Box marginRight={2} marginBottom={index + 1 === validation.length ? 0 : 2}>
               <IconText

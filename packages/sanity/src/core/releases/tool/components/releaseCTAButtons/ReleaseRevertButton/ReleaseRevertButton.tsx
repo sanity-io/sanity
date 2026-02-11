@@ -10,7 +10,6 @@ import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
-import {useIsReleasesPlus} from '../../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
@@ -63,7 +62,8 @@ const ConfirmReleaseDialog = ({
 
     const revertReleaseId = createReleaseId()
 
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       if (!documentRevertStates) {
         throw new Error('Unable to find documents to revert')
       }
@@ -137,21 +137,24 @@ const ConfirmReleaseDialog = ({
           ),
         })
       }
-    } catch (revertError) {
-      if (isReleaseLimitError(revertError)) return
-
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
-          </Text>
-        ),
-      })
-      console.error(revertError)
-    } finally {
-      setRevertReleaseStatus('idle')
     }
+    await run()
+      .catch((revertError) => {
+        if (isReleaseLimitError(revertError)) return
+
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
+            </Text>
+          ),
+        })
+        console.error(revertError)
+      })
+      .finally(() => {
+        setRevertReleaseStatus('idle')
+      })
   }, [
     setRevertReleaseStatus,
     getDocumentRevertStates,
@@ -205,13 +208,13 @@ const ConfirmReleaseDialog = ({
       <Flex align="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}
-          id="stage-release"
+          id="immediate-revert-release"
           style={{display: 'block'}}
-          checked={stageNewRevertRelease}
+          checked={!stageNewRevertRelease}
         />
         <Box flex={1} paddingLeft={3}>
           <Text muted size={1}>
-            <label htmlFor="stage-release">
+            <label htmlFor="immediate-revert-release">
               {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}
             </label>
           </Text>
@@ -235,7 +238,7 @@ export const ReleaseRevertButton = ({
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
   const {createRelease} = useReleaseOperations()
@@ -248,12 +251,10 @@ export const ReleaseRevertButton = ({
     setIsPendingGuardResponse(false)
   }, [guardWithReleaseLimitUpsell])
 
-  const isReleasesPlus = useIsReleasesPlus()
-
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
@@ -261,8 +262,6 @@ export const ReleaseRevertButton = ({
       isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease])
-
-  if (!isReleasesPlus) return null
 
   return (
     <>
@@ -281,7 +280,7 @@ export const ReleaseRevertButton = ({
          * Permissions to create a request (implemented)
          * @todo Permissions to create each schema type within the release (not implemented)
          */
-        disabled={isPendingGuardResponse || !hasCreatePermission || disabled || mode === 'disabled'}
+        disabled={isPendingGuardResponse || !hasCreatePermission || disabled}
         data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (

@@ -162,6 +162,7 @@ export interface Rule {
   either(children: Rule[]): Rule
   optional(): Rule
   required(): Rule
+  skip(): Rule
   custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
   media<T extends MediaAssetTypes = MediaAssetTypes>(fn: MediaValidator<T>): Rule
   min(len: number | string | FieldReference): Rule
@@ -281,6 +282,10 @@ export interface ValidationContext {
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /**
+   * Whether this field is hidden for any reason (either itself or any of its ancestors).
+   */
+  hidden?: boolean
 }
 
 /**
@@ -372,6 +377,14 @@ export interface ValidationError {
    * the document.
    */
   path?: Path
+
+  /**
+   * Extra metadata for the validation error. Currently used by the Media Library asset source to ignore
+   * certain validation markers when validating asset source media library assets.
+   *
+   * @internal
+   */
+  __internal_metadata?: unknown
 
   /**
    * Same as `path` but allows more than one value. If provided, the same

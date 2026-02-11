@@ -1,11 +1,12 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
-  isPublishedId,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -28,6 +29,8 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   NOT_READY: 'action.publish.disabled.not-ready',
 } as const
 
+const PUBLISHED_STATE = {status: 'published'} as const
+
 function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE_KEY,
   publishedAt: string | undefined,
@@ -42,22 +45,28 @@ function getDisabledReason(
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const timeSincePublished = useRelativeTime(publishedAt, {useTemporalPhrase: true})
-  return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
+  return <Text>{t('action.publish.already-published.tooltip', {timeSincePublished})}</Text>
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-// eslint-disable-next-line complexity
-export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published, release} = props
-  const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
-  const {publish} = useDocumentOperation(id, type)
-  const validationStatus = useValidationStatus(id, type)
-  const syncState = useSyncState(id, type)
+export const usePublishAction: DocumentActionComponent = (props) => {
+  const {id, type, liveEdit, draft, published, release, version} = props
+  const [publishState, setPublishState] = useState<
+    {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
+  >(null)
+
+  const bundleId = version?._id && getVersionFromId(version._id)
+
+  const {publish} = useDocumentOperation(id, type, bundleId)
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
+  const validationStatus = useValidationStatus(value._id, type, !release)
+  const syncState = useSyncState(id, type)
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const revision = (editState?.draft || editState?.published || {})._rev
+  const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
@@ -72,24 +81,23 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const currentUser = useCurrentUser()
 
-  // eslint-disable-next-line no-nested-ternary
   const title = publish.disabled
     ? getDisabledReason(publish.disabled, (published || {})._updatedAt, t) || ''
     : hasValidationErrors
       ? t('action.publish.validation-issues.tooltip')
       : ''
 
-  const hasDraft = Boolean(draft)
+  const currentPublishRevision = published?._rev
 
   const doPublish = useCallback(() => {
     publish.execute()
-    setPublishState('publishing')
-  }, [publish])
+    setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
+  }, [publish, currentPublishRevision])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
     const validationComplete =
-      validationStatus.isValidating === false && validationStatus.revision !== revision
+      !validationStatus.isValidating && validationStatus.revision === revision
 
     if (!publishScheduled || isSyncing || !validationComplete) {
       return
@@ -97,6 +105,13 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
     if (!hasValidationErrors) {
       doPublish()
+    } else {
+      // User tried to publish before validation was complete
+      toast.push({
+        title: t('action.publish.validation-issues-toast.title'),
+        description: t('action.publish.validation-issues-toast.description'),
+        status: 'error',
+      })
     }
     setPublishScheduled(false)
   }, [
@@ -108,18 +123,25 @@ export const PublishAction: DocumentActionComponent = (props) => {
     revision,
     isValidating,
     validationStatus.isValidating,
+    toast,
+    t,
   ])
 
   useEffect(() => {
-    const didPublish = publishState === 'publishing' && !hasDraft
+    const didPublish =
+      // All we need to check here is for the revision of the current published document
+      // to be different from what it was at the time of publish
+      // a successful publish will always lead to a new published revision
+      publishState?.status === 'publishing' &&
+      currentPublishRevision !== publishState.publishRevision
 
-    const nextState = didPublish ? 'published' : null
+    const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, hasDraft])
+  }, [changesOpen, publishState, currentPublishRevision])
 
   const telemetry = useTelemetry()
 
@@ -149,12 +171,15 @@ export const PublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
-    if (release) {
-      // Version documents are not publishable by this action, they should be published as part of a release
+    if (release && version) {
+      // release versions are not publishable by this action, they should be published as part of a release
       return null
     }
-    if (liveEdit) {
-      // Live edit documents are not publishable by this action, they are published automatically
+
+    if (liveEdit && !version) {
+      // disable publish if liveEdit is true and we're not on a version
+      // e.g. if liveEdit is true and we have a version, we want to allow publish
+      // note that liveEdit is "forced" on version documents as a hack of sorts
       return null
     }
 
@@ -163,7 +188,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
      * then it means the draft is yet to be saved - in this case don't disabled
      * the publish button due to ALREADY_PUBLISHED reason
      */
-    if (isPublishedId(value._id) && draft !== null) {
+    if (published && !draft && !version) {
       return {
         tone: 'default',
         icon: PublishIcon,
@@ -187,30 +212,30 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
     const disabled = Boolean(
       publishScheduled ||
-        editState?.transactionSyncLock?.enabled ||
-        publishState === 'publishing' ||
-        publishState === 'published' ||
-        hasValidationErrors ||
-        publish.disabled,
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled,
     )
 
     return {
       disabled: disabled || isPermissionsLoading,
       tone: 'default',
       label:
-        // eslint-disable-next-line no-nested-ternary
-        publishState === 'published'
+        publishState?.status === 'published'
           ? t('action.publish.published.label')
-          : publishScheduled || publishState === 'publishing'
-            ? t('action.publish.running.label')
-            : t('action.publish.draft.label'),
+          : publishScheduled
+            ? t('action.publish.validation-in-progress.label')
+            : publishState?.status === 'publishing'
+              ? t('action.publish.running.label')
+              : t('action.publish.draft.label'),
       // @todo: Implement loading state, to show a `<Button loading />` state
       // loading: publishScheduled || publishState === 'publishing',
       icon: PublishIcon,
-      // eslint-disable-next-line no-nested-ternary
       title: publishScheduled
         ? t('action.publish.waiting')
-        : publishState === 'published' || publishState === 'publishing'
+        : publishState?.status === 'published' || publishState?.status === 'publishing'
           ? null
           : title,
       shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
@@ -219,8 +244,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
   }, [
     release,
     liveEdit,
-    value._id,
+    version,
     draft,
+    published,
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
@@ -231,10 +257,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
     t,
     title,
     handle,
-    published?._updatedAt,
     currentUser,
   ])
 }
 
-PublishAction.action = 'publish'
-PublishAction.displayName = 'PublishAction'
+usePublishAction.action = 'publish'
+usePublishAction.displayName = 'PublishAction'

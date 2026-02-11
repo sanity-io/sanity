@@ -1,5 +1,6 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {stegaClean} from '@sanity/client/stega'
+import {Flex, Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {type PortableTextBlock} from 'sanity'
 
@@ -31,9 +32,10 @@ export function SimpleBlockPortableText(): React.JSX.Element {
       bodyString: string
       body: PortableTextBlock[]
       notes: {_key: string; title?: string; minutes?: number; notes?: PortableTextBlock[]}[]
+      slugs: {_key: string; current?: string | null}[]
     }[]
   >(
-    /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,_type,slug,title,"bodyString":pt::text(body),body,notes}`,
+    /* groq */ `*[_type == "simpleBlock"] | order(_updatedAt desc)[0..10]{_id,_type,slug,title,slugs,"bodyString":pt::text(body),body,notes}`,
   )
 
   if (error) {
@@ -41,7 +43,17 @@ export function SimpleBlockPortableText(): React.JSX.Element {
   }
 
   if (loading) {
-    return <p>Loading...</p>
+    return (
+      <Flex
+        align="center"
+        direction="column"
+        height="fill"
+        justify="center"
+        style={{width: '100%'}}
+      >
+        <Spinner />
+      </Flex>
+    )
   }
 
   return (
@@ -66,6 +78,31 @@ export function SimpleBlockPortableText(): React.JSX.Element {
                 slug: {stegaClean(item.slug.current)}
               </p>
             )}
+            <h2>Slugs</h2>
+            {item.slugs?.map((slugItem, index) => (
+              <div
+                key={slugItem._key}
+                data-sanity={dataAttribute.scope(`slugs[${index}]`).toString()}
+                style={{
+                  padding: '8px',
+                  margin: '4px 0',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  backgroundColor: '#f9f9f9',
+                  position: 'relative',
+                }}
+                onClick={(e) => {
+                  // Prevent default to avoid any interference
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <p data-sanity={dataAttribute.scope(`slugs[${index}].current`).toString()}>
+                  slug: {slugItem.current}
+                </p>
+              </div>
+            ))}
             <p>{item.bodyString}</p>
             <PortableText components={components} value={item.body} />
             {item.notes?.map((note) => (

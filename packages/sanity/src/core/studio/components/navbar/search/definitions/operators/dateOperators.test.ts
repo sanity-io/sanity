@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 

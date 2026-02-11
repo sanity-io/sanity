@@ -27,7 +27,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
             {fieldDefinition.titlePath.slice(0, -1).map((pathTitle, index) => {
               return (
                 <Fragment
-                  // eslint-disable-next-line react/no-array-index-key
+                  // oxlint-disable-next-line no-array-index-key
                   key={index}
                 >
                   <span>{pathTitle}</span>

@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -14,15 +15,15 @@ import {
 import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
 import {isRecord, validateDocument} from 'sanity'
 
-import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
-import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
-import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
+import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball.ts'
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces.ts'
+import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment.ts'
 import {
   createReporter,
   type WorkerChannel,
   type WorkerChannelEvent,
   type WorkerChannelStream,
-} from '../util/workerChannels'
+} from '../util/workerChannels.ts'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
@@ -129,7 +130,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
   }
 }
 
-main().then(() => process.exit())
+void main().then(() => process.exit())
 
 async function loadWorkspace() {
   const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})

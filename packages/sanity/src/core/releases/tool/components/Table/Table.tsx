@@ -1,28 +1,20 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
-import {Box, Card, type CardProps, Flex, rem, Stack, Text, useTheme} from '@sanity/ui'
-import {
-  defaultRangeExtractor,
-  type Range,
-  useVirtualizer,
-  type VirtualItem,
-} from '@tanstack/react-virtual'
+import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
+import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 import {
   type CSSProperties,
   Fragment,
   type HTMLProps,
-  type MutableRefObject,
   type RefAttributes,
-  type RefObject,
   useMemo,
   useRef,
 } from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
+import {TableLayout} from './TableLayout'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
 import {type Column} from './types'
 
@@ -59,40 +51,13 @@ export interface TableProps<TableData, AdditionalRowTableData> {
     datum: RowDatum<TableData, AdditionalRowTableData> | unknown
   }) => React.ReactNode
   rowProps?: (datum: TableData) => Partial<TableRowProps>
-  scrollContainerRef: RefObject<HTMLDivElement | null>
+  scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
 }
 
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
 
-/**
- * This function modifies the rangeExtractor to account for the offset of the virtualizer
- * in this case, the parent with overflow (the element over which the scroll happens) and the start of the virtualizer
- * don't match, because there are some elements rendered on top of the virtualizer.
- * This, will take care of adding more elements to the start of the virtualizer to account for the offset.
- */
-const withVirtualizerOffset = ({
-  scrollContainerRef,
-  virtualizerContainerRef,
-  range,
-}: {
-  scrollContainerRef: MutableRefObject<HTMLDivElement | null>
-  virtualizerContainerRef: MutableRefObject<HTMLDivElement | null>
-  range: Range
-}) => {
-  const parentOffset = scrollContainerRef.current?.offsetTop ?? 0
-  const virtualizerOffset = virtualizerContainerRef.current?.offsetTop ?? 0
-  const virtualizerScrollMargin = virtualizerOffset - parentOffset
-  const topItemsOffset = Math.ceil(virtualizerScrollMargin / ITEM_HEIGHT)
-  const startIndexWithOffset = range.startIndex - topItemsOffset
-  const result = defaultRangeExtractor({
-    ...range,
-    // By modifying the startIndex, we are adding more elements to the start of the virtualizer
-    startIndex: startIndexWithOffset > 0 ? startIndexWithOffset : 0,
-  })
-  return result
-}
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
@@ -107,8 +72,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort} = useTableContext()
   const virtualizerContainerRef = useRef<HTMLDivElement | null>(null)
+
   const filteredData = useMemo(() => {
-    const filteredResult = searchTerm && searchFilter ? searchFilter(data, searchTerm) : data
+    const filteredResult = searchFilter ? searchFilter(data, searchTerm || '') : data
     if (!sort) return filteredResult
 
     const sortColumn = columnDefs.find((column) => column.id === sort.column)
@@ -148,11 +114,9 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
-    getScrollElement: () => scrollContainerRef.current,
+    getScrollElement: () => scrollContainerRef,
     estimateSize: () => ITEM_HEIGHT,
     overscan: 5,
-    rangeExtractor: (range) =>
-      withVirtualizerOffset({scrollContainerRef, virtualizerContainerRef, range}),
   })
 
   const rowActionColumnDef: Column = useMemo(
@@ -196,13 +160,18 @@ const TableInner = <TableData, AdditionalRowTableData>({
         return (
           <Card
             key={cardKey}
-            data-testid="table-row"
-            as="tr"
+            data-testid={loading ? 'table-row-skeleton' : 'table-row'}
             borderBottom
             display="flex"
+            data-index={datum.index}
+            as="tr"
             style={{
               height: `${datum.virtualRow.size}px`,
-              transform: `translateY(${datum.virtualRow.start - datum.index * datum.virtualRow.size}px)`,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              transform: `translateY(${datum.virtualRow.start}px)`,
               paddingInline: `max(
                 calc((100% - var(--maxInlineSize)) / 2),
                 var(--paddingInline)
@@ -231,26 +200,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
     [amalgamatedColumnDefs, loading, rowId, rowProps],
   )
 
-  const emptyContent = useMemo(() => {
-    if (typeof emptyState === 'string') {
-      return (
-        <Card
-          as="tr"
-          borderBottom
-          display="flex"
-          padding={4}
-          style={{
-            justifyContent: 'center',
-          }}
-        >
-          <Text as="td" muted size={1}>
-            {emptyState}
-          </Text>
-        </Card>
-      )
-    }
-    return emptyState()
-  }, [emptyState])
+  const emptyContent = useMemo(
+    () => <TableEmptyState emptyState={emptyState} colSpan={amalgamatedColumnDefs.length} />,
+    [amalgamatedColumnDefs.length, emptyState],
+  )
 
   const headers = useMemo(
     () =>
@@ -315,24 +268,29 @@ const TableInner = <TableData, AdditionalRowTableData>({
   }
 
   return (
-    <div ref={virtualizerContainerRef}>
+    <div ref={virtualizerContainerRef} style={{height: '100%'}}>
       <div
         style={
           {
             'width': '100%',
+            'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
             '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
           } as CSSProperties
         }
       >
-        <Stack as="table">
-          <TableHeader
-            headers={headers}
-            searchDisabled={loading || (!searchTerm && !data.length)}
-          />
-          <Stack as="tbody">{tableContent()}</Stack>
-        </Stack>
+        <TableLayout
+          isEmptyState={filteredData.length === 0 && !loading}
+          header={
+            <TableHeader
+              headers={headers}
+              searchDisabled={loading || (!searchTerm && !data.length)}
+            />
+          }
+          content={tableContent()}
+          contentHeight={`${rowVirtualizer.getTotalSize()}px`}
+        />
       </div>
     </div>
   )

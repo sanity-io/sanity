@@ -1,4 +1,4 @@
-import {escapeRegExp, isEqual} from 'lodash'
+import {escapeRegExp, isEqual} from 'lodash-es'
 import {
   type ComponentType,
   type MutableRefObject,
@@ -112,7 +112,6 @@ function useRouterFromWorkspaceHistory(
   }, [event?.state, event?.type, history, router, tools])
 
   // Handles redirects to intents, e.g. `/test/intent/create/template=codeTest;type=codeTest/` -> `/test/content/input-plugin;codeTest;c7e1aa3e-5555-40f5-b0af-c7309df6edcc%2Ctemplate%3DcodeTest`
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     const resolvedIntent = maybeResolveIntent(event, router, tools, prevEvent)
     // If resolvedIntent is truthy then we have a redirect to perform. Most of the time it'll be `null`

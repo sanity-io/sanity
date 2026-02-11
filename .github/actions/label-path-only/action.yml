@@ -1,0 +1,33 @@
+name: Label PR based on path changes
+description: Automatically add or remove a label based on whether only files in a specific path have changed
+
+inputs:
+  path:
+    description: "The directory path to check (e.g., examples/ or packages/@sanity/cli/)"
+    required: true
+  label:
+    description: "The label name to add/remove"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check if only specified path changed
+      id: check
+      uses: ./.github/actions/check-path-only
+      with:
+        path: ${{ inputs.path }}
+
+    - name: Add label
+      if: steps.check.outputs.path_only == 'true'
+      shell: bash
+      run: gh pr edit ${{ github.event.pull_request.number }} --add-label "${{ inputs.label }}"
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Remove label
+      if: steps.check.outputs.path_only == 'false'
+      shell: bash
+      run: gh pr edit ${{ github.event.pull_request.number }} --remove-label "${{ inputs.label }}" || true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}

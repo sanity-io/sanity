@@ -5,7 +5,6 @@ const mediaGroup: CliCommandGroupDefinition = {
   signature: '[COMMAND]',
   description: 'Manage Media Library.',
   isGroupRoot: true,
-  hideFromHelp: true,
 }
 
 export default mediaGroup

@@ -1,5 +1,4 @@
 import {type ReleaseState} from '@sanity/client'
-import {type PreviewValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
@@ -8,6 +7,7 @@ import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
+import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../util/draftUtils'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
@@ -15,12 +15,12 @@ interface ReleaseDocumentPreviewProps {
   documentId: string
   documentTypeName: string
   releaseId: string
-  previewValues: PreviewValue | undefined | null
-  isLoading: boolean
   releaseState?: ReleaseState
   documentRevision?: string
   hasValidationError?: boolean
   layout?: PreviewLayoutKey
+  isGoingToBePublished?: boolean
+  isCardinalityOneRelease?: boolean
 }
 
 const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
@@ -30,15 +30,20 @@ export function ReleaseDocumentPreview({
   documentId,
   documentTypeName,
   releaseId,
-  previewValues,
-  isLoading,
   releaseState,
+  isCardinalityOneRelease,
   documentRevision,
   layout,
+  isGoingToBePublished = false,
 }: ReleaseDocumentPreviewProps) {
   const documentPresence = useDocumentPresence(documentId)
 
   const intentParams = useMemo(() => {
+    if (isCardinalityOneRelease) {
+      return {
+        scheduledDraft: getReleaseIdFromReleaseDocumentId(releaseId),
+      }
+    }
     if (releaseState === 'published') {
       // We are inspecting this document through the published view of the doc.
       return {
@@ -59,7 +64,7 @@ export function ReleaseDocumentPreview({
     }
 
     return {}
-  }, [releaseState, releaseId, documentRevision])
+  }, [releaseState, releaseId, documentRevision, isCardinalityOneRelease])
 
   const LinkComponent = useMemo(
     () =>
@@ -75,7 +80,7 @@ export function ReleaseDocumentPreview({
               ...intentParams,
             }}
             searchParams={
-              isArchivedRelease(releaseState)
+              isCardinalityOneRelease || isArchivedRelease(releaseState)
                 ? undefined
                 : [
                     [
@@ -90,7 +95,7 @@ export function ReleaseDocumentPreview({
           />
         )
       }),
-    [documentId, documentTypeName, intentParams, releaseState, releaseId],
+    [documentId, documentTypeName, intentParams, releaseState, releaseId, isCardinalityOneRelease],
   )
 
   const previewPresence = useMemo(
@@ -98,12 +103,18 @@ export function ReleaseDocumentPreview({
     [documentPresence],
   )
 
+  const {isLoading: previewLoading, value: resolvedPreview} = useDocumentPreviewValues({
+    documentId: isGoingToBePublished ? getPublishedId(documentId) : documentId,
+    documentType: documentTypeName,
+    perspectiveStack: isGoingToBePublished ? [] : [getReleaseIdFromReleaseDocumentId(releaseId)],
+  })
+
   return (
     <Card tone="inherit" as={LinkComponent} radius={2} data-as="a">
       <SanityDefaultPreview
-        {...previewValues}
+        {...(resolvedPreview || {})}
         status={previewPresence}
-        isPlaceholder={isLoading}
+        isPlaceholder={previewLoading}
         layout={layout}
       />
     </Card>

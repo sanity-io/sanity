@@ -1,9 +1,13 @@
-/* eslint-disable camelcase */
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ObjectSchemaType, type SanityDocument, type SanityDocumentLike} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
@@ -11,11 +15,20 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
+  isGoingToUnpublish,
+  isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
   isVersionId,
   type PartialContext,
+  pathToString,
+  type ReleaseDocument,
+  selectUpstreamVersion,
+  useActiveReleases,
   useCopyPaste,
   useDocumentForm,
+  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -25,13 +38,14 @@ import {
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
 import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
-import {useDocumentIdStack} from '../../hooks/useDocumentIdStack'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied} from './__telemetry__'
+import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {
@@ -49,9 +63,19 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line complexity, max-statements
-export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+// eslint-disable-next-line max-statements
+export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+  const {
+    children,
+    index,
+    pane,
+    paneKey,
+    onFocusPath,
+    onSetMaximizedPane,
+    maximized = false,
+    forcedVersion,
+    historyStore,
+  } = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -76,6 +100,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     },
   } = useSource()
   const telemetry = useTelemetry()
+  const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
   const {push: pushToast} = useToast()
@@ -98,18 +123,26 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
+    beta,
   } = useWorkspace()
+
+  const enhancedObjectDialogEnabled = useMemo(() => {
+    return beta?.form?.enhancedObjectDialog?.enabled
+  }, [beta])
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
+
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
     }
   }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
+
+  const {data: releases = EMPTY_ARRAY} = useActiveReleases()
 
   const diffViewRouter = useDiffViewRouter()
 
@@ -135,6 +168,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
 
   /**
    * Determine if the current document is deleted.
@@ -159,8 +193,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const getComparisonValue = useCallback(
-    (editState: EditStateFor) => {
-      return changesOpen ? sinceDocument || editState?.published : editState?.published || null
+    (upstreamEditState: EditStateFor) => {
+      const upstream = selectUpstreamVersion(upstreamEditState)
+      if (changesOpen) {
+        return sinceDocument || upstream
+      }
+      return upstream || null
     },
     [changesOpen, sinceDocument],
   )
@@ -171,15 +209,23 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     (editState: EditStateFor): boolean => {
       const isDeleted = getIsDeleted(editState)
       const seeingHistoryDocument = Boolean(params.rev)
+
+      // Check if current perspective is a paused scheduled draft
+      const currentRelease = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+      const isPaused = isPausedCardinalityOneRelease(currentRelease)
+
       return (
         seeingHistoryDocument ||
         isDeleting ||
         isDeleted ||
-        !isPerspectiveWriteable({
-          selectedPerspective: perspective.selectedPerspective,
-          isDraftModelEnabled,
-          schemaType,
-        }).result
+        (!isPaused &&
+          !isPerspectiveWriteable({
+            selectedPerspective: perspective.selectedPerspective,
+            isDraftModelEnabled,
+            schemaType,
+          }).result)
       )
     },
     [
@@ -189,6 +235,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       params.rev,
       perspective.selectedPerspective,
       schemaType,
+      releases,
+      selectedReleaseId,
     ],
   )
 
@@ -197,13 +245,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       if (onOlderRevision) {
         return revisionDocument || {_id: value._id, _type: value._type}
       }
+
+      // If the document is deleted (no draft, published, or version), return the last revision
+      const isDeleted = !value._createdAt && !value._updatedAt
+      if (isDeleted && lastNonDeletedRevId) {
+        // Return the fetched last revision document if available
+        if (lastRevisionDocument) {
+          return lastRevisionDocument
+        }
+      }
+
       return value
     },
-    [onOlderRevision, revisionDocument],
+    [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
   )
 
   const {
     editState,
+    upstreamEditState,
+    hasUpstreamVersion,
     connectionState,
     focusPath,
     onChange,
@@ -226,56 +286,67 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     onSetCollapsedFieldSet,
     openPath,
   } = useDocumentForm({
+    changesOpen,
     documentType,
     documentId,
     initialValue: initialValue,
     comparisonValue: getComparisonValue,
-    releaseId: selectedReleaseId,
+    releaseId: selectedPerspectiveName,
     selectedPerspectiveName,
     initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
     readOnly: getIsReadOnly,
     onFocusPath,
     getFormDocumentValue: getDisplayed,
+    displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
   })
 
-  const getDocumentVersionType = useCallback(() => {
-    let version: DocumentActionsVersionType
-    switch (true) {
-      case Boolean(params.rev):
-        version = 'revision'
-        break
-      case selectedReleaseId && isVersionId(value._id):
-        version = 'version'
-        break
-      case selectedPerspectiveName === 'published':
-        version = 'published'
-        break
-      case draftsEnabled:
-        version = 'draft'
-        break
-      default:
-        version = 'published'
-    }
+  const actionsVersionType = useMemo(
+    () =>
+      getDocumentVersionType(
+        params,
+        selectedReleaseId,
+        value,
+        selectedPerspectiveName,
+        draftsEnabled,
+        releases,
+      ),
+    [params, selectedReleaseId, value, selectedPerspectiveName, draftsEnabled, releases],
+  )
 
-    return version
-  }, [params.rev, selectedReleaseId, value._id, selectedPerspectiveName, draftsEnabled])
-
-  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
-
-  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
+  const documentActionsContext: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
       schemaType: documentType,
       documentId,
-      versionType: actionsPerspective,
+      versionType: actionsVersionType,
       releaseId: selectedReleaseId,
     }),
-    [documentType, documentId, actionsPerspective, selectedReleaseId],
+    [documentType, documentId, actionsVersionType, selectedReleaseId],
   )
 
   // Resolve document actions
   const actions = useMemo(
-    () => documentActions(documentActionsProps),
-    [documentActions, documentActionsProps],
+    () => documentActions(documentActionsContext),
+    [documentActions, documentActionsContext],
+  )
+
+  const handlePathOpen = useCallback(
+    (path: Path) => {
+      // Update internal open path
+      onPathOpen(path)
+
+      if (enhancedObjectDialogEnabled) {
+        /**
+         * Before we used to set the path open based on the focus path
+         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+         */
+        const nextPath = pathToString(path)
+        if (params.path !== nextPath) {
+          setPaneParams({...params, path: nextPath})
+        }
+      }
+    },
+    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
   )
 
   // Resolve document badges
@@ -324,7 +395,12 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({displayed, documentId, editState})
+  const {previousId} = useDocumentIdStack({
+    strict: true,
+    displayed,
+    documentId,
+    editState,
+  })
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -340,6 +416,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
+
+  const toggleInlineChanges = useCallback(() => {
+    const nextState = router.stickyParams.displayInlineChanges !== 'true'
+    telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
+
+    router.navigate({
+      stickyParams: {
+        displayInlineChanges: String(nextState),
+      },
+    })
+  }, [router, telemetry])
 
   const handleMenuAction = useCallback(
     async (item: PaneMenuItem) => {
@@ -393,6 +480,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
+      if (item.action === 'toggleInlineChanges') {
+        toggleInlineChanges()
+        return true
+      }
+
       return false
     },
     [
@@ -408,6 +500,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       handleInspectorAction,
       diffViewRouter,
       value._id,
+      toggleInlineChanges,
     ],
   )
 
@@ -420,9 +513,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     })
   }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const compareValue = useMemo(() => getComparisonValue(editState), [editState, getComparisonValue])
+  const compareValue = useMemo(
+    () => getComparisonValue(upstreamEditState),
+    [upstreamEditState, getComparisonValue],
+  )
+
   const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
-  const revisionNotFound = onOlderRevision && !revisionDocument
+  const revisionNotFound = onOlderRevision && !revisionDocument && ready
+
+  const currentDisplayed = useMemo(() => {
+    if (editState.version && isGoingToUnpublish(editState.version)) {
+      return editState.published
+    }
+    return displayed
+  }, [editState.version, editState.published, displayed])
 
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
@@ -436,7 +540,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed,
+        displayed: currentDisplayed,
         documentId,
         documentIdRaw,
         documentType,
@@ -448,7 +552,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onBlur,
         onChange,
         onFocus,
-        onPathOpen,
+        onPathOpen: handlePathOpen,
         onHistoryClose: handleHistoryClose,
         onHistoryOpen: handleHistoryOpen,
         onInspectClose: handleLegacyInspectClose,
@@ -458,6 +562,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         onSetActiveFieldGroup,
         onSetCollapsedPath,
         onSetCollapsedFieldSet,
+        onSetMaximizedPane,
+        maximized,
         openInspector,
         openPath,
         index,
@@ -468,6 +574,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         ready,
         schemaType: schemaType!,
+        hasUpstreamVersion,
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
@@ -486,6 +593,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         revisionId,
         revisionNotFound,
         lastNonDeletedRevId,
+        lastRevisionDocument,
       }) satisfies DocumentPaneContextValue,
     [
       actions,
@@ -497,7 +605,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      displayed,
+      currentDisplayed,
       documentId,
       documentIdRaw,
       documentType,
@@ -509,7 +617,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onBlur,
       onChange,
       onFocus,
-      onPathOpen,
+      handlePathOpen,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
@@ -519,6 +627,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onSetActiveFieldGroup,
       onSetCollapsedPath,
       onSetCollapsedFieldSet,
+      onSetMaximizedPane,
+      maximized,
       openInspector,
       openPath,
       index,
@@ -529,6 +639,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       ready,
       schemaType,
+      hasUpstreamVersion,
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,
@@ -546,26 +657,72 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       revisionId,
       revisionNotFound,
       lastNonDeletedRevId,
+      lastRevisionDocument,
     ],
   )
 
-  // Reset `focusPath` when `documentId` or `params.path` changes
+  const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
       const {path, ...restParams} = params
-      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
-      onProgrammaticFocus(pathFromUrl)
 
-      // remove the `path`-param from url after we have consumed it as the initial focus path
-      paneRouter.setParams(restParams)
+      // trigger a focus when `params.path` changes
+      if (path !== pathRef.current) {
+        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
+        onProgrammaticFocus(pathFromUrl)
+      }
+
+      if (!enhancedObjectDialogEnabled) {
+        // remove the `path`-param from url after we have consumed it as the initial focus path
+        paneRouter.setParams(restParams)
+      }
     }
+    pathRef.current = params.path
 
     return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready])
+  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
-})
+}
 
-DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+// eslint-disable-next-line max-params
+function getDocumentVersionType(
+  params: Record<string, string | undefined> | undefined,
+  selectedReleaseId: string | undefined,
+  value: SanityDocumentLike,
+  selectedPerspectiveName: string | undefined,
+  draftsEnabled: boolean,
+  releases: ReleaseDocument[],
+) {
+  let version: DocumentActionsVersionType
+  switch (true) {
+    case Boolean(params?.rev):
+      version = 'revision'
+      break
+    case selectedReleaseId && isVersionId(value._id): {
+      // Check if this is a scheduled draft (cardinality one release)
+      const releaseDocument = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+
+      if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+        version = 'scheduled-draft'
+      } else {
+        version = 'version'
+      }
+      break
+    }
+    case selectedPerspectiveName === 'published':
+      version = 'published'
+      break
+    case draftsEnabled:
+      version = 'draft'
+      break
+    default:
+      version = 'published'
+  }
+
+  return version
+}

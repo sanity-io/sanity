@@ -20,10 +20,6 @@ export interface SanityMediaLibraryConfig {
    */
   __internal: {
     /**
-     * Whether the plugin is running in a local development environment against local Media Library app
-     */
-    isLocalDev: boolean
-    /**
      * Whether to use the staging or production Media Library environment
      */
     env: 'staging' | 'production'
@@ -34,8 +30,9 @@ export interface SanityMediaLibraryConfig {
     /**
      * The version of the plugin API to use (routes served by the Media Library app will be prefixed with this version)
      * @defaultValue 'v1'
+     * @deprecated Plugin API now uses the latest full-app version
      */
-    pluginApiVersion: string
+    pluginApiVersion?: string
     /**
      * Base path for the Media Library app
      */
@@ -68,14 +65,12 @@ export interface AssetMenuAction {
   type: 'delete' | 'showUsage'
 }
 
-export type AssetType = 'image' | 'file'
-
 /**
  * The type that is returned from the Media Library for an selected asset item
  * @internal
  */
 export interface AssetSelectionItem {
-  asset: {_id: string; _type: string}
+  asset: {_id: string; _type: string; assetType: string}
   assetInstanceId: string
 }
 

@@ -134,9 +134,9 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     <SvgWrapper style={{zIndex: visibleConnector && visibleConnector.field.zIndex}}>
       {visibleConnector?.change && (
         <ConnectorGroup
+          key={visibleConnector.field.id}
           field={visibleConnector.field}
           change={visibleConnector.change}
-          key={visibleConnector.field.id}
           onSetFocus={onSetFocus}
           setHovered={setHovered}
         />

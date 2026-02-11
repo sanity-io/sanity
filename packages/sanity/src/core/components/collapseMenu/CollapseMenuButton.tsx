@@ -30,17 +30,16 @@ export const CollapseMenuButton = forwardRef(function CollapseMenuButton(
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    collapsedProps = {},
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    expandedProps = {},
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    tooltipProps = {},
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
+    collapsedProps,
+    // oxlint-disable-next-line no-unused-vars
+    expandedProps,
+    // oxlint-disable-next-line no-unused-vars
+    tooltipProps,
+    // oxlint-disable-next-line no-unused-vars
     tooltipText,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
     dividerBefore,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ...rest
   } = props
 

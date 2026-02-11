@@ -1,0 +1,31 @@
+{
+  "name": "slack-notify",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/functions": "^1.0.3",
+    "@slack/web-api": "^7.9.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "slack-notify",
+    "src": "./functions/slack-notify",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'post'",
+      "projection": "{_id, title, slug, _createdAt}"
+    },
+    "env": {
+      "COMMENT": "SLACK_OAUTH_TOKEN and SLACK_CHANNEL are required. Optional: BASE_URL, STUDIO_URL as they will default to dev mode localhost urls",
+      "SLACK_OAUTH_TOKEN": "SLACK_OAUTH_TOKEN",
+      "SLACK_CHANNEL": "SLACK_CHANNEL",
+      "BASE_URL": "BASE_URL",
+      "STUDIO_URL": "STUDIO_URL"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

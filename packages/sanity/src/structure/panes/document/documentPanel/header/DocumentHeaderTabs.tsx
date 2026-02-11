@@ -24,10 +24,10 @@ export function DocumentHeaderTabs() {
     <TabList space={1}>
       {views.map((view, index) => (
         <DocumentHeaderTab
+          key={view.id}
           icon={view.icon}
           id={`${paneKey}tab-${view.id}`}
           isActive={activeViewId === view.id}
-          key={view.id}
           label={view.title}
           tabPanelId={tabPanelId}
           viewId={index === 0 ? null : (view.id ?? null)}

@@ -3,8 +3,8 @@ import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useState} from 'react'
 
-import {Button} from '../../../../ui-components'
 import {CollapseTabList} from '..'
+import {Button} from '../../../../ui-components'
 
 const GAP_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}
 
@@ -32,7 +32,6 @@ export default function CollapseMenuStory() {
               icon={IceCreamIcon}
               mode="bleed"
               selected={selected === num}
-              // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setSelected(num)}
             />
           ))}

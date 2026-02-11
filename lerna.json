@@ -1,7 +1,6 @@
 {
   "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
   "npmClient": "pnpm",
-  "loglevel": "debug",
   "packages": [
     "dev/*",
     "perf/tests",
@@ -9,11 +8,10 @@
     "examples/*",
     "packages/@repo/*",
     "packages/@sanity/*",
-    "packages/create-sanity",
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.96.0",
+  "version": "5.9.0",
   "command": {
     "version": {
       "changelogPreset": "conventionalcommits",

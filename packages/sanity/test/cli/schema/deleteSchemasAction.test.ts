@@ -314,7 +314,7 @@ describe('deleteSchemasAction', () => {
   it('should log mixed error, notfound, success results', async () => {
     let lastCreateClient: SanityClient = defaultContext.apiClient()
     const clientOverrides: any = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       withConfig: (newConfig: any) => {
         lastCreateClient = createMockSanityClient(
           {...testWorkspace, ...newConfig},

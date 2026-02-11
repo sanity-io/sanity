@@ -53,7 +53,8 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
       </Text>
       <Stack space={2}>
         {annotations.map((annotation, idx) => (
-          <AnnotationItem annotation={annotation} key={idx} />
+          // oxlint-disable-next-line no-array-index-key
+          <AnnotationItem key={idx} annotation={annotation} />
         ))}
       </Stack>
     </Stack>

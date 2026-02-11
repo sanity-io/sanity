@@ -183,7 +183,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
       error: (err: Error) => {
         setIsDeleting(false)
         handleDeleteError(err)
-        // eslint-disable-next-line no-console
+
         console.error('Could not delete asset', err)
       },
     })

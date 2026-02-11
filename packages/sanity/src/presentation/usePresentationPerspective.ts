@@ -5,10 +5,18 @@ import {type PresentationPerspective} from './types'
 /**
  * @internal
  */
-export function usePresentationPerspective(): PresentationPerspective {
-  const {perspectiveStack, selectedPerspectiveName = 'drafts', selectedReleaseId} = usePerspective()
-  const perspective = (
-    selectedReleaseId ? perspectiveStack : selectedPerspectiveName
-  ) as PresentationPerspective
-  return perspective
+export function usePresentationPerspective({
+  scheduledDraft,
+}: {
+  scheduledDraft: string | undefined
+}): PresentationPerspective {
+  const {selectedPerspectiveName = 'drafts', selectedReleaseId, perspectiveStack} = usePerspective()
+
+  return selectedReleaseId || scheduledDraft
+    ? scheduledDraft
+      ? [scheduledDraft, ...perspectiveStack]
+      : perspectiveStack
+    : selectedPerspectiveName === 'published'
+      ? 'published'
+      : 'drafts'
 }

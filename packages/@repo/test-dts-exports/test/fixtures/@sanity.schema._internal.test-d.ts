@@ -2,9 +2,10 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import {describe, expectTypeOf, test} from 'vitest'
 import type {
+  ALL_FIELDS_GROUP_NAME,
   builtinTypes,
+  createSchemaFromManifestTypes,
   DEFAULT_MAX_FIELD_DEPTH,
   DescriptorConverter,
   extractSchema,
@@ -16,17 +17,28 @@ import type {
   ProblemPathPropertySegment,
   ProblemPathSegment,
   ProblemPathTypeSegment,
+  processSchemaSynchronization,
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
+  SchemaSynchronizationRequest,
+  SchemaSynchronizationResult,
   TypeWithProblems,
   validateMediaLibraryAssetAspect,
   validateSchema,
+  ValidationError,
   ValidationResult,
 } from '@sanity/schema/_internal'
+import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/schema/_internal', () => {
+  test('ALL_FIELDS_GROUP_NAME', () => {
+    expectTypeOf<typeof ALL_FIELDS_GROUP_NAME>().not.toBeNever()
+  })
   test('builtinTypes', () => {
     expectTypeOf<typeof builtinTypes>().not.toBeNever()
+  })
+  test('createSchemaFromManifestTypes', () => {
+    expectTypeOf<typeof createSchemaFromManifestTypes>().toBeFunction()
   })
   test('DEFAULT_MAX_FIELD_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_FIELD_DEPTH>().not.toBeNever()
@@ -61,11 +73,20 @@ describe('@sanity/schema/_internal', () => {
   test('ProblemPathTypeSegment', () => {
     expectTypeOf<ProblemPathTypeSegment>().toBeObject()
   })
+  test('processSchemaSynchronization', () => {
+    expectTypeOf<typeof processSchemaSynchronization>().toBeFunction()
+  })
   test('resolveSearchConfig', () => {
     expectTypeOf<typeof resolveSearchConfig>().toBeFunction()
   })
   test('resolveSearchConfigForBaseFieldPaths', () => {
     expectTypeOf<typeof resolveSearchConfigForBaseFieldPaths>().toBeFunction()
+  })
+  test('SchemaSynchronizationRequest', () => {
+    expectTypeOf<SchemaSynchronizationRequest>().not.toBeNever()
+  })
+  test('SchemaSynchronizationResult', () => {
+    expectTypeOf<SchemaSynchronizationResult>().not.toBeNever()
   })
   test('TypeWithProblems', () => {
     expectTypeOf<TypeWithProblems>().toBeObject()
@@ -75,6 +96,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('validateSchema', () => {
     expectTypeOf<typeof validateSchema>().toBeFunction()
+  })
+  test('ValidationError', () => {
+    expectTypeOf<ValidationError>().not.toBeNever()
   })
   test('ValidationResult', () => {
     expectTypeOf<ValidationResult>().toBeObject()

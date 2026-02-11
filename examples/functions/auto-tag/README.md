@@ -52,13 +52,15 @@ npx sanity schema deploy
 
 1. **Initialize the example**
 
-   For a new project:
+   Run this if you haven't initialized blueprints:
 
    ```bash
-   npx sanity blueprints init --example auto-tag
+   npx sanity blueprints init
    ```
 
-   For an existing project:
+   You'll be prompted to select your organization and Sanity studio.
+
+   Then run:
 
    ```bash
    npx sanity blueprints add function --example auto-tag
@@ -79,9 +81,10 @@ npx sanity schema deploy
          memory: 2,
          timeout: 30,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post' && !defined(tags)",
-           projection: '_id',
+           on: ['create', 'update'],
+           filter:
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
+           projection: '{_id}',
          },
        }),
      ],
@@ -94,15 +97,6 @@ npx sanity schema deploy
 
    ```bash
    npm install
-   ```
-
-   And install function dependencies:
-
-   ```bash
-   npm install @sanity/functions
-   cd functions/auto-tag
-   npm install
-   cd ../..
    ```
 
 4. **Make sure you have a schema deployed**
@@ -118,39 +112,17 @@ npx sanity schema deploy
 
 You can test the auto-tag function locally using the Sanity CLI before deploying it to production.
 
-**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
+### Simple Testing Command
 
-### 1. Basic Function Test
-
-Since document functions require the document ID to exist in your dataset, create a test document first:
+Test the function with an existing document ID from your dataset:
 
 ```bash
-# From the studio/ folder, create a test document
-cd studio
-npx sanity documents create ../functions/auto-tag/document.json --replace
+npx sanity functions test auto-tag --document-id <insert-document-id> --dataset production --with-user-token
 ```
 
-Then test the function with the created document (from project root):
+Replace `<insert-document-id>` with an actual document ID from your dataset and `production` with your dataset name.
 
-```bash
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-tag --file functions/auto-tag/document.json
-```
-
-**Alternative:** Test with a real document from your dataset:
-
-```bash
-# From the studio/ folder, find and export an existing post document
-cd studio
-npx sanity documents query "*[_type == 'post' && !defined(tags)][0]" > ../real-post.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-tag --file real-post.json
-```
-
-### 2. Interactive Development Mode
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -158,71 +130,9 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
-This opens an interactive playground where you can test functions with custom data
-
-### 3. Test with Custom Data
-
-For custom data testing, you still need to use a real document ID that exists in your dataset:
-
-```bash
-# From the studio/ folder, create or find a real document ID
-cd studio
-REAL_DOC_ID=$(npx sanity documents query "*[_type == 'post'][0]._id")
-
-# Create a temporary JSON file with custom data in project root
-cd ..
-cat > test-custom-data.json << EOF
-{
-  "_type": "post",
-  "_id": $REAL_DOC_ID,
-  "content": [
-    {
-      "_type": "block",
-      "_key": "test-block",
-      "children": [
-        {
-          "_type": "span",
-          "_key": "test-span",
-          "text": "Your custom blog post content here..."
-        }
-      ]
-    }
-  ]
-}
-EOF
-
-# Test with the custom data file
-npx sanity functions test auto-tag --file test-custom-data.json
-```
-
-### 4. Test with Real Document Data
-
-The most reliable approach is to test with existing documents from your dataset:
-
-```bash
-# From the studio/ folder, find and export a document that matches your function's filter
-cd studio
-npx sanity documents query "*[_type == 'post' && !defined(tags)][0]" > ../test-real-document.json
-
-# Back to project root for function testing
-cd ..
-npx sanity functions test auto-tag --file test-real-document.json
-```
-
-### 5. Enable Debugging
-
-To see detailed logs during testing, modify the function temporarily to add logging:
-
-```typescript
-// Add this to your function for debugging
-console.log('Event data:', JSON.stringify(event.data, null, 2))
-console.log('Generated tags:', result.tags)
-```
-
 ### Testing Tips
 
 - **Use real document IDs** - Document functions require IDs that exist in your dataset
-- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
 - **Use Node.js v22.x** locally to match production runtime
 - **Test edge cases** like posts without content or with existing tags
 - **Check function logs** in CLI output for debugging
@@ -278,7 +188,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    ```
 
    This command will:
-
    - Package your function code
    - Upload it to Sanity's infrastructure
    - Configure the event triggers for post publications
@@ -287,7 +196,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 3. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-
    - Checking the Sanity Studio under "Compute"
    - Publishing a new post without tags and confirming tags are generated
    - Monitoring function logs in the CLI
@@ -295,7 +203,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 ### Deployment best practices
 
 - **Test thoroughly first** - Always test your function locally before deploying
-- **Monitor AI usage** - Agent Actions have usage limits and costs.  Visit Settings in your Manage console to learn more
+- **Monitor AI usage** - Agent Actions have usage limits and costs. Visit Settings in your Manage console to learn more
 - **Avoid recursion** - The filter `!defined(tags)` prevents the function from re-triggering
 - **Check permissions** - Ensure your function has access to Sanity's AI capabilities
 - **Use specific filters** - The current filter only targets posts without tags to avoid unnecessary executions
@@ -332,7 +240,7 @@ For more details, see the [official function deployment documentation](https://w
 
 When a content editor publishes a new blog post without tags, the function automatically:
 
-1. **Triggers** on the publish event for post documents without existing tags
+1. **Triggers** on create/update events when the 'content' field changes
 2. **Analyzes** the post's content field using AI
 3. **Retrieves** existing tags from other published posts for vocabulary consistency
 4. **Generates** 3 relevant tags, prioritizing reuse of existing tags when appropriate
@@ -365,5 +273,5 @@ target: {
 Modify the blueprint filter to target different content types:
 
 ```typescript
-filter: "_type == 'article' && !defined(keywords)"
+filter: "_type == 'article' && !defined(keywords) && delta::changedAny(content)"
 ```

@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {defineField, defineType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 

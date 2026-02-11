@@ -1,6 +1,6 @@
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {memoize, uniq} from 'lodash'
+import {memoize, uniq} from 'lodash-es'
 import {type RawPatch} from 'mendoza'
 import {EMPTY, finalize, type Observable, of} from 'rxjs'
 import {concatMap, map, scan, shareReplay} from 'rxjs/operators'
@@ -52,7 +52,7 @@ export function createObserveDocument({
     const _apiConfig = {
       dataset: apiConfig?.dataset || client.config().dataset!,
       projectId: apiConfig?.projectId || client.config().projectId!,
-      apiVersion: apiConfig?.apiVersion || client.config().apiVersion!,
+      apiVersion: apiConfig?.apiVersion || client.config().apiVersion,
     }
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(

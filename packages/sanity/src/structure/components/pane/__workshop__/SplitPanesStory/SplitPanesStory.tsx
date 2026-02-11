@@ -74,17 +74,17 @@ function StructureTool(props: {
         if (pane.type === 'list') {
           return (
             <ListPane
+              key={key}
               active={i === path.length - 2}
               childId={path[i + 1]}
               index={i}
-              key={key}
               node={pane}
               setPath={setPath}
             />
           )
         }
 
-        return <DocumentPane index={i} key={key} node={pane} setPath={setPath} />
+        return <DocumentPane key={key} index={i} node={pane} setPath={setPath} />
       })}
     </PaneLayout>
   )

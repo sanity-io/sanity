@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type ImageUrlBuilder} from '@sanity/image-url'
 import {
   type AssetSource,
   type Image as BaseImage,
@@ -10,7 +11,6 @@ import {type Observable} from 'rxjs'
 
 import {type UploaderResolver} from '../../../studio/uploads/types'
 import {type ObjectInputProps} from '../../../types'
-import {type ImageUrlBuilder} from '../types'
 
 /**
  * @hidden
@@ -32,8 +32,10 @@ export interface BaseImageInputValue extends Partial<BaseImage> {
 /**
  * @hidden
  * @beta */
-export interface BaseImageInputProps
-  extends ObjectInputProps<BaseImageInputValue, ImageSchemaType> {
+export interface BaseImageInputProps extends ObjectInputProps<
+  BaseImageInputValue,
+  ImageSchemaType
+> {
   assetSources: AssetSource[]
   directUploads?: boolean
   imageUrlBuilder: ImageUrlBuilder

@@ -1,4 +1,3 @@
-/* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {
   type GlobalDocumentReferenceSchemaType,
@@ -12,6 +11,7 @@ import {
   type ReactNode,
   useCallback,
   useId,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -44,8 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
 }
 
 /** @internal */
-export interface GlobalDocumentReferenceInputProps
-  extends ObjectInputProps<GlobalDocumentReferenceValue, GlobalDocumentReferenceSchemaType> {
+export interface GlobalDocumentReferenceInputProps extends ObjectInputProps<
+  GlobalDocumentReferenceValue,
+  GlobalDocumentReferenceSchemaType
+> {
   getReferenceInfo: (
     doc: {_id: string; _type?: string},
     type: GlobalDocumentReferenceSchemaType,
@@ -72,7 +74,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     schemaType,
     validation,
     value,
-    elementProps,
+    elementProps: {ref: forwardRef, ...elementProps},
   } = props
 
   const {t} = useTranslation()
@@ -152,7 +154,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   const hasFocusAtRef = focusPath.length === 1 && focusPath[0] === '_ref'
 
   // --- focus handling
-  const focusElementRef = elementProps.ref
+  const focusElementRef = useRef<HTMLDivElement | null>(null)
+  useImperativeHandle(forwardRef, () => focusElementRef.current)
   useDidUpdate({hasFocusAt: hasFocusAtRef, ref: value?._ref}, (prev, current) => {
     const refUpdated = prev?.ref !== current.ref
     const focusAtUpdated = prev?.hasFocusAt !== current.hasFocusAt
@@ -179,22 +182,20 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
 
   const handleFocus = useCallback(
     (event: FocusEvent<HTMLDivElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.([])
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
-
-  const handleBlur = useCallback((event: FocusEvent) => elementProps.onBlur(event), [elementProps])
 
   const handleAutocompleteFocus = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
-      if (event.currentTarget === elementProps.ref.current) {
+      if (event.currentTarget === focusElementRef.current) {
         onPathFocus?.(REF_PATH)
       }
     },
-    [elementProps.ref, onPathFocus],
+    [onPathFocus],
   )
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
@@ -322,6 +323,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                 filterOption={NO_FILTER}
                 renderOption={renderOption}
                 openButton={{onClick: handleAutocompleteOpenButtonClick}}
+                ref={focusElementRef as unknown as React.Ref<HTMLInputElement>}
               />
             </div>
           </ChangeIndicator>
@@ -357,8 +359,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  ref={elementProps.ref}
+                  onBlur={elementProps.onBlur}
+                  ref={focusElementRef}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -378,8 +380,8 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                   __unstable_focusRing
                   tabIndex={0}
                   onFocus={handleFocus}
-                  onBlur={handleBlur}
-                  ref={elementProps.ref}
+                  onBlur={elementProps.onBlur}
+                  ref={focusElementRef}
                 >
                   <PreviewReferenceValue
                     value={value}
@@ -430,7 +432,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
             {loadableReferenceInfo.error && (
               <ReferenceMetadataLoadErrorAlertStrip
                 errorMessage={loadableReferenceInfo.error.message}
-                onHandleRetry={loadableReferenceInfo.retry!}
+                onHandleRetry={loadableReferenceInfo.retry}
               />
             )}
           </Card>

@@ -2,7 +2,6 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import {describe, expectTypeOf, test} from 'vitest'
 import type {
   BackLinkProps,
   BaseGenericList,
@@ -130,6 +129,7 @@ import type {
   SerializePath,
   shallowIntentChecker,
   SortMenuItem,
+  StrictVersionLayeringOptions,
   StructureBuilder,
   StructureBuilderOptions,
   StructureContext,
@@ -151,6 +151,7 @@ import type {
   UnserializedListItemChild,
   useDocumentPane,
   useDocumentTitle,
+  UseDocumentTitle,
   usePaneOptions,
   usePaneRouter,
   UserComponent,
@@ -159,6 +160,7 @@ import type {
   View,
   ViewBuilder,
 } from 'sanity/structure'
+import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/structure', () => {
   test('BackLinkProps', () => {
@@ -539,6 +541,9 @@ describe('sanity/structure', () => {
   test('SortMenuItem', () => {
     expectTypeOf<SortMenuItem>().toBeObject()
   })
+  test('StrictVersionLayeringOptions', () => {
+    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
+  })
   test('StructureBuilder', () => {
     expectTypeOf<StructureBuilder>().toBeObject()
   })
@@ -601,6 +606,9 @@ describe('sanity/structure', () => {
   })
   test('useDocumentTitle', () => {
     expectTypeOf<typeof useDocumentTitle>().toBeFunction()
+  })
+  test('UseDocumentTitle', () => {
+    expectTypeOf<UseDocumentTitle>().toBeObject()
   })
   test('usePaneOptions', () => {
     expectTypeOf<typeof usePaneOptions>().toBeFunction()

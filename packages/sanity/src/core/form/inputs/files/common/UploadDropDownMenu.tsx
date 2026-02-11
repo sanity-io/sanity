@@ -1,7 +1,7 @@
 import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {startCase, uniqueId} from 'lodash'
+import {startCase, uniqueId} from 'lodash-es'
 import {type ChangeEvent, type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 
 import {
@@ -93,6 +93,7 @@ function UploadDropDownMenuComponent(
       const isDefaultSource = assetSource.name === assetSources[0].name
       return (
         <MenuItem
+          key={`${inputId}-menu-button`}
           {...{[ASSET_SOURCE_DATA_ATTRIBUTE]: assetSource.name}}
           badgeText={
             isDefaultSource
@@ -103,7 +104,6 @@ function UploadDropDownMenuComponent(
           disabled={uploadsDisabled}
           htmlFor={inputId}
           icon={assetSource.icon}
-          key={`${inputId}-menu-button`}
           onClick={handleMenuItemClick}
           renderMenuItem={renderMenuItemLabel}
           text={

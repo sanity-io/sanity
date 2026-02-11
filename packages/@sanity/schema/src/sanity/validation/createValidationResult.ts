@@ -17,6 +17,7 @@ export const HELP_IDS = {
   ARRAY_OF_ARRAY: 'schema-array-of-array',
   ARRAY_OF_INVALID: 'schema-array-of-invalid',
   ARRAY_OF_NOT_UNIQUE: 'schema-array-of-invalid',
+  ARRAY_OF_DUPLICATE_PRIMITIVE_JSON_TYPE: 'schema-array-of-duplicate-primitive-json-type',
   ARRAY_OF_TYPE_GLOBAL_TYPE_CONFLICT: 'schema-array-of-type-global-type-conflict',
   ARRAY_OF_TYPE_BUILTIN_TYPE_CONFLICT: 'schema-array-of-type-builtin-type-conflict',
   REFERENCE_TO_INVALID: 'schema-reference-to-invalid',

@@ -1,5 +1,7 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {useCallback, useState} from 'react'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -22,8 +24,25 @@ vi.mock('../../../store/useReleasesIds', () => ({
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslate: vi.fn().mockReturnValue({
-    t: vi.fn(),
+    t: vi.fn((key) => key),
   }),
+}))
+
+vi.mock('../../../hooks/useTimeZone', () => ({
+  useTimeZone: vi.fn().mockReturnValue({
+    timeZone: {name: 'UTC'},
+    utcToCurrentZoneDate: vi.fn((date) => date),
+  }),
+}))
+
+const mockUseReleaseFormStorage = vi.fn().mockReturnValue({
+  getStoredReleaseData: vi.fn().mockReturnValue({}),
+  saveReleaseDataToStorage: vi.fn(),
+  clearReleaseDataFromStorage: vi.fn(),
+})
+
+vi.mock('../../hooks/useReleaseFormStorage', () => ({
+  useReleaseFormStorage: mockUseReleaseFormStorage,
 }))
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
@@ -38,8 +57,22 @@ describe('ReleaseForm', () => {
     metadata: {
       title: '',
       description: '',
+      releaseType: 'asap',
     },
   }
+
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear()
+    vi.clearAllMocks()
+
+    // Reset the useReleaseFormStorage mock to return empty data
+    mockUseReleaseFormStorage.mockReturnValue({
+      getStoredReleaseData: vi.fn().mockReturnValue({}),
+      saveReleaseDataToStorage: vi.fn(),
+      clearReleaseDataFromStorage: vi.fn(),
+    })
+  })
 
   describe('when creating a new release', () => {
     beforeEach(async () => {
@@ -77,37 +110,162 @@ describe('ReleaseForm', () => {
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
+    })
 
+    it('should render the form fields', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
         wrapper,
       })
-    })
 
-    it('should render the form fields', () => {
       expect(screen.getByTestId('release-form-title')).toBeInTheDocument()
       expect(screen.getByTestId('release-form-description')).toBeInTheDocument()
-      //expect(screen.getByTestId('release-form-publish-at')).toBeInTheDocument()
     })
 
-    it('should call onChange when title input value changes', () => {
+    it('should call onChange when title input value changes', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+        wrapper,
+      })
+
       const titleInput = screen.getByTestId('release-form-title')
-      fireEvent.change(titleInput, {target: {value: 'Bundle 1'}})
+      await userEvent.type(titleInput, 'Bundle 1')
 
-      expect(onChangeMock).toHaveBeenCalledWith({
-        ...valueMock,
-        metadata: {...valueMock.metadata, title: 'Bundle 1'},
+      await waitFor(() => {
+        expect(onChangeMock).toHaveBeenCalledWith({
+          ...valueMock,
+          metadata: {...valueMock.metadata, title: 'Bundle 1'},
+        })
       })
     })
 
-    it('should call onChange when description textarea value changes', () => {
+    it('should call onChange when description textarea value changes', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+        wrapper,
+      })
+
       const descriptionTextarea = screen.getByTestId('release-form-description')
-      fireEvent.change(descriptionTextarea, {target: {value: 'New Description'}})
+      await userEvent.type(descriptionTextarea, 'New Description')
+
+      await waitFor(() => {
+        expect(onChangeMock).toHaveBeenCalledWith({
+          ...valueMock,
+          metadata: {...valueMock.metadata, description: 'New Description'},
+        })
+      })
+    })
+
+    it('should render release type selection menu', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseForm onChange={onChangeMock} value={valueMock} />, {
+        wrapper,
+      })
+
+      expect(screen.getByText('ASAP')).toBeInTheDocument()
+    })
+  })
+
+  describe('when localStorage has stored values', () => {
+    const storedData = {
+      title: 'Stored Title',
+      description: 'Stored Description',
+      releaseType: 'scheduled' as const,
+      intendedPublishAt: '2024-12-25T10:00:00.000Z',
+    }
+    // Create a component that simulates the real parent component behavior
+    // this is needed for the test on changes specifically for the local storage scenario
+    const TestComponent = () => {
+      const [value, setValue] = useState(valueMock)
+
+      const handleOnChange = useCallback(
+        (newValue: EditableReleaseDocument) => {
+          onChangeMock(newValue)
+          setValue(newValue)
+        },
+        [setValue],
+      )
+
+      return <ReleaseForm onChange={handleOnChange} value={value} />
+    }
+
+    beforeEach(async () => {
+      // Set up localStorage with stored data
+      localStorage.setItem('studio.release-form.recovery', JSON.stringify(storedData))
+
+      mockUseReleaseFormStorage.mockReturnValue({
+        getStoredReleaseData: vi.fn().mockReturnValue(storedData),
+        saveReleaseDataToStorage: vi.fn(),
+        clearReleaseDataFromStorage: vi.fn(),
+      })
+
+      onChangeMock.mockClear()
+      onErrorMock.mockClear()
+
+      const mockData: ReleaseDocument[] = []
+      mockUseActiveReleases.mockReturnValue({
+        data: mockData,
+        loading: false,
+        dispatch: vi.fn(),
+        error: undefined,
+      })
+
+      mockUseReleasesIds.mockReturnValue({
+        releasesIds: [],
+      })
+
+      mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
+    })
+
+    it('should call onChange with the stored values merged with the original value', async () => {
+      const wrapper = await createTestProvider()
+      render(<TestComponent />, {
+        wrapper,
+      })
 
       expect(onChangeMock).toHaveBeenCalledWith({
         ...valueMock,
-        metadata: {...valueMock.metadata, description: 'New Description'},
+        metadata: {
+          ...valueMock.metadata,
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
       })
+    })
+
+    it('should load stored values from localStorage and populate the form', async () => {
+      const wrapper = await createTestProvider()
+      render(<TestComponent />, {
+        wrapper,
+      })
+
+      expect(onChangeMock).toHaveBeenCalledWith({
+        ...valueMock,
+        metadata: {
+          ...valueMock.metadata,
+          title: storedData.title,
+          description: storedData.description,
+          releaseType: storedData.releaseType,
+          intendedPublishAt: storedData.intendedPublishAt,
+        },
+      })
+
+      // Wait for the form fields to be updated with the stored values
+      await waitFor(() => {
+        expect(screen.getByTestId('release-form-title')).toHaveValue(storedData.title)
+        expect(screen.getByTestId('release-form-description')).toHaveValue(storedData.description)
+      })
+    })
+
+    it('should show the correct release type in the menu', async () => {
+      const wrapper = await createTestProvider()
+      render(<TestComponent />, {
+        wrapper,
+      })
+
+      expect(screen.getByText('At time')).toBeInTheDocument()
     })
   })
 
@@ -161,24 +319,31 @@ describe('ReleaseForm', () => {
       })
 
       mockUseDateTimeFormat.mockReturnValue({format: vi.fn().mockReturnValue('Mocked date')})
+    })
 
+    it('should allow for any title to be used', async () => {
       const wrapper = await createTestProvider()
       render(<ReleaseForm onChange={onChangeMock} value={existingBundleValue} />, {
         wrapper,
       })
-    })
 
-    it('should allow for any title to be used', async () => {
       const titleInput = screen.getByTestId('release-form-title')
       expect(titleInput).toHaveValue(existingBundleValue.metadata.title)
       // the slug of this title already exists,
       // but the slug for the existing edited release will not be changed
-      fireEvent.change(titleInput, {target: {value: 'Spring Drop'}})
+      await userEvent.type(titleInput, 'Spring Drop')
 
-      expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByTestId('input-validation-icon-error')).not.toBeInTheDocument()
+      })
     })
 
-    it('should populate the form with the existing release values', () => {
+    it('should populate the form with the existing release values', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseForm onChange={onChangeMock} value={existingBundleValue} />, {
+        wrapper,
+      })
+
       expect(screen.getByTestId('release-form-title')).toHaveValue(
         existingBundleValue.metadata.title,
       )

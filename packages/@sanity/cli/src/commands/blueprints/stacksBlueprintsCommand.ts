@@ -1,21 +1,14 @@
+import {BlueprintsStacksCommand} from '@sanity/runtime-cli'
+import {logger} from '@sanity/runtime-cli/utils'
+
 import {type CliCommandDefinition} from '../../types'
-
-const helpText = `
-Options
-  --project-id <id>    Project ID to use
-
-Examples:
-  # List all Stacks for the current Project
-  sanity blueprints stacks
-
-  # List Stacks for a specific project
-  sanity blueprints stacks --project-id abc123
-`
+import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsStacksFlags {
   'project-id'?: string
   'projectId'?: string
   'project'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsStacksFlags = {
@@ -25,10 +18,8 @@ const defaultFlags: BlueprintsStacksFlags = {
 const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
   name: 'stacks',
   group: 'blueprints',
-  helpText,
-  signature: '[--project-id <id>]',
-  description: 'List all Blueprint Stacks for the current Project',
-  hideFromHelp: true,
+  ...transformHelpText(BlueprintsStacksCommand, 'sanity', 'blueprints stacks'),
+  hideFromHelp: false,
 
   async action(args, context) {
     const {apiClient, output} = context
@@ -46,7 +37,7 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: (message) => output.print(message),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
     })
 
@@ -56,6 +47,7 @@ const stacksBlueprintsCommand: CliCommandDefinition<BlueprintsStacksFlags> = {
       ...cmdConfig.value,
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
+        'verbose': flags.verbose,
       },
     })
 

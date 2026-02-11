@@ -71,7 +71,6 @@ export function StructureError({error}: StructureErrorProps) {
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
                 {path.slice(1).map((segment, i) => (
-                  // eslint-disable-next-line react/no-array-index-key
                   <PathSegment key={`${segment}-${i}`}>{segment}</PathSegment>
                 ))}
               </Code>

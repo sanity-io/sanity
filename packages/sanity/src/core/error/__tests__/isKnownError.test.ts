@@ -25,6 +25,7 @@ describe('#isKnownError', () => {
     expect(
       isKnownError(
         new CorsOriginError({
+          isStaging: false,
           projectId: 'test',
         }),
       ),
@@ -52,17 +53,17 @@ describe('#isKnownError', () => {
   })
 
   test('should return false for null', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect(isKnownError(null as any)).toBe(false)
   })
 
   test('should return false for undefined', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect(isKnownError(undefined as any)).toBe(false)
   })
 
   test('should return false for an object that does not have a ViteDevServerStoppedError property', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line no-explicit-any
     expect(isKnownError({} as any)).toBe(false)
   })
 })

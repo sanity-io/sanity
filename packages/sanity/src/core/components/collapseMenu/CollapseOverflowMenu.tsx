@@ -31,19 +31,18 @@ export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
         <Menu>
           {menuOptions.map((c, index) => {
             const {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              collapsedProps = {},
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              expandedProps = {},
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              tooltipProps = {},
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              // oxlint-disable-next-line no-unused-vars
+              collapsedProps,
+              // oxlint-disable-next-line no-unused-vars
+              expandedProps,
+              // oxlint-disable-next-line no-unused-vars
+              tooltipProps,
+              // oxlint-disable-next-line no-unused-vars
               tooltipText,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               dividerBefore,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              // oxlint-disable-next-line no-unused-vars
               fontSize,
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              // oxlint-disable-next-line no-unused-vars
               padding,
               text,
               icon,
@@ -54,7 +53,13 @@ export const CollapseOverflowMenu = forwardRef(function CollapseOverflowMenu(
             return (
               <Fragment key={c.key}>
                 {dividerBefore && index !== 0 && <MenuDivider />}
-                <MenuItem text={text} icon={icon} pressed={selected} {...rest} />
+                <MenuItem
+                  text={text}
+                  icon={icon}
+                  pressed={selected}
+                  aria-pressed={selected}
+                  {...rest}
+                />
               </Fragment>
             )
           })}

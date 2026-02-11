@@ -1,15 +1,17 @@
 /* eslint-disable i18next/no-literal-string */
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Heading, Stack} from '@sanity/ui'
-import {useEffect, useState} from 'react'
+import {Badge, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
 
-import {Button} from '../../../../ui-components'
+import {Button, type ButtonProps} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {type AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
 import {type LoginComponentProps} from './types'
+
+const SANITY_LAST_USED_PROVIDER_KEY = 'sanity:last_used_provider'
 
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
@@ -99,19 +101,54 @@ export function createLoginComponent({
   function LoginComponent({projectId, ...props}: LoginComponentProps) {
     const redirectPath = props.redirectPath || props.basePath || '/'
 
-    const [providers, setProviders] = useState<AuthProvider[] | null>(null)
+    const [providerData, setProviderData] = useState<{
+      providers: AuthProvider[]
+      lastUsedProvider?: AuthProvider
+      isLoading: boolean
+    }>({
+      providers: [],
+      isLoading: true,
+    })
+
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
     const [client] = useClient()
 
+    const getProviderData = useCallback(async () => {
+      let providers = [] as AuthProvider[]
+
+      if (!client) return []
+
+      try {
+        providers = await getProviders({client, ...providerOptions})
+      } catch (err) {
+        setError(err)
+      }
+
+      return providers
+    }, [client])
+
+    const getLastUsedProvider = useCallback((providerList: AuthProvider[]) => {
+      // only set last used provider if there are mutiple providers
+      if (!providerList || providerList.length <= 1) return undefined
+      const providerName = localStorage.getItem(SANITY_LAST_USED_PROVIDER_KEY)
+      return providerList?.find(({name}) => name === providerName)
+    }, [])
+
     useEffect(() => {
       if (!client) return
 
-      getProviders({client, ...providerOptions})
-        .then(setProviders)
-        .catch(setError)
-    }, [client])
+      const setup = async () => {
+        const providers = await getProviderData()
+        const lastUsedProvider = getLastUsedProvider(providers)
+        setProviderData({providers, lastUsedProvider, isLoading: false})
+      }
+
+      void setup()
+    }, [client, getLastUsedProvider, getProviderData])
+
+    const {providers, lastUsedProvider, isLoading} = providerData
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
     // one provider available
@@ -126,7 +163,9 @@ export function createLoginComponent({
         redirectPath,
       })
 
-    const loading = !providers || redirectUrlForRedirectOnSingle
+    const loading = isLoading || redirectUrlForRedirectOnSingle
+
+    const providerList = providers.filter(({name}) => name !== lastUsedProvider?.name)
 
     useEffect(() => {
       if (redirectUrlForRedirectOnSingle) {
@@ -144,28 +183,91 @@ export function createLoginComponent({
           Choose login provider
         </Heading>
 
-        <Stack space={2}>
-          {providers.map((provider, index) => (
-            <Button
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${provider.url}_${index}`}
-              as="a"
-              icon={providerLogos[provider.name] || <CustomLogo provider={provider} />}
+        <Stack>
+          {lastUsedProvider && (
+            <LastUsedProviderButton
+              provider={lastUsedProvider}
               href={createHrefForProvider({
                 loginMethod,
                 projectId,
-                url: provider.url,
+                url: lastUsedProvider.url,
                 redirectPath,
               })}
-              mode="ghost"
-              size="large"
-              text={provider.title}
             />
-          ))}
+          )}
+
+          <Stack space={2}>
+            {providerList?.map((provider, index) => (
+              <ProviderButton
+                key={`${provider.url}_${index}`}
+                provider={provider}
+                href={createHrefForProvider({
+                  loginMethod,
+                  projectId,
+                  url: provider.url,
+                  redirectPath,
+                })}
+              />
+            ))}
+          </Stack>
         </Stack>
       </Stack>
     )
   }
 
   return LoginComponent
+}
+
+function LastUsedProviderButton(props: {href: string; provider: AuthProvider}) {
+  return (
+    <Flex direction="column" style={{width: '100%'}}>
+      <Badge radius={2} tone="primary" style={{alignSelf: 'start', marginBottom: '8px'}}>
+        Last used
+      </Badge>
+      <ProviderButton autoFocus tone="primary" {...props} />
+      <Text size={0} align="center" style={{margin: '13px 0 13px 0'}}>
+        OR
+      </Text>
+    </Flex>
+  )
+}
+
+function ProviderButton({
+  href,
+  provider,
+  tone = 'default',
+  autoFocus = false,
+}: {
+  href: string
+  provider: AuthProvider
+  tone?: ButtonProps['tone']
+  autoFocus?: boolean
+}) {
+  const focusRef = useCallback(
+    (node: HTMLButtonElement) => {
+      if (autoFocus) node?.focus()
+    },
+    [autoFocus],
+  )
+
+  const handleProviderSelect = useCallback(() => {
+    localStorage.setItem(SANITY_LAST_USED_PROVIDER_KEY, provider.name)
+  }, [provider])
+
+  const ProviderLogo = providerLogos[provider.name] || CustomLogo
+
+  return (
+    <Button
+      ref={focusRef}
+      as="a"
+      href={href}
+      mode="ghost"
+      size="large"
+      tone={tone}
+      style={{width: '100%'}}
+      text={provider.title}
+      icon={<ProviderLogo provider={provider} />}
+      onClick={handleProviderSelect}
+    />
+  )
 }

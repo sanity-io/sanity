@@ -1,5 +1,3 @@
-/* eslint-disable quote-props */
-
 import {route} from '../route'
 
 export const router = route.create('/:dataset', [

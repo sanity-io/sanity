@@ -17,6 +17,7 @@ export function PreviewArray(props: Props) {
     <ul>
       {value.map((item, i) => {
         return (
+          // oxlint-disable-next-line no-array-index-key
           <li key={i}>
             <PreviewAny {...rest} value={item} _depth={_depth + 1} maxDepth={maxDepth} />
           </li>

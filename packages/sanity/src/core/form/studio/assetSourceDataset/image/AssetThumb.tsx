@@ -148,7 +148,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
       error: (err: Error) => {
         setIsDeleting(false)
         handleDeleteError(err)
-        // eslint-disable-next-line no-console
+
         console.error('Could not delete asset', err)
       },
     })

@@ -1,14 +1,26 @@
 import {
-  type EditorChange,
+  type EditorEmittedEvent,
+  EditorProvider,
   type EditorSelection,
   PortableTextEditable,
-  PortableTextEditor,
+  type PortableTextEditor,
   type RenderBlockFunction,
+  useEditor,
+  usePortableTextEditor,
 } from '@portabletext/editor'
+import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {css, styled} from 'styled-components'
 
 import {type FormNodePresence} from '../../../../presence/types'
@@ -128,7 +140,6 @@ export default function PresenceInputStory() {
           <PresenceProvider presence={presenceA}>
             <Input
               onChange={setValue}
-              // eslint-disable-next-line react/jsx-no-bind
               onSelectionChange={(v) => handleSelectionChange(v, 'user-1')}
               value={value}
             />
@@ -148,7 +159,6 @@ export default function PresenceInputStory() {
           <PresenceProvider presence={presenceB}>
             <Input
               onChange={setValue}
-              // eslint-disable-next-line react/jsx-no-bind
               onSelectionChange={(v) => handleSelectionChange(v, 'user-2')}
               value={value}
             />
@@ -165,6 +175,29 @@ interface InputProps {
   value: PortableTextBlock[]
 }
 
+const EditorRefPlugin = forwardRef<PortableTextEditor | null>(function EditorRefPlugin(_, ref) {
+  const portableTextEditor = usePortableTextEditor()
+  const portableTextEditorRef = useRef(portableTextEditor)
+
+  useImperativeHandle(ref, () => portableTextEditorRef.current, [])
+
+  return null
+})
+EditorRefPlugin.displayName = 'EditorRefPlugin'
+
+function UpdateValuePlugin(props: {value: PortableTextBlock[] | undefined}) {
+  const editor = useEditor()
+
+  useEffect(() => {
+    editor.send({
+      type: 'update value',
+      value: props.value,
+    })
+  }, [editor, props.value])
+
+  return null
+}
+
 function Input(props: InputProps) {
   const {onChange, onSelectionChange, value} = props
   const editorRef = useRef<PortableTextEditor | null>(null)
@@ -173,16 +206,14 @@ function Input(props: InputProps) {
     path: ['body'],
   })
 
-  const handleChange = useCallback(
-    (e: EditorChange) => {
-      if (e.type === 'patch' && editorRef.current) {
-        const nextValue = PortableTextEditor.getValue(editorRef.current)
-
-        onChange(nextValue || [])
+  const handleEvent = useCallback(
+    (event: EditorEmittedEvent) => {
+      if (event.type === 'mutation') {
+        onChange(event.value || [])
       }
 
-      if (e.type === 'selection') {
-        onSelectionChange(e.selection)
+      if (event.type === 'selection') {
+        onSelectionChange(event.selection)
       }
     },
     [onChange, onSelectionChange],
@@ -190,12 +221,15 @@ function Input(props: InputProps) {
 
   return (
     <EditorCard border padding={4} sizing="border">
-      <PortableTextEditor
-        onChange={handleChange}
-        ref={editorRef}
-        schemaType={schema.get('body')}
-        value={value}
+      <EditorProvider
+        initialConfig={{
+          schema: schema.get('body'),
+          initialValue: value,
+        }}
       >
+        <EditorRefPlugin ref={editorRef} />
+        <EventListenerPlugin on={handleEvent} />
+        <UpdateValuePlugin value={value} />
         <PortableTextEditable
           rangeDecorations={decorations}
           renderBlock={renderBlock}
@@ -203,7 +237,7 @@ function Input(props: InputProps) {
           style={INLINE_STYLE}
           tabIndex={0}
         />
-      </PortableTextEditor>
+      </EditorProvider>
     </EditorCard>
   )
 }

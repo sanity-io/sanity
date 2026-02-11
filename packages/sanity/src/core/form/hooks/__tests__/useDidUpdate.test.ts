@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {renderHook} from '@testing-library/react'
 import {StrictMode} from 'react'
 import {describe, expect, it, vi} from 'vitest'

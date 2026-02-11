@@ -1,23 +1,24 @@
 import {type RootTheme, type ThemeColorSchemeKey} from '@sanity/ui/theme'
 
-/** @public */
-export interface StudioTheme
-  extends Omit<
-    RootTheme,
-    | 'avatar'
-    | 'button'
-    | 'container'
-    | 'focusRing'
-    | 'input'
-    | 'layer'
-    | 'media'
-    | 'radius'
-    | 'shadows'
-    | 'space'
-    | 'styles'
-    | 'color'
-    | 'fonts'
-  > {
+/** @public
+ * @deprecated – Will be removed in upcoming major version
+ * */
+export interface StudioTheme extends Omit<
+  RootTheme,
+  | 'avatar'
+  | 'button'
+  | 'container'
+  | 'focusRing'
+  | 'input'
+  | 'layer'
+  | 'media'
+  | 'radius'
+  | 'shadows'
+  | 'space'
+  | 'styles'
+  | 'color'
+  | 'fonts'
+> {
   /** @internal */
   __dark?: boolean
   /** @internal */
@@ -73,7 +74,16 @@ export interface StudioTheme
 }
 
 /**
- * Used to specify light or dark mode, or to respect system settings (prefers-color-scheme media query) use 'system'
+ * Used to specify light or dark mode, or to respect system settings (prefers-color-scheme media
+ * query) use 'system'
  * @public
  */
-export type StudioThemeColorSchemeKey = ThemeColorSchemeKey | 'system'
+export type StudioColorScheme = ThemeColorSchemeKey | 'system'
+
+/**
+ * Used to specify light or dark mode, or to respect system settings (prefers-color-scheme media
+ * query) use 'system'
+ * @public
+ * @deprecated Use `StudioColorScheme` instead
+ */
+export type StudioThemeColorSchemeKey = StudioColorScheme

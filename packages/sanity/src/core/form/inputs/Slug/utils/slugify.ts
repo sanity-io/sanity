@@ -10,7 +10,6 @@ const defaultSlugify = (value: FIXME, type: SlugSchemaType): string => {
   return value ? speakingurl(value, slugifyOpts) : ''
 }
 
-// eslint-disable-next-line require-await
 export async function slugify(
   sourceValue: FIXME,
   type: SlugSchemaType,

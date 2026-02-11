@@ -8,7 +8,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import {range} from 'lodash'
+import {range} from 'lodash-es'
 import {
   type ComponentProps,
   type FormEvent,
@@ -337,7 +337,7 @@ function CalendarMonthSelect(props: {
       <Box flex={1}>
         <Select radius={0} value={value} onChange={onChange}>
           {MONTH_NAMES.map((m, i) => (
-            // eslint-disable-next-line react/no-array-index-key
+            // oxlint-disable-next-line no-array-index-key
             <option key={i} value={i}>
               {m}
             </option>

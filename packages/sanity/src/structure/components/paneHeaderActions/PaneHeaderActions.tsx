@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {uniqBy} from 'lodash'
+import {uniqBy} from 'lodash-es'
 import {memo, useCallback, useMemo} from 'react'
 import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
 
@@ -51,13 +51,24 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
 
   const handleAction = useCallback(
     (item: PaneMenuItem) => {
+      // If menu item has an id, update toggle state first
+      if (item.id) {
+        const toggleHandler = actionHandlers.setMenuItemState
+        if (toggleHandler) {
+          toggleHandler({_menuItemId: item.id, ...(item.params as Record<string, unknown>)})
+        }
+        // If no action, or action is 'setMenuItemState' (already handled above), we're done
+        if (!item.action || item.action === 'setMenuItemState') {
+          return !!toggleHandler
+        }
+      }
+
       if (typeof item.action === 'string' && !(item.action in actionHandlers)) {
         console.warn('No handler for action:', item.action)
         return false
       }
 
       const handler =
-        // eslint-disable-next-line no-nested-ternary
         typeof item.action === 'function'
           ? item.action
           : typeof item.action === 'string'
@@ -65,7 +76,16 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
             : null
 
       if (handler) {
-        handler(item.params as Record<string, string>)
+        // Include the menu item's id and selected state in the params passed to the handler
+        // Note: isSelected reflects the state AFTER the toggle (since toggle handler runs first)
+        const paramsWithId = item.id
+          ? {
+              ...(item.params as Record<string, unknown>),
+              _menuItemId: item.id,
+              isSelected: !item.selected,
+            }
+          : {...(item.params as Record<string, unknown>), isSelected: !item.selected}
+        handler(paramsWithId)
         return true
       }
 

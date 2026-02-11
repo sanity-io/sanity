@@ -3,7 +3,7 @@ import {type Schema} from '@sanity/types'
 import {renderPath} from './utils'
 
 export function reportWarnings(schema: Schema) {
-  /* eslint-disable no-console */
+  // oxlint-disable no-console
   const problemGroups = schema._validation
 
   const groupsWithWarnings = problemGroups?.filter((group) =>
@@ -25,5 +25,5 @@ export function reportWarnings(schema: Schema) {
     console.groupEnd()
   })
   console.groupEnd()
-  /* eslint-enable no-console */
+  // oxlint-enable no-console
 }

@@ -3,6 +3,8 @@ import {type ClientPerspective, type ReleaseDocument} from '@sanity/client'
 import {type MenuItem} from '@sanity/ui'
 import {type ComponentProps} from 'react'
 
+import {type SystemBundle} from '../util/draftUtils'
+
 /**
  * @beta
  */
@@ -10,9 +12,18 @@ import {type ComponentProps} from 'react'
 export type ReleaseId = string
 
 /**
- * @beta
+ * A value representing a perspective, including the data describing it. This is either the name of a
+ * system bundle, or a document describing a release.
+ *
+ * @public
  */
-export type SelectedPerspective = ReleaseDocument | 'published' | 'drafts'
+export type TargetPerspective = ReleaseDocument | SystemBundle | string
+
+/**
+ * @beta
+ * @deprecated Use `TargetPerspective` instead.
+ */
+export type SelectedPerspective = TargetPerspective
 
 /**
  * @beta
@@ -31,7 +42,7 @@ export interface PerspectiveContextValue {
   selectedReleaseId: ReleaseId | undefined
 
   /* Return the current global release */
-  selectedPerspective: SelectedPerspective
+  selectedPerspective: TargetPerspective
   /**
    * The stacked array of perspectives ids ordered chronologically to represent the state of documents at the given point in time.
    * It can be used as the perspective param in the client to get the correct view of the documents.
@@ -42,11 +53,19 @@ export interface PerspectiveContextValue {
   excludedPerspectives: string[]
 }
 
+/**
+ * @internal
+ */
+export type RawPerspectiveContextValue = Pick<
+  PerspectiveContextValue,
+  'selectedPerspective' | 'selectedPerspectiveName' | 'selectedReleaseId'
+>
+
 type ExtractArray<Union> = Union extends unknown[] ? Union : never
 
 /**
  * @internal
  */
 export type ReleasesNavMenuItemPropsGetter = (content: {
-  perspective: SelectedPerspective
+  perspective: TargetPerspective
 }) => Partial<ComponentProps<typeof MenuItem>>

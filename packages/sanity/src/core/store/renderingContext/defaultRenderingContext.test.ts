@@ -2,8 +2,8 @@ import {expect, it} from 'vitest'
 
 import {defaultRenderingContext} from './defaultRenderingContext'
 
-it("emits the subject if it's not `undefined`", () => {
-  expect(defaultRenderingContext).toMatchEmissions([
+it("emits the subject if it's not `undefined`", async () => {
+  await expect(defaultRenderingContext).toMatchEmissions([
     [
       {
         name: 'coreUi',
@@ -21,8 +21,8 @@ it("emits the subject if it's not `undefined`", () => {
   ])
 })
 
-it('emits the the default context if the subject is `undefined`', () => {
-  expect(defaultRenderingContext).toMatchEmissions([
+it('emits the the default context if the subject is `undefined`', async () => {
+  await expect(defaultRenderingContext).toMatchEmissions([
     [
       undefined,
       {

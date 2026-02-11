@@ -1,6 +1,4 @@
-/* eslint-disable camelcase */
-
-import {negate} from 'lodash'
+import {negate} from 'lodash-es'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
@@ -77,6 +75,7 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
@@ -93,6 +92,7 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,

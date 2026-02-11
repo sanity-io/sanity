@@ -4,18 +4,20 @@ import path from 'node:path'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {noopLogger} from '@sanity/telemetry'
 import chalk from 'chalk'
-import {info} from 'log-symbols'
+import logSymbols from 'log-symbols'
 import {rimraf} from 'rimraf'
 import semver from 'semver'
 
 import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareDependencyVersions} from '../../util/compareDependencyVersions'
-import {getAppAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {getAppId} from '../../util/getAppId'
+import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
 import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
 import {readModuleVersion} from '../../util/readModuleVersion'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
 import {getTimer} from '../../util/timing'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
 import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityAppCommandFlags {
@@ -33,7 +35,7 @@ export default async function buildSanityApp(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityAppCommandFlags = {
     'minify': true,
     'stats': false,
@@ -49,6 +51,7 @@ export default async function buildSanityApp(
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
 
   const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const appId = getAppId({cliConfig, output})
 
   const installedSdkVersion = await readModuleVersion(context.workDir, '@sanity/sdk-react')
   const installedSanityVersion = await readModuleVersion(context.workDir, 'sanity')
@@ -56,22 +59,41 @@ export default async function buildSanityApp(
   if (!installedSdkVersion) {
     throw new Error(`Failed to find installed @sanity/sdk-react version`)
   }
-  // Get the version without any tags if any
-  const coercedSdkVersion = semver.coerce(installedSdkVersion)?.version
-  // Sanity might not be installed, but if it is we want to auto update it.
-  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !coercedSdkVersion) {
-    throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
-  }
-  const sdkVersion = encodeURIComponent(`^${coercedSdkVersion}`)
-  const sanityVersion = coercedSanityVersion && encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getAppAutoUpdateImportMap({sdkVersion, sanityVersion})
+
+  let autoUpdatesImports = {}
 
   if (autoUpdatesEnabled) {
-    output.print(`${info} Building with auto-updates enabled`)
+    // Get the clean version without build metadata: https://semver.org/#spec-item-10
+    const cleanSDKVersion = semver.parse(installedSdkVersion)?.version
+    if (!cleanSDKVersion) {
+      throw new Error(`Failed to parse installed SDK version: ${installedSdkVersion}`)
+    }
+
+    // Sanity might not be installed, but if it is, we want to auto update it.
+    const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+
+    const autoUpdatedPackages = [
+      {name: '@sanity/sdk', version: cleanSDKVersion},
+      {name: '@sanity/sdk-react', version: cleanSDKVersion},
+      ...(cleanSanityVersion ? [{name: 'sanity' as const, version: cleanSanityVersion}] : []),
+    ]
+    autoUpdatesImports = getAutoUpdatesImportMap(autoUpdatedPackages, {appId})
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
+
+    // note: we want to show this warning only if running `sanity build`
+    // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
+    // see deployAction.ts
+    if (args.groupOrCommand !== 'deploy' && !appId) {
+      warnAboutMissingAppId({
+        appType: 'app',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
-    const result = await compareDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(autoUpdatedPackages, workDir, {appId})
 
     // If it is in unattended mode, we don't want to prompt
     if (result?.length && !unattendedMode) {
@@ -174,6 +196,8 @@ export default async function buildSanityApp(
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
       entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
       isApp: true,
+      schemaExtraction: cliConfig?.schemaExtraction,
+      telemetryLogger: context.telemetry,
     })
 
     trace.log({
@@ -200,7 +224,6 @@ export default async function buildSanityApp(
   return {didCompile: true}
 }
 
-// eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_APP_'))
 }

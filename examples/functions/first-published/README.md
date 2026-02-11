@@ -22,13 +22,15 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 
 1. **Initialize the example**
 
-   For a new project:
+   Run this if you haven't initialized blueprints:
 
    ```bash
-   npx sanity blueprints init --example first-published
+   npx sanity blueprints init
    ```
 
-   For an existing project:
+   You'll be prompted to select your organization and Sanity studio.
+
+   Then run:
 
    ```bash
    npx sanity blueprints add function --example first-published
@@ -43,9 +45,9 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
      memory: 1,
      timeout: 10,
      event: {
-       on: ['publish'],
+       on: ['create'],
        filter: "_type == 'post' && !defined(firstPublished)",
-       projection: '_id',
+       projection: '{_id}',
      },
    })
    ```
@@ -58,17 +60,19 @@ This Sanity Function automatically sets a `firstPublished` timestamp when a post
 
 ## Testing the function locally
 
-You can test the first-published function locally using the Sanity CLI before deploying:
+You can test the first-published function locally using the Sanity CLI before deploying.
 
-### 1. Basic Function Test
+### Simple Testing Command
 
-Test with the included sample document:
+Test the function with an existing document ID from your dataset:
 
 ```bash
-npx sanity functions test first-published --file document.json
+npx sanity functions test first-published --document-id <insert-document-id> --dataset production --with-user-token
 ```
 
-### 2. Interactive Development Mode
+Replace `<insert-document-id>` with an actual document ID from your dataset and `production` with your dataset name.
+
+### Interactive Development Mode
 
 Start the development server for interactive testing:
 
@@ -76,31 +80,7 @@ Start the development server for interactive testing:
 npx sanity functions dev
 ```
 
-### 3. Test with Custom Data
-
-Test with your own document data:
-
-```bash
-npx sanity functions test first-published --data '{
-  "_type": "post",
-  "_id": "test-post",
-  "title": "Test Article"
-}'
-```
-
-### 4. Test with Real Document Data
-
-Capture a real document from your dataset:
-
-```bash
-# Export a real document for testing
-npx sanity documents get "your-post-id" > test-document.json
-
-# Test with the real document
-npx sanity functions test first-published --file test-document.json
-```
-
-### 5. Enable Debugging
+#### Enable Debugging
 
 Add temporary logging to your function:
 
@@ -166,7 +146,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
    ```
 
    This command will:
-
    - Package your function code
    - Upload it to Sanity's infrastructure
    - Configure the event triggers for post publications
@@ -175,7 +154,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 3. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-
    - Checking the Sanity Studio under "Compute"
    - Publishing a new post and confirming the `firstPublished` field is set
    - Monitoring function logs in the CLI

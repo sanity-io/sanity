@@ -11,7 +11,7 @@ import {
   TextInput,
   VirtualList,
 } from '@sanity/ui'
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -120,9 +120,9 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
     (user: UserWithPermission) => {
       return (
         <MentionUserMenuItem
+          key={user.id}
           user={user}
           onSelect={onSelect}
-          key={user.id}
           pressed={user.id === value}
         />
       )

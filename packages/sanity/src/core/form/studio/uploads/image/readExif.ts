@@ -29,7 +29,7 @@ export function readExif(file: File) {
     catchError((error) => {
       if (!SKIP_EXIF_ERROR_RE.test(error.message)) {
         // Exif read failed, we do not want to fail hard
-        console.warn(`Exif read failed, continuing anyway: ${error.message}`) // eslint-disable-line no-console
+        console.warn(`Exif read failed, continuing anyway: ${error.message}`)
       }
       return observableOf({})
     }),

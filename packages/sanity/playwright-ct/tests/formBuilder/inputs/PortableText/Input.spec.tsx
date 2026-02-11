@@ -1,6 +1,5 @@
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type EditorChange, type PortableTextEditor} from '@portabletext/editor'
-import {type RefObject} from 'react'
 
 import {testHelpers} from '../../../utils/testHelpers'
 import {InputStory} from './InputStory'
@@ -66,14 +65,19 @@ test.describe('Portable Text Input', () => {
       page,
     }) => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
-      let ref: undefined | RefObject<PortableTextEditor | null>
-      const getRef = (editorRef: RefObject<PortableTextEditor | null>) => {
-        ref = editorRef
-      }
-      await mount(<InputStory getRef={getRef} />)
+      let editorIstance: PortableTextEditor | undefined
+      await mount(
+        <InputStory
+          editorRef={(editor) => {
+            if (editor) {
+              editorIstance = editor
+            }
+          }}
+        />,
+      )
       await getFocusedPortableTextEditor('field-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
-      expect(ref?.current?.schemaTypes.block).toBeDefined()
+      expect(editorIstance?.schemaTypes.block).toBeDefined()
     })
   })
 

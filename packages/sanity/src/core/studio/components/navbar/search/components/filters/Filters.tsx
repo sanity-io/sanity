@@ -42,7 +42,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
 
   const lastAddedFilterKey = lastAddedFilter && getFilterKey(lastAddedFilter)
 
-  const ClearFiltersButton = () => (
+  const clearFiltersButton = (
     <Button
       mode="bleed"
       onClick={handleClear}
@@ -61,21 +61,21 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
             const key = getFilterKey(filter)
             return (
               <FilterButton
+                key={key}
                 filter={filter}
                 initialOpen={isMounted && lastAddedFilterKey === key}
-                key={key}
               />
             )
           })}
           {!fullscreen && <AddFilterButton />}
         </Flex>
-        {clearFiltersButtonVisible && !fullscreen && <ClearFiltersButton />}
+        {clearFiltersButtonVisible && !fullscreen && clearFiltersButton}
       </Flex>
 
       {fullscreen && (
         <Flex justify="space-between" paddingBottom={2} paddingX={2}>
           <AddFilterButton />
-          {clearFiltersButtonVisible && <ClearFiltersButton />}
+          {clearFiltersButtonVisible && clearFiltersButton}
         </Flex>
       )}
 

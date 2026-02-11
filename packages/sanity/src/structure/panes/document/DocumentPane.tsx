@@ -85,7 +85,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       ? {
           path: pathFromString(parentRefPath),
           state:
-            // eslint-disable-next-line no-nested-ternary
             groupIndex >= routerPanesStateLength - 1
               ? 'none'
               : groupIndex >= routerPanesStateLength - 2
@@ -139,7 +138,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     >
       {/* NOTE: this is a temporary location for this provider until we */}
       {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
       <ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
@@ -148,6 +146,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
+            {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
             <DocumentLayout documentId={options.id} documentType={options.type} />
           </CommentsWrapper>
         </DiffViewDocumentLayout>

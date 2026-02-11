@@ -1,5 +1,5 @@
 import humanizeList from 'humanize-list'
-import {flatten, partition} from 'lodash'
+import {flatten, partition} from 'lodash-es'
 
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
@@ -7,6 +7,17 @@ import {getDupes} from '../utils/getDupes'
 
 function isPrimitiveTypeName(typeName: any) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
+}
+
+function resolveJsonType(typeDef: any, visitorContext: any): string | undefined {
+  if ('jsonType' in typeDef) {
+    return typeDef.jsonType
+  }
+  const parentType = visitorContext.getType(typeDef.type)
+  if (!parentType) {
+    return undefined
+  }
+  return resolveJsonType(parentType, visitorContext)
 }
 
 function isAssignable(typeName: any, type: any) {
@@ -156,6 +167,32 @@ export default (typeDef: any, visitorContext: any) => {
         HELP_IDS.ARRAY_OF_INVALID,
       ),
     )
+  }
+
+  // Check for multiple primitive types that resolve to the same JSON type
+  // e.g. both "string" and "text" resolve to JSON type "string"
+  if (primitiveTypes.length > 1) {
+    const primitivesByJsonType = new Map<string, any[]>()
+    for (const primitiveType of primitiveTypes) {
+      const jsonType = resolveJsonType(primitiveType, visitorContext)
+      if (jsonType && isPrimitiveTypeName(jsonType)) {
+        const existing = primitivesByJsonType.get(jsonType) || []
+        existing.push(primitiveType)
+        primitivesByJsonType.set(jsonType, existing)
+      }
+    }
+
+    for (const [jsonType, types] of primitivesByJsonType) {
+      if (types.length > 1) {
+        const typeNames = types.map((t) => t.name || t.type)
+        problems.push(
+          warning(
+            `Array cannot contain multiple members with JSON type "${jsonType}" (${humanizeList(typeNames.map(quote))}) as there is no way to distinguish between them`,
+            HELP_IDS.ARRAY_OF_DUPLICATE_PRIMITIVE_JSON_TYPE,
+          ),
+        )
+      }
+    }
   }
 
   const list = typeDef?.options?.list

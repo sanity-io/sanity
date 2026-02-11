@@ -27,7 +27,7 @@ export function Block(props: {
   let returned = children
 
   const handleClick = useCallback(
-    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
 
       if (!isRemoved) {

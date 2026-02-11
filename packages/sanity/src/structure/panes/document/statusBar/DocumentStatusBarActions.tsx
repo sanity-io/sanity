@@ -1,20 +1,17 @@
-/* eslint-disable no-warning-comments */
 /* eslint-disable camelcase */
 import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useCallback, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {
-  type DocumentActionComponent,
-  type DocumentActionDescription,
-  type DocumentActionProps,
   Hotkeys,
   isSanityDefinedAction,
+  usePausedScheduledDraft,
   usePerspective,
   useSource,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
-import {RenderActionCollectionState, type ResolvedAction} from '../../../components'
-import {HistoryRestoreAction} from '../../../documentActions'
+import {RenderActionCollectionState, type ResolvedAction, usePaneRouter} from '../../../components'
+import {useHistoryRestoreAction} from '../../../documentActions'
 import {toLowerCaseNoSpaces} from '../../../util/toLowerCaseNoSpaces'
 import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
@@ -22,19 +19,22 @@ import {ActionStateDialog} from './ActionStateDialog'
 
 interface DocumentStatusBarActionsInnerProps {
   disabled: boolean
-  showMenu: boolean
   states: ResolvedAction[]
 }
 
 const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInner(
   props: DocumentStatusBarActionsInnerProps,
 ) {
-  const {disabled, showMenu, states} = props
+  const {disabled, states} = props
   const {__internal_tasks} = useSource()
   const {editState} = useDocumentPane()
+  const {params} = usePaneRouter()
+  const showingRevision = Boolean(params?.rev)
+
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const {isPaused} = usePausedScheduledDraft()
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -56,13 +56,22 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       </Flex>
     )
   }, [firstActionState])
-  const showFirstActionButton = selectedReleaseId
-    ? // If the first action is a custom action and we are in a version document show it.
-      firstActionState && !isSanityDefinedAction(firstActionState)
-    : firstActionState && !editState?.liveEdit
+
+  const shouldShowScheduleAsFirstActionButton = firstActionState?.action === 'schedule' && isPaused
+
+  const showFirstActionButton = showingRevision
+    ? Boolean(firstActionState)
+    : selectedReleaseId
+      ? // For paused drafts, only allow 'schedule' action as primary
+        // Otherwise, only show custom (non-Sanity-defined) actions as primary
+        firstActionState &&
+        (shouldShowScheduleAsFirstActionButton || !isSanityDefinedAction(firstActionState))
+      : firstActionState && (!editState?.liveEdit || editState?.version)
 
   const sideMenuItems = useMemo(() => {
-    return showFirstActionButton ? menuActionStates : [firstActionState, ...menuActionStates]
+    return showFirstActionButton
+      ? menuActionStates
+      : [firstActionState, ...menuActionStates].filter(Boolean)
   }, [showFirstActionButton, firstActionState, menuActionStates])
 
   return (
@@ -76,7 +85,6 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
                 icon={firstActionState.icon}
-                // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
                 ref={setButtonElement}
                 text={firstActionState.label}
@@ -86,10 +94,10 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           </Tooltip>
         </LayerProvider>
       )}
-      {showMenu && menuActionStates.length > 0 && (
+      {sideMenuItems.length > 0 && (
         <ActionMenuButton actionStates={sideMenuItems} disabled={disabled} />
       )}
-      {firstActionState && firstActionState.dialog && (
+      {showFirstActionButton && firstActionState && firstActionState.dialog && (
         <ActionStateDialog dialog={firstActionState.dialog} referenceElement={buttonElement} />
       )}
     </Flex>
@@ -97,100 +105,54 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
 })
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {
-    actions: allActions,
-    connectionState,
-    documentId,
-    editState,
-    isInitialValueLoading,
-  } = useDocumentPane()
+  return (
+    <RenderActionCollectionState group="default">
+      {({states}) => <RenderDocumentStatusBarActions states={states} />}
+    </RenderActionCollectionState>
+  )
+})
+
+function RenderDocumentStatusBarActions(props: {states: ResolvedAction[]}) {
+  const {connectionState, documentId} = useDocumentPane()
 
   // The restore action has a dedicated place in the UI; it's only visible when the user is viewing
   // a different document revision. It must be omitted from this collection.
-  const actions = useMemo(
-    () => (allActions ?? []).filter((action) => !isRestoreAction(action)),
-    [allActions],
-  )
-  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
-    () => (editState ? {...editState, initialValueResolved: !isInitialValueLoading} : null),
-    [editState, isInitialValueLoading],
+  const states = props.states.filter((state) =>
+    state.action ? state.action !== useHistoryRestoreAction.action : true,
   )
 
-  const renderDocumentStatusBarActions = useCallback<
-    (props: {states: ResolvedAction[]}) => React.ReactNode
-  >(
-    ({states}) => (
-      <DocumentStatusBarActionsInner
-        disabled={connectionState !== 'connected'}
-        showMenu={actions.length > 1}
-        states={states}
-        // Use document ID as key to make sure that the actions state is reset when the document changes
-        key={documentId}
-      />
-    ),
-    [actions.length, connectionState, documentId],
-  )
-
-  if (actions.length === 0 || !actionProps) {
-    return null
-  }
+  if (states.length === 0) return null
 
   return (
-    <RenderActionCollectionState actions={actions} actionProps={actionProps} group="default">
-      {renderDocumentStatusBarActions}
-    </RenderActionCollectionState>
+    <DocumentStatusBarActionsInner
+      // Use document ID as key to make sure that the actions state is reset when the document changes
+      key={documentId}
+      disabled={connectionState !== 'connected'}
+      states={states}
+    />
   )
-})
+}
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {
-    actions,
-    connectionState,
-    editState,
-    revisionId: revision,
-    isInitialValueLoading,
-  } = useDocumentPane()
-
-  const disabled = (editState?.draft || editState?.published || {})._rev === revision
-  const actionProps: Omit<DocumentActionProps, 'onComplete'> | null = useMemo(
-    () =>
-      editState
-        ? {
-            ...editState,
-            revision: revision || undefined,
-            initialValueResolved: !isInitialValueLoading,
-          }
-        : null,
-    [editState, revision, isInitialValueLoading],
-  )
-
-  // If multiple `restore` actions are defined, ensure only the final one is used.
-  const historyActions = useMemo(() => (actions ?? []).filter(isRestoreAction).slice(-1), [actions])
-
-  const renderDocumentStatusBarActions = useCallback<
-    (props: {states: DocumentActionDescription[]}) => React.ReactNode
-  >(
-    ({states}) => (
-      <DocumentStatusBarActionsInner
-        disabled={connectionState !== 'connected' || Boolean(disabled)}
-        showMenu={false}
-        states={states}
-      />
-    ),
-    [connectionState, disabled],
-  )
-  if (!actionProps) {
-    return null
-  }
   return (
-    <RenderActionCollectionState actions={historyActions} actionProps={actionProps} group="default">
-      {renderDocumentStatusBarActions}
+    <RenderActionCollectionState group="default">
+      {({states}) => <RenderHistoryStatusBarActions states={states} />}
     </RenderActionCollectionState>
   )
 })
 
-export function isRestoreAction(
-  action: DocumentActionComponent,
-): action is DocumentActionComponent & {action: 'restore'} {
-  return action.action === HistoryRestoreAction.action
+function RenderHistoryStatusBarActions({states}: {states: ResolvedAction[]}) {
+  const {connectionState, editState, revisionId: revision} = useDocumentPane()
+
+  const disabled = (editState?.draft || editState?.published || {})._rev === revision
+
+  return (
+    <DocumentStatusBarActionsInner
+      disabled={connectionState !== 'connected' || Boolean(disabled)}
+      // If multiple `restore` actions are defined, ensure only the final one is used.
+      states={states
+        .filter((state) => (state.action ? state.action === useHistoryRestoreAction.action : false))
+        .slice(-1)}
+    />
+  )
 }

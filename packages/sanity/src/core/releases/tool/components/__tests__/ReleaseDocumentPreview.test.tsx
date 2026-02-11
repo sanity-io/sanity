@@ -15,6 +15,12 @@ interface DocumentPresenceData {
 
 const mockDocumentPresence: DocumentPresenceData[] = []
 
+const mockPreviewValues = {
+  title: 'Test Document',
+  subtitle: 'Test Subtitle',
+  media: null,
+}
+
 vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
   SanityDefaultPreview: vi.fn(({isPlaceholder, title, subtitle, status}) => (
     <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>
@@ -23,6 +29,13 @@ vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
       {status}
     </div>
   )),
+}))
+
+vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  useDocumentPreviewValues: vi.fn(() => ({
+    isLoading: false,
+    value: mockPreviewValues,
+  })),
 }))
 
 vi.mock('sanity/router', () => ({
@@ -48,12 +61,6 @@ vi.mock('../../../../store/_legacy/presence/useDocumentPresence', () => ({
   useDocumentPresence: vi.fn(() => mockDocumentPresence),
 }))
 
-const mockPreviewValues = {
-  title: 'Test Document',
-  subtitle: 'Test Subtitle',
-  media: null,
-}
-
 const renderTest = async (props: ComponentProps<typeof ReleaseDocumentPreview>) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
@@ -74,8 +81,6 @@ describe('ReleaseDocumentPreview', () => {
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeASAPRelease._id,
-      previewValues: mockPreviewValues,
-      isLoading: false,
     })
 
     expect(screen.getByText('Test Document')).toBeInTheDocument()
@@ -83,12 +88,18 @@ describe('ReleaseDocumentPreview', () => {
   })
 
   it('renders in loading state', async () => {
+    // Mock loading state
+    const {useDocumentPreviewValues} =
+      await import('../../../../tasks/hooks/useDocumentPreviewValues')
+    vi.mocked(useDocumentPreviewValues).mockReturnValueOnce({
+      isLoading: true,
+      value: null,
+    })
+
     const {container} = await renderTest({
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeASAPRelease._id,
-      previewValues: mockPreviewValues,
-      isLoading: true,
     })
 
     expect(container.querySelector('[data-ui="Placeholder"]')).toBeInTheDocument()
@@ -99,8 +110,6 @@ describe('ReleaseDocumentPreview', () => {
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeASAPRelease._id,
-      previewValues: mockPreviewValues,
-      isLoading: false,
       releaseState: 'published',
     })
 
@@ -114,8 +123,6 @@ describe('ReleaseDocumentPreview', () => {
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeScheduledRelease._id,
-      previewValues: mockPreviewValues,
-      isLoading: false,
       releaseState: 'active',
     })
 
@@ -129,8 +136,6 @@ describe('ReleaseDocumentPreview', () => {
       documentId: 'doc123',
       documentTypeName: 'post',
       releaseId: activeScheduledRelease._id,
-      previewValues: mockPreviewValues,
-      isLoading: false,
       releaseState: 'archived',
     })
 

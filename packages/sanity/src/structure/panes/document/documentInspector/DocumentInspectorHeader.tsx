@@ -17,8 +17,8 @@ export interface DocumentInspectorHeaderProps {
 
 const Root = styled(Card)({
   position: 'relative',
-  zIndex: 1,
-  lineHeight: 0,
+  zIndex: '1',
+  lineHeight: '0',
 })
 
 /** @internal */

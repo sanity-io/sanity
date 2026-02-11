@@ -38,15 +38,12 @@ function getSlugSourceContext(
   return {parentPath, parent, ...context}
 }
 
-// eslint-disable-next-line require-await
 async function getNewFromSource(
   source: string | Path | SlugSourceFn,
   document: SanityDocument,
   context: SlugSourceContext,
 ): Promise<string | undefined> {
-  return typeof source === 'function'
-    ? source(document, context)
-    : (PathUtils.get(document, source) as string | undefined)
+  return typeof source === 'function' ? source(document, context) : PathUtils.get(document, source)
 }
 
 /**
@@ -111,10 +108,18 @@ export function SlugInput(props: SlugInputProps) {
     [updateSlug],
   )
 
+  const handleFocus = useCallback(() => {
+    // Use requestAnimationFrame to defer focus to next frame, preventing race conditions
+    // this is especially important for blur/focus handlers in array contexts
+    requestAnimationFrame(() => {
+      inputRef.current?.focus()
+    })
+  }, [])
+
   // Make sure the slug input is focused when the `focused` prop becomes true, regardless of wether the focusPath is `slug` or `slug.current` (both should work)
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
-      inputRef.current?.focus()
+      handleFocus()
     }
   })
   // Handle stega visual editing links, which uses `slug.current` as the focus path
@@ -128,7 +133,7 @@ export function SlugInput(props: SlugInputProps) {
       currentFocusPath.length === 1 &&
       currentFocusPath[0] === 'current'
     ) {
-      inputRef.current?.focus()
+      handleFocus()
     }
   })
 

@@ -3,10 +3,7 @@ import {renderHook} from '@testing-library/react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {
-  type ConditionalPropertyProps,
-  unstable_useConditionalProperty as useConditionalProperty,
-} from './useConditionalProperty'
+import {type ConditionalPropertyProps, useConditionalProperty} from './useConditionalProperty'
 
 const dummyDocument = {
   _createdAt: '2021-11-04T15:41:48Z',
@@ -31,6 +28,7 @@ const DEFAULT_PROPS: Omit<ConditionalPropertyProps, 'checkProperty'> = {
   checkPropertyKey: 'testKey',
   document: dummyDocument,
   value: undefined,
+  path: [],
   parent: {
     parentTest: 'hello',
     siblingProp: true,
@@ -42,7 +40,6 @@ afterEach(() => {
 })
 
 describe('Conditional property resolver', () => {
-  /* eslint-disable max-nested-callbacks */
   it('calls callback function', async () => {
     const TestWrapper = await createTestProvider()
     const callbackFn = vi.fn(() => true)
@@ -203,11 +200,11 @@ describe('Conditional property resolver', () => {
           document: dummyDocument,
           value: dummyDocument.venue.address,
           parent: dummyDocument.venue,
+          path: [],
           checkProperty: vi.fn<ConditionalPropertyCallback>(({parent}) => Boolean(parent.location)),
         }),
       {wrapper: TestWrapper},
     )
     expect(result.current).toBeTruthy()
   })
-  /* eslint-enable max-nested-callbacks */
 })

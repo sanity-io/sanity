@@ -1,13 +1,13 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
 import {OWN_PROPS_NAME} from '../constants'
 import {hiddenGetter, lazyGetter} from '../utils'
 import {
   BLOCK_STYLES,
+  DEFAULT_ANNOTATIONS,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
-  DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
@@ -72,13 +72,7 @@ export const BlockType = {
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: extendMember(type),
-        }
-      })
+      return fields.map((fieldDef) => extendMember.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
@@ -144,8 +138,6 @@ function createListItemField(lists: any) {
     },
   }
 }
-
-const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createChildrenField(marks: any, of = []) {
   return {

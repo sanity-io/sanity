@@ -1,4 +1,4 @@
-import {fromPairs, partition, toPairs} from 'lodash'
+import {fromPairs, partition, toPairs} from 'lodash-es'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
@@ -98,7 +98,7 @@ export function RouterProvider(props: RouterProviderProps): React.JSX.Element {
         }),
       })
     },
-    [routerProp, state._searchParams],
+    [routerProp, state],
   )
 
   const resolvePathFromState = useCallback(

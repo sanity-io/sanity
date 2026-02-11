@@ -3,8 +3,6 @@
   "include": ["./src", "test"],
   "compilerOptions": {
     "rootDir": ".",
-    "paths": {
-      "@sanity/types": ["./src/index.ts"]
-    }
+    "customConditions": ["monorepo"]
   }
 }

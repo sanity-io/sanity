@@ -82,7 +82,7 @@ export function DiffString(props: {diff: StringDiff}) {
     <>
       {(diff.segments || []).map((segment, segmentIndex) => (
         <DiffStringSegment
-          // eslint-disable-next-line react/no-array-index-key
+          // oxlint-disable-next-line no-array-index-key
           key={segmentIndex}
           segment={segment}
         />

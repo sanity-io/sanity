@@ -12,7 +12,7 @@ import {
 import {type createSchemaStoreFixture} from './schemaStoreFixture'
 
 // test code :shrug:
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 type ANY = any
 
 export function createMockSchemaStoreContext(
@@ -55,7 +55,7 @@ export function createMockCliOutputter() {
   const log: ANY = []
 
   // we want control characters here: its needed to remove chalk colors for better readability in test logs
-  // eslint-disable-next-line no-control-regex
+  // oxlint-disable-next-line no-control-regex
   const stripAnsi = (str: string) => str.replace(/\x1B\[[0-9;]*m/g, '')
   const noChalkLog = (args: ANY[]) =>
     args.map((arg) => (typeof arg === 'string' ? stripAnsi(arg) : arg))

@@ -76,7 +76,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
       ((schemaType.options?.list || EMPTY_ARRAY) as ObjectOption[]).map((option, index) =>
         isKeyedObject(option) ? option : {...option, _key: `auto-generated-${index}`},
       ),
-    [schemaType.options?.list],
+    [schemaType.options],
   )
 
   const handleChange = useCallback(
@@ -119,6 +119,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
           const disabled = !optionType
 
           return (
+            // oxlint-disable-next-line no-array-index-key
             <Flex key={index} align="center" as="label" muted={disabled}>
               <Checkbox
                 disabled={disabled}

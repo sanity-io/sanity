@@ -42,7 +42,6 @@ const Root = styled(Card)`
  * @hidden
  * @internal
  */
-// eslint-disable-next-line complexity
 export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &

@@ -1,4 +1,4 @@
-import {debounce} from 'lodash'
+import {debounce} from 'lodash-es'
 import {useLayoutEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type IsEqualFunction} from './types'
@@ -21,7 +21,6 @@ function createStore<Value>(reportedValues: Map<string, Value>, publish: () => v
    */
   function add(id: string, value: Value) {
     if (reportedValues.has(id)) {
-      // eslint-disable-next-line no-console
       // console.error(
       //   new Error(
       //     `Invalid call to useReporter(${id}): A component reporting on "${id}" is already mounted in the subtree. Make sure that all reporters within the same <Tracker> subtree have unique ids.`

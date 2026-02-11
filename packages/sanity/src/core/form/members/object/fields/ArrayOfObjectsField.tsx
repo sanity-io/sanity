@@ -1,27 +1,42 @@
-import {type Path, type SchemaType} from '@sanity/types'
+import {
+  type AssetFromSource,
+  type AssetSourceUploader,
+  type Path,
+  type SchemaType,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {get} from 'lodash'
-import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
-import {type Subscription} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import {noop} from 'lodash-es'
+import {
+  type FocusEvent,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {tap} from 'rxjs/operators'
 
-import {useClient} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
-import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {handleSelectAssetFromSource as handleSelectAssetFromSourceShared} from '../../../inputs/files/common/assetSource'
+import {insert, type PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
 import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
-import {type FileLike, type UploadProgressEvent} from '../../../studio/uploads/types'
+import {type FileLike} from '../../../studio/uploads/types'
+import {createInitialUploadPatches} from '../../../studio/uploads/utils'
 import {
   type ArrayFieldProps,
   type ArrayInputInsertEvent,
   type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
+  type InputOnSelectFileFunctionProps,
   type ObjectItem,
   type OnPathFocusPayload,
   type RenderAnnotationCallback,
@@ -30,7 +45,6 @@ import {
   type RenderFieldCallback,
   type RenderInputCallback,
   type RenderPreviewCallback,
-  type UploadEvent,
 } from '../../../types'
 import {useFormBuilder} from '../../../useFormBuilder'
 import {ensureKey} from '../../../utils/ensureKey'
@@ -77,7 +91,12 @@ export function ArrayOfObjectsField(props: {
   const fieldActions = useDocumentFieldActions()
 
   const focusRef = useRef<Element & {focus: () => void}>(undefined)
-  const uploadSubscriptions = useRef<Record<string, Subscription>>({})
+  const assetSourceUploaderRef = useRef<
+    Record<string, {unsubscribe: () => void; uploader: AssetSourceUploader}>
+  >({})
+
+  // Some asset sources require a component to serve the upload flow (like Media Library)
+  const [assetSourceUploadComponents, setAssetSourceUploadComponents] = useState<ReactElement[]>([])
 
   useDidUpdate(member.field.focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus) {
@@ -143,6 +162,7 @@ export function ArrayOfObjectsField(props: {
   const resolveInitialValue = useResolveInitialValueForType()
 
   const toast = useToast()
+  const {t} = useTranslation()
 
   const handleCollapse = useCallback(() => {
     onSetPathCollapsed(member.field.path, true)
@@ -243,8 +263,7 @@ export function ArrayOfObjectsField(props: {
         return
       }
 
-      if (!(item as any)?._key || !(refItem as any)?._key) {
-        // eslint-disable-next-line no-console
+      if (!item?._key || !refItem?._key) {
         console.error(
           'Neither the item you are moving nor the item you are moving to have a key. Cannot continue.',
         )
@@ -286,9 +305,9 @@ export function ArrayOfObjectsField(props: {
 
   const handleRemoveItem = useCallback(
     (itemKey: string) => {
-      if (uploadSubscriptions.current[itemKey]) {
-        uploadSubscriptions.current[itemKey].unsubscribe()
-        delete uploadSubscriptions.current[itemKey]
+      if (assetSourceUploaderRef.current[itemKey]) {
+        assetSourceUploaderRef.current[itemKey].unsubscribe()
+        delete assetSourceUploaderRef.current[itemKey]
       }
       handleChange([unset([{_key: itemKey}])])
     },
@@ -313,7 +332,6 @@ export function ArrayOfObjectsField(props: {
     [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],
   )
 
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const formBuilder = useFormBuilder()
 
   const supportsImageUploads = formBuilder.__internal.image.directUploads
@@ -333,36 +351,107 @@ export function ArrayOfObjectsField(props: {
     [supportsFileUploads, supportsImageUploads],
   )
 
-  const handleUpload = useCallback(
-    ({file, schemaType, uploader}: UploadEvent) => {
-      const item = createProtoArrayValue(schemaType)
-      const key = item._key
-
-      handleInsert({
-        items: [item],
-        position: 'after',
-        referenceItem: -1,
-        open: false,
+  const handleSelectAssetsFromSource = useCallback(
+    (assets: AssetFromSource[], schemaType: any, key: string) => {
+      handleSelectAssetFromSourceShared({
+        assetsFromSource: assets,
+        onChange: (patches) =>
+          handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key})),
+        type: schemaType,
+        resolveUploader,
+        uploadWith: undefined,
       })
+    },
+    [handleChange, resolveUploader],
+  )
 
-      const options = {
-        metadata: get(schemaType, 'options.metadata'),
-        storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
-      }
+  const handleSelectFile = useCallback(
+    ({assetSource, schemaType, file}: InputOnSelectFileFunctionProps) => {
+      if (assetSource.Uploader) {
+        const item = createProtoArrayValue(schemaType)
+        const key = item._key
 
-      const events$ = uploader.upload(client, file, schemaType, options).pipe(
-        map((uploadProgressEvent: UploadProgressEvent) =>
-          PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key}),
-        ),
-        tap((event) => handleChange(event.patches)),
-      )
+        try {
+          handleInsert({
+            items: [item],
+            position: 'after',
+            referenceItem: -1,
+            open: false,
+          })
 
-      uploadSubscriptions.current = {
-        ...uploadSubscriptions.current,
-        [key]: events$.subscribe(),
+          handleChange(PatchEvent.from(createInitialUploadPatches(file)).prefixAll({_key: key}))
+
+          const uploader = new assetSource.Uploader()
+
+          setAssetSourceUploadComponents((prev) => {
+            const AssetSourceComponent = assetSource.component
+            const assetSourceComponent = (
+              <AssetSourceComponent
+                key={key}
+                assetSource={assetSource}
+                action="upload"
+                onSelect={(assets) => handleSelectAssetsFromSource(assets, schemaType, key)}
+                accept="*/*"
+                onClose={noop}
+                selectedAssets={[]}
+                selectionType="single"
+                uploader={uploader}
+              />
+            )
+            return [...prev, assetSourceComponent]
+          })
+          const unsubscribe = uploader.subscribe((event) => {
+            switch (event.type) {
+              case 'progress':
+                handleChange(
+                  PatchEvent.from([
+                    set(Math.max(2, event.progress), [{_key: key}, UPLOAD_STATUS_KEY, 'progress']),
+                    set(new Date().toISOString(), [{_key: key}, UPLOAD_STATUS_KEY, 'updatedAt']),
+                  ]),
+                )
+                break
+              case 'error':
+                event.files.forEach((_file) => {
+                  console.error(_file.error)
+                })
+                toast.push({
+                  status: 'error',
+                  description: t('asset-sources.common.uploader.upload-failed.description'),
+                  title: t('asset-sources.common.uploader.upload-failed.title'),
+                })
+                break
+              case 'all-complete':
+                handleChange(PatchEvent.from([unset([{_key: key}, UPLOAD_STATUS_KEY])]))
+                break
+              default:
+            }
+          })
+          assetSourceUploaderRef.current = {
+            ...assetSourceUploaderRef.current,
+            [key]: {
+              unsubscribe: () => {
+                // Remove the asset source component when upload is done or aborted
+                setAssetSourceUploadComponents((prev) => prev.filter((el) => el.key !== key))
+                return unsubscribe
+              },
+              uploader,
+            },
+          }
+          uploader.upload([file], {
+            schemaType,
+            onChange: (patches) => {
+              handleChange(PatchEvent.from(patches as PatchEvent).prefixAll({_key: key}))
+            },
+          })
+        } catch (err) {
+          console.error(err)
+          assetSourceUploaderRef.current?.[key]?.unsubscribe()
+          handleChange(PatchEvent.from([unset(['_upload'])]).prefixAll({_key: key}))
+          handleRemoveItem(key)
+        }
       }
     },
-    [client, handleChange, handleInsert],
+    [handleInsert, handleSelectAssetsFromSource, handleChange, toast, t, handleRemoveItem],
   )
 
   const inputProps = useMemo((): Omit<ArrayOfObjectsInputProps, 'renderDefault'> => {
@@ -373,11 +462,15 @@ export function ArrayOfObjectsField(props: {
       readOnly: member.field.readOnly,
       schemaType: member.field.schemaType,
       changed: member.field.changed,
+      __unstable_computeDiff: member.field.__unstable_computeDiff,
+      compareValue: member.field.compareValue,
+      hasUpstreamVersion: member.field.hasUpstreamVersion,
       id: member.field.id,
       onItemExpand: handleExpandItem,
       onItemCollapse: handleCollapseItem,
       onItemClose: handleCloseItem,
       onItemOpen: handleOpenItem,
+      displayInlineChanges: member.field.displayInlineChanges ?? false,
 
       focusPath: member.field.focusPath,
       focused: member.field.focused,
@@ -392,8 +485,8 @@ export function ArrayOfObjectsField(props: {
       onItemPrepend: handleItemPrepend,
       onPathFocus: handleFocusChildPath,
       resolveInitialValue,
-      onUpload: handleUpload,
-      resolveUploader: resolveUploader,
+      onSelectFile: handleSelectFile,
+      resolveUploader,
       validation: member.field.validation,
       presence: member.field.presence,
       renderAnnotation,
@@ -412,12 +505,16 @@ export function ArrayOfObjectsField(props: {
     member.field.readOnly,
     member.field.schemaType,
     member.field.changed,
+    member.field.__unstable_computeDiff,
+    member.field.compareValue,
     member.field.id,
     member.field.focusPath,
     member.field.focused,
     member.field.path,
     member.field.validation,
     member.field.presence,
+    member.field.hasUpstreamVersion,
+    member.field.displayInlineChanges,
     handleExpandItem,
     handleCollapseItem,
     handleCloseItem,
@@ -430,7 +527,7 @@ export function ArrayOfObjectsField(props: {
     handleItemPrepend,
     handleFocusChildPath,
     resolveInitialValue,
-    handleUpload,
+    handleSelectFile,
     resolveUploader,
     renderAnnotation,
     renderBlock,
@@ -440,50 +537,6 @@ export function ArrayOfObjectsField(props: {
     renderItem,
     renderPreview,
     elementProps,
-  ])
-
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
-
-  const fieldProps = useMemo((): Omit<ArrayFieldProps, 'renderDefault'> => {
-    return {
-      actions: fieldActions,
-      name: member.name,
-      index: member.index,
-      level: member.field.level,
-      value: member.field.value,
-      title: member.field.schemaType.title,
-      description: member.field.schemaType.description,
-      collapsible: member.collapsible,
-      collapsed: member.collapsed,
-      changed: member.field.changed,
-      onCollapse: handleCollapse,
-      onExpand: handleExpand,
-      schemaType: member.field.schemaType,
-      inputId: member.field.id,
-      path: member.field.path,
-      presence: member.field.presence,
-      validation: member.field.validation,
-      children: renderedInput,
-      inputProps: inputProps as ArrayOfObjectsInputProps,
-    }
-  }, [
-    fieldActions,
-    member.name,
-    member.index,
-    member.field.level,
-    member.field.value,
-    member.field.schemaType,
-    member.field.changed,
-    member.field.id,
-    member.field.path,
-    member.field.presence,
-    member.field.validation,
-    member.collapsible,
-    member.collapsed,
-    handleCollapse,
-    handleExpand,
-    renderedInput,
-    inputProps,
   ])
 
   return (
@@ -496,7 +549,48 @@ export function ArrayOfObjectsField(props: {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      <RenderField
+        actions={fieldActions}
+        name={member.name}
+        index={member.index}
+        level={member.field.level}
+        value={member.field.value}
+        title={member.field.schemaType.title}
+        description={member.field.schemaType.description}
+        collapsible={member.collapsible}
+        collapsed={member.collapsed}
+        changed={member.field.changed}
+        onCollapse={handleCollapse}
+        onExpand={handleExpand}
+        schemaType={member.field.schemaType}
+        inputId={member.field.id}
+        path={member.field.path}
+        presence={member.field.presence}
+        validation={member.field.validation}
+        inputProps={inputProps as ArrayOfObjectsInputProps}
+        render={renderField}
+      >
+        <RenderInput {...inputProps} render={renderInput} />
+      </RenderField>
+      {assetSourceUploadComponents}
     </FormCallbacksProvider>
   )
+}
+
+// The RenderInput and RenderField wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<ArrayOfObjectsInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderField({
+  render,
+  ...props
+}: Omit<ArrayFieldProps, 'renderDefault'> & {
+  render: RenderFieldCallback
+}) {
+  return render(props)
 }

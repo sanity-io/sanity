@@ -1,12 +1,15 @@
-/* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
+/* eslint-disable @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
+import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
+import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
+import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -73,6 +76,7 @@ export function StudioLayout() {
   // The default component is the `StudioLayoutComponent` defined below.
   const Layout = useLayoutComponent()
 
+  // eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work
   return <Layout />
 }
 
@@ -86,6 +90,8 @@ export function StudioLayoutComponent() {
   // In the background, check if the network protocol used to communicate with the
   // Sanity API is modern (HTTP/2 or newer). Shows a toast if it's not.
   useNetworkProtocolCheck()
+
+  const defaultRouteTools = useMemo(() => tools.filter(isDefaultRouteTool), [tools])
 
   const router = useRouter()
   const activeToolName = useRouterState(
@@ -105,14 +111,14 @@ export function StudioLayoutComponent() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const documentTitle = useMemo(() => {
-    const mainTitle = title || startCase(name)
-
-    if (activeToolName) {
-      return `${startCase(activeToolName)} | ${mainTitle}`
+    const workspaceTitle = title || startCase(name)
+    const toolTitle = activeTool ? activeTool.title || activeTool.name : undefined
+    if (toolTitle) {
+      return `${toolTitle} | ${workspaceTitle}`
     }
+    return workspaceTitle
+  }, [activeTool, name, title])
 
-    return mainTitle
-  }, [activeToolName, name, title])
   const toolControlsDocumentTitle = !!activeTool?.controlsDocumentTitle
 
   useEffect(() => {
@@ -171,13 +177,21 @@ export function StudioLayoutComponent() {
     })
   }, [isLegacyDeskRedirect, router])
 
+  const getErrorScreen = useCallback((error: Error) => {
+    if (isDocumentLimitError(error)) {
+      return <DocumentLimitsUpsellPanel />
+    }
+    return null
+  }, [])
+
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
         <Navbar />
       </NavbarContext.Provider>
       {isLegacyDeskRedirect && <RedirectingScreen />}
-      {tools.length === 0 && <NoToolsScreen />}
+      {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
       {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
@@ -186,7 +200,11 @@ export function StudioLayoutComponent() {
       )}
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
-      <StudioErrorBoundary key={activeTool?.name} heading={`The ${activeTool?.name} tool crashed`}>
+      <StudioErrorBoundary
+        key={activeTool?.name}
+        heading={`The ${activeTool?.name} tool crashed`}
+        getErrorScreen={getErrorScreen}
+      >
         {detectViteDevServerStopped && <DetectViteDevServerStopped />}
         <Card flex={1} hidden={searchFullscreenOpen}>
           {activeTool && activeToolName && (
@@ -197,6 +215,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
+                {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
                 <ActiveToolLayout activeTool={activeTool} />
               </Suspense>
             </RouteScope>

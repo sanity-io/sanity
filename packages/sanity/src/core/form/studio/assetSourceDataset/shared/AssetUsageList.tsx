@@ -49,7 +49,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
   )
 
   return (
-    <Card as={LinkComponent} radius={2} key={document._id} data-as="a" tabIndex={0}>
+    <Card key={document._id} as={LinkComponent} radius={2} data-as="a" tabIndex={0}>
       <Flex align="center" gap={2}>
         <Preview
           layout="default"

@@ -2,6 +2,7 @@ import {type SchemaValidationProblem} from '@sanity/types'
 
 import {groupProblems} from './groupProblems'
 import {validateSchema} from './validateSchema'
+import {validateNoCallbacks} from './validation/utils/validateNoCallbacks'
 
 function unsupportedTypeValidator(typeLabel: string) {
   return function () {
@@ -16,6 +17,13 @@ function unsupportedTypeValidator(typeLabel: string) {
   }
 }
 
+function noCallbacksVisitor(typeDef: any, visitorContext: any) {
+  return {
+    ...typeDef,
+    _problems: validateNoCallbacks(typeDef),
+  }
+}
+
 /**
  * Ensure that the provided value is a valid Media Library asset aspect that can be safely deployed.
  *
@@ -27,11 +35,13 @@ export function validateMediaLibraryAssetAspect(
   const input = [maybeAspect]
 
   const validated = validateSchema(input, {
+    transformCommonVisitors: (visitors) => [...visitors, noCallbacksVisitor],
     transformTypeVisitors: (typeVisitors) => ({
       ...typeVisitors,
       document: unsupportedTypeValidator('document'),
       image: unsupportedTypeValidator('image'),
       file: unsupportedTypeValidator('file'),
+      video: unsupportedTypeValidator('sanity.video'),
       reference: unsupportedTypeValidator('reference'),
       crossDatasetReference: unsupportedTypeValidator('cross dataset reference'),
     }),

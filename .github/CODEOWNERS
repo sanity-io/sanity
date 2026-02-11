@@ -20,14 +20,12 @@
 *.telemetry.ts @sanity-io/data-eng
 
 # Code and typegeneration
-/packages/@sanity/codegen/ @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/actions/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
-# Ignore package.json and changelog
-/packages/@sanity/codegen/package.json
-/packages/@sanity/codegen/CHANGELOG.md
-
 # Presentation Tool, which interfaces with Visual Editing libraries
 /packages/sanity/src/presentation/ @sanity-io/ecosystem
+
+# Examples
+/examples/functions @kmelve @kenjonespizza @iamkevingreen

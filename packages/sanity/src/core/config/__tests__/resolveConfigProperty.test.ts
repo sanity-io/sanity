@@ -50,7 +50,6 @@ describe('resolveConfigProperty', () => {
 
     const context = {}
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const reducer = vi.fn<ConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       (prev, config, _context) => {
         return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
@@ -121,7 +120,6 @@ describe('resolveConfigProperty', () => {
 
     const context = {}
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const asyncReducer = vi.fn<AsyncConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
       async (prev, config, _context) => {
         await new Promise((resolve) => setTimeout(resolve, 0))
@@ -158,12 +156,12 @@ describe('resolveConfigProperty', () => {
     expect(asyncReducer.mock.calls[0][2]).toBe(context)
   })
 
-  it('throws `ConfigPropertyError`s with breadcrumbs', () => {
+  it('throws `ConfigPropertyError`s with breadcrumbs', async () => {
     const deepest = definePlugin({name: 'deepest'})
     const deeper = definePlugin({name: 'deeper', plugins: [deepest()]})
     const deep = definePlugin({name: 'deep', plugins: [deeper()]})
 
-    expect(
+    await expect(
       resolveConfigProperty({
         propertyName: 'example',
         config: {name: 'config', plugins: [deep()]},

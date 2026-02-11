@@ -1,10 +1,9 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
-import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
+import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash-es'
 
 import {
   deriveSearchWeightsFromType,
-  isPerspectiveRaw,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
@@ -114,43 +113,53 @@ export function createSearchQuery(
   searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
   searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
-  const {filter, params, tag} = searchOpts
+  const {
+    filter,
+    params,
+    tag,
+    maxDepth,
+    isCrossDataset,
+    __unstable_extendedProjection,
+    perspective,
+    sort,
+    limit,
+    comments,
+  } = searchOpts
 
   const specs = searchTerms.types
     .map((schemaType) =>
       deriveSearchWeightsFromType({
         schemaType,
-        maxDepth: searchOpts.maxDepth || DEFAULT_MAX_FIELD_DEPTH,
-        isCrossDataset: searchOpts.isCrossDataset,
+        maxDepth: maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+        isCrossDataset: isCrossDataset,
       }),
     )
     .filter(({paths}) => paths.length)
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
-  const {perspective} = searchOpts
-  const isRaw = isPerspectiveRaw(perspective)
 
   // Construct search filters used in this GROQ query
   const filters = [
     '_type in $__types',
-    searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
     ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
-    // Versions are collated server-side using the `perspective` option. Therefore, they must
-    // not be fetched individually. This should only be added if the search needs to be narrow to the perspective
-    isRaw ? '' : '!(_id in path("versions.**"))',
   ].filter(Boolean)
 
-  const selections = specs.map((spec) => {
-    const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
-    return `${constraint}${selection}`
-  })
+  const selections = searchOpts.skipSortByScore
+    ? []
+    : specs.map((spec) => {
+        const constraint = `_type == "${spec.typeName}" => `
+        if (searchOpts.skipSortByScore) {
+          return undefined
+        }
+        const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+        return `${constraint}${selection}`
+      })
 
   // Default to `_id asc` (GROQ default) if no search sort is provided
-  const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
+  const sortOrder = toOrderClause(sort || [{field: '_id', direction: 'asc'}])
 
   const projectionFields = ['_type', '_id', '_originalId']
   const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
@@ -165,8 +174,8 @@ export function createSearchQuery(
   // Optionally prepend our query with an 'extended' projection.
   // Required if we want to sort on nested object or reference fields.
   // In future, creating the extended projection should be handled internally by `createSearchQuery`.
-  if (searchOpts?.__unstable_extendedProjection) {
-    const extendedProjection = searchOpts?.__unstable_extendedProjection
+  if (__unstable_extendedProjection) {
+    const extendedProjection = __unstable_extendedProjection
     const firstProjection = projectionFields.concat(extendedProjection).join(', ')
 
     query = [
@@ -177,24 +186,23 @@ export function createSearchQuery(
 
   // Prepend GROQ comments
   const groqComments = [`findability-mvi:${FINDABILITY_MVI}`]
-    .concat(searchOpts?.comments || [])
+    .concat(comments || [])
     .map((s) => `// ${s}`)
     .join('\n')
-  const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
-  const limit = searchOpts?.limit ?? DEFAULT_LIMIT
+  const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
   return {
     query: updatedQuery,
     params: {
       ...toGroqParams(terms),
       __types: specs.map((spec) => spec.typeName),
-      __limit: limit,
+      __limit: limit ?? DEFAULT_LIMIT,
       ...params,
     },
     options: {
       tag,
-      perspective: isRaw || !searchOpts.perspective?.length ? 'raw' : searchOpts.perspective,
+      perspective,
     },
     searchSpec: specs,
     terms,

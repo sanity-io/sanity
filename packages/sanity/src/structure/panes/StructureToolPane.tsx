@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {lazy, memo, Suspense} from 'react'
 
 import {PaneRouterProvider} from '../components/paneRouter'
@@ -19,6 +19,8 @@ interface StructureToolPaneProps {
   path: string
   selected: boolean
   siblingIndex: number
+  maximized: boolean
+  onSetMaximizedPane?: () => void
 }
 
 // TODO: audit this creates separate chunks
@@ -49,6 +51,8 @@ export const StructureToolPane = memo(
       path,
       selected,
       siblingIndex,
+      maximized,
+      onSetMaximizedPane,
     } = props
 
     const PaneComponent = paneMap[pane.type] || UnknownPane
@@ -71,6 +75,8 @@ export const StructureToolPane = memo(
             paneKey={paneKey}
             // @ts-expect-error TS doesn't know how to handle this intersection
             pane={pane}
+            maximized={maximized}
+            onSetMaximizedPane={onSetMaximizedPane}
           />
         </Suspense>
       </PaneRouterProvider>
@@ -84,9 +90,7 @@ export const StructureToolPane = memo(
     if (!isEqual(prevParams, nextParams)) return false
     if (!isEqual(prevPayload, nextPayload)) return false
 
-    const keys = new Set([...Object.keys(prev), ...Object.keys(next)]) as Set<
-      keyof typeof next | keyof typeof prev
-    >
+    const keys = new Set([...Object.keys(prev), ...Object.keys(next)]) as Set<keyof typeof next>
 
     // then shallow equal the rest
     for (const key of keys) {

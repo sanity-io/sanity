@@ -5,11 +5,12 @@ import {
   type ObjectSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import pick from 'lodash/pick'
+import {pick} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
+import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 
 describe('Extract studio manifest', () => {
   test('extracted schema types should be mappable to a createSchema compatible version', () => {
@@ -17,6 +18,7 @@ describe('Extract studio manifest', () => {
     const sourceSchema = createSchema({
       name: 'test',
       types: [
+        ...mediaLibrarySchemas,
         defineType({
           type: 'object',
           name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
@@ -176,6 +178,10 @@ describe('Extract studio manifest', () => {
                   styles: [{value: 'customStyle', title: 'Custom style'}],
                 }),
               ],
+            }),
+            defineField({
+              name: 'video',
+              type: 'sanity.video',
             }),
           ],
         }),
