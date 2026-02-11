@@ -60,17 +60,11 @@ describe('resolveUploadAssetSources', () => {
     } as unknown as SchemaType
   }
 
-  const createMockFile = (name: string, type: string): File =>
-    new File(['content'], name, {type})
+  const createMockFile = (name: string, type: string): File => new File(['content'], name, {type})
 
   describe('Type Resolution', () => {
     it('returns asset sources for image type', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType()
 
       const result = resolveUploadAssetSources(imageType, formBuilder)
@@ -90,12 +84,9 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('returns empty array for non-file/image types', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        true,
-        [mockAssetSourceWithUploader],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], true, [
+        mockAssetSourceWithUploader,
+      ])
       const stringType: SchemaType = {
         name: 'string',
         type: {name: 'string', type: null, jsonType: 'string'},
@@ -108,12 +99,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('handles inherited image types', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const customImageType: SchemaType = {
         name: 'customImage',
         type: {name: 'image', type: null, jsonType: 'object'},
@@ -143,12 +129,7 @@ describe('resolveUploadAssetSources', () => {
 
   describe('Upload Support Flags', () => {
     it('returns empty array when directImageUploads is false', () => {
-      const formBuilder = createMockFormBuilder(
-        false,
-        [mockAssetSourceWithUploader],
-        true,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(false, [mockAssetSourceWithUploader], true, [])
       const imageType = createMockImageType()
 
       const result = resolveUploadAssetSources(imageType, formBuilder)
@@ -166,12 +147,9 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('respects formBuilder configuration for each type independently', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [mockAssetSourceWithUploader],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [
+        mockAssetSourceWithUploader,
+      ])
       const imageType = createMockImageType()
       const fileType = createMockFileType()
 
@@ -185,12 +163,7 @@ describe('resolveUploadAssetSources', () => {
 
   describe('File Filtering with Accept Patterns', () => {
     it('filters files that do not match image accept pattern (e.g., image/png only)', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/png')
       const jpegFile = createMockFile('test.jpg', 'image/jpeg')
 
@@ -200,12 +173,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('returns sources when file matches image accept pattern', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/png')
       const pngFile = createMockFile('test.png', 'image/png')
 
@@ -237,12 +205,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('ignores file validation when no file provided (for hover scenarios)', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/png')
 
       const result = resolveUploadAssetSources(imageType, formBuilder)
@@ -252,12 +215,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('uses default accept pattern image/* when image type has no accept option', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType()
       const jpegFile = createMockFile('test.jpg', 'image/jpeg')
 
@@ -279,12 +237,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('accepts wildcard mime types', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/*')
       const jpegFile = createMockFile('test.jpg', 'image/jpeg')
       const pngFile = createMockFile('test.png', 'image/png')
@@ -314,12 +267,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('returns all sources when none have Uploaders (plugin fallback)', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithoutUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithoutUploader], false, [])
       const imageType = createMockImageType()
 
       const result = resolveUploadAssetSources(imageType, formBuilder)
@@ -368,12 +316,7 @@ describe('resolveUploadAssetSources', () => {
 
   describe('Edge Cases', () => {
     it('handles multiple accept patterns separated by commas', () => {
-      const formBuilder = createMockFormBuilder(
-        true,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(true, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/png,image/jpeg')
       const jpegFile = createMockFile('test.jpg', 'image/jpeg')
       const pngFile = createMockFile('test.png', 'image/png')
@@ -402,12 +345,7 @@ describe('resolveUploadAssetSources', () => {
     })
 
     it('returns empty array when directUploads is false even if accept pattern matches', () => {
-      const formBuilder = createMockFormBuilder(
-        false,
-        [mockAssetSourceWithUploader],
-        false,
-        [],
-      )
+      const formBuilder = createMockFormBuilder(false, [mockAssetSourceWithUploader], false, [])
       const imageType = createMockImageType('image/png')
       const pngFile = createMockFile('test.png', 'image/png')
 
