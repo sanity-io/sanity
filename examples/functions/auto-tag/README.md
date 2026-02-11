@@ -170,9 +170,10 @@ Once you've tested your function locally and are satisfied with its behavior, yo
          memory: 2,
          timeout: 30,
          event: {
-           on: ['publish'],
-           filter: "_type == 'post' && !defined(tags)",
-           projection: '_id',
+           on: ['create', 'update'],
+           filter:
+             "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
+           projection: '{_id}',
          },
        }),
      ],
@@ -196,7 +197,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 3. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Checking the Sanity Studio under "Compute"
+   - Checking the Sanity Manage console under "API > Functions"
    - Publishing a new post without tags and confirming tags are generated
    - Monitoring function logs in the CLI
 
@@ -205,7 +206,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 - **Test thoroughly first** - Always test your function locally before deploying
 - **Monitor AI usage** - Agent Actions have usage limits and costs. Visit Settings in your Manage console to learn more
 - **Avoid recursion** - The filter `!defined(tags)` prevents the function from re-triggering
-- **Check permissions** - Ensure your function has access to Sanity's AI capabilities
 - **Use specific filters** - The current filter only targets posts without tags to avoid unnecessary executions
 
 ### Troubleshooting deployment
@@ -214,11 +214,6 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 
 - Cause: Your account doesn't have deployment permissions for this project
 - Solution: Ask a project admin to grant you Deploy Studio permissions
-
-**Error: "AI capabilities not available"**
-
-- Cause: Your project may not have access to Sanity's AI features
-- Solution: Check your project's feature access or contact Sanity support
 
 **Function not generating tags after deployment**
 

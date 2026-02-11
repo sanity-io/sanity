@@ -128,9 +128,9 @@ Once you've tested your function locally and are satisfied with its behavior, yo
          memory: 1,
          timeout: 10,
          event: {
-           on: ['publish'],
+           on: ['create'],
            filter: "_type == 'post' && !defined(firstPublished)",
-           projection: '_id',
+           projection: '{_id}',
          },
        }),
      ],
@@ -154,7 +154,7 @@ Once you've tested your function locally and are satisfied with its behavior, yo
 3. **Verify deployment**
 
    After deployment, you can verify your function is active by:
-   - Checking the Sanity Studio under "Compute"
+   - Checking the Sanity Manage console under "API > Functions"
    - Publishing a new post and confirming the `firstPublished` field is set
    - Monitoring function logs in the CLI
 
