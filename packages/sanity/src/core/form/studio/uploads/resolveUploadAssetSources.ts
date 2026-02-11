@@ -5,6 +5,15 @@ import * as is from '../../utils/is'
 import {accepts} from './accepts'
 import {type FileLike} from './types'
 
+/**
+ * Returns sources with Uploaders, or all sources if none have Uploaders.
+ * Enables drag-and-drop for custom asset sources (UploadPlaceholder creates default uploader).
+ */
+function filterAssetSourcesWithFallback(assetSources: AssetSource[]): AssetSource[] {
+  const sourcesWithUploader = assetSources.filter((source) => Boolean(source.Uploader))
+  return sourcesWithUploader.length > 0 ? sourcesWithUploader : assetSources
+}
+
 export function resolveUploadAssetSources(
   type: SchemaType,
   formBuilder: FormBuilderContextValue,
@@ -19,7 +28,7 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || 'image/*')) {
       return []
     }
-    return formBuilder.__internal.image.assetSources.filter((source) => Boolean(source.Uploader))
+    return filterAssetSourcesWithFallback(formBuilder.__internal.image.assetSources)
   }
   if (is.type('file', type)) {
     if (!supportsDirectFileUploads) {
@@ -28,7 +37,7 @@ export function resolveUploadAssetSources(
     if (file && !accepts(file, type.options?.accept || '')) {
       return []
     }
-    return formBuilder.__internal.file.assetSources.filter((source) => Boolean(source.Uploader))
+    return filterAssetSourcesWithFallback(formBuilder.__internal.file.assetSources)
   }
   return []
 }
