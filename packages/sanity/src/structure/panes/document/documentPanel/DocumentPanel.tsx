@@ -157,10 +157,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     return false
   }, [activeView, displayed, documentId, editState?.draft, editState?.published, schemaType, value])
 
-  // Scroll to top as `documentId` changes
+  const prevDocumentIdRef = useRef<string | undefined>(undefined)
+
+  // Scroll to top when `documentId` changes (but not on initial render)
   useEffect(() => {
     if (!documentScrollElement?.scrollTo) return
-    documentScrollElement.scrollTo(0, 0)
+
+    // Skip scroll on initial render
+    if (prevDocumentIdRef.current === undefined) {
+      prevDocumentIdRef.current = documentId
+      return
+    }
+
+    // Only scroll if documentId actually changed
+    if (prevDocumentIdRef.current !== documentId) {
+      documentScrollElement.scrollTo(0, 0)
+      prevDocumentIdRef.current = documentId
+    }
   }, [documentId, documentScrollElement])
 
   // Pass portal element to `DocumentPane`
