@@ -123,17 +123,32 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     [onPathOpen, findAncestorFullscreenPath, closeAll],
   )
 
-  const close = useCallback(() => {
-    const currentPath = stack[stack.length - 1]?.path
+  const close = useCallback(
+    (options?: {toParent?: boolean}) => {
+      const currentPath = stack[stack.length - 1]?.path
 
-    // Check if there's a fullscreen PTE that we should navigate back to
-    if (currentPath && hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
-      closeWithFullscreen(currentPath)
-      return
-    }
+      // When toParent is set and there's a parent dialog, navigate to it
+      // instead of closing everything
+      if (options?.toParent && stack.length >= 2) {
+        const parentEntry = stack[stack.length - 2]
+        if (parentEntry?.path) {
+          onPathOpen(parentEntry.path)
+          // Remove the top entry, keep the parent and ancestors
+          setStack((prev) => prev.slice(0, -1))
+          return
+        }
+      }
 
-    closeAll()
-  }, [closeWithFullscreen, closeAll, stack, hasAnyFullscreen, allFullscreenPaths])
+      // Check if there's a fullscreen PTE that we should navigate back to
+      if (currentPath && hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
+        closeWithFullscreen(currentPath)
+        return
+      }
+
+      closeAll()
+    },
+    [closeWithFullscreen, closeAll, stack, onPathOpen, hasAnyFullscreen, allFullscreenPaths],
+  )
 
   const value = useMemo(
     () => ({stack, push, remove, update, close}),

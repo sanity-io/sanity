@@ -77,7 +77,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
  * Non-top dialogs are hidden via CSS while preserving their state.
  */
 export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.JSX.Element {
-  const {children, header, onClose, type, width} = props
+  const {children, header, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const {onPathOpen} = useFormCallbacks()
@@ -143,25 +143,23 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
             onPathOpen(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
-            onClose?.()
+            close()
           }
         }
       }
     },
-    [isTop, stack, onPathOpen, onClose, telemetry],
+    [isTop, stack, onPathOpen, close, telemetry],
   )
 
   const handleStackedDialogClose = useCallback(() => {
-    // This means that we are closing the dialog and are not at the root level
-    // Which means we will open the parent dialog
     if (stack.length >= 2) {
       telemetry.log(NavigatedToNestedObjectViaCloseButton)
+      close({toParent: true})
     } else {
       telemetry.log(NestedDialogClosed)
+      close()
     }
-
-    onClose?.()
-  }, [onClose, stack, telemetry])
+  }, [stack, telemetry, close])
 
   const handleCompleteDialogClose = useCallback(() => {
     telemetry.log(NestedDialogClosed)
