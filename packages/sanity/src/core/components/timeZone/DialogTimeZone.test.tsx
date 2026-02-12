@@ -3,8 +3,8 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
-import {type NormalizedTimeZone} from '../../studio/timezones/types'
 import {useTimeZone} from '../../hooks/useTimeZone'
+import {type NormalizedTimeZone} from '../../studio/timezones/types'
 import DialogTimeZone from './DialogTimeZone'
 
 vi.mock('../../hooks/useTimeZone')
@@ -46,9 +46,7 @@ const mockTimeZones: NormalizedTimeZone[] = [
 
 describe('DialogTimeZone', () => {
   const mockSetTimeZone = vi.fn()
-  const mockGetTimeZone = vi.fn((value: string) =>
-    mockTimeZones.find((tz) => tz.value === value),
-  )
+  const mockGetTimeZone = vi.fn((value: string) => mockTimeZones.find((tz) => tz.value === value))
   const mockGetLocalTimeZone = vi.fn(() => mockTimeZones[0])
   const mockOnClose = vi.fn()
 
@@ -70,10 +68,9 @@ describe('DialogTimeZone', () => {
   it('renders with initial timezone selection', async () => {
     const wrapper = await createTestProvider()
 
-    render(
-      <DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />,
-      {wrapper},
-    )
+    render(<DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />, {
+      wrapper,
+    })
 
     expect(screen.getByText('Select time zone')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Eastern Time (America/New_York)')).toBeInTheDocument()
@@ -83,10 +80,9 @@ describe('DialogTimeZone', () => {
     const wrapper = await createTestProvider()
     const user = userEvent.setup()
 
-    render(
-      <DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />,
-      {wrapper},
-    )
+    render(<DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />, {
+      wrapper,
+    })
 
     // Click the dropdown button
     const dropdownButton = screen.getByRole('button', {name: /open/i})
@@ -103,10 +99,9 @@ describe('DialogTimeZone', () => {
     const wrapper = await createTestProvider()
     const user = userEvent.setup()
 
-    render(
-      <DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />,
-      {wrapper},
-    )
+    render(<DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />, {
+      wrapper,
+    })
 
     // Clear and type to search for London
     const combobox = screen.getByRole('combobox')
@@ -121,10 +116,9 @@ describe('DialogTimeZone', () => {
     const wrapper = await createTestProvider()
     const user = userEvent.setup()
 
-    render(
-      <DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />,
-      {wrapper},
-    )
+    render(<DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />, {
+      wrapper,
+    })
 
     // Find the autocomplete input container
     const autocomplete = screen.getByRole('combobox')
@@ -143,10 +137,9 @@ describe('DialogTimeZone', () => {
   it('update button is disabled when timezone unchanged', async () => {
     const wrapper = await createTestProvider()
 
-    render(
-      <DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />,
-      {wrapper},
-    )
+    render(<DialogTimeZone onClose={mockOnClose} timeZoneScope={{type: 'input', id: 'test'}} />, {
+      wrapper,
+    })
 
     // Update button should be disabled when no change has been made
     const updateButton = screen.getByRole('button', {name: 'Update time zone'})
