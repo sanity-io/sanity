@@ -10,7 +10,6 @@ import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {
   NavigatedToNestedObjectViaCloseButton,
   navigatedToNestedObjectViaKeyboardShortcut,
@@ -80,7 +79,6 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const {children, header, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const {onPathOpen} = useFormCallbacks()
   const telemetry = useTelemetry()
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
     absolutePath?: Path
@@ -92,7 +90,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack, close} = useDialogStack({
+  const {dialogId, isTop, stack, close, navigateTo} = useDialogStack({
     path: currentPath,
   })
 
@@ -140,7 +138,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
           if (newLastStackPath.length > 1) {
             telemetry.log(navigatedToNestedObjectViaKeyboardShortcut)
-            onPathOpen(newLastStackPath)
+            navigateTo(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
             close()
@@ -148,7 +146,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         }
       }
     },
-    [isTop, stack, onPathOpen, close, telemetry],
+    [isTop, stack, navigateTo, close, telemetry],
   )
 
   const handleStackedDialogClose = useCallback(() => {
@@ -179,7 +177,13 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           __unstable_autoFocus={isTop ? props.autofocus : false}
           contentRef={setDocumentScrollElement}
           data-testid="nested-object-dialog"
-          header={<DialogBreadcrumbs currentPath={currentPath} />}
+          header={
+            <DialogBreadcrumbs
+              currentPath={currentPath}
+              onNavigate={navigateTo}
+              onClose={handleStackedDialogClose}
+            />
+          }
           id={dialogId}
           onClose={handleStackedDialogClose}
           onDragEnter={onDragEnter}

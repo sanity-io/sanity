@@ -150,9 +150,33 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     [closeWithFullscreen, closeAll, stack, onPathOpen, hasAnyFullscreen, allFullscreenPaths],
   )
 
+  const navigateTo = useCallback(
+    (targetPath: Path) => {
+      onPathOpen(targetPath)
+
+      // Keep only stack entries whose paths are strict ancestors of the target path
+      // (dialogs that should remain open because the target is inside them)
+      setStack((prev) =>
+        prev.filter((entry) => {
+          if (!entry.path) return false
+          // Entry must be strictly shorter to be an ancestor
+          if (entry.path.length >= targetPath.length) return false
+          // eslint-disable-next-line max-nested-callbacks
+          return entry.path.every((segment, index) => {
+            const targetSegment = targetPath[index]
+            return isKeySegment(segment) && isKeySegment(targetSegment)
+              ? segment._key === targetSegment._key
+              : segment === targetSegment
+          })
+        }),
+      )
+    },
+    [onPathOpen],
+  )
+
   const value = useMemo(
-    () => ({stack, push, remove, update, close}),
-    [stack, push, remove, update, close],
+    () => ({stack, push, remove, update, close, navigateTo}),
+    [stack, push, remove, update, close, navigateTo],
   )
 
   return <DialogStackContext.Provider value={value}>{children}</DialogStackContext.Provider>
