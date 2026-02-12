@@ -21,6 +21,7 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
+  truncateReleaseTitle,
   getReleaseTone,
   getVersionFromId,
   getVersionId,
@@ -307,9 +308,9 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
-          <Text size={1} weight="medium">
-            {release.metadata.title || tCore('release.placeholder-untitled-release')}
+        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0, maxWidth: '200px'}}>
+          <Text size={1} weight="medium" textOverflow="ellipsis">
+            {truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release'))}
           </Text>
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
             <Text muted size={1}>
@@ -359,7 +360,7 @@ function getMenuButtonProps({
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
-      text: selected?.metadata.title || tCore('release.placeholder-untitled-release'),
+      text: truncateReleaseTitle(selected?.metadata.title, tCore('release.placeholder-untitled-release')),
       icon: <ReleaseAvatar padding={1} tone={tone} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
       tone,

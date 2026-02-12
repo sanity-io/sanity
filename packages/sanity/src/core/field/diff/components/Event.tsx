@@ -12,6 +12,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
+import {truncateReleaseTitle} from '../../../releases/util/releaseTitle'
 import {
   type DocumentGroupEvent,
   isEditDocumentVersionEvent,
@@ -166,7 +167,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
                       isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
                     }
                   >
-                    {event.release.metadata?.title || t('release.placeholder-untitled-release')}
+                    {truncateReleaseTitle(event.release.metadata?.title, t('release.placeholder-untitled-release'))}
                   </VersionInlineBadge>
                 ) : (
                   <VersionInlineBadge $tone="caution">

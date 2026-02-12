@@ -113,9 +113,7 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title:
-                truncateReleaseTitle(release?.metadata.title) ||
-                coreT('release.placeholder-untitled-release'),
+              title: truncateReleaseTitle(release?.metadata.title, coreT('release.placeholder-untitled-release')),
             }}
             components={{
               Label: ({children}) => {

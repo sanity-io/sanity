@@ -1,8 +1,9 @@
-import {Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
   formatRelativeLocalePublishDate,
   getReleaseIdFromReleaseDocumentId,
+  getReleaseTitleDetails,
   getReleaseTone,
   getVersionFromId,
   isCardinalityOneRelease,
@@ -267,6 +268,13 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
 
   const isDraftModelEnabled = workspace.document.drafts?.enabled
 
+  const inCreationTitleDetails = filteredReleases.inCreation
+    ? getReleaseTitleDetails(
+        filteredReleases.inCreation.metadata.title,
+        t('release.placeholder-untitled-release'),
+      )
+    : undefined
+
   const nonReleaseVersions = documentVersions.filter((versionDocumentId) => {
     if (isPublishedId(versionDocumentId) || isDraftId(versionDocumentId)) {
       return false
@@ -356,14 +364,21 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       )}
       {filteredReleases.inCreation && (
         <VersionChip
-          tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
+          tooltipContent={
+            inCreationTitleDetails?.isTruncated ? (
+              <Stack space={2} style={{maxWidth: '300px'}}>
+                <Text size={1} weight="medium">{inCreationTitleDetails.fullTitle}</Text>
+                <TooltipContent release={filteredReleases.inCreation} />
+              </Stack>
+            ) : (
+              <TooltipContent release={filteredReleases.inCreation} />
+            )
+          }
           selected
           onClick={() => {}}
           locked={false}
           tone={getReleaseTone(filteredReleases.inCreation)}
-          text={
-            filteredReleases.inCreation.metadata.title || t('release.placeholder-untitled-release')
-          }
+          text={inCreationTitleDetails?.displayTitle ?? t('release.placeholder-untitled-release')}
           onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
           contextValues={{
             documentId: displayed?._id || '',
@@ -379,32 +394,47 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
       )}
 
       {displayed &&
-        filteredReleases.currentReleases?.map((release) => (
-          <VersionChip
-            key={release._id}
-            tooltipContent={<TooltipContent release={release} />}
-            {...getReleaseChipState(release)}
-            onClick={() => handlePerspectiveChange(release)}
-            text={release.metadata.title || t('release.placeholder-untitled-release')}
-            tone={getReleaseTone(release)}
-            locked={isReleaseScheduledOrScheduling(release)}
-            onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
-            contextValues={{
-              documentId: displayed?._id || '',
-              documentType,
-              releases: filteredReleases.notCurrentReleases,
-              releasesLoading: loading,
-              bundleId: getReleaseIdFromReleaseDocumentId(release._id),
-              isVersion: true,
-              release,
-              // displayed, in this instance is not going to be the version to compare to
-              // since it's going to be the published version
-              isGoingToUnpublish: editState?.version
-                ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
-                : false,
-            }}
-          />
-        ))}
+        filteredReleases.currentReleases?.map((release) => {
+          const titleDetails = getReleaseTitleDetails(
+            release.metadata.title,
+            t('release.placeholder-untitled-release'),
+          )
+          return (
+            <VersionChip
+              key={release._id}
+              tooltipContent={
+                titleDetails.isTruncated ? (
+                  <Stack space={2} style={{maxWidth: '300px'}}>
+                    <Text size={1} weight="medium">{titleDetails.fullTitle}</Text>
+                    <TooltipContent release={release} />
+                  </Stack>
+                ) : (
+                  <TooltipContent release={release} />
+                )
+              }
+              {...getReleaseChipState(release)}
+              onClick={() => handlePerspectiveChange(release)}
+              text={titleDetails.displayTitle}
+              tone={getReleaseTone(release)}
+              locked={isReleaseScheduledOrScheduling(release)}
+              onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+              contextValues={{
+                documentId: displayed?._id || '',
+                documentType,
+                releases: filteredReleases.notCurrentReleases,
+                releasesLoading: loading,
+                bundleId: getReleaseIdFromReleaseDocumentId(release._id),
+                isVersion: true,
+                release,
+                // displayed, in this instance is not going to be the version to compare to
+                // since it's going to be the published version
+                isGoingToUnpublish: editState?.version
+                  ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                  : false,
+              }}
+            />
+          )
+        })}
       <NonReleaseVersionsSelect
         nonReleaseVersions={nonReleaseVersions}
         selectedPerspective={selectedPerspectiveName}

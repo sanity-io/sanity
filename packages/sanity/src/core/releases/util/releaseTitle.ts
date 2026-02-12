@@ -3,41 +3,48 @@
  * @internal
  */
 
-/** Default character limit for release titles */
-export const DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT = 50
-
-/** CSS max-width values for different UI contexts */
-export const RELEASE_TITLE_MAX_WIDTHS = {
-  /** For compact UI elements like chips and badges */
-  compact: '180px',
-  /** For medium UI elements like menu items and cards */
-  medium: '300px',
-  /** For large UI elements like headers and main displays */
-  large: '400px',
-} as const
+const DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT = 50
 
 /**
- * Truncates a release title to the default character limit
- * @param title - The release title to truncate (returns undefined if title is undefined)
- * @returns Truncated title with "..." if needed, or undefined if input is undefined
+ * Resolves a release title, returning the fallback if the title is empty/undefined
+ * @param title - The release title (may be undefined or empty)
+ * @param fallback - The fallback string to use when title is absent
+ * @returns The resolved title string
  */
-export function truncateReleaseTitle(title: string | undefined): string | undefined {
-  if (!title) return undefined
-  return title.length > DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT
-    ? `${title.slice(0, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)}...`
-    : title
+export function getReleaseTitle(title: string | undefined, fallback: string): string {
+  return title || fallback
 }
 
 /**
- * Gets CSS styles for release title truncation
- * @param maxWidth - Maximum width for the container
- * @returns CSS styles for text truncation
+ * Resolves and truncates a release title to the default character limit.
+ * Falls back to `fallback` when `title` is empty/undefined, then truncates.
+ * @param title - The release title (may be undefined or empty)
+ * @param fallback - The fallback string to use when title is absent
+ * @returns Truncated title with "..." if it exceeds the limit
  */
-export function getReleaseTitleTruncationStyles(maxWidth?: string) {
-  return {
-    overflow: 'hidden' as const,
-    textOverflow: 'ellipsis' as const,
-    whiteSpace: 'nowrap' as const,
-    ...(maxWidth && {maxWidth}),
-  }
+export function truncateReleaseTitle(title: string | undefined, fallback: string): string {
+  const resolved = getReleaseTitle(title, fallback)
+  return resolved.length > DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT
+    ? `${resolved.slice(0, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)}...`
+    : resolved
+}
+
+/**
+ * Returns structured title details for consumers that need both
+ * the truncated display title and tooltip data.
+ * @param title - The release title (may be undefined or empty)
+ * @param fallback - The fallback string to use when title is absent
+ * @returns Object with displayTitle, fullTitle, and isTruncated flag
+ */
+export function getReleaseTitleDetails(
+  title: string | undefined,
+  fallback: string,
+): {displayTitle: string; fullTitle: string; isTruncated: boolean} {
+  const fullTitle = getReleaseTitle(title, fallback)
+  const isTruncated = fullTitle.length > DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT
+  const displayTitle = isTruncated
+    ? `${fullTitle.slice(0, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)}...`
+    : fullTitle
+
+  return {displayTitle, fullTitle, isTruncated}
 }

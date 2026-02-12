@@ -76,7 +76,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           <VersionStatus
             key={versionName}
             mode={snapshot._updatedAt === snapshot._createdAt ? 'created' : 'edited'}
-            title={release?.metadata.title || t('release.placeholder-untitled-release')}
+            title={truncateReleaseTitle(release?.metadata.title, t('release.placeholder-untitled-release'))}
             timestamp={snapshot?._updatedAt}
             tone={release ? getReleaseTone(release) : 'default'}
           />
@@ -101,7 +101,7 @@ const VersionStatus = ({
   mode,
   tone,
 }: {
-  title: string | undefined
+  title: string
   mode: Mode
   timestamp?: string
   tone: BadgeTone
@@ -117,7 +117,7 @@ const VersionStatus = ({
     <Flex align="center" gap={2}>
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
-        {truncateReleaseTitle(title) || t('release.placeholder-untitled-release')} -{' '}
+        {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>

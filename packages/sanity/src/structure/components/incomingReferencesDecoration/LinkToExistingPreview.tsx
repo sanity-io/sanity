@@ -7,6 +7,7 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getReleaseIdFromReleaseDocumentId,
+  truncateReleaseTitle,
   getReleaseTone,
   getVersionFromId,
   isDraftId,
@@ -65,7 +66,7 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
       const releaseId = getVersionFromId(id)
       const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
       if (release) {
-        return {tone: getReleaseTone(release), text: release.metadata.title}
+        return {tone: getReleaseTone(release), text: truncateReleaseTitle(release.metadata.title, release._id)}
       }
     }
     return null

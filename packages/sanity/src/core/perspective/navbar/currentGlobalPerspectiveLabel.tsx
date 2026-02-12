@@ -15,8 +15,10 @@ import {
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../ui-components/tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {RELEASES_INTENT} from '../../releases/plugin'
+import {getReleaseTitleDetails} from '../../releases/util/releaseTitle'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
@@ -73,6 +75,10 @@ function AnimatedTextWidth({children, text}: {children: ReactNode; text: string}
 
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
+  const titleDetails = getReleaseTitleDetails(
+    selectedPerspective.metadata?.title,
+    t('release.placeholder-untitled-release'),
+  )
 
   const ReleasesIntentLink = useMemo(
     () =>
@@ -96,16 +102,25 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
   )
 
   return (
-    <Button
-      as={ReleasesIntentLink}
-      data-as="a"
-      rel="noopener noreferrer"
-      mode="bleed"
-      padding={2}
-      radius="full"
-      style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
-      text={selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')}
-    />
+    <Tooltip
+      disabled={!titleDetails.isTruncated}
+      content={
+        <Box style={{maxWidth: '300px'}}>
+          <Text size={1}>{titleDetails.fullTitle}</Text>
+        </Box>
+      }
+    >
+      <Button
+        as={ReleasesIntentLink}
+        data-as="a"
+        rel="noopener noreferrer"
+        mode="bleed"
+        padding={2}
+        radius="full"
+        style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
+        text={titleDetails.displayTitle}
+      />
+    </Tooltip>
   )
 }
 

@@ -24,9 +24,7 @@ export function UnpublishedDocumentBanner() {
   const {t: tCore} = useTranslation()
 
   if (isReleaseDocument(selectedPerspective) && isCurrentVersionGoingToUnpublish) {
-    const title =
-      truncateReleaseTitle(selectedPerspective.metadata?.title) ||
-      tCore('release.placeholder-untitled-release')
+    const title = truncateReleaseTitle(selectedPerspective.metadata?.title, tCore('release.placeholder-untitled-release'))
 
     return (
       <Banner

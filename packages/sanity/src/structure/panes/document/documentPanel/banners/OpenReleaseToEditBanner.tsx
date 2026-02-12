@@ -67,10 +67,8 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
           })
           return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
-        .map(
-          (version) =>
-            truncateReleaseTitle(version.metadata.title) ||
-            tCore('release.placeholder-untitled-release'),
+        .map((version) =>
+          truncateReleaseTitle(version.metadata.title, tCore('release.placeholder-untitled-release')),
         ),
     [activeReleases, documentVersions, tCore],
   )

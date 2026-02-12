@@ -12,6 +12,7 @@ import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
+import {truncateReleaseTitle} from '../../util/releaseTitle'
 import {releasesLocaleNamespace} from '../../i18n'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
@@ -24,7 +25,7 @@ export function ReleaseDashboardHeader(props: {
   const {inspector, release, setInspector} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const title = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const title = truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release'))
   const router = useRouter()
 
   const handleNavigateToReleasesList = useCallback(() => {
@@ -62,11 +63,11 @@ export function ReleaseDashboardHeader(props: {
           />
           <Button
             mode="bleed"
-            text={title || tCore('release.placeholder-untitled-release')}
+            text={title}
             textWeight="semibold"
             padding={2}
             style={{
-              ...(title ? undefined : {opacity: 0.5}),
+              ...(release.metadata.title ? undefined : {opacity: 0.5}),
               maxWidth: '300px',
               textOverflow: 'ellipsis',
               overflow: 'hidden',

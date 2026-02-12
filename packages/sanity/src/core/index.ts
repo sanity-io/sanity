@@ -50,6 +50,8 @@ export {
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   sortReleases,
+  getReleaseTitle,
+  getReleaseTitleDetails,
   truncateReleaseTitle,
   useActiveReleases,
   useArchivedReleases,

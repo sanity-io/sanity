@@ -7,6 +7,7 @@ import {
   type TargetPerspective,
   type TFunction,
   Translate,
+  truncateReleaseTitle,
   usePerspective,
   useSource,
   useTranslation,
@@ -154,7 +155,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
 
 function perspectiveLabel(perspective: TargetPerspective, {t}: {t: TFunction}): string {
   if (isReleaseDocument(perspective)) {
-    return perspective.metadata.title ?? perspective._id
+    return truncateReleaseTitle(perspective.metadata.title, perspective._id)
   }
 
   if (perspective === 'drafts') {

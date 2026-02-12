@@ -73,9 +73,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
                 t={t}
                 i18nKey="banners.choose-new-document-destination.release-inactive"
                 values={{
-                  title:
-                    truncateReleaseTitle(selectedPerspective.metadata.title) ||
-                    tCore('release.placeholder-untitled-release'),
+                  title: truncateReleaseTitle(selectedPerspective.metadata.title, tCore('release.placeholder-untitled-release')),
                 }}
                 components={{
                   VersionBadge: getVersionInlineBadge(selectedPerspective),

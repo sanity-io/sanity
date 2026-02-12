@@ -39,8 +39,7 @@ export function DiscardVersionDialog(props: {
   const rawReleaseName =
     typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
   const currentRelease = getVersionNameFromId(documentId as VersionId)
-  const releaseName =
-    truncateReleaseTitle(rawReleaseName) || coreT('release.placeholder-untitled-release')
+  const releaseName = truncateReleaseTitle(rawReleaseName, coreT('release.placeholder-untitled-release'))
 
   const schemaType = schema.get(documentType)
 

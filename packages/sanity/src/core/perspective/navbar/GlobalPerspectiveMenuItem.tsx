@@ -16,6 +16,7 @@ import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {getReleaseTitleDetails} from '../../releases/util/releaseTitle'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
@@ -117,11 +118,17 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const {t} = useTranslation()
 
-  const displayTitle = useMemo(() => {
-    if (isPublishedPerspective(release)) return t('release.navbar.published')
-    if (isDraftPerspective(release)) return t('release.navbar.drafts')
+  const titleDetails = useMemo(() => {
+    if (isPublishedPerspective(release)) {
+      const title = t('release.navbar.published')
+      return {displayTitle: title, fullTitle: title, isTruncated: false}
+    }
+    if (isDraftPerspective(release)) {
+      const title = t('release.navbar.drafts')
+      return {displayTitle: title, fullTitle: title, isTruncated: false}
+    }
 
-    return release.metadata.title || t('release.placeholder-untitled-release')
+    return getReleaseTitleDetails(release.metadata.title, t('release.placeholder-untitled-release'))
   }, [release, t])
 
   const handleToggleReleaseVisibility = useCallback(
@@ -186,10 +193,19 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               minWidth: 0,
             }}
           >
-            <Flex gap={3} align="center" style={{minWidth: 0, overflow: 'hidden'}}>
-              <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
-                {displayTitle}
-              </Text>
+            <Flex gap={3} align="center" style={{minWidth: 0}}>
+              <Tooltip
+                disabled={!titleDetails.isTruncated}
+                content={
+                  <Box style={{maxWidth: '300px'}}>
+                    <Text size={1}>{titleDetails.fullTitle}</Text>
+                  </Box>
+                }
+              >
+                <Text size={1} weight="medium" style={{minWidth: 0}}>
+                  {titleDetails.displayTitle}
+                </Text>
+              </Tooltip>
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (

@@ -14,6 +14,7 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
+import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
@@ -65,7 +66,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
-  const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const titleDetails = getReleaseTitleDetails(release.metadata.title, tCore('release.placeholder-untitled-release'))
 
   return (
     <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
@@ -73,7 +74,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: displayTitle}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: titleDetails.displayTitle}} />
           </Text>
         }
       >
@@ -106,9 +107,18 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               </Box>
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>
-                  <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
-                    {displayTitle}
-                  </Text>
+                  <Tooltip
+                    disabled={!titleDetails.isTruncated}
+                    content={
+                      <Box style={{maxWidth: '300px'}}>
+                        <Text size={1}>{titleDetails.fullTitle}</Text>
+                      </Box>
+                    }
+                  >
+                    <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
+                      {titleDetails.displayTitle}
+                    </Text>
+                  </Tooltip>
                 </Flex>
               </Stack>
             </Flex>

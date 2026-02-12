@@ -95,8 +95,7 @@ export function DocumentNotInReleaseBanner({
             values={{
               title: isAnonymousBundle
                 ? currentRelease
-                : truncateReleaseTitle(currentRelease?.metadata?.title) ||
-                  tCore('release.placeholder-untitled-release'),
+                : truncateReleaseTitle(currentRelease?.metadata?.title, tCore('release.placeholder-untitled-release')),
             }}
             components={{
               VersionBadge: getVersionInlineBadge(currentRelease),

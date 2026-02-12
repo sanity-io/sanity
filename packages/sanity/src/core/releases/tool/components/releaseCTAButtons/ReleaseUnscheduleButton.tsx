@@ -9,6 +9,7 @@ import {Translate, useTranslation} from '../../../../i18n'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
+import {truncateReleaseTitle} from '../../../util/releaseTitle'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -46,7 +47,7 @@ export const ReleaseUnscheduleButton = ({
                 t={t}
                 i18nKey="toast.unschedule.error"
                 values={{
-                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                  title: truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release')),
                   error: schedulingError.message,
                 }}
               />

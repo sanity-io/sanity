@@ -4,7 +4,7 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../../components'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getReleaseTitleTruncationStyles} from '../../../util/releaseTitle'
+import {truncateReleaseTitle} from '../../../util/releaseTitle'
 import {ReleaseTime} from '../ReleaseTime'
 
 export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
@@ -14,8 +14,13 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
       <Flex gap={3} padding={3}>
         <ReleaseAvatar tone={getReleaseTone(release)} padding={0} />
         <Stack space={2}>
-          <Text weight="medium" size={1} style={getReleaseTitleTruncationStyles('250px')}>
-            {release.metadata.title || t('release.placeholder-untitled-release')}
+          <Text
+            weight="medium"
+            size={1}
+            textOverflow="ellipsis"
+            style={{maxWidth: '250px'}}
+          >
+            {truncateReleaseTitle(release.metadata.title, t('release.placeholder-untitled-release'))}
           </Text>
           <Text muted size={1}>
             <ReleaseTime release={release} />
