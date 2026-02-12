@@ -3,8 +3,6 @@ import {type CliCommandDefinition} from '@sanity/cli'
 const description = 'Extracts a JSON representation of a Sanity schema within a Studio context.'
 
 const helpText = `
-**Note**: This command is experimental and subject to change.
-
 Options
   --workspace <name> The name of the workspace to generate a schema for
   --path Optional path to specify destination of the schema file
