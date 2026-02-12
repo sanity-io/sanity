@@ -33,7 +33,6 @@ import {
   type CommentUpdatePayload,
 } from '../../types'
 import {CommentsInspectorError} from './CommentsInspectorError'
-import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
 interface CommentToDelete {
@@ -454,7 +453,6 @@ function CommentsInspectorInner(
             status={status}
           />
         )}
-        {mode === 'default' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )
