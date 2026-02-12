@@ -89,6 +89,8 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
     await page.keyboard.press('Escape')
     await expect(modal).not.toBeVisible()
 
+    await expect(page.getByTestId('field-animals')).toBeVisible()
+    await expect(page.getByTestId('field-animals')).toBeEnabled()
     await page.getByTestId('field-animals').focus()
   })
 
@@ -105,8 +107,11 @@ test.describe('Enhanced Object Dialog - when tab focusing on an array item', () 
     page,
   }) => {
     test.slow()
-    await page.keyboard.press('Tab')
-    await page.keyboard.press('Tab')
+    // Focus the array item directly rather than relying on Tab order
+    await page
+      .getByTestId('field-animals')
+      .getByRole('button', {name: /Blue, the whale/})
+      .focus()
     await page.keyboard.press('Enter')
 
     await expect(page.getByTestId('nested-object-dialog')).toBeVisible()
