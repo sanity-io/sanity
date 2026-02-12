@@ -40,9 +40,9 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {setTimeZone, allTimeZones, timeZone, getLocalTimeZone, getTimeZone} =
     useTimeZone(timeZoneScope)
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
+  const [showAllOptions, setShowAllOptions] = useState(false)
   const {t} = useTranslation('studio')
 
-  // Different text based on different scopes
   const timeZoneScopeTypeToLabel = useMemo(
     (): Record<TimeZoneScopeType, ReturnType<typeof t>> => ({
       scheduledPublishing: t('time-zone.dialog-info.scheduled-publishing'),
@@ -52,11 +52,27 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     [t],
   )
 
-  // Callbacks
   const handleTimeZoneChange = useCallback(
-    (value: string) => setSelectedTz(getTimeZone(value)),
+    (value: string) => {
+      if (!value) {
+        setSelectedTz(undefined)
+        return
+      }
+      setShowAllOptions(false)
+      setSelectedTz(getTimeZone(value))
+    },
     [getTimeZone],
   )
+
+  const handleQueryChange = useCallback((newQuery: string | null) => {
+    if (newQuery) {
+      setShowAllOptions(false)
+    }
+  }, [])
+
+  const handleAutocompleteOpenButtonClick = useCallback(() => {
+    setShowAllOptions(true)
+  }, [])
 
   const handleTimeZoneSelectLocal = useCallback(
     () => setSelectedTz(getLocalTimeZone()),
@@ -95,6 +111,17 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
     if (!option) return ''
     return `${option.alternativeName} (${option.namePretty})`
   }, [])
+
+  const filterOption = useCallback(
+    (filterQuery: string, option: NormalizedTimeZone) => {
+      // Always show all options if dropdown button was clicked
+      // Otherwise use standard filtering
+      if (showAllOptions || filterQuery === '') return true
+      const searchText = `${option.city} (GMT${option.offset}) ${option.alternativeName}`
+      return searchText.toLowerCase().includes(filterQuery.toLowerCase())
+    },
+    [showAllOptions],
+  )
 
   return (
     <Dialog
@@ -139,16 +166,11 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             icon={SearchIcon}
             id="timezone"
             onChange={handleTimeZoneChange}
-            openButton
+            onQueryChange={handleQueryChange}
+            openButton={{onClick: handleAutocompleteOpenButtonClick}}
             options={allTimeZones}
             padding={4}
-            filterOption={(query: string, option: NormalizedTimeZone) => {
-              if (query === '') return true
-              return `${option.city} (GMT
-            ${option.offset}) ${option.alternativeName}`
-                ?.toLowerCase()
-                ?.includes(query?.toLowerCase())
-            }}
+            filterOption={filterOption}
             placeholder={t('time-zone.action.search-for-timezone-placeholder')}
             popover={{
               // Dialog is portaled to the document root, so its Autocomplete
