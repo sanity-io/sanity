@@ -76,6 +76,7 @@ function CommentsInspectorInner(
   const [deleteError, setDeleteError] = useState<Error | null>(null)
 
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const currentUser = useCurrentUser()
   const {
@@ -98,7 +99,9 @@ function CommentsInspectorInner(
   const pushToast = useToast().push
   const {isTopLayer} = useLayer()
 
-  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
+  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll({
+    boundaryElement: rootElement,
+  })
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
   const telemetry = useCommentsTelemetry()
@@ -303,6 +306,11 @@ function CommentsInspectorInner(
     }
   }, [isTopLayer, selectedPath, setSelectedPath])
 
+  const setRootRef = useCallback((element: HTMLDivElement | null) => {
+    rootRef.current = element
+    setRootElement(element)
+  }, [])
+
   useClickOutsideEvent(
     (event) => {
       // Clear the selected path when clicking outside the comments inspector.
@@ -343,13 +351,16 @@ function CommentsInspectorInner(
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
-      setSelectedPath({
+      handlePathSelect({
         fieldPath: commentToScrollTo.target.path?.field || null,
         origin: 'url',
         threadId: commentToScrollTo.threadId || null,
       })
 
-      scrollToComment(commentToScrollTo._id)
+      // Defer the comment scroll to prevent React batching from overwriting the field scroll
+      requestAnimationFrame(() => {
+        scrollToComment(commentToScrollTo._id)
+      })
 
       didScrollToCommentFromParam.current = true
       commentIdParamRef.current = undefined
@@ -360,10 +371,10 @@ function CommentsInspectorInner(
     }
   }, [
     getComment,
+    handlePathSelect,
     loading,
     onClearSelectedComment,
     scrollToComment,
-    setSelectedPath,
     setStatus,
     telemetry,
   ])
@@ -405,7 +416,7 @@ function CommentsInspectorInner(
         height="fill"
         onClick={handleDeselectPath}
         overflow="hidden"
-        ref={rootRef}
+        ref={setRootRef}
       >
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
