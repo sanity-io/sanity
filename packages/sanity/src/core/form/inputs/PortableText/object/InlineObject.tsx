@@ -164,7 +164,6 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
       floatingBoundary,
       focused,
       input,
-      memberItem?.member.item.changed,
       isOpen,
       markers,
       memberItem?.member,
