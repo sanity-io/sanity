@@ -208,7 +208,7 @@ export function VideoPreview(props: VideoAssetProps) {
   }
 
   if (playbackInfoState.error) {
-    return <VideoSkeleton error={playbackInfoState.error} />
+    return <VideoSkeleton error={playbackInfoState.error} retry={playbackInfoState.retry} />
   }
 
   if (!playbackInfoState.result) {
