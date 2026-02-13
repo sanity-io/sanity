@@ -16,7 +16,8 @@ import {useVideoPlaybackInfo} from './useVideoPlaybackInfo'
 import {VideoActionsMenu} from './VideoActionsMenu'
 import {VideoSkeleton} from './VideoSkeleton'
 
-function getMediaLibraryId(assetRef: string) {
+/** @internal Exported for testing */
+export function getMediaLibraryId(assetRef: string) {
   const id = assetRef.split(':')?.[1]
   if (!id || !id.startsWith('ml')) {
     throw new Error('Invalid asset reference')
@@ -45,19 +46,20 @@ export function VideoPreview(props: VideoAssetProps) {
     .config()
     .apiHost.endsWith('.sanity.work')
 
-  const videoPlaybackParams = useMemo(() => {
+  const [videoPlaybackParams, parseError] = useMemo<
+    | [null, null]
+    | [{mediaLibraryId: string; assetRef: NonNullable<typeof asset>}, null]
+    | [null, Error]
+  >(() => {
     if (!asset?._ref) {
-      return null
+      return [null, null]
     }
     try {
       const mediaLibraryId = getMediaLibraryId(asset._ref)
-      return {
-        mediaLibraryId,
-        assetRef: asset,
-      }
+      return [{mediaLibraryId, assetRef: asset}, null]
     } catch (error) {
       console.error('Failed to parse asset reference:', error)
-      return null
+      return [null, error instanceof Error ? error : new Error(String(error))]
     }
   }, [asset])
 
@@ -195,6 +197,10 @@ export function VideoPreview(props: VideoAssetProps) {
 
   if (!asset) {
     return null
+  }
+
+  if (parseError) {
+    return <VideoSkeleton error={parseError} />
   }
 
   if (playbackInfoState.isLoading) {
