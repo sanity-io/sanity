@@ -201,7 +201,7 @@
     "@sanity/preview-url-secret": "^4.0.3",
     "@sanity/schema": "workspace:*",
     "@sanity/sdk": "2.1.2",
-    "@sanity/telemetry": "^0.8.0",
+    "@sanity/telemetry": "catalog:",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
