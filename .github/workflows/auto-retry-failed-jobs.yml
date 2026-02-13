@@ -9,7 +9,6 @@ on:
       - "Unit tests"
       - "End-to-End Tests"
       - "End-to-End Component Tests"
-      - "CLI Unit tests"
       - "eFPS Test"
     types: [completed]
 
