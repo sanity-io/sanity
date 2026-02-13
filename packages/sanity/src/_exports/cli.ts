@@ -1,6 +1,3 @@
-export {
-  getStudioEnvironmentVariables,
-  type StudioEnvVariablesOptions,
-} from '../_internal/cli/server/getStudioEnvironmentVariables'
+export {getStudioEnvironmentVariables, type StudioEnvVariablesOptions} from '@sanity/cli/_internal'
 export type {CliClientOptions, CliConfig} from '@sanity/cli'
 export {createCliConfig, defineCliConfig, getCliClient} from '@sanity/cli'
