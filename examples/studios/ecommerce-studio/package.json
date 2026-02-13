@@ -28,7 +28,6 @@
     "start": "sanity dev --port 3337"
   },
   "dependencies": {
-    "@sanity/cli": "workspace:*",
     "@sanity/ui": "catalog:",
     "react": "catalog:",
     "react-barcode": "^1.6.1",

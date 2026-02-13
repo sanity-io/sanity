@@ -4,12 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "bootstrap": "pnpm install && pnpm build:cli",
+    "bootstrap": "pnpm install",
     "build": "turbo run build --filter='./packages/*' --filter='./packages/@sanity/*'",
     "build:bundle": "turbo run build:bundle --filter='./packages/*' --filter='./packages/@sanity/*'",
     "build:clean": "pnpm -r --parallel run clean",
-    "build:cli": "turbo run build --filter=@sanity/cli --filter=sanity",
-    "build:cli-only": "turbo run --filter=@sanity/cli build",
     "build:e2e": "pnpm e2e:build",
     "build:efps": "pnpm build --filter=efps-tests",
     "build:performance-studio": "pnpm perf:studio:build",

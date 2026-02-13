@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "pnpm build:cli && (cd studio && pnpm build)",
+    "build": "(cd studio && pnpm build)",
     "lint": "eslint .",
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "perf:test": "ts-node --files cli",
