@@ -2,6 +2,7 @@ import {render} from '@testing-library/react'
 import {usePerspective} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {usePaneRouter} from '../../../../components'
 import {CommentsWrapper} from '../CommentsWrapper'
 
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
@@ -49,6 +50,7 @@ vi.mock('../../useDocumentPane', () => ({
 }))
 
 const mockUsePerspective = usePerspective as Mock
+const mockUsePaneRouter = usePaneRouter as Mock
 
 describe('CommentsWrapper', () => {
   beforeEach(() => {
@@ -87,7 +89,7 @@ describe('CommentsWrapper', () => {
       })
     })
 
-    it('calls resolveIntentLink with correct intent params for content releases', () => {
+    it('passes perspective search param for content releases (non-scheduled)', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
@@ -115,15 +117,21 @@ describe('CommentsWrapper', () => {
         inspect: 'sanity/comments',
         comment: 'comment-xyz',
       })
+      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['perspective', 'rSomeRelease']])
     })
 
-    it('passes perspective search param to resolveIntentLink for scheduled drafts', () => {
+    it('passes scheduledDraft as intent param (not perspective search param) for scheduled drafts', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rScheduledDraft',
         selectedReleaseId: 'rScheduledDraft',
         selectedPerspective: 'rScheduledDraft',
         perspectiveStack: ['rScheduledDraft', 'drafts'],
         excludedPerspectives: [],
+      })
+
+      mockUsePaneRouter.mockReturnValue({
+        params: {scheduledDraft: 'rScheduledDraft'},
+        setParams: vi.fn(),
       })
 
       render(
@@ -138,7 +146,14 @@ describe('CommentsWrapper', () => {
       getCommentLink('comment-scheduled')
 
       expect(mockResolveIntentLink).toHaveBeenCalledOnce()
-      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['perspective', 'rScheduledDraft']])
+      expect(mockResolveIntentLink.mock.calls[0][1]).toEqual({
+        id: 'doc-scheduled',
+        type: 'article',
+        inspect: 'sanity/comments',
+        comment: 'comment-scheduled',
+        scheduledDraft: 'rScheduledDraft',
+      })
+      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([])
     })
 
     it('passes empty search params to resolveIntentLink when no release is selected', () => {
