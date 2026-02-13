@@ -55,10 +55,6 @@ jobs:
       # For this trick to work there needs to be a `"@sanity/ui@3": "$@sanity/ui"` override in the root package.json, with a `@sanity/ui` entry in `devDependencies`
       - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
 
-      - name: Build CLI
-        # This warms up the turborepo remote cache
-        run: pnpm build:cli --output-logs=full --log-order=grouped
-
   install:
     needs: [prepare, build-cli]
     timeout-minutes: 30
@@ -100,10 +96,6 @@ jobs:
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
-
-      - name: Build CLI
-        # This should take only a few seconds as it'll restore the remote cache that got primed in the `install` job
-        run: pnpm build:cli --output-logs=full --log-order=grouped
 
       - name: Cache E2E test studio on PR
         # Always run with PRs logic, to ensure tests run by the UI repo doesn't conflict with tests run by the sanity repo

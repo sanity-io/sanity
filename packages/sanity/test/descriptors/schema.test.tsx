@@ -117,7 +117,13 @@ describe('Base features', () => {
 
     test('string', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', description: 'Hello'})).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            description: 'Hello',
+          })
+        ).typeDef,
       ).toMatchObject({
         description: 'Hello',
       })
@@ -125,8 +131,13 @@ describe('Base features', () => {
 
     test('non-string', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', description: 123 as unknown as string}))
-          .typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            description: 123 as unknown as string,
+          })
+        ).typeDef,
       ).toMatchObject({
         description: undefined,
       })
@@ -134,9 +145,19 @@ describe('Base features', () => {
 
     test('JSX', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', description: <div>Hello</div>})).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            description: <div>Hello</div>,
+          })
+        ).typeDef,
       ).toMatchObject({
-        description: {__type: 'jsx', type: 'div', props: {children: 'Hello'}},
+        description: {
+          __type: 'jsx',
+          type: 'div',
+          props: {children: 'Hello'},
+        },
       })
     })
 
@@ -204,8 +225,13 @@ describe('Base features', () => {
 
     test('non-boolean', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', readOnly: 123 as unknown as boolean}))
-          .typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            readOnly: 123 as unknown as boolean,
+          })
+        ).typeDef,
       ).toMatchObject({
         readOnly: undefined,
       })
@@ -213,7 +239,13 @@ describe('Base features', () => {
 
     test('conditional', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', readOnly: () => true})).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            readOnly: () => true,
+          })
+        ).typeDef,
       ).toMatchObject({
         readOnly: {__type: 'function'},
       })
@@ -245,8 +277,13 @@ describe('Base features', () => {
 
     test('non-boolean', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', hidden: 123 as unknown as boolean}))
-          .typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            hidden: 123 as unknown as boolean,
+          })
+        ).typeDef,
       ).toMatchObject({
         hidden: undefined,
       })
@@ -288,7 +325,9 @@ describe('Base features', () => {
             } as object,
           })
         ).typeDef,
-      ).toMatchObject({options: {a: true, b: false, c: 'hello', d: null, e: [true]}})
+      ).toMatchObject({
+        options: {a: true, b: false, c: 'hello', d: null, e: [true]},
+      })
     })
 
     test('numbers', async () => {
@@ -346,7 +385,9 @@ describe('Base features', () => {
             } as object,
           })
         ).typeDef,
-      ).toMatchObject({options: {foo: {__type: 'object', value: {__type: 'yes'}}}})
+      ).toMatchObject({
+        options: {foo: {__type: 'object', value: {__type: 'yes'}}},
+      })
     })
 
     test('max depth', async () => {
@@ -361,7 +402,9 @@ describe('Base features', () => {
             } as object,
           })
         ).typeDef,
-      ).toMatchObject({options: {val: {a: {b: {c: {d: {__type: 'maxDepth'}}}}}}})
+      ).toMatchObject({
+        options: {val: {a: {b: {c: {d: {__type: 'maxDepth'}}}}}},
+      })
     })
   })
 
@@ -377,7 +420,13 @@ describe('Base features', () => {
 
     test('string', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', initialValue: 'hello'})).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            initialValue: 'hello',
+          })
+        ).typeDef,
       ).toMatchObject({
         initialValue: 'hello',
       })
@@ -393,7 +442,13 @@ describe('Base features', () => {
 
     test('with reason', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'string', deprecated: {reason: 'Hello'}})).typeDef,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'string',
+            deprecated: {reason: 'Hello'},
+          })
+        ).typeDef,
       ).toMatchObject({
         deprecated: {reason: 'Hello'},
       })
@@ -620,7 +675,7 @@ describe('Base features', () => {
     })
 
     // This succeeds because transformValidation is not applied to the child validations
-    // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx (transformValidation) for more details.
+    // See `transformValidation` in `@sanity/cli` for more details.
     test('email validation in nested all', async () => {
       expect(
         (
@@ -1046,7 +1101,10 @@ describe('Base features', () => {
               {
                 type: 'anyOf',
                 children: [
-                  {message: 'Must be a valid email', rules: [{type: 'email'}]},
+                  {
+                    message: 'Must be a valid email',
+                    rules: [{type: 'email'}],
+                  },
                   {
                     message: 'Must be uppercase',
                     rules: [{type: 'uppercase'}],
@@ -1378,7 +1436,10 @@ describe('Document', () => {
 describe('Object', () => {
   test('fields', async () => {
     // We place all the fields + the assertions for each converted field here.
-    const fieldTests: Array<{field: any; assert: (field: ObjectField) => void}> = [
+    const fieldTests: Array<{
+      field: any
+      assert: (field: ObjectField) => void
+    }> = [
       {
         field: defineField({
           name: 'name',
@@ -2017,7 +2078,13 @@ describe('Array', () => {
   describe('of', () => {
     test('single string', async () => {
       expect(
-        (await convertType({name: 'foo', type: 'array', of: [{type: 'string'}]})).typeDef.of,
+        (
+          await convertType({
+            name: 'foo',
+            type: 'array',
+            of: [{type: 'string'}],
+          })
+        ).typeDef.of,
       ).toMatchObject([
         {
           name: 'string',
@@ -2038,7 +2105,11 @@ describe('Array', () => {
                 {name: 'bar2', type: 'bar'},
               ],
             },
-            {name: 'bar', type: 'object', fields: [{name: 'title', type: 'string'}]},
+            {
+              name: 'bar',
+              type: 'object',
+              fields: [{name: 'title', type: 'string'}],
+            },
           )
         ).typeDef.of,
       ).toMatchObject([
@@ -2106,7 +2177,11 @@ describe('References', () => {
       (
         await convertType(
           {name: 'foo', type: 'reference', to: [{type: 'person'}]},
-          {name: 'person', type: 'document', fields: [{name: 'name', type: 'string'}]},
+          {
+            name: 'person',
+            type: 'document',
+            fields: [{name: 'name', type: 'string'}],
+          },
         )
       ).typeDef,
     ).toMatchObject({
@@ -2147,7 +2222,13 @@ describe('References', () => {
           type: 'globalDocumentReference',
           resourceType: 'media-library',
           resourceId: 'foo',
-          to: [{title: 'Person', type: 'person', preview: {select: {title: 'title'}}}],
+          to: [
+            {
+              title: 'Person',
+              type: 'person',
+              preview: {select: {title: 'title'}},
+            },
+          ],
         })
       ).typeDef,
     ).toMatchObject({
@@ -2262,7 +2343,11 @@ describe('Block', () => {
       marks: {
         decorators: [{title: 'Weak', value: 'weak'}],
         annotations: [
-          {name: 'internalLink', type: 'object', fields: [{name: 'path', type: 'string'}]},
+          {
+            name: 'internalLink',
+            type: 'object',
+            fields: [{name: 'path', type: 'string'}],
+          },
         ],
       },
     })
@@ -2407,7 +2492,12 @@ describe('Manifest roundtrip conversion', () => {
 
 describe('createSchemaFromManifestTypes', () => {
   test('Ensures schema is valid', () => {
-    expect(() => createSchemaFromManifestTypes({name: 'invalid', types: [{foo: 'bar'}]})).toThrow(
+    expect(() =>
+      createSchemaFromManifestTypes({
+        name: 'invalid',
+        types: [{foo: 'bar'}],
+      }),
+    ).toThrow(
       new ValidationError([
         {
           path: [
@@ -2439,7 +2529,7 @@ describe('createSchemaFromManifestTypes', () => {
 // Tests for manifest conversion edge cases and limitations
 describe('Manifest conversion limitations', () => {
   // These tests verify that certain validation rules are excluded during manifest extraction
-  // See packages/sanity/src/_internal/manifest/extractWorkspaceManifest.tsx for implementation details
+  // See `transformValidation` in `@sanity/cli` for more details
 
   describe('validation rules without constraint property', () => {
     // Email validation is defined as {flag: 'email'} without a constraint property

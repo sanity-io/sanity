@@ -15,14 +15,12 @@ export default defineConfig({
       '**/.github/workflows/test.yml',
     ],
     projects: [
-      'packages/@sanity/cli',
       'packages/@sanity/mutator',
       'packages/@sanity/schema',
       'packages/@sanity/types',
       'packages/@sanity/util',
       'packages/@sanity/vision',
       'packages/sanity',
-      'packages/sanity/src/_internal/cli',
       'perf/tests',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
@@ -39,9 +37,6 @@ export default defineConfig({
         '**/__telemetry__/**',
         // exclude internal
         'packages/@repo/**',
-        // exclude cli source files since their tests run in separate processes, so no coverage will be collected
-        'packages/@sanity/cli/src/**',
-        'packages/sanity/src/_internal/cli/**',
       ],
       reportOnFailure: true,
       clean: true,
