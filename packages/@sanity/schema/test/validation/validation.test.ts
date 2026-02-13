@@ -319,6 +319,61 @@ describe('Validation test', () => {
     expect(validationErrors).toHaveLength(0)
   })
 
+  describe('field type is a document type', () => {
+    test('warns when a field type references a document type', () => {
+      const schemaDef = [
+        {
+          name: 'person',
+          type: 'document',
+          fields: [{name: 'name', type: 'string'}],
+        },
+        {
+          name: 'myObject',
+          type: 'object',
+          fields: [{name: 'author', type: 'person'}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myObject = validation.get('myObject')
+      const authorField = myObject.fields[0]
+
+      const warnings = authorField._problems.filter(
+        (p: any) => p.helpId === 'schema-field-type-is-document',
+      )
+      expect(warnings).toHaveLength(1)
+      expect(warnings[0].message).toContain('person')
+    })
+
+    test('does not warn for object field types', () => {
+      const schemaDef = [
+        {
+          name: 'address',
+          type: 'object',
+          fields: [{name: 'street', type: 'string'}],
+        },
+        {
+          name: 'myDocument',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string'},
+            {name: 'address', type: 'address'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myDocument = validation.get('myDocument')
+
+      for (const field of myDocument.fields) {
+        const warnings = field._problems.filter(
+          (p: any) => p.helpId === 'schema-field-type-is-document',
+        )
+        expect(warnings).toHaveLength(0)
+      }
+    })
+  })
+
   describe('block annotations with custom types', () => {
     test('accepts custom object type used directly as annotation', () => {
       // This is the pattern that was broken in issue #3782

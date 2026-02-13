@@ -31,6 +31,7 @@ export const HELP_IDS = {
   GLOBAL_DOCUMENT_REFERENCE_INVALID: 'global-document-reference-invalid',
   DEPRECATED_BLOCKEDITOR_KEY: 'schema-deprecated-blockeditor-key',
   STANDALONE_BLOCK_TYPE: 'schema-standalone-block-type',
+  FIELD_TYPE_IS_DOCUMENT: 'schema-field-type-is-document',
 }
 
 function createValidationResult(
