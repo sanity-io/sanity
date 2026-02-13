@@ -177,7 +177,7 @@
     "@rexxars/react-json-inspector": "^9.0.1",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^0.4.1",
-    "@sanity/cli": "workspace:*",
+    "@sanity/cli": "6.0.0-alpha.12",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "catalog:",
     "@sanity/color": "^3.0.6",

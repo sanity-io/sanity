@@ -1,4 +1,4 @@
-// Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
+// Copied from `@sanity/cli` (templates/ecommerce/plugins/barcode-input/BarcodeInput.js)
 
 import {Box, Text} from '@sanity/ui'
 import {useState} from 'react'

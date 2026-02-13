@@ -23,15 +23,12 @@ sanity/
 │   ├── groq/                   # GROQ language utilities
 │   ├── create-sanity/          # Project scaffolding CLI
 │   ├── @sanity/                # Scoped public packages
-│   │   ├── cli/               # Command-line interface
 │   │   ├── types/             # TypeScript type definitions
 │   │   ├── schema/            # Schema compilation and validation
 │   │   ├── mutator/           # Document mutation logic
 │   │   ├── diff/              # Document diffing utilities
 │   │   ├── util/              # Shared utilities
-│   │   ├── vision/            # GROQ query tool (Studio plugin)
-│   │   ├── codegen/           # TypeScript code generation
-│   │   └── migrate/           # Migration utilities
+│   │   └── vision/            # GROQ query tool (Studio plugin)
 │   └── @repo/                  # Internal monorepo tooling (not published)
 │       ├── eslint-config/     # Shared ESLint configuration
 │       ├── test-config/       # Shared test configuration
@@ -89,15 +86,12 @@ The packages have a layered dependency structure. Lower-level packages have no i
 | Package           | Description                                                                             |
 | ----------------- | --------------------------------------------------------------------------------------- |
 | `sanity`          | Main studio package containing UI, form builder, structure tool, and core functionality |
-| `@sanity/cli`     | Command-line interface for project management, builds, and deployments                  |
 | `@sanity/types`   | TypeScript type definitions for documents, schemas, and common data structures          |
 | `@sanity/schema`  | Schema compilation, validation, and type inference                                      |
 | `@sanity/mutator` | Document mutation logic for real-time collaboration                                     |
 | `@sanity/diff`    | Generates diffs between documents for change tracking                                   |
 | `@sanity/util`    | Shared utilities (paths, date formatting, client helpers)                               |
 | `@sanity/vision`  | GROQ query playground tool (Studio plugin)                                              |
-| `@sanity/codegen` | TypeScript type generation from schemas                                                 |
-| `@sanity/migrate` | Content migration utilities                                                             |
 | `groq`            | GROQ language utilities and types                                                       |
 
 ## Core Architecture Concepts
