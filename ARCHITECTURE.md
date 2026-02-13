@@ -21,7 +21,6 @@ sanity/
 ├── packages/                    # All publishable and internal packages
 │   ├── sanity/                 # Main studio package (the "sanity" npm package)
 │   ├── groq/                   # GROQ language utilities
-│   ├── create-sanity/          # Project scaffolding CLI
 │   ├── @sanity/                # Scoped public packages
 │   │   ├── types/             # TypeScript type definitions
 │   │   ├── schema/            # Schema compilation and validation

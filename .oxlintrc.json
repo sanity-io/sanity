@@ -125,7 +125,7 @@
     "react/exhaustive-deps": "error",
     "react/rules-of-hooks": "error",
     "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
-    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
+    // We no longer allow commonjs as we ship ESM only
     "import/no-commonjs": "error",
     "no-restricted-globals": [
       "error",
