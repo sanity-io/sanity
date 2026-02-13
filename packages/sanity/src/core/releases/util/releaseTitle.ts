@@ -16,20 +16,6 @@ export function getReleaseTitle(title: string | undefined, fallback: string): st
 }
 
 /**
- * Resolves and truncates a release title to the default character limit.
- * Falls back to `fallback` when `title` is empty/undefined, then truncates.
- * @param title - The release title (may be undefined or empty)
- * @param fallback - The fallback string to use when title is absent
- * @returns Truncated title with "..." if it exceeds the limit
- */
-export function truncateReleaseTitle(title: string | undefined, fallback: string): string {
-  const resolved = getReleaseTitle(title, fallback)
-  return resolved.length > DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT
-    ? `${resolved.slice(0, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)}...`
-    : resolved
-}
-
-/**
  * Returns structured title details for consumers that need both
  * the truncated display title and tooltip data.
  * @param title - The release title (may be undefined or empty)

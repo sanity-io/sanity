@@ -22,7 +22,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {truncateReleaseTitle} from '../../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -129,7 +129,10 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="toast.schedule.success"
               values={{
-                title: truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release')),
+                title: getReleaseTitleDetails(
+                  release.metadata.title,
+                  tCore('release.placeholder-untitled-release'),
+                ).displayTitle,
               }}
             />
           </Text>
@@ -147,7 +150,10 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="toast.schedule.error"
               values={{
-                title: truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release')),
+                title: getReleaseTitleDetails(
+                  release.metadata.title,
+                  tCore('release.placeholder-untitled-release'),
+                ).displayTitle,
                 error: schedulingError.message,
               }}
             />
@@ -284,7 +290,10 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="schedule-dialog.confirm-description"
               values={{
-                title: truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release')),
+                title: getReleaseTitleDetails(
+                  release.metadata.title,
+                  tCore('release.placeholder-untitled-release'),
+                ).displayTitle,
                 count: documents.length,
               }}
             />

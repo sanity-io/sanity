@@ -16,7 +16,7 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {truncateReleaseTitle} from '../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../util/releaseTitle'
 
 export function UnpublishVersionDialog(props: {
   onClose: () => void
@@ -113,7 +113,10 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: truncateReleaseTitle(release?.metadata.title, coreT('release.placeholder-untitled-release')),
+              title: getReleaseTitleDetails(
+                release?.metadata.title,
+                coreT('release.placeholder-untitled-release'),
+              ).displayTitle,
             }}
             components={{
               Label: ({children}) => {

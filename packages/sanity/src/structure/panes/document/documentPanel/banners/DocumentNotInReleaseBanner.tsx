@@ -8,7 +8,7 @@ import {
   type SystemBundle,
   type TargetPerspective,
   Translate,
-  truncateReleaseTitle,
+  getReleaseTitleDetails,
   useConditionalToast,
   useTranslation,
   useVersionOperations,
@@ -95,7 +95,10 @@ export function DocumentNotInReleaseBanner({
             values={{
               title: isAnonymousBundle
                 ? currentRelease
-                : truncateReleaseTitle(currentRelease?.metadata?.title, tCore('release.placeholder-untitled-release')),
+                : getReleaseTitleDetails(
+                    currentRelease?.metadata?.title,
+                    tCore('release.placeholder-untitled-release'),
+                  ).displayTitle,
             }}
             components={{
               VersionBadge: getVersionInlineBadge(currentRelease),

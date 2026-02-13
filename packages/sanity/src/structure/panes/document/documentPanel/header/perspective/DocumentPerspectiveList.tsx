@@ -367,7 +367,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           tooltipContent={
             inCreationTitleDetails?.isTruncated ? (
               <Stack space={2} style={{maxWidth: '300px'}}>
-                <Text size={1} weight="medium">{inCreationTitleDetails.fullTitle}</Text>
+                <Text size={1} weight="medium">
+                  {inCreationTitleDetails.fullTitle}
+                </Text>
                 <TooltipContent release={filteredReleases.inCreation} />
               </Stack>
             ) : (
@@ -405,7 +407,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               tooltipContent={
                 titleDetails.isTruncated ? (
                   <Stack space={2} style={{maxWidth: '300px'}}>
-                    <Text size={1} weight="medium">{titleDetails.fullTitle}</Text>
+                    <Text size={1} weight="medium">
+                      {titleDetails.fullTitle}
+                    </Text>
                     <TooltipContent release={release} />
                   </Stack>
                 ) : (

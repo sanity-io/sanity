@@ -66,7 +66,10 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
-  const titleDetails = getReleaseTitleDetails(release.metadata.title, tCore('release.placeholder-untitled-release'))
+  const titleDetails = getReleaseTitleDetails(
+    release.metadata.title,
+    tCore('release.placeholder-untitled-release'),
+  )
 
   return (
     <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
@@ -74,7 +77,11 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: titleDetails.displayTitle}} />
+            <Translate
+              t={t}
+              i18nKey="deleted-release"
+              values={{title: titleDetails.displayTitle}}
+            />
           </Text>
         }
       >

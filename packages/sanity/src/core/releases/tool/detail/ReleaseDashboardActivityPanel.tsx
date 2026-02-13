@@ -6,8 +6,8 @@ import {styled} from 'styled-components'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
-import {truncateReleaseTitle} from '../../util/releaseTitle'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getReleaseTitleDetails} from '../../util/releaseTitle'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
@@ -65,7 +65,12 @@ export function ReleaseDashboardActivityPanel({
                   <LoadingBlock title={t('activity.panel.loading')} />
                 )}
                 <ReleaseActivityList
-                  releaseTitle={truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release'))}
+                  releaseTitle={
+                    getReleaseTitleDetails(
+                      release.metadata.title,
+                      tCore('release.placeholder-untitled-release'),
+                    ).displayTitle
+                  }
                   releaseId={release._id}
                   events={events.events}
                   hasMore={events.hasMore}

@@ -21,7 +21,7 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  truncateReleaseTitle,
+  getReleaseTitleDetails,
   getReleaseTone,
   getVersionFromId,
   getVersionId,
@@ -40,6 +40,7 @@ import {
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {Tooltip} from '../../../../ui-components/tooltip'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
@@ -303,15 +304,34 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   }
 
   const tone: ButtonTone = release ? getReleaseTone(release) : 'neutral'
+  const titleDetails = getReleaseTitleDetails(
+    release.metadata.title,
+    tCore('release.placeholder-untitled-release'),
+  )
 
   return (
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0, maxWidth: '200px'}}>
-          <Text size={1} weight="medium" textOverflow="ellipsis">
-            {truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release'))}
-          </Text>
+        <Stack
+          flex={1}
+          paddingY={2}
+          paddingRight={2}
+          space={2}
+          style={{minWidth: 0, maxWidth: '200px'}}
+        >
+          <Tooltip
+            disabled={!titleDetails.isTruncated}
+            content={
+              <Box style={{maxWidth: '300px'}}>
+                <Text size={1}>{titleDetails.fullTitle}</Text>
+              </Box>
+            }
+          >
+            <Text size={1} weight="medium" textOverflow="ellipsis">
+              {titleDetails.displayTitle}
+            </Text>
+          </Tooltip>
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
             <Text muted size={1}>
               {tCore(`release.type.${release.metadata.releaseType}`)}
@@ -360,7 +380,10 @@ function getMenuButtonProps({
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
-      text: truncateReleaseTitle(selected?.metadata.title, tCore('release.placeholder-untitled-release')),
+      text: getReleaseTitleDetails(
+        selected?.metadata.title,
+        tCore('release.placeholder-untitled-release'),
+      ).displayTitle,
       icon: <ReleaseAvatar padding={1} tone={tone} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
       tone,

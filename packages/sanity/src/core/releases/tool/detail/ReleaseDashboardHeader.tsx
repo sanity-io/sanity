@@ -12,8 +12,8 @@ import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
-import {truncateReleaseTitle} from '../../util/releaseTitle'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getReleaseTitleDetails} from '../../util/releaseTitle'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 
@@ -25,7 +25,10 @@ export function ReleaseDashboardHeader(props: {
   const {inspector, release, setInspector} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const title = truncateReleaseTitle(release.metadata.title, tCore('release.placeholder-untitled-release'))
+  const title = getReleaseTitleDetails(
+    release.metadata.title,
+    tCore('release.placeholder-untitled-release'),
+  ).displayTitle
   const router = useRouter()
 
   const handleNavigateToReleasesList = useCallback(() => {

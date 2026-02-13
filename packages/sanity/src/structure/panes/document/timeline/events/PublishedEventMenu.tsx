@@ -16,7 +16,7 @@ import {
   type PublishDocumentVersionEvent,
   RELEASES_INTENT,
   Translate,
-  truncateReleaseTitle,
+  getReleaseTitleDetails,
   useSetPerspective,
   useTranslation,
   useWorkspace,
@@ -116,7 +116,10 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                         }}
                         i18nKey="events.open.release"
                         values={{
-                          releaseTitle: truncateReleaseTitle(event.release.metadata?.title, tCore('release.placeholder-untitled-release')),
+                          releaseTitle: getReleaseTitleDetails(
+                            event.release.metadata?.title,
+                            tCore('release.placeholder-untitled-release'),
+                          ).displayTitle,
                         }}
                         t={t}
                       />
@@ -133,7 +136,10 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                       }}
                       i18nKey="events.inspect.release"
                       values={{
-                        releaseTitle: truncateReleaseTitle(event.release.metadata?.title, tCore('release.placeholder-untitled-release')),
+                        releaseTitle: getReleaseTitleDetails(
+                          event.release.metadata?.title,
+                          tCore('release.placeholder-untitled-release'),
+                        ).displayTitle,
                       }}
                       t={t}
                     />

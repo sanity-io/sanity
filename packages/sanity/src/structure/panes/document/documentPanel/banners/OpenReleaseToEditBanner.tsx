@@ -7,7 +7,7 @@ import {
   isCardinalityOneRelease,
   isVersionId,
   Translate,
-  truncateReleaseTitle,
+  getReleaseTitleDetails,
   useActiveReleases,
   useDocumentVersions,
   useOnlyHasVersions,
@@ -67,8 +67,12 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
           })
           return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
-        .map((version) =>
-          truncateReleaseTitle(version.metadata.title, tCore('release.placeholder-untitled-release')),
+        .map(
+          (version) =>
+            getReleaseTitleDetails(
+              version.metadata.title,
+              tCore('release.placeholder-untitled-release'),
+            ).displayTitle,
         ),
     [activeReleases, documentVersions, tCore],
   )

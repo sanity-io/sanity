@@ -1,11 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
+import {Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {truncateReleaseTitle} from '../../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
@@ -15,14 +16,27 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   const {release} = props
   const {t} = useTranslation()
   const isScheduled = isReleaseScheduledOrScheduling(release)
+  const titleDetails = getReleaseTitleDetails(
+    release.metadata?.title,
+    t('release.placeholder-untitled-release'),
+  )
 
   return (
     <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
       <Stack flex={1} space={2} style={{maxWidth: '180px'}}>
-        <Text size={1} weight="medium" textOverflow="ellipsis">
-          {truncateReleaseTitle(release.metadata?.title, t('release.placeholder-untitled-release'))}
-        </Text>
+        <Tooltip
+          disabled={!titleDetails.isTruncated}
+          content={
+            <Box style={{maxWidth: '300px'}}>
+              <Text size={1}>{titleDetails.fullTitle}</Text>
+            </Box>
+          }
+        >
+          <Text size={1} weight="medium" textOverflow="ellipsis">
+            {titleDetails.displayTitle}
+          </Text>
+        </Tooltip>
         <Text muted size={1}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&
