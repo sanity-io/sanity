@@ -1,4 +1,4 @@
-import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {SchemaType, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
@@ -37,6 +37,8 @@ export interface FormFieldHeaderTextProps {
    * Additional content to be rendered alongside the title
    */
   suffix?: ReactNode
+  schemaType: SchemaType
+  value: unknown
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -45,9 +47,11 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
+  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, membersValidation =EMPTY_ARRAY, suffix, schemaType, value} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
+
+  console.log('[xxx]', { schemaType, value })
 
   return (
     <Stack space={3}>
@@ -85,6 +89,9 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                   fontSize={1}
                   placement="top"
                   validation={validation}
+                  membersValidation={membersValidation}
+                  schemaType={schemaType}
+                  value={value}
                 />
               </Box>
             )}

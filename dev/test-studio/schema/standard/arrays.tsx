@@ -20,10 +20,12 @@ export const topLevelArrayType = defineType({
 export const topLevelPrimitiveArrayType = defineType({
   name: 'topLevelPrimitiveArrayType',
   type: 'array',
+  validation: rules => rules.min(100),
   of: [
     {
       type: 'string',
       title: 'A string',
+      validation: rules => rules.min(666)
     },
     {
       type: 'number',
@@ -53,6 +55,7 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+      validation: rule => rule.required().min(5),
     },
     // Example demonstrating schema validation error for issue #3631
     // This array contains multiple types that resolve to JSON type "string"
@@ -149,6 +152,7 @@ export default defineType({
       title: 'Array of objects',
       description: 'First field in object is string with list options',
       type: 'array',
+      validation: rule => rule.required().min(10),
       of: [
         {
           name: 'item',
@@ -175,12 +179,14 @@ export default defineType({
               title: 'field A',
               type: 'string',
               group: ['a'],
+              validation: rule => rule.required().min(5).warning()
             },
             {
               name: 'fieldB',
               title: 'field B',
               type: 'string',
               group: ['b'],
+              validation: rule => rule.required().min(5)
             },
             {
               name: 'fieldC',

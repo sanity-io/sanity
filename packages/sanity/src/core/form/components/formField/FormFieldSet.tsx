@@ -62,7 +62,7 @@ export interface FormFieldSetProps {
   level?: number
   onCollapse?: () => void
   onExpand?: () => void
-  schemaType?: SchemaType
+  schemaType: SchemaType
   title?: ReactNode
   /**
    *
@@ -157,6 +157,8 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     tabIndex,
     title,
     validation = EMPTY_ARRAY,
+    membersValidation = EMPTY_ARRAY,
+    value,
     inputId,
     path,
     deprecated,
@@ -164,9 +166,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     ...restProps
   } = props
 
-  const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+  const { focused, hovered, onMouseEnter, onMouseLeave } = useFieldActions()
 
-  const hasValidationMarkers = validation.length > 0
+  const hasValidationMarkers = validation.length + membersValidation.length > 0
   const ref = useRef<HTMLDivElement | null>(null)
   const {t} = useTranslation()
 
@@ -246,6 +248,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                         fontSize={1}
                         placement="top"
                         validation={validation}
+                        membersValidation={membersValidation}
+                        schemaType={schemaType}
+                        value={value}
                       />
                     </Box>
                   )}

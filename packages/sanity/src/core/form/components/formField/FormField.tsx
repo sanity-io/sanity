@@ -1,4 +1,4 @@
-import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {SchemaType, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
@@ -47,6 +47,7 @@ export interface FormFieldProps {
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
   path: Path
+  schemaType: SchemaType
 }
 
 /** @internal */
@@ -66,6 +67,7 @@ export const FormField = memo(function FormField(
     readOnly,
     title,
     validation,
+    membersValidation,
     deprecated,
     ...restProps
   } = props
@@ -100,7 +102,10 @@ export const FormField = memo(function FormField(
                   inputId={inputId}
                   title={title}
                   validation={validation}
-                  deprecated={deprecated}
+                  membersValidation={membersValidation}
+                  deprecated = { deprecated }
+                  schemaType={props.schemaType}
+                  value={props.value}
                 />
               }
             />

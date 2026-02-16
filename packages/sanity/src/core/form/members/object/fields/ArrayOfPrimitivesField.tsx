@@ -441,6 +441,7 @@ export function ArrayOfPrimitivesField(props: {
         path={member.field.path}
         presence={member.field.presence}
         validation={member.field.validation}
+        membersValidation={member.field.membersValidation}
         inputProps={inputProps as ArrayOfPrimitivesInputProps}
         render={renderField}
       >

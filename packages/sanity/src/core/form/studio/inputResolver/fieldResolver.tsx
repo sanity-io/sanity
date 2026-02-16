@@ -141,6 +141,8 @@ function PrimitiveField(field: FieldProps) {
             deprecated={field.schemaType.deprecated}
             path={field.path}
             readOnly={field.inputProps.readOnly}
+            schemaType={field.schemaType}
+            value={field.value}
           >
             <ChangeIndicator
               hasFocus={focused}
@@ -209,10 +211,13 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           schemaType={field.schemaType}
           title={field.title}
           validation={field.validation}
+          membersValidation={field.membersValidation}
           inputId={field.inputId}
           deprecated={field.schemaType.deprecated}
           path={field.path}
           readOnly={field.inputProps.readOnly}
+          schemaType={field.schemaType}
+          value={field.value}
         >
           {field.children}
         </FormFieldSet>

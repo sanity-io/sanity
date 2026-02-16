@@ -577,6 +577,7 @@ export function ArrayOfObjectsField(props: {
         path={member.field.path}
         presence={member.field.presence}
         validation={member.field.validation}
+        membersValidation={member.field.membersValidation}
         inputProps={inputProps as ArrayOfObjectsInputProps}
         render={renderField}
       >

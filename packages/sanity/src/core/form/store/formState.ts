@@ -1113,9 +1113,16 @@ export function createPrepareFormState({
 
       const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
       const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
+
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
         .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
+      const membersValidation = props.validation
+        .filter((item) => !isEqual(props.path, item.path))
+        .filter((item) => startsWith(props.path, item.path))
+        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
       const members = items.flatMap((item, index) =>
         prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
       )
@@ -1133,6 +1140,7 @@ export function createPrepareFormState({
         id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
+        membersValidation,
         presence,
         members,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
@@ -1159,8 +1167,14 @@ export function createPrepareFormState({
 
       const filteredPresence = props.presence.filter((item) => isEqual(item.path, props.path))
       const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
+
       const validation = props.validation
         .filter((item) => isEqual(item.path, props.path))
+        .map((v) => ({level: v.level, message: v.message, path: v.path}))
+
+      const membersValidation = props.validation
+        .filter((item) => !isEqual(props.path, item.path))
+        .filter((item) => startsWith(props.path, item.path))
         .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
       const members = items.flatMap((item, index) =>
@@ -1184,6 +1198,7 @@ export function createPrepareFormState({
         id: getSafeDomId(toString(props.path)),
         level: props.level,
         validation,
+        membersValidation,
         presence,
         members,
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
