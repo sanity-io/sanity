@@ -1426,8 +1426,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       groq-js:
-        specifier: ^1.26.0
-        version: 1.26.0
+        specifier: ^1.27.0
+        version: 1.27.0
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -2000,8 +2000,8 @@ importers:
         specifier: ^8.7.0
         version: 8.7.0(debug@4.4.3)
       groq-js:
-        specifier: ^1.26.0
-        version: 1.26.0
+        specifier: ^1.27.0
+        version: 1.27.0
       gunzip-maybe:
         specifier: ^1.4.2
         version: 1.4.2
@@ -8947,6 +8947,10 @@ packages:
 
   groq-js@1.26.0:
     resolution: {integrity: sha512-1WxWfmeownBbB2UhvFGyLT3yl/NFGF2qUoev+650Or2qDnoyXjvL83lwspUFuG4piWdDRh2iETljXKoDxacH+w==}
+    engines: {node: '>= 14'}
+
+  groq-js@1.27.0:
+    resolution: {integrity: sha512-EMRqw8e82X3CITXXDXpFBH8iC0kMgwsJ6YQzOEueyksWuf7MTDEuxc95o/0npMHo8/BvQHOFPXu2XehdPmBQ+Q==}
     engines: {node: '>= 14'}
 
   groq@3.88.1-typegen-experimental.0:
@@ -21039,6 +21043,12 @@ snapshots:
   graphmatch@1.1.0: {}
 
   groq-js@1.26.0:
+    dependencies:
+      debug: 4.4.3(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  groq-js@1.27.0:
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
