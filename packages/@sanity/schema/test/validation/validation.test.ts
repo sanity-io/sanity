@@ -345,6 +345,88 @@ describe('Validation test', () => {
       expect(warnings[0].message).toContain('person')
     })
 
+    test('warns when a nested field type references a document type', () => {
+      const schemaDef = [
+        {
+          name: 'person',
+          type: 'document',
+          fields: [{name: 'name', type: 'string'}],
+        },
+        {
+          name: 'otherType',
+          type: 'document',
+          fields: [
+            {
+              name: 'author',
+              type: 'person',
+            },
+            {
+              name: 'hero',
+              type: 'object',
+              fields: [
+                {
+                  name: 'legend',
+                  type: 'person',
+                },
+              ],
+            },
+            {
+              name: 'people',
+              type: 'array',
+              of: [
+                {
+                  name: 'person',
+                  type: 'person',
+                },
+                {
+                  name: 'objectPerson',
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'person',
+                      type: 'person',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const otherTypeValidation = validation.get('otherType')
+
+      expect(otherTypeValidation._problems).toHaveLength(0)
+
+      const authorField = otherTypeValidation.fields[0]
+      expect(authorField._problems).toHaveLength(1)
+      expect(authorField._problems[0]).toHaveProperty('helpId', 'schema-field-type-is-document')
+
+      const objectField = otherTypeValidation.fields.find((f: any) => f.name === 'hero')
+      expect(objectField._problems).toHaveLength(0)
+      expect(objectField.fields[0]._problems).toHaveLength(1)
+      expect(objectField.fields[0]._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+
+      const arrayField = otherTypeValidation.fields.find((f: any) => f.name === 'people')
+      expect(arrayField._problems).toHaveLength(0)
+      expect(arrayField.of[0]._problems).toHaveLength(1)
+      expect(arrayField.of[0]._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+
+      const arrayObjectField = arrayField.of[1].fields[0]
+      expect(arrayObjectField._problems).toHaveLength(1)
+      expect(arrayObjectField._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+    })
+
     test('does not warn for object field types', () => {
       const schemaDef = [
         {
