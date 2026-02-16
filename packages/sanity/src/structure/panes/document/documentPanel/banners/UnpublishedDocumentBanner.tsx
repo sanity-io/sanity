@@ -1,16 +1,16 @@
 import {UnpublishIcon} from '@sanity/icons'
-import {Box, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {
+  getReleaseTitleDetails,
   getVersionInlineBadge,
   isGoingToUnpublish,
   isReleaseDocument,
+  ReleaseTitle,
   Translate,
-  getReleaseTitleDetails,
   usePerspective,
   useTranslation,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
@@ -46,16 +46,12 @@ export function UnpublishedDocumentBanner() {
                   VersionBadge: ({children}) => {
                     const BadgeWithTone = getVersionInlineBadge(selectedPerspective)
                     return (
-                      <Tooltip
-                        disabled={!titleDetails.isTruncated}
-                        content={
-                          <Box style={{maxWidth: '300px'}}>
-                            <Text size={1}>{titleDetails.fullTitle}</Text>
-                          </Box>
-                        }
+                      <ReleaseTitle
+                        title={selectedPerspective.metadata?.title}
+                        fallback={tCore('release.placeholder-untitled-release')}
                       >
-                        <BadgeWithTone>{children}</BadgeWithTone>
-                      </Tooltip>
+                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                      </ReleaseTitle>
                     )
                   },
                 }}

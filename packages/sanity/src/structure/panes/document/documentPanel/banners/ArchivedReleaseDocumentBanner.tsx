@@ -1,16 +1,15 @@
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionInlineBadge,
   isCardinalityOneRelease,
+  ReleaseTitle,
   Translate,
-  getReleaseTitleDetails,
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -48,40 +47,31 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     return 'banners.archived-release.description'
   }, [release])
 
-  const titleDetails = getReleaseTitleDetails(
-    release?.metadata.title,
-    tCore('release.placeholder-untitled-release'),
-  )
-
   return (
     <Banner
       tone="caution"
       content={
         <Text size={1}>
-          <Translate
-            t={t}
-            i18nKey={description}
-            values={{
-              title: titleDetails.displayTitle,
-            }}
-            components={{
-              VersionBadge: ({children}) => {
-                const BadgeWithTone = getVersionInlineBadge(release)
-                return (
-                  <Tooltip
-                    disabled={!titleDetails.isTruncated}
-                    content={
-                      <Box style={{maxWidth: '300px'}}>
-                        <Text size={1}>{titleDetails.fullTitle}</Text>
-                      </Box>
-                    }
-                  >
-                    <BadgeWithTone>{children}</BadgeWithTone>
-                  </Tooltip>
-                )
-              },
-            }}
-          />
+          <ReleaseTitle
+            title={release?.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+          >
+            {({displayTitle}) => (
+              <Translate
+                t={t}
+                i18nKey={description}
+                values={{
+                  title: displayTitle,
+                }}
+                components={{
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(release)
+                    return <BadgeWithTone>{children}</BadgeWithTone>
+                  },
+                }}
+              />
+            )}
+          </ReleaseTitle>
         </Text>
       }
       action={

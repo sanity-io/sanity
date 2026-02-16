@@ -12,15 +12,14 @@ import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../releases/util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
-  isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
@@ -118,19 +117,6 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const {t} = useTranslation()
 
-  const titleDetails = useMemo(() => {
-    if (isPublishedPerspective(release)) {
-      const title = t('release.navbar.published')
-      return {displayTitle: title, fullTitle: title, isTruncated: false}
-    }
-    if (isDraftPerspective(release)) {
-      const title = t('release.navbar.drafts')
-      return {displayTitle: title, fullTitle: title, isTruncated: false}
-    }
-
-    return getReleaseTitleDetails(release.metadata.title, t('release.placeholder-untitled-release'))
-  }, [release, t])
-
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
@@ -194,18 +180,19 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             }}
           >
             <Flex gap={3} align="center" style={{minWidth: 0}}>
-              <Tooltip
-                disabled={!titleDetails.isTruncated}
-                content={
-                  <Box style={{maxWidth: '300px'}}>
-                    <Text size={1}>{titleDetails.fullTitle}</Text>
-                  </Box>
-                }
-              >
+              {isReleaseDocument(release) ? (
+                <ReleaseTitle
+                  title={release.metadata.title}
+                  fallback={t('release.placeholder-untitled-release')}
+                  textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                />
+              ) : (
                 <Text size={1} weight="medium" style={{minWidth: 0}}>
-                  {titleDetails.displayTitle}
+                  {isDraftPerspective(release)
+                    ? t('release.navbar.drafts')
+                    : t('release.navbar.published')}
                 </Text>
-              </Tooltip>
+              )}
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (

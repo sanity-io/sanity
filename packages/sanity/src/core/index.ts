@@ -49,6 +49,7 @@ export {
   LATEST,
   PUBLISHED,
   ReleaseAvatar,
+  ReleaseTitle,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   sortReleases,

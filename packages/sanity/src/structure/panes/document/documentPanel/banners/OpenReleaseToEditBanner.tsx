@@ -1,4 +1,4 @@
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -6,8 +6,8 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isVersionId,
+  ReleaseTitle,
   Translate,
-  getReleaseTitleDetails,
   useActiveReleases,
   useDocumentVersions,
   useOnlyHasVersions,
@@ -16,7 +16,6 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -58,23 +57,16 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
 
   const {data: documentVersions} = useDocumentVersions({documentId})
 
-  const documentVersionsTitleDetailsList = useMemo(
+  const documentVersionReleases = useMemo(
     () =>
-      activeReleases
-        .filter((version) => {
-          const hasDocumentVersion = documentVersions.find((release) => {
-            const r = getVersionFromId(release) ?? ''
-            return getReleaseIdFromReleaseDocumentId(version._id) === r
-          })
-          return hasDocumentVersion && !isCardinalityOneRelease(version)
+      activeReleases.filter((version) => {
+        const hasDocumentVersion = documentVersions.find((release) => {
+          const r = getVersionFromId(release) ?? ''
+          return getReleaseIdFromReleaseDocumentId(version._id) === r
         })
-        .map((version) =>
-          getReleaseTitleDetails(
-            version.metadata.title,
-            tCore('release.placeholder-untitled-release'),
-          ),
-        ),
-    [activeReleases, documentVersions, tCore],
+        return hasDocumentVersion && !isCardinalityOneRelease(version)
+      }),
+    [activeReleases, documentVersions],
   )
   const tone = currentVersion && getReleaseTone(currentVersion)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -83,11 +75,12 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
     setPerspective(releaseId)
   }, [releaseId, setPerspective])
 
-  if (documentVersionsTitleDetailsList.length === 0) {
+  if (documentVersionReleases.length === 0) {
     return null
   }
 
-  const firstTitleDetails = documentVersionsTitleDetailsList[0]
+  const firstRelease = documentVersionReleases[0]
+  const fallback = tCore('release.placeholder-untitled-release')
 
   return (
     <Banner
@@ -96,51 +89,33 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
       content={
         <Text size={1}>
           <Flex direction={'row'} gap={1} wrap="wrap">
-            {documentVersionsTitleDetailsList.length > 1 ? (
-              <Translate
-                t={t}
-                i18nKey="banners.release.navigate-to-edit-description-multiple"
-                components={{
-                  VersionBadge: () => (
-                    <Tooltip
-                      disabled={!firstTitleDetails.isTruncated}
-                      content={
-                        <Box style={{maxWidth: '300px'}}>
-                          <Text size={1}>{firstTitleDetails.fullTitle}</Text>
-                        </Box>
-                      }
-                    >
-                      <VersionInlineBadge>{firstTitleDetails.displayTitle}</VersionInlineBadge>
-                    </Tooltip>
-                  ),
-                }}
-                values={{count: documentVersionsTitleDetailsList.length - 1}}
-              />
-            ) : (
-              <Translate
-                t={t}
-                i18nKey="banners.release.navigate-to-edit-description-single"
-                components={{
-                  VersionBadge: () => (
-                    <Tooltip
-                      disabled={!firstTitleDetails.isTruncated}
-                      content={
-                        <Box style={{maxWidth: '300px'}}>
-                          <Text size={1}>{firstTitleDetails.fullTitle}</Text>
-                        </Box>
-                      }
-                    >
-                      <VersionInlineBadge>{firstTitleDetails.displayTitle}</VersionInlineBadge>
-                    </Tooltip>
-                  ),
-                }}
-              />
-            )}
+            <ReleaseTitle title={firstRelease.metadata.title} fallback={fallback}>
+              {({displayTitle}) =>
+                documentVersionReleases.length > 1 ? (
+                  <Translate
+                    t={t}
+                    i18nKey="banners.release.navigate-to-edit-description-multiple"
+                    components={{
+                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
+                    }}
+                    values={{count: documentVersionReleases.length - 1}}
+                  />
+                ) : (
+                  <Translate
+                    t={t}
+                    i18nKey="banners.release.navigate-to-edit-description-single"
+                    components={{
+                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
+                    }}
+                  />
+                )
+              }
+            </ReleaseTitle>
           </Flex>
         </Text>
       }
       action={
-        documentVersionsTitleDetailsList.length > 0
+        documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
               tone: tone,

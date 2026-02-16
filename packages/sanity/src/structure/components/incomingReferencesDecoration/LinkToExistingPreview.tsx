@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
+import {type BadgeTone, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -7,20 +7,18 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitleDetails,
   getReleaseTone,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isVersionId,
   PreviewCard,
+  ReleaseTitle,
   SanityDefaultPreview,
   useActiveReleases,
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
-
-import {Tooltip} from '../../../ui-components'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -56,34 +54,34 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     original: null,
   })
 
-  const badgeProps = useMemo(() => {
+  const badgeProps = useMemo(():
+    | {kind: 'static'; tone: BadgeTone; text: string}
+    | {kind: 'release'; tone: BadgeTone; releaseTitle: string | undefined; releaseFallback: string}
+    | null => {
     const id = value._id
     if (isDraftId(id)) {
       return {
+        kind: 'static',
         tone: getReleaseTone('drafts'),
         text: t('release.chip.draft'),
-        isTruncated: false,
-        fullTitle: t('release.chip.draft'),
       }
     }
     if (isPublishedId(id)) {
       return {
+        kind: 'static',
         tone: getReleaseTone('published'),
         text: t('release.chip.published'),
-        isTruncated: false,
-        fullTitle: t('release.chip.published'),
       }
     }
     if (isVersionId(id)) {
       const releaseId = getVersionFromId(id)
       const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
       if (release) {
-        const titleDetails = getReleaseTitleDetails(release.metadata.title, release._id)
         return {
+          kind: 'release',
           tone: getReleaseTone(release),
-          text: titleDetails.displayTitle,
-          isTruncated: titleDetails.isTruncated,
-          fullTitle: titleDetails.fullTitle,
+          releaseTitle: release.metadata.title,
+          releaseFallback: release._id,
         }
       }
     }
@@ -106,16 +104,15 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
         status={
           badgeProps ? (
             <Text size={0}>
-              <Tooltip
-                disabled={!badgeProps.isTruncated}
-                content={
-                  <Box style={{maxWidth: '300px'}}>
-                    <Text size={1}>{badgeProps.fullTitle}</Text>
-                  </Box>
-                }
-              >
+              {badgeProps.kind === 'release' ? (
+                <ReleaseTitle title={badgeProps.releaseTitle} fallback={badgeProps.releaseFallback}>
+                  {({displayTitle}) => (
+                    <VersionInlineBadge $tone={badgeProps.tone}>{displayTitle}</VersionInlineBadge>
+                  )}
+                </ReleaseTitle>
+              ) : (
                 <VersionInlineBadge $tone={badgeProps.tone}>{badgeProps.text}</VersionInlineBadge>
-              </Tooltip>
+              )}
             </Text>
           ) : undefined
         }

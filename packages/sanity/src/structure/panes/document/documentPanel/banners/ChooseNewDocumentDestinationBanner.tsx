@@ -1,22 +1,22 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'
 import {
+  getReleaseTitleDetails,
   getVersionInlineBadge,
   isPerspectiveWriteable,
   isReleaseDocument,
   type PerspectiveNotWriteableReason,
   ReleasesNav,
   type ReleasesNavMenuItemPropsGetter,
+  ReleaseTitle,
   type TargetPerspective,
   Translate,
-  getReleaseTitleDetails,
   useTranslation,
   useWorkspace,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -88,16 +88,12 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
                   VersionBadge: ({children}) => {
                     const BadgeWithTone = getVersionInlineBadge(releaseDoc)
                     return (
-                      <Tooltip
-                        disabled={!titleDetails.isTruncated}
-                        content={
-                          <Box style={{maxWidth: '300px'}}>
-                            <Text size={1}>{titleDetails.fullTitle}</Text>
-                          </Box>
-                        }
+                      <ReleaseTitle
+                        title={releaseDoc.metadata.title}
+                        fallback={tCore('release.placeholder-untitled-release')}
                       >
-                        <BadgeWithTone>{children}</BadgeWithTone>
-                      </Tooltip>
+                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                      </ReleaseTitle>
                     )
                   },
                 }}

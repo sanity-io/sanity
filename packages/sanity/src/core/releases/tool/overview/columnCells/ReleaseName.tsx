@@ -11,6 +11,7 @@ import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
+import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
@@ -102,8 +103,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             selected={isReleasePinned}
             aria-label={
               isReleasePinned
-                ? `${t('dashboard.details.unpin-release')}: "${release.metadata.title}"`
-                : `${t('dashboard.details.pin-release')}: "${release.metadata.title}"`
+                ? `${t('dashboard.details.unpin-release')}: "${titleDetails.fullTitle}"`
+                : `${t('dashboard.details.pin-release')}: "${titleDetails.fullTitle}"`
             }
             aria-live="assertive"
           />
@@ -114,18 +115,11 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
               </Box>
               <Stack flex={1} space={2}>
                 <Flex align="center" gap={2} style={{minWidth: 0}}>
-                  <Tooltip
-                    disabled={!titleDetails.isTruncated}
-                    content={
-                      <Box style={{maxWidth: '300px'}}>
-                        <Text size={1}>{titleDetails.fullTitle}</Text>
-                      </Box>
-                    }
-                  >
-                    <Text size={1} weight="medium" style={{minWidth: 0}}>
-                      {titleDetails.displayTitle}
-                    </Text>
-                  </Tooltip>
+                  <ReleaseTitle
+                    title={release.metadata.title}
+                    fallback={tCore('release.placeholder-untitled-release')}
+                    textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                  />
                 </Flex>
               </Stack>
             </Flex>

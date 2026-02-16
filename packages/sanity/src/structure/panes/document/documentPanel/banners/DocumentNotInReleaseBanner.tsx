@@ -1,20 +1,20 @@
-import {Box, Text, useToast} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getReleaseTitleDetails,
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
+  ReleaseTitle,
   type SystemBundle,
   type TargetPerspective,
   Translate,
-  getReleaseTitleDetails,
   useConditionalToast,
   useTranslation,
   useVersionOperations,
 } from 'sanity'
 
-import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -105,17 +105,16 @@ export function DocumentNotInReleaseBanner({
             components={{
               VersionBadge: ({children}) => {
                 const BadgeWithTone = getVersionInlineBadge(currentRelease)
+                if (isAnonymousBundle) {
+                  return <BadgeWithTone>{children}</BadgeWithTone>
+                }
                 return (
-                  <Tooltip
-                    disabled={!titleDetails.isTruncated}
-                    content={
-                      <Box style={{maxWidth: '300px'}}>
-                        <Text size={1}>{titleDetails.fullTitle}</Text>
-                      </Box>
-                    }
+                  <ReleaseTitle
+                    title={currentRelease.metadata?.title}
+                    fallback={tCore('release.placeholder-untitled-release')}
                   >
-                    <BadgeWithTone>{children}</BadgeWithTone>
-                  </Tooltip>
+                    {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                  </ReleaseTitle>
                 )
               },
             }}

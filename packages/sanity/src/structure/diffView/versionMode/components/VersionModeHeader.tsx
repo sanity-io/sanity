@@ -39,8 +39,8 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
+import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {Tooltip} from '../../../../ui-components/tooltip'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../../hooks/useDiffViewState'
@@ -304,28 +304,17 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
   }
 
   const tone: ButtonTone = release ? getReleaseTone(release) : 'neutral'
-  const titleDetails = getReleaseTitleDetails(
-    release.metadata.title,
-    tCore('release.placeholder-untitled-release'),
-  )
 
   return (
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
         <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
-          <Tooltip
-            disabled={!titleDetails.isTruncated}
-            content={
-              <Box style={{maxWidth: '300px'}}>
-                <Text size={1}>{titleDetails.fullTitle}</Text>
-              </Box>
-            }
-          >
-            <Text size={1} weight="medium">
-              {titleDetails.displayTitle}
-            </Text>
-          </Tooltip>
+          <ReleaseTitle
+            title={release.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+            textProps={{size: 1, weight: 'medium'}}
+          />
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
             <Text muted size={1}>
               {tCore(`release.type.${release.metadata.releaseType}`)}

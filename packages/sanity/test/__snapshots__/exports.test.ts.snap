@@ -166,6 +166,7 @@ exports[`exports snapshot 1`] = `
     "RelativeTime": "function",
     "ReleaseAvatar": "function",
     "ReleaseAvatarIcon": "function",
+    "ReleaseTitle": "function",
     "ReleasesNav": "function",
     "Resizable": "function",
     "ResourceCacheProvider": "function",

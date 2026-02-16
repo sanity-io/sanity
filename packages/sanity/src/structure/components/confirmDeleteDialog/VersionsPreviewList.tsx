@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -7,10 +7,10 @@ import {
   getPreviewValueWithFallback,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitleDetails,
   getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
+  ReleaseTitle,
   SanityDefaultPreview,
   type SchemaType,
   useActiveReleases,
@@ -19,8 +19,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
-
-import {Tooltip} from '../../../ui-components'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;
@@ -75,18 +73,10 @@ const VersionItemPreview = ({
     )
   }, [releases, versionId, documentVariant])
 
-  const titleDetails = useMemo(() => {
-    if (documentVariant === 'version') {
-      return getReleaseTitleDetails(release?.metadata?.title, getVersionFromId(versionId) as string)
-    }
-    const text =
-      documentVariant === 'published' ? t('release.chip.published') : t('release.chip.draft')
-    return {
-      displayTitle: text,
-      fullTitle: text,
-      isTruncated: false,
-    }
-  }, [documentVariant, release, versionId, t])
+  const systemTitle = useMemo(() => {
+    if (documentVariant === 'version') return undefined
+    return documentVariant === 'published' ? t('release.chip.published') : t('release.chip.draft')
+  }, [documentVariant, t])
 
   const tone = release
     ? getReleaseTone(release)
@@ -114,21 +104,20 @@ const VersionItemPreview = ({
               <Text size={1}>
                 <ReleaseAvatarIcon tone={tone} />
               </Text>
-              {titleDetails.isTruncated ? (
-                <Tooltip
-                  content={
-                    <Box style={{maxWidth: '300px'}}>
-                      <Text size={1}>{titleDetails.fullTitle}</Text>
-                    </Box>
-                  }
+              {documentVariant === 'version' ? (
+                <ReleaseTitle
+                  title={release?.metadata?.title}
+                  fallback={getVersionFromId(versionId) as string}
                 >
-                  <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
-                    {titleDetails.displayTitle}
-                  </EllipsisText>
-                </Tooltip>
+                  {({displayTitle}) => (
+                    <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                      {displayTitle}
+                    </EllipsisText>
+                  )}
+                </ReleaseTitle>
               ) : (
                 <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
-                  {titleDetails.displayTitle}
+                  {systemTitle}
                 </EllipsisText>
               )}
             </Flex>
