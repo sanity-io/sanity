@@ -130,12 +130,12 @@ function getObjectFieldsetAndFieldGroupOperations(
     ops.push({type: 'expandFieldSet', path: fieldsetMember.fieldSet.path})
   }
 
-  if (fieldMember && hasAllMembers(fieldMember.field)) {
-    if (isMemberArrayOfObjects(fieldMember)) {
-      ops.push(...getArrayFieldsetAndFieldGroupOperations(fieldMember.field, tail))
-    } else if (isMemberObject(fieldMember)) {
-      ops.push(...getObjectFieldsetAndFieldGroupOperations(fieldMember.field, tail))
-    }
+  if (fieldMember && isMemberArrayOfObjects(fieldMember)) {
+    ops.push(...getArrayFieldsetAndFieldGroupOperations(fieldMember.field, tail))
+  }
+
+  if (fieldMember && isMemberObject(fieldMember) && hasAllMembers(fieldMember.field)) {
+    ops.push(...getObjectFieldsetAndFieldGroupOperations(fieldMember.field, tail))
   }
 
   return ops
