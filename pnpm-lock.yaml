@@ -1894,9 +1894,9 @@ importers:
       '@sanity/schema':
         specifier: workspace:*
         version: link:../@sanity/schema
-      '@sanity/sdk':
-        specifier: 2.1.2
-        version: 2.1.2(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+      '@sanity/sdk-react':
+        specifier: ^2.7.0
+        version: 2.7.0(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
       '@sanity/telemetry':
         specifier: ^0.8.0
         version: 0.8.1(react@19.2.4)
@@ -5272,10 +5272,6 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  '@sanity/comlink@2.0.5':
-    resolution: {integrity: sha512-6Rbg71hkeoGInk/9hBsCUBCZ33IHSs2fZynAR85ANkXDM+WYiwRDlker7OngBkfbK8TF9+G797VjNMQQgJINiQ==}
-    engines: {node: '>=18'}
-
   '@sanity/comlink@3.1.1':
     resolution: {integrity: sha512-UyBJG4oWNs+VGVo5Yr5aKir5bgMzF/dnaNYjqxP2+5+iXnvhVOcI6dAtEXDj7kMmn5/ysHNKbLDlW6aVeBm7xg==}
     engines: {node: '>=18'}
@@ -5403,10 +5399,6 @@ packages:
   '@sanity/media-library-types@1.2.0':
     resolution: {integrity: sha512-p+Bw96I63SwBcMNA/L5dnMdEcS88EEDUDZ65LGuwOCMXrESRGMFCSxgc+0HnL0JXDIzgYgfrPuf1I3bO9QneAw==}
 
-  '@sanity/message-protocol@0.12.0':
-    resolution: {integrity: sha512-RMRWQG5yVkCZnnBHW3qxVbZGUOeXPBzFPdD9+pynQCTVZI7zYBEzjnY8lcSYjty+0unDHqeoqMPfBXhqs0rg2g==}
-    engines: {node: '>=20.0.0'}
-
   '@sanity/message-protocol@0.18.0':
     resolution: {integrity: sha512-yu4OPcggHqTb2qTqQgYdPlwj8+7ZIUHORMMiZfYNLt7P8hd/Wf90KBg13u9hrISU5L4rPVGzdkSJpaYu9wu6EQ==}
     engines: {node: '>=20.0.0'}
@@ -5485,12 +5477,19 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
-  '@sanity/sdk@2.1.2':
-    resolution: {integrity: sha512-gRBMDNvMUqlFTVoNgOLtcOFDO+e8Fh6v+BrEA4C5F18oi949ObjMmPB2aZMoyP3N3GQuqwVQP6L2PrhH70H7Bw==}
-    engines: {node: '>=20.0.0'}
+  '@sanity/sdk-react@2.7.0':
+    resolution: {integrity: sha512-FJexcjFmE6at+NR1ezjb3HDr9OBWd/YNs/UgUIODkjXdFD0WqKIAZEEPqojyAs7AG4+wWeyFdMIFwJqDs9Amsg==}
+    engines: {node: '>=20.19'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   '@sanity/sdk@2.5.0':
     resolution: {integrity: sha512-ytqPSOQaT5Tnr1777xW7xBDtvv1b6wyac/pz7eo499SQ9ixUmeSrHJs6hvt4D/Hj5DIahViSYcqLbdww0IOD0g==}
+    engines: {node: '>=20.19'}
+
+  '@sanity/sdk@2.7.0':
+    resolution: {integrity: sha512-gCjuz72AV8KMN1c26eCT8rYZbSe9rf23IwBr3XQq4AoCklzXFGdg4ZXtEwtScby/G5pW05geXLjT3Z0We69cAQ==}
     engines: {node: '>=20.19'}
 
   '@sanity/signed-urls@2.0.2':
@@ -16361,12 +16360,6 @@ snapshots:
 
   '@sanity/color@3.0.6': {}
 
-  '@sanity/comlink@2.0.5':
-    dependencies:
-      rxjs: 7.8.2
-      uuid: 11.1.0
-      xstate: 5.25.1
-
   '@sanity/comlink@3.1.1':
     dependencies:
       rxjs: 7.8.2
@@ -16580,10 +16573,6 @@ snapshots:
       react: 19.2.4
 
   '@sanity/media-library-types@1.2.0': {}
-
-  '@sanity/message-protocol@0.12.0':
-    dependencies:
-      '@sanity/comlink': 2.0.5
 
   '@sanity/message-protocol@0.18.0':
     dependencies:
@@ -16826,27 +16815,25 @@ snapshots:
       - supports-color
       - use-sync-external-store
 
-  '@sanity/sdk@2.1.2(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))':
+  '@sanity/sdk-react@2.7.0(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))':
     dependencies:
-      '@sanity/bifur-client': 0.4.1
       '@sanity/client': 7.14.1(debug@4.4.3)
-      '@sanity/comlink': 3.1.1
-      '@sanity/diff-match-patch': 3.2.0
-      '@sanity/diff-patch': 6.0.0
-      '@sanity/json-match': 1.0.5
-      '@sanity/message-protocol': 0.12.0
-      '@sanity/mutate': 0.12.6(debug@4.4.3)
+      '@sanity/message-protocol': 0.18.0
+      '@sanity/sdk': 2.7.0(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
       '@sanity/types': link:packages/@sanity/types
+      '@types/lodash-es': 4.17.12
       groq: 3.88.1-typegen-experimental.0
       lodash-es: 4.17.23
-      reselect: 5.1.1
+      react: 19.2.4
+      react-compiler-runtime: 19.1.0-rc.2(react@19.2.4)
+      react-dom: 19.2.4(react@19.2.4)
+      react-error-boundary: 5.0.0(react@19.2.4)
       rxjs: 7.8.2
-      zustand: 5.0.9(@types/react@19.2.11)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
     transitivePeerDependencies:
       - '@types/react'
       - debug
       - immer
-      - react
+      - supports-color
       - use-sync-external-store
 
   '@sanity/sdk@2.5.0(@types/react@19.2.11)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))':
@@ -16862,6 +16849,32 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       groq: 3.88.1-typegen-experimental.0
       groq-js: 1.27.0
+      lodash-es: 4.17.23
+      reselect: 5.1.1
+      rxjs: 7.8.2
+      zustand: 5.0.9(@types/react@19.2.11)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
+    transitivePeerDependencies:
+      - '@types/react'
+      - debug
+      - immer
+      - react
+      - supports-color
+      - use-sync-external-store
+
+  '@sanity/sdk@2.7.0(@types/react@19.2.11)(debug@4.4.3)(immer@11.0.1)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))':
+    dependencies:
+      '@sanity/bifur-client': 0.4.1
+      '@sanity/client': 7.14.1(debug@4.4.3)
+      '@sanity/comlink': 3.1.1
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/diff-patch': 6.0.0
+      '@sanity/id-utils': 1.0.0
+      '@sanity/json-match': 1.0.5
+      '@sanity/message-protocol': 0.18.0
+      '@sanity/mutate': 0.12.6(debug@4.4.3)
+      '@sanity/types': link:packages/@sanity/types
+      groq: 3.88.1-typegen-experimental.0
+      groq-js: 1.26.0
       lodash-es: 4.17.23
       reselect: 5.1.1
       rxjs: 7.8.2
