@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -10,6 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {Tooltip} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -47,10 +48,10 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     return 'banners.archived-release.description'
   }, [release])
 
-  const title = getReleaseTitleDetails(
+  const titleDetails = getReleaseTitleDetails(
     release?.metadata.title,
     tCore('release.placeholder-untitled-release'),
-  ).displayTitle
+  )
 
   return (
     <Banner
@@ -61,10 +62,24 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
             t={t}
             i18nKey={description}
             values={{
-              title,
+              title: titleDetails.displayTitle,
             }}
             components={{
-              VersionBadge: getVersionInlineBadge(release),
+              VersionBadge: ({children}) => {
+                const BadgeWithTone = getVersionInlineBadge(release)
+                return (
+                  <Tooltip
+                    disabled={!titleDetails.isTruncated}
+                    content={
+                      <Box style={{maxWidth: '300px'}}>
+                        <Text size={1}>{titleDetails.fullTitle}</Text>
+                      </Box>
+                    }
+                  >
+                    <BadgeWithTone>{children}</BadgeWithTone>
+                  </Tooltip>
+                )
+              },
             }}
           />
         </Text>

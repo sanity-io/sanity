@@ -15,7 +15,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseTitleDetails} from '../../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {

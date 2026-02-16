@@ -1,4 +1,4 @@
-import {Text, useToast} from '@sanity/ui'
+import {Box, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -14,6 +14,7 @@ import {
   useVersionOperations,
 } from 'sanity'
 
+import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -41,6 +42,12 @@ export function DocumentNotInReleaseBanner({
   const {createVersion} = useVersionOperations()
 
   const isAnonymousBundle = typeof currentRelease === 'string'
+  const titleDetails = isAnonymousBundle
+    ? {displayTitle: currentRelease, fullTitle: currentRelease, isTruncated: false}
+    : getReleaseTitleDetails(
+        currentRelease?.metadata?.title,
+        tCore('release.placeholder-untitled-release'),
+      )
   const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
   const handleAddToRelease = useCallback(async () => {
@@ -93,15 +100,24 @@ export function DocumentNotInReleaseBanner({
             i18nKey="banners.release.not-in-release"
             t={t}
             values={{
-              title: isAnonymousBundle
-                ? currentRelease
-                : getReleaseTitleDetails(
-                    currentRelease?.metadata?.title,
-                    tCore('release.placeholder-untitled-release'),
-                  ).displayTitle,
+              title: titleDetails.displayTitle,
             }}
             components={{
-              VersionBadge: getVersionInlineBadge(currentRelease),
+              VersionBadge: ({children}) => {
+                const BadgeWithTone = getVersionInlineBadge(currentRelease)
+                return (
+                  <Tooltip
+                    disabled={!titleDetails.isTruncated}
+                    content={
+                      <Box style={{maxWidth: '300px'}}>
+                        <Text size={1}>{titleDetails.fullTitle}</Text>
+                      </Box>
+                    }
+                  >
+                    <BadgeWithTone>{children}</BadgeWithTone>
+                  </Tooltip>
+                )
+              },
             }}
           />
         </Text>

@@ -40,6 +40,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const isReady = params?.inspect === HISTORY_INSPECTOR_NAME
   const {selectedPerspective} = usePerspective()
 
@@ -112,7 +113,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
             <Translate
               t={t}
               values={{
-                perspective: perspectiveLabel(selectedPerspective, {t}),
+                perspective: perspectiveLabel(selectedPerspective, {t, tCore}),
               }}
               i18nKey="changes.banner.description"
             />
@@ -153,9 +154,15 @@ export function ChangesTabs(props: DocumentInspectorProps) {
   )
 }
 
-function perspectiveLabel(perspective: TargetPerspective, {t}: {t: TFunction}): string {
+function perspectiveLabel(
+  perspective: TargetPerspective,
+  {t, tCore}: {t: TFunction; tCore: TFunction},
+): string {
   if (isReleaseDocument(perspective)) {
-    return getReleaseTitleDetails(perspective.metadata.title, perspective._id).displayTitle
+    return getReleaseTitleDetails(
+      perspective.metadata.title,
+      tCore('release.placeholder-untitled-release'),
+    ).displayTitle
   }
 
   if (perspective === 'drafts') {

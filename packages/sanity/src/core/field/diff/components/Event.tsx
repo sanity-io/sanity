@@ -11,8 +11,8 @@ import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelat
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../../releases/store/types'
+import {getReleaseTitleDetails} from '../../../releases/util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../../releases/util/releaseTitle'
 import {
   type DocumentGroupEvent,
   isEditDocumentVersionEvent,
@@ -146,6 +146,14 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   const userIds = isEditDocumentVersionEvent(event) ? event.contributors : [event.author]
 
+  const releaseTitleDetails =
+    isPublishDocumentVersionEvent(event) && event.release
+      ? getReleaseTitleDetails(
+          event.release.metadata?.title,
+          t('release.placeholder-untitled-release'),
+        )
+      : undefined
+
   return (
     <>
       <Flex align="center" gap={3}>
@@ -161,19 +169,23 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
-                {event.release ? (
-                  <VersionInlineBadge
-                    $tone={
-                      isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
+                {event.release && releaseTitleDetails ? (
+                  <Tooltip
+                    disabled={!releaseTitleDetails.isTruncated}
+                    content={
+                      <Box style={{maxWidth: '300px'}}>
+                        <Text size={1}>{releaseTitleDetails.fullTitle}</Text>
+                      </Box>
                     }
                   >
-                    {
-                      getReleaseTitleDetails(
-                        event.release.metadata?.title,
-                        t('release.placeholder-untitled-release'),
-                      ).displayTitle
-                    }
-                  </VersionInlineBadge>
+                    <VersionInlineBadge
+                      $tone={
+                        isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
+                      }
+                    >
+                      {releaseTitleDetails.displayTitle}
+                    </VersionInlineBadge>
+                  </Tooltip>
                 ) : (
                   <VersionInlineBadge $tone="caution">
                     {t('changes.versions.draft')}

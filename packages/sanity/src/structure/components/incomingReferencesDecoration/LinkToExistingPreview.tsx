@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -19,6 +19,8 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
+
+import {Tooltip} from '../../../ui-components'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -57,18 +59,31 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
   const badgeProps = useMemo(() => {
     const id = value._id
     if (isDraftId(id)) {
-      return {tone: getReleaseTone('drafts'), text: t('release.chip.draft')}
+      return {
+        tone: getReleaseTone('drafts'),
+        text: t('release.chip.draft'),
+        isTruncated: false,
+        fullTitle: t('release.chip.draft'),
+      }
     }
     if (isPublishedId(id)) {
-      return {tone: getReleaseTone('published'), text: t('release.chip.published')}
+      return {
+        tone: getReleaseTone('published'),
+        text: t('release.chip.published'),
+        isTruncated: false,
+        fullTitle: t('release.chip.published'),
+      }
     }
     if (isVersionId(id)) {
       const releaseId = getVersionFromId(id)
       const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
       if (release) {
+        const titleDetails = getReleaseTitleDetails(release.metadata.title, release._id)
         return {
           tone: getReleaseTone(release),
-          text: getReleaseTitleDetails(release.metadata.title, release._id).displayTitle,
+          text: titleDetails.displayTitle,
+          isTruncated: titleDetails.isTruncated,
+          fullTitle: titleDetails.fullTitle,
         }
       }
     }
@@ -91,7 +106,16 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
         status={
           badgeProps ? (
             <Text size={0}>
-              <VersionInlineBadge $tone={badgeProps.tone}>{badgeProps.text}</VersionInlineBadge>
+              <Tooltip
+                disabled={!badgeProps.isTruncated}
+                content={
+                  <Box style={{maxWidth: '300px'}}>
+                    <Text size={1}>{badgeProps.fullTitle}</Text>
+                  </Box>
+                }
+              >
+                <VersionInlineBadge $tone={badgeProps.tone}>{badgeProps.text}</VersionInlineBadge>
+              </Tooltip>
             </Text>
           ) : undefined
         }

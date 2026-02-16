@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'
 import {
   getVersionInlineBadge,
@@ -16,6 +16,7 @@ import {
   useWorkspace,
 } from 'sanity'
 
+import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -57,6 +58,14 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
     [isDraftModelEnabled, schemaType],
   )
 
+  const releaseDoc = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
+  const titleDetails = releaseDoc
+    ? getReleaseTitleDetails(
+        releaseDoc.metadata.title,
+        tCore('release.placeholder-untitled-release'),
+      )
+    : undefined
+
   return (
     <Banner
       tone="caution"
@@ -68,18 +77,29 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-draft-document')}
-            {reason === 'RELEASE_NOT_ACTIVE' && isReleaseDocument(selectedPerspective) && (
+            {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && titleDetails && (
               <Translate
                 t={t}
                 i18nKey="banners.choose-new-document-destination.release-inactive"
                 values={{
-                  title: getReleaseTitleDetails(
-                    selectedPerspective.metadata.title,
-                    tCore('release.placeholder-untitled-release'),
-                  ).displayTitle,
+                  title: titleDetails.displayTitle,
                 }}
                 components={{
-                  VersionBadge: getVersionInlineBadge(selectedPerspective),
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(releaseDoc)
+                    return (
+                      <Tooltip
+                        disabled={!titleDetails.isTruncated}
+                        content={
+                          <Box style={{maxWidth: '300px'}}>
+                            <Text size={1}>{titleDetails.fullTitle}</Text>
+                          </Box>
+                        }
+                      >
+                        <BadgeWithTone>{children}</BadgeWithTone>
+                      </Tooltip>
+                    )
+                  },
                 }}
               />
             )}

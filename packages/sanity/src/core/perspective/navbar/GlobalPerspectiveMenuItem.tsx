@@ -15,8 +15,8 @@ import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../releases/util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../releases/util/releaseTitle'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,

@@ -3,6 +3,8 @@
  * @internal
  */
 
+import {truncateString} from '../../util/unicodeString'
+
 const DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT = 50
 
 /**
@@ -29,7 +31,7 @@ export function getReleaseTitleDetails(
   const fullTitle = getReleaseTitle(title, fallback)
   const isTruncated = fullTitle.length > DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT
   const displayTitle = isTruncated
-    ? `${fullTitle.slice(0, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)}...`
+    ? truncateString(fullTitle, DEFAULT_RELEASE_TITLE_CHARACTER_LIMIT)
     : fullTitle
 
   return {displayTitle, fullTitle, isTruncated}

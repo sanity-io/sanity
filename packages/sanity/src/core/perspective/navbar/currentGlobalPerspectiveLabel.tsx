@@ -20,7 +20,7 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../releases/util/releaseTitle'
+import {getReleaseTitleDetails} from '../../releases/util/getReleaseTitleDetails'
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {oversizedButtonStyle} from '../styles'
 import {type TargetPerspective} from '../types'
@@ -117,7 +117,7 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
         mode="bleed"
         padding={2}
         radius="full"
-        style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
+        style={{maxWidth: '180px'}}
         text={titleDetails.displayTitle}
       />
     </Tooltip>

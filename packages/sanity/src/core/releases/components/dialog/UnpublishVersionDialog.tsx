@@ -15,8 +15,8 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../util/releaseTitle'
 
 export function UnpublishVersionDialog(props: {
   onClose: () => void

@@ -131,7 +131,7 @@ export function TitleDescriptionForm({
       titleRef.current.style.height = 'auto'
       titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
     }
-  }, [release])
+  }, [release.metadata.title])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {

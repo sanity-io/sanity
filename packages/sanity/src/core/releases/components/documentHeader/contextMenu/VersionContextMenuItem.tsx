@@ -5,8 +5,8 @@ import {memo} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
@@ -24,7 +24,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   return (
     <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
-      <Stack flex={1} space={2} style={{maxWidth: '180px'}}>
+      <Stack flex={1} space={2}>
         <Tooltip
           disabled={!titleDetails.isTruncated}
           content={
@@ -33,7 +33,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
             </Box>
           }
         >
-          <Text size={1} weight="medium" textOverflow="ellipsis">
+          <Text size={1} weight="medium">
             {titleDetails.displayTitle}
           </Text>
         </Tooltip>

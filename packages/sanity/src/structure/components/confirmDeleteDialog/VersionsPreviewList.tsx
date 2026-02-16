@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -7,6 +7,7 @@ import {
   getPreviewValueWithFallback,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
+  getReleaseTitleDetails,
   getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
@@ -18,6 +19,8 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+
+import {Tooltip} from '../../../ui-components'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;
@@ -72,12 +75,18 @@ const VersionItemPreview = ({
     )
   }, [releases, versionId, documentVariant])
 
-  const getVersionBadgeText = () => {
+  const titleDetails = useMemo(() => {
     if (documentVariant === 'version') {
-      return release?.metadata?.title || (getVersionFromId(versionId) as string)
+      return getReleaseTitleDetails(release?.metadata?.title, getVersionFromId(versionId) as string)
     }
-    return documentVariant === 'published' ? t('release.chip.published') : t('release.chip.draft')
-  }
+    const text =
+      documentVariant === 'published' ? t('release.chip.published') : t('release.chip.draft')
+    return {
+      displayTitle: text,
+      fullTitle: text,
+      isTruncated: false,
+    }
+  }, [documentVariant, release, versionId, t])
 
   const tone = release
     ? getReleaseTone(release)
@@ -105,9 +114,23 @@ const VersionItemPreview = ({
               <Text size={1}>
                 <ReleaseAvatarIcon tone={tone} />
               </Text>
-              <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
-                {getVersionBadgeText()}
-              </EllipsisText>
+              {titleDetails.isTruncated ? (
+                <Tooltip
+                  content={
+                    <Box style={{maxWidth: '300px'}}>
+                      <Text size={1}>{titleDetails.fullTitle}</Text>
+                    </Box>
+                  }
+                >
+                  <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                    {titleDetails.displayTitle}
+                  </EllipsisText>
+                </Tooltip>
+              ) : (
+                <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                  {titleDetails.displayTitle}
+                </EllipsisText>
+              )}
             </Flex>
           </Card>
         </Card>

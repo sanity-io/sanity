@@ -13,7 +13,7 @@ import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getReleaseTitleDetails} from '../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 
@@ -69,13 +69,7 @@ export function ReleaseDashboardHeader(props: {
             text={title}
             textWeight="semibold"
             padding={2}
-            style={{
-              ...(release.metadata.title ? undefined : {opacity: 0.5}),
-              maxWidth: '300px',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }}
+            style={release.metadata.title ? undefined : {opacity: 0.5}}
           />
         </Breadcrumbs>
       </Flex>

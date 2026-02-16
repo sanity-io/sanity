@@ -13,8 +13,8 @@ import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
@@ -122,7 +122,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
                       </Box>
                     }
                   >
-                    <Text size={1} weight="medium" textOverflow="ellipsis" style={{minWidth: 0}}>
+                    <Text size={1} weight="medium" style={{minWidth: 0}}>
                       {titleDetails.displayTitle}
                     </Text>
                   </Tooltip>

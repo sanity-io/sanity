@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   Menu,
   // eslint-disable-next-line no-restricted-imports
@@ -24,7 +25,7 @@ import {
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 
-import {MenuButton} from '../../../../../ui-components'
+import {MenuButton, Tooltip} from '../../../../../ui-components'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
@@ -63,6 +64,13 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     }, 100)
   }, [setParams, params, event.versionRevisionId, setPerspective, isDraftModelEnabled])
+
+  const titleDetails = event.release
+    ? getReleaseTitleDetails(
+        event.release.metadata?.title,
+        tCore('release.placeholder-untitled-release'),
+      )
+    : undefined
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (
@@ -112,14 +120,22 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                     <Text size={1} style={{textDecoration: 'none'}}>
                       <Translate
                         components={{
-                          VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
+                          VersionBadge: ({children}) => (
+                            <Tooltip
+                              disabled={!titleDetails?.isTruncated}
+                              content={
+                                <Box style={{maxWidth: '300px'}}>
+                                  <Text size={1}>{titleDetails?.fullTitle}</Text>
+                                </Box>
+                              }
+                            >
+                              <VersionBadge>{children}</VersionBadge>
+                            </Tooltip>
+                          ),
                         }}
                         i18nKey="events.open.release"
                         values={{
-                          releaseTitle: getReleaseTitleDetails(
-                            event.release.metadata?.title,
-                            tCore('release.placeholder-untitled-release'),
-                          ).displayTitle,
+                          releaseTitle: titleDetails?.displayTitle,
                         }}
                         t={t}
                       />
@@ -132,14 +148,22 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                   <Text size={1}>
                     <Translate
                       components={{
-                        VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
+                        VersionBadge: ({children}) => (
+                          <Tooltip
+                            disabled={!titleDetails?.isTruncated}
+                            content={
+                              <Box style={{maxWidth: '300px'}}>
+                                <Text size={1}>{titleDetails?.fullTitle}</Text>
+                              </Box>
+                            }
+                          >
+                            <VersionBadge>{children}</VersionBadge>
+                          </Tooltip>
+                        ),
                       }}
                       i18nKey="events.inspect.release"
                       values={{
-                        releaseTitle: getReleaseTitleDetails(
-                          event.release.metadata?.title,
-                          tCore('release.placeholder-untitled-release'),
-                        ).displayTitle,
+                        releaseTitle: titleDetails?.displayTitle,
                       }}
                       t={t}
                     />

@@ -7,7 +7,7 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getReleaseTitleDetails} from '../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 

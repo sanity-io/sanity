@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -16,6 +16,7 @@ import {
   VersionInlineBadge,
 } from 'sanity'
 
+import {Tooltip} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
@@ -57,7 +58,7 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
 
   const {data: documentVersions} = useDocumentVersions({documentId})
 
-  const documentVersionsTitleList = useMemo(
+  const documentVersionsTitleDetailsList = useMemo(
     () =>
       activeReleases
         .filter((version) => {
@@ -67,12 +68,11 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
           })
           return hasDocumentVersion && !isCardinalityOneRelease(version)
         })
-        .map(
-          (version) =>
-            getReleaseTitleDetails(
-              version.metadata.title,
-              tCore('release.placeholder-untitled-release'),
-            ).displayTitle,
+        .map((version) =>
+          getReleaseTitleDetails(
+            version.metadata.title,
+            tCore('release.placeholder-untitled-release'),
+          ),
         ),
     [activeReleases, documentVersions, tCore],
   )
@@ -83,9 +83,11 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
     setPerspective(releaseId)
   }, [releaseId, setPerspective])
 
-  if (documentVersionsTitleList.length === 0) {
+  if (documentVersionsTitleDetailsList.length === 0) {
     return null
   }
+
+  const firstTitleDetails = documentVersionsTitleDetailsList[0]
 
   return (
     <Banner
@@ -94,16 +96,25 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
       content={
         <Text size={1}>
           <Flex direction={'row'} gap={1} wrap="wrap">
-            {documentVersionsTitleList.length > 1 ? (
+            {documentVersionsTitleDetailsList.length > 1 ? (
               <Translate
                 t={t}
                 i18nKey="banners.release.navigate-to-edit-description-multiple"
                 components={{
                   VersionBadge: () => (
-                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                    <Tooltip
+                      disabled={!firstTitleDetails.isTruncated}
+                      content={
+                        <Box style={{maxWidth: '300px'}}>
+                          <Text size={1}>{firstTitleDetails.fullTitle}</Text>
+                        </Box>
+                      }
+                    >
+                      <VersionInlineBadge>{firstTitleDetails.displayTitle}</VersionInlineBadge>
+                    </Tooltip>
                   ),
                 }}
-                values={{count: documentVersionsTitleList.length - 1}}
+                values={{count: documentVersionsTitleDetailsList.length - 1}}
               />
             ) : (
               <Translate
@@ -111,7 +122,16 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
                 i18nKey="banners.release.navigate-to-edit-description-single"
                 components={{
                   VersionBadge: () => (
-                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
+                    <Tooltip
+                      disabled={!firstTitleDetails.isTruncated}
+                      content={
+                        <Box style={{maxWidth: '300px'}}>
+                          <Text size={1}>{firstTitleDetails.fullTitle}</Text>
+                        </Box>
+                      }
+                    >
+                      <VersionInlineBadge>{firstTitleDetails.displayTitle}</VersionInlineBadge>
+                    </Tooltip>
                   ),
                 }}
               />
@@ -120,7 +140,7 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
         </Text>
       }
       action={
-        documentVersionsTitleList.length > 0
+        documentVersionsTitleDetailsList.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
               tone: tone,

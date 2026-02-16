@@ -14,7 +14,7 @@ import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../..
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../util/releaseTitle'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 
 /**
  * @internal

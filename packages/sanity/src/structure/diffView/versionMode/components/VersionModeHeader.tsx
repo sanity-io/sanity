@@ -313,13 +313,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
-        <Stack
-          flex={1}
-          paddingY={2}
-          paddingRight={2}
-          space={2}
-          style={{minWidth: 0, maxWidth: '200px'}}
-        >
+        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
           <Tooltip
             disabled={!titleDetails.isTruncated}
             content={
@@ -328,7 +322,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
               </Box>
             }
           >
-            <Text size={1} weight="medium" textOverflow="ellipsis">
+            <Text size={1} weight="medium">
               {titleDetails.displayTitle}
             </Text>
           </Tooltip>

@@ -168,7 +168,9 @@ describe('ReleaseDetail', () => {
     it('should show the header', async () => {
       await renderTest()
 
-      expect(await screen.findByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(
+        await screen.findAllByText(activeASAPRelease.metadata.title, {exact: false}),
+      ).not.toHaveLength(0)
       expect(await screen.findByTestId('release-menu-button')).toBeInTheDocument()
       expect((await screen.findByTestId('publish-all-button')).closest('button')).toBeDisabled()
     })
@@ -450,7 +452,9 @@ describe('after releases have loaded', () => {
     it('should show missing release message', async () => {
       await renderTest()
 
-      expect(await screen.findByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(
+        await screen.findAllByText(activeASAPRelease.metadata.title, {exact: false}),
+      ).not.toHaveLength(0)
     })
   })
 

@@ -4,8 +4,8 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../../components'
+import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../util/getReleaseTone'
-import {getReleaseTitleDetails} from '../../../util/releaseTitle'
 import {ReleaseTime} from '../ReleaseTime'
 
 export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
@@ -28,7 +28,7 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
               </Box>
             }
           >
-            <Text weight="medium" size={1} textOverflow="ellipsis" style={{maxWidth: '250px'}}>
+            <Text weight="medium" size={1}>
               {titleDetails.displayTitle}
             </Text>
           </Tooltip>
