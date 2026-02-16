@@ -44,7 +44,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {resolveIntentLink} = useRouter()
 
   const selectedCommentId = params?.comment
-  const scheduledDraft = (params as {scheduledDraft?: string})?.scheduledDraft
+  const scheduledDraft = params?.scheduledDraft
   const paramsRef = useRef(params)
 
   useLayoutEffect(() => {
