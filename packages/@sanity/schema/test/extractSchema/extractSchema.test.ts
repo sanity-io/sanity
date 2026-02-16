@@ -913,17 +913,14 @@ describe('Extract schema test', () => {
       'referenceAuthors',
     ])
 
-    strictEqual(validDocument.attributes.inlineAuthor.value.type, 'inline')
-    expect(validDocument.attributes.inlineAuthor.value.name).toEqual('author')
-
+    strictEqual(validDocument.attributes.inlineAuthor.value.type, 'object')
     strictEqual(validDocument.attributes.inlineAuthors.value.type, 'array')
     strictEqual(validDocument.attributes.inlineAuthors.value.of.type, 'object')
     expect(validDocument.attributes.inlineAuthors.value.of.attributes).toEqual({
-      _key: {type: 'objectAttribute', value: {type: 'string'}},
+      _type: {type: 'objectAttribute', value: {type: 'string', value: 'author'}},
+      name: {optional: true, type: 'objectAttribute', value: {type: 'string'}},
     })
-
-    strictEqual(validDocument.attributes.inlineAuthors.value.of.rest?.type, 'inline')
-    expect(validDocument.attributes.inlineAuthors.value.of.rest.name).toEqual('author')
+    strictEqual(validDocument.attributes.inlineAuthors.value.of.rest?.type, 'object')
 
     expect(extracted).toMatchSnapshot()
   })
@@ -1051,6 +1048,61 @@ describe('Extract schema test', () => {
     assert(inlineRef.value.type === 'inline')
     expect(inlineRef.value.name).toBe('thing.reference')
   })
+})
+
+test('field with a type defined as a document type is not hoisted', () => {
+  const schema = createSchema(
+    {
+      name: 'test',
+      types: [
+        defineType({
+          name: 'hero',
+          type: 'object',
+          fields: [{type: 'string', name: 'title'}],
+        }),
+        defineType({
+          name: 'author',
+          type: 'document',
+          fields: [{type: 'string', name: 'title'}],
+        }),
+        defineType({
+          name: 'post',
+          type: 'document',
+          fields: [
+            {type: 'string', name: 'title'},
+            {type: 'author', name: 'author'},
+            {type: 'hero', name: 'hero'},
+            {type: 'reference', name: 'authorRef', to: [{type: 'author'}]},
+          ],
+        }),
+      ],
+    },
+    true,
+  )
+
+  const extracted = extractSchema(schema)
+  const postType = extracted.find((t) => t.name === 'post')
+
+  assert(postType?.type === 'document')
+
+  // we expect the hero to be an inline ref
+  expect(postType.attributes.hero.value).toEqual({
+    name: 'hero',
+    type: 'inline',
+  })
+
+  // we expect the field referencing a doc type not to be an inline ref
+  expect(postType.attributes.author.value.type).toBe('object')
+  assert(postType.attributes.author.value.type === 'object')
+  expect(postType.attributes.author.value.attributes._type.value).toEqual({
+    type: 'string',
+    value: 'author',
+  })
+
+  // we do expect the reference to be an inline ref to the hoisted ref type
+  expect(postType.attributes.authorRef.value.type).toBe('inline')
+
+  expect(extracted).toMatchSnapshot()
 })
 
 test('inline regression: inline type that references other inline type', () => {
