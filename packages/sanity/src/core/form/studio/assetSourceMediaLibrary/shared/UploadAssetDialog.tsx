@@ -85,6 +85,22 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
       // The upload is progressing in the iframe, update the uploader files
       if (message.type === 'uploadProgress' && uploader) {
         message.files.forEach(({id, status, progress, error}) => {
+          if (status === 'alreadyExists') {
+            const file = uploader.getFiles().find((f) => f.id === id)
+            if (file) {
+              toast.push({
+                status: 'warning',
+                title: t('asset-sources.media-library.warning.file-already-exist.title', {
+                  filename: file.file.name,
+                }),
+                description: t(
+                  'asset-sources.media-library.warning.file-already-exist.description',
+                ),
+                closable: true,
+                duration: 10000,
+              })
+            }
+          }
           uploader.updateFile(id, {
             status,
             progress,
@@ -94,10 +110,14 @@ export function UploadAssetsDialog(props: UploadAssetsDialogProps): ReactNode {
       }
       // The upload has completed inside the iframe
       if (message.type === 'uploadResponse' && uploader) {
-        void handleUploaded(message.assets)
+        void handleUploaded(message.assets).then(() => {
+          if ('signalCompletion' in uploader && typeof uploader.signalCompletion === 'function') {
+            uploader.signalCompletion()
+          }
+        })
       }
     },
-    [handleUploaded, open, uploader],
+    [handleUploaded, open, toast, t, uploader],
   )
 
   const {postMessage, setIframe} = usePluginPostMessage(appHost, handlePluginMessage)
