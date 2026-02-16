@@ -82,5 +82,35 @@ export default {
         },
       ],
     },
+    {
+      name: 'objectArray',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          groups: [
+            {
+              name: 'alpha',
+            },
+            {
+              name: 'beta',
+              default: true,
+            },
+          ],
+          fields: [
+            {
+              name: 'stringAlpha',
+              type: 'string',
+              group: 'alpha',
+            },
+            {
+              name: 'stringBeta',
+              type: 'string',
+              group: 'beta',
+            },
+          ],
+        },
+      ],
+    },
   ],
 }
