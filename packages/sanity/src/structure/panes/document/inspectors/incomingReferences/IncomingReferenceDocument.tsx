@@ -15,7 +15,7 @@ import {IncomingReferencePreview} from '../../../../components/incomingReference
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 
-const FadeInFlex = motion(Flex)
+const FadeInFlex = motion.create(Flex)
 
 export const IncomingReferenceDocument = (props: {
   document: SanityDocument
