@@ -71,6 +71,12 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     return null
   }, [releases, value._id, t])
 
+  /**
+   * If the document is not found, for example because it will be unpublished.
+   * Then we don't want to render the preview of it. Because it shouldn't be possible
+   * to link to a document that will be unpublished in this same release
+   */
+  if (!snapshot && !isLoading) return null
   return (
     <PreviewCard __unstable_focusRing onClick={onLinkToDocument} as="button" radius={2}>
       <SanityDefaultPreview

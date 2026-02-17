@@ -33,6 +33,120 @@ describe('Validation test', () => {
     expect(myObject.fields[2]._problems.length).toBeGreaterThan(0)
   })
 
+  describe('array with multiple primitive types of the same JSON type', () => {
+    test('warns when array contains both string and text types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'contentArray',
+          of: [
+            {type: 'string', name: 'heading'},
+            {type: 'text', name: 'paragraph'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const contentArray = validation.get('contentArray')
+
+      const warnings = contentArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        severity: 'warning',
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+      expect(warnings[0].message).toContain('JSON type "string"')
+      expect(warnings[0].message).toContain('no way to distinguish between them')
+    })
+
+    test('warns when array contains multiple string-based types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'multiStringArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'text', name: 'body'},
+            {type: 'url', name: 'link'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const multiStringArray = validation.get('multiStringArray')
+
+      const warnings = multiStringArray._problems.filter((p: any) => p.severity === 'warning')
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0]).toMatchObject({
+        helpId: 'schema-array-of-duplicate-primitive-json-type',
+      })
+    })
+
+    test('allows array with a single primitive type', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'singleStringArray',
+          of: [{type: 'string'}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const singleStringArray = validation.get('singleStringArray')
+
+      const errors = singleStringArray._problems.filter((p: any) => p.severity === 'error')
+      expect(errors).toHaveLength(0)
+    })
+
+    test('allows array with different primitive JSON types', () => {
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'mixedPrimitivesArray',
+          of: [
+            {type: 'string', name: 'text'},
+            {type: 'number', name: 'count'},
+            {type: 'boolean', name: 'flag'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const mixedPrimitivesArray = validation.get('mixedPrimitivesArray')
+
+      // Should have errors because mixing primitives and objects is also not allowed,
+      // but no duplicate JSON type errors
+      const duplicateJsonTypeErrors = mixedPrimitivesArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(duplicateJsonTypeErrors).toHaveLength(0)
+    })
+
+    test('warns when array contains email and string types (both resolve to JSON string)', () => {
+      // Tests that date-like and text-like built-in types that resolve to JSON string are detected
+      const schemaDef = [
+        {
+          type: 'array',
+          name: 'stringVariantsArray',
+          of: [
+            {type: 'string', name: 'title'},
+            {type: 'email', name: 'contactEmail'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const stringVariantsArray = validation.get('stringVariantsArray')
+
+      const warnings = stringVariantsArray._problems.filter(
+        (p: any) => p.helpId === 'schema-array-of-duplicate-primitive-json-type',
+      )
+      expect(warnings.length).toBeGreaterThan(0)
+      expect(warnings[0].severity).toBe('warning')
+      expect(warnings[0].message).toContain('JSON type "string"')
+    })
+  })
+
   test('validate standalone blocks', () => {
     const result = validateSchema([
       {
@@ -203,6 +317,143 @@ describe('Validation test', () => {
       (problem: any) => problem.severity === 'error',
     )
     expect(validationErrors).toHaveLength(0)
+  })
+
+  describe('field type is a document type', () => {
+    test('warns when a field type references a document type', () => {
+      const schemaDef = [
+        {
+          name: 'person',
+          type: 'document',
+          fields: [{name: 'name', type: 'string'}],
+        },
+        {
+          name: 'myObject',
+          type: 'object',
+          fields: [{name: 'author', type: 'person'}],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myObject = validation.get('myObject')
+      const authorField = myObject.fields[0]
+
+      const warnings = authorField._problems.filter(
+        (p: any) => p.helpId === 'schema-field-type-is-document',
+      )
+      expect(warnings).toHaveLength(1)
+      expect(warnings[0].message).toContain('person')
+    })
+
+    test('warns when a nested field type references a document type', () => {
+      const schemaDef = [
+        {
+          name: 'person',
+          type: 'document',
+          fields: [{name: 'name', type: 'string'}],
+        },
+        {
+          name: 'otherType',
+          type: 'document',
+          fields: [
+            {
+              name: 'author',
+              type: 'person',
+            },
+            {
+              name: 'hero',
+              type: 'object',
+              fields: [
+                {
+                  name: 'legend',
+                  type: 'person',
+                },
+              ],
+            },
+            {
+              name: 'people',
+              type: 'array',
+              of: [
+                {
+                  name: 'person',
+                  type: 'person',
+                },
+                {
+                  name: 'objectPerson',
+                  type: 'object',
+                  fields: [
+                    {
+                      name: 'person',
+                      type: 'person',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const otherTypeValidation = validation.get('otherType')
+
+      expect(otherTypeValidation._problems).toHaveLength(0)
+
+      const authorField = otherTypeValidation.fields[0]
+      expect(authorField._problems).toHaveLength(1)
+      expect(authorField._problems[0]).toHaveProperty('helpId', 'schema-field-type-is-document')
+
+      const objectField = otherTypeValidation.fields.find((f: any) => f.name === 'hero')
+      expect(objectField._problems).toHaveLength(0)
+      expect(objectField.fields[0]._problems).toHaveLength(1)
+      expect(objectField.fields[0]._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+
+      const arrayField = otherTypeValidation.fields.find((f: any) => f.name === 'people')
+      expect(arrayField._problems).toHaveLength(0)
+      expect(arrayField.of[0]._problems).toHaveLength(1)
+      expect(arrayField.of[0]._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+
+      const arrayObjectField = arrayField.of[1].fields[0]
+      expect(arrayObjectField._problems).toHaveLength(1)
+      expect(arrayObjectField._problems[0]).toHaveProperty(
+        'helpId',
+        'schema-field-type-is-document',
+      )
+    })
+
+    test('does not warn for object field types', () => {
+      const schemaDef = [
+        {
+          name: 'address',
+          type: 'object',
+          fields: [{name: 'street', type: 'string'}],
+        },
+        {
+          name: 'myDocument',
+          type: 'document',
+          fields: [
+            {name: 'title', type: 'string'},
+            {name: 'address', type: 'address'},
+          ],
+        },
+      ]
+
+      const validation = validateSchema(schemaDef)
+      const myDocument = validation.get('myDocument')
+
+      for (const field of myDocument.fields) {
+        const warnings = field._problems.filter(
+          (p: any) => p.helpId === 'schema-field-type-is-document',
+        )
+        expect(warnings).toHaveLength(0)
+      }
+    })
   })
 
   describe('block annotations with custom types', () => {

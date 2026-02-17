@@ -170,3 +170,54 @@ describe('normalizeValidationRules', () => {
     ])
   })
 })
+
+describe('Rule.skip()', () => {
+  it('clears all validation rules', () => {
+    const rule = RuleClass.string().required().min(5).max(100)
+
+    expect(rule._rules.length).toBeGreaterThan(1)
+    expect(rule._required).toBe('required')
+
+    const skipped = rule.skip()
+
+    expect(skipped._rules).toEqual([])
+    expect(skipped._required).toBe('optional')
+    expect(skipped._message).toBeUndefined()
+    expect(skipped._level).toBe('error')
+    expect(skipped._fieldRules).toBeUndefined()
+  })
+
+  it('returns a new Rule instance (does not mutate original)', () => {
+    const original = RuleClass.number().required().greaterThan(0)
+    const originalRulesLength = original._rules.length
+
+    const skipped = original.skip()
+
+    // Original should be unchanged
+    expect(original._rules.length).toBe(originalRulesLength)
+    expect(original._required).toBe('required')
+
+    // Skipped should be cleared
+    expect(skipped._rules).toEqual([])
+    expect(skipped._required).toBe('optional')
+    expect(skipped).not.toBe(original)
+  })
+
+  it('can be used conditionally in validation functions', () => {
+    const schema: StringSchemaType = {
+      jsonType: 'string',
+      name: 'conditionalString',
+      validation: (rule) => {
+        const shouldSkip = true
+        return shouldSkip ? rule.skip() : rule.required().min(5)
+      },
+    }
+
+    const rules = normalizeValidationRules(schema)
+    expect(rules).toHaveLength(1)
+    const [rule] = rules
+
+    expect(rule._rules).toEqual([])
+    expect(rule._required).toBe('optional')
+  })
+})

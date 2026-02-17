@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
+
+### Features
+
+* add warning when a document type is used for a field ([#12151](https://github.com/sanity-io/sanity/issues/12151)) ([8519d02](https://github.com/sanity-io/sanity/commit/8519d029c35a7419e944bfa61180de6a15e9a057)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.27.0 ([#12160](https://github.com/sanity-io/sanity/issues/12160)) ([ff50a1c](https://github.com/sanity-io/sanity/commit/ff50a1c1378bef2b8f8b92bfaa15fcc7cd17787d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* don't make inline refs for references to top level doc types ([#12168](https://github.com/sanity-io/sanity/issues/12168)) ([7e490d9](https://github.com/sanity-io/sanity/commit/7e490d905a01beb5c65319edfdb3a0a4eaa86068)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* warn on doc type used as field type in array member too ([#12165](https://github.com/sanity-io/sanity/issues/12165)) ([94fa583](https://github.com/sanity-io/sanity/commit/94fa58373887b5ca49f376763b7432391579b641)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
+## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-10)
+
+### Features
+
+* add hidden to validation context ([#12050](https://github.com/sanity-io/sanity/issues/12050)) ([26b665b](https://github.com/sanity-io/sanity/commit/26b665b540269d63a446bcfa361db5ddf0d561df)) by RitaDias (rita@sanity.io)
+
+### Bug Fixes
+
+* add warning for schema validation when an array contains multiple primitive types that resolve to same json type ([#12095](https://github.com/sanity-io/sanity/issues/12095)) ([31155be](https://github.com/sanity-io/sanity/commit/31155be6dbf86faeb41b77cea27cf9c765961234)) by RitaDias (rita@sanity.io)
+
+### Reverts
+
+* rollback v5.9.0 version bump ([#12139](https://github.com/sanity-io/sanity/issues/12139)) ([4195d26](https://github.com/sanity-io/sanity/commit/4195d269f400347fb16765400842f765eb1625ec)) by Bjørge Næss (bjoerge@gmail.com)
+
+## [5.8.1](https://github.com/sanity-io/sanity/compare/v5.8.0...v5.8.1) (2026-02-05)
+
+**Note:** Version bump only for package @sanity/schema
+
+## [5.8.0](https://github.com/sanity-io/sanity/compare/v5.7.0...v5.8.0) (2026-02-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^1.26.0 ([#11983](https://github.com/sanity-io/sanity/issues/11983)) ([052b6a2](https://github.com/sanity-io/sanity/commit/052b6a23074c4b3541665dd21b0680ef29626a1e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.7.0](https://github.com/sanity-io/sanity/compare/v5.6.0...v5.7.0) (2026-01-27)
 
 **Note:** Version bump only for package @sanity/schema

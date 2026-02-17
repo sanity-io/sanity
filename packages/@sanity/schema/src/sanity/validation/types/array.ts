@@ -9,6 +9,17 @@ function isPrimitiveTypeName(typeName: any) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
 }
 
+function resolveJsonType(typeDef: any, visitorContext: any): string | undefined {
+  if ('jsonType' in typeDef) {
+    return typeDef.jsonType
+  }
+  const parentType = visitorContext.getType(typeDef.type)
+  if (!parentType) {
+    return undefined
+  }
+  return resolveJsonType(parentType, visitorContext)
+}
+
 function isAssignable(typeName: any, type: any) {
   return (typeof type.name === 'string' ? type.name : type.type) === typeName
 }
@@ -158,6 +169,32 @@ export default (typeDef: any, visitorContext: any) => {
     )
   }
 
+  // Check for multiple primitive types that resolve to the same JSON type
+  // e.g. both "string" and "text" resolve to JSON type "string"
+  if (primitiveTypes.length > 1) {
+    const primitivesByJsonType = new Map<string, any[]>()
+    for (const primitiveType of primitiveTypes) {
+      const jsonType = resolveJsonType(primitiveType, visitorContext)
+      if (jsonType && isPrimitiveTypeName(jsonType)) {
+        const existing = primitivesByJsonType.get(jsonType) || []
+        existing.push(primitiveType)
+        primitivesByJsonType.set(jsonType, existing)
+      }
+    }
+
+    for (const [jsonType, types] of primitivesByJsonType) {
+      if (types.length > 1) {
+        const typeNames = types.map((t) => t.name || t.type)
+        problems.push(
+          warning(
+            `Array cannot contain multiple members with JSON type "${jsonType}" (${humanizeList(typeNames.map(quote))}) as there is no way to distinguish between them`,
+            HELP_IDS.ARRAY_OF_DUPLICATE_PRIMITIVE_JSON_TYPE,
+          ),
+        )
+      }
+    }
+  }
+
   const list = typeDef?.options?.list
   if (!isMixedArray && Array.isArray(list)) {
     const isArrayOfPrimitives = primitiveTypes.length > 0
@@ -217,7 +254,28 @@ export default (typeDef: any, visitorContext: any) => {
 
   return {
     ...typeDef,
-    of: of.map(visitorContext.visit),
+    of: of.map((ofMember: any, index: number) => {
+      const visited = visitorContext.visit(ofMember, index)
+
+      if (
+        ofMember.type &&
+        typeof ofMember.type === 'string' &&
+        visitorContext.getType(ofMember.type)?.type === 'document'
+      ) {
+        return {
+          ...visited,
+          _problems: [
+            ...(visited._problems || []),
+            warning(
+              `The type "${ofMember.type}" is a document type and should not be used as a field type directly. Use a "reference" if you want to create a link to the document, or use "object" if you want to embed fields inline.`,
+              HELP_IDS.FIELD_TYPE_IS_DOCUMENT,
+            ),
+          ],
+        }
+      }
+
+      return visited
+    }),
     _problems: problems,
   }
 }

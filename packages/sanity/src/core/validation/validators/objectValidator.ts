@@ -107,15 +107,16 @@ export const objectValidators: Validators = {
     try {
       const [type, libraryId, documentId] = value.media._ref.split(':', 3)
       // TODO: replace this with stable resource config when available
-      const resourceConfig = {'~experimental_resource': {type, id: libraryId}}
+      const resourceConfig = {resource: {type, id: libraryId}}
       const asset = await context
         .getClient({apiVersion: '2025-02-19'})
         .withConfig(resourceConfig)
-        .fetch<
-          (MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null
-        >(`*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`, {
-          id: documentId,
-        })
+        .fetch<(MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null>(
+          `*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`,
+          {
+            id: documentId,
+          },
+        )
       if (!asset) {
         console.warn(
           `${context.i18n.t('validation:object.media-not-found')}\nAsset ID: ${value.media._ref}`,

@@ -4,7 +4,9 @@ import {type RestEndpointMethodTypes} from '@octokit/rest'
 import {REPO} from '../constants'
 import {octokit} from '../octokit'
 import {getMergedPRForCommit} from '../utils/github'
-import {createId} from '../utils/ids'
+import {getSanityDocumentIdsForBaseVersion} from '../utils/ids'
+import {markdownToPortableText} from '../utils/portabletext-markdown/markdownToPortableText'
+import {extractReleaseNotes, shouldExcludeReleaseNotes} from '../utils/pullRequestReleaseNotes'
 
 const INTERNAL_ASSOCIATIONS = ['MEMBER', 'OWNER']
 
@@ -30,11 +32,19 @@ export async function commentPrAfterMerge(options: {
     return
   }
 
-  const collaborators = await getCollaborators(pullRequest)
-  const baseVersionId = Buffer.from(options.baseVersion).toString('base64url')
-  const releaseId = `rstudio-${baseVersionId}`
+  // skip the reminder comment if the PR description explicitly states "no release notes needed"
+  const skipReminder = pullRequest.body
+    ? shouldExcludeReleaseNotes(extractReleaseNotes(markdownToPortableText(pullRequest.body)))
+    : false
 
-  const changelogDocumentId = createId(releaseId, `studio-${baseVersionId}`)
+  if (skipReminder) {
+    console.log(`PR #${pr.number} explicitly states no notes for release is required, skipping.`)
+    return
+  }
+
+  const collaborators = await getCollaborators(pullRequest)
+
+  const {releaseId, changelogDocumentId} = getSanityDocumentIdsForBaseVersion(options.baseVersion)
 
   const entryKey = options.commit.slice(0, 8)
   const entryPath = encodeURIComponent(`changelog[_key=="${entryKey}"]`)

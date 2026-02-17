@@ -7,6 +7,7 @@ import yargs from 'yargs'
 
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
+import {draftReleaseNotes} from '../src/commands/draftReleaseNotes'
 import {publishReleases} from '../src/commands/publishReleases'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
@@ -125,6 +126,21 @@ await yargs(process.argv.slice(2))
     handler: () => writePrChecks().then(() => void 0),
   })
   .command({
+    command: 'draft-release-notes',
+
+    describe: 'Draft release notes',
+    builder: (cmd) =>
+      cmd.options({
+        baseVersion: {
+          description:
+            'Current base version. E.g. the current version in package.json / lerna.json',
+          type: 'string',
+          demandOption: true,
+        },
+      }),
+    handler: (args) => draftReleaseNotes({baseVersion: args.baseVersion}).then(() => void 0),
+  })
+  .command({
     command: 'status-check-commit',
     describe: 'Update in-flight release status checks for a single commit',
     builder: (cmd) =>
@@ -134,8 +150,14 @@ await yargs(process.argv.slice(2))
           type: 'string',
           demandOption: true,
         },
+        pr: {
+          description: 'Current pull request',
+          type: 'number',
+          demandOption: true,
+        },
       }),
-    handler: (args) => writeCommitCheck({commit: args.commit}).then(() => void 0),
+    handler: (args) =>
+      writeCommitCheck({commit: args.commit, currentPrNumber: args.pr}).then(() => void 0),
   })
   .demandCommand(1, 'must provide a valid command')
   .help('h')

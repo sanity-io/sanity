@@ -82,7 +82,10 @@ export interface StructureContext extends Source {
    */
   resolveDocumentNode: (
     /** an object holding the documentId and schemaType for the document node being resolved. */
-    options: {documentId?: string; schemaType: string},
+    options: {
+      documentId?: string
+      schemaType: string
+    },
   ) => DocumentBuilder
   /** Get structure builder
    * @returns a structure builder. See {@link StructureBuilder}

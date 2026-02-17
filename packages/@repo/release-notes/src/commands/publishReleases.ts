@@ -60,7 +60,7 @@ ${changelogDocument.changelog.map((entry) => `${mention(entry.author)} | ${entry
       targetVersion: options.targetVersion,
       changelog: formattedChangelog,
     }),
-    draft: true,
+    draft: false,
   })
   console.log('Created GitHub Release:', response.data.html_url)
 }

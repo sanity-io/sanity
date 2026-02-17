@@ -20,6 +20,11 @@ export type PortableTextBlock = {
   _type: 'block'
   _key: string
   style?: PortableTextStyle
+  level?: number
+  markDefs: ({
+    _key: string
+    _type: string
+  } & Record<string, unknown>)[]
   listItem?: PortableTextListItem
   children: (PortableTextSpan | PortableTextImage | PortableTextCode | PortableTextLink)[]
 }

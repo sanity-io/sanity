@@ -1,6 +1,6 @@
-import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
-import {createClient} from '@sanity/client'
 import {toHTML} from '@portabletext/to-html'
+import {createClient} from '@sanity/client'
+import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
 
 interface EmailDocument {
   _id: string

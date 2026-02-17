@@ -2,8 +2,8 @@ import {type QueryParams} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {map} from 'rxjs/operators'
 import {mergeMapArray} from 'rxjs-mergemap-array'
+import {map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store'
 

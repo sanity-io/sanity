@@ -3,6 +3,7 @@
   "include": ["./src", "./bin"],
   "compilerOptions": {
     "rootDir": ".",
-    "lib": ["es2024"]
+    "lib": ["es2024"],
+    "noUncheckedIndexedAccess": true
   }
 }

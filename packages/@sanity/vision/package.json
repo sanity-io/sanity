@@ -1,31 +1,36 @@
 {
   "name": "@sanity/vision",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
-    "sanity",
+    "admin",
     "cms",
+    "content",
+    "gui",
     "headless",
     "realtime",
-    "content",
-    "vision",
+    "sanity",
     "sanity-plugin",
-    "gui",
-    "admin"
+    "vision"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/vision"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -34,11 +39,12 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
@@ -95,7 +101,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "rimraf": "^5.0.10",
-    "sanity": "^5.7.0",
+    "sanity": "^5.10.0",
     "styled-components": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
@@ -104,11 +110,5 @@
     "react": "^19.2.2",
     "sanity": "^4.0.0-0 || ^5.0.0-0",
     "styled-components": "^6.1.15"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./package.json": "./package.json"
-    }
   }
 }

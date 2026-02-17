@@ -1,8 +1,11 @@
 import {AddIcon} from '@sanity/icons'
+import {type SanityDocument} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {
+  CommandList,
+  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getDraftId,
   getPublishedId,
@@ -23,6 +26,7 @@ import {AddIncomingReference} from './AddIncomingReference'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {getIncomingReferences, INITIAL_STATE} from './getIncomingReferences'
 import {IncomingReferenceDocument} from './IncomingReferenceDocument'
+import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from './shared'
 import {type IncomingReferencesOptions, type IncomingReferenceType} from './types'
 
 export function IncomingReferencesType({
@@ -126,6 +130,17 @@ export function IncomingReferencesType({
     }
   }, [documents, newReferenceId])
 
+  const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
+    (document) => (
+      <IncomingReferenceDocument
+        document={document}
+        referenceToId={referenced.id}
+        actions={actions}
+      />
+    ),
+    [referenced.id, actions],
+  )
+
   if (!schemaType) return null
   if (loading) {
     return <LoadingBlock showText title={t('incoming-references-input.types-loading')} />
@@ -141,16 +156,23 @@ export function IncomingReferencesType({
       )}
       <Card radius={2} padding={1} border tone="default">
         {documents.length > 0 ? (
-          <Stack space={1}>
-            {documents.map((document) => (
-              <IncomingReferenceDocument
-                key={document._id}
-                document={document}
-                referenceToId={referenced.id}
-                actions={actions}
-              />
-            ))}
-          </Stack>
+          <IncomingReferencesListContainer $itemCount={documents.length}>
+            <CommandList
+              activeItemDataAttr="data-hovered"
+              ariaLabel={t('incoming-references-input.list-label', {
+                type: type.title || schemaType?.title,
+              })}
+              canReceiveFocus
+              fixedHeight
+              getItemKey={(index) => documents[index]._id}
+              itemHeight={INCOMING_REFERENCES_ITEM_HEIGHT}
+              items={documents}
+              onlyShowSelectionWhenActive
+              overscan={5}
+              renderItem={renderItem}
+              wrapAround={false}
+            />
+          </IncomingReferencesListContainer>
         ) : (
           <>
             <Flex

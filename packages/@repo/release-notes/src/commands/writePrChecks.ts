@@ -19,5 +19,11 @@ export async function writePrChecks() {
     base: 'main',
   })
 
-  return pMap(prs, (pr) => writeCheck({releasePr, headSha: pr.head.sha}), {concurrency: 10})
+  // no need to write check on the release PR itself (if it exists)
+  const filteredPrs = releasePr ? prs.filter((pr) => pr.number !== releasePr.number) : prs
+  return pMap(
+    filteredPrs,
+    (pr) => writeCheck({releasePr, headSha: pr.head.sha, currentPrNumber: pr.number}),
+    {concurrency: 10},
+  )
 }

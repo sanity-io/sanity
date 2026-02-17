@@ -6,9 +6,12 @@ import {
 } from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 
+const DEFERRED_TERMINAL_STATUSES = ['complete', 'alreadyExists'] as const
+
 export class MediaLibraryUploader implements AssetSourceUploader {
   private files: AssetSourceUploadFile[] = []
   private subscribers = new Set<AssetSourceUploadSubscriber>()
+  private deferredUpdates = new Map<string, {status: string; progress?: number; error?: Error}>()
 
   private checkAllComplete(): void {
     const isDone =
@@ -31,6 +34,24 @@ export class MediaLibraryUploader implements AssetSourceUploader {
 
   private emit(event: AssetSourceUploadEvent): void {
     this.subscribers.forEach((fn) => fn(event))
+  }
+
+  /**
+   * Emit all-complete after applying any deferred terminal status updates.
+   * Call this when uploadResponse is received so all-complete fires after the
+   * asset source has the data it needs, avoiding unmount before postMessage arrives.
+   */
+  signalCompletion(): void {
+    this.deferredUpdates.forEach(({status, progress, error}, fileId) => {
+      const target = this.files.find((f) => f.id === fileId)
+      if (target) {
+        if (error) target.error = error
+        if (progress !== undefined) target.progress = progress
+        target.status = status as AssetSourceUploadFile['status']
+      }
+    })
+    this.deferredUpdates.clear()
+    this.checkAllComplete()
   }
 
   upload(files: globalThis.File[]): AssetSourceUploadFile[] {
@@ -67,18 +88,28 @@ export class MediaLibraryUploader implements AssetSourceUploader {
   }
   updateFile(fileId: string, data: {progress?: number; status?: string; error?: Error}): void {
     const target = this.files.find((f) => f.id === fileId)
-    if (target) {
-      if (data.error) {
-        target.error = data.error
+    if (!target) return
+
+    if (data.error) target.error = data.error
+    if (data.progress !== undefined && data.progress !== target.progress) {
+      target.progress = data.progress
+      this.emit({type: 'progress', file: target, progress: target.progress * 100})
+    }
+    if (data.status && data.status !== target.status) {
+      if (
+        DEFERRED_TERMINAL_STATUSES.includes(
+          data.status as (typeof DEFERRED_TERMINAL_STATUSES)[number],
+        )
+      ) {
+        this.deferredUpdates.set(fileId, {
+          status: data.status,
+          progress: data.progress,
+          error: data.error,
+        })
+        return
       }
-      if (data.progress && data.progress !== target.progress) {
-        target.progress = data.progress
-        this.emit({type: 'progress', file: target, progress: target.progress * 100})
-      }
-      if (data.status && data.status !== target.status) {
-        target.status = data.status as AssetSourceUploadFile['status']
-        this.emit({type: 'status', file: target, status: target.status})
-      }
+      target.status = data.status as AssetSourceUploadFile['status']
+      this.emit({type: 'status', file: target, status: target.status})
     }
     this.checkAllComplete()
   }
@@ -104,5 +135,6 @@ export class MediaLibraryUploader implements AssetSourceUploader {
 
   reset(): void {
     this.files = []
+    this.deferredUpdates.clear()
   }
 }

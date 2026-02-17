@@ -1,4 +1,5 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {type SanityDocumentLike} from '@sanity/types'
 import {Box, Grid, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
@@ -6,7 +7,11 @@ import {catchError, concat, filter, map, type Observable, of, scan, switchMap, t
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  getPublishedId,
+  isDraftId,
   isNonNullable,
+  isPublishedId,
+  isVersionId,
   ReferenceAutocomplete,
   type SanityClient,
   type SchemaType,
@@ -57,13 +62,34 @@ const incomingReferenceSearch = (
   return (textTerm: string) =>
     search(textTerm, {perspective: 'raw'}).pipe(
       map(({hits}) => hits.map(({hit}) => hit)),
-      map((docs) => docs.slice(0, 100)),
+      map((docs) => {
+        // We want to collate drafts and published documents into a single entry, but keep the versions as a separate entry
+        const byId: Map<string, SanityDocumentLike> = new Map()
+
+        docs.forEach((doc) => {
+          if (isVersionId(doc._id)) {
+            // We want to preserve version documents as a different entry.
+            byId.set(doc._id, doc)
+            return
+          }
+          const publishedId = getPublishedId(doc._id)
+          const entry = byId.get(publishedId)
+          if (!entry) {
+            byId.set(publishedId, doc)
+            // If the document is a draft and the entry is published, we want to keep the draft.
+          } else if (isDraftId(doc._id) && isPublishedId(entry._id)) {
+            byId.set(publishedId, doc)
+          }
+        })
+        return Array.from(byId.values())
+      }),
       map((collated) =>
         collated.map((entry) => ({
           _id: entry._id,
           _type: entry._type,
         })),
       ),
+      map((docs) => docs.slice(0, 100)),
     )
 }
 

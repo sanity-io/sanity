@@ -1,13 +1,13 @@
 {
   "name": "@sanity/types",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content",
+    "sanity",
     "types",
     "typescript"
   ],
@@ -15,15 +15,20 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/types"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -32,11 +37,12 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/types/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -56,7 +62,7 @@
     "@repo/package.config": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/insert-menu": "3.0.3",
+    "@sanity/insert-menu": "3.0.4",
     "@sanity/pkg-utils": "catalog:",
     "@types/react": "catalog:",
     "@typescript/native-preview": "catalog:",
@@ -68,11 +74,5 @@
   },
   "peerDependencies": {
     "@types/react": "^19.2"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./package.json": "./package.json"
-    }
   }
 }

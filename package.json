@@ -16,12 +16,12 @@
     "build:test-studio": "pnpm build --filter=sanity-test-studio",
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "pnpm --recursive --parallel exec depcheck",
-    "check:format": "prettier --cache --check .",
+    "check:format": "oxfmt --check .",
     "check:lint": "turbo run lint --continue -- --quiet",
     "check:oxlint": "oxlint --disable-nested-config --type-aware --quiet",
     "check:test": "pnpm test -- --silent",
     "check:types": "tsgo && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*' --continue",
-    "chore:format:fix": "prettier --cache --write .",
+    "chore:format:fix": "pnpm format",
     "chore:lint:changed": "turbo run lint --filter=[HEAD^1] -- --quiet --fix",
     "chore:lint:fix": "turbo run lint --ui tui -- --quiet --fix",
     "chore:lint:inspect": "eslint --inspect-config",
@@ -64,6 +64,7 @@
     "example:ecommerce-studio": "cd examples/studios/ecommerce-studio && pnpm start",
     "example:example-studio": "cd examples/studios/blog-studio && pnpm start",
     "example:movies-studio": "cd examples/studios/movies-studio && pnpm start",
+    "format": "oxfmt .",
     "generate:docs": "tsx -r dotenv-flow/config ./scripts/generate-documents/cli.ts",
     "generate:dts-exports": "turbo run generate:dts-exports",
     "preinstall": "npx only-allow pnpm",
@@ -98,16 +99,6 @@
     "tsdoc:dev": "sanity-tsdoc dev",
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "prettier --cache --write",
-      "oxlint --disable-nested-config --type-aware --fix --quiet"
-    ],
-    "*.{md,yml,yaml,css,json}": [
-      "prettier --cache --write"
-    ]
-  },
-  "prettier": "@sanity/prettier-config",
   "devDependencies": {
     "@lerna-lite/cli": "^4.11.0",
     "@lerna-lite/list": "^4.11.0",
@@ -119,7 +110,6 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@sanity/prettier-config": "^3.0.0",
     "@sanity/ui": "catalog:",
     "@types/node": "^24.6.1",
     "@typescript/native-preview": "catalog:",
@@ -133,11 +123,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
-    "oxlint": "1.42.0",
-    "oxlint-tsgolint": "0.11.3",
+    "oxfmt": "^0.28.0",
+    "oxlint": "1.43.0",
+    "oxlint-tsgolint": "0.11.4",
     "playwright": "catalog:",
-    "prettier": "catalog:",
-    "prettier-plugin-packagejson": "^3.0.0",
     "sanity": "workspace:*",
     "tsx": "^4.21.0",
     "turbo": "^2.7.5",
@@ -145,6 +134,15 @@
     "typescript": "catalog:",
     "vercel": "^48.12.1",
     "vitest": "catalog:"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint --disable-nested-config --type-aware --fix --quiet"
+    ],
+    "*.{md,yml,yaml,css,json}": [
+      "oxfmt --no-error-on-unmatched-pattern"
+    ]
   },
   "packageManager": "pnpm@10.28.2",
   "//": "pnpm settings moved to pnpm-workspace.yaml"

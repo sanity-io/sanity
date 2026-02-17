@@ -10,7 +10,6 @@ import {pathToString} from '../../field/paths/helpers'
 import {useDialogStack} from '../../hooks/useDialogStack'
 import {PresenceOverlay} from '../../presence'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {useFormCallbacks} from '../studio/contexts/FormCallbacks'
 import {
   NavigatedToNestedObjectViaCloseButton,
   navigatedToNestedObjectViaKeyboardShortcut,
@@ -77,10 +76,9 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
  * Non-top dialogs are hidden via CSS while preserving their state.
  */
 export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.JSX.Element {
-  const {children, header, onClose, type, width} = props
+  const {children, header, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
-  const {onPathOpen} = useFormCallbacks()
   const telemetry = useTelemetry()
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
     absolutePath?: Path
@@ -92,7 +90,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Specifically when opening a key in a PTE
   const currentPath = absolutePath || path
 
-  const {dialogId, isTop, stack} = useDialogStack({
+  const {dialogId, isTop, stack, close, navigateTo} = useDialogStack({
     path: currentPath,
   })
 
@@ -140,28 +138,31 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
 
           if (newLastStackPath.length > 1) {
             telemetry.log(navigatedToNestedObjectViaKeyboardShortcut)
-            onPathOpen(newLastStackPath)
+            navigateTo(newLastStackPath)
           } else {
             telemetry.log(NestedDialogClosed)
-            onClose?.()
+            close()
           }
         }
       }
     },
-    [isTop, stack, onPathOpen, onClose, telemetry],
+    [isTop, stack, navigateTo, close, telemetry],
   )
 
-  const handleClose = useCallback(() => {
-    // This means that we are closing the dialog and are not at the root level
-    // Which means we will open the parent dialog
+  const handleStackedDialogClose = useCallback(() => {
     if (stack.length >= 2) {
       telemetry.log(NavigatedToNestedObjectViaCloseButton)
+      close({toParent: true})
     } else {
       telemetry.log(NestedDialogClosed)
+      close()
     }
+  }, [stack, telemetry, close])
 
-    onClose?.()
-  }, [onClose, stack, telemetry])
+  const handleCompleteDialogClose = useCallback(() => {
+    telemetry.log(NestedDialogClosed)
+    close()
+  }, [close, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 
@@ -176,13 +177,20 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           __unstable_autoFocus={isTop ? props.autofocus : false}
           contentRef={setDocumentScrollElement}
           data-testid="nested-object-dialog"
-          header={<DialogBreadcrumbs currentPath={currentPath} />}
+          header={
+            <DialogBreadcrumbs
+              currentPath={currentPath}
+              onNavigate={navigateTo}
+              onClose={handleStackedDialogClose}
+            />
+          }
           id={dialogId}
-          onClose={handleClose}
+          onClose={handleStackedDialogClose}
           onDragEnter={onDragEnter}
           onDrop={onDrop}
           width={width}
           animate={!shouldDisableAnimation}
+          onClickOutside={handleCompleteDialogClose}
         >
           {contents}
         </StyledDialog>
@@ -197,7 +205,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     >
       <PopoverDialog
         header={header}
-        onClose={handleClose}
+        onClose={handleStackedDialogClose}
         width={width}
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}

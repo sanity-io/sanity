@@ -1,27 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import debugit from 'debug'
-import {firstValueFrom} from 'rxjs'
 
-import {getFeatures} from '../../hooks/useFeatureEnabled'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 
 const debug = debugit('sanity:store')
-
-const DISABLE_TOGGLE = 'toggle.user-application.upload-live-manifest.disable'
-
-async function isEnabled(client: SanityClient): Promise<boolean> {
-  const {projectId} = client.config()
-  if (!projectId) return false
-
-  return firstValueFrom(getFeatures({projectId, versionedClient: client}))
-    .then((features) => !features.includes(DISABLE_TOGGLE))
-    .catch((err) => {
-      debug(`Fetching features failed. User applications cache enabled for project ${projectId}.`, {
-        err,
-      })
-      return true
-    })
-}
 
 /**
  * User application from the API
@@ -77,10 +59,6 @@ export function createUserApplicationCache(): UserApplicationCache {
       }
 
       const projectClient = client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-      if (!(await isEnabled(projectClient))) {
-        return []
-      }
 
       const promise = projectClient
         .request<UserApplication[]>({

@@ -1,39 +1,27 @@
 {
   "name": "@sanity/cli",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
-    "sanity",
+    "cli",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content",
-    "cli",
+    "sanity",
     "tool"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/cli"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
-  "type": "commonjs",
-  "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "monorepo": "./src/index.ts",
-      "default": "./lib/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
   },
@@ -43,6 +31,24 @@
     "lib",
     "templates"
   ],
+  "type": "commonjs",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "monorepo": "./src/index.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsc --project packages/@sanity/cli/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -58,9 +64,9 @@
     "@babel/traverse": "^7.28.6",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "catalog:",
-    "@sanity/runtime-cli": "^13.1.0",
-    "@sanity/telemetry": "^0.8.0",
-    "@sanity/template-validator": "^2.4.3",
+    "@sanity/runtime-cli": "^13.2.1",
+    "@sanity/telemetry": "catalog:",
+    "@sanity/template-validator": "^3.0.0",
     "@sanity/worker-channels": "^1.1.0",
     "chalk": "^4.1.2",
     "debug": "^4.4.3",
@@ -70,7 +76,7 @@
     "get-latest-version": "^5.1.0",
     "jsonc-parser": "^3.3.1",
     "pkg-dir": "^5.0.0",
-    "prettier": "catalog:",
+    "prettier": "^3.8.1",
     "semver": "^7.7.2"
   },
   "devDependencies": {
@@ -142,11 +148,5 @@
   },
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./package.json": "./package.json"
-    }
   }
 }

@@ -4,24 +4,24 @@
   "private": true,
   "description": "",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
+    "ecommerce-studio",
     "headless",
     "realtime",
-    "content",
-    "ecommerce-studio"
+    "sanity"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "examples/studios/ecommerce-studio"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
     "clean": "rimraf lib dest",

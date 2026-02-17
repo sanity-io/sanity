@@ -22,9 +22,10 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
 
     --indicator-in-range-height: 16.5px;
 
-    ${$inRange &&
-    !$last &&
-    css`
+    ${
+      $inRange &&
+      !$last &&
+      css`
       &:after {
         content: '';
         display: block;
@@ -32,42 +33,46 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
         left: var(--indicator-left);
         bottom: -var(--indicator-bottom);
         width: var(--indicator-width);
-        height: ${$isDefaultPerspective
-          ? 'calc(var(--indicator-bottom) + 12px)'
-          : 'var(--indicator-bottom)'};
+        height: ${
+          $isDefaultPerspective ? 'calc(var(--indicator-bottom) + 12px)' : 'var(--indicator-bottom)'
+        };
         background-color: var(--card-border-color);
       }
-    `}
+    `
+    }
 
-    ${$inRange &&
-    css`
-      > [data-ui='MenuItem'] {
-        position: relative;
+    ${
+      $inRange &&
+      css`
+        > [data-ui='MenuItem'] {
+          position: relative;
 
-        &:before,
-        &:after {
-          content: '';
-          display: block;
-          position: absolute;
-          left: var(--indicator-left);
-          width: var(--indicator-width);
-          background-color: var(--card-border-color);
+          &:before,
+          &:after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: var(--indicator-left);
+            width: var(--indicator-width);
+            background-color: var(--card-border-color);
+          }
+
+          &:before {
+            top: 0;
+            height: var(--indicator-in-range-height);
+          }
+
+          &:after {
+            top: var(--indicator-in-range-height);
+            bottom: 0;
+          }
         }
+      `
+    }
 
-        &:before {
-          top: 0;
-          height: var(--indicator-in-range-height);
-        }
-
-        &:after {
-          top: var(--indicator-in-range-height);
-          bottom: 0;
-        }
-      }
-    `}
-
-    ${$first &&
-    css`
+    ${
+      $first &&
+      css`
       > [data-ui='MenuItem']:after {
         margin-top: -3px;
         border-top-left-radius: ${INDICATOR_WIDTH}px;
@@ -76,10 +81,12 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
       > [data-ui='MenuItem']:before {
         display: none;
       }
-    `}
+    `
+    }
 
-    ${$last &&
-    css`
+    ${
+      $last &&
+      css`
       > [data-ui='MenuItem']:before {
         // dot diameter (5px) - 1.6px stroke divided by 2
         padding-bottom: 1.7px;
@@ -89,7 +96,8 @@ export const GlobalPerspectiveMenuItemIndicator = styled.div<{
       > [data-ui='MenuItem']:after {
         display: none;
       }
-    `}
+    `
+    }
   `,
 )
 
@@ -99,8 +107,9 @@ export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: bo
     // 4px padding + 33px release indicator width + 4px gap
     padding-left: 41px;
 
-    ${$withinRange &&
-    css`
+    ${
+      $withinRange &&
+      css`
       &:before {
         content: '';
         display: block;
@@ -111,6 +120,7 @@ export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: bo
         width: ${INDICATOR_WIDTH}px;
         background-color: var(${INDICATOR_COLOR_VAR_NAME});
       }
-    `}
+    `
+    }
   `,
 )

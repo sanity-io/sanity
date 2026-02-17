@@ -16,7 +16,7 @@ import {
 } from '@sanity/types'
 import {cloneDeep} from 'lodash-es'
 
-const FIELD_REF = Symbol('FIELD_REF')
+const FIELD_REF = Symbol.for('@sanity/schema/field-ref')
 const ruleConstraintTypes: RuleTypeConstraint[] = [
   'Array',
   'Boolean',
@@ -176,6 +176,16 @@ export const Rule: RuleClass = class Rule implements IRule {
   optional(): Rule {
     const rule = this.cloneWithRules([{flag: 'presence', constraint: 'optional'}])
     rule._required = 'optional'
+    return rule
+  }
+
+  skip(): Rule {
+    const rule = this.clone()
+    rule._rules = []
+    rule._required = 'optional'
+    rule._message = undefined
+    rule._level = 'error'
+    rule._fieldRules = undefined
     return rule
   }
 

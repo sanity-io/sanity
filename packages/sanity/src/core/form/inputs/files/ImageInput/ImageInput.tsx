@@ -270,6 +270,9 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
                   }
                   onChange(PatchEvent.from([unset([UPLOAD_STATUS_KEY])]))
                   setMenuOpen(false)
+                  // Reset state to allow selecting again
+                  setSelectedAssetSource(null)
+                  setIsUploading(false)
                   break
                 }
                 default:

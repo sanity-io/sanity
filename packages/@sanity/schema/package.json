@@ -1,28 +1,40 @@
 {
   "name": "@sanity/schema",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "description": "",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
     "headless",
     "realtime",
-    "content",
+    "sanity",
     "schema"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/@sanity/schema"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "_internal": [
+        "./lib/_internal.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "source": "./src/_exports/index.ts",
@@ -36,18 +48,13 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "_internal": [
-        "./lib/_internal.d.ts"
-      ]
+  "publishConfig": {
+    "exports": {
+      ".": "./lib/index.js",
+      "./_internal": "./lib/_internal.js",
+      "./package.json": "./package.json"
     }
   },
-  "files": [
-    "lib"
-  ],
   "scripts": {
     "build": "pnpm clean && pkg-utils build --strict --check --clean",
     "check:types": "(cd ../../.. && tsgo --project packages/@sanity/schema/tsconfig.lib.json --erasableSyntaxOnly)",
@@ -63,7 +70,7 @@
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^2.0.1",
-    "groq-js": "^1.26.0",
+    "groq-js": "^1.27.0",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
     "lodash-es": "^4.17.22",
@@ -83,12 +90,5 @@
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./lib/index.js",
-      "./_internal": "./lib/_internal.js",
-      "./package.json": "./package.json"
-    }
   }
 }

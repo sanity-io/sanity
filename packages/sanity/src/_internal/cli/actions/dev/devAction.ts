@@ -131,7 +131,7 @@ export default async function startSanityDevServer(
 ): Promise<void> {
   const timers = getTimer()
   const flags = await parseCliFlags(args)
-  const {output, apiClient, workDir, cliConfig, prompt, cliConfigPath} = context
+  const {output, apiClient, workDir, cliConfig, prompt, cliConfigPath, telemetry} = context
 
   const {loadInDashboard} = flags
 
@@ -209,6 +209,10 @@ export default async function startSanityDevServer(
     }
   }
 
+  if (cliConfig?.schemaExtraction?.enabled) {
+    output.print(`${logSymbols.info} Running dev server with schema extraction enabled`)
+  }
+
   // Try to load CLI configuration from sanity.cli.(js|ts)
   const config = getDevServerConfig({flags, workDir, cliConfig, output})
 
@@ -239,7 +243,10 @@ export default async function startSanityDevServer(
   try {
     const startTime = Date.now()
     const spinner = output.spinner('Starting dev server').start()
-    const {server} = await startDevServer({...config})
+    const {server} = await startDevServer({
+      ...config,
+      telemetryLogger: telemetry,
+    })
 
     const {info: loggerInfo} = server.config.logger
     const {port} = server.config.server
@@ -322,5 +329,7 @@ export function getDevServerConfig({
     staticPath: path.join(workDir, 'static'),
     reactStrictMode,
     reactCompiler: cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
+    typegen: cliConfig?.typegen,
+    schemaExtraction: cliConfig?.schemaExtraction,
   }
 }

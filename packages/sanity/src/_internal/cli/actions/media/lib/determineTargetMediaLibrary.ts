@@ -1,6 +1,7 @@
 import {CliCommandContext} from '@sanity/cli'
-import {debug} from '../../../debug'
 import {filter, firstValueFrom, groupBy, mergeMap, of, toArray, zip} from 'rxjs'
+
+import {debug} from '../../../debug'
 
 /**
  * Fetch a list of available media libraries and present them to the user in a list prompt. The items

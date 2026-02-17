@@ -1,8 +1,8 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons'
 import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
-import {Button, type ButtonProps} from '../../../ui-components'
 import {useTranslation} from '../..'
+import {Button, type ButtonProps} from '../../../ui-components'
 
 type ContextMenuButtonProps = Pick<
   ButtonProps,

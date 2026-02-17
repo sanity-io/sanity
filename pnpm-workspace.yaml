@@ -13,29 +13,29 @@ packages:
 catalog:
   '@playwright/experimental-ct-react': 1.57.0
   '@playwright/test': 1.57.0
-  '@sanity/client': ^7.14.1
-  '@sanity/codegen': 5.6.0
+  '@sanity/client': ^7.15.0
+  '@sanity/codegen': ^5.9.1
   '@sanity/migrate': ^5.2.3
+  '@sanity/telemetry': ^0.8.1
   '@sanity/eslint-config-i18n': ^2.0.0
-  '@sanity/pkg-utils': ^10.4.2
+  '@sanity/pkg-utils': ^10.4.4
   '@sanity/ui': ^3.1.11
   '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
-  '@types/react': ^19.2.7
+  '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3
   '@types/react-is': ^19.2.0
   '@typescript/native-preview': 7.0.0-dev.20260112.1
   '@vitejs/plugin-react': ^5.1.2
   babel-plugin-styled-components: ^2.1.4
-  esbuild: 0.27.2
+  esbuild: 0.27.3
   esbuild-register: ^3.6.0
   eslint: ^9.39.2
   globals: ^16.2.0
   playwright: 1.57.0
-  prettier: ^3.8.1
-  react: ^19.2.3
-  react-dom: ^19.2.3
-  react-is: ^19.2.3
+  react: ^19.2.4
+  react-dom: ^19.2.4
+  react-is: ^19.2.4
   # Note: there is currently a test failure in src/core/form/inputs/files/FileInput/__tests__/fileInput.test.tsx
   # that blocks us from upgrading to jsdom@27 – once that test is passing, the jsdom override can be removed from
   # the workspace package.json.
@@ -64,6 +64,7 @@ linkWorkspacePackages: deep
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
+  - '@oxfmt/*'
   - '@oxlint/*'
   - '@oxlint-tsgolint/*'
   - '@portabletext/*'
@@ -73,6 +74,7 @@ minimumReleaseAgeExclude:
   - csstype
   - 'get-it'
   - 'groq-js'
+  - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'eslint-plugin-oxlint'

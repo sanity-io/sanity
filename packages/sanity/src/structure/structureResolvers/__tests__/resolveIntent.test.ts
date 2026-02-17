@@ -1,12 +1,11 @@
-/* eslint-disable simple-import-sort/imports */
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
 import {describe, expect, it, vi} from 'vitest'
+// oxfmt-ignore
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
-
+// oxfmt-ignore
 import {type SchemaPluginOptions} from 'sanity'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-/* eslint-enable simple-import-sort/imports */
 import {type PaneNode, type UnresolvedPaneNode} from '../../types'
 import {PaneResolutionError} from '../PaneResolutionError'
 import {resolveIntent} from '../resolveIntent'

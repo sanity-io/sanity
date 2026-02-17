@@ -1,5 +1,5 @@
-import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
 import {createClient} from '@sanity/client'
+import {documentEventHandler, type DocumentEvent} from '@sanity/functions'
 
 interface MarketingCampaignDocument {
   _id: string

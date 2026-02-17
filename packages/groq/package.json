@@ -1,32 +1,38 @@
 {
   "name": "groq",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
-    "sanity",
     "cms",
-    "headless",
-    "realtime",
     "content",
     "groq",
-    "tagged",
-    "template",
+    "headless",
     "literal",
-    "string"
+    "realtime",
+    "sanity",
+    "string",
+    "tagged",
+    "template"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/groq"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
+  "files": [
+    "lib"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "./lib/groq.cjs",
+  "module": "./lib/groq.js",
+  "types": "./lib/groq.d.ts",
   "exports": {
     ".": {
       "require": "./lib/groq.cjs",
@@ -34,12 +40,6 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/groq.cjs",
-  "module": "./lib/groq.js",
-  "types": "./lib/groq.d.ts",
-  "files": [
-    "lib"
-  ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "(cd ../.. && tsgo --project packages/groq/tsconfig.lib.json --erasableSyntaxOnly)",

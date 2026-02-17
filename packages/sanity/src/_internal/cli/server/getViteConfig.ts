@@ -1,7 +1,12 @@
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
+import {
+  type CliCommandContext,
+  type CliConfig,
+  type ReactCompilerConfig,
+  type UserViteConfig,
+} from '@sanity/cli'
 import debug from 'debug'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, type Rollup} from 'vite'
@@ -15,6 +20,8 @@ import {normalizeBasePath} from './helpers'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
 import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
+import {sanitySchemaExtractionPlugin} from './vite/plugin-schema-extraction'
+import {sanityTypegenPlugin} from './vite/plugin-typegen'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -46,6 +53,11 @@ export interface ViteOptions {
   minify?: boolean
 
   /**
+   * Schema extraction configuration
+   */
+  schemaExtraction?: CliConfig['schemaExtraction']
+
+  /**
    * HTTP development server configuration
    */
   server?: {port?: number; host?: string}
@@ -58,6 +70,17 @@ export interface ViteOptions {
   importMap?: {imports?: Record<string, string>}
   reactCompiler: ReactCompilerConfig | undefined
   isApp?: boolean
+
+  /**
+   * Typegen configuration. When enabled, types are generated on startup
+   * and when query files or schema.json change.
+   */
+  typegen?: CliConfig['typegen'] & {enabled?: boolean}
+
+  /**
+   * Telemetry logger for tracking plugin usage
+   */
+  telemetryLogger?: CliCommandContext['telemetry']
 }
 
 /**
@@ -78,6 +101,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     importMap,
     reactCompiler,
     isApp,
+    typegen,
+    telemetryLogger,
+    schemaExtraction,
   } = options
   const basePath = normalizeBasePath(rawBasePath)
 
@@ -140,6 +166,29 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityRuntimeRewritePlugin(),
       sanityBuildEntries({basePath, cwd, importMap, isApp}),
+      // Add typegen plugin when enabled
+      ...(typegen?.enabled
+        ? [
+            sanityTypegenPlugin({
+              workDir: cwd,
+              config: typegen,
+              telemetryLogger,
+            }),
+          ]
+        : []),
+      // Add schema extraction when enabled
+      ...(schemaExtraction?.enabled
+        ? [
+            sanitySchemaExtractionPlugin({
+              workDir: cwd,
+              outputPath: schemaExtraction.path,
+              workspaceName: schemaExtraction.workspace,
+              additionalPatterns: schemaExtraction.watchPatterns,
+              enforceRequiredFields: schemaExtraction.enforceRequiredFields,
+              telemetryLogger: telemetryLogger,
+            }),
+          ]
+        : []),
     ],
     envPrefix: isApp ? 'SANITY_APP_' : 'SANITY_STUDIO_',
     logLevel: mode === 'production' ? 'silent' : 'info',

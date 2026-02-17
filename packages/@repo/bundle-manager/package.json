@@ -1,25 +1,25 @@
 {
   "name": "@repo/bundle-manager",
-  "version": "5.7.0",
+  "version": "5.10.0",
   "private": true,
   "description": "Internal tool for building and uploading bundles to modules.sanity-cdn.com",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
-  "sideEffects": false,
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts",
-    "./package.json": "./package.json"
-  },
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
   "bin": {
     "bundle-manager": "./bin/bundle-manager.ts"
   },
   "files": [
     "src"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "check:types": "(cd ../../.. && tsc --project packages/@repo/bundle-manager/tsconfig.json --erasableSyntaxOnly)",
     "lint": "eslint .",

@@ -6,6 +6,8 @@ export default defineConfig({
   },
   dist: 'lib',
   extract: {
+    // TODO: disabled for now as it's not compatible with `dts: 'rolldown'`, we should replace `@microsoft/api-extractor` with a better tool for validating tsdoc tags`
+    enabled: false,
     // We already check types with `check:types` scripts
     checkTypes: false,
 
@@ -34,4 +36,6 @@ export default defineConfig({
     noImplicitSideEffects: 'error',
     noPublishConfigExports: 'error',
   },
+  // `dts: 'api-extractor'` is not compatible with `customConditions: ['monorepo']` for typegen, it leads to invalid syntax in `.d.ts` files
+  dts: 'rolldown',
 })
