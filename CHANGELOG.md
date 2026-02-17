@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
+
+### Features
+
+* add warning when a document type is used for a field ([#12151](https://github.com/sanity-io/sanity/issues/12151)) ([8519d02](https://github.com/sanity-io/sanity/commit/8519d029c35a7419e944bfa61180de6a15e9a057)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* change on pte block ([#12149](https://github.com/sanity-io/sanity/issues/12149)) ([bdad5d3](https://github.com/sanity-io/sanity/commit/bdad5d31df70332f39d15c45ea43c4b746f265bd)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** add `isArrayOfPrimitivesFormNode` ([3ce4c46](https://github.com/sanity-io/sanity/commit/3ce4c46a5dd10067b2a8b65b5bc527c46bc16c2d)) by Ash (ash@sanity.io)
+* **sanity:** add `readOrderedFormMembers` ([a3969fc](https://github.com/sanity-io/sanity/commit/a3969fc355fca6171618cc6440eded0ea9165161)) by Ash (ash@sanity.io)
+* **sanity:** add missing `_allMembers` type ([fd4df92](https://github.com/sanity-io/sanity/commit/fd4df92f55bca0b6ca9a0a4d04de36cbaa2bc289)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* **comments:** route scheduledDraft as pane param in comment links ([#12156](https://github.com/sanity-io/sanity/issues/12156)) ([4712d1e](https://github.com/sanity-io/sanity/commit/4712d1eb69761ca4d9905eb00c443ce0d739ab22)) by Jordan Lawrence (jordanl17@me.com)
+* **comments:** scroll to field when navigating to a comment deeplink ([#12144](https://github.com/sanity-io/sanity/issues/12144)) ([a3c282a](https://github.com/sanity-io/sanity/commit/a3c282a4c92212ebbedd3111444bdccdda34a2c5)) by Jordan Lawrence (jordanl17@me.com)
+* **deps:** update dependency @portabletext/plugin-paste-link to v2 ([#12161](https://github.com/sanity-io/sanity/issues/12161)) ([f396bac](https://github.com/sanity-io/sanity/commit/f396bacfedfcd714e49adee30545173708401176)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency @sanity/client to ^7.15.0 ([#12167](https://github.com/sanity-io/sanity/issues/12167)) ([fe75d84](https://github.com/sanity-io/sanity/commit/fe75d8437e83169e347551dcc30853698d44841e)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** update dependency groq-js to ^1.27.0 ([#12160](https://github.com/sanity-io/sanity/issues/12160)) ([ff50a1c](https://github.com/sanity-io/sanity/commit/ff50a1c1378bef2b8f8b92bfaa15fcc7cd17787d)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v5 (major) ([#12162](https://github.com/sanity-io/sanity/issues/12162)) ([5b9ba17](https://github.com/sanity-io/sanity/commit/5b9ba176818c4ec42ac21de306b2e4e0f011d22a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext to v6 (major) ([#12164](https://github.com/sanity-io/sanity/issues/12164)) ([225b965](https://github.com/sanity-io/sanity/commit/225b965bfd2535a5d7cedc73269cb3beca3fc6b4)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* don't make inline refs for references to top level doc types ([#12168](https://github.com/sanity-io/sanity/issues/12168)) ([7e490d9](https://github.com/sanity-io/sanity/commit/7e490d905a01beb5c65319edfdb3a0a4eaa86068)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+* **form:** prevent erroneous upload warning when pasting plain text into PTE ([#12109](https://github.com/sanity-io/sanity/issues/12109)) ([c76fcf1](https://github.com/sanity-io/sanity/commit/c76fcf10f3d345f69725b92288fbbde43063cb44)) by Eoin Falconer (eoin.falc@gmail.com)
+* **form:** reset asset source state after upload completes ([#12111](https://github.com/sanity-io/sanity/issues/12111)) ([db94da8](https://github.com/sanity-io/sanity/commit/db94da8974a49ae5bb5937c1fe4991ffa23ee187)) by Eoin Falconer (eoin.falc@gmail.com)
+* implement fallback for asset sources without uploaders ([#11907](https://github.com/sanity-io/sanity/issues/11907)) ([ec5de61](https://github.com/sanity-io/sanity/commit/ec5de61c20a2332ec71399b797f3734770cda17b)) by Jordan Lawrence (jordanl17@me.com)
+* issue where clicking the "x" to close dialog or the breadcrumb to navigate would have issues when reopening Item ([#12147](https://github.com/sanity-io/sanity/issues/12147)) ([d078259](https://github.com/sanity-io/sanity/commit/d078259cc07c55754704b2418fe2f76546cf8045)) by RitaDias (rita@sanity.io)
+* media library plugin upload existing asset issue ([#12173](https://github.com/sanity-io/sanity/issues/12173)) ([970f5c8](https://github.com/sanity-io/sanity/commit/970f5c89a6fa6372f6395d3e426977e68e100999)) by Per-Kristian Nordnes (per.kristian.nordnes@gmail.com)
+* **mutator:** include more details with error message ([#12150](https://github.com/sanity-io/sanity/issues/12150)) ([b132a1e](https://github.com/sanity-io/sanity/commit/b132a1e47016d2876dd0d87509b0353f8fb19ea2)) by Bjørge Næss (bjoerge@gmail.com)
+* **presentation:** fix root cause of undefined in perspective array ([#12142](https://github.com/sanity-io/sanity/issues/12142)) ([ff4bcea](https://github.com/sanity-io/sanity/commit/ff4bcea247e2d92abc355982127e71cc48867fe6)) by Noah Gentile (nkgentile@users.noreply.github.com)
+* reduce LISTENER_RESET_DELAY from 10s to 5s ([#12118](https://github.com/sanity-io/sanity/issues/12118)) ([715d036](https://github.com/sanity-io/sanity/commit/715d03649c4eff62af735f48d9eec3f4533b97d2)) by RitaDias (rita@sanity.io)
+* **sanity:** migrate deprecated `motion` call to `motion.create` ([abbdf73](https://github.com/sanity-io/sanity/commit/abbdf73a9b9d48ad1aa899cbf63581dd65bf6ea7)) by Ash (ash@sanity.io)
+* tz dropdown opens as expected even if an existing selection is made ([#12152](https://github.com/sanity-io/sanity/issues/12152)) ([46dcb62](https://github.com/sanity-io/sanity/commit/46dcb6232351f2fef3120f18e45464ae67d49af3)) by Jordan Lawrence (jordanl17@me.com)
+* warn on doc type used as field type in array member too ([#12165](https://github.com/sanity-io/sanity/issues/12165)) ([94fa583](https://github.com/sanity-io/sanity/commit/94fa58373887b5ca49f376763b7432391579b641)) by Kristoffer Brabrand (kristoffer@brabrand.no)
+
 ## [5.9.0](https://github.com/sanity-io/sanity/compare/v5.8.1...v5.9.0) (2026-02-10)
 
 ### Features
