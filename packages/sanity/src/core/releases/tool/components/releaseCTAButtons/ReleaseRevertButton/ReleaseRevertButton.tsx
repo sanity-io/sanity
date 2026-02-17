@@ -16,7 +16,7 @@ import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../../store/useReleasePermissions'
 import {createReleaseId} from '../../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../../../util/getReleaseTitleDetails'
+import {getReleaseTitle} from '../../../../util/getReleaseTitleDetails'
 import {getReleaseDefaults} from '../../../../util/util'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 import {useDocumentRevertStates} from './useDocumentRevertStates'
@@ -43,10 +43,10 @@ const ConfirmReleaseDialog = ({
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const releaseDisplayTitle = getReleaseTitleDetails(
+  const releaseDisplayTitle = getReleaseTitle(
     release.metadata.title,
     tCore('release.placeholder-untitled-release'),
-  ).displayTitle
+  )
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
   const getDocumentRevertStates = useDocumentRevertStates(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)

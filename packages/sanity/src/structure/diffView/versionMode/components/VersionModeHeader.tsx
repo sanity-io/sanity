@@ -21,7 +21,7 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitleDetails,
+  getReleaseTitle,
   getReleaseTone,
   getVersionFromId,
   getVersionId,
@@ -363,10 +363,10 @@ function getMenuButtonProps({
     const tone: ButtonTone = selected ? getReleaseTone(selected) : 'neutral'
 
     return {
-      text: getReleaseTitleDetails(
+      text: getReleaseTitle(
         selected?.metadata.title,
         tCore('release.placeholder-untitled-release'),
-      ).displayTitle,
+      ),
       icon: <ReleaseAvatar padding={1} tone={tone} />,
       iconRight: selected && isReleaseScheduledOrScheduling(selected) ? <LockIcon /> : undefined,
       tone,

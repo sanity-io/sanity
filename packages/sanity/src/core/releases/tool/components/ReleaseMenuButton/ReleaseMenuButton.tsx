@@ -19,7 +19,7 @@ import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {createReleaseId} from '../../../util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
+import {getReleaseTitle} from '../../../util/getReleaseTitleDetails'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 import {DuplicateReleaseToastLink} from './DuplicateReleaseToastLink'
 import {RELEASE_ACTION_MAP, type ReleaseAction} from './releaseActions'
@@ -89,10 +89,10 @@ export const ReleaseMenuButton = ({
   const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
-  const releaseTitle = getReleaseTitleDetails(
+  const releaseTitle = getReleaseTitle(
     release.metadata.title,
     tCore('release.placeholder-untitled-release'),
-  ).displayTitle
+  )
   const isActionPublishOrSchedule = selectedAction === 'publish' || selectedAction === 'schedule'
   const {document} = useWorkspace()
   const {

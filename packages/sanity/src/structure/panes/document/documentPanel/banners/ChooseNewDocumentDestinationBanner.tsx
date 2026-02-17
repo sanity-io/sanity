@@ -3,7 +3,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'
 import {
-  getReleaseTitleDetails,
+  getReleaseTitle,
   getVersionInlineBadge,
   isPerspectiveWriteable,
   isReleaseDocument,
@@ -59,11 +59,8 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
   )
 
   const releaseDoc = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
-  const titleDetails = releaseDoc
-    ? getReleaseTitleDetails(
-        releaseDoc.metadata.title,
-        tCore('release.placeholder-untitled-release'),
-      )
+  const releaseTitle = releaseDoc
+    ? getReleaseTitle(releaseDoc.metadata.title, tCore('release.placeholder-untitled-release'))
     : undefined
 
   return (
@@ -77,12 +74,12 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-draft-document')}
-            {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && titleDetails && (
+            {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
               <Translate
                 t={t}
                 i18nKey="banners.choose-new-document-destination.release-inactive"
                 values={{
-                  title: titleDetails.displayTitle,
+                  title: releaseTitle,
                 }}
                 components={{
                   VersionBadge: ({children}) => {

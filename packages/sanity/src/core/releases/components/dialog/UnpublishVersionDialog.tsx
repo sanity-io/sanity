@@ -15,7 +15,7 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
+import {getReleaseTitle} from '../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../util/getReleaseTone'
 
 export function UnpublishVersionDialog(props: {
@@ -113,10 +113,10 @@ export function UnpublishVersionDialog(props: {
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: getReleaseTitleDetails(
+              title: getReleaseTitle(
                 release?.metadata.title,
                 coreT('release.placeholder-untitled-release'),
-              ).displayTitle,
+              ),
             }}
             components={{
               Label: ({children}) => {

@@ -344,7 +344,6 @@ exports[`exports snapshot 1`] = `
     "getReferencePaths": "function",
     "getReleaseIdFromReleaseDocumentId": "function",
     "getReleaseTitle": "function",
-    "getReleaseTitleDetails": "function",
     "getReleaseTone": "function",
     "getSanityCreateLinkMetadata": "function",
     "getSchemaTypeTitle": "function",

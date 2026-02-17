@@ -37,7 +37,6 @@ export {
   getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTitle,
-  getReleaseTitleDetails,
   getReleaseTone,
   getVersionInlineBadge,
   isDraftPerspective,

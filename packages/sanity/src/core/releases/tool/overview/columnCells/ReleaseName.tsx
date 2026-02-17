@@ -14,7 +14,7 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitleDetails} from '../../../util/getReleaseTitleDetails'
+import {getReleaseTitle} from '../../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
@@ -67,7 +67,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
-  const titleDetails = getReleaseTitleDetails(
+  const releaseTitle = getReleaseTitle(
     release.metadata.title,
     tCore('release.placeholder-untitled-release'),
   )
@@ -78,11 +78,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate
-              t={t}
-              i18nKey="deleted-release"
-              values={{title: titleDetails.displayTitle}}
-            />
+            <Translate t={t} i18nKey="deleted-release" values={{title: releaseTitle}} />
           </Text>
         }
       >
@@ -103,8 +99,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             selected={isReleasePinned}
             aria-label={
               isReleasePinned
-                ? `${t('dashboard.details.unpin-release')}: "${titleDetails.fullTitle}"`
-                : `${t('dashboard.details.pin-release')}: "${titleDetails.fullTitle}"`
+                ? `${t('dashboard.details.unpin-release')}: "${releaseTitle}"`
+                : `${t('dashboard.details.pin-release')}: "${releaseTitle}"`
             }
             aria-live="assertive"
           />

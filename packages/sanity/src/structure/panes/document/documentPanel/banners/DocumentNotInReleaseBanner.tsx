@@ -2,7 +2,7 @@ import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitleDetails,
+  getReleaseTitle,
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
@@ -42,9 +42,9 @@ export function DocumentNotInReleaseBanner({
   const {createVersion} = useVersionOperations()
 
   const isAnonymousBundle = typeof currentRelease === 'string'
-  const titleDetails = isAnonymousBundle
-    ? {displayTitle: currentRelease, fullTitle: currentRelease, isTruncated: false}
-    : getReleaseTitleDetails(
+  const releaseTitle = isAnonymousBundle
+    ? currentRelease
+    : getReleaseTitle(
         currentRelease?.metadata?.title,
         tCore('release.placeholder-untitled-release'),
       )
@@ -100,7 +100,7 @@ export function DocumentNotInReleaseBanner({
             i18nKey="banners.release.not-in-release"
             t={t}
             values={{
-              title: titleDetails.displayTitle,
+              title: releaseTitle,
             }}
             components={{
               VersionBadge: ({children}) => {
