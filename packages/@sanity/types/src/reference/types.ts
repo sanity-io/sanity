@@ -69,9 +69,9 @@ export interface ReferenceTypeFilterContext {
 /**
  * Function type for filtering which document types can be created from a reference field.
  *
- * The `creationTypeFilter` specifically controls the types 
+ * The `creationTypeFilter` specifically controls the types
  * available when clicking "Create new" in the reference input.
- * 
+ *
  * This is distinct from the `filter` option, which controls which existing documents appear in search results.
  *
  * @param context - Information about the current document and field location

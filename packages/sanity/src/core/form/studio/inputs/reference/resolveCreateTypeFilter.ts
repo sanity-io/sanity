@@ -46,9 +46,7 @@ export function resolveCreateTypeFilter(
     const filteredResult = filterFn(context, toTypes)
 
     if (!Array.isArray(filteredResult)) {
-      console.error(
-        '[sanity] creationTypeFilter must return an array, falling back to all types',
-      )
+      console.error('[sanity] creationTypeFilter must return an array, falling back to all types')
       return toTypes
     }
 
