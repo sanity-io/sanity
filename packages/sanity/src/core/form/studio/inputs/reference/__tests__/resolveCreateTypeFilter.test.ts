@@ -12,11 +12,11 @@ import {resolveCreateTypeFilter} from '../resolveCreateTypeFilter'
 // Helper to create a minimal schema type for testing
 function createSchemaType(
   toTypes: string[],
-  filterTypes?: ReferenceTypeFilter,
+  creationTypeFilter?: ReferenceTypeFilter,
 ): ReferenceSchemaType {
   return {
     to: toTypes.map((name) => ({name, type: name, title: name})),
-    options: filterTypes ? {filterTypes} : undefined,
+    options: creationTypeFilter ? {creationTypeFilter} : undefined,
   } as ReferenceSchemaType
 }
 
@@ -34,7 +34,7 @@ function createTestDocument(props: Partial<SanityDocument>): SanityDocument {
 
 describe('resolveCreateTypeFilter', () => {
   describe('backward compatibility', () => {
-    test('returns all types when no filterTypes option provided', () => {
+    test('returns all types when no creationTypeFilter option provided', () => {
       const result = resolveCreateTypeFilter({
         schemaType: createSchemaType(['book', 'author', 'editor']),
         document: createTestDocument({}),
@@ -60,17 +60,17 @@ describe('resolveCreateTypeFilter', () => {
 
   describe('filter function execution', () => {
     test('passes correct context and toTypes to filter function', () => {
-      const filterTypes = vi.fn().mockReturnValue([{type: 'book'}])
+      const creationTypeFilter = vi.fn().mockReturnValue([{type: 'book'}])
 
       const document = createTestDocument({category: 'fiction'})
 
       resolveCreateTypeFilter({
-        schemaType: createSchemaType(['book', 'author'], filterTypes),
+        schemaType: createSchemaType(['book', 'author'], creationTypeFilter),
         document,
         valuePath: ['creator'],
       })
 
-      expect(filterTypes).toHaveBeenCalledWith(
+      expect(creationTypeFilter).toHaveBeenCalledWith(
         {
           document,
           parent: document,
@@ -81,19 +81,19 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('resolves parent correctly for nested paths', () => {
-      const filterTypes = vi.fn().mockReturnValue([{type: 'book'}])
+      const creationTypeFilter = vi.fn().mockReturnValue([{type: 'book'}])
 
       const document = createTestDocument({
         nested: {field: 'value', ref: null},
       })
 
       resolveCreateTypeFilter({
-        schemaType: createSchemaType(['book'], filterTypes),
+        schemaType: createSchemaType(['book'], creationTypeFilter),
         document,
         valuePath: ['nested', 'ref'],
       })
 
-      expect(filterTypes).toHaveBeenCalledWith(
+      expect(creationTypeFilter).toHaveBeenCalledWith(
         expect.objectContaining({
           parent: {field: 'value', ref: null},
           parentPath: ['nested'],
@@ -115,7 +115,7 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('filters based on document values', () => {
-      const filterTypes = (
+      const creationTypeFilter = (
         {document}: ReferenceTypeFilterContext,
         toTypes: ReferenceTypeOption[],
       ): ReferenceTypeOption[] => {
@@ -125,13 +125,13 @@ describe('resolveCreateTypeFilter', () => {
       }
 
       const resultFiction = resolveCreateTypeFilter({
-        schemaType: createSchemaType(['novel', 'story', 'manual', 'guide'], filterTypes),
+        schemaType: createSchemaType(['novel', 'story', 'manual', 'guide'], creationTypeFilter),
         document: createTestDocument({_id: 'doc1', category: 'fiction'}),
         valuePath: ['ref'],
       })
 
       const resultNonFiction = resolveCreateTypeFilter({
-        schemaType: createSchemaType(['novel', 'story', 'manual', 'guide'], filterTypes),
+        schemaType: createSchemaType(['novel', 'story', 'manual', 'guide'], creationTypeFilter),
         document: createTestDocument({_id: 'doc2', category: 'nonfiction'}),
         valuePath: ['ref'],
       })
@@ -140,8 +140,8 @@ describe('resolveCreateTypeFilter', () => {
       expect(resultNonFiction).toEqual([{type: 'manual'}, {type: 'guide'}])
     })
 
-    test('filterTypes does not affect search behavior (filter isolation)', () => {
-      const filterTypes = vi.fn().mockReturnValue([{type: 'book'}])
+    test('creationTypeFilter does not affect search behavior (filter isolation)', () => {
+      const creationTypeFilter = vi.fn().mockReturnValue([{type: 'book'}])
       const filter = vi.fn()
 
       const schemaType: ReferenceSchemaType = {
@@ -150,7 +150,7 @@ describe('resolveCreateTypeFilter', () => {
           {name: 'author', type: 'author', title: 'Author'},
         ],
         options: {
-          filterTypes,
+          creationTypeFilter,
           filter,
         },
       } as ReferenceSchemaType
@@ -161,7 +161,7 @@ describe('resolveCreateTypeFilter', () => {
         valuePath: ['ref'],
       })
 
-      expect(filterTypes).toHaveBeenCalled()
+      expect(creationTypeFilter).toHaveBeenCalled()
       expect(filter).not.toHaveBeenCalled()
     })
   })
@@ -180,7 +180,7 @@ describe('resolveCreateTypeFilter', () => {
 
       expect(result).toEqual([{type: 'book'}, {type: 'author'}])
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Error in reference filterTypes function'),
+        expect.stringContaining('Error in reference creationTypeFilter function'),
         expect.any(Error),
       )
 
@@ -208,7 +208,7 @@ describe('resolveCreateTypeFilter', () => {
 
       expect(result).toEqual([{type: 'book'}, {type: 'author'}])
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('filterTypes must return an array'),
+        expect.stringContaining('creationTypeFilter must return an array'),
       )
 
       consoleSpy.mockRestore()
@@ -255,7 +255,7 @@ describe('resolveCreateTypeFilter', () => {
 
       expect(result).toEqual([{type: 'book'}, {type: 'author'}])
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('filterTypes returned invalid object without type property'),
+        expect.stringContaining('creationTypeFilter returned invalid object without type property'),
         expect.anything(),
       )
 
@@ -263,15 +263,15 @@ describe('resolveCreateTypeFilter', () => {
     })
 
     test('verifies toTypes parameter structure', () => {
-      const filterTypes = vi.fn().mockReturnValue([{type: 'book'}])
+      const creationTypeFilter = vi.fn().mockReturnValue([{type: 'book'}])
 
       resolveCreateTypeFilter({
-        schemaType: createSchemaType(['book', 'author', 'editor'], filterTypes),
+        schemaType: createSchemaType(['book', 'author', 'editor'], creationTypeFilter),
         document: createTestDocument({}),
         valuePath: ['ref'],
       })
 
-      const toTypesArg = filterTypes.mock.calls[0][1] as ReferenceTypeOption[]
+      const toTypesArg = creationTypeFilter.mock.calls[0][1] as ReferenceTypeOption[]
       expect(toTypesArg).toEqual([{type: 'book'}, {type: 'author'}, {type: 'editor'}])
       expect(toTypesArg.every((item) => typeof item === 'object' && 'type' in item)).toBe(true)
     })

@@ -56,12 +56,12 @@ export default defineType({
     }),
     defineField({
       name: 'multiTypeRef',
-      title: 'Book or author with filterTypes',
+      title: 'Book or author with creationTypeFilter',
       description: 'Available types depend on typeFilter above',
       type: 'reference',
       to: [{type: 'book'}, {type: 'author'}],
       options: {
-        filterTypes: ({document}, toTypes) => {
+        creationTypeFilter: ({document}, toTypes) => {
           const filter = document?.typeFilter as string | undefined
           if (filter === 'book') {
             return toTypes.filter((t) => t.type === 'book')
@@ -91,7 +91,7 @@ export default defineType({
     defineField({
       name: 'arrayWithConditionalTypes',
       type: 'array',
-      title: 'Array with filterTypes using parent context',
+      title: 'Array with creationTypeFilter using parent context',
       of: [
         {
           type: 'object',
@@ -108,7 +108,7 @@ export default defineType({
               type: 'reference',
               to: [{type: 'book'}, {type: 'author'}],
               options: {
-                filterTypes: ({parent}, toTypes) => {
+                creationTypeFilter: ({parent}, toTypes) => {
                   const role = (parent as {role?: string})?.role
                   if (role === 'book') {
                     return toTypes.filter((t) => t.type === 'book')

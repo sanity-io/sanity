@@ -222,7 +222,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
       return []
     }
 
-    // Resolve which types are allowed based on filterTypes option
+    // Resolve which types are allowed based on creationTypeFilter option
     const allowedTypeOptions = resolveCreateTypeFilter({
       schemaType,
       document: documentValue,

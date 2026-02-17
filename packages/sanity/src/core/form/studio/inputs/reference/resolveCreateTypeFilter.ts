@@ -14,11 +14,16 @@ export interface ResolveCreateTypeFilterOptions {
 }
 
 /**
- * Resolves filterTypes from schema options using the ComposableOption pattern.
- * Falls back to all available types if: no filterTypes defined, execution throws,
- * returns empty array, returns invalid objects, or returns no valid types.
+ * Resolves the creationTypeFilter callback from schema options to determine which
+ * document types can be created from a reference field.
  *
- * @returns Array of ReferenceTypeOption objects with type names
+ * This function safely executes the user-defined creationTypeFilter callback and
+ * handles various error scenarios by falling back to all available types.
+ *
+ * @param options - Configuration including schema type, document, and field path
+ * @returns Array of ReferenceTypeOption objects representing types available for creation
+ *
+ * @internal
  */
 export function resolveCreateTypeFilter(
   options: ResolveCreateTypeFilterOptions,
@@ -26,7 +31,7 @@ export function resolveCreateTypeFilter(
   const {schemaType, document, valuePath} = options
   const availableTypes = schemaType.to.map((refType) => refType.name)
   const toTypes: ReferenceTypeOption[] = availableTypes.map((type) => ({type}))
-  const filterFn = schemaType.options?.filterTypes
+  const filterFn = schemaType.options?.creationTypeFilter
 
   if (!filterFn) return toTypes
 
@@ -41,7 +46,9 @@ export function resolveCreateTypeFilter(
     const filteredResult = filterFn(context, toTypes)
 
     if (!Array.isArray(filteredResult)) {
-      console.error('[sanity] filterTypes must return an array, falling back to all types')
+      console.error(
+        '[sanity] creationTypeFilter must return an array, falling back to all types',
+      )
       return toTypes
     }
 
@@ -49,7 +56,10 @@ export function resolveCreateTypeFilter(
 
     const validTypes = filteredResult.filter((item) => {
       if (!item || typeof item !== 'object' || !('type' in item)) {
-        console.error('[sanity] filterTypes returned invalid object without type property:', item)
+        console.error(
+          '[sanity] creationTypeFilter returned invalid object without type property:',
+          item,
+        )
         return false
       }
       return availableTypes.includes(item.type)
@@ -58,7 +68,7 @@ export function resolveCreateTypeFilter(
     return validTypes.length > 0 ? validTypes : toTypes
   } catch (error) {
     console.error(
-      '[sanity] Error in reference filterTypes function, falling back to all types:',
+      '[sanity] Error in reference creationTypeFilter function, falling back to all types:',
       error,
     )
     return toTypes

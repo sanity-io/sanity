@@ -52,14 +52,34 @@ export interface ReferenceTypeOption {
   type: string
 }
 
-/** @public */
+/**
+ * Context object passed to the creationTypeFilter callback.
+ *
+ * @public
+ */
 export interface ReferenceTypeFilterContext {
+  /** The current document being edited */
   document: SanityDocument
+  /** The parent value containing this reference field */
   parent?: Record<string, unknown> | Record<string, unknown>[]
+  /** The path to the parent value in the document */
   parentPath: Path
 }
 
-/** @public */
+/**
+ * Function type for filtering which document types can be created from a reference field.
+ *
+ * The `creationTypeFilter` specifically controls the types 
+ * available when clicking "Create new" in the reference input.
+ * 
+ * This is distinct from the `filter` option, which controls which existing documents appear in search results.
+ *
+ * @param context - Information about the current document and field location
+ * @param toTypes - Array of type options from the reference field's `to` configuration
+ * @returns Filtered array of type options that should be available for creation
+ *
+ * @public
+ */
 export type ReferenceTypeFilter = (
   context: ReferenceTypeFilterContext,
   toTypes: ReferenceTypeOption[],
@@ -81,19 +101,60 @@ export interface ReferenceFilterQueryOptions {
 export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
   disableNew?: boolean
   /**
-   * Function to filter which types appear in the "Create new" type picker.
+   * Callback function to dynamically filter which document types can be created
+   * from this reference field based on the current document state.
+   *
+   * This allows you to conditionally restrict the types available in the
+   * "Create new" dropdown based on other field values in the document.
+   *
+   * **Important**: This only affects document creation, not which existing documents
+   * appear in search results. To filter search results, use the `filter` option instead.
+   *
+   * @param context - Contains the current document, parent value, and field path
+   * @param toTypes - Array of all types configured in the reference field's `to` property
+   * @returns Array of type options that should be available for creation. Return the
+   *          original `toTypes` array to allow all types, or a filtered subset to restrict.
    *
    * @example
+   * Restrict creation based on a field value:
    * ```ts
-   * filterTypes: ({document}, toTypes) => {
-   *   if (document?.role === 'editor') {
-   *     return toTypes.filter(t => t.type === 'article')
+   * {
+   *   name: 'participant',
+   *   type: 'reference',
+   *   to: [{type: 'individual'}, {type: 'team'}],
+   *   options: {
+   *     creationTypeFilter: ({document}, toTypes) => {
+   *       if (document?.participantType === 'individual') {
+   *         return toTypes.filter(t => t.type === 'individual')
+   *       }
+   *       if (document?.participantType === 'team') {
+   *         return toTypes.filter(t => t.type === 'team')
+   *       }
+   *       return toTypes
+   *     }
    *   }
-   *   return toTypes
+   * }
+   * ```
+   *
+   * @example
+   * Restrict based on user role from parent context:
+   * ```ts
+   * {
+   *   name: 'article',
+   *   type: 'reference',
+   *   to: [{type: 'blogPost'}, {type: 'newsArticle'}],
+   *   options: {
+   *     creationTypeFilter: ({document}, toTypes) => {
+   *       if (document?.userRole === 'editor') {
+   *         return toTypes.filter(t => t.type === 'blogPost')
+   *       }
+   *       return toTypes
+   *     }
+   *   }
    * }
    * ```
    */
-  filterTypes?: ReferenceTypeFilter
+  creationTypeFilter?: ReferenceTypeFilter
 }
 
 /** @public */
