@@ -69,6 +69,7 @@ export default defineType({
           if (filter === 'author') {
             return toTypes.filter((t) => t.type === 'author')
           }
+          return toTypes
         },
       },
     }),
