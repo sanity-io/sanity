@@ -1799,8 +1799,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
       '@portabletext/plugin-paste-link':
-        specifier: ^1.0.3
-        version: 1.0.3(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
+        specifier: ^2.0.0
+        version: 2.0.0(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
       '@portabletext/plugin-typography':
         specifier: ^5.0.24
         version: 5.0.24(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
@@ -4715,11 +4715,11 @@ packages:
       '@portabletext/editor': ^5.0.0
       react: ^19.2
 
-  '@portabletext/plugin-paste-link@1.0.3':
-    resolution: {integrity: sha512-m2AXNOOyDeaPLdDmsOyCCd0awobw0FnKswMuZbdBhLTd4fqdATReW+mTuSqVTPNhOYpWJOWsA3WAsOLh5V1DCA==}
+  '@portabletext/plugin-paste-link@2.0.0':
+    resolution: {integrity: sha512-5hQQyvR3Hj5xiu0pllMcGzOPQ7phZfQOKBnh80uF7UHsmIxVdkJT0Jb7kb/7sGtg5RIex3A9e4j7S4udywhdzw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^4.3.9
+      '@portabletext/editor': ^5.0.0
       react: ^19.2
 
   '@portabletext/plugin-typography@5.0.24':
@@ -15824,7 +15824,7 @@ snapshots:
       '@portabletext/editor': 5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       react: 19.2.4
 
-  '@portabletext/plugin-paste-link@1.0.3(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
+  '@portabletext/plugin-paste-link@2.0.0(@portabletext/editor@5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
     dependencies:
       '@portabletext/editor': 5.0.0(@portabletext/sanity-bridge@2.0.0)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       react: 19.2.4
