@@ -107,21 +107,18 @@ export default defineType({
               name: 'reference',
               type: 'reference',
               to: [{type: 'book'}, {type: 'author'}],
-              options: {disableNew: true},
-              // options: {
-              //   disableNew: true,
-              //   // creationTypeFilter: ({parent}, toTypes) => {
-              //   //   const role = (parent as {role?: string})?.role
-              //   //   return []
-              //   //   if (role === 'book') {
-              //   //     return toTypes.filter((t) => t.type === 'book')
-              //   //   }
-              //   //   if (role === 'author') {
-              //   //     return toTypes.filter((t) => t.type === 'author')
-              //   //   }
-              //   //   return toTypes
-              //   // },
-              // },
+              options: {
+                creationTypeFilter: ({parent}, toTypes) => {
+                  const role = (parent as {role?: string})?.role
+                  if (role === 'book') {
+                    return toTypes.filter((t) => t.type === 'book')
+                  }
+                  if (role === 'author') {
+                    return toTypes.filter((t) => t.type === 'author')
+                  }
+                  return toTypes
+                },
+              },
             },
           ],
           preview: {

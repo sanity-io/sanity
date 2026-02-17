@@ -123,22 +123,6 @@ export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
    * @returns Array of type options that should be available for creation. Return the
    *          original `toTypes` array to allow all types, a filtered subset to restrict
    *          available types, or an empty array `[]` to hide the "Create new" button entirely.
-   *
-   * @example
-   * ```typescript
-   * // Allow creating only books when role is 'bookEditor'
-   * creationTypeFilter: ({parent}, toTypes) => {
-   *   if (parent?.role === 'bookEditor') {
-   *     return toTypes.filter(t => t.type === 'book')
-   *   }
-   *   return toTypes
-   * }
-   *
-   * // Hide create button when document is locked
-   * creationTypeFilter: ({document}) => {
-   *   return document?.locked ? [] : toTypes
-   * }
-   * ```
    */
   creationTypeFilter?: ReferenceTypeFilter
 }
