@@ -20,6 +20,10 @@ export interface ResolveCreateTypeFilterOptions {
  * This function safely executes the user-defined creationTypeFilter callback and
  * handles various error scenarios by falling back to all available types.
  *
+ * When the filter returns an empty array [], this is treated as a valid result
+ * that hides the "Create new" button entirely, allowing conditional disabling of
+ * document creation based on the current document state.
+ *
  * @param options - Configuration including schema type, document, and field path
  * @returns Array of ReferenceTypeOption objects representing types available for creation
  *
@@ -50,7 +54,10 @@ export function resolveCreateTypeFilter(
       return toTypes
     }
 
-    if (!filteredResult.length) return toTypes
+    // If filter intentionally returned empty array, respect it (hides create button)
+    if (filteredResult.length === 0) {
+      return []
+    }
 
     const validTypes = filteredResult.filter((item) => {
       if (!item || typeof item !== 'object' || !('type' in item)) {
@@ -63,6 +70,7 @@ export function resolveCreateTypeFilter(
       return availableTypes.includes(item.type)
     })
 
+    // If all items were invalid, fall back to all types (error scenario)
     return validTypes.length > 0 ? validTypes : toTypes
   } catch (error) {
     console.error(

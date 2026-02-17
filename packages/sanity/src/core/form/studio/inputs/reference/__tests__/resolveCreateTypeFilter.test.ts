@@ -187,14 +187,14 @@ describe('resolveCreateTypeFilter', () => {
       consoleSpy.mockRestore()
     })
 
-    test('returns all types when filter returns empty array', () => {
+    test('returns empty array when filter returns empty array', () => {
       const result = resolveCreateTypeFilter({
         schemaType: createSchemaType(['book', 'author'], () => []),
         document: createTestDocument({}),
         valuePath: ['ref'],
       })
 
-      expect(result).toEqual([{type: 'book'}, {type: 'author'}])
+      expect(result).toEqual([])
     })
 
     test('returns all types when filter returns non-array', () => {

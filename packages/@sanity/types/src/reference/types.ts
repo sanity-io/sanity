@@ -99,6 +99,14 @@ export interface ReferenceFilterQueryOptions {
 
 /** @public */
 export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
+  /**
+   * When `true`, hides the "Create new" button in the reference input,
+   * preventing users from creating new documents from this field.
+   *
+   * For more granular control (e.g., allowing creation of only specific types,
+   * or conditionally hiding the button based on document state), use the
+   * `creationTypeFilter` option instead.
+   */
   disableNew?: boolean
   /**
    * Callback function to dynamically filter which document types can be created
@@ -113,44 +121,22 @@ export interface ReferenceBaseOptions extends BaseSchemaTypeOptions {
    * @param context - Contains the current document, parent value, and field path
    * @param toTypes - Array of all types configured in the reference field's `to` property
    * @returns Array of type options that should be available for creation. Return the
-   *          original `toTypes` array to allow all types, or a filtered subset to restrict.
+   *          original `toTypes` array to allow all types, a filtered subset to restrict
+   *          available types, or an empty array `[]` to hide the "Create new" button entirely.
    *
    * @example
-   * Restrict creation based on a field value:
-   * ```ts
-   * {
-   *   name: 'participant',
-   *   type: 'reference',
-   *   to: [{type: 'individual'}, {type: 'team'}],
-   *   options: {
-   *     creationTypeFilter: ({document}, toTypes) => {
-   *       if (document?.participantType === 'individual') {
-   *         return toTypes.filter(t => t.type === 'individual')
-   *       }
-   *       if (document?.participantType === 'team') {
-   *         return toTypes.filter(t => t.type === 'team')
-   *       }
-   *       return toTypes
-   *     }
+   * ```typescript
+   * // Allow creating only books when role is 'bookEditor'
+   * creationTypeFilter: ({parent}, toTypes) => {
+   *   if (parent?.role === 'bookEditor') {
+   *     return toTypes.filter(t => t.type === 'book')
    *   }
+   *   return toTypes
    * }
-   * ```
    *
-   * @example
-   * Restrict based on user role from parent context:
-   * ```ts
-   * {
-   *   name: 'article',
-   *   type: 'reference',
-   *   to: [{type: 'blogPost'}, {type: 'newsArticle'}],
-   *   options: {
-   *     creationTypeFilter: ({document}, toTypes) => {
-   *       if (document?.userRole === 'editor') {
-   *         return toTypes.filter(t => t.type === 'blogPost')
-   *       }
-   *       return toTypes
-   *     }
-   *   }
+   * // Hide create button when document is locked
+   * creationTypeFilter: ({document}) => {
+   *   return document?.locked ? [] : toTypes
    * }
    * ```
    */
