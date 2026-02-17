@@ -1,0 +1,108 @@
+name: Create Release PR
+
+on:
+  push:
+    branches:
+      - v4
+
+permissions:
+  contents: read
+
+jobs:
+  create-or-update-pr:
+    # this runs in v4, and we want to skip running it when release PRs are merged
+    # format of the commit message is specified in lerna.json
+    if: >
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: v4
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Update version
+        run: |
+          npx lerna version \
+            --force-publish \
+            --no-git-tag-version \
+            --conventional-commits \
+            --yes
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Fix lerna.json EOF formatting
+        # lerna version formats lerna.json removing EOF line
+        # this is needed to pass linter
+        run: npx prettier --write lerna.json
+
+      - name: Sync workspace lockfile
+        run: pnpm install --lockfile-only
+
+      - name: Get version commit message
+        # generate the commit message that would be created (determined by lerna.json)
+        id: version-commit
+        run: |
+          VERSION=$(cat lerna.json | jq -r .version)
+          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get version
+        id: release-as
+        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Fetch latest tags
+        run: git fetch --tags --force
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          {
+            echo "notes<<EOF"
+            pnpm --silent release:notes
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+      - name: Create or update PR
+        uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412 # v7
+        id: create-pull-request
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          title: "${{steps.version-commit.outputs.message}}"
+          body: |
+            🤖 I have created a release **squib** **squob**
+
+            Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
+
+            ## Release Notes Template
+
+            ${{steps.release-notes.outputs.notes}}
+          commit-message: "${{steps.version-commit.outputs.message}}"
+          branch: ci/release-v4
+          labels: "release:v4"
+          sign-commits: true
+          base: v4
+          team-reviewers: "@sanity-io/studio"
+          draft: true
