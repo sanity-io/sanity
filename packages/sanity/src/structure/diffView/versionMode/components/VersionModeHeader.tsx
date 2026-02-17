@@ -30,6 +30,7 @@ import {
   isSystemBundleName,
   ReleaseAvatar,
   type ReleaseDocument,
+  ReleaseTitle,
   type TargetPerspective,
   useActiveReleases,
   useDocumentVersions,
@@ -39,7 +40,6 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'
