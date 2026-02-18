@@ -22,11 +22,11 @@ import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
-  PublishButtonReady,
-  type PublishButtonReadyInfo,
+  type PublishButtonDisabledReason,
+  PublishButtonReadyTrace,
   PublishButtonStateChanged,
   type PublishButtonStateChangedInfo,
-  PublishOutcomeTracked,
+  PublishOutcomeTrace,
 } from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
@@ -99,17 +99,19 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   // ---------------------------------------------------------------------------
-  // Telemetry: Publish outcome tracking
+  // Telemetry: Publish outcome trace
   // ---------------------------------------------------------------------------
-  // Track when publish was initiated and whether it succeeds
-  const publishStartTimeRef = useRef<number | null>(null)
+  // Traces the full publish operation from click to revision change
+  const publishTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
   const publishWasScheduledRef = useRef<boolean>(false)
 
   const doPublish = useCallback(() => {
     publish.execute()
-    publishStartTimeRef.current = Date.now()
+    const trace = telemetry.trace(PublishOutcomeTrace)
+    trace.start()
+    publishTraceRef.current = trace
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision])
+  }, [publish, currentPublishRevision, telemetry])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -144,7 +146,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     t,
   ])
 
-  // Detect publish success (revision changed) and report outcome
+  // Detect publish success (revision changed) and complete the trace
   useEffect(() => {
     const didPublish =
       // All we need to check here is for the revision of the current published document
@@ -153,14 +155,14 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
-    // Telemetry: report publish success
-    if (didPublish && publishStartTimeRef.current) {
-      telemetry.log(PublishOutcomeTracked, {
-        durationMs: Date.now() - publishStartTimeRef.current,
+    // Telemetry: complete the publish outcome trace
+    if (didPublish && publishTraceRef.current) {
+      publishTraceRef.current.log({
         previouslyPublished: Boolean(publishState.publishRevision),
         wasScheduledWhileSyncing: publishWasScheduledRef.current,
       })
-      publishStartTimeRef.current = null
+      publishTraceRef.current.complete()
+      publishTraceRef.current = null
     }
 
     const nextState = didPublish ? PUBLISHED_STATE : null
@@ -169,7 +171,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, currentPublishRevision, telemetry])
+  }, [changesOpen, publishState, currentPublishRevision])
 
   // ---------------------------------------------------------------------------
   // Telemetry: Publish button state tracking
@@ -256,32 +258,31 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [isEffectivelyDisabled, disabledReasons, buttonLabel, telemetry])
 
   // ---------------------------------------------------------------------------
-  // Telemetry: Time-to-ready tracking
+  // Telemetry: Time-to-ready trace
   // ---------------------------------------------------------------------------
-  // Measures the time from the button becoming disabled to becoming enabled again
-  const disabledAtRef = useRef<number | null>(null)
-  const disabledReasonAtRef = useRef<string>('unknown')
+  // Traces the time from the button becoming disabled to becoming enabled again
+  const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
+  const disabledReasonAtRef = useRef<PublishButtonDisabledReason | 'unknown'>('unknown')
 
   useEffect(() => {
     if (isEffectivelyDisabled) {
-      // Button just became disabled — record the timestamp and reason
-      if (disabledAtRef.current === null) {
-        disabledAtRef.current = Date.now()
-        disabledReasonAtRef.current = disabledReasons[0] || 'unknown'
+      // Button just became disabled — start a trace
+      if (readyTraceRef.current === null) {
+        const trace = telemetry.trace(PublishButtonReadyTrace)
+        trace.start()
+        readyTraceRef.current = trace
+        disabledReasonAtRef.current =
+          (disabledReasons[0] as PublishButtonDisabledReason) || 'unknown'
       }
     } else {
-      // Button just became enabled — report time-to-ready if we were tracking
-      if (disabledAtRef.current !== null) {
-        const timeToReadyMs = Date.now() - disabledAtRef.current
-        // Only report meaningful durations (> 100ms avoids noise from initial renders)
-        if (timeToReadyMs > 100) {
-          telemetry.log(PublishButtonReady, {
-            timeToReadyMs,
-            disabledReason: disabledReasonAtRef.current as PublishButtonReadyInfo['disabledReason'],
-            previouslyPublished: Boolean(published),
-          })
-        }
-        disabledAtRef.current = null
+      // Button just became enabled — complete the trace if we were tracking
+      if (readyTraceRef.current !== null) {
+        readyTraceRef.current.log({
+          disabledReason: disabledReasonAtRef.current,
+          previouslyPublished: Boolean(published),
+        })
+        readyTraceRef.current.complete()
+        readyTraceRef.current = null
       }
     }
   }, [isEffectivelyDisabled, disabledReasons, telemetry, published])
