@@ -143,6 +143,9 @@ importers:
       depcheck:
         specifier: ^1.4.7
         version: 1.4.7
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
@@ -152,6 +155,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      eslint-formatter-gha:
+        specifier: ^2.0.1
+        version: 2.0.1
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -8282,6 +8288,17 @@ packages:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
 
+  eslint-formatter-gha@2.0.1:
+    resolution: {integrity: sha512-HbiPXXjIley/JRcQ9zRZ4HJhhU8ZIf0wVLbfyQKm/7HIcbvOsA2xwl/Lblyd8fhYalUWxKcodJOwsOwxw7O0Cw==}
+
+  eslint-formatter-json@9.0.1:
+    resolution: {integrity: sha512-EQ/X+bPjiOUDo4frNbkY+5R6emaHTL7t2jHsJw5s8p8w1BTJ6ao6S7g/PaRyx/CqqaYcjJkWAPHH/onNyFlJBQ==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  eslint-formatter-stylish@9.0.1:
+    resolution: {integrity: sha512-FlhMRUiDUHztGj+bhm3pYo5DJ6Gbjh/FGPClcDENme7f9+Sc3+HZg6wMq80KJmRD8/oj/Ib6gy4D/ppjmHfGVA==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
   eslint-import-context@0.1.9:
     resolution: {integrity: sha512-K9Hb+yRaGAGUbwjhFNHvSmmkZs9+zbuoe3kFQ4V1wYjrepUFYM2dZAfNtjbbj3qsPfUfsA68Bx/ICWQMi+C8Eg==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
@@ -12341,6 +12358,9 @@ packages:
 
   text-decoder@1.2.3:
     resolution: {integrity: sha512-3/o9z3X0X0fTupwsYvR03pJ/DjWuqqrfwBgTQzdWDiQSm9KitAyz/9WqsT2JQW7KV2m+bC2ol/zqpW37NHxLaA==}
+
+  text-table@0.2.0:
+    resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
   throttleit@2.1.0:
     resolution: {integrity: sha512-nt6AMGKW1p/70DF/hGBdJB57B8Tspmbp5gfJ8ilhLnt7kkr2ye7hzD6NVG8GGErk2HWF34igrL2CXmNIkzKqKw==}
@@ -20224,6 +20244,19 @@ snapshots:
       eslint-plugin-turbo: 2.7.6(eslint@9.39.2(jiti@2.6.1))(turbo@2.7.5)
       turbo: 2.7.5
 
+  eslint-formatter-gha@2.0.1:
+    dependencies:
+      eslint-formatter-json: 9.0.1
+      eslint-formatter-stylish: 9.0.1
+
+  eslint-formatter-json@9.0.1: {}
+
+  eslint-formatter-stylish@9.0.1:
+    dependencies:
+      chalk: 4.1.2
+      strip-ansi: 6.0.1
+      text-table: 0.2.0
+
   eslint-import-context@0.1.9(unrs-resolver@1.11.1):
     dependencies:
       get-tsconfig: 4.13.6
@@ -24803,6 +24836,8 @@ snapshots:
       b4a: 1.7.3
     transitivePeerDependencies:
       - react-native-b4a
+
+  text-table@0.2.0: {}
 
   throttleit@2.1.0: {}
 
