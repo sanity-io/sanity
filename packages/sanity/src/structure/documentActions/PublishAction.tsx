@@ -289,7 +289,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // ---------------------------------------------------------------------------
 
   const handle = useCallback(() => {
-    telemetry.log(DocumentPublished, {})
+    telemetry.log(DocumentPublished, {
+      publishedImmediately: !draft?._createdAt,
+      previouslyPublished: Boolean(published),
+    })
     if (
       syncState.isSyncing ||
       validationStatus.isValidating ||
@@ -301,6 +304,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     telemetry,
+    draft?._createdAt,
+    published,
     syncState.isSyncing,
     validationStatus.isValidating,
     validationStatus.revision,
