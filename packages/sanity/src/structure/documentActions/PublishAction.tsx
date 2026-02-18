@@ -2,7 +2,7 @@ import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getVersionFromId,
@@ -20,7 +20,14 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
+import {
+  DocumentPublished,
+  PublishButtonReady,
+  type PublishButtonReadyInfo,
+  PublishButtonStateChanged,
+  type PublishButtonStateChangedInfo,
+  PublishOutcomeTracked,
+} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -30,6 +37,13 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
 } as const
 
 const PUBLISHED_STATE = {status: 'published'} as const
+
+/**
+ * Timeout threshold for detecting a "stuck" publish operation.
+ * If the published revision hasn't changed within this window after clicking Publish,
+ * we report a timeout outcome.
+ */
+const PUBLISH_TIMEOUT_MS = 30_000
 
 function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE_KEY,
@@ -89,8 +103,20 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const currentPublishRevision = published?._rev
 
+  const telemetry = useTelemetry()
+
+  // ---------------------------------------------------------------------------
+  // Telemetry: Publish outcome tracking
+  // ---------------------------------------------------------------------------
+  // Track when publish was initiated and whether it succeeds or times out
+  const publishStartTimeRef = useRef<number | null>(null)
+  const publishOutcomeReportedRef = useRef<boolean>(false)
+  const publishWasScheduledRef = useRef<boolean>(false)
+
   const doPublish = useCallback(() => {
     publish.execute()
+    publishStartTimeRef.current = Date.now()
+    publishOutcomeReportedRef.current = false
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
   }, [publish, currentPublishRevision])
 
@@ -127,6 +153,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     t,
   ])
 
+  // Detect publish success (revision changed) and report outcome
   useEffect(() => {
     const didPublish =
       // All we need to check here is for the revision of the current published document
@@ -135,15 +162,165 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
+    // Telemetry: report publish success
+    if (didPublish && publishStartTimeRef.current && !publishOutcomeReportedRef.current) {
+      publishOutcomeReportedRef.current = true
+      telemetry.log(PublishOutcomeTracked, {
+        outcome: 'success',
+        durationMs: Date.now() - publishStartTimeRef.current,
+        previouslyPublished: Boolean(publishState.publishRevision),
+        wasScheduledWhileSyncing: publishWasScheduledRef.current,
+      })
+      publishStartTimeRef.current = null
+    }
+
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, currentPublishRevision])
+  }, [changesOpen, publishState, currentPublishRevision, telemetry])
 
-  const telemetry = useTelemetry()
+  // Telemetry: detect publish timeout
+  useEffect(() => {
+    if (publishState?.status !== 'publishing' || !publishStartTimeRef.current) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      if (!publishOutcomeReportedRef.current && publishStartTimeRef.current) {
+        publishOutcomeReportedRef.current = true
+        telemetry.log(PublishOutcomeTracked, {
+          outcome: 'timeout',
+          durationMs: PUBLISH_TIMEOUT_MS,
+          previouslyPublished: Boolean(publishState.publishRevision),
+          wasScheduledWhileSyncing: publishWasScheduledRef.current,
+        })
+      }
+    }, PUBLISH_TIMEOUT_MS)
+
+    return () => clearTimeout(timer)
+  }, [publishState, telemetry])
+
+  // ---------------------------------------------------------------------------
+  // Telemetry: Publish button state tracking
+  // ---------------------------------------------------------------------------
+
+  // Compute the full set of disabled reasons for telemetry
+  const disabledReasons = useMemo(() => {
+    const reasons: string[] = []
+    if (publishScheduled) reasons.push('PUBLISH_SCHEDULED')
+    if (editState?.transactionSyncLock?.enabled) reasons.push('TRANSACTION_SYNC_LOCK')
+    if (publishState?.status === 'publishing') reasons.push('PUBLISHING')
+    if (publishState?.status === 'published') reasons.push('PUBLISHED')
+    if (hasValidationErrors) reasons.push('VALIDATION_ERROR')
+    if (publish.disabled) reasons.push(publish.disabled)
+    if (isPermissionsLoading) reasons.push('PERMISSIONS_LOADING')
+    if (!isPermissionsLoading && !permissions?.granted) reasons.push('PERMISSION_DENIED')
+    if (isSyncing) reasons.push('SYNCING')
+    return reasons
+  }, [
+    publishScheduled,
+    editState?.transactionSyncLock?.enabled,
+    publishState,
+    hasValidationErrors,
+    publish.disabled,
+    isPermissionsLoading,
+    permissions?.granted,
+    isSyncing,
+  ])
+
+  const buttonLabel = useMemo(() => {
+    if (publishState?.status === 'published') return 'published' as const
+    if (publishScheduled) return 'waiting' as const
+    if (publishState?.status === 'publishing') return 'publishing' as const
+    return 'publish' as const
+  }, [publishState, publishScheduled])
+
+  // Compute the effective disabled state (mirrors the logic in the return useMemo below)
+  const isEffectivelyDisabled = useMemo(() => {
+    // Early-return disabled cases
+    if (published && !draft && !version) return true
+    if (!isPermissionsLoading && !permissions?.granted) return true
+
+    return Boolean(
+      publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled ||
+      isPermissionsLoading,
+    )
+  }, [
+    published,
+    draft,
+    version,
+    isPermissionsLoading,
+    permissions?.granted,
+    publishScheduled,
+    editState?.transactionSyncLock?.enabled,
+    publishState,
+    hasValidationErrors,
+    publish.disabled,
+  ])
+
+  // Track state transitions
+  const prevDisabledRef = useRef<boolean | null>(null)
+
+  useEffect(() => {
+    // Skip the initial render — only track transitions
+    if (prevDisabledRef.current === null) {
+      prevDisabledRef.current = isEffectivelyDisabled
+      return
+    }
+
+    // Only log on actual transitions
+    if (prevDisabledRef.current !== isEffectivelyDisabled) {
+      prevDisabledRef.current = isEffectivelyDisabled
+      telemetry.log(PublishButtonStateChanged, {
+        isDisabled: isEffectivelyDisabled,
+        disabledReasons: disabledReasons as PublishButtonStateChangedInfo['disabledReasons'],
+        buttonLabel,
+      })
+    }
+  }, [isEffectivelyDisabled, disabledReasons, buttonLabel, telemetry])
+
+  // ---------------------------------------------------------------------------
+  // Telemetry: Time-to-ready tracking
+  // ---------------------------------------------------------------------------
+  // Measures the time from the button becoming disabled to becoming enabled again
+  const disabledAtRef = useRef<number | null>(null)
+  const disabledReasonAtRef = useRef<string>('unknown')
+
+  useEffect(() => {
+    if (isEffectivelyDisabled) {
+      // Button just became disabled — record the timestamp and reason
+      if (disabledAtRef.current === null) {
+        disabledAtRef.current = Date.now()
+        disabledReasonAtRef.current = disabledReasons[0] || 'unknown'
+      }
+    } else {
+      // Button just became enabled — report time-to-ready if we were tracking
+      if (disabledAtRef.current !== null) {
+        const timeToReadyMs = Date.now() - disabledAtRef.current
+        // Only report meaningful durations (> 100ms avoids noise from initial renders)
+        if (timeToReadyMs > 100) {
+          telemetry.log(PublishButtonReady, {
+            timeToReadyMs,
+            disabledReason: disabledReasonAtRef.current as PublishButtonReadyInfo['disabledReason'],
+            previouslyPublished: Boolean(published),
+          })
+        }
+        disabledAtRef.current = null
+      }
+    }
+  }, [isEffectivelyDisabled, disabledReasons, telemetry, published])
+
+  // ---------------------------------------------------------------------------
+  // Handle publish click
+  // ---------------------------------------------------------------------------
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
@@ -155,8 +332,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       validationStatus.isValidating ||
       validationStatus.revision !== revision
     ) {
+      publishWasScheduledRef.current = true
       setPublishScheduled(true)
     } else {
+      publishWasScheduledRef.current = false
       doPublish()
     }
   }, [
