@@ -86,6 +86,30 @@ export const EDITOR_CONFIGS = {
     },
     buildServerConfig: defaultHttpConfig,
   },
+  'Gemini CLI': {
+    configKey: 'mcpServers',
+    detect: async () => {
+      const geminiDir = path.join(homeDir, '.gemini')
+      return existsSync(geminiDir) ? path.join(geminiDir, 'settings.json') : null
+    },
+    buildServerConfig: defaultHttpConfig,
+  },
+  'GitHub Copilot CLI': {
+    configKey: 'mcpServers',
+    detect: async () => {
+      const copilotDir =
+        process.platform === 'linux' && process.env.XDG_CONFIG_HOME
+          ? path.join(process.env.XDG_CONFIG_HOME, 'copilot')
+          : path.join(homeDir, '.copilot')
+      return existsSync(copilotDir) ? path.join(copilotDir, 'mcp-config.json') : null
+    },
+    buildServerConfig: (token) => ({
+      type: 'http',
+      url: MCP_SERVER_URL,
+      headers: {Authorization: `Bearer ${token}`},
+      tools: ['*'],
+    }),
+  },
   'Zed': {
     configKey: 'context_servers',
     detect: async () => {
