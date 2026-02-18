@@ -96,8 +96,6 @@ jobs:
 
             Merging this PR will publish v${{steps.release-as.outputs.version}} to npm 🚀
 
-            ## Release Notes Template
-
             ${{steps.release-notes.outputs.notes}}
           commit-message: "${{steps.version-commit.outputs.message}}"
           branch: ci/release-v4
