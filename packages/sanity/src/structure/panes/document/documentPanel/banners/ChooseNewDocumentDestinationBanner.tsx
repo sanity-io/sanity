@@ -3,7 +3,6 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback} from 'react'
 import {
-  getReleaseTitle,
   getVersionInlineBadge,
   isPerspectiveWriteable,
   isReleaseDocument,
@@ -60,7 +59,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
 
   const releaseDoc = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
   const releaseTitle = releaseDoc
-    ? getReleaseTitle(releaseDoc.metadata.title, tCore('release.placeholder-untitled-release'))
+    ? releaseDoc.metadata.title || tCore('release.placeholder-untitled-release')
     : undefined
 
   return (

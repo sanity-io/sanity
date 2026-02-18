@@ -2,7 +2,6 @@ import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitle,
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
@@ -44,10 +43,7 @@ export function DocumentNotInReleaseBanner({
   const isAnonymousBundle = typeof currentRelease === 'string'
   const releaseTitle = isAnonymousBundle
     ? currentRelease
-    : getReleaseTitle(
-        currentRelease?.metadata?.title,
-        tCore('release.placeholder-untitled-release'),
-      )
+    : currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release')
   const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
   const handleAddToRelease = useCallback(async () => {

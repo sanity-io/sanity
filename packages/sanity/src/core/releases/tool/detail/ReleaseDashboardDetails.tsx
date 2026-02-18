@@ -15,7 +15,6 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitle} from '../../util/getReleaseTitleDetails'
 import {isNotArchivedRelease} from '../../util/util'
 import {ArchivedReleaseBanner} from './ArchivedReleaseBanner'
 import {ReleaseDetailsEditor} from './ReleaseDetailsEditor'
@@ -42,10 +41,7 @@ export function ReleaseDashboardDetails({
   const setPerspective = useSetPerspective()
 
   const isSelected = releaseId === selectedReleaseId
-  const releaseFullTitle = getReleaseTitle(
-    release.metadata.title,
-    tCore('release.placeholder-untitled-release'),
-  )
+  const releaseFullTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
   const isAtTimeRelease = release?.metadata?.releaseType === 'scheduled'
   const isReleaseOpen = state !== 'archived' && state !== 'published'
   const isActive = release.state === 'active'

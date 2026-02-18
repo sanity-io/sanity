@@ -8,7 +8,6 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   ReleaseAvatar,
-  getReleaseTitle,
   useActiveReleases,
   type VersionInfoDocumentStub,
 } from '../../releases'
@@ -76,10 +75,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           <VersionStatus
             key={versionName}
             mode={snapshot._updatedAt === snapshot._createdAt ? 'created' : 'edited'}
-            title={getReleaseTitle(
-              release?.metadata.title,
-              t('release.placeholder-untitled-release'),
-            )}
+            title={release?.metadata.title || t('release.placeholder-untitled-release')}
             timestamp={snapshot?._updatedAt}
             tone={release ? getReleaseTone(release) : 'default'}
           />

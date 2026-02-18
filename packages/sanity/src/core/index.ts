@@ -36,7 +36,6 @@ export {
   formatRelativeLocalePublishDate,
   getDocumentIsInPerspective,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTitle,
   getReleaseTone,
   getVersionInlineBadge,
   isDraftPerspective,

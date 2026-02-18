@@ -12,7 +12,6 @@ import {useRouter} from 'sanity/router'
 
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {getReleaseTitle} from '../../util/getReleaseTitleDetails'
 import {GROUP_SEARCH_PARAM_KEY} from '../overview/queryParamUtils'
 import {type ReleaseInspector} from './ReleaseDetail'
 
@@ -24,10 +23,7 @@ export function ReleaseDashboardHeader(props: {
   const {inspector, release, setInspector} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const title = getReleaseTitle(
-    release.metadata.title,
-    tCore('release.placeholder-untitled-release'),
-  )
+  const title = release.metadata.title || tCore('release.placeholder-untitled-release')
   const router = useRouter()
 
   const handleNavigateToReleasesList = useCallback(() => {

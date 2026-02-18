@@ -1,29 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {getReleaseTitle, getReleaseTitleDetails} from '../getReleaseTitleDetails'
-
-describe('getReleaseTitle', () => {
-  it('should return the title when provided', () => {
-    expect(getReleaseTitle('My Release', 'Fallback')).toBe('My Release')
-  })
-
-  it('should return the fallback when title is undefined', () => {
-    expect(getReleaseTitle(undefined, 'Fallback Title')).toBe('Fallback Title')
-  })
-
-  it('should return the fallback when title is an empty string', () => {
-    expect(getReleaseTitle('', 'Fallback Title')).toBe('Fallback Title')
-  })
-
-  it('should return the fallback for any falsy title value', () => {
-    expect(getReleaseTitle(undefined, 'default')).toBe('default')
-    expect(getReleaseTitle('', 'default')).toBe('default')
-  })
-
-  it('should return a whitespace-only title as-is since it is truthy', () => {
-    expect(getReleaseTitle('   ', 'Fallback')).toBe('   ')
-  })
-})
+import {getReleaseTitleDetails} from '../getReleaseTitleDetails'
 
 describe('getReleaseTitleDetails', () => {
   describe('titles within the character limit', () => {

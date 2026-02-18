@@ -15,7 +15,6 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseTitle} from '../../../util/getReleaseTitleDetails'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleasePublishAllButtonProps {
@@ -99,10 +98,7 @@ export const ReleasePublishAllButton = ({
               t={t}
               i18nKey="toast.publish.error"
               values={{
-                title: getReleaseTitle(
-                  release.metadata.title,
-                  tCore('release.placeholder-untitled-release'),
-                ),
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 error: publishingError.message,
               }}
             />
@@ -154,10 +150,7 @@ export const ReleasePublishAllButton = ({
               t={t}
               i18nKey="publish-dialog.confirm-publish-description"
               values={{
-                title: getReleaseTitle(
-                  release.metadata.title,
-                  tCore('release.placeholder-untitled-release'),
-                ),
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 releaseDocumentsLength: documents.length,
                 count: documents.length,
               }}

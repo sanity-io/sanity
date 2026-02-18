@@ -7,7 +7,6 @@ import {
   type TargetPerspective,
   type TFunction,
   Translate,
-  getReleaseTitle,
   usePerspective,
   useSource,
   useTranslation,
@@ -159,10 +158,7 @@ function perspectiveLabel(
   {t, tCore}: {t: TFunction; tCore: TFunction},
 ): string {
   if (isReleaseDocument(perspective)) {
-    return getReleaseTitle(
-      perspective.metadata.title,
-      tCore('release.placeholder-untitled-release'),
-    )
+    return perspective.metadata.title || tCore('release.placeholder-untitled-release')
   }
 
   if (perspective === 'drafts') {

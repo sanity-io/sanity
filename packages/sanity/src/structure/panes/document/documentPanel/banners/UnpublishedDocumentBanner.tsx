@@ -1,7 +1,6 @@
 import {UnpublishIcon} from '@sanity/icons'
 import {Stack, Text} from '@sanity/ui'
 import {
-  getReleaseTitle,
   getVersionInlineBadge,
   isGoingToUnpublish,
   isReleaseDocument,
@@ -25,10 +24,8 @@ export function UnpublishedDocumentBanner() {
   const {t: tCore} = useTranslation()
 
   if (isReleaseDocument(selectedPerspective) && isCurrentVersionGoingToUnpublish) {
-    const releaseTitle = getReleaseTitle(
-      selectedPerspective.metadata?.title,
-      tCore('release.placeholder-untitled-release'),
-    )
+    const releaseTitle =
+      selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
 
     return (
       <Banner

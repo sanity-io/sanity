@@ -7,7 +7,6 @@ import {
   isReleaseDocument,
   type ReleaseDocument,
   Translate,
-  getReleaseTitle,
   useDocumentOperation,
   usePerspective,
   useTranslation,
@@ -74,10 +73,7 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
             t={t}
             i18nKey="banners.deleted-release-banner.text"
             values={{
-              title: getReleaseTitle(
-                release.metadata?.title,
-                t('release.placeholder-untitled-release'),
-              ),
+              title: release.metadata?.title || t('release.placeholder-untitled-release'),
             }}
           />
         </Text>

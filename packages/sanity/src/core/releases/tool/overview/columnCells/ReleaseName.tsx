@@ -14,7 +14,6 @@ import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitle} from '../../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
@@ -67,10 +66,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
-  const releaseTitle = getReleaseTitle(
-    release.metadata.title,
-    tCore('release.placeholder-untitled-release'),
-  )
+  const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
     <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">

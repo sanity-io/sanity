@@ -22,7 +22,6 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseScheduledOrScheduling} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {getReleaseTitle} from '../../../util/getReleaseTitleDetails'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
 interface ReleaseScheduleButtonProps {
@@ -129,10 +128,7 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="toast.schedule.success"
               values={{
-                title: getReleaseTitle(
-                  release.metadata.title,
-                  tCore('release.placeholder-untitled-release'),
-                ),
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
               }}
             />
           </Text>
@@ -150,10 +146,7 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="toast.schedule.error"
               values={{
-                title: getReleaseTitle(
-                  release.metadata.title,
-                  tCore('release.placeholder-untitled-release'),
-                ),
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 error: schedulingError.message,
               }}
             />
@@ -290,10 +283,7 @@ export const ReleaseScheduleButton = ({
               t={t}
               i18nKey="schedule-dialog.confirm-description"
               values={{
-                title: getReleaseTitle(
-                  release.metadata.title,
-                  tCore('release.placeholder-untitled-release'),
-                ),
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 count: documents.length,
               }}
             />

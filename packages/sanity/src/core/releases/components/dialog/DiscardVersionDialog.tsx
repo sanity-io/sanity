@@ -14,7 +14,6 @@ import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../..
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTitle} from '../../util/getReleaseTitleDetails'
 
 /**
  * @internal
@@ -39,7 +38,7 @@ export function DiscardVersionDialog(props: {
   const rawReleaseName =
     typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
   const currentRelease = getVersionNameFromId(documentId as VersionId)
-  const releaseName = getReleaseTitle(rawReleaseName, coreT('release.placeholder-untitled-release'))
+  const releaseName = rawReleaseName || coreT('release.placeholder-untitled-release')
 
   const schemaType = schema.get(documentType)
 
