@@ -48,7 +48,6 @@ jobs:
           RELEASE_AS: ${{ steps.release-as.outputs.version }}
 
   git-operations:
-    if: ${{ github.event.inputs.publish != 'true' }}
     needs: build-and-validate
     runs-on: ubuntu-latest
     permissions:
