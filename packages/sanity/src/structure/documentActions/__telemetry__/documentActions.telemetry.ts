@@ -1,12 +1,7 @@
 import {defineEvent, defineTrace} from '@sanity/telemetry'
 
-interface DocumentPublishedInfo {
-  publishedImmediately: boolean
-  previouslyPublished: boolean
-}
-
 /** When a user clicks the Publish button */
-export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
+export const DocumentPublished = defineEvent({
   name: 'Document Published',
   version: 1,
   description: 'User clicked the "Publish" button in the document pane',
@@ -49,7 +44,6 @@ export const PublishOutcomeTrace = defineTrace({
 
 export interface PublishButtonReadyData {
   disabledReason: PublishButtonDisabledReason | 'unknown'
-  previouslyPublished: boolean
 }
 
 /** Traces the time from the publish button becoming disabled to becoming enabled */

@@ -277,23 +277,19 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       if (readyTraceRef.current !== null) {
         readyTraceRef.current.log({
           disabledReason: disabledReasonAtRef.current,
-          previouslyPublished: Boolean(published),
         })
         readyTraceRef.current.complete()
         readyTraceRef.current = null
       }
     }
-  }, [isEffectivelyDisabled, disabledReasons, telemetry, published])
+  }, [isEffectivelyDisabled, disabledReasons, telemetry])
 
   // ---------------------------------------------------------------------------
   // Handle publish click
   // ---------------------------------------------------------------------------
 
   const handle = useCallback(() => {
-    telemetry.log(DocumentPublished, {
-      publishedImmediately: !draft?._createdAt,
-      previouslyPublished: Boolean(published),
-    })
+    telemetry.log(DocumentPublished, {})
     if (
       syncState.isSyncing ||
       validationStatus.isValidating ||
@@ -305,8 +301,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     telemetry,
-    draft?._createdAt,
-    published,
     syncState.isSyncing,
     validationStatus.isValidating,
     validationStatus.revision,
