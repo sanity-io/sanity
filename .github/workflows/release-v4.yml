@@ -111,8 +111,6 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Publish packages to npm
-        # todo: remove
-        if: false
         run: pnpm -r publish --tag maintenance-v4
         env:
           NPM_CONFIG_PROVENANCE: true
@@ -141,8 +139,6 @@ jobs:
         run: pnpm run build:bundle
 
       - name: Upload bundles to staging bucket
-        # todo remove
-        if: false
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
@@ -153,8 +149,6 @@ jobs:
         run: pnpm run build:bundle
 
       - name: Upload bundles to production bucket
-        # todo remove
-        if: false
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
