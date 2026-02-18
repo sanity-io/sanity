@@ -106,7 +106,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // ---------------------------------------------------------------------------
   // Traces the full publish operation from click to revision change
   const publishTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
-  const publishWasScheduledRef = useRef<boolean>(false)
 
   const doPublish = useCallback(() => {
     publish.execute()
@@ -160,10 +159,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     // Telemetry: complete the publish outcome trace
     if (didPublish && publishTraceRef.current) {
-      publishTraceRef.current.log({
-        previouslyPublished: Boolean(publishState.publishRevision),
-        wasScheduledWhileSyncing: publishWasScheduledRef.current,
-      })
       publishTraceRef.current.complete()
       publishTraceRef.current = null
     }
@@ -304,10 +299,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       validationStatus.isValidating ||
       validationStatus.revision !== revision
     ) {
-      publishWasScheduledRef.current = true
       setPublishScheduled(true)
     } else {
-      publishWasScheduledRef.current = false
       doPublish()
     }
   }, [
