@@ -1,7 +1,17 @@
 import {defineEvent, defineTrace} from '@sanity/telemetry'
 
-/** When a user clicks the Publish button */
-export const DocumentPublished = defineEvent({
+interface DocumentPublishedInfo {
+  /**
+   * The document was created and published straight away
+   */
+  publishedImmediately: boolean
+
+  /**
+   * The document had a previously published version when it was published
+   */
+  previouslyPublished: boolean
+}
+export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
   name: 'Document Published',
   version: 1,
   description: 'User clicked the "Publish" button in the document pane',
@@ -32,7 +42,6 @@ export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedIn
   name: 'Publish Button State Changed',
   version: 1,
   description: 'Publish button transitioned between enabled/disabled states',
-  maxSampleRate: 500,
 })
 
 /** Traces a publish operation from click to revision change */
