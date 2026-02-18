@@ -4,8 +4,6 @@ import {useEffect, useMemo, useRef} from 'react'
 import {
   type PublishButtonDisabledReason,
   PublishButtonReadyTrace,
-  PublishButtonStateChanged,
-  type PublishButtonStateChangedInfo,
 } from './__telemetry__/documentActions.telemetry'
 
 interface UsePublishButtonTelemetryProps {
@@ -23,7 +21,7 @@ interface UsePublishButtonTelemetryProps {
 }
 
 /**
- * Tracks publish button state transitions and time-to-ready.
+ * Traces the time from the publish button becoming disabled to becoming enabled again.
  * Purely observational — no side effects on the publish flow.
  */
 export function usePublishButtonTelemetry(props: UsePublishButtonTelemetryProps): void {
@@ -66,13 +64,6 @@ export function usePublishButtonTelemetry(props: UsePublishButtonTelemetryProps)
     isSyncing,
   ])
 
-  const buttonLabel = useMemo(() => {
-    if (publishStatus === 'published') return 'published' as const
-    if (publishScheduled) return 'waiting' as const
-    if (publishStatus === 'publishing') return 'publishing' as const
-    return 'publish' as const
-  }, [publishStatus, publishScheduled])
-
   const isEffectivelyDisabled = useMemo(() => {
     if (published && !draft && !version) return true
     if (!isPermissionsLoading && !permissionsGranted) return true
@@ -98,25 +89,6 @@ export function usePublishButtonTelemetry(props: UsePublishButtonTelemetryProps)
     hasValidationErrors,
     publishDisabled,
   ])
-
-  // Track state transitions
-  const prevDisabledRef = useRef<boolean | null>(null)
-
-  useEffect(() => {
-    if (prevDisabledRef.current === null) {
-      prevDisabledRef.current = isEffectivelyDisabled
-      return
-    }
-
-    if (prevDisabledRef.current !== isEffectivelyDisabled) {
-      prevDisabledRef.current = isEffectivelyDisabled
-      telemetry.log(PublishButtonStateChanged, {
-        isDisabled: isEffectivelyDisabled,
-        disabledReasons: disabledReasons as PublishButtonStateChangedInfo['disabledReasons'],
-        buttonLabel,
-      })
-    }
-  }, [isEffectivelyDisabled, disabledReasons, buttonLabel, telemetry])
 
   // Time-to-ready trace
   const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)

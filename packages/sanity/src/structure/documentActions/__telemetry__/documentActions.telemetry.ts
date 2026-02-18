@@ -31,19 +31,6 @@ export type PublishButtonDisabledReason =
   | 'PERMISSIONS_LOADING'
   | 'PERMISSION_DENIED'
 
-export interface PublishButtonStateChangedInfo {
-  isDisabled: boolean
-  disabledReasons: PublishButtonDisabledReason[]
-  buttonLabel: 'publish' | 'publishing' | 'published' | 'waiting'
-}
-
-/** When the publish button transitions between enabled/disabled states */
-export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedInfo>({
-  name: 'Publish Button State Changed',
-  version: 1,
-  description: 'Publish button transitioned between enabled/disabled states',
-})
-
 /** Traces a publish operation from click to revision change */
 export const TimeToPublishTrace = defineTrace({
   name: 'Time to Publish',
