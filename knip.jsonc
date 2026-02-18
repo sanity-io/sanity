@@ -26,10 +26,12 @@
         "@lerna-lite/list",
         "@lerna-lite/publish",
         "conventional-changelog-conventionalcommits",
-        // depcheck is no longer maintained; the goal is to replace it with Knip in CI
-        "depcheck",
+        // Knip does not parse scripts in actions/github-script
+        "dotenv",
         // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
         "eslint-formatter-gha",
+        // See .github/workflows/e2e-ui.yml
+        "@sanity/ui",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
@@ -58,7 +60,6 @@
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
       "ignoreDependencies": [
-        "@sanity/ui-workshop",
         "@vitest/expect",
         "babel-plugin-styled-components",
       ],

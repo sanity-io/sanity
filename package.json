@@ -121,7 +121,7 @@
     "eslint": "catalog:",
     "eslint-formatter-gha": "^2.0.1",
     "husky": "^9.1.7",
-    "knip": "https://pkg.pr.new/knip@7e7a8b0",
+    "knip": "^5.83.1",
     "lint-staged": "^16.2.7",
     "npm-run-all2": "^6.2.6",
     "oxfmt": "^0.28.0",
