@@ -1,4 +1,4 @@
-import {defineEvent} from '@sanity/telemetry'
+import {defineEvent, defineTrace} from '@sanity/telemetry'
 
 interface DocumentPublishedInfo {
   /**
@@ -26,7 +26,7 @@ export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
  * Maps to the internal disabled reasons from the publish operation,
  * plus additional UI-level reasons.
  */
-type PublishButtonDisabledReason =
+export type PublishButtonDisabledReason =
   | 'LIVE_EDIT_ENABLED'
   | 'ALREADY_PUBLISHED'
   | 'NO_CHANGES'
@@ -68,15 +68,14 @@ export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedIn
 })
 
 // ---------------------------------------------------------------------------
-// Publish outcome telemetry
+// Publish outcome trace
 // ---------------------------------------------------------------------------
 
-interface PublishOutcomeInfo {
-  /**
-   * Time in milliseconds from clicking Publish to the published revision changing.
-   */
-  durationMs: number
-
+/**
+ * Data logged as intermediate steps during the publish trace.
+ * Logged via trace.log() when the publish outcome is determined.
+ */
+export interface PublishOutcomeData {
   /**
    * Whether the document had been previously published
    */
@@ -89,25 +88,28 @@ interface PublishOutcomeInfo {
   wasScheduledWhileSyncing: boolean
 }
 
-export const PublishOutcomeTracked = defineEvent<PublishOutcomeInfo>({
-  name: 'Publish Outcome Tracked',
-  version: 1,
+/**
+ * Traces the full publish operation — from clicking Publish to the published
+ * revision changing. The backend computes duration from trace.start → trace.complete
+ * timestamps. Long durations indicate the "stuck on Publishing" problem.
+ */
+export const PublishOutcomeTrace = defineTrace<PublishOutcomeData>({
+  name: 'Publish Outcome',
+  version: 2,
   description:
-    'Tracks the duration of a successful publish operation — from clicking Publish ' +
-    'to the published revision changing. Long durations indicate the "stuck" problem.',
+    'Traces a publish operation from click to completion. ' +
+    'Duration is computed from trace.start → trace.complete timestamps.',
 })
 
 // ---------------------------------------------------------------------------
-// Publish button time-to-ready telemetry
+// Publish button time-to-ready trace
 // ---------------------------------------------------------------------------
 
-export interface PublishButtonReadyInfo {
-  /**
-   * Time in milliseconds from the button becoming disabled (due to a mutation/sync)
-   * to the button becoming enabled again.
-   */
-  timeToReadyMs: number
-
+/**
+ * Data logged as intermediate steps during the time-to-ready trace.
+ * Logged via trace.log() when the button becomes enabled again.
+ */
+export interface PublishButtonReadyData {
   /**
    * What caused the button to be disabled in the first place.
    */
@@ -119,10 +121,16 @@ export interface PublishButtonReadyInfo {
   previouslyPublished: boolean
 }
 
-export const PublishButtonReady = defineEvent<PublishButtonReadyInfo>({
+/**
+ * Traces the time from the publish button becoming disabled (after an edit
+ * or during sync) to it becoming enabled and ready to use. The backend
+ * computes duration from trace.start → trace.complete timestamps.
+ * Long durations indicate the "stuck" problem.
+ */
+export const PublishButtonReadyTrace = defineTrace<PublishButtonReadyData>({
   name: 'Publish Button Ready',
-  version: 1,
+  version: 2,
   description:
-    'Tracks the time from the publish button becoming disabled (after an edit or during sync) ' +
-    'to it becoming enabled and ready to use. Long durations indicate the "stuck" problem.',
+    'Traces the time from the publish button becoming disabled to becoming enabled again. ' +
+    'Duration is computed from trace.start → trace.complete timestamps.',
 })
