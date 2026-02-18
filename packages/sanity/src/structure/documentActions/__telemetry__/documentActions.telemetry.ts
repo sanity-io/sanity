@@ -40,13 +40,8 @@ export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedIn
   maxSampleRate: 500,
 })
 
-export interface PublishOutcomeData {
-  previouslyPublished: boolean
-  wasScheduledWhileSyncing: boolean
-}
-
 /** Traces a publish operation from click to revision change */
-export const PublishOutcomeTrace = defineTrace<PublishOutcomeData>({
+export const PublishOutcomeTrace = defineTrace({
   name: 'Publish Outcome',
   version: 1,
   description: 'Traces a publish operation from click to completion',
