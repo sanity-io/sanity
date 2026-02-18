@@ -28,6 +28,8 @@
         "conventional-changelog-conventionalcommits",
         // depcheck is no longer maintained; the goal is to replace it with Knip in CI
         "depcheck",
+        // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
+        "eslint-formatter-gha",
       ],
       "ignoreBinaries": [
         // No root packages provide these binaries
