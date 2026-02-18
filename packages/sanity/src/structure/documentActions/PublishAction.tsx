@@ -20,7 +20,11 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished, TimeToPublishTrace} from './__telemetry__/documentActions.telemetry'
+import {
+  DocumentPublished,
+  type PublishButtonDisabledReason,
+  TimeToPublishTrace,
+} from './__telemetry__/documentActions.telemetry'
 import {usePublishButtonTelemetry} from './usePublishButtonTelemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
@@ -162,19 +166,37 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  // Telemetry: publish button state transitions and time-to-ready
-  usePublishButtonTelemetry({
-    published: Boolean(published),
-    draft: Boolean(draft),
-    version: Boolean(version),
-    publishScheduled,
-    transactionSyncLockEnabled: Boolean(editState?.transactionSyncLock?.enabled),
-    publishStatus: publishState?.status ?? null,
-    hasValidationErrors,
-    publishDisabled: publish.disabled,
+  // Telemetry: publish button time-to-ready
+  const telemetryDisabledReasons = useMemo(() => {
+    const reasons: string[] = []
+    if (published && !draft && !version) reasons.push('ALREADY_PUBLISHED')
+    if (!isPermissionsLoading && !permissions?.granted) reasons.push('PERMISSION_DENIED')
+    if (publishScheduled) reasons.push('PUBLISH_SCHEDULED')
+    if (editState?.transactionSyncLock?.enabled) reasons.push('TRANSACTION_SYNC_LOCK')
+    if (publishState?.status === 'publishing') reasons.push('PUBLISHING')
+    if (publishState?.status === 'published') reasons.push('PUBLISHED')
+    if (hasValidationErrors) reasons.push('VALIDATION_ERROR')
+    if (publish.disabled) reasons.push(publish.disabled)
+    if (isPermissionsLoading) reasons.push('PERMISSIONS_LOADING')
+    if (syncState.isSyncing) reasons.push('SYNCING')
+    return reasons
+  }, [
+    published,
+    draft,
+    version,
     isPermissionsLoading,
-    permissionsGranted: Boolean(permissions?.granted),
-    isSyncing,
+    permissions?.granted,
+    publishScheduled,
+    editState?.transactionSyncLock?.enabled,
+    publishState?.status,
+    hasValidationErrors,
+    publish.disabled,
+    syncState.isSyncing,
+  ])
+
+  usePublishButtonTelemetry({
+    isDisabled: telemetryDisabledReasons.length > 0,
+    disabledReasons: telemetryDisabledReasons as PublishButtonDisabledReason[],
   })
 
   // ---------------------------------------------------------------------------
