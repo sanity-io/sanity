@@ -1,0 +1,177 @@
+name: Release @v4
+
+on:
+  push:
+    branches:
+      - v4
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-validate:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'chore(release): publish ')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    outputs:
+      version: ${{ steps.release-as.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Get version from lerna.json
+        id: release-as
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version
+        run: |
+          echo "Release version: $RELEASE_AS"
+          if [[ ! "$RELEASE_AS" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version: $RELEASE_AS"
+            exit 1
+          fi
+        env:
+          RELEASE_AS: ${{ steps.release-as.outputs.version }}
+
+  git-operations:
+    needs: build-and-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get version from lerna.json
+        id: release-as
+        run: |
+          version=$(jq -r .version lerna.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Tag and push version
+        run: |
+          git tag v$RELEASE_AS -m v$RELEASE_AS
+          git push origin v$RELEASE_AS
+        env:
+          RELEASE_AS: ${{ needs.build-and-validate.outputs.version || steps.release-as.outputs.version }}
+
+  npm-publish:
+    needs: [build-and-validate, git-operations]
+    if: always() && needs.build-and-validate.result == 'success' && (needs.git-operations.result == 'success' || needs.git-operations.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # to enable use of OIDC for npm provenance
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Publish packages to npm
+        # todo: remove
+        if: false
+        run: pnpm -r publish --tag maintenance-v4
+        env:
+          NPM_CONFIG_PROVENANCE: true
+
+  bundle-upload:
+    needs: npm-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Build bundles for staging
+        env:
+          # sets the __SANITY_STAGING__ global variable to true in built bundles
+          SANITY_INTERNAL_ENV: "staging"
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to staging bucket
+        # todo remove
+        if: false
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish
+
+      - name: Build bundles for production
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to production bucket
+        # todo remove
+        if: false
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: pnpm bundle-manager publish
+
+  notify-on-failure:
+    needs: [npm-publish, bundle-upload]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: The workflow \"${{github.workflow}}\" on <${{ github.server_url }}/${{ github.repository }}|${{github.repository}}> failed in branch <${{ github.server_url }}/${{ github.repository }}/tree/${{github.ref_name}}|${{github.ref_name}}> (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run >)"
+            }
