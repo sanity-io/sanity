@@ -45,8 +45,8 @@ export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedIn
 })
 
 /** Traces a publish operation from click to revision change */
-export const PublishOutcomeTrace = defineTrace({
-  name: 'Publish Outcome',
+export const TimeToPublishTrace = defineTrace({
+  name: 'Time to Publish',
   version: 1,
   description: 'Traces a publish operation from click to completion',
 })

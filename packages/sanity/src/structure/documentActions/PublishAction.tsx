@@ -20,7 +20,7 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished, PublishOutcomeTrace} from './__telemetry__/documentActions.telemetry'
+import {DocumentPublished, TimeToPublishTrace} from './__telemetry__/documentActions.telemetry'
 import {usePublishButtonTelemetry} from './usePublishButtonTelemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
@@ -100,7 +100,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const doPublish = useCallback(() => {
     publish.execute()
-    const trace = telemetry.trace(PublishOutcomeTrace)
+    const trace = telemetry.trace(TimeToPublishTrace)
     trace.start()
     publishTraceRef.current = trace
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
