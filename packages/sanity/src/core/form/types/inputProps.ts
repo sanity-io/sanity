@@ -3,10 +3,12 @@ import {
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
-  type OnPasteFn,
+  type OnPasteResultOrPromise,
+  type PasteData as EditorPasteData,
   type PortableTextEditor,
   type RangeDecoration,
 } from '@portabletext/editor'
+import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {
   type ArraySchemaType,
   type AssetSource,
@@ -602,3 +604,28 @@ export type InputProps =
   | ObjectInputProps<SlugValue>
   | PortableTextInputProps
   | StringInputProps
+
+/**
+ * Data passed to the `onPaste` handler when content is pasted into a
+ * Portable Text editor in Sanity Studio.
+ *
+ * @beta
+ * @remarks
+ * This is Studio's own version of the editor's `PasteData` type.
+ * The `schemaTypes` field contains Sanity-specific
+ * `PortableTextMemberSchemaTypes` instead of the editor's `EditorSchema`.
+ */
+export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
+  schemaTypes: PortableTextMemberSchemaTypes
+}
+
+/**
+ * Custom paste handler for Portable Text in Sanity Studio.
+ *
+ * @beta
+ * @remarks
+ * It is encouraged not to return `Promise<undefined>` from the `OnPasteFn` as
+ * a mechanism to fall back to the native paste behaviour. This doesn't work in
+ * all cases. Always return plain `undefined` if possible.
+ */
+export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise

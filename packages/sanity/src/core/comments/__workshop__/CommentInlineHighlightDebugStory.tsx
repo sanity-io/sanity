@@ -9,6 +9,7 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
@@ -345,7 +346,7 @@ export default function CommentInlineHighlightDebugStory() {
                 <Text>
                   <EditorProvider
                     initialConfig={{
-                      schema: pteSchema.get('body'),
+                      schemaDefinition: sanitySchemaToPortableTextSchema(pteSchema.get('body')),
                       initialValue: value,
                     }}
                   >
