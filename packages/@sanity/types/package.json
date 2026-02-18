@@ -74,5 +74,10 @@
   },
   "peerDependencies": {
     "@types/react": "^19.2"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }
