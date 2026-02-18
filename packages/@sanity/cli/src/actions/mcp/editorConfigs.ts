@@ -7,10 +7,11 @@ import execa from 'execa'
 import {MCP_SERVER_URL} from './constants'
 
 export interface EditorConfig {
+  buildServerConfig: (token: string) => Record<string, unknown>
   configKey: string
   /** Returns the config file path if editor is detected, null otherwise */
   detect: () => Promise<string | null>
-  buildServerConfig: (token: string) => Record<string, unknown>
+  format: 'jsonc' | 'toml'
 }
 
 const defaultHttpConfig = (token: string) => ({
@@ -27,14 +28,16 @@ const homeDir = os.homedir()
  */
 export const EDITOR_CONFIGS = {
   'Cursor': {
+    buildServerConfig: defaultHttpConfig,
     configKey: 'mcpServers',
     detect: async () => {
       const cursorDir = path.join(homeDir, '.cursor')
       return existsSync(cursorDir) ? path.join(cursorDir, 'mcp.json') : null
     },
-    buildServerConfig: defaultHttpConfig,
+    format: 'jsonc',
   },
   'VS Code': {
+    buildServerConfig: defaultHttpConfig,
     configKey: 'servers',
     detect: async () => {
       let configDir: string | null = null
@@ -52,9 +55,10 @@ export const EDITOR_CONFIGS = {
       }
       return configDir && existsSync(configDir) ? path.join(configDir, 'mcp.json') : null
     },
-    buildServerConfig: defaultHttpConfig,
+    format: 'jsonc',
   },
   'VS Code Insiders': {
+    buildServerConfig: defaultHttpConfig,
     configKey: 'servers',
     detect: async () => {
       let configDir: string | null = null
@@ -72,9 +76,10 @@ export const EDITOR_CONFIGS = {
       }
       return configDir && existsSync(configDir) ? path.join(configDir, 'mcp.json') : null
     },
-    buildServerConfig: defaultHttpConfig,
+    format: 'jsonc',
   },
   'Claude Code': {
+    buildServerConfig: defaultHttpConfig,
     configKey: 'mcpServers',
     detect: async () => {
       try {
@@ -84,17 +89,43 @@ export const EDITOR_CONFIGS = {
         return null
       }
     },
-    buildServerConfig: defaultHttpConfig,
+    format: 'jsonc',
+  },
+  'Codex CLI': {
+    buildServerConfig: (token) => ({
+      type: 'http',
+      url: MCP_SERVER_URL,
+      // eslint-disable-next-line camelcase
+      http_headers: {Authorization: `Bearer ${token}`},
+    }),
+    configKey: 'mcp_servers',
+    detect: async () => {
+      try {
+        await execa('codex', ['--version'], {stdio: 'pipe', timeout: 5000})
+        const codexHome = process.env.CODEX_HOME || path.join(homeDir, '.codex')
+        return path.join(codexHome, 'config.toml')
+      } catch {
+        return null
+      }
+    },
+    format: 'toml',
   },
   'Gemini CLI': {
+    buildServerConfig: defaultHttpConfig,
     configKey: 'mcpServers',
     detect: async () => {
       const geminiDir = path.join(homeDir, '.gemini')
       return existsSync(geminiDir) ? path.join(geminiDir, 'settings.json') : null
     },
-    buildServerConfig: defaultHttpConfig,
+    format: 'jsonc',
   },
   'GitHub Copilot CLI': {
+    buildServerConfig: (token) => ({
+      type: 'http',
+      url: MCP_SERVER_URL,
+      headers: {Authorization: `Bearer ${token}`},
+      tools: ['*'],
+    }),
     configKey: 'mcpServers',
     detect: async () => {
       const copilotDir =
@@ -103,14 +134,14 @@ export const EDITOR_CONFIGS = {
           : path.join(homeDir, '.copilot')
       return existsSync(copilotDir) ? path.join(copilotDir, 'mcp-config.json') : null
     },
-    buildServerConfig: (token) => ({
-      type: 'http',
-      url: MCP_SERVER_URL,
-      headers: {Authorization: `Bearer ${token}`},
-      tools: ['*'],
-    }),
+    format: 'jsonc',
   },
   'Zed': {
+    buildServerConfig: (token) => ({
+      url: MCP_SERVER_URL,
+      headers: {Authorization: `Bearer ${token}`},
+      settings: {},
+    }),
     configKey: 'context_servers',
     detect: async () => {
       let configDir: string | null = null
@@ -125,13 +156,14 @@ export const EDITOR_CONFIGS = {
       }
       return configDir && existsSync(configDir) ? path.join(configDir, 'settings.json') : null
     },
-    buildServerConfig: (token) => ({
-      url: MCP_SERVER_URL,
-      headers: {Authorization: `Bearer ${token}`},
-      settings: {},
-    }),
+    format: 'jsonc',
   },
   'OpenCode': {
+    buildServerConfig: (token) => ({
+      type: 'remote',
+      url: MCP_SERVER_URL,
+      headers: {Authorization: `Bearer ${token}`},
+    }),
     configKey: 'mcp',
     detect: async () => {
       try {
@@ -141,11 +173,7 @@ export const EDITOR_CONFIGS = {
         return null
       }
     },
-    buildServerConfig: (token) => ({
-      type: 'remote',
-      url: MCP_SERVER_URL,
-      headers: {Authorization: `Bearer ${token}`},
-    }),
+    format: 'jsonc',
   },
 } satisfies Record<string, EditorConfig>
 
