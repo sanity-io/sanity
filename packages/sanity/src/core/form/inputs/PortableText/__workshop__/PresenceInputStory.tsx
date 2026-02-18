@@ -9,6 +9,7 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
@@ -223,7 +224,7 @@ function Input(props: InputProps) {
     <EditorCard border padding={4} sizing="border">
       <EditorProvider
         initialConfig={{
-          schema: schema.get('body'),
+          schemaDefinition: sanitySchemaToPortableTextSchema(schema.get('body')),
           initialValue: value,
         }}
       >

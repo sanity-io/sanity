@@ -11,6 +11,7 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
@@ -351,7 +352,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   initialValue: value,
                   readOnly: readOnly || !ready,
                   keyGenerator,
-                  schema: schemaType,
+                  schemaDefinition: sanitySchemaToPortableTextSchema(schemaType),
                 }}
               >
                 <EditorChangePlugin
