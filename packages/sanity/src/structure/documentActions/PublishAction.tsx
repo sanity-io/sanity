@@ -20,14 +20,8 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {
-  DocumentPublished,
-  type PublishButtonDisabledReason,
-  PublishButtonReadyTrace,
-  PublishButtonStateChanged,
-  type PublishButtonStateChangedInfo,
-  PublishOutcomeTrace,
-} from './__telemetry__/documentActions.telemetry'
+import {DocumentPublished, PublishOutcomeTrace} from './__telemetry__/documentActions.telemetry'
+import {usePublishButtonTelemetry} from './usePublishButtonTelemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -168,118 +162,20 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  // ---------------------------------------------------------------------------
-  // Telemetry: Publish button state tracking
-  // ---------------------------------------------------------------------------
-
-  // Compute the full set of disabled reasons for telemetry
-  const disabledReasons = useMemo(() => {
-    const reasons: string[] = []
-    if (publishScheduled) reasons.push('PUBLISH_SCHEDULED')
-    if (editState?.transactionSyncLock?.enabled) reasons.push('TRANSACTION_SYNC_LOCK')
-    if (publishState?.status === 'publishing') reasons.push('PUBLISHING')
-    if (publishState?.status === 'published') reasons.push('PUBLISHED')
-    if (hasValidationErrors) reasons.push('VALIDATION_ERROR')
-    if (publish.disabled) reasons.push(publish.disabled)
-    if (isPermissionsLoading) reasons.push('PERMISSIONS_LOADING')
-    if (!isPermissionsLoading && !permissions?.granted) reasons.push('PERMISSION_DENIED')
-    if (isSyncing) reasons.push('SYNCING')
-    return reasons
-  }, [
+  // Telemetry: publish button state transitions and time-to-ready
+  usePublishButtonTelemetry({
+    published: Boolean(published),
+    draft: Boolean(draft),
+    version: Boolean(version),
     publishScheduled,
-    editState?.transactionSyncLock?.enabled,
-    publishState,
+    transactionSyncLockEnabled: Boolean(editState?.transactionSyncLock?.enabled),
+    publishStatus: publishState?.status ?? null,
     hasValidationErrors,
-    publish.disabled,
+    publishDisabled: publish.disabled,
     isPermissionsLoading,
-    permissions?.granted,
+    permissionsGranted: Boolean(permissions?.granted),
     isSyncing,
-  ])
-
-  const buttonLabel = useMemo(() => {
-    if (publishState?.status === 'published') return 'published' as const
-    if (publishScheduled) return 'waiting' as const
-    if (publishState?.status === 'publishing') return 'publishing' as const
-    return 'publish' as const
-  }, [publishState, publishScheduled])
-
-  // Compute the effective disabled state (mirrors the logic in the return useMemo below)
-  const isEffectivelyDisabled = useMemo(() => {
-    // Early-return disabled cases
-    if (published && !draft && !version) return true
-    if (!isPermissionsLoading && !permissions?.granted) return true
-
-    return Boolean(
-      publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
-      publishState?.status === 'publishing' ||
-      publishState?.status === 'published' ||
-      hasValidationErrors ||
-      publish.disabled ||
-      isPermissionsLoading,
-    )
-  }, [
-    published,
-    draft,
-    version,
-    isPermissionsLoading,
-    permissions?.granted,
-    publishScheduled,
-    editState?.transactionSyncLock?.enabled,
-    publishState,
-    hasValidationErrors,
-    publish.disabled,
-  ])
-
-  // Track state transitions
-  const prevDisabledRef = useRef<boolean | null>(null)
-
-  useEffect(() => {
-    // Skip the initial render — only track transitions
-    if (prevDisabledRef.current === null) {
-      prevDisabledRef.current = isEffectivelyDisabled
-      return
-    }
-
-    // Only log on actual transitions
-    if (prevDisabledRef.current !== isEffectivelyDisabled) {
-      prevDisabledRef.current = isEffectivelyDisabled
-      telemetry.log(PublishButtonStateChanged, {
-        isDisabled: isEffectivelyDisabled,
-        disabledReasons: disabledReasons as PublishButtonStateChangedInfo['disabledReasons'],
-        buttonLabel,
-      })
-    }
-  }, [isEffectivelyDisabled, disabledReasons, buttonLabel, telemetry])
-
-  // ---------------------------------------------------------------------------
-  // Telemetry: Time-to-ready trace
-  // ---------------------------------------------------------------------------
-  // Traces the time from the button becoming disabled to becoming enabled again
-  const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
-  const disabledReasonAtRef = useRef<PublishButtonDisabledReason | 'unknown'>('unknown')
-
-  useEffect(() => {
-    if (isEffectivelyDisabled) {
-      // Button just became disabled — start a trace
-      if (readyTraceRef.current === null) {
-        const trace = telemetry.trace(PublishButtonReadyTrace)
-        trace.start()
-        readyTraceRef.current = trace
-        disabledReasonAtRef.current =
-          (disabledReasons[0] as PublishButtonDisabledReason) || 'unknown'
-      }
-    } else {
-      // Button just became enabled — complete the trace if we were tracking
-      if (readyTraceRef.current !== null) {
-        readyTraceRef.current.log({
-          disabledReason: disabledReasonAtRef.current,
-        })
-        readyTraceRef.current.complete()
-        readyTraceRef.current = null
-      }
-    }
-  }, [isEffectivelyDisabled, disabledReasons, telemetry])
+  })
 
   // ---------------------------------------------------------------------------
   // Handle publish click
