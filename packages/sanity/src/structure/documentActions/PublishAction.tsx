@@ -38,13 +38,6 @@ const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
-/**
- * Timeout threshold for detecting a "stuck" publish operation.
- * If the published revision hasn't changed within this window after clicking Publish,
- * we report a timeout outcome.
- */
-const PUBLISH_TIMEOUT_MS = 30_000
-
 function getDisabledReason(
   reason: keyof typeof DISABLED_REASON_TITLE_KEY,
   publishedAt: string | undefined,
@@ -108,15 +101,13 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // ---------------------------------------------------------------------------
   // Telemetry: Publish outcome tracking
   // ---------------------------------------------------------------------------
-  // Track when publish was initiated and whether it succeeds or times out
+  // Track when publish was initiated and whether it succeeds
   const publishStartTimeRef = useRef<number | null>(null)
-  const publishOutcomeReportedRef = useRef<boolean>(false)
   const publishWasScheduledRef = useRef<boolean>(false)
 
   const doPublish = useCallback(() => {
     publish.execute()
     publishStartTimeRef.current = Date.now()
-    publishOutcomeReportedRef.current = false
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
   }, [publish, currentPublishRevision])
 
@@ -163,10 +154,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       currentPublishRevision !== publishState.publishRevision
 
     // Telemetry: report publish success
-    if (didPublish && publishStartTimeRef.current && !publishOutcomeReportedRef.current) {
-      publishOutcomeReportedRef.current = true
+    if (didPublish && publishStartTimeRef.current) {
       telemetry.log(PublishOutcomeTracked, {
-        outcome: 'success',
         durationMs: Date.now() - publishStartTimeRef.current,
         previouslyPublished: Boolean(publishState.publishRevision),
         wasScheduledWhileSyncing: publishWasScheduledRef.current,
@@ -181,27 +170,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }, delay)
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision, telemetry])
-
-  // Telemetry: detect publish timeout
-  useEffect(() => {
-    if (publishState?.status !== 'publishing' || !publishStartTimeRef.current) {
-      return
-    }
-
-    const timer = setTimeout(() => {
-      if (!publishOutcomeReportedRef.current && publishStartTimeRef.current) {
-        publishOutcomeReportedRef.current = true
-        telemetry.log(PublishOutcomeTracked, {
-          outcome: 'timeout',
-          durationMs: PUBLISH_TIMEOUT_MS,
-          previouslyPublished: Boolean(publishState.publishRevision),
-          wasScheduledWhileSyncing: publishWasScheduledRef.current,
-        })
-      }
-    }, PUBLISH_TIMEOUT_MS)
-
-    return () => clearTimeout(timer)
-  }, [publishState, telemetry])
 
   // ---------------------------------------------------------------------------
   // Telemetry: Publish button state tracking

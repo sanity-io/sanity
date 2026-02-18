@@ -71,22 +71,9 @@ export const PublishButtonStateChanged = defineEvent<PublishButtonStateChangedIn
 // Publish outcome telemetry
 // ---------------------------------------------------------------------------
 
-type PublishOutcome =
-  /** The published revision changed within the expected window */
-  | 'success'
-  /** The publish operation did not complete within the timeout threshold */
-  | 'timeout'
-
 interface PublishOutcomeInfo {
   /**
-   * Whether the publish succeeded or timed out
-   */
-  outcome: PublishOutcome
-
-  /**
-   * Time in milliseconds from clicking Publish to detecting the outcome.
-   * For 'success': time until the published revision changed.
-   * For 'timeout': the timeout threshold (30 000 ms).
+   * Time in milliseconds from clicking Publish to the published revision changing.
    */
   durationMs: number
 
@@ -106,8 +93,8 @@ export const PublishOutcomeTracked = defineEvent<PublishOutcomeInfo>({
   name: 'Publish Outcome Tracked',
   version: 1,
   description:
-    'Tracks whether a publish operation succeeded or timed out, and how long it took. ' +
-    'A timeout indicates the "stuck on Saving/Publishing" problem.',
+    'Tracks the duration of a successful publish operation — from clicking Publish ' +
+    'to the published revision changing. Long durations indicate the "stuck" problem.',
 })
 
 // ---------------------------------------------------------------------------
