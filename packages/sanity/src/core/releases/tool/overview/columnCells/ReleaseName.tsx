@@ -99,14 +99,14 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             }
             aria-live="assertive"
           />
-          <Card {...cardProps} padding={2} radius={2} flex={1}>
+          <Card {...cardProps} padding={2} radius={2} flex={1} style={{minWidth: 0}}>
             <Flex align="center" gap={2}>
               <Box flex="none">
                 <ReleaseAvatar tone={getReleaseTone(release)} />
               </Box>
-              <Stack flex={1} space={2}>
-                <Flex align="center" gap={2}>
-                  <Text size={1} weight="medium">
+              <Stack flex={1} space={2} style={{minWidth: 0}}>
+                <Flex align="center" gap={2} style={{minWidth: 0}}>
+                  <Text size={1} weight="medium" textOverflow="ellipsis">
                     {displayTitle}
                   </Text>
                 </Flex>
