@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {type BadgeTone, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -13,6 +13,7 @@ import {
   isPublishedId,
   isVersionId,
   PreviewCard,
+  ReleaseTitle,
   SanityDefaultPreview,
   useActiveReleases,
   useTranslation,
@@ -53,19 +54,35 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     original: null,
   })
 
-  const badgeProps = useMemo(() => {
+  const badgeProps = useMemo(():
+    | {kind: 'static'; tone: BadgeTone; text: string}
+    | {kind: 'release'; tone: BadgeTone; releaseTitle: string | undefined; releaseFallback: string}
+    | null => {
     const id = value._id
     if (isDraftId(id)) {
-      return {tone: getReleaseTone('drafts'), text: t('release.chip.draft')}
+      return {
+        kind: 'static',
+        tone: getReleaseTone('drafts'),
+        text: t('release.chip.draft'),
+      }
     }
     if (isPublishedId(id)) {
-      return {tone: getReleaseTone('published'), text: t('release.chip.published')}
+      return {
+        kind: 'static',
+        tone: getReleaseTone('published'),
+        text: t('release.chip.published'),
+      }
     }
     if (isVersionId(id)) {
       const releaseId = getVersionFromId(id)
       const release = releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
       if (release) {
-        return {tone: getReleaseTone(release), text: release.metadata.title}
+        return {
+          kind: 'release',
+          tone: getReleaseTone(release),
+          releaseTitle: release.metadata.title,
+          releaseFallback: release._id,
+        }
       }
     }
     return null
@@ -87,7 +104,15 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
         status={
           badgeProps ? (
             <Text size={0}>
-              <VersionInlineBadge $tone={badgeProps.tone}>{badgeProps.text}</VersionInlineBadge>
+              {badgeProps.kind === 'release' ? (
+                <ReleaseTitle title={badgeProps.releaseTitle} fallback={badgeProps.releaseFallback}>
+                  {({displayTitle}) => (
+                    <VersionInlineBadge $tone={badgeProps.tone}>{displayTitle}</VersionInlineBadge>
+                  )}
+                </ReleaseTitle>
+              ) : (
+                <VersionInlineBadge $tone={badgeProps.tone}>{badgeProps.text}</VersionInlineBadge>
+              )}
             </Text>
           ) : undefined
         }

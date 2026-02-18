@@ -12,11 +12,7 @@ import {largeDocument} from './schema/largeDocument'
 import {simple} from './schema/simple'
 
 export default defineConfig({
-  plugins: [
-    // For some reason we need the explicit type cast here or else the type checker will fail with
-    // TS4082: Default export of the module has or is using private name 'PluginOptions'.
-    structureTool({name: 'desk'}),
-  ],
+  plugins: [structureTool({name: 'desk'})],
   title: 'Perf test Studio',
   name: 'default',
   projectId: STUDIO_PROJECT_ID,

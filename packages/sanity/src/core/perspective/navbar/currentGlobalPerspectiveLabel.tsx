@@ -16,6 +16,7 @@ import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -96,16 +97,23 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
   )
 
   return (
-    <Button
-      as={ReleasesIntentLink}
-      data-as="a"
-      rel="noopener noreferrer"
-      mode="bleed"
-      padding={2}
-      radius="full"
-      style={{maxWidth: '180px', textOverflow: 'ellipsis'}}
-      text={selectedPerspective.metadata?.title || t('release.placeholder-untitled-release')}
-    />
+    <ReleaseTitle
+      title={selectedPerspective.metadata?.title}
+      fallback={t('release.placeholder-untitled-release')}
+    >
+      {({displayTitle}) => (
+        <Button
+          as={ReleasesIntentLink}
+          data-as="a"
+          rel="noopener noreferrer"
+          mode="bleed"
+          padding={2}
+          radius="full"
+          style={{maxWidth: '180px'}}
+          text={displayTitle}
+        />
+      )}
+    </ReleaseTitle>
   )
 }
 

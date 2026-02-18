@@ -100,7 +100,7 @@ const VersionStatus = ({
   mode,
   tone,
 }: {
-  title: string | undefined
+  title: string
   mode: Mode
   timestamp?: string
   tone: BadgeTone
@@ -116,7 +116,7 @@ const VersionStatus = ({
     <Flex align="center" gap={2}>
       <ReleaseAvatar tone={tone} padding={0} />
       <Text size={1}>
-        {title || t('release.placeholder-untitled-release')} -{' '}
+        {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>

@@ -9,6 +9,7 @@ import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ReleaseTitle} from '../../../releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
@@ -161,13 +162,22 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
               <>
                 {' '}
                 {event.release ? (
-                  <VersionInlineBadge
-                    $tone={
-                      isReleaseDocument(event.release) ? getReleaseTone(event.release) : 'default'
-                    }
+                  <ReleaseTitle
+                    title={event.release.metadata?.title}
+                    fallback={t('release.placeholder-untitled-release')}
                   >
-                    {event.release.metadata?.title || t('release.placeholder-untitled-release')}
-                  </VersionInlineBadge>
+                    {({displayTitle}) => (
+                      <VersionInlineBadge
+                        $tone={
+                          isReleaseDocument(event.release!)
+                            ? getReleaseTone(event.release)
+                            : 'default'
+                        }
+                      >
+                        {displayTitle}
+                      </VersionInlineBadge>
+                    )}
+                  </ReleaseTitle>
                 ) : (
                   <VersionInlineBadge $tone="caution">
                     {t('changes.versions.draft')}

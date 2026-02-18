@@ -12,6 +12,7 @@ import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
+import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -19,7 +20,6 @@ import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
-  isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
@@ -117,13 +117,6 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   const {t} = useTranslation()
 
-  const displayTitle = useMemo(() => {
-    if (isPublishedPerspective(release)) return t('release.navbar.published')
-    if (isDraftPerspective(release)) return t('release.navbar.drafts')
-
-    return release.metadata.title || t('release.placeholder-untitled-release')
-  }, [release, t])
-
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       event.stopPropagation()
@@ -182,12 +175,24 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             space={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
+              maxWidth: '200px',
+              minWidth: 0,
             }}
           >
-            <Flex gap={3} align="center">
-              <Text size={1} weight="medium">
-                {displayTitle}
-              </Text>
+            <Flex gap={3} align="center" style={{minWidth: 0}}>
+              {isReleaseDocument(release) ? (
+                <ReleaseTitle
+                  title={release.metadata.title}
+                  fallback={t('release.placeholder-untitled-release')}
+                  textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                />
+              ) : (
+                <Text size={1} weight="medium" style={{minWidth: 0}}>
+                  {isDraftPerspective(release)
+                    ? t('release.navbar.drafts')
+                    : t('release.navbar.published')}
+                </Text>
+              )}
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (
