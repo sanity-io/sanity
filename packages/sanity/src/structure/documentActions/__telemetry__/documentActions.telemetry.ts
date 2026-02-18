@@ -42,7 +42,7 @@ export const PublishOutcomeTrace = defineTrace({
   description: 'Traces a publish operation from click to completion',
 })
 
-export interface PublishButtonReadyData {
+interface PublishButtonReadyData {
   disabledReason: PublishButtonDisabledReason | 'unknown'
 }
 
