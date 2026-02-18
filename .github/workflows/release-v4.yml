@@ -114,7 +114,7 @@ jobs:
       - name: Publish packages to npm
         # todo: remove
         if: false
-        run: pnpm -r publish
+        run: pnpm -r publish --tag maintenance-v4
         env:
           NPM_CONFIG_PROVENANCE: true
 
