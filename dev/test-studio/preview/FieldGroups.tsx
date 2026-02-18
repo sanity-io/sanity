@@ -18,9 +18,18 @@ export function FieldGroups(): React.JSX.Element {
           field8: string | null
         } | null
       } | null
+      objectArray:
+        | [
+            {
+              _key: string
+              stringAlpha: string | null
+              stringBeta: string | null
+            },
+          ]
+        | null
     }[]
   >(
-    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"][0..10]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}}}`,
+    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"][0..10]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}},objectArray}`,
   )
 
   if (error) {
@@ -63,6 +72,14 @@ export function FieldGroups(): React.JSX.Element {
                   )}
                 </Stack>
               )}
+              <Stack space={4} paddingLeft={2}>
+                {item.objectArray?.map((object) => (
+                  <Stack key={object._key} space={4} paddingLeft={2}>
+                    <Text>{object.stringAlpha || 'N/A'}</Text>
+                    <Text>{object.stringBeta || 'N/A'}</Text>
+                  </Stack>
+                ))}
+              </Stack>
             </Stack>
           </Card>
         )

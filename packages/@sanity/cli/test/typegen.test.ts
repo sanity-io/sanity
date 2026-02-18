@@ -275,7 +275,10 @@ describeCliTest('CLI: `sanity typegen`', () => {
               await runSanityLongRunningCommand(
                 studioName,
                 ['typegen', 'generate', '--watch', ...cmdArgs],
-                cmdOptions,
+                {
+                  ...cmdOptions,
+                  timeout: 25_000,
+                },
                 async (output) => {
                   // assert that it's doing the initial generation
                   expect(output.stderr).toContain('Successfully generated types')

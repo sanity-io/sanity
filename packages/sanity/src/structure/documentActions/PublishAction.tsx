@@ -7,11 +7,13 @@ import {
   type DocumentActionComponent,
   getVersionFromId,
   InsufficientPermissionsMessage,
+  isPublishedPerspective,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
+  usePerspective,
   useRelativeTime,
   useSyncState,
   useTranslation,
@@ -52,6 +54,7 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release, version} = props
+  const {selectedPerspective} = usePerspective()
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
@@ -171,6 +174,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
+    if (isPublishedPerspective(selectedPerspective)) {
+      // never show publish action on a published document
+      return null
+    }
+
     if (release && version) {
       // release versions are not publishable by this action, they should be published as part of a release
       return null
@@ -242,6 +250,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       onHandle: handle,
     }
   }, [
+    selectedPerspective,
     release,
     liveEdit,
     version,

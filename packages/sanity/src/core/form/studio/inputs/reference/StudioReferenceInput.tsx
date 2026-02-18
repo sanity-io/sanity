@@ -36,6 +36,7 @@ import {
 import {type ObjectInputProps} from '../../../types'
 import {useReferenceInputOptions} from '../../contexts'
 import * as adapter from '../client-adapters/reference'
+import {resolveCreateTypeFilter} from './resolveCreateTypeFilter'
 import {resolveUserDefinedFilter} from './resolveUserDefinedFilter'
 
 /**
@@ -220,12 +221,19 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     if (disableNew) {
       return []
     }
-    return (initialValueTemplateItems || [])
 
+    // Resolve which types are allowed based on creationTypeFilter option
+    const allowedTypeOptions = resolveCreateTypeFilter({
+      schemaType,
+      document: documentValue,
+      valuePath: path,
+    })
+    const allowedTypes = allowedTypeOptions.map((opt) => opt.type)
+
+    return (initialValueTemplateItems || [])
       .filter((i) => {
-        return schemaType.to.some((_refType) => {
-          return _refType.name === i.template?.schemaType
-        })
+        // Only include templates for types that are both in schema AND allowed by filter
+        return allowedTypes.includes(i.template?.schemaType ?? '')
       })
       .map((item): CreateReferenceOption | undefined =>
         item.template?.schemaType
@@ -245,7 +253,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
           : undefined,
       )
       .filter(isNonNullable)
-  }, [disableNew, initialValueTemplateItems, schemaType.to])
+  }, [disableNew, initialValueTemplateItems, schemaType, documentValue, path])
 
   const getReferenceInfo = useCallback(
     (id: string, _type: ReferenceSchemaType) =>

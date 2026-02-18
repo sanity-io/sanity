@@ -10,7 +10,10 @@ export type {
 export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
 export {defineIncomingReferenceDecoration} from './components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
 export {isIncomingReferenceCreation} from './components/incomingReferencesDecoration/isIncomingReferenceCreation'
-export {type IncomingReferenceAction} from './components/incomingReferencesDecoration/types'
+export {
+  type IncomingReferenceAction,
+  type IncomingReferencesOptions,
+} from './components/incomingReferencesDecoration/types'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'

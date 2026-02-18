@@ -132,6 +132,10 @@ export interface ObjectFormNode<
    * @hidden
    * @beta */
   members: ObjectMember[]
+  /**
+   * @hidden
+   * @beta */
+  _allMembers?: ObjectMember[]
 }
 
 /** @public */

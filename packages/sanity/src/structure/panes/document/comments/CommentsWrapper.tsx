@@ -44,6 +44,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {resolveIntentLink} = useRouter()
 
   const selectedCommentId = params?.comment
+  const scheduledDraft = params?.scheduledDraft
   const paramsRef = useRef(params)
 
   useLayoutEffect(() => {
@@ -52,15 +53,23 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const getCommentLink = useCallback(
     (commentId: string) => {
-      const intentLink = resolveIntentLink('edit', {
-        id: documentId,
-        type: documentType,
-        inspect: COMMENTS_INSPECTOR_NAME,
-        comment: commentId,
-      })
+      const searchParams: [string, string][] =
+        selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
+
+      const intentLink = resolveIntentLink(
+        'edit',
+        {
+          id: documentId,
+          type: documentType,
+          inspect: COMMENTS_INSPECTOR_NAME,
+          comment: commentId,
+          ...(scheduledDraft ? {scheduledDraft} : {}),
+        },
+        searchParams,
+      )
       return `${window.location.origin}${intentLink}`
     },
-    [documentId, documentType, resolveIntentLink],
+    [documentId, documentType, resolveIntentLink, scheduledDraft, selectedReleaseId],
   )
 
   const handleClearSelectedComment = useCallback(() => {
