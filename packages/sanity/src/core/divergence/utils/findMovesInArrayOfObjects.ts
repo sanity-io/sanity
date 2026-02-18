@@ -91,6 +91,7 @@ const findIntersectingKeysUsingSet: FindIntersectingKeys = (a, b) => {
   const aKeys = new Set(a.map(({_key}) => _key))
   const bKeys = new Set(b.map(({_key}) => _key))
 
+  // @ts-expect-error - `intersection()` newer than target envs, but is feature-tested (array fallback)
   const intersectingKeys = aKeys.intersection(bKeys)
 
   const [aIntersectingKeys, bIntersectingKeys] = [a, b].map((subject) =>

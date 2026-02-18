@@ -311,6 +311,11 @@
     "react-dom": "^19.2.2",
     "styled-components": "^6.1.15"
   },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ],
   "engines": {
     "node": ">=20.19 <22 || >=22.12"
   }
