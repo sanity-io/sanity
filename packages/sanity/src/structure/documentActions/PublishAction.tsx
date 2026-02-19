@@ -162,21 +162,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  const isPublishDisabled = Boolean(
-    (published && !draft && !version) ||
-    (!isPermissionsLoading && !permissions?.granted) ||
+  const disabled = Boolean(
     publishScheduled ||
     editState?.transactionSyncLock?.enabled ||
     publishState?.status === 'publishing' ||
     publishState?.status === 'published' ||
     hasValidationErrors ||
-    publish.disabled ||
-    isPermissionsLoading,
+    publish.disabled,
   )
 
   const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
   useEffect(() => {
-    if (isPublishDisabled) {
+    if (disabled) {
       if (readyTraceRef.current === null) {
         const trace = telemetry.trace(PublishButtonReadyTrace)
         trace.start()
@@ -186,7 +183,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       readyTraceRef.current.complete()
       readyTraceRef.current = null
     }
-  }, [isPublishDisabled, telemetry])
+  }, [disabled, telemetry])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
@@ -242,7 +239,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         icon: PublishIcon,
         label: t('action.publish.label'),
         title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
-        disabled: isPublishDisabled,
+        disabled: true,
       }
     }
 
@@ -254,12 +251,12 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
-        disabled: isPublishDisabled,
+        disabled: true,
       }
     }
 
     return {
-      disabled: isPublishDisabled,
+      disabled: disabled || isPermissionsLoading,
       tone: 'default',
       label:
         publishState?.status === 'published'
@@ -277,12 +274,13 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         : publishState?.status === 'published' || publishState?.status === 'publishing'
           ? null
           : title,
-      shortcut: isPublishDisabled ? null : 'Ctrl+Alt+P',
+      shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
       onHandle: handle,
     }
   }, [
     selectedPerspective,
-    isPublishDisabled,
+    disabled,
+    publishScheduled,
     release,
     liveEdit,
     version,
@@ -290,7 +288,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     published,
     isPermissionsLoading,
     permissions?.granted,
-    publishScheduled,
     publishState,
     t,
     title,
