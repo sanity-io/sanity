@@ -161,20 +161,17 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  const disabled = Boolean(
-    publishScheduled ||
-    editState?.transactionSyncLock?.enabled ||
-    publishState?.status === 'publishing' ||
-    publishState?.status === 'published' ||
-    hasValidationErrors ||
-    publish.disabled,
+  const isWaitingToPublish = Boolean(
+    draft &&
+    (publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
+      hasValidationErrors ||
+      isPermissionsLoading),
   )
 
   const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
   useEffect(() => {
-    const isPublishInProgress =
-      publishState?.status === 'publishing' || publishState?.status === 'published'
-    if (disabled && !isPublishInProgress) {
+    if (isWaitingToPublish) {
       if (readyTraceRef.current === null) {
         const trace = telemetry.trace(PublishButtonDisabledDurationTrace)
         trace.start()
@@ -184,7 +181,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       readyTraceRef.current.complete()
       readyTraceRef.current = null
     }
-  }, [disabled, publishState, telemetry])
+  }, [isWaitingToPublish, telemetry])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
@@ -256,6 +253,15 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       }
     }
 
+    const disabled = Boolean(
+      publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled,
+    )
+
     return {
       disabled: disabled || isPermissionsLoading,
       tone: 'default',
@@ -280,7 +286,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     selectedPerspective,
-    disabled,
     publishScheduled,
     release,
     liveEdit,
@@ -289,11 +294,15 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     published,
     isPermissionsLoading,
     permissions?.granted,
+    publishScheduled,
+    editState?.transactionSyncLock?.enabled,
     publishState,
+    hasValidationErrors,
+    currentUser,
+    publish.disabled,
     t,
     title,
     handle,
-    currentUser,
   ])
 }
 
