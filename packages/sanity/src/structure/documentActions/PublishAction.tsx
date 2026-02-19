@@ -298,11 +298,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     editState?.transactionSyncLock?.enabled,
     publishState,
     hasValidationErrors,
-    currentUser,
     publish.disabled,
     t,
     title,
     handle,
+    currentUser,
   ])
 }
 
