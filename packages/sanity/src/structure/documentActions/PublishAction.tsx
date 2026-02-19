@@ -171,8 +171,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   )
 
   const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
+  const isPublishInProgress =
+    publishState?.status === 'publishing' || publishState?.status === 'published'
   useEffect(() => {
-    if (disabled) {
+    if (disabled && !isPublishInProgress) {
       if (readyTraceRef.current === null) {
         const trace = telemetry.trace(PublishButtonDisabledDurationTrace)
         trace.start()
@@ -182,7 +184,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       readyTraceRef.current.complete()
       readyTraceRef.current = null
     }
-  }, [disabled, telemetry])
+  }, [disabled, isPublishInProgress, telemetry])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
