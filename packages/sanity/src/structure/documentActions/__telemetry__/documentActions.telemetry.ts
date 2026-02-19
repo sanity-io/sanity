@@ -24,9 +24,10 @@ export const TimeToPublishTrace = defineTrace({
   description: 'Traces a publish operation from click to completion',
 })
 
-/** Traces the time from the publish button becoming disabled to becoming enabled */
-export const PublishButtonDisabledToEnabledTrace = defineTrace({
-  name: 'Publish Button Disabled to Enabled',
+/** Traces the time from the publish button becoming disabled to becoming enabled or until it successfully publishes */
+export const PublishButtonDisabledDurationTrace = defineTrace({
+  name: 'Publish Button Disabled Duration',
   version: 1,
-  description: 'Traces the publish button from disabled to enabled again',
+  description:
+    'Traces the publish button from disabled to enabled again or until it successfully publishes',
 })
