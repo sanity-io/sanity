@@ -59,10 +59,7 @@
         "playwright-ct/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
-      "ignoreDependencies": [
-        "@vitest/expect",
-        "babel-plugin-styled-components",
-      ],
+      "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
     },
     "packages/@sanity/schema": {
       "entry": ["src/_exports/*.ts", "package.config.ts"],
