@@ -145,7 +145,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
-    // Telemetry: complete the publish outcome trace
     if (didPublish && publishTraceRef.current) {
       publishTraceRef.current.complete()
       publishTraceRef.current = null
