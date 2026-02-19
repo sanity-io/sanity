@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
+
+### Features
+
+* **ci:** mark linear issues as done on release ([#12060](https://github.com/sanity-io/sanity/issues/12060)) ([127726f](https://github.com/sanity-io/sanity/commit/127726fd984dfb2c4b6ed59ab566b0e7856807f5)) by Drew Lyton (31733517+drewlyton@users.noreply.github.com)
+* conditional multi schema references ([#12066](https://github.com/sanity-io/sanity/issues/12066)) ([7e7ea6d](https://github.com/sanity-io/sanity/commit/7e7ea6d9520e9841ab2dd96e7d2cfe433b71ae5e)) by Jordan Lawrence (jordanl17@me.com)
+* **test-studio:** add demonstration of stega overlays failing to expand group inside object array member ([f2bbdf0](https://github.com/sanity-io/sanity/commit/f2bbdf038074d5ee5d612f616f43a8d39a7a9e6e)) by Ash (ash@sanity.io)
+
+### Bug Fixes
+
+* add content to the breadcrumb instead of 'mark definitions' ([#12175](https://github.com/sanity-io/sanity/issues/12175)) ([85ccfb4](https://github.com/sanity-io/sanity/commit/85ccfb4108c6251e698aad644c4560bc62d76e57)) by RitaDias (rita@sanity.io)
+* **deps:** update dependency groq-js to ^1.27.1 ([#12180](https://github.com/sanity-io/sanity/issues/12180)) ([c8c7dea](https://github.com/sanity-io/sanity/commit/c8c7dea5a94a691dabb2f1549a2d494432d494f0)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12199](https://github.com/sanity-io/sanity/issues/12199)) ([d504974](https://github.com/sanity-io/sanity/commit/d5049742aea7ea4c313dbf1e28e9fe4a63a2b911)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **docs:** export IncomingReferenceOptions ([#12177](https://github.com/sanity-io/sanity/issues/12177)) ([d75c1f6](https://github.com/sanity-io/sanity/commit/d75c1f6ba53452401812165e7bced74ce687cc71)) by Mark Michon (mark.michon@sanity.io)
+* hiding publish action always on the published document ([#12176](https://github.com/sanity-io/sanity/issues/12176)) ([68d74df](https://github.com/sanity-io/sanity/commit/68d74dfbfcb85e6f82f070071b8d375d9c7fb74f)) by Jordan Lawrence (jordanl17@me.com)
+* **sanity:** publishing versions using `PublishAction` ([3a06898](https://github.com/sanity-io/sanity/commit/3a068987ff5794d5f9a0bd402c927d38b56775fe)) by Ash (ash@sanity.io)
+* **sanity:** set nested group correctly when expanding paths touching object array members ([63233a2](https://github.com/sanity-io/sanity/commit/63233a268f044ea2220486fdf50ba4a1dcc3ab0e)) by Ash (ash@sanity.io)
+* truncating long release titles ([#12148](https://github.com/sanity-io/sanity/issues/12148)) ([b2f4127](https://github.com/sanity-io/sanity/commit/b2f4127dd6085843f260d04565f2a51cf494aec6)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
 
 ### Features

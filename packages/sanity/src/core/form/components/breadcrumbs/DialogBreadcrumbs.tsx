@@ -81,16 +81,18 @@ function BreadcrumbButton({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   isSelected = false,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   isSelected?: boolean
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
   const telemetry = useTelemetry()
 
@@ -148,14 +150,16 @@ function BreadcrumbMenuItem({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
@@ -351,6 +355,7 @@ export function DialogBreadcrumbs({
                     itemPath={overflowItem.path}
                     documentSchemaType={documentSchemaType}
                     documentValue={documentValue}
+                    currentPath={currentPath}
                     onPathSelect={handlePathSelect}
                   />
                 ))}
@@ -386,6 +391,7 @@ export function DialogBreadcrumbs({
           itemPath={item.path}
           documentSchemaType={documentSchemaType}
           documentValue={documentValue}
+          currentPath={currentPath}
           isSelected={isSelected}
           onPathSelect={handlePathSelect}
         />

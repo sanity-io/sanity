@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
+
+### Features
+
+* conditional multi schema references ([#12066](https://github.com/sanity-io/sanity/issues/12066)) ([7e7ea6d](https://github.com/sanity-io/sanity/commit/7e7ea6d9520e9841ab2dd96e7d2cfe433b71ae5e)) by Jordan Lawrence (jordanl17@me.com)
+
 ## [5.10.0](https://github.com/sanity-io/sanity/compare/v5.9.0...v5.10.0) (2026-02-17)
 
 **Note:** Version bump only for package @sanity/types

@@ -65,10 +65,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const validationStatus = useValidationStatus(value._id, type, !release)
   const syncState = useSyncState(id, type)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'default', bundleId)
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const revision = (editState?.draft || editState?.published || {})._rev
+  const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
   const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)

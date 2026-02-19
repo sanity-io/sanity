@@ -60,7 +60,7 @@ import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
-import {languageFilterDebugType} from './debug/languageFilter'
+import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
 import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
@@ -255,6 +255,7 @@ export function createSchemaTypes(projectId: string) {
     inspectorsTestType,
     invalidPreviews,
     languageFilterDebugType,
+    localeBlockContentType,
     lazyComponents,
     liveEdit,
     localeString,
