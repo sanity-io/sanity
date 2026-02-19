@@ -17,20 +17,6 @@ export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
   description: 'User clicked the "Publish" button in the document pane',
 })
 
-export type PublishButtonDisabledReason =
-  | 'LIVE_EDIT_ENABLED'
-  | 'ALREADY_PUBLISHED'
-  | 'NO_CHANGES'
-  | 'NOT_READY'
-  | 'VALIDATION_ERROR'
-  | 'SYNCING'
-  | 'PUBLISHING'
-  | 'PUBLISHED'
-  | 'PUBLISH_SCHEDULED'
-  | 'TRANSACTION_SYNC_LOCK'
-  | 'PERMISSIONS_LOADING'
-  | 'PERMISSION_DENIED'
-
 /** Traces a publish operation from click to revision change */
 export const TimeToPublishTrace = defineTrace({
   name: 'Time to Publish',
@@ -38,12 +24,8 @@ export const TimeToPublishTrace = defineTrace({
   description: 'Traces a publish operation from click to completion',
 })
 
-interface PublishButtonReadyData {
-  disabledReason: PublishButtonDisabledReason | 'unknown'
-}
-
 /** Traces the time from the publish button becoming disabled to becoming enabled */
-export const PublishButtonReadyTrace = defineTrace<PublishButtonReadyData>({
+export const PublishButtonReadyTrace = defineTrace({
   name: 'Publish Button Ready',
   version: 1,
   description: 'Traces the publish button from disabled to enabled again',

@@ -22,10 +22,9 @@ import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
-  type PublishButtonDisabledReason,
+  PublishButtonReadyTrace,
   TimeToPublishTrace,
 } from './__telemetry__/documentActions.telemetry'
-import {usePublishButtonTelemetry} from './usePublishButtonTelemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -167,37 +166,35 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, currentPublishRevision])
 
   // Telemetry: publish button time-to-ready
-  const telemetryDisabledReasons = useMemo(() => {
-    const reasons: string[] = []
-    if (published && !draft && !version) reasons.push('ALREADY_PUBLISHED')
-    if (!isPermissionsLoading && !permissions?.granted) reasons.push('PERMISSION_DENIED')
-    if (publishScheduled) reasons.push('PUBLISH_SCHEDULED')
-    if (editState?.transactionSyncLock?.enabled) reasons.push('TRANSACTION_SYNC_LOCK')
-    if (publishState?.status === 'publishing') reasons.push('PUBLISHING')
-    if (publishState?.status === 'published') reasons.push('PUBLISHED')
-    if (hasValidationErrors) reasons.push('VALIDATION_ERROR')
-    if (publish.disabled) reasons.push(publish.disabled)
-    if (isPermissionsLoading) reasons.push('PERMISSIONS_LOADING')
-    if (syncState.isSyncing) reasons.push('SYNCING')
-    return reasons
-  }, [
-    published,
-    draft,
-    version,
-    isPermissionsLoading,
-    permissions?.granted,
-    publishScheduled,
-    editState?.transactionSyncLock?.enabled,
-    publishState?.status,
-    hasValidationErrors,
-    publish.disabled,
-    syncState.isSyncing,
-  ])
+  // Mirrors the disabled logic in the return useMemo below — true when the
+  // publish button is not clickable for any reason.
+  const isPublishDisabled = Boolean(
+    (published && !draft && !version) ||
+      (!isPermissionsLoading && !permissions?.granted) ||
+      publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
+      publishState?.status === 'publishing' ||
+      publishState?.status === 'published' ||
+      hasValidationErrors ||
+      publish.disabled ||
+      isPermissionsLoading,
+  )
 
-  usePublishButtonTelemetry({
-    isDisabled: telemetryDisabledReasons.length > 0,
-    disabledReasons: telemetryDisabledReasons as PublishButtonDisabledReason[],
-  })
+  const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
+  useEffect(() => {
+    if (isPublishDisabled) {
+      if (readyTraceRef.current === null) {
+        const trace = telemetry.trace(PublishButtonReadyTrace)
+        trace.start()
+        readyTraceRef.current = trace
+      }
+    } else {
+      if (readyTraceRef.current !== null) {
+        readyTraceRef.current.complete()
+        readyTraceRef.current = null
+      }
+    }
+  }, [isPublishDisabled, telemetry])
 
   // ---------------------------------------------------------------------------
   // Handle publish click
