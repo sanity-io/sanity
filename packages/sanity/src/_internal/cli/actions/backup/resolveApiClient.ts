@@ -33,7 +33,7 @@ async function resolveApiClient(
     })
   }
 
-  client = client.withConfig({dataset: datasetName, apiVersion})
+  client = client.withConfig({dataset: selectedDataset, apiVersion})
 
   return {
     projectId,
