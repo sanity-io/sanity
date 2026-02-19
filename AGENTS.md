@@ -46,7 +46,6 @@ These checks run on every PR and **must pass**:
 | **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
 | **Type Check**   | `pnpm check:types`   | TypeScript via tsgo + turbo                              |
 | **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
-| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                    |
 | **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |
 | **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                |
 | **PR Title**     | Conventional commits | e.g., `feat(scope): description`                         |
@@ -89,7 +88,6 @@ sanity/
 ### Key Packages
 
 - **`packages/sanity`** - Core studio package with all UI components
-- **`packages/@sanity/cli`** - CLI tool (`sanity` command)
 - **`packages/@sanity/types`** - TypeScript type definitions
 - **`packages/@sanity/schema`** - Schema compilation
 - **`packages/@sanity/mutator`** - Document mutation logic
@@ -104,7 +102,6 @@ sanity/
 
 ```bash
 pnpm build              # Build all packages
-pnpm build:cli          # Build CLI only (faster)
 pnpm watch              # Watch mode for development
 ```
 

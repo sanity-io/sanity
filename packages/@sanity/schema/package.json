@@ -90,5 +90,10 @@
     "eslint": "catalog:",
     "rimraf": "^5.0.10",
     "vitest": "catalog:"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }

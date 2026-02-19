@@ -6,6 +6,7 @@ import {catchError, forkJoin, from, map, type Observable, of, switchMap} from 'r
 import {useClient} from '../../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
 import {getPublishedId} from '../../../../../util/draftUtils'
+import {promiseWithResolvers} from '../../../../../util/promiseWithResolvers'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../../util/releasesClient'
 import {type DocumentInRelease} from '../../../detail/useBundleDocuments'
 
@@ -33,7 +34,7 @@ export const useDocumentRevertStates = (releaseDocuments: DocumentInRelease[]) =
 
   useEffect(() => {
     if (!resultPromiseRef.current) {
-      const {promise, resolve} = Promise.withResolvers<DocumentRevertStates>()
+      const {promise, resolve} = promiseWithResolvers<DocumentRevertStates>()
 
       resultPromiseRef.current = promise
       resolvedDocumentRevertStatesPromiseRef.current = resolve

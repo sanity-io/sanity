@@ -19,15 +19,7 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
           // eslint-disable-next-line @typescript-eslint/no-shadow
           t,
         ) => {
-          try {
-            await import(path)
-          } catch (error) {
-            if (workspace === '@sanity/cli') {
-              t.todo('native ESM not supported yet')
-            } else {
-              throw error
-            }
-          }
+          await import(path)
         },
       )
     }

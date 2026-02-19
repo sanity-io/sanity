@@ -3,6 +3,7 @@ import {type PermissionCheckResult, type SanityClient} from 'sanity'
 import {describe, expect, test, vi} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
+import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolveAllowPatternsActor} from '../../actors/resolve-allow-patterns'
 import {defineResolveInitialUrlActor} from '../../actors/resolve-initial-url'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
@@ -62,7 +63,10 @@ const mockActors = ({
 } = {}) => ({
   'create preview secret': fromPromise(() => Promise.resolve({secret: 'abc123', expiresAt})),
   'read shared preview secret': fromPromise<string | null>(() => Promise.resolve('dfg456')),
-  'resolve allow patterns': defineResolveAllowPatternsActor({client, allowOption}),
+  'resolve allow patterns': defineResolveAllowPatternsActor({
+    client,
+    allowOption,
+  }),
   'resolve initial url': defineResolveInitialUrlActor({
     client,
     studioBasePath,
@@ -127,7 +131,10 @@ describe('Preview URL machine', () => {
       expect(snapshot.context.previewUrlSecretPermission).toEqual(permissionCheckResult)
     })
 
-    const permissionCheckResult = of({granted: true, reason: 'Matching grant'})
+    const permissionCheckResult = of({
+      granted: true,
+      reason: 'Matching grant',
+    })
     test.each([
       ['read', shareAccessSingletonDocument],
       ['create', shareAccessSingletonDocument],
@@ -173,7 +180,7 @@ describe('Preview URL machine', () => {
     })
 
     test('is busy while resolving initial url', async () => {
-      const {promise, resolve} = Promise.withResolvers<URL>()
+      const {promise, resolve} = promiseWithResolvers<URL>()
       const actor = createActor(
         previewUrlMachine.provide({
           actors: {
@@ -254,7 +261,7 @@ describe('Preview URL machine', () => {
     })
 
     test('is busy while resolving allow patterns', async () => {
-      const {promise, resolve} = Promise.withResolvers<URLPattern[]>()
+      const {promise, resolve} = promiseWithResolvers<URLPattern[]>()
       const actor = createActor(
         previewUrlMachine.provide({
           actors: {
@@ -414,7 +421,7 @@ describe('Preview URL machine', () => {
 
   describe('resolves url from search param', () => {
     test('is busy while resolving', async () => {
-      const {promise, resolve} = Promise.withResolvers<URL>()
+      const {promise, resolve} = promiseWithResolvers<URL>()
       const actor = createActor(
         previewUrlMachine.provide({
           actors: {
@@ -476,7 +483,7 @@ describe('Preview URL machine', () => {
     )
 
     test('handles errors', async () => {
-      const {promise, reject} = Promise.withResolvers<URL>()
+      const {promise, reject} = promiseWithResolvers<URL>()
       const actor = createActor(
         previewUrlMachine.provide({
           actors: {
@@ -581,28 +588,40 @@ describe('Preview URL machine', () => {
     /**
      * Setting a new origin resets the preview URL machine
      */
-    actor.send({type: 'set preview search param', previewSearchParam: 'http://localhost:3333/blog'})
+    actor.send({
+      type: 'set preview search param',
+      previewSearchParam: 'http://localhost:3333/blog',
+    })
     snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
     expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3333/blog')
 
     /**
      * A new origin that isn't allowed is ignored
      */
-    actor.send({type: 'set preview search param', previewSearchParam: 'https://example.com/docs'})
+    actor.send({
+      type: 'set preview search param',
+      previewSearchParam: 'https://example.com/docs',
+    })
     snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
     expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3333/blog')
 
     /**
      * A new origin that is allowed can run the loop once more
      */
-    actor.send({type: 'set preview search param', previewSearchParam: 'http://localhost:4321/docs'})
+    actor.send({
+      type: 'set preview search param',
+      previewSearchParam: 'http://localhost:4321/docs',
+    })
     snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
     expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:4321/docs')
 
     /**
      * A relative preview search param updates the context
      */
-    actor.send({type: 'set preview search param', previewSearchParam: '/about'})
+    actor.send({
+      type: 'set preview search param',
+      previewSearchParam: '/about',
+    })
     snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
     expect(snapshot.context.previewSearchParam).toBe('/about')
 
@@ -681,7 +700,10 @@ describe('Preview URL machine', () => {
 
       test('handles when preview mode is enabled but permissions are missing', async () => {
         const notify = vi.fn()
-        const permissionCheckResult = of({granted: false, reason: 'No matching grants found'})
+        const permissionCheckResult = of({
+          granted: false,
+          reason: 'No matching grants found',
+        })
         const actor = createActor(
           previewUrlMachine.provide({
             actions: {'notify preview will likely fail': notify},
@@ -727,7 +749,10 @@ describe('Preview URL machine', () => {
           },
         ],
         [
-          {enable: '/api/draft-mode/enable', shareAccess: null as unknown as boolean},
+          {
+            enable: '/api/draft-mode/enable',
+            shareAccess: null as unknown as boolean,
+          },
           {
             enable: '/api/draft-mode/enable',
             shareAccess: true,
@@ -774,7 +799,9 @@ describe('Preview URL machine', () => {
       test('creates a secret and adds it to the context', async () => {
         const actor = createActor(
           previewUrlMachine.provide({
-            actors: mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+            actors: mockActors({
+              previewUrlOption: {previewMode: {enable: '/api/preview'}},
+            }),
           }),
           {
             input: {previewSearchParam: null},
@@ -789,14 +816,16 @@ describe('Preview URL machine', () => {
 
       test('handles secret expiry', async () => {
         const ttl = 1_000
-        const t1 = Promise.withResolvers<{secret: string; expiresAt: Date}>()
-        const t2 = Promise.withResolvers<{secret: string; expiresAt: Date}>()
+        const t1 = promiseWithResolvers<{secret: string; expiresAt: Date}>()
+        const t2 = promiseWithResolvers<{secret: string; expiresAt: Date}>()
         let promise = t1.promise
 
         const actor = createActor(
           previewUrlMachine.provide({
             actors: {
-              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              }),
               'create preview secret': fromPromise(() => promise),
             },
           }),
@@ -822,17 +851,22 @@ describe('Preview URL machine', () => {
 
       test('only creates a new secret if the permission is granted', async () => {
         const subject = new Subject<PermissionCheckResult>()
-        const permissionCheckResult = of({granted: true, reason: 'Matching grant'})
+        const permissionCheckResult = of({
+          granted: true,
+          reason: 'Matching grant',
+        })
 
         const ttl = 1_000
-        const t1 = Promise.withResolvers<{secret: string; expiresAt: Date}>()
-        const t2 = Promise.withResolvers<{secret: string; expiresAt: Date}>()
+        const t1 = promiseWithResolvers<{secret: string; expiresAt: Date}>()
+        const t2 = promiseWithResolvers<{secret: string; expiresAt: Date}>()
         let promise = t1.promise
 
         const actor = createActor(
           previewUrlMachine.provide({
             actors: {
-              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              }),
               'create preview secret': fromPromise(() => promise),
               'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(
                 ({input}) => {
@@ -877,8 +911,14 @@ describe('Preview URL machine', () => {
     })
 
     describe('reads shared preview secrets if missing permissions to create preview secrets', () => {
-      const permissionCheckResultGranted = of({granted: true, reason: 'Matching grant'})
-      const permissionCheckResultDenied = of({granted: false, reason: 'No matching grants found'})
+      const permissionCheckResultGranted = of({
+        granted: true,
+        reason: 'Matching grant',
+      })
+      const permissionCheckResultDenied = of({
+        granted: false,
+        reason: 'No matching grants found',
+      })
       const checkPermissionActor = fromObservable<PermissionCheckResult, CheckPermissionInput>(
         ({input}) => {
           if (
@@ -912,7 +952,9 @@ describe('Preview URL machine', () => {
         const actor = createActor(
           previewUrlMachine.provide({
             actors: {
-              ...mockActors({previewUrlOption: {previewMode: {enable: '/api/preview'}}}),
+              ...mockActors({
+                previewUrlOption: {previewMode: {enable: '/api/preview'}},
+              }),
               'check permission': checkPermissionActor,
             },
           }),
@@ -972,7 +1014,10 @@ describe('Preview URL machine', () => {
       /**
        * A new origin that isn't allowed is ignored
        */
-      actor.send({type: 'set preview search param', previewSearchParam: 'https://example.com/docs'})
+      actor.send({
+        type: 'set preview search param',
+        previewSearchParam: 'https://example.com/docs',
+      })
       snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
       expect(snapshot.context.previewUrl?.origin).toBe('http://localhost:3333')
 
@@ -989,7 +1034,10 @@ describe('Preview URL machine', () => {
       /**
        * A relative preview search param updates the context
        */
-      actor.send({type: 'set preview search param', previewSearchParam: '/about'})
+      actor.send({
+        type: 'set preview search param',
+        previewSearchParam: '/about',
+      })
       snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
       expect(snapshot.context.previewSearchParam).toBe('/about')
 

@@ -1,7 +1,6 @@
 {
   "ignores": [
     "@repo/test-exports",
-    "@sanity/cli",
     "@sanity/diff",
     "@sanity/mutator",
     "@sanity/schema",

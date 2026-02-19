@@ -12,17 +12,8 @@
 
 # -- Others --
 
-# Shopify templates
-/packages/@sanity/cli/src/actions/init-project/templates/shopify* @thebiggianthead
-/packages/@sanity/cli/templates/shopify* @thebiggianthead
-
 # Telemetry definitions
 *.telemetry.ts @sanity-io/data-eng
-
-# Code and typegeneration
-/packages/@sanity/cli/src/actions/typegen @sanity-io/content-lake-dx
-/packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
-/packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
 # Presentation Tool, which interfaces with Visual Editing libraries
 /packages/sanity/src/presentation/ @sanity-io/ecosystem

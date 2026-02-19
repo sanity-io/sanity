@@ -110,5 +110,10 @@
     "react": "^19.2.2",
     "sanity": "^4.0.0-0 || ^5.0.0-0",
     "styled-components": "^6.1.15"
-  }
+  },
+  "browserslist": [
+    "node >=20.19",
+    "node >=22.12",
+    "baseline 2024"
+  ]
 }

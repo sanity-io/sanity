@@ -25,7 +25,6 @@
     "@portabletext/react": "^6.0.2",
     "@portabletext/toolkit": "^5.0.1",
     "@sanity/assist": "^5.0.3",
-    "@sanity/cli": "workspace:*",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.6",
     "@sanity/color-input": "^6.0.3",

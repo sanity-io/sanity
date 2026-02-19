@@ -1,10 +1,5 @@
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-
 import {defineConfig} from '@repo/test-config/vitest'
 import react from '@vitejs/plugin-react'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   test: {
@@ -21,5 +16,9 @@ export default defineConfig({
       ignoreSourceErrors: true,
     },
   },
-  plugins: [react({babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]}})],
+  plugins: [
+    react({
+      babel: {plugins: [['babel-plugin-react-compiler', {target: '19'}]]},
+    }),
+  ],
 })

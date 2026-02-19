@@ -3,7 +3,7 @@ description: "Checks if only files in a specified directory path have changed"
 
 inputs:
   path:
-    description: "The directory path to check (e.g., 'examples/' or 'packages/@sanity/cli/')"
+    description: "The directory path to check (e.g., 'examples/' or 'packages/@sanity/util/')"
     required: true
 
 outputs:
