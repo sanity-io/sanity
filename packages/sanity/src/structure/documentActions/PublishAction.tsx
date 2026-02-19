@@ -162,9 +162,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  // Telemetry: publish button time-to-ready
-  // Mirrors the disabled logic in the return useMemo below — true when the
-  // publish button is not clickable for any reason.
   const isPublishDisabled = Boolean(
     (published && !draft && !version) ||
     (!isPermissionsLoading && !permissions?.granted) ||
