@@ -2,6 +2,8 @@ import {expect} from '@playwright/test'
 
 import {expectCreatedStatus, expectPublishedStatus} from '../../helpers/documentStatusAssertions'
 import {test} from '../../studio-test'
+import {speciesDocumentNameAnonymousVersion} from '../releases/utils/__fixtures__/documents'
+import {createDocument, getRandomReleaseId} from '../releases/utils/methods'
 
 test(`document panel displays correct title for published document`, async ({
   page,
@@ -69,4 +71,34 @@ test(`custom publish action can patch document before publication`, async ({
 
   // Ensure the custom publish action succeeded in setting the `publishedAt` field.
   await expect(publishedAtInput).toHaveValue(/.*/)
+})
+
+test('publish action can publish anonymous version', async ({
+  page,
+  sanityClient,
+  _testContext,
+  browserName,
+}) => {
+  const bundle = `anon-${getRandomReleaseId()}`
+  const canonicalId = _testContext.getUniqueDocumentId()
+
+  const publishAction = page.getByTestId('action-publish')
+  const documentStatus = page.getByTestId('pane-footer-document-status')
+  const nameInput = page.getByTestId('field-name').getByTestId('string-input')
+  const paneFooter = page.getByTestId('pane-footer-document-status')
+
+  await createDocument(sanityClient, {
+    ...speciesDocumentNameAnonymousVersion,
+    _id: `versions.${bundle}.${canonicalId}`,
+  })
+
+  await page.goto(`${browserName}/content/species;${canonicalId}?perspective=${bundle}`)
+  await nameInput.fill(`${speciesDocumentNameAnonymousVersion.name} - updated ${Date.now()}`)
+
+  // Wait for the document to save before publishing.
+  await expectCreatedStatus(paneFooter)
+
+  // Wait for the document to be published.
+  await publishAction.click()
+  await expectPublishedStatus(documentStatus)
 })
