@@ -56,13 +56,11 @@ export function useBreadcrumbPreview(
   documentValue: unknown,
   currentPath?: Path,
 ) {
-  const value = useFormValue(itemPath)
-
   const markDefContext = useMemo(
     () => getMarkDefContext(itemPath, currentPath),
     [itemPath, currentPath],
   )
-  const blockValue = useFormValue(markDefContext?.blockPath ?? itemPath)
+  const value = useFormValue(markDefContext?.blockPath ?? itemPath)
 
   const schemaType = useMemo(
     () => resolveSchemaTypeForPath(documentSchemaType, itemPath, documentValue),
@@ -72,7 +70,7 @@ export function useBreadcrumbPreview(
   const {value: preview} = useValuePreviewWithFallback({schemaType, value})
 
   if (markDefContext) {
-    const annotatedText = getAnnotatedText(blockValue, markDefContext.markDefKey)
+    const annotatedText = getAnnotatedText(value, markDefContext.markDefKey)
     if (annotatedText) return annotatedText
   }
 
