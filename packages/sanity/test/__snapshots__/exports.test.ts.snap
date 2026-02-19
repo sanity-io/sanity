@@ -343,7 +343,6 @@ exports[`exports snapshot 1`] = `
     "getPublishedId": "function",
     "getReferencePaths": "function",
     "getReleaseIdFromReleaseDocumentId": "function",
-    "getReleaseTitle": "function",
     "getReleaseTone": "function",
     "getSanityCreateLinkMetadata": "function",
     "getSchemaTypeTitle": "function",
