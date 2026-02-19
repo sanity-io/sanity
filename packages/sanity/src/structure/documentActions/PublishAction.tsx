@@ -94,11 +94,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const currentPublishRevision = published?._rev
 
   const telemetry = useTelemetry()
-
-  // ---------------------------------------------------------------------------
-  // Telemetry: Publish outcome trace
-  // ---------------------------------------------------------------------------
-  // Traces the full publish operation from click to revision change
   const publishTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
 
   const doPublish = useCallback(() => {
@@ -142,7 +137,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     t,
   ])
 
-  // Detect publish success (revision changed) and complete the trace
   useEffect(() => {
     const didPublish =
       // All we need to check here is for the revision of the current published document
@@ -170,14 +164,14 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   // publish button is not clickable for any reason.
   const isPublishDisabled = Boolean(
     (published && !draft && !version) ||
-      (!isPermissionsLoading && !permissions?.granted) ||
-      publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
-      publishState?.status === 'publishing' ||
-      publishState?.status === 'published' ||
-      hasValidationErrors ||
-      publish.disabled ||
-      isPermissionsLoading,
+    (!isPermissionsLoading && !permissions?.granted) ||
+    publishScheduled ||
+    editState?.transactionSyncLock?.enabled ||
+    publishState?.status === 'publishing' ||
+    publishState?.status === 'published' ||
+    hasValidationErrors ||
+    publish.disabled ||
+    isPermissionsLoading,
   )
 
   const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
@@ -188,17 +182,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         trace.start()
         readyTraceRef.current = trace
       }
-    } else {
-      if (readyTraceRef.current !== null) {
-        readyTraceRef.current.complete()
-        readyTraceRef.current = null
-      }
+    } else if (readyTraceRef.current !== null) {
+      readyTraceRef.current.complete()
+      readyTraceRef.current = null
     }
   }, [isPublishDisabled, telemetry])
-
-  // ---------------------------------------------------------------------------
-  // Handle publish click
-  // ---------------------------------------------------------------------------
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
