@@ -242,7 +242,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         icon: PublishIcon,
         label: t('action.publish.label'),
         title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
-        disabled: true,
+        disabled: isPublishDisabled,
       }
     }
 
@@ -254,21 +254,12 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
-        disabled: true,
+        disabled: isPublishDisabled,
       }
     }
 
-    const disabled = Boolean(
-      publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
-      publishState?.status === 'publishing' ||
-      publishState?.status === 'published' ||
-      hasValidationErrors ||
-      publish.disabled,
-    )
-
     return {
-      disabled: disabled || isPermissionsLoading,
+      disabled: isPublishDisabled,
       tone: 'default',
       label:
         publishState?.status === 'published'
@@ -286,11 +277,12 @@ export const usePublishAction: DocumentActionComponent = (props) => {
         : publishState?.status === 'published' || publishState?.status === 'publishing'
           ? null
           : title,
-      shortcut: disabled || publishScheduled ? null : 'Ctrl+Alt+P',
+      shortcut: isPublishDisabled ? null : 'Ctrl+Alt+P',
       onHandle: handle,
     }
   }, [
     selectedPerspective,
+    isPublishDisabled,
     release,
     liveEdit,
     version,
@@ -299,10 +291,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     isPermissionsLoading,
     permissions?.granted,
     publishScheduled,
-    editState?.transactionSyncLock?.enabled,
     publishState,
-    hasValidationErrors,
-    publish.disabled,
     t,
     title,
     handle,
