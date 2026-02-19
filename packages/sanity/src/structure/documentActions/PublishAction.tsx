@@ -24,7 +24,7 @@ import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
-  PublishButtonReadyTrace,
+  PublishButtonDisabledToEnabledTrace,
   TimeToPublishTrace,
 } from './__telemetry__/documentActions.telemetry'
 
@@ -174,7 +174,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   useEffect(() => {
     if (disabled) {
       if (readyTraceRef.current === null) {
-        const trace = telemetry.trace(PublishButtonReadyTrace)
+        const trace = telemetry.trace(PublishButtonDisabledToEnabledTrace)
         trace.start()
         readyTraceRef.current = trace
       }

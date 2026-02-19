@@ -25,8 +25,8 @@ export const TimeToPublishTrace = defineTrace({
 })
 
 /** Traces the time from the publish button becoming disabled to becoming enabled */
-export const PublishButtonReadyTrace = defineTrace({
-  name: 'Publish Button Ready',
+export const PublishButtonDisabledToEnabledTrace = defineTrace({
+  name: 'Publish Button Disabled to Enabled',
   version: 1,
   description: 'Traces the publish button from disabled to enabled again',
 })
