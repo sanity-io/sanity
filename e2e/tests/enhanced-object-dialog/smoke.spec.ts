@@ -37,6 +37,49 @@ test.describe('Enhanced Object Dialog - open and close', () => {
   })
 })
 
+test.describe('Enhanced Object Dialog - nested open and close via breadcrumb root', () => {
+  test.beforeEach(async ({createDraftDocument, page, browserName}) => {
+    test.skip(browserName === 'firefox')
+    test.slow()
+
+    await createDraftDocument('/content/input-debug;objectsDebug')
+
+    // Create "Blue whale" animal
+    await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+    const modal = page.getByTestId('nested-object-dialog')
+    await expect(modal).toBeVisible()
+
+    const nameInput = page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+    await expect(nameInput).toBeVisible()
+    await nameInput.fill('Blue whale')
+
+    // Add a friend "Dolphin" inside Blue whale
+    const addFriendButton = modal
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.friends$/)
+      .getByRole('button', {name: 'Add item'})
+    await addFriendButton.scrollIntoViewIfNeeded()
+    await addFriendButton.click()
+
+    // Fill the friend name (now inside a second-level dialog)
+    const friendNameInput = page
+      .getByTestId(/^field-animals\[_key=="[^"]+"\]\.friends\[_key=="[^"]+"\]\.name$/)
+      .getByTestId('string-input')
+    await expect(friendNameInput).toBeVisible()
+    await friendNameInput.fill('Dolphin')
+  })
+
+  test('clicking the root breadcrumb item closes all dialogs', async ({page}) => {
+    const topDialog = page.getByTestId('nested-object-dialog').last()
+    await expect(topDialog).toBeVisible()
+
+    // Click the "Animals" root breadcrumb on the top-most dialog to close everything
+    await topDialog.getByTestId('breadcrumb-item-animals').click()
+    await expect(page.getByTestId('nested-object-dialog')).not.toBeVisible()
+  })
+})
+
 test.describe('Enhanced Object Dialog - when disabled', () => {
   test.beforeEach(async ({page, _testContext, browserName, baseURL}) => {
     // Navigate to the browser-specific no-enhanced-dialog workspace

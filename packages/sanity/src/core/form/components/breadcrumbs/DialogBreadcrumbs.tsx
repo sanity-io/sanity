@@ -113,6 +113,7 @@ function BreadcrumbButton({
       title={title}
       aria-label={title}
       aria-current={isSelected ? 'location' : false}
+      data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
