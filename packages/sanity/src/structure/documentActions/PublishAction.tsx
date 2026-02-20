@@ -2,7 +2,7 @@ import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text, useToast} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getVersionFromId,
@@ -22,7 +22,11 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
+import {
+  DocumentPublished,
+  PublishButtonDisabledDurationTrace,
+  TimeToPublishTrace,
+} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -92,10 +96,16 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const currentPublishRevision = published?._rev
 
+  const telemetry = useTelemetry()
+  const publishTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
+
   const doPublish = useCallback(() => {
     publish.execute()
+    const trace = telemetry.trace(TimeToPublishTrace)
+    trace.start()
+    publishTraceRef.current = trace
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision])
+  }, [publish, currentPublishRevision, telemetry])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -138,6 +148,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
+    if (didPublish && publishTraceRef.current) {
+      publishTraceRef.current.complete()
+      publishTraceRef.current = null
+    }
+
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
@@ -146,7 +161,27 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, currentPublishRevision])
 
-  const telemetry = useTelemetry()
+  const isWaitingToPublish = Boolean(
+    draft &&
+    (publishScheduled ||
+      editState?.transactionSyncLock?.enabled ||
+      hasValidationErrors ||
+      isPermissionsLoading),
+  )
+
+  const readyTraceRef = useRef<ReturnType<typeof telemetry.trace> | null>(null)
+  useEffect(() => {
+    if (isWaitingToPublish) {
+      if (readyTraceRef.current === null) {
+        const trace = telemetry.trace(PublishButtonDisabledDurationTrace)
+        trace.start()
+        readyTraceRef.current = trace
+      }
+    } else if (readyTraceRef.current !== null) {
+      readyTraceRef.current.complete()
+      readyTraceRef.current = null
+    }
+  }, [isWaitingToPublish, telemetry])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
