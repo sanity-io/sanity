@@ -23,7 +23,6 @@ import {css, styled} from 'styled-components'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useFormBuilder} from '../../useFormBuilder'
-import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
@@ -126,45 +125,17 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  const schemaTypes = usePortableTextMemberSchemaTypes()
+  const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
+    return <Decorator {...decoratorProps} />
+  }, [])
 
-  const renderDecorator = useCallback(
-    (decoratorProps: BlockDecoratorRenderProps) => {
-      const sanitySchemaType = schemaTypes.decorators.find(
-        (type) => type.value === decoratorProps.value,
-      )
-      if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for decorator: ${decoratorProps.value}`)
-      }
-      return <Decorator {...decoratorProps} schemaType={sanitySchemaType} />
-    },
-    [schemaTypes.decorators],
-  )
+  const renderStyle = useCallback((styleProps: BlockStyleRenderProps) => {
+    return <Style {...styleProps} />
+  }, [])
 
-  const renderStyle = useCallback(
-    (styleProps: BlockStyleRenderProps) => {
-      const sanitySchemaType = schemaTypes.styles.find((type) => type.value === styleProps.value)
-      if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for style: ${styleProps.value}`)
-      }
-      return <Style {...styleProps} schemaType={sanitySchemaType} />
-    },
-    [schemaTypes.styles],
-  )
-
-  const renderListItem = useCallback(
-    (listItemProps: BlockListItemRenderProps) => {
-      const sanitySchemaType = schemaTypes.lists.find((type) => type.value === listItemProps.value)
-      if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for list item: ${listItemProps.value}`)
-      }
-      return <ListItem {...listItemProps} schemaType={sanitySchemaType} />
-    },
-    [schemaTypes.lists],
-  )
+  const renderListItem = useCallback((listItemProps: BlockListItemRenderProps) => {
+    return <ListItem {...listItemProps} />
+  }, [])
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
