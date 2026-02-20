@@ -1082,6 +1082,9 @@ importers:
       dotenv:
         specifier: ^16.6.1
         version: 16.6.1
+      glob:
+        specifier: ^13.0.0
+        version: 13.0.0
       lodash-es:
         specifier: ^4.17.22
         version: 4.17.23
