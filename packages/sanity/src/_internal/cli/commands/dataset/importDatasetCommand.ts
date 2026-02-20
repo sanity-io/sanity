@@ -12,6 +12,7 @@ import prettyMs from 'pretty-ms'
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 import {debug} from '../../debug'
+import {isInteractive} from '../../util/isInteractive'
 
 const yellow = (str: string) => `\u001b[33m${str}\u001b[39m`
 
@@ -22,6 +23,7 @@ Options
   --allow-failing-assets Skip assets that cannot be fetched/uploaded
   --replace-assets Skip reuse of existing assets
   --skip-cross-dataset-references Skips references to other datasets
+  -y, --yes Unattended mode, auto-confirm dataset creation prompts
 
 Rarely used options (should generally not be used)
   --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
@@ -53,6 +55,8 @@ interface ImportFlags {
   'allow-system-documents'?: boolean
   'replace'?: boolean
   'missing'?: boolean
+  'yes'?: boolean
+  'y'?: boolean
 }
 
 interface ParsedImportFlags {
@@ -140,7 +144,8 @@ const importDatasetCommand: CliCommandDefinition = {
       )
     }
 
-    const targetDataset = await determineTargetDataset(target, context)
+    const unattended = Boolean(args.extOptions.yes || args.extOptions.y)
+    const targetDataset = await determineTargetDataset(target, context, unattended)
     debug(`Target dataset has been set to "${targetDataset}"`)
 
     const isUrl = /^https?:\/\//i.test(file)
@@ -309,7 +314,11 @@ const importDatasetCommand: CliCommandDefinition = {
   },
 }
 
-async function determineTargetDataset(target: string, context: CliCommandContext) {
+async function determineTargetDataset(
+  target: string,
+  context: CliCommandContext,
+  unattended: boolean,
+) {
   const {apiClient, output, prompt} = context
   const client = apiClient()
 
@@ -326,18 +335,27 @@ async function determineTargetDataset(target: string, context: CliCommandContext
   spinner.succeed('[100%] Fetching available datasets')
 
   let targetDataset = target ? `${target}` : null
+  const skipPrompts = unattended || !isInteractive
   if (!targetDataset) {
+    if (skipPrompts) {
+      throw new Error(
+        'Target dataset must be specified when using --yes flag or in non-interactive mode',
+      )
+    }
     targetDataset = await chooseDatasetPrompt(context, {
       message: 'Select target dataset',
       allowCreation: true,
     })
   } else if (!datasets.find((dataset) => dataset.name === targetDataset)) {
     debug('Target dataset does not exist, prompting for creation')
-    const shouldCreate = await prompt.single({
-      type: 'confirm',
-      message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
-      default: true,
-    })
+    let shouldCreate = skipPrompts
+    if (!skipPrompts) {
+      shouldCreate = await prompt.single({
+        type: 'confirm',
+        message: `Dataset "${targetDataset}" does not exist, would you like to create it?`,
+        default: true,
+      })
+    }
 
     if (!shouldCreate) {
       throw new Error(`Dataset "${targetDataset}" does not exist`)
