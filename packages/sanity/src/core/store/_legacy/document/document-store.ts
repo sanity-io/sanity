@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type CurrentUser, type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
 
@@ -119,6 +119,7 @@ export interface DocumentStoreOptions {
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
   extraOptions?: DocumentStoreExtraOptions
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /** @internal */
@@ -131,6 +132,7 @@ export function createDocumentStore({
   i18n,
   serverActionsEnabled,
   extraOptions = {},
+  currentUser,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -150,6 +152,7 @@ export function createDocumentStore({
     i18n,
     serverActionsEnabled,
     extraOptions,
+    currentUser,
   }
 
   return {
