@@ -149,15 +149,18 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     [isTop, stack, navigateTo, close, telemetry],
   )
 
-  const handleStackedDialogClose = useCallback(() => {
-    if (stack.length >= 2) {
-      telemetry.log(NavigatedToNestedObjectViaCloseButton)
-      close({toParent: true})
-    } else {
-      telemetry.log(NestedDialogClosed)
-      close()
-    }
-  }, [stack, telemetry, close])
+  const handleStackedDialogClose = useCallback(
+    (closeAll?: boolean) => {
+      if (!closeAll && stack.length >= 2) {
+        telemetry.log(NavigatedToNestedObjectViaCloseButton)
+        close({toParent: true})
+      } else {
+        telemetry.log(NestedDialogClosed)
+        close()
+      }
+    },
+    [telemetry, close, stack.length],
+  )
 
   const handleCompleteDialogClose = useCallback(() => {
     telemetry.log(NestedDialogClosed)

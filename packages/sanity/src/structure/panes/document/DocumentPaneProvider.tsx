@@ -666,8 +666,13 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     if (ready && params.path) {
       const {path, ...restParams} = params
 
-      // trigger a focus when `params.path` changes
-      if (path !== pathRef.current) {
+      // Only trigger a programmatic focus when the URL path changed AND the
+      // form's openPath doesn't already reflect it.  When handlePathOpen updates
+      // both the form state and the URL, the form is already in sync — calling
+      // onProgrammaticFocus again would re-set focusPath/openPath and cause
+      // cascading state updates that flicker nested dialogs.
+      const currentOpenPathString = pathToString(openPath)
+      if (path !== pathRef.current && path !== currentOpenPathString) {
         const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
         onProgrammaticFocus(pathFromUrl)
       }
@@ -680,7 +685,15 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     pathRef.current = params.path
 
     return undefined
-  }, [formStateRef, onProgrammaticFocus, paneRouter, params, ready, enhancedObjectDialogEnabled])
+  }, [
+    formStateRef,
+    onProgrammaticFocus,
+    paneRouter,
+    params,
+    ready,
+    enhancedObjectDialogEnabled,
+    openPath,
+  ])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
