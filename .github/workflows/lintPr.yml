@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
       - name: Ensure local main ref exists for turbo --affected
-        run: git fetch origin main:main
+        run: git checkout -B main origin/main && git switch -
       - uses: ./.github/actions/setup
 
       - name: Oxlint files
