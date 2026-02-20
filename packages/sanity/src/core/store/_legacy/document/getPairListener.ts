@@ -13,6 +13,8 @@ import {
   type MutationEvent,
   type PendingMutationsEvent,
   type ReconnectEvent,
+  type ResetEvent,
+  type WelcomeBackEvent,
   type WelcomeEvent,
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
@@ -60,12 +62,11 @@ export type ListenerEvent =
   | InitialSnapshotEvent
   | PendingMutationsEvent
   | WelcomeEvent
+  | WelcomeBackEvent
+  | ResetEvent
 
 const PENDING_START: PendingMutationsEvent = {type: 'pending', phase: 'begin'}
 const PENDING_END: PendingMutationsEvent = {type: 'pending', phase: 'end'}
-
-// refetch and reset local document to server snapshot if listener connection has been disconnected for longer than this
-const REFETCH_IF_DISCONNECTED_LONGER_THAN_MS = 20_000
 
 function isMutationEvent(msg: ListenerEvent): msg is MutationEvent {
   return msg.type === 'mutation'
@@ -109,66 +110,28 @@ export function getPairListener(
         {
           includeResult: false,
           includeAllVersions: true,
-          events: ['welcome', 'mutation', 'reconnect'],
+          enableResume: true,
+          events: ['welcome', 'mutation', 'reconnect', 'reset', 'welcomeback'],
           effectFormat: 'mendoza',
-          tag: options.tag || 'document.pair-listener',
+          tag: options.tag || 'document.pair.listen',
         },
-      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
+      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
       dedupeListenerEvents(),
-      map((event): WelcomeEvent | MutationEvent | ReconnectEvent =>
-        event.type === 'mutation'
-          ? {
-              ...event,
-              // client equivalent of `event.messageDispatchedAt`
-              // note: consider moving this to client.listen()
-              messageReceivedAt: new Date().toString(),
-            }
-          : event,
-      ),
       shareReplayLatest({
-        predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
+        predicate: (event) =>
+          event.type === 'welcome' ||
+          event.type === 'reconnect' ||
+          event.type === 'reset' ||
+          event.type === 'welcomeback',
       }),
     ),
   )
 
   const pairEvents$ = sharedEvents.pipe(
-    scan(
-      (
-        acc:
-          | {
-              event: WelcomeEvent | MutationEvent | ReconnectEvent
-              disconnectedAt?: Date
-              disconnectedTime?: number
-            }
-          | undefined,
-        event,
-      ) => ({
-        event,
-        disconnectedAt: event.type === 'reconnect' ? acc?.disconnectedAt || new Date() : undefined,
-        disconnectedTime:
-          event.type === 'welcome' && acc?.disconnectedAt
-            ? acc.disconnectedAt && Date.now() - acc.disconnectedAt.getTime()
-            : undefined,
-      }),
-      undefined,
-    ),
-    filter(Boolean),
-    concatMap(({event, disconnectedTime}, i) => {
-      const shouldSyncDocument =
-        (event.type === 'welcome' && i === 0) ||
-        (disconnectedTime && disconnectedTime > REFETCH_IF_DISCONNECTED_LONGER_THAN_MS)
-      if ((disconnectedTime || 0) > 0) {
-        debug('Reconnected after being disconnected for: %dms', disconnectedTime)
-      }
-      // Note: during disconnect, we might have lost mutation events that are required for the local buffered
-      // documents consistency.
-      // If mutation events keep arriving, the gap detection (see sequentializeListenerEvents.ts) will eventually kick
-      // in and reset/resync the document back to current server state.
-      // However, if no mutation events arrive after reconnect, there is a chance for the document to get stuck in a
-      // forever inconsistent state (which usually manifests itself by the "Saving…"-state getting stuck).
-      // However, as long as the document is actively being edited, either by the local user, or other collaborators,
-      // the gap detection and recovery will eventually activate and the document will be consistent again.
+    concatMap((event) => {
+      // note: resumability may not be enabled – if so, treat welcome the same way as a reset
+      const shouldSyncDocument = event.type === 'welcome' || event.type === 'reset'
       return shouldSyncDocument
         ? fetchInitialDocumentSnapshots().pipe(
             mergeMap(({draft, published, version}) => [
@@ -266,7 +229,7 @@ export function getPairListener(
     return client.observable
       .getDocuments<SanityDocument>(
         [publishedId, draftId, versionId].filter((id): id is string => typeof id === 'string'),
-        {tag: 'document.snapshots'},
+        {tag: 'document.pair.fetch'},
       )
       .pipe(
         map(([published, draft, version]) => ({
