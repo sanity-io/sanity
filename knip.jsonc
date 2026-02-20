@@ -28,6 +28,8 @@
         "conventional-changelog-conventionalcommits",
         // Knip does not parse scripts in actions/github-script
         "dotenv",
+        // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
+        "only-allow",
         // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
         "eslint-formatter-gha",
         // See .github/workflows/e2e-ui.yml
