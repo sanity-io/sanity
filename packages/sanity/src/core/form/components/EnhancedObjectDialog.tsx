@@ -150,12 +150,8 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   )
 
   const handleStackedDialogClose = useCallback(
-    (navigatedPath?: Path) => {
-      // When called from the breadcrumb (navigatedPath is set), we're navigating
-      // above all dialog levels — always close everything.
-      // When called from the X button (no navigatedPath) and there are stacked
-      // dialogs, navigate to the parent dialog instead.
-      if (!navigatedPath && stack.length >= 2) {
+    (closeAll?: boolean) => {
+      if (!closeAll && stack.length >= 2) {
         telemetry.log(NavigatedToNestedObjectViaCloseButton)
         close({toParent: true})
       } else {

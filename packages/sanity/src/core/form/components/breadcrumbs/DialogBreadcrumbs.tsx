@@ -48,8 +48,8 @@ interface DialogBreadcrumbsProps {
   currentPath?: Path
   /** Callback to navigate to a path, updating the form path and cleaning up the dialog stack. */
   onNavigate?: (path: Path) => void
-  /** Callback to fully close all dialogs and reset the path. Used when navigating above all dialog levels. */
-  onClose?: (path?: Path) => void
+  /** Callback to differentiate between closing all dialogs and closing the top dialog. Used when navigating above all dialog levels. */
+  onClose?: (closeAll?: boolean) => void
 }
 
 interface BreadcrumbItemData {
@@ -253,10 +253,12 @@ export function DialogBreadcrumbs({
 
         // Fallback: open to the item itself
         navigate(path)
-      } else {
+      } else if (path.length === 1) {
         // Non-key segment (field name like "animals") — this means navigating above
         // all dialog levels, so close everything rather than navigating to a field path.
-        onClose?.(path)
+        onClose?.(true)
+      } else {
+        navigate(path)
       }
     },
     [navigate, onClose, documentSchemaType, documentValue, currentPath],
