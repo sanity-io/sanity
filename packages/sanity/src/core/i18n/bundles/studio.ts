@@ -671,6 +671,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.duplicate': 'Duplicate',
   /** Label for editing the item of a specific type, eg "Edit Person" */
   'inputs.array.action.edit': 'Edit {{itemTypeTitle}}',
+  /** Tooltip text explaining why adding items is disabled when array max is reached */
+  'inputs.array.action.max-reached': 'Maximum items reached',
   /** Label for removing an array item action  */
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */

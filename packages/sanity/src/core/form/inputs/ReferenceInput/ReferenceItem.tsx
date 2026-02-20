@@ -26,6 +26,7 @@ import {type ObjectItem, type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
+import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
@@ -177,11 +178,15 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     setContextMenuButtonElement(element)
     menuButtonRef.current = element
   }, [])
+
+  const arrayValidation = useArrayValidation()
   const {insertBefore, insertAfter} = useInsertMenuMenuItems({
     schemaTypes: insertableTypes,
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: arrayValidation?.maxReached,
+    disabledReason: arrayValidation?.maxReached ? t('inputs.array.action.max-reached') : undefined,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
