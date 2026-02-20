@@ -1,3 +1,0 @@
-{
-  "ignores": ["sanity", "eslint-plugin-testing-library", "babel-plugin-styled-components"]
-}
