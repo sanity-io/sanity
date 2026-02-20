@@ -164,7 +164,7 @@
     "@juggle/resize-observer": "^3.4.0",
     "@mux/mux-player-react": "^3.10.2",
     "@portabletext/block-tools": "^5.0.3",
-    "@portabletext/editor": "^5.0.4",
+    "@portabletext/editor": "6.0.0-canary.0",
     "@portabletext/patches": "^2.0.4",
     "@portabletext/plugin-markdown-shortcuts": "^6.0.4",
     "@portabletext/plugin-one-line": "^5.0.4",

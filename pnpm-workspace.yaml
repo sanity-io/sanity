@@ -101,3 +101,4 @@ trustPolicyExclude:
   - undici@5.29.0
   - undici-types@6.21.0
   - vite@6.4.1
+  - '@portabletext/editor@6.0.0-canary.0'

@@ -575,11 +575,11 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       '@portabletext/editor':
-        specifier: ^5.0.4
-        version: 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+        specifier: 6.0.0-canary.0
+        version: 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       '@portabletext/plugin-character-pair-decorator':
         specifier: ^6.0.4
-        version: 6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+        version: 6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.4)
@@ -1790,23 +1790,23 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       '@portabletext/editor':
-        specifier: ^5.0.4
-        version: 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+        specifier: 6.0.0-canary.0
+        version: 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       '@portabletext/patches':
         specifier: ^2.0.4
         version: 2.0.4
       '@portabletext/plugin-markdown-shortcuts':
         specifier: ^6.0.4
-        version: 6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+        version: 6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
       '@portabletext/plugin-one-line':
         specifier: ^5.0.4
-        version: 5.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
+        version: 5.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
       '@portabletext/plugin-paste-link':
         specifier: ^2.0.4
-        version: 2.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
+        version: 2.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)
       '@portabletext/plugin-typography':
         specifier: ^6.0.4
-        version: 6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+        version: 6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
       '@portabletext/react':
         specifier: ^6.0.2
         version: 6.0.2(react@19.2.4)
@@ -4765,8 +4765,8 @@ packages:
     resolution: {integrity: sha512-TmqoaZJnL9mP+o6dyZf3RWWGCPlvneYZKRrAg0uXc1rMOD3fVMaht29dC3LVvmgV1U5duFLBJPS6TpcKNx6xjA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/editor@5.0.4':
-    resolution: {integrity: sha512-br+P0dtTXJYVs7d08igXzpgzhtprf2hmJjhs25dNXdohG+CtcqXVcpZQFjWPQ/C1x1q0JmSAJ5sSox6y1a2IOA==}
+  '@portabletext/editor@6.0.0-canary.0':
+    resolution: {integrity: sha512-wdRCqEWsblNjVLoevxQQV9rcEXcoL4GkpIfMCrGPXCwKvCnNbReETwyZ4qt1YeP5GFbXHMXrdL8u1ZdJrOrhgg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@portabletext/sanity-bridge': ^2.0.2
@@ -15895,7 +15895,7 @@ snapshots:
       '@portabletext/schema': 2.1.1
       '@sanity/types': link:packages/@sanity/types
 
-  '@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)':
+  '@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 5.0.3
       '@portabletext/keyboard-shortcuts': 2.1.2
@@ -15904,8 +15904,6 @@ snapshots:
       '@portabletext/sanity-bridge': 2.0.2
       '@portabletext/schema': 2.1.1
       '@portabletext/to-html': 5.0.1
-      '@sanity/schema': link:packages/@sanity/schema
-      '@sanity/types': link:packages/@sanity/types
       '@xstate/react': 6.0.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.25.1)
       debug: 4.4.3(supports-color@8.1.1)
       react: 19.2.4
@@ -15931,9 +15929,9 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
+  '@portabletext/plugin-character-pair-decorator@6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.25.1)
       react: 19.2.4
       remeda: 2.32.0
@@ -15941,38 +15939,38 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-input-rule@3.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
+  '@portabletext/plugin-input-rule@3.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       '@xstate/react': 6.0.0(@types/react@19.2.11)(react@19.2.4)(xstate@5.25.1)
       react: 19.2.4
       xstate: 5.25.1
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-markdown-shortcuts@6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
+  '@portabletext/plugin-markdown-shortcuts@6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
-      '@portabletext/plugin-character-pair-decorator': 6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
-      '@portabletext/plugin-input-rule': 3.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/plugin-character-pair-decorator': 6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+      '@portabletext/plugin-input-rule': 3.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
       react: 19.2.4
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-one-line@5.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
+  '@portabletext/plugin-one-line@5.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       react: 19.2.4
 
-  '@portabletext/plugin-paste-link@2.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
+  '@portabletext/plugin-paste-link@2.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
       react: 19.2.4
 
-  '@portabletext/plugin-typography@6.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
+  '@portabletext/plugin-typography@6.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)':
     dependencies:
-      '@portabletext/editor': 5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
-      '@portabletext/plugin-input-rule': 3.0.4(@portabletext/editor@5.0.4(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
+      '@portabletext/editor': 6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@portabletext/plugin-input-rule': 3.0.4(@portabletext/editor@6.0.0-canary.0(@portabletext/sanity-bridge@2.0.2)(@types/react@19.2.11)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2))(@types/react@19.2.11)(react@19.2.4)
       react: 19.2.4
     transitivePeerDependencies:
       - '@types/react'
