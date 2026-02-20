@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -130,6 +130,22 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
   const isSvg = useMemo(() => value?.asset?._ref?.split('-').at(-1) === 'svg', [value?.asset?._ref])
 
+  // Calculate cropped dimensions
+  const croppedDimensions = useMemo(() => {
+    if (!image) return null
+
+    const crop = localValue.crop || DEFAULT_CROP
+    const croppedWidth = Math.round(image.width * (1 - crop.left - crop.right))
+    const croppedHeight = Math.round(image.height * (1 - crop.top - crop.bottom))
+
+    return {
+      originalWidth: image.width,
+      originalHeight: image.height,
+      croppedWidth,
+      croppedHeight,
+    }
+  }, [image, localValue.crop])
+
   const {t} = useTranslation()
   return (
     <FormField
@@ -213,6 +229,20 @@ export function ImageToolInput(props: ImageToolInputProps) {
             </RatioBox>
           </ChangeIndicator>
         </Card>
+
+        {/* Display cropped dimensions */}
+        {!isImageLoading && croppedDimensions && (
+          <Box marginTop={3}>
+            <Inline space={2}>
+              <Text size={1} muted>
+                {t('inputs.imagetool.crop-dimensions', {
+                  width: croppedDimensions.croppedWidth,
+                  height: croppedDimensions.croppedHeight,
+                })}
+              </Text>
+            </Inline>
+          </Box>
+        )}
 
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
