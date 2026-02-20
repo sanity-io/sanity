@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-20)
+
+### Features
+
+* **cli:** add Gemini, Codex and Copilot CLIs to MCP configure ([#12194](https://github.com/sanity-io/sanity/issues/12194)) ([093e716](https://github.com/sanity-io/sanity/commit/093e7165e77bce80e11e59e7a98f58524d363e43)) by James Woods (jwwoods01@gmail.com)
+* **dataset:** add commands for managing embeddings ([759d47e](https://github.com/sanity-io/sanity/commit/759d47e7bf219eca7e0fb09b824ad1aadbc9a3bc)) by Alex Doroshenko (adoprog@users.noreply.github.com)
+
+### Bug Fixes
+
+* **core:** prepare for PTE v6 EditorConfig and paste type changes ([e131d6a](https://github.com/sanity-io/sanity/commit/e131d6a52b26a0a6cc4566803bbdd959aabc5999)), closes [#2136](https://github.com/sanity-io/sanity/issues/2136) by Christian Grøngaard (christian.groengaard@sanity.io)
+* **deps:** update dependency @sanity/import to ^4.1.2 ([#12208](https://github.com/sanity-io/sanity/issues/12208)) ([2c7841d](https://github.com/sanity-io/sanity/commit/2c7841db8e3a583832dcf49b0af9087a71eb236c)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+* **deps:** Update portabletext ([#12210](https://github.com/sanity-io/sanity/issues/12210)) ([d7294b9](https://github.com/sanity-io/sanity/commit/d7294b9a1e3d51f37a4e7bd8a1121863ae81a13a)) by renovate[bot] (29139614+renovate[bot]@users.noreply.github.com)
+
 ## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
 
 ### Features

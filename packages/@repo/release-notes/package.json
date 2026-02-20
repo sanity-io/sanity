@@ -1,6 +1,6 @@
 {
   "name": "@repo/release-notes",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "private": true,
   "description": "Internal tool for updating release-notes",
   "license": "MIT",

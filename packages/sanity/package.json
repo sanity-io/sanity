@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
