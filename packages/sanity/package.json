@@ -190,7 +190,7 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/image-url": "^2.0.3",
-    "@sanity/import": "^4.1.1",
+    "@sanity/import": "^4.1.2",
     "@sanity/insert-menu": "^3.0.4",
     "@sanity/logos": "^2.2.2",
     "@sanity/media-library-types": "^1.2.0",

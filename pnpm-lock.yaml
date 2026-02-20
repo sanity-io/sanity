@@ -1868,8 +1868,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       '@sanity/import':
-        specifier: ^4.1.1
-        version: 4.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
+        specifier: ^4.1.2
+        version: 4.1.2(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)
       '@sanity/insert-menu':
         specifier: ^3.0.4
         version: 3.0.4(@emotion/is-prop-valid@1.4.0)(@sanity/styled-components@6.1.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@sanity/types@packages+@sanity+types)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -5453,8 +5453,8 @@ packages:
     resolution: {integrity: sha512-A/vOugFw/ROGgSeSGB6nimO0c35x9KztatOPIIVlhkL+zsOfP7khigCbdJup2FSv6C03FX2XaUAhXojCxANl2Q==}
     engines: {node: '>=20.19.0'}
 
-  '@sanity/import@4.1.1':
-    resolution: {integrity: sha512-vCJ0pq3OS105h13J6b9aU3BVTrAmC38Y/NC/uJJ5WVFKB7lHogZ5tWOHLJ8yaaE5/WdKCM/jixyeUZ4CiOijNA==}
+  '@sanity/import@4.1.2':
+    resolution: {integrity: sha512-4X81TbdRnnxqkdUU5+chLRT8A0RpvrlJkFDeYgjkbJZSsng3d9AwudWPC0kqAcZbZrGhxdzeTsu2dQl0nNfIgA==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     hasBin: true
 
@@ -16615,7 +16615,7 @@ snapshots:
     dependencies:
       '@sanity/signed-urls': 2.0.2
 
-  '@sanity/import@4.1.1(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
+  '@sanity/import@4.1.2(@sanity/telemetry@0.8.1(react@19.2.4))(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.44.1)(yaml@2.8.2)':
     dependencies:
       '@oclif/core': 4.8.0
       '@oclif/plugin-help': 6.2.37
