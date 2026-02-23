@@ -53,5 +53,12 @@ export const isEmptyArray = isDeepEmptyArray
 /**
  * @deprecated Use `isDeepEmpty` instead
  * todo: remove in v4
+ * @alias
+ */
+export const isEmpty = isDeepEmpty
+
+/**
+ * @deprecated Use `isDeepEmpty` instead
+ * todo: remove in v4
  */
 export const isEmptyObject = isDeepEmptyObject
