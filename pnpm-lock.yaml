@@ -51,9 +51,6 @@ catalogs:
     babel-plugin-styled-components:
       specifier: ^2.1.4
       version: 2.1.4
-    esbuild:
-      specifier: 0.27.3
-      version: 0.27.3
     esbuild-register:
       specifier: ^3.6.0
       version: 3.6.0
@@ -2039,7 +2036,7 @@ importers:
         specifier: 'catalog:'
         version: 24.10.13
       esbuild:
-        specifier: 'catalog:'
+        specifier: 0.27.3
         version: 0.27.3
       eslint:
         specifier: 'catalog:'
