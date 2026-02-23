@@ -6,17 +6,15 @@
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",
   "scripts": {
-    "build": "run-s workshop:build sanity:build sanity:manifest",
+    "build": "run-s sanity:build sanity:manifest",
     "check:types": "tsc --noEmit",
     "clean": "rimraf .sanity dist",
-    "dev": "run-p workshop:dev sanity:dev",
+    "dev": "sanity dev",
     "lint": "eslint .",
     "sanity:build": "PKG_BUILD_VERSION=$(./get-version.ts) sanity build --source-maps",
     "sanity:dev": "sanity dev",
     "sanity:manifest": "SANITY_AUTH_TOKEN=${VERCEL_SANITY_API_DEPLOY_TOKEN} sanity schema deploy --workspace default",
-    "start": "sanity preview",
-    "workshop:build": "tsx scripts/workshop/build.ts",
-    "workshop:dev": "tsx scripts/workshop/dev.ts"
+    "start": "sanity preview"
   },
   "dependencies": {
     "@portabletext/block-tools": "^5.0.3",
@@ -40,7 +38,6 @@
     "@sanity/react-loader": "^2.0.5",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
-    "@sanity/ui-workshop": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.2",
     "@sanity/vision": "workspace:*",

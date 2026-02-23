@@ -56,7 +56,6 @@
         "src/_internal/cli/server/esbuild-register.js",
         "playwright-ct/template/index.ts",
         "mock-browser-env-stub-loader.mjs",
-        "src/**/__workshop__/**/index.ts", // See dev/test-studio/scripts/workshop/dev.ts
       ],
       "project": [
         "src/**/*.{ts,tsx}",

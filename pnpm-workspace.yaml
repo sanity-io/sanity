@@ -20,7 +20,6 @@ catalog:
   '@sanity/eslint-config-i18n': ^2.0.0
   '@sanity/pkg-utils': ^10.4.4
   '@sanity/ui': ^3.1.11
-  '@sanity/ui-workshop': ^3.4.0
   '@types/node': ^24.3.0
   '@types/react': ^19.2.11
   '@types/react-dom': ^19.2.3

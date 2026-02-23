@@ -33,8 +33,6 @@ export default defineConfig({
       reporter: ['html', 'json', 'json-summary'],
       include: ['packages/**/src/**'],
       exclude: [
-        // exclude workshop files
-        '**/__workshop__/**',
         // exclude telemetry definitions
         '**/__telemetry__/**',
         // exclude internal

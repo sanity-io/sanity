@@ -315,7 +315,6 @@
     "@sanity/eslint-config-i18n": "catalog:",
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/pkg-utils": "catalog:",
-    "@sanity/ui-workshop": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.5",
     "@sentry/types": "^8.55.0",
     "@testing-library/jest-dom": "^6.9.1",
