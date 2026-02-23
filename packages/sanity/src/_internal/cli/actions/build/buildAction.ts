@@ -104,7 +104,7 @@ export default async function buildSanityStudio(
       const versionMismatchWarning =
         `The following local package versions are different from the versions currently served at runtime.\n` +
         `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')}`
 
       // If it is non-interactive or in unattended mode, we don't want to prompt
       if (isInteractive && !unattendedMode) {
