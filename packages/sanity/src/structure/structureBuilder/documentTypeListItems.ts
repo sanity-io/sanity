@@ -27,7 +27,7 @@ function isList(collection: Collection): collection is List {
   return collection.type === 'list'
 }
 
-export function getDocumentTypes({schema}: StructureContext): string[] {
+function getDocumentTypes({schema}: StructureContext): string[] {
   return schema
     .getTypeNames()
     .filter((n) => {

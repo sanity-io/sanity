@@ -27,7 +27,7 @@ export function toggleExpanded(event: any): void {
   lru.set(path, !current)
 }
 
-export function selectElement(element: HTMLElement): void {
+function selectElement(element: HTMLElement): void {
   const sel = window.getSelection()
 
   if (sel) {

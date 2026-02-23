@@ -27,8 +27,8 @@ const LISTEN_OPTIONS: ListenOptions = {
   tag: 'tasks-store',
 }
 
-export const SORT_FIELD = '_createdAt'
-export const SORT_ORDER = 'desc'
+const SORT_FIELD = '_createdAt'
+const SORT_ORDER = 'desc'
 
 const QUERY_FILTERS = [`_type == "tasks.task"`]
 

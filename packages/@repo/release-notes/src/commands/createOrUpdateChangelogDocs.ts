@@ -104,7 +104,7 @@ export async function createOrUpdateChangelogDocs(args: {
   return {success: true, changelogDocumentId, apiVersionDocId, commitsWithPrs, releaseId}
 }
 
-export async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
+async function toArray<T>(it: AsyncIterableIterator<T>): Promise<T[]> {
   const result: T[] = []
   for await (const chunk of it) {
     result.push(chunk)

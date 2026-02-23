@@ -9,7 +9,7 @@ const TEXT = encoder.encode(
  * @param byteSize - The size in bytes of the uint array to generate
  * @internal
  */
-export function loremBytes(byteSize: number): Uint8Array {
+function loremBytes(byteSize: number): Uint8Array {
   const result = new Uint8Array(byteSize)
   for (let i = 0; i < byteSize; i++) {
     result[i] = TEXT[i % TEXT.byteLength]

@@ -8,7 +8,7 @@ import {TasksListTabs} from './TasksListTabs'
 /**
  * @internal
  */
-export function TaskSidebarContent({
+function TaskSidebarContent({
   items,
   onTaskSelect,
   activeTabId,

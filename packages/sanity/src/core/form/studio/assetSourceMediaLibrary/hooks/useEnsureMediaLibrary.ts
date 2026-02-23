@@ -19,7 +19,7 @@ import {type MediaLibrary} from '../types'
 
 type ErrorCode = 'ERROR_NO_ORGANIZATION_FOUND' | 'ERROR_NO_LIBRARY_FOUND'
 
-export class ProvisionError extends Error {
+class ProvisionError extends Error {
   message: string
   error: string
   code: ErrorCode

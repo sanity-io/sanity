@@ -8,10 +8,7 @@ import {isInteractive} from '../isInteractive'
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 
-export const ALLOWED_PACKAGE_MANAGERS: PackageManager[] = ['npm', 'yarn', 'pnpm', 'bun', 'manual']
-export const allowedPackageManagersString = ALLOWED_PACKAGE_MANAGERS.map((pm) => `"${pm}"`).join(
-  ' | ',
-)
+const ALLOWED_PACKAGE_MANAGERS: PackageManager[] = ['npm', 'yarn', 'pnpm', 'bun', 'manual']
 
 const EXPERIMENTAL = ['bun']
 
@@ -109,23 +106,23 @@ async function getAvailablePackageManagers(cwd: string): Promise<PackageManager[
   return choices.filter((pm): pm is PackageManager => pm !== false)
 }
 
-export function hasNpmInstalled(cwd?: string): Promise<boolean> {
+function hasNpmInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('npm', cwd)
 }
 
-export function hasYarnInstalled(cwd?: string): Promise<boolean> {
+function hasYarnInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('yarn', cwd)
 }
 
-export function hasPnpmInstalled(cwd?: string): Promise<boolean> {
+function hasPnpmInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('pnpm', cwd)
 }
 
-export function hasBunInstalled(cwd?: string): Promise<boolean> {
+function hasBunInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('bun', cwd)
 }
 
-export function getNpmRunPath(cwd: string): string {
+function getNpmRunPath(cwd: string): string {
   let previous
   let cwdPath = path.resolve(cwd)
   const result: string[] = []

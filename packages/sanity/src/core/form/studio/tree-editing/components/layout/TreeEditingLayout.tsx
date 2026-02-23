@@ -27,7 +27,7 @@ interface TreeEditingLayoutProps {
  * This component is not currently used, but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
  * For now I think it's best to keep it
  */
-export const TreeEditingLayout = memo(function TreeEditingLayout(
+const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
 ): React.JSX.Element {
   const {

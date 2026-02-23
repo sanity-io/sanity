@@ -71,7 +71,7 @@ function mutConcat<T>(array: T[], chunks: T[]) {
   return array
 }
 
-export function createDocumentAvailabilityObserver(
+function createDocumentAvailabilityObserver(
   versionedClient: SanityClient,
   observePaths: ObservePathsFn,
 ): (id: string) => Observable<DocumentAvailability> {

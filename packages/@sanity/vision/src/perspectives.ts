@@ -1,5 +1,4 @@
 import {type ClientPerspective} from '@sanity/client'
-import isEqual from 'react-fast-compare'
 import {type PerspectiveContextValue, type PerspectiveStack} from 'sanity'
 
 export const SUPPORTED_PERSPECTIVES = [
@@ -40,17 +39,6 @@ export function isVirtualPerspective(
 
 export function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
   return typeof selectedPerspectiveName !== 'undefined'
-}
-
-export function hasPinnedPerspectiveChanged(
-  previous: PerspectiveContextValue,
-  next: PerspectiveContextValue,
-): boolean {
-  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
-
-  return (
-    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
-  )
 }
 
 export function getActivePerspective({

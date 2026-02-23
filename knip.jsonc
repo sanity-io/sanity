@@ -65,7 +65,12 @@
       "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
     },
     "packages/@sanity/schema": {
-      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "entry": [
+        "src/_exports/*.ts",
+        "package.config.ts",
+        // Knip can't trace `import * as types from './types'` in Schema.ts
+        "src/legacy/types/index.ts",
+      ],
       "project": ["src/**/*.ts"],
     },
     "packages/@sanity/mutator": {

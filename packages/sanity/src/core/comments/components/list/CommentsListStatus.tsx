@@ -10,7 +10,7 @@ interface EmptyStateMessage {
   message: React.ReactNode
 }
 
-export function getEmptyStateMessages(t: TFunction): Record<CommentStatus, EmptyStateMessage> {
+function getEmptyStateMessages(t: TFunction): Record<CommentStatus, EmptyStateMessage> {
   return {
     open: {
       title: t('list-status.empty-state-open-title'),

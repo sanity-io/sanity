@@ -148,7 +148,7 @@ async function getCollaborators(pullRequest: PullRequest) {
  * Returns a new array with unique items, keyed by `keyFn`.
  * Keeps the FIRST item encountered for each key and preserves input order.
  */
-export function uniqueBy<T, K>(items: readonly T[], keyFn: (item: T) => K): T[] {
+function uniqueBy<T, K>(items: readonly T[], keyFn: (item: T) => K): T[] {
   const seen = new Set<K>()
   const out: T[] = []
   for (const item of items) {

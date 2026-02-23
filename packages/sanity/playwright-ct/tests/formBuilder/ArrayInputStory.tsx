@@ -20,7 +20,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function ArrayInputStory() {
+function ArrayInputStory() {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <TestForm />

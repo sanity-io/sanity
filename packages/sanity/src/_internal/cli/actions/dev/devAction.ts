@@ -53,7 +53,7 @@ const getDefaultDashboardURL = ({
   }).toString()}`
 }
 
-export const getDashboardURL = async ({
+const getDashboardURL = async ({
   fetchFn = globalThis.fetch,
   timeout = 5000,
   organizationId,

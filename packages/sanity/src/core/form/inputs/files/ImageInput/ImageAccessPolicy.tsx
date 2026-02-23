@@ -4,7 +4,7 @@ import {styled} from 'styled-components'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
 import {type AssetAccessPolicy} from '../types'
 
-export const Wrapper = styled(Inline)`
+const Wrapper = styled(Inline)`
   position: absolute;
   top: 0;
   left: 0;

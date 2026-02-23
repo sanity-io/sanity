@@ -10,12 +10,6 @@ import {debug} from './debug'
 import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 
-export interface SchemaExtractionOptions {
-  enabled: boolean
-  outputPath?: string
-  workspaceName?: string
-}
-
 export interface DevServerOptions {
   cwd: string
   basePath: string

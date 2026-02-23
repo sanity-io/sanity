@@ -31,7 +31,7 @@ interface DiffContext {
   fieldFilter?: string[]
 }
 
-export function buildChangeList(
+function buildChangeList(
   schemaType: SchemaType,
   diff: Diff,
   path: Path = [],
@@ -89,7 +89,7 @@ export function buildObjectChangeList(
   ]
 }
 
-export function buildFieldChange(
+function buildFieldChange(
   field: ObjectField,
   diff: ObjectDiff,
   path: Path,
@@ -107,7 +107,7 @@ export function buildFieldChange(
   return buildChangeList(field.type as any, fieldDiff, fieldPath, fieldTitlePath, context)
 }
 
-export function buildFieldsetChangeList(
+function buildFieldsetChangeList(
   fieldSet: MultiFieldSet,
   diff: ObjectDiff,
   path: Path,
@@ -164,7 +164,7 @@ export function buildFieldsetChangeList(
   ]
 }
 
-export function buildArrayChangeList(
+function buildArrayChangeList(
   schemaType: ArraySchemaType,
   diff: ArrayDiff,
   path: Path = [],

@@ -13,7 +13,7 @@ import {type DocumentAvailability} from '../../../preview'
 import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
-export type PreviewDocumentValue = PreviewValue & {
+type PreviewDocumentValue = PreviewValue & {
   _id: string
   _createdAt?: string
   _updatedAt?: string

@@ -60,7 +60,7 @@ export function formatFailure(
   return 'Unknown error'
 }
 
-export function getStatus(attempt: DeliveryAttempt): string {
+function getStatus(attempt: DeliveryAttempt): string {
   if (attempt.isFailure) {
     return 'Failed'
   }

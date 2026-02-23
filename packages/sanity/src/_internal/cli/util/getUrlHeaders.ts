@@ -3,7 +3,7 @@ import {promise} from 'get-it/middleware'
 
 const request = getIt([promise()])
 
-export class HttpError extends Error {
+class HttpError extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'HttpError'

@@ -36,7 +36,7 @@ export default async function extractAction(
   return runSingleExtraction(args, context)
 }
 
-export function getExtractOptions(
+function getExtractOptions(
   flags: ExtractFlags,
   config: CliCommandContext['cliConfig'],
   workDir: string,

@@ -13,7 +13,7 @@ function normalizeToProp(typeDef: any) {
 }
 
 const VALID_DATASET = /^[a-z0-9~][-_a-z0-9]+$/
-export function isValidDatasetName(name: string): string | true {
+function isValidDatasetName(name: string): string | true {
   const isValid = name.length >= 2 && name.toLowerCase() === name && VALID_DATASET.test(name)
   return (
     isValid ||

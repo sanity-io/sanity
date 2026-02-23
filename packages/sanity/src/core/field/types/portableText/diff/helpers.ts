@@ -32,7 +32,7 @@ import {
 import * as TextSymbols from './symbols'
 import {type InlineSymbolMap, type MarkSymbolMap, type PortableTextDiff} from './types'
 
-export const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
+const UNKNOWN_TYPE_NAME = '_UNKOWN_TYPE_'
 
 export function hasPTMemberType(schemaType: ArraySchemaType): boolean {
   return schemaType.of.some(isPTSchemaType)
@@ -102,7 +102,7 @@ export function getDecorators(spanSchemaType: SpanSchemaType): {title: string; v
   return []
 }
 
-export function getAnnotations(spanSchemaType: SpanSchemaType): ObjectSchemaType[] {
+function getAnnotations(spanSchemaType: SpanSchemaType): ObjectSchemaType[] {
   if (spanSchemaType.annotations) {
     return orderBy(spanSchemaType.annotations, ['name'], ['asc'])
   }
@@ -113,7 +113,7 @@ export function isDecorator(name: string, schemaType: SpanSchemaType): boolean {
   return getDecorators(schemaType).some((dec) => dec.value === name)
 }
 
-export function blockToSymbolizedText(
+function blockToSymbolizedText(
   diff: ObjectDiff,
   block: PortableTextTextBlock | undefined,
   decoratorMap: MarkSymbolMap,

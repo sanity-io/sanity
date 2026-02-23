@@ -43,13 +43,6 @@ export const CreatedRelease = defineEvent<OriginInfo>({
   description: 'User created a release',
 })
 
-/** When a release is successfully updated */
-export const UpdatedRelease = defineEvent({
-  name: 'Release Updated',
-  version: 1,
-  description: 'User updated a release',
-})
-
 /** When a release is successfully deleted */
 export const DeletedRelease = defineEvent({
   name: 'Release Deleted',

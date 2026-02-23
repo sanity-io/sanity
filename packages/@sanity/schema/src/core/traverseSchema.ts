@@ -20,7 +20,7 @@ export type Visitor = (typeDef: SchemaTypeDef, arg1: VisitContext) => SchemaType
 
 const NOOP_VISITOR: Visitor = (typeDef) => typeDef
 
-export class UnknownType {
+class UnknownType {
   name: string
 
   constructor(name: string) {

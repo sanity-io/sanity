@@ -90,7 +90,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function FocusTrackingStory({
+function FocusTrackingStory({
   focusPath,
   onPathFocus,
   document,

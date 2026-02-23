@@ -35,7 +35,7 @@ type Props = {
   setMenuButtonElement: (element: HTMLButtonElement | null) => void
 }
 
-export const MenuActionsWrapper = styled(Inline)`
+const MenuActionsWrapper = styled(Inline)`
   position: absolute;
   top: 0;
   right: 0;

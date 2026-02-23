@@ -47,7 +47,7 @@ const CHILDREN_ITEMS_VARIANTS: Variants = {
 
 const ITEM_HEIGHT = 57
 
-export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const EventsTimeline = ({
   events: allEvents,

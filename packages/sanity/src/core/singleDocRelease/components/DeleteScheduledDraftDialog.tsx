@@ -162,7 +162,7 @@ function DeleteScheduledDraftDialogContent({
   )
 }
 
-export function DeleteScheduledDraftDialogWithCopyToDraft({
+function DeleteScheduledDraftDialogWithCopyToDraft({
   documentId,
   documentType,
   onClose,

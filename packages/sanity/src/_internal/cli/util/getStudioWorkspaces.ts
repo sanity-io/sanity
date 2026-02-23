@@ -25,7 +25,7 @@ interface GetStudioWorkspacesOptions {
 /**
  * Note: Don't run this on the main thread, use it a forked process
  */
-export function getStudioConfig({
+function getStudioConfig({
   basePath,
   configPath: cfgPath,
 }: GetStudioWorkspacesOptions): WorkspaceOptions[] {

@@ -14,30 +14,6 @@ import {shouldShowReleaseInView} from '../../util/util'
 import {type CardinalityView} from './queryParamUtils'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
-export const ReleaseCalendarFilterDay: CalendarProps['renderCalendarDay'] = (props) => {
-  const {data: releases} = useActiveReleases()
-  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
-
-  const {date} = props
-
-  const [startOfDayForTimeZone, endOfDayForTimeZone] = getTimezoneAdjustedDateTimeRange(date)
-
-  const dayHasReleases = releases?.some((release) => {
-    const releasePublishAt = release.publishAt || release.metadata.intendedPublishAt
-    if (!releasePublishAt) return false
-
-    const publishDateUTC = new Date(releasePublishAt)
-
-    return (
-      release.metadata.releaseType === 'scheduled' &&
-      publishDateUTC >= startOfDayForTimeZone &&
-      publishDateUTC <= endOfDayForTimeZone
-    )
-  })
-
-  return <CalendarDay {...props} dateStyles={dayHasReleases ? {fontWeight: 700} : {}} />
-}
-
 const ReleaseCalendarFilterDayWithCardinality = (
   props: CalendarDayProps & {
     cardinalityView: CardinalityView

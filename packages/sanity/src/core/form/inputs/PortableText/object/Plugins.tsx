@@ -189,7 +189,7 @@ function DefaultTypographyPlugin(props: PortableTextPluginsProps['plugins']['typ
   return <TypographyPlugin {...typographyPluginProps} />
 }
 
-export const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
+const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) => {
   const RenderPlugins = useMiddlewareComponents({
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,

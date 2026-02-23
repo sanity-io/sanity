@@ -41,13 +41,12 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
   },
 )
 
-export const FileMenuItem = styled(MenuItem).attrs({forwardedAs: 'label'})(
-  ({theme}: {theme: Theme}) => {
-    const {focusRing} = theme.sanity
-    const base = theme.sanity.color.base
-    const border = {width: 1, color: 'var(--card-border-color)'}
+const FileMenuItem = styled(MenuItem).attrs({forwardedAs: 'label'})(({theme}: {theme: Theme}) => {
+  const {focusRing} = theme.sanity
+  const base = theme.sanity.color.base
+  const border = {width: 1, color: 'var(--card-border-color)'}
 
-    return css`
+  return css`
       &:not([data-disabled='true']) {
         &:focus-within {
           box-shadow: ${focusRingStyle({base, border, focusRing})};
@@ -75,5 +74,4 @@ export const FileMenuItem = styled(MenuItem).attrs({forwardedAs: 'label'})(
         opacity: 0;
       }
     `
-  },
-)
+})

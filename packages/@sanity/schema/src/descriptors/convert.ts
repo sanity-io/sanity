@@ -270,7 +270,7 @@ type Options = {
   duplicateArrayElements: Map<ArrayElement, string>
 }
 
-export function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
+function convertTypeDef(schemaType: SchemaType, path: string, opts: Options): TypeDef {
   const common = convertCommonTypeDef(schemaType, path, opts)
 
   if (!schemaType.type) {

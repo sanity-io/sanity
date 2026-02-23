@@ -15,7 +15,7 @@ import {
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
 
-export const INITIAL_STATE = {
+const INITIAL_STATE = {
   documents: [],
   loading: true,
 }

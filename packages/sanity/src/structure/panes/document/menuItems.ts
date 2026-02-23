@@ -85,7 +85,7 @@ function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): Pa
   }
 }
 
-export function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
+function getProductionPreviewItem({previewUrl, t}: GetMenuItemsParams): PaneMenuItem | null {
   if (!previewUrl) return null
 
   return {

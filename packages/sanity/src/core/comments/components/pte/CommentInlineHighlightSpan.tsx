@@ -5,7 +5,7 @@ import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
-export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
+const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark
 
   // Colors used when a comment is added

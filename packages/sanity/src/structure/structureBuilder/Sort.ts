@@ -2,7 +2,7 @@ import {type SortOrdering} from '@sanity/types'
 
 import {structureLocaleNamespace} from '../i18n'
 
-export const ORDER_BY_UPDATED_AT: SortOrdering = {
+const ORDER_BY_UPDATED_AT: SortOrdering = {
   title: 'Last edited',
   i18n: {
     title: {
@@ -14,7 +14,7 @@ export const ORDER_BY_UPDATED_AT: SortOrdering = {
   by: [{field: '_updatedAt', direction: 'desc'}],
 }
 
-export const ORDER_BY_CREATED_AT: SortOrdering = {
+const ORDER_BY_CREATED_AT: SortOrdering = {
   title: 'Created',
   i18n: {
     title: {

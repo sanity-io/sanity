@@ -462,7 +462,7 @@ function ensureConditional<const Key extends string>(key: Key, value: unknown) {
   return {}
 }
 
-export function transformBlockType(
+function transformBlockType(
   blockType: SchemaType,
   context: Context,
 ): Pick<ManifestSchemaType, 'marks' | 'lists' | 'styles' | 'of'> | Record<string, never> {

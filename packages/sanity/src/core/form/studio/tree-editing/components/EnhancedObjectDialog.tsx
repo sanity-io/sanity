@@ -55,7 +55,7 @@ interface EnhancedObjectDialogProps {
   schemaType: ObjectSchemaType
 }
 
-export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JSX.Element | null {
+function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JSX.Element | null {
   const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
 

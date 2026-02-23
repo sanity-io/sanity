@@ -23,8 +23,6 @@ interface ValidateFlags {
   'debug-metafile-path'?: string
 }
 
-export type SchemaValidationFormatter = (result: ValidateSchemaWorkerResult) => string
-
 export default async function validateAction(
   args: CliCommandArguments<ValidateFlags>,
   {workDir, output}: CliCommandContext,

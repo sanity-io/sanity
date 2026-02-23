@@ -149,7 +149,7 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
   return problems
 }
 
-export function validatePreview(preview: PreviewConfig) {
+function validatePreview(preview: PreviewConfig) {
   if (!isPlainObject(preview)) {
     return [error(`The "preview" property must be an object, instead saw "${typeof preview}"`)]
   }

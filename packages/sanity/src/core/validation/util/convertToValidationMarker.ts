@@ -3,7 +3,7 @@ import {type Path, type ValidationError, type ValidationMarker} from '@sanity/ty
 import {type ValidationContext} from '../types'
 import {pathToString} from '../util/pathToString'
 
-export function isNonNullable<T>(t: T): t is NonNullable<T> {
+function isNonNullable<T>(t: T): t is NonNullable<T> {
   return t !== null || t !== undefined
 }
 

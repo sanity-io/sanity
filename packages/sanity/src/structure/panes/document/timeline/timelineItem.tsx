@@ -20,7 +20,7 @@ import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
 
-export const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
+const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
   const theme = getTheme_v2(props.theme)
   const color = props.$color
 

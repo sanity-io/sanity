@@ -11,7 +11,7 @@ function getScheme(scheme: unknown): StudioThemeColorSchemeKey {
 }
 
 /** @internal */
-export const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
+const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 let snapshot: StudioThemeColorSchemeKey
 const subscribers = new Set<() => void>()

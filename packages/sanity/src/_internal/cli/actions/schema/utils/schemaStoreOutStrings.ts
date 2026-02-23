@@ -10,7 +10,7 @@ export function projectIdDatasetPair(pair: {projectId: string; dataset: string})
   return JSON.stringify({projectId: pair.projectId, dataset: pair.dataset})
 }
 
-export function getStringArrayOutString(array: string[]) {
+function getStringArrayOutString(array: string[]) {
   return `[${array.map((d) => `"${d}"`).join(',')}]`
 }
 

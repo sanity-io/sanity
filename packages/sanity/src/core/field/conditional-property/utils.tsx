@@ -1,19 +1,10 @@
-import {
-  type ConditionalProperty,
-  type ConditionalPropertyCallbackContext,
-  type CurrentUser,
-} from '@sanity/types'
-import omit from 'lodash-es/omit.js'
+import {type ConditionalProperty, type ConditionalPropertyCallbackContext} from '@sanity/types'
 import {useMemo} from 'react'
 
 import {isRecord} from '../../util'
 
-export function isThenable(value: unknown): value is Promise<unknown> {
+function isThenable(value: unknown): value is Promise<unknown> {
   return isRecord(value) && typeof value?.then === 'function'
-}
-
-export function omitDeprecatedRole(user: CurrentUser): Omit<CurrentUser, 'role'> {
-  return omit(user, 'role')
 }
 
 export function useCheckCondition(

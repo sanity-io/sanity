@@ -23,7 +23,7 @@ Examples
   sanity exec --mock-browser-env myscript.js -- --dry-run positional-argument
 `
 
-export const execCommand: CliCommandDefinition = {
+const execCommand: CliCommandDefinition = {
   name: 'exec',
   signature: 'SCRIPT',
   description: 'Executes a script within the Sanity Studio context',

@@ -29,5 +29,3 @@ export function AnnotationsStory() {
     </TestWrapper>
   )
 }
-
-export default AnnotationsStory

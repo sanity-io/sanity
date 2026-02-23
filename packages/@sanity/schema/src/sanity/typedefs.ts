@@ -11,7 +11,7 @@ export interface TypeDef {
   options?: Record<string, any>
 }
 
-export interface SchemaDef {
+interface SchemaDef {
   name: string
   types: TypeDef[]
 }

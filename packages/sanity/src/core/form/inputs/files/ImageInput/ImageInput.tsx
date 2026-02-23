@@ -47,7 +47,7 @@ import {InvalidImageWarning} from './InvalidImageWarning'
 import {type BaseImageInputProps, type BaseImageInputValue} from './types'
 import {useAccessPolicy} from './useAccessPolicy'
 
-export {BaseImageInputProps, BaseImageInputValue}
+export {BaseImageInputProps}
 
 function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element {
   const {

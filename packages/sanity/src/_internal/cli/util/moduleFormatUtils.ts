@@ -10,7 +10,7 @@ export function formatModuleSizes(modules: ChunkModule[]): string {
   return lines.join('\n')
 }
 
-export function formatModuleName(modName: string): string {
+function formatModuleName(modName: string): string {
   const delimiter = '/node_modules/'
   const nodeIndex = modName.lastIndexOf(delimiter)
   return nodeIndex === -1 ? modName : modName.slice(nodeIndex + delimiter.length)

@@ -44,6 +44,3 @@ export const useWeeksOfMonth = (date: Date): Week[] => {
     }),
   )
 }
-
-export const formatTime = (hours: number, minutes: number): string =>
-  `${`${hours}`.padStart(2, '0')}:${`${minutes}`.padStart(2, '0')}`

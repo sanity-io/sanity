@@ -1,8 +1,7 @@
 // Based off: https://github.com/sanity-io/sanity/blob/next/packages/@sanity/desk-tool/src/components/paneItem/helpers.tsx
 import {type SanityDocument} from '@sanity/client'
-import {WarningOutlineIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {type ComponentType, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
@@ -16,32 +15,7 @@ export interface PaneItemPreviewState {
   published?: SanityDocument | null
 }
 
-export interface PreviewValue {
-  id?: string
-  subtitle?: ReactNode
-  title?: ReactNode
-  media?: ReactNode | ComponentType
-  icon?: boolean
-  type?: string
-  displayOptions?: {showIcon?: boolean}
-  schemaType?: {name?: string}
-}
-
 const isLiveEditEnabled = (schemaType: any) => schemaType.liveEdit === true
-
-export const getMissingDocumentFallback = (item: SanityDocument): PreviewValue => ({
-  title: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? String(item.title) : 'Missing document'}
-    </span>
-  ),
-  subtitle: (
-    <span style={{fontStyle: 'italic'}}>
-      {item.title ? `Missing document ID: ${item._id}` : `Document ID: ${item._id}`}
-    </span>
-  ),
-  media: WarningOutlineIcon,
-})
 
 export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,
