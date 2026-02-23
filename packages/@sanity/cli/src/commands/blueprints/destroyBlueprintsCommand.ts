@@ -53,7 +53,7 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
         'no-wait': flags['no-wait'],
         'force': flags.force ?? flags.f,
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
-        'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'stack': flags['stack-id'] ?? flags.stackId ?? flags.stack,
       },
     })
 

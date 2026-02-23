@@ -6,6 +6,7 @@ import {transformHelpText} from '../../util/runtimeCommandHelp'
 
 export interface BlueprintsPlanFlags {
   verbose?: boolean
+  stack?: string
 }
 
 const defaultFlags: BlueprintsPlanFlags = {
@@ -43,6 +44,7 @@ const planBlueprintsCommand: CliCommandDefinition<BlueprintsPlanFlags> = {
       ...cmdConfig.value,
       flags: {
         verbose: flags.verbose,
+        stack: flags.stack,
       },
     })
 

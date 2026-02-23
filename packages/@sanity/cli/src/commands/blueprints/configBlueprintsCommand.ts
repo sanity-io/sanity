@@ -53,7 +53,7 @@ const configBlueprintsCommand: CliCommandDefinition<BlueprintsConfigFlags> = {
       token,
       flags: {
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
-        'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'stack': flags['stack-id'] ?? flags.stackId ?? flags.stack,
         'edit': flags.edit ?? flags.e,
         'verbose': flags.verbose,
       },

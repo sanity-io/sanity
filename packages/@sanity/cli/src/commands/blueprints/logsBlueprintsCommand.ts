@@ -7,6 +7,7 @@ import {transformHelpText} from '../../util/runtimeCommandHelp'
 export interface BlueprintsLogsFlags {
   watch?: boolean
   w?: boolean
+  stack?: string
 }
 
 const defaultFlags: BlueprintsLogsFlags = {
@@ -35,6 +36,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
       log: logger.Logger(output.print),
+      stackOverride: flags.stack,
       token,
     })
 
