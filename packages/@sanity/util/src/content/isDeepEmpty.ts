@@ -56,7 +56,6 @@ export const isEmptyArray = isDeepEmptyArray
  * @alias
  */
 /* eslint-enable tsdoc/syntax */
-
 export const isEmpty = isDeepEmpty
 
 /**
