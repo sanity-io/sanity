@@ -35,7 +35,7 @@ vi.mock('@sanity/runtime-cli/cores/functions', () => fnsMockCores)
 const token = 'test-token'
 const localBlueprint = {
   projectId: 'a1b2c3',
-  stackId: 'ST-d4e5f6',
+  stackId: 'ST-1a2b3c4d5e',
 }
 const config = {
   bin: 'sanity',
@@ -144,18 +144,18 @@ describe('blueprints commands with mocked cores', () => {
         extOptions: {
           'edit': true,
           'project-id': 'proj123',
-          'stack-id': 'stack123',
+          'stack-id': 'ST-1a2b3c4d5e',
         },
       }
 
-      // sanity blueprints config --edit --project-id proj123 --stack-id stack123
+      // sanity blueprints config --edit --project-id proj123 --stack-id ST-1a2b3c4d5e
       await configBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintConfigCore).toHaveBeenCalledWith({
         ...config,
         flags: {
           'project-id': 'proj123',
-          'stack-id': 'stack123',
+          'stack': 'ST-1a2b3c4d5e',
           'test-config': undefined,
           'edit': true,
         },
@@ -232,17 +232,17 @@ describe('blueprints commands with mocked cores', () => {
       const args: CliCommandArguments = {
         ...emptyArgs,
         extOptions: {
-          id: 'stack123',
+          stack: 'ST-1a2b3c4d5e',
         },
       }
 
-      // sanity blueprints info --id stack123
+      // sanity blueprints info --stack ST-1a2b3c4d5e
       await infoBlueprintsCommand.action(args, mockContext)
 
       expect(mockCores.blueprintInfoCore).toHaveBeenCalledWith({
         ...config,
         blueprint: localBlueprint,
-        flags: {id: 'stack123'},
+        flags: {},
       })
     })
   })
