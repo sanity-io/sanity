@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreWorkspaces": [
-    "packages/@sanity/cli",
     "e2e",
     "dev/*",
     "perf/*",
@@ -51,9 +50,6 @@
         "src/_exports/*.ts",
         "bin/sanity",
         "package.config.ts",
-        "src/_internal/cli/threads/*.ts",
-        "src/_internal/cli/actions/exec/*.ts",
-        "src/_internal/cli/server/esbuild-register.js",
         "playwright-ct/template/index.ts",
         "mock-browser-env-stub-loader.mjs",
       ],
