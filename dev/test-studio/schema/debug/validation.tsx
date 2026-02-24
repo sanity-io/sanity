@@ -240,6 +240,22 @@ export default defineType({
       ],
     },
     {
+      name: 'tags',
+      title: 'Tags',
+      description: 'Array of strings, max 3',
+      validation: (Rule) => Rule.max(3),
+      type: 'array',
+      of: [{type: 'string'}],
+    },
+    {
+      name: 'featuredAuthors',
+      title: 'Featured authors',
+      description: 'Inline author objects, max 2',
+      validation: (Rule) => Rule.max(2),
+      type: 'array',
+      of: [{type: 'author'}],
+    },
+    {
       name: 'books',
       title: 'Books',
       description: 'Unique book references, minimum 1, max 5',
