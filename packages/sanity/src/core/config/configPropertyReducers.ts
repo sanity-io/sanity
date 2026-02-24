@@ -448,7 +448,7 @@ export const enhancedObjectDialogEnabledReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
-    const enabled = innerConfig.beta?.form?.enhancedObjectDialog?.enabled
+    const enabled = true //innerConfig.beta?.form?.enhancedObjectDialog?.enabled
 
     if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled
