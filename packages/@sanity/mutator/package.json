@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "cms",

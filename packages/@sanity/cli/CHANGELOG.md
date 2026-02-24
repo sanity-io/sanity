@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
+
+### Features
+
+* **cli:** add Gemini, Codex and Copilot CLIs to MCP configure ([#12194](https://github.com/sanity-io/sanity/issues/12194)) ([093e716](https://github.com/sanity-io/sanity/commit/093e7165e77bce80e11e59e7a98f58524d363e43)) by James Woods (jwwoods01@gmail.com)
+* **cli:** upgrade blueprints commands ([#12226](https://github.com/sanity-io/sanity/issues/12226)) ([245a07f](https://github.com/sanity-io/sanity/commit/245a07ff585caf4c63536c47f7dd468c5c01205a)) by Taylor Beseda (tbeseda@gmail.com)
+
 ## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
 
 **Note:** Version bump only for package @sanity/cli

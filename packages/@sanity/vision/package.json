@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -101,7 +101,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "rimraf": "^5.0.10",
-    "sanity": "^5.11.0",
+    "sanity": "^5.12.0",
     "styled-components": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

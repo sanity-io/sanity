@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.12.0](https://github.com/sanity-io/sanity/compare/v5.11.0...v5.12.0) (2026-02-24)
+
+### Features
+
+* remove enhancedObjectDialog from config ([#12231](https://github.com/sanity-io/sanity/issues/12231)) ([5444de8](https://github.com/sanity-io/sanity/commit/5444de827663e1b00a3ccc7a93abe05c99fe0c0c)) by RitaDias (rita@sanity.io)
+
 ## [5.11.0](https://github.com/sanity-io/sanity/compare/v5.10.0...v5.11.0) (2026-02-19)
 
 **Note:** Version bump only for package studio-e2e-testing
