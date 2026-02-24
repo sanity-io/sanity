@@ -22,25 +22,25 @@ interface DocumentIdInfo {
 }
 
 export const TimeToPublishStart = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Clicked',
+  name: 'Publish Button Clicked - Started',
   version: 1,
   description: 'Logs when a publish operation starts (user clicks publish)',
 })
 
 export const TimeToPublishComplete = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Finished Publishing',
+  name: 'Publish Button Clicked - Completed',
   version: 1,
   description: 'Logs when a publish operation completes (revision change confirmed)',
 })
 
 export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Becomes Disabled',
+  name: 'Publish Button Becomes Disabled - Started',
   version: 1,
   description: 'Logs when the publish button becomes disabled',
 })
 
 export const PublishButtonDisabledComplete = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Becomes Enabled',
+  name: 'Publish Button Becomes Disabled - Completed',
   version: 1,
   description: 'Logs when the publish button becomes enabled again',
 })
