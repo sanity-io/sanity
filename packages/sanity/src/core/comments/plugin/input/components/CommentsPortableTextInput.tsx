@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 import {
-  type EditorChange,
   type EditorSelection,
   type PortableTextBlock,
   PortableTextEditor,
@@ -16,7 +15,7 @@ import {debounce, isEqual} from 'lodash-es'
 import {AnimatePresence} from 'motion/react'
 import {memo, startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps, useFieldActions} from '../../../../form'
+import {type EditorChange, type PortableTextInputProps, useFieldActions} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
 import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components'

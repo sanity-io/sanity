@@ -1,9 +1,10 @@
 import {
-  type EditorChange,
   type EditorSelection,
   type HotkeyOptions,
+  type InvalidValueResolution,
   type OnCopyFn,
   type OnPasteResultOrPromise,
+  type Patch,
   type PasteData as EditorPasteData,
   type PortableTextEditor,
   type RangeDecoration,
@@ -28,6 +29,7 @@ import {
 } from '@sanity/types'
 import {
   type ComponentType,
+  type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
   type FormEventHandler,
   type MutableRefObject,
@@ -629,3 +631,33 @@ export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
  * all cases. Always return plain `undefined` if possible.
  */
 export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
+
+/**
+ * Studio-owned change types emitted by the Portable Text editor.
+ *
+ * These types mirror the editor's internal event types but are owned by Studio
+ * to decouple Studio's public callback interface from the editor's internals.
+ * The `EditorChangePlugin` in `PortableTextInput.tsx` translates
+ * `EditorEmittedEvent`s into these change types.
+ *
+ * @beta
+ */
+export type EditorChange =
+  | {type: 'blur'; event: ReactFocusEvent<HTMLDivElement, Element>}
+  | {type: 'error'; name: string; level: 'warning' | 'error'; description: string; data?: unknown}
+  | {type: 'focus'; event: ReactFocusEvent<HTMLDivElement, Element>}
+  | {
+      type: 'invalidValue'
+      resolution: InvalidValueResolution | null
+      value: PortableTextBlock[] | undefined
+    }
+  | {type: 'loading'; isLoading: boolean}
+  | {type: 'mutation'; patches: Patch[]; snapshot: PortableTextBlock[] | undefined}
+  | {type: 'patch'; patch: Patch}
+  | {type: 'ready'}
+  | {type: 'connection'; value: 'online' | 'offline'}
+  | {type: 'redo'; patches: Patch[]; snapshot: PortableTextBlock[] | undefined}
+  | {type: 'selection'; selection: EditorSelection}
+  | {type: 'undo'; patches: Patch[]; snapshot: PortableTextBlock[] | undefined}
+  | {type: 'unset'; previousValue: PortableTextBlock[]}
+  | {type: 'value'; value: PortableTextBlock[] | undefined}
