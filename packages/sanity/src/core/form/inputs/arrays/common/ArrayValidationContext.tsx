@@ -4,29 +4,22 @@ import {ArrayValidationContext} from 'sanity/_singletons'
 
 import {getValidationRule} from '../../../utils/getValidationRule'
 
-interface ArrayValidationState {
-  /** Whether adding more items would exceed the max validation rule */
+/** @internal */
+export interface ArrayValidationState {
   maxReached: boolean
 }
 
 interface ArrayValidationProviderProps {
   children: ReactNode
-  /** The array schema type containing validation rules */
   schemaType: ArraySchemaType
-  /** Current number of items in the array */
   itemCount: number
 }
 
-/**
- * Provider that exposes array validation state to child components.
- * Used to determine if insert operations should be disabled.
- *
- * @internal
- */
+/** @internal */
 export function ArrayValidationProvider(props: ArrayValidationProviderProps) {
   const {children, schemaType, itemCount} = props
 
-  // Extract max rule separately since schemaType is stable but itemCount may change frequently
+  // Separated from the value memo so rule extraction only re-runs when schemaType changes
   const maxRule = useMemo(() => getValidationRule(schemaType, 'max'), [schemaType])
 
   const value = useMemo((): ArrayValidationState => {
@@ -40,12 +33,7 @@ export function ArrayValidationProvider(props: ArrayValidationProviderProps) {
   return <ArrayValidationContext.Provider value={value}>{children}</ArrayValidationContext.Provider>
 }
 
-/**
- * Hook to access array validation state.
- * Returns null if used outside of ArrayValidationProvider.
- *
- * @internal
- */
+/** @internal */
 export function useArrayValidation(): ArrayValidationState | null {
   return useContext(ArrayValidationContext)
 }

@@ -87,9 +87,9 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
               : `${t('inputs.array.action.add-before')}...`
           }
           icon={InsertAboveIcon}
-          onClick={disabled ? undefined : handleToggleInsertBefore}
+          onClick={handleToggleInsertBefore}
           disabled={disabled}
-          tooltipProps={disabled && disabledReason ? {content: disabledReason} : undefined}
+          tooltipProps={disabledReason ? {content: disabledReason} : undefined}
         />
       ) : null,
     [disabled, disabledReason, handleToggleInsertBefore, t, types],
@@ -105,9 +105,9 @@ export function useInsertMenuMenuItems(props: InsertMenuItemsProps) {
               : `${t('inputs.array.action.add-after')}...`
           }
           icon={InsertBelowIcon}
-          onClick={disabled ? undefined : handleToggleInsertAfter}
+          onClick={handleToggleInsertAfter}
           disabled={disabled}
-          tooltipProps={disabled && disabledReason ? {content: disabledReason} : undefined}
+          tooltipProps={disabledReason ? {content: disabledReason} : undefined}
         />
       ) : null,
     [disabled, disabledReason, handleToggleInsertAfter, t, types],

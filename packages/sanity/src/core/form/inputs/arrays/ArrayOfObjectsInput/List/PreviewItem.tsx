@@ -72,6 +72,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
   const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = maxReached ? t('inputs.array.action.max-reached') : undefined
 
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
@@ -162,8 +164,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
-    disabled: arrayValidation?.maxReached,
-    disabledReason: arrayValidation?.maxReached ? t('inputs.array.action.max-reached') : undefined,
+    disabled: maxReached,
+    disabledReason: maxReachedReason,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY

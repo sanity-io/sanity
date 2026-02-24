@@ -76,6 +76,8 @@ export const ItemRow = forwardRef(function ItemRow(
   const {t} = useTranslation()
 
   const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = maxReached ? t('inputs.array.action.max-reached') : undefined
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
   const menuItems = useMemo(
@@ -114,10 +116,8 @@ export const ItemRow = forwardRef(function ItemRow(
             onInsert={handleInsert}
             text={t('inputs.array.action.add-before')}
             icon={InsertAboveIcon}
-            disabled={arrayValidation?.maxReached}
-            disabledReason={
-              arrayValidation?.maxReached ? t('inputs.array.action.max-reached') : undefined
-            }
+            disabled={maxReached}
+            disabledReason={maxReachedReason}
           />
         ),
         !disableActions.includes('add') && !disableActions.includes('addAfter') && (
@@ -128,15 +128,14 @@ export const ItemRow = forwardRef(function ItemRow(
             onInsert={handleInsert}
             text={t('inputs.array.action.add-after')}
             icon={InsertBelowIcon}
-            disabled={arrayValidation?.maxReached}
-            disabledReason={
-              arrayValidation?.maxReached ? t('inputs.array.action.max-reached') : undefined
-            }
+            disabled={maxReached}
+            disabledReason={maxReachedReason}
           />
         ),
       ].filter(Boolean),
     [
-      arrayValidation?.maxReached,
+      maxReached,
+      maxReachedReason,
       disableActions,
       handleCopy,
       handleDuplicate,

@@ -1,9 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-interface ArrayValidationState {
-  /** Whether adding more items would exceed the max validation rule */
-  maxReached: boolean
-}
+import type {ArrayValidationState} from '../../core/form/inputs/arrays/common/ArrayValidationContext'
 
 /** @internal */
 export const ArrayValidationContext = createContext<ArrayValidationState | null>(
