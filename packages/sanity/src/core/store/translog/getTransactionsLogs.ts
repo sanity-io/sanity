@@ -1,5 +1,8 @@
 import {type SanityClient} from '@sanity/client'
-import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {
+  type TransactionLogEventWithMutations,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
 
 import {getJsonStream} from '../_legacy/history/history/getJsonStream'
 
@@ -68,7 +71,7 @@ export async function getTransactionsLogs(
      */
     authors?: string
   },
-): Promise<TransactionLogEventWithEffects[]> {
+): Promise<(TransactionLogEventWithEffects & TransactionLogEventWithMutations)[]> {
   const clientConfig = client.config()
   const dataset = clientConfig.dataset
   const queryParams = new URLSearchParams({
@@ -91,7 +94,7 @@ export async function getTransactionsLogs(
   )
 
   const stream = await getJsonStream(transactionsUrl, clientConfig.token)
-  const transactions: TransactionLogEventWithEffects[] = []
+  const transactions: (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[] = []
 
   const reader = stream.getReader()
   for (;;) {
