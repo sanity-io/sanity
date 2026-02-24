@@ -94,7 +94,9 @@ export function useUserListWithPermissions(
     )
 
     // 3. Get all the system groups. Use the cached response if it exists to avoid unnecessary requests.
-    const _systemGroup$ = client.observable.fetch('*[_type == "system.group"]').pipe(shareReplay(1))
+    const _systemGroup$ = client.observable
+      .fetch('*[_type == "system.group"]{members, grants}')
+      .pipe(shareReplay(1))
     return [_users$, _systemGroup$]
   }, [client.observable, projectStore, userStore])
 
