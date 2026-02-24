@@ -23,10 +23,10 @@ export function EnhancedObjectDialogProvider(
 
   const value = useMemo((): EnhancedObjectDialogContextValue => {
     return {
-      enabled: beta?.form?.enhancedObjectDialog?.enabled === true,
+      enabled: true,
       legacyEditing: Boolean(legacyEditing),
     }
-  }, [beta?.form?.enhancedObjectDialog?.enabled, legacyEditing])
+  }, [legacyEditing])
 
   return (
     <EnhancedObjectDialogContext.Provider value={value}>

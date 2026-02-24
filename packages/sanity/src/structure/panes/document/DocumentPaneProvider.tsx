@@ -126,9 +126,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     beta,
   } = useWorkspace()
 
-  const enhancedObjectDialogEnabled = useMemo(() => {
-    return beta?.form?.enhancedObjectDialog?.enabled
-  }, [beta])
+  const enhancedObjectDialogEnabled = true
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
