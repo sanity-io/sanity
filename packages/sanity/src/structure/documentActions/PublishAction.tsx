@@ -161,10 +161,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const isWaitingToPublish = Boolean(
     (draft || version) &&
-    (publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
-      hasValidationErrors ||
-      isPermissionsLoading),
+    (publishScheduled || editState?.transactionSyncLock?.enabled || isPermissionsLoading),
   )
 
   useEffect(() => {
@@ -278,7 +275,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [
     selectedPerspective,
-    publishScheduled,
     release,
     liveEdit,
     version,
