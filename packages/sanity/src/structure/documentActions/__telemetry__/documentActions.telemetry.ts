@@ -11,6 +11,16 @@ interface DocumentPublishedInfo {
    */
   previouslyPublished: boolean
 }
+
+interface PublishButtonDisabledInfo {
+  /**
+   * Associated with a remote event
+   * Specifically with the condition editState?.transactionSyncLock?.enabled for publishing a document
+   * Which can be triggered by a remote event
+   */
+  isRemoteEvent: boolean
+}
+
 export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
   name: 'Document Published',
   version: 1,
@@ -33,13 +43,15 @@ export const TimeToPublishComplete = defineEvent<DocumentIdInfo>({
   description: 'Logs when a publish operation completes (revision change confirmed)',
 })
 
-export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo>({
+export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo & PublishButtonDisabledInfo>({
   name: 'Publish Button Becomes Disabled - Started',
   version: 1,
   description: 'Logs when the publish button becomes disabled',
 })
 
-export const PublishButtonDisabledComplete = defineEvent<DocumentIdInfo>({
+export const PublishButtonDisabledComplete = defineEvent<
+  DocumentIdInfo & PublishButtonDisabledInfo
+>({
   name: 'Publish Button Becomes Disabled - Completed',
   version: 1,
   description: 'Logs when the publish button becomes enabled again',

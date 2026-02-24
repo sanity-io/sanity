@@ -166,11 +166,17 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   useEffect(() => {
     if (!isWaitingToPublish) return undefined
-    telemetry.log(PublishButtonDisabledStart, {documentId: id})
+    telemetry.log(PublishButtonDisabledStart, {
+      documentId: id,
+      isRemoteEvent: editState?.transactionSyncLock?.enabled,
+    })
     return () => {
-      telemetry.log(PublishButtonDisabledComplete, {documentId: id})
+      telemetry.log(PublishButtonDisabledComplete, {
+        documentId: id,
+        isRemoteEvent: editState?.transactionSyncLock?.enabled,
+      })
     }
-  }, [isWaitingToPublish, telemetry, id])
+  }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
