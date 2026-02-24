@@ -160,7 +160,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
   const isWaitingToPublish = Boolean(
-    draft &&
+    (draft || version) &&
     (publishScheduled ||
       editState?.transactionSyncLock?.enabled ||
       hasValidationErrors ||
