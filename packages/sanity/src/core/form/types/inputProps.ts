@@ -643,9 +643,9 @@ export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
  * @beta
  */
 export type EditorChange =
-  | {type: 'blur'; event: ReactFocusEvent<HTMLDivElement, Element>}
+  | {type: 'blur'; event: ReactFocusEvent<HTMLDivElement>}
   | {type: 'error'; name: string; level: 'warning' | 'error'; description: string; data?: unknown}
-  | {type: 'focus'; event: ReactFocusEvent<HTMLDivElement, Element>}
+  | {type: 'focus'; event: ReactFocusEvent<HTMLDivElement>}
   | {
       type: 'invalidValue'
       resolution: InvalidValueResolution | null
