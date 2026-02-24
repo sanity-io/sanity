@@ -9,6 +9,7 @@ import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
 import {
+  catchError,
   filter,
   map,
   mergeMap,
@@ -240,6 +241,11 @@ function submitCommitRequest(
         }
       },
       next: () => request.success(),
+    }),
+    catchError((error) => {
+      console.error('An error occurred during commit', error)
+
+      return EMPTY
     }),
   )
 }
