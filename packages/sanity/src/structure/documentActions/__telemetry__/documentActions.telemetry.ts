@@ -1,4 +1,4 @@
-import {defineEvent, defineTrace} from '@sanity/telemetry'
+import {defineEvent} from '@sanity/telemetry'
 
 interface DocumentPublishedInfo {
   /**
@@ -17,17 +17,30 @@ export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
   description: 'User clicked the "Publish" button in the document pane',
 })
 
-/** Traces a publish operation from click to revision change */
-export const TimeToPublishTrace = defineTrace({
-  name: 'Time to Publish',
+interface DocumentIdInfo {
+  documentId: string
+}
+
+export const TimeToPublishStart = defineEvent<DocumentIdInfo>({
+  name: 'Publish Button Clicked',
   version: 1,
-  description: 'Traces a publish operation from click to completion',
+  description: 'Logs when a publish operation starts (user clicks publish)',
 })
 
-/** Traces the time from the publish button becoming disabled to becoming enabled or until it successfully publishes */
-export const PublishButtonDisabledDurationTrace = defineTrace({
-  name: 'Publish Button Disabled Duration',
+export const TimeToPublishComplete = defineEvent<DocumentIdInfo>({
+  name: 'Publish Button Finished Publishing',
   version: 1,
-  description:
-    'Traces the publish button from disabled to enabled again or until it successfully publishes',
+  description: 'Logs when a publish operation completes (revision change confirmed)',
+})
+
+export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo>({
+  name: 'Publish Button Becomes Disabled',
+  version: 1,
+  description: 'Logs when the publish button becomes disabled',
+})
+
+export const PublishButtonDisabledComplete = defineEvent<DocumentIdInfo>({
+  name: 'Publish Button Becomes Enabled',
+  version: 1,
+  description: 'Logs when the publish button becomes enabled again',
 })
