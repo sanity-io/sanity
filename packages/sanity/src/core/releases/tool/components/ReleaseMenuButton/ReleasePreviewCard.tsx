@@ -3,7 +3,6 @@ import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar, ReleaseTitle} from '../../../components'
-import {getReleaseTone} from '../../../util/getReleaseTone'
 import {ReleaseTime} from '../ReleaseTime'
 
 export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
@@ -12,7 +11,7 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
   return (
     <Card border padding={1} radius={2}>
       <Flex gap={3} padding={3}>
-        <ReleaseAvatar tone={getReleaseTone(release)} padding={0} />
+        <ReleaseAvatar release={release} padding={0} />
         <Stack space={2}>
           <ReleaseTitle
             title={release.metadata.title}

@@ -6,7 +6,7 @@ import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useWorkspace} from '../../../../studio/workspace'
 import {useCopyToDrafts} from '../../../hooks/useCopyToDrafts'
-import {getReleaseTone} from '../../../util/getReleaseTone'
+import {LATEST} from '../../../util/const'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 
 interface CopyToDraftsMenuItemProps {
@@ -68,7 +68,7 @@ export const CopyToDraftsMenuItem = memo(function CopyToDraftsMenuItem(
       renderMenuItem={() => (
         <Flex gap={3} align="center">
           <Box flex="none" paddingX={2}>
-            <ReleaseAvatar padding={0} tone={getReleaseTone('drafts')} />
+            <ReleaseAvatar padding={0} release={LATEST} />
           </Box>
           <Text size={1} weight="medium">
             {t('release.chip.draft')}

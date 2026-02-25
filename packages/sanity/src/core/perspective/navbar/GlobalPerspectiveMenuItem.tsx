@@ -16,7 +16,6 @@ import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
@@ -164,7 +163,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
               {isReleasePerspectiveExcluded ? (
                 <ExcludedLayerDot />
               ) : (
-                <ReleaseAvatar tone={getReleaseTone(release)} />
+                <ReleaseAvatar release={release} />
               )}
             </Text>
           </Box>

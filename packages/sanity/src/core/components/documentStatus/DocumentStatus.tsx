@@ -1,16 +1,17 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
+import {type TargetPerspective} from '../../perspective/types'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   ReleaseAvatar,
   useActiveReleases,
   type VersionInfoDocumentStub,
 } from '../../releases'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {
@@ -53,7 +54,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           title={t('release.chip.published')}
           mode="published"
           timestamp={published._updatedAt}
-          tone={'positive'}
+          release={PUBLISHED}
         />
       )}
       {isDraftModelEnabled && draft && (
@@ -61,7 +62,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           title={t('release.chip.draft')}
           mode="draft"
           timestamp={draft._updatedAt}
-          tone="caution"
+          release={LATEST}
         />
       )}
       {versionsList.map(([versionName, snapshot]) => {
@@ -77,7 +78,7 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
             mode={snapshot._updatedAt === snapshot._createdAt ? 'created' : 'edited'}
             title={release?.metadata.title || t('release.placeholder-untitled-release')}
             timestamp={snapshot?._updatedAt}
-            tone={release ? getReleaseTone(release) : 'default'}
+            release={release}
           />
         )
       })}
@@ -98,12 +99,12 @@ const VersionStatus = ({
   title,
   timestamp,
   mode,
-  tone,
+  release,
 }: {
   title: string
   mode: Mode
   timestamp?: string
-  tone: BadgeTone
+  release: TargetPerspective | undefined
 }) => {
   const {t} = useTranslation()
 
@@ -114,7 +115,7 @@ const VersionStatus = ({
 
   return (
     <Flex align="center" gap={2}>
-      <ReleaseAvatar tone={tone} padding={0} />
+      <ReleaseAvatar release={release} padding={0} />
       <Text size={1}>
         {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>

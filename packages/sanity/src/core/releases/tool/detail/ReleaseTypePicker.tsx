@@ -159,8 +159,8 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     if (isUpdating) return <Spinner size={1} data-testid="updating-release-spinner" />
     if (release.state === 'published') return <PublishIcon />
 
-    return <ReleaseAvatar tone={tone} padding={0} />
-  }, [isUpdating, release.state, tone])
+    return <ReleaseAvatar release={release} padding={0} />
+  }, [isUpdating, release])
 
   const labelContent = useMemo(
     () => (

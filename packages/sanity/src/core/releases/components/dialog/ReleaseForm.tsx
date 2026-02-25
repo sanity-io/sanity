@@ -1,7 +1,6 @@
-import {type EditableReleaseDocument} from '@sanity/client'
+import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
 import {ChevronDownIcon, InfoOutlineIcon} from '@sanity/icons'
 import {
-  type BadgeTone,
   // eslint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
   Flex,
@@ -39,7 +38,7 @@ export function ReleaseForm(props: {
   value: EditableReleaseDocument
 }): React.JSX.Element {
   const {onChange, value} = props
-  const {releaseType, intendedPublishAt} = value.metadata || {}
+  const {releaseType = DEFAULT_RELEASE_TYPE, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
 
@@ -155,7 +154,7 @@ export function ReleaseForm(props: {
                 <Flex justify="space-between" align="center">
                   <ReleaseTypeOption
                     text={t(`release.type.${releaseType}`)}
-                    tone={releaseType ? RELEASE_TYPES_TONES[releaseType].tone : 'critical'}
+                    releaseType={releaseType}
                   />
                   <Text size={1}>
                     <ChevronDownIcon />
@@ -170,9 +169,10 @@ export function ReleaseForm(props: {
             }}
             menu={
               <Menu>
-                {Object.entries(RELEASE_TYPES_TONES).map(([type, {tone}]) => (
+                {/* oxlint-disable-next-line typescript/no-unsafe-type-assertion */}
+                {(Object.keys(RELEASE_TYPES_TONES) as ReleaseType[]).map((type) => (
                   <MenuItem key={type} data-value={type} onClick={handleReleaseTypeChange}>
-                    <ReleaseTypeOption text={t(`release.type.${type}`)} tone={tone} />
+                    <ReleaseTypeOption text={t(`release.type.${type}`)} releaseType={type} />
                   </MenuItem>
                 ))}
               </Menu>
@@ -202,9 +202,12 @@ export function ReleaseForm(props: {
   )
 }
 
-const ReleaseTypeOption: ComponentType<{text: string; tone: BadgeTone}> = ({tone, text}) => (
+const ReleaseTypeOption: ComponentType<{
+  text: string
+  releaseType: ReleaseType
+}> = ({releaseType, text}) => (
   <Flex gap={3} align="center">
-    <ReleaseAvatar padding={1} tone={tone} />
+    <ReleaseAvatar padding={1} releaseType={releaseType} />
     <Text>{text}</Text>
   </Flex>
 )

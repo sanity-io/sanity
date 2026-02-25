@@ -4,7 +4,6 @@ import {Flex, Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
 
 import {useTranslation} from '../../../../i18n'
-import {getReleaseTone} from '../../../util/getReleaseTone'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
 import {ReleaseTitle} from '../../ReleaseTitle'
@@ -18,7 +17,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
 
   return (
     <Flex gap={3} justify="center" align="center">
-      <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
+      <ReleaseAvatar padding={2} release={release} />
       <Stack flex={1} space={2}>
         <ReleaseTitle
           title={release.metadata?.title}
