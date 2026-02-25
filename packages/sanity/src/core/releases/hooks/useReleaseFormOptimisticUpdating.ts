@@ -39,7 +39,8 @@ export function useReleaseFormOptimisticUpdating({
       const unfocusedFieldUpdates = formFieldNames
         .filter((field) => field !== focusedField)
         .reduce<Partial<ReleaseFormFields>>((fieldUpdates, field) => {
-          fieldUpdates[field] = incomingFormData[field]
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          fieldUpdates[field] = incomingFormData[field] as any
 
           return fieldUpdates
         }, {})

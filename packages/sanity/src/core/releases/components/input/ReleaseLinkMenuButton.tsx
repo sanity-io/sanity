@@ -16,15 +16,12 @@ import {ReleasePickerMenu} from './ReleasePickerMenu'
 
 type InsertPosition = {path: Path; offset: number}
 
-/**
- * Calculate the end position of the document for inserting content
- */
 function getEndPosition(editor: PortableTextEditor): InsertPosition | null {
   const value = PortableTextEditor.getValue(editor)
   if (!value) return null
 
   const lastBlock = value.at(-1)
-  if (!lastBlock || !lastBlock.children || !Array.isArray(lastBlock.children)) {
+  if (!lastBlock?.children || !Array.isArray(lastBlock.children)) {
     return null
   }
 
@@ -32,9 +29,7 @@ function getEndPosition(editor: PortableTextEditor): InsertPosition | null {
   if (!lastChild) return null
 
   const offset =
-    '_type' in lastChild && lastChild._type === 'span' && 'text' in lastChild
-      ? (lastChild.text?.length ?? 0)
-      : 0
+    lastChild._type === 'span' && typeof lastChild.text === 'string' ? lastChild.text.length : 0
 
   return {
     path: [{_key: lastBlock._key}, 'children', {_key: lastChild._key}],

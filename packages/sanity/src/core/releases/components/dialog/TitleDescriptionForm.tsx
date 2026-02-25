@@ -50,6 +50,13 @@ const TitleTextArea = styled.textarea((props) => {
   `
 })
 
+function autoResizeTextArea(element: HTMLTextAreaElement | null): void {
+  if (element) {
+    element.style.height = 'auto'
+    element.style.height = `${element.scrollHeight}px`
+  }
+}
+
 export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
   release.state !== 'archived' && release.state !== 'published'
 
@@ -72,40 +79,24 @@ export function TitleDescriptionForm({
       id: release._id,
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
-          title: metadata.title,
-          description: metadata.description || '',
+          title: metadata.title ?? '',
+          description: metadata.description ?? '',
         }),
         [],
       ),
     })
 
   useEffect(() => {
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
-  }, [])
-
-  useEffect(() => {
-    if (titleRef.current) {
-      titleRef.current.style.height = 'auto'
-      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-    }
+    autoResizeTextArea(titleRef.current)
   }, [release.metadata.title])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
       const title = event.target.value
-      // save the values to make input snappier while requests happen in the background
       updateLocalData({title})
       onChange({...release, metadata: {...release.metadata, title}})
-
-      // Auto-resize the textarea
-      if (titleRef.current) {
-        titleRef.current.style.height = 'auto'
-        titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
-      }
+      autoResizeTextArea(titleRef.current)
     },
     [onChange, release, updateLocalData],
   )
@@ -114,13 +105,12 @@ export function TitleDescriptionForm({
     (pteValue: PortableTextBlock[]) => {
       if (!isReleaseOpen) return
 
-      // Save the values to make input snappier while requests happen in the background
       updateLocalData({description: pteValue})
       onChange({
         ...release,
         metadata: {
           ...release.metadata,
-          description: pteValue,
+          description: pteValue as unknown as string,
         },
       })
     },

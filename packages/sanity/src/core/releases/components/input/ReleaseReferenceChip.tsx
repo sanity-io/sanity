@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type JSX, useMemo} from 'react'
+import {type JSX, useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -53,10 +53,19 @@ export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Elem
   const router = useRouter()
   const {data: releases, loading} = useAllReleases()
 
-  const release = useMemo<ReleaseDocument | null>(() => {
+  const release = useMemo(() => {
     if (loading) return null
     return releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId) ?? null
   }, [releases, releaseId, loading])
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLSpanElement>): void => {
+      e.preventDefault()
+      const url = router.resolvePathFromState({releaseId})
+      window.open(url, '_blank', 'noopener,noreferrer')
+    },
+    [router, releaseId],
+  )
 
   if (loading) {
     return (
@@ -77,12 +86,6 @@ export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Elem
   const isArchived = isArchivedRelease(release)
   const title = release.metadata.title || 'Untitled Release'
   const displayText = isArchived ? `${title} (archived)` : title
-
-  const handleClick = (e: React.MouseEvent<HTMLSpanElement>): void => {
-    e.preventDefault()
-    const url = router.resolvePathFromState({releaseId})
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
 
   return (
     <ChipSpan

@@ -17,34 +17,34 @@ function createLinkAnnotation(href: string) {
   }
 }
 
-function createAutoLinkRule() {
-  return defineInputRule({
-    on: URL_REGEX,
-    actions: [
-      ({event}) => {
-        const selectAndAnnotate = event.matches.flatMap((match) => [
-          raise({type: 'select', at: match.targetOffsets}),
-          raise({
-            type: 'annotation.add',
-            annotation: createLinkAnnotation(normalizeHref(match.text)),
-          }),
-        ])
+const autoLinkRule = defineInputRule({
+  on: URL_REGEX,
+  actions: [
+    ({event}) => {
+      const selectAndAnnotate = event.matches.flatMap((match) => [
+        raise({type: 'select', at: match.targetOffsets}),
+        raise({
+          type: 'annotation.add',
+          annotation: createLinkAnnotation(normalizeHref(match.text)),
+        }),
+      ])
 
-        const lastMatch = event.matches[event.matches.length - 1]
-        const endPosition = {
-          path: event.focusBlock.path,
-          offset: lastMatch.targetOffsets.focus.offset,
-        }
+      const lastMatch = event.matches[event.matches.length - 1]
+      const endPosition = {
+        path: event.focusBlock.path,
+        offset: lastMatch.targetOffsets.focus.offset,
+      }
 
-        return [
-          ...selectAndAnnotate,
-          raise({type: 'select', at: {anchor: endPosition, focus: endPosition}}),
-        ]
-      },
-    ],
-  })
-}
+      return [
+        ...selectAndAnnotate,
+        raise({type: 'select', at: {anchor: endPosition, focus: endPosition}}),
+      ]
+    },
+  ],
+})
+
+const AUTO_LINK_RULES = [autoLinkRule]
 
 export function AutoLinkPlugin(): JSX.Element {
-  return <InputRulePlugin rules={[createAutoLinkRule()]} />
+  return <InputRulePlugin rules={AUTO_LINK_RULES} />
 }

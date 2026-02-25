@@ -2,11 +2,7 @@ import {toPlainText} from '@portabletext/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
 
-import {
-  type ReleaseDescription,
-  isPTEDescription,
-  isStringDescription,
-} from '../types/releaseDescription'
+import {type ReleaseDescription, isStringDescription} from '../types/releaseDescription'
 
 /**
  * Convert a plain text string to Portable Text blocks.
@@ -16,14 +12,11 @@ import {
  * @returns Array of Portable Text blocks
  */
 export function stringToPTE(text: string): PortableTextBlock[] {
-  if (!text || text.trim() === '') {
+  if (!text.trim()) {
     return []
   }
 
-  // Split by newlines to preserve paragraph structure
-  const lines = text.split('\n')
-
-  return lines.map((line) => ({
+  return text.split('\n').map((line) => ({
     _type: 'block',
     _key: randomKey(12),
     style: 'normal',
@@ -47,7 +40,7 @@ export function stringToPTE(text: string): PortableTextBlock[] {
  * @returns Plain text string
  */
 export function pteToString(blocks: PortableTextBlock[]): string {
-  if (!blocks || blocks.length === 0) {
+  if (blocks.length === 0) {
     return ''
   }
 
@@ -78,11 +71,7 @@ export function normalizeDescriptionToPTE(
     return stringToPTE(description)
   }
 
-  if (isPTEDescription(description)) {
-    return description
-  }
-
-  return []
+  return description
 }
 
 /**
@@ -98,7 +87,6 @@ export function areDescriptionsEquivalent(
   b: ReleaseDescription | undefined,
 ): boolean {
   if (a === b) return true
-  if (!a && !b) return true
   if (!a || !b) return false
 
   const textA = isStringDescription(a) ? a : pteToString(a)

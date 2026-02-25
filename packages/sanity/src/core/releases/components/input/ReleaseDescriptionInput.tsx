@@ -12,7 +12,7 @@ import {
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
-import {BoldIcon, CalendarIcon, ItalicIcon, UnderlineIcon} from '@sanity/icons'
+import {BoldIcon, ItalicIcon, UnderlineIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -72,11 +72,10 @@ const PlaceholderWrapper = styled.span((props) => {
   `
 })
 
-const TOOLBAR_BUTTONS = [
+const MARK_BUTTONS = [
   {mark: 'strong', icon: BoldIcon, title: 'Bold (Cmd+B)'},
   {mark: 'em', icon: ItalicIcon, title: 'Italic (Cmd+I)'},
   {mark: 'underline', icon: UnderlineIcon, title: 'Underline (Cmd+U)'},
-  {action: 'linkRelease', icon: CalendarIcon, title: 'Link Release'},
 ] as const
 
 function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
@@ -96,57 +95,19 @@ function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
   return (
     <Box paddingX={2} paddingY={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
       <Flex gap={1}>
-        {TOOLBAR_BUTTONS.map((button) => {
-          if ('mark' in button) {
-            return (
-              <Button
-                key={button.mark}
-                mode="bleed"
-                icon={button.icon}
-                onClick={() => handleToggleMark(button.mark)}
-                tooltipProps={{content: button.title}}
-                selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
-              />
-            )
-          }
-
-          return <ReleaseLinkMenuButton key={button.action} selected={false} />
-        })}
+        {MARK_BUTTONS.map((button) => (
+          <Button
+            key={button.mark}
+            mode="bleed"
+            icon={button.icon}
+            onClick={() => handleToggleMark(button.mark)}
+            tooltipProps={{content: button.title}}
+            selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
+          />
+        ))}
+        <ReleaseLinkMenuButton selected={false} />
       </Flex>
     </Box>
-  )
-}
-
-// Inner component that has access to PTE context
-function EditorContent({
-  readOnly,
-  placeholder,
-  renderDecorator,
-  renderAnnotation,
-  renderChild,
-}: {
-  readOnly: boolean
-  placeholder?: string
-  renderDecorator: (props: {children: React.ReactNode; value: string}) => JSX.Element
-  renderAnnotation: (props: {
-    children: React.ReactNode
-    value: {_type: string; href?: string}
-  }) => JSX.Element
-  renderChild: RenderChildFunction
-}): JSX.Element {
-  return (
-    <>
-      <Toolbar readOnly={readOnly} />
-      <StyledEditable
-        renderPlaceholder={() =>
-          placeholder ? <PlaceholderWrapper>{placeholder}</PlaceholderWrapper> : null
-        }
-        renderDecorator={renderDecorator}
-        renderAnnotation={renderAnnotation}
-        renderChild={renderChild}
-        data-testid="release-description-input"
-      />
-    </>
   )
 }
 
@@ -172,13 +133,9 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
         case 'blurred':
           onBlur?.()
           break
-        case 'mutation': {
-          const mutationValue = event.value ?? []
-          if (Array.isArray(mutationValue)) {
-            onChange(mutationValue as PortableTextBlock[])
-          }
+        case 'mutation':
+          onChange((event.value ?? []) as PortableTextBlock[])
           break
-        }
         default:
           break
       }
@@ -240,12 +197,10 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   const renderChild: RenderChildFunction = useCallback((childProps: BlockChildRenderProps) => {
     const {children, value: childValue, selected} = childProps
 
-    // Check if this is a release reference inline object
     if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
       return <ReleaseReferenceChip releaseId={childValue.releaseId as string} selected={selected} />
     }
 
-    // Default: render children as-is (spans, text nodes, etc.)
     return children
   }, [])
 
@@ -270,12 +225,15 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
             context.schema.decorators.find((d) => d.name === 'em')?.name
           }
         />
-        <EditorContent
-          readOnly={isReadOnly}
-          placeholder={placeholder}
+        <Toolbar readOnly={isReadOnly} />
+        <StyledEditable
+          renderPlaceholder={() =>
+            placeholder ? <PlaceholderWrapper>{placeholder}</PlaceholderWrapper> : null
+          }
           renderDecorator={renderDecorator}
           renderAnnotation={renderAnnotation}
           renderChild={renderChild}
+          data-testid="release-description-input"
         />
       </EditorProvider>
     </StyledCard>

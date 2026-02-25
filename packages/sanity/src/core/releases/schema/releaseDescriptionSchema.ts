@@ -1,24 +1,13 @@
 import {defineArrayMember, defineField} from '@sanity/types'
 
-/**
- * PTE schema configuration for release descriptions.
- *
- * Supports minimal formatting:
- * - Bold (strong)
- * - Italic (em)
- * - Underline
- * - Hyperlinks (auto-detected URLs)
- *
- * No lists or headings for simplicity.
- */
 export const releaseDescriptionSchema = defineField({
   name: 'releaseDescription',
   type: 'array',
   of: [
     defineArrayMember({
       type: 'block',
-      styles: [], // No heading styles
-      lists: [], // No lists
+      styles: [],
+      lists: [],
       marks: {
         decorators: [
           {title: 'Strong', value: 'strong'},
@@ -40,7 +29,6 @@ export const releaseDescriptionSchema = defineField({
           },
         ],
       },
-      // Inline objects for release references
       of: [
         defineField({
           type: 'object',
