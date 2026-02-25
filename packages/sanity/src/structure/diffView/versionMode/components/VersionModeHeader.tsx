@@ -382,7 +382,8 @@ function getMenuButtonProps({
 
   return {
     text: selected,
-    icon: <ReleaseAvatar padding={1} release={selected} />,
+    // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+    icon: <ReleaseAvatar padding={1} releaseType="undecided" />,
     tone: 'neutral',
   }
 }

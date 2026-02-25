@@ -72,6 +72,9 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
         const release = releases?.find(
           (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
         )
+        if (!release) {
+          return null
+        }
         return (
           <VersionStatus
             key={versionName}
@@ -104,7 +107,7 @@ const VersionStatus = ({
   title: string
   mode: Mode
   timestamp?: string
-  release: TargetPerspective | undefined
+  release: TargetPerspective
 }) => {
   const {t} = useTranslation()
 
