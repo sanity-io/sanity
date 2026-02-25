@@ -1,5 +1,4 @@
-import {defineBehavior, raise} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
+import {raise} from '@portabletext/editor/behaviors'
 import {defineInputRule, InputRulePlugin} from '@portabletext/plugin-input-rule'
 import {randomKey} from '@sanity/util/content'
 import {type JSX} from 'react'
@@ -25,59 +24,27 @@ function createAutoLinkRule() {
       ({event}) => {
         const selectAndAnnotate = event.matches.flatMap((match) => [
           raise({type: 'select', at: match.targetOffsets}),
-          raise({type: 'annotation.add', annotation: createLinkAnnotation(normalizeHref(match.text))}),
+          raise({
+            type: 'annotation.add',
+            annotation: createLinkAnnotation(normalizeHref(match.text)),
+          }),
         ])
 
         const lastMatch = event.matches[event.matches.length - 1]
-        const endPosition = {path: event.focusBlock.path, offset: lastMatch.targetOffsets.focus.offset}
-
-        return [...selectAndAnnotate, raise({type: 'select', at: {anchor: endPosition, focus: endPosition}})]
-      },
-    ],
-  })
-}
-
-function createPasteAutoLinkBehavior() {
-  return defineBehavior({
-    on: 'clipboard.paste',
-    actions: [
-      (event: any) => {
-        const pastedText = event.event?.originEvent?.dataTransfer?.getData('text')
-        if (pastedText === null || pastedText === undefined || pastedText === '') {
-          return []
+        const endPosition = {
+          path: event.focusBlock.path,
+          offset: lastMatch.targetOffsets.focus.offset,
         }
 
-        const urls = pastedText.match(URL_REGEX)
-        const selection = event.snapshot?.selection
-        const isSingleUrl = urls?.length === 1 && pastedText.trim() === urls[0]
-
-        if (selection === null || selection === undefined) {
-          return [raise({type: 'insert.text', text: pastedText})]
-        }
-
-        if (isSingleUrl) {
-          const {path, offset} = selection.focus
-          const endOffset = offset + pastedText.length
-
-          return [
-            raise({type: 'insert.text', text: pastedText}),
-            raise({type: 'select', at: {anchor: {path, offset}, focus: {path, offset: endOffset}, backward: false}}),
-            raise({type: 'annotation.add', annotation: createLinkAnnotation(normalizeHref(urls[0]))}),
-            raise({type: 'select', at: {anchor: {path, offset: endOffset}, focus: {path, offset: endOffset}}}),
-          ]
-        }
-
-        return [raise({type: 'insert.text', text: pastedText})]
+        return [
+          ...selectAndAnnotate,
+          raise({type: 'select', at: {anchor: endPosition, focus: endPosition}}),
+        ]
       },
     ],
   })
 }
 
 export function AutoLinkPlugin(): JSX.Element {
-  return (
-    <>
-      <InputRulePlugin rules={[createAutoLinkRule()]} />
-      <BehaviorPlugin behaviors={[createPasteAutoLinkBehavior()]} />
-    </>
-  )
+  return <InputRulePlugin rules={[createAutoLinkRule()]} />
 }

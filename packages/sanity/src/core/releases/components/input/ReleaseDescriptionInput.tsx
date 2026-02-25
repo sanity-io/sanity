@@ -10,6 +10,8 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
+import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {BoldIcon, CalendarIcon, ItalicIcon, UnderlineIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex} from '@sanity/ui'
@@ -103,9 +105,7 @@ function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
                 icon={button.icon}
                 onClick={() => handleToggleMark(button.mark)}
                 tooltipProps={{content: button.title}}
-                selected={
-                  selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false
-                }
+                selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
               />
             )
           }
@@ -261,6 +261,15 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
         <EventListenerPlugin on={handleEditorEvent} />
         <UpdateReadOnlyPlugin readOnly={isReadOnly} />
         <AutoLinkPlugin />
+        <PasteLinkPlugin />
+        <MarkdownShortcutsPlugin
+          boldDecorator={({context}) =>
+            context.schema.decorators.find((d) => d.name === 'strong')?.name
+          }
+          italicDecorator={({context}) =>
+            context.schema.decorators.find((d) => d.name === 'em')?.name
+          }
+        />
         <EditorContent
           readOnly={isReadOnly}
           placeholder={placeholder}

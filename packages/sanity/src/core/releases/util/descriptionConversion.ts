@@ -2,7 +2,11 @@ import {toPlainText} from '@portabletext/react'
 import {type PortableTextBlock} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
 
-import {type ReleaseDescription, isPTEDescription, isStringDescription} from '../types/releaseDescription'
+import {
+  type ReleaseDescription,
+  isPTEDescription,
+  isStringDescription,
+} from '../types/releaseDescription'
 
 /**
  * Convert a plain text string to Portable Text blocks.

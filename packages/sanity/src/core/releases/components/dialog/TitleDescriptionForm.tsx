@@ -50,7 +50,6 @@ const TitleTextArea = styled.textarea((props) => {
   `
 })
 
-
 export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
   release.state !== 'archived' && release.state !== 'published'
 
