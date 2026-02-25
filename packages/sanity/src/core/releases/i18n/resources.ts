@@ -229,6 +229,8 @@ const releasesLocaleStrings = {
   'no-releases': 'No Releases',
   /** Banner text shown when navigating to a release that does not exist */
   'banner.release-not-found': 'This release could not be found',
+  /** Tooltip for the dismiss button in the release not found banner */
+  'banner.release-not-found.dismiss': 'Dismiss',
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',

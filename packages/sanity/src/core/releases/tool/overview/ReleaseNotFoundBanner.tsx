@@ -24,7 +24,12 @@ export function ReleaseNotFoundBanner({onDismiss}: ReleaseNotFoundBannerProps) {
               {t('banner.release-not-found')}
             </Text>
           </Box>
-          <Button icon={CloseIcon} mode="bleed" onClick={onDismiss} />
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={onDismiss}
+            tooltipProps={{content: t('banner.release-not-found.dismiss')}}
+          />
         </Flex>
       </Card>
     </Box>
