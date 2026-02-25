@@ -12,6 +12,15 @@ export const DocumentURLCopied = defineEvent({
 /**
  * @internal
  */
+export const DocumentIDCopied = defineEvent({
+  name: 'DocumentIDCopied',
+  version: 1,
+  description: 'User copied document ID to clipboard',
+})
+
+/**
+ * @internal
+ */
 export const InlineChangesSwitchedOn = defineEvent({
   name: 'InlineChangesSwitchedOn',
   version: 1,

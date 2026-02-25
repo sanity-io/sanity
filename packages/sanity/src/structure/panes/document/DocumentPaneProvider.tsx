@@ -5,7 +5,6 @@ import {
   type SanityDocument,
   type SanityDocumentLike,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -32,7 +31,6 @@ import {
   usePerspective,
   useSchema,
   useSource,
-  useStudioUrl,
   useTranslation,
   useUnique,
   useWorkspace,
@@ -45,7 +43,7 @@ import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
 import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {DocumentURLCopied, InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
 import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {
@@ -103,7 +101,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {push: pushToast} = useToast()
   const {
     options,
     menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
@@ -115,8 +112,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-  const {buildStudioUrl} = useStudioUrl()
-
   const perspective = usePerspective()
 
   const {
@@ -125,8 +120,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     },
     beta,
   } = useWorkspace()
-
-  const enhancedObjectDialogEnabled = true
 
   const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
@@ -287,7 +280,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     changesOpen,
     documentType,
     documentId,
-    initialValue: initialValue,
+    initialValue,
     comparisonValue: getComparisonValue,
     releaseId: selectedPerspectiveName,
     selectedPerspectiveName,
@@ -329,22 +322,19 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
   const handlePathOpen = useCallback(
     (path: Path) => {
-      // Update internal open path
       onPathOpen(path)
 
-      if (enhancedObjectDialogEnabled) {
-        /**
-         * Before we used to set the path open based on the focus path
-         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
-         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
-         */
-        const nextPath = pathToString(path)
-        if (params.path !== nextPath) {
-          setPaneParams({...params, path: nextPath})
-        }
+      /**
+       * Before we used to set the path open based on the focus path
+       * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+       * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+       */
+      const nextPath = pathToString(path)
+      if (params.path !== nextPath) {
+        setPaneParams({...params, path: nextPath})
       }
     },
-    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
+    [onPathOpen, params, setPaneParams],
   )
 
   // Resolve document badges
@@ -433,24 +423,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         return true
       }
 
-      if (item.action === 'copy-document-url' && navigator) {
-        telemetry.log(DocumentURLCopied)
-        // Chose to copy the user's current URL instead of
-        // the document's edit intent link because
-        // of bugs when resolving a document that has
-        // multiple access paths within Structure
-        const copyUrl = buildStudioUrl({
-          coreUi: (url) => `${url}/intent/edit/id=${documentId};type=${documentType}`,
-        })
-        await navigator.clipboard.writeText(copyUrl)
-        pushToast({
-          id: 'copy-document-url',
-          status: 'info',
-          title: t('panes.document-operation-results.operation-success_copy-url'),
-        })
-        return true
-      }
-
       if (item.action === 'reviewChanges') {
         handleHistoryOpen()
         return true
@@ -488,11 +460,6 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [
       previewUrl,
       previousId,
-      telemetry,
-      buildStudioUrl,
-      pushToast,
-      t,
-      documentId,
       documentType,
       handleHistoryOpen,
       handleInspectorAction,
@@ -662,36 +629,24 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
-      const {path, ...restParams} = params
-
       // Only trigger a programmatic focus when the URL path changed AND the
       // form's openPath doesn't already reflect it.  When handlePathOpen updates
       // both the form state and the URL, the form is already in sync — calling
       // onProgrammaticFocus again would re-set focusPath/openPath and cause
       // cascading state updates that flicker nested dialogs.
       const currentOpenPathString = pathToString(openPath)
-      if (path !== pathRef.current && path !== currentOpenPathString) {
-        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
+      if (params.path !== pathRef.current && params.path !== currentOpenPathString) {
+        const pathFromUrl = resolveKeyedPath(
+          formStateRef.current?.value,
+          pathFromString(params.path),
+        )
         onProgrammaticFocus(pathFromUrl)
-      }
-
-      if (!enhancedObjectDialogEnabled) {
-        // remove the `path`-param from url after we have consumed it as the initial focus path
-        paneRouter.setParams(restParams)
       }
     }
     pathRef.current = params.path
 
     return undefined
-  }, [
-    formStateRef,
-    onProgrammaticFocus,
-    paneRouter,
-    params,
-    ready,
-    enhancedObjectDialogEnabled,
-    openPath,
-  ])
+  }, [formStateRef, onProgrammaticFocus, params, ready, openPath])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>

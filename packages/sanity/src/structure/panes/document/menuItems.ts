@@ -1,4 +1,4 @@
-import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, LinkIcon, TransferIcon} from '@sanity/icons'
+import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, TransferIcon} from '@sanity/icons'
 import {
   type DocumentIdStack,
   type DocumentInspector,
@@ -107,13 +107,6 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
   ].filter(Boolean) as PaneMenuItem[]
 
   return [
-    // Always present document menu item to copy current url to clipboard
-    {
-      action: 'copy-document-url',
-      showAsAction: true,
-      title: params.t('action.copy-document-url.label'),
-      icon: LinkIcon,
-    },
     ...inspectorItems,
 
     // TODO: convert to inspector or document view?
