@@ -1,4 +1,3 @@
-import {CalendarIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
 import {useCallback} from 'react'
@@ -8,10 +7,12 @@ import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n'
+import {ReleaseAvatarIcon} from '../releases'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
 import {oversizedButtonStyle} from './styles'
+import {usePerspective} from './usePerspective'
 
 const Dot = styled.div({
   width: 4,
@@ -33,7 +34,7 @@ export function ReleasesToolLink(): React.JSX.Element {
   const {errorCount$} = useReleasesStore()
   const errorCount = useObservable(errorCount$)
   const hasError = errorCount !== 0
-
+  const {selectedPerspective} = usePerspective()
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
@@ -47,7 +48,7 @@ export function ReleasesToolLink(): React.JSX.Element {
         as={OversizedButton}
         name={SCHEDULES_TOOL_NAME}
         data-as="a"
-        icon={CalendarIcon}
+        icon={<ReleaseAvatarIcon release={selectedPerspective} />}
         mode="bleed"
         padding={2}
         radius="full"
