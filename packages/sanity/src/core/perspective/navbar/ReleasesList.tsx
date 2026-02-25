@@ -132,7 +132,7 @@ export function ReleasesList({
         </Stack>
       </Card>
       {areReleasesEnabled && (
-        <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} space={1}>
+        <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} data-ui="scroll-wrapper">
           {orderedReleaseTypes.map((releaseType) => (
             <ReleaseTypeMenuSection
               key={releaseType}
