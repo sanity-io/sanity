@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack} from '@sanity/ui'
 import {type JSX, type RefObject, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
@@ -22,24 +22,10 @@ import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
-const StyledBox = styled(Box)`
+const ScrollWrapper = styled(Stack)`
   overflow: auto;
   max-height: 75vh;
 `
-
-const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(({
-  $reducePadding,
-  $removePadding,
-}) => {
-  const padding = $reducePadding ? '4px' : '16px'
-  return css`
-    position: sticky;
-    top: 0;
-    background-color: var(--card-bg-color);
-    z-index: 10;
-    padding-bottom: ${$removePadding ? '0px' : padding};
-  `
-})
 
 export function ReleasesList({
   areReleasesEnabled,
@@ -128,12 +114,9 @@ export function ReleasesList({
   }
 
   return (
-    <>
-      <StyledBox ref={setScrollContainer} onScroll={onScroll}>
-        <StyledPublishedBox
-          $reducePadding={!releases.length || !areReleasesEnabled}
-          $removePadding={!areReleasesEnabled}
-        >
+    <Card radius={3} overflow="hidden">
+      <Card borderBottom padding={1}>
+        <Stack space={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
@@ -146,30 +129,31 @@ export function ReleasesList({
               menuItemProps={menuItemProps}
             />
           )}
-        </StyledPublishedBox>
-        {areReleasesEnabled && (
-          <>
-            {orderedReleaseTypes.map((releaseType) => (
-              <ReleaseTypeMenuSection
-                key={releaseType}
-                releaseType={releaseType}
-                releases={sortedReleaseTypeReleases[releaseType]}
-                range={range}
-                currentGlobalBundleMenuItemRef={scrollElementRef}
-                menuItemProps={menuItemProps}
-              />
-            ))}
-          </>
-        )}
-      </StyledBox>
+        </Stack>
+      </Card>
       {areReleasesEnabled && (
-        <>
-          <MenuDivider />
-          <ScheduledDraftsMenuItem />
-          <ViewContentReleasesMenuItem />
-          <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-        </>
+        <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} space={1}>
+          {orderedReleaseTypes.map((releaseType) => (
+            <ReleaseTypeMenuSection
+              key={releaseType}
+              releaseType={releaseType}
+              releases={sortedReleaseTypeReleases[releaseType]}
+              range={range}
+              currentGlobalBundleMenuItemRef={scrollElementRef}
+              menuItemProps={menuItemProps}
+            />
+          ))}
+        </ScrollWrapper>
       )}
-    </>
+      {areReleasesEnabled && (
+        <Card borderTop paddingY={1} paddingX={2}>
+          <Stack space={1}>
+            <ScheduledDraftsMenuItem />
+            <ViewContentReleasesMenuItem />
+            <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+          </Stack>
+        </Card>
+      )}
+    </Card>
   )
 }

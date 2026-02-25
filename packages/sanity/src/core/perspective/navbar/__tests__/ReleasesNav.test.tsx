@@ -337,9 +337,8 @@ describe('ReleasesNav', () => {
           .getByText('active Release')
           .closest('button')!
 
-        expect(
-          within(activeReleaseMenuItem).queryByTestId('release-avatar-suggest'),
-        ).not.toBeInTheDocument()
+        const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
+        expect(indicatorIcon).toHaveStyle({opacity: 0})
       })
 
       describe('when releases are disabled', () => {

@@ -15,6 +15,10 @@ import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 const StyledMenu = styled(Menu)`
   min-width: 200px;
   max-width: 320px;
+  /* Remove the default menu gap*/
+  > [data-ui='Stack'] {
+    gap: 0;
+  }
 `
 const OversizedButton = styled(Button)`
   ${oversizedButtonStyle}
@@ -63,7 +67,7 @@ export function GlobalPerspectiveMenu({
         id="releases-menu"
         onClose={resetRangeVisibility}
         menu={
-          <StyledMenu data-testid="release-menu" ref={styledMenuRef}>
+          <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
             <ReleasesList
               areReleasesEnabled={areReleasesEnabled}
               setScrollContainer={setScrollContainer}
