@@ -6,8 +6,6 @@ import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/con
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
-const HIDDEN_STUDIO_MENU_TOOLS = ['releases']
-
 /**
  * @hidden
  * @beta */
@@ -21,7 +19,7 @@ export function StudioToolMenu(props: ToolMenuProps) {
         if (tool.name === SCHEDULED_PUBLISHING_TOOL_NAME && !scheduledPublishingEnabled) {
           return false
         }
-        return !HIDDEN_STUDIO_MENU_TOOLS.includes(tool.name)
+        return true
       }),
     [scheduledPublishingEnabled, tools],
   )
