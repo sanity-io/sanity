@@ -29,6 +29,7 @@ import {
   isSystemBundleName,
   ReleaseAvatar,
   type ReleaseDocument,
+  ReleaseTitle,
   type TargetPerspective,
   useActiveReleases,
   useDocumentVersions,
@@ -307,10 +308,12 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} tone={tone} />
-        <Stack flex={1} paddingY={2} paddingRight={2} space={2}>
-          <Text size={1} weight="medium">
-            {release.metadata.title || tCore('release.placeholder-untitled-release')}
-          </Text>
+        <Stack flex={1} paddingY={2} paddingRight={2} space={2} style={{minWidth: 0}}>
+          <ReleaseTitle
+            title={release.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+            textProps={{size: 1, weight: 'medium'}}
+          />
           {['asap', 'undecided'].includes(release.metadata.releaseType) && (
             <Text muted size={1}>
               {tCore(`release.type.${release.metadata.releaseType}`)}

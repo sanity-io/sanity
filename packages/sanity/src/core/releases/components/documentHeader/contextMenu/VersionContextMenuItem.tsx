@@ -7,6 +7,7 @@ import {useTranslation} from '../../../../i18n'
 import {getReleaseTone} from '../../../util/getReleaseTone'
 import {formatRelativeLocalePublishDate, isReleaseScheduledOrScheduling} from '../../../util/util'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
+import {ReleaseTitle} from '../../ReleaseTitle'
 
 export const VersionContextMenuItem = memo(function VersionContextMenuItem(props: {
   release: ReleaseDocument
@@ -19,9 +20,11 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
     <Flex gap={3} justify="center" align="center">
       <ReleaseAvatar padding={2} tone={getReleaseTone(release)} />
       <Stack flex={1} space={2}>
-        <Text size={1} weight="medium">
-          {release.metadata?.title || t('release.placeholder-untitled-release')}
-        </Text>
+        <ReleaseTitle
+          title={release.metadata?.title}
+          fallback={t('release.placeholder-untitled-release')}
+          textProps={{size: 1, weight: 'medium'}}
+        />
         <Text muted size={1}>
           {release.metadata.releaseType === 'asap' && <>{t('release.type.asap')}</>}
           {release.metadata.releaseType === 'scheduled' &&

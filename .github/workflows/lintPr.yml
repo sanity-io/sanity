@@ -3,9 +3,6 @@ name: Lint PR
 on:
   # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Build on commits pushed to branches without a PR if it's in the allowlist
-  push:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -22,6 +19,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # needed for the --affected flag in turbo to work correctly
+      - name: Ensure local main ref exists for turbo --affected
+        run: git fetch origin main:main
       - uses: ./.github/actions/setup
 
       - name: Oxlint files

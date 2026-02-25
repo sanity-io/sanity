@@ -1257,15 +1257,9 @@ export interface MediaLibraryConfig {
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  /** beta features with the form namespace */
   form?: {
-    /**
-     * Enhanced Object Dialog is a new dialog for editing objects in the studio.
-     * @deprecated This property will be removed in a future release as we make the enhanced object dialog the default.
-     */
-    enhancedObjectDialog?: {
-      enabled: boolean
-    }
+    /** @deprecated `enhancedObjectDialog` has been removed. The enhanced object dialog is now always enabled and is considered the default studio experience. */
+    enhancedObjectDialog?: never
   }
 
   /**

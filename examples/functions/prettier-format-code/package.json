@@ -3,7 +3,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
-    "@sanity/client": "^7.14.1",
+    "@sanity/client": "^7.15.0",
     "@sanity/functions": "^1.0.3",
     "prettier": "^3.8.1"
   },

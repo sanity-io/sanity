@@ -112,10 +112,7 @@ export function createGetReferenceInfo(context: {client: SanityClient}) {
   }
 }
 
-function createObserveFields(context: {
-  client: SanityClient
-  listener: Observable<ListenEvent<Record<string, any>>>
-}) {
+function createObserveFields(context: {client: SanityClient; listener: Observable<ListenEvent>}) {
   const {client, listener} = context
   return function observeFields(id: string, fields: string[]): Observable<SanityDocument | null> {
     return listener.pipe(

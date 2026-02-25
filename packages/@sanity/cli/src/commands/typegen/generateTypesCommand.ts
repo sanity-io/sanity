@@ -3,8 +3,7 @@ import {type CliCommandDefinition} from '../../types'
 const description = 'Generates TypeScript types from schema types and GROQ queries'
 
 const helpText = `
-Sanity TypeGen (Beta)
-This command is currently in beta and may undergo significant changes. Feedback is welcome!
+Sanity TypeGen
 
 Usage
   sanity typegen generate [--watch] [--config-path <value>]
@@ -41,7 +40,6 @@ The default configuration values listed above are used if not overridden in your
 
 Note:
 - The \`sanity schema extract\` command is a prerequisite for extracting your Sanity Studio schema into a \`schema.json\` file, which is then used by the \`sanity typegen generate\` command to generate type definitions.
-- While this tool is in beta, we encourage you to experiment with these configurations and provide feedback to help improve its functionality and usability.
 `
 
 const generateTypegenCommand: CliCommandDefinition = {

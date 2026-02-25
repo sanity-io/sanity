@@ -16,6 +16,7 @@ export const DatePicker = forwardRef(function DatePicker(
     showTimeZone?: boolean
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope
+    onTimeZoneOpen?: () => void
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
@@ -26,6 +27,7 @@ export const DatePicker = forwardRef(function DatePicker(
     padding = 2,
     showTimeZone = false,
     timeZoneScope,
+    onTimeZoneOpen,
     ...rest
   } = props
 
@@ -54,6 +56,7 @@ export const DatePicker = forwardRef(function DatePicker(
       padding={padding}
       showTimeZone={showTimeZone}
       timeZoneScope={timeZoneScope}
+      onTimeZoneOpen={onTimeZoneOpen}
     />
   )
 })

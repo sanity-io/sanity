@@ -3,6 +3,7 @@ import {
   type EditorEmittedEvent,
   EditorProvider,
   PortableTextEditable,
+  defineSchema,
   useEditor,
 } from '@portabletext/editor'
 import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
@@ -136,15 +137,7 @@ export function StringInputPortableText(props: StringInputProps) {
   const [initialConfig] = useState<EditorConfig>(() => ({
     initialValue: packageValue(props.value),
     readOnly: props.readOnly ?? false,
-    schema: {
-      name: 'pteTransformer',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-        },
-      ],
-    },
+    schemaDefinition: defineSchema({}),
   }))
 
   const rootTheme = useRootTheme()

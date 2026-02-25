@@ -152,7 +152,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {data: documentVersions} = useDocumentVersions({documentId})
   const workspace = useWorkspace()
 
-  const enhancedObjectDialogEnabled = workspace.beta?.form?.enhancedObjectDialog?.enabled
+  const enhancedObjectDialogEnabled = true
 
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!schemaType) {

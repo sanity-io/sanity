@@ -5,6 +5,7 @@ import {
   getReleaseTone,
   getVersionInlineBadge,
   LATEST,
+  ReleaseTitle,
   type SystemBundle,
   type TargetPerspective,
   Translate,
@@ -40,6 +41,9 @@ export function DocumentNotInReleaseBanner({
   const {createVersion} = useVersionOperations()
 
   const isAnonymousBundle = typeof currentRelease === 'string'
+  const releaseTitle = isAnonymousBundle
+    ? currentRelease
+    : currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release')
   const [versionCreateState, setVersionCreateState] = useState<VersionCreateState | undefined>()
   const toast = useToast()
   const handleAddToRelease = useCallback(async () => {
@@ -92,12 +96,23 @@ export function DocumentNotInReleaseBanner({
             i18nKey="banners.release.not-in-release"
             t={t}
             values={{
-              title: isAnonymousBundle
-                ? currentRelease
-                : currentRelease?.metadata?.title || tCore('release.placeholder-untitled-release'),
+              title: releaseTitle,
             }}
             components={{
-              VersionBadge: getVersionInlineBadge(currentRelease),
+              VersionBadge: ({children}) => {
+                const BadgeWithTone = getVersionInlineBadge(currentRelease)
+                if (isAnonymousBundle) {
+                  return <BadgeWithTone>{children}</BadgeWithTone>
+                }
+                return (
+                  <ReleaseTitle
+                    title={currentRelease.metadata?.title}
+                    fallback={tCore('release.placeholder-untitled-release')}
+                  >
+                    {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                  </ReleaseTitle>
+                )
+              },
             }}
           />
         </Text>

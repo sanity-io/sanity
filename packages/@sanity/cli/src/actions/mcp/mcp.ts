@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import {applyEdits, modify} from 'jsonc-parser'
+import {parse as parseToml, stringify as stringifyToml} from 'smol-toml'
 
 import {type CliApiClient, type CliCommandContext, type CliPrompter} from '../../types'
 import {getCliToken} from '../../util/clientWrapper'
@@ -15,6 +16,10 @@ export interface MCPSetupResult {
   configuredEditors: EditorName[]
   skipped: boolean
   error?: Error
+}
+
+interface TomlConfig {
+  [key: string]: Record<string, unknown> | undefined
 }
 
 /**
@@ -89,10 +94,11 @@ async function createMCPToken(apiClient: CliApiClient): Promise<string> {
  */
 async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
   const configPath = editor.configPath
-  const {configKey, buildServerConfig} = EDITOR_CONFIGS[editor.name]
+  const {configKey, buildServerConfig, format} = EDITOR_CONFIGS[editor.name]
+  const serverConfig = buildServerConfig(token)
 
-  // Read existing content or start with empty object
-  let content = '{}'
+  // Read existing content or start with empty object/document
+  let content = format === 'toml' ? '' : '{}'
   if (existsSync(configPath)) {
     const fileContent = await fs.readFile(configPath, 'utf-8')
     if (fileContent.trim()) {
@@ -100,12 +106,24 @@ async function writeMCPConfig(editor: Editor, token: string): Promise<void> {
     }
   }
 
-  // Modify using jsonc-parser - preserves comments
-  // Setting a nested path automatically creates intermediate objects
-  const edits = modify(content, [configKey, 'Sanity'], buildServerConfig(token), {
-    formattingOptions: {tabSize: 2, insertSpaces: true},
-  })
-  content = applyEdits(content, edits)
+  if (format === 'toml') {
+    const tomlConfig = content.trim() ? (parseToml(content) as TomlConfig) : {}
+    const existingServers = tomlConfig[configKey]
+
+    tomlConfig[configKey] = {
+      ...(existingServers && typeof existingServers === 'object' ? existingServers : {}),
+      Sanity: serverConfig,
+    }
+
+    content = stringifyToml(tomlConfig)
+  } else {
+    // Modify using jsonc-parser - preserves comments
+    // Setting a nested path automatically creates intermediate objects
+    const edits = modify(content, [configKey, 'Sanity'], serverConfig, {
+      formattingOptions: {tabSize: 2, insertSpaces: true},
+    })
+    content = applyEdits(content, edits)
+  }
 
   // Ensure parent directory exists and write
   await fs.mkdir(path.dirname(configPath), {recursive: true})

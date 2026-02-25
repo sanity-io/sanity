@@ -6,6 +6,7 @@ import {
   getVersionFromId,
   isCardinalityOneRelease,
   isVersionId,
+  ReleaseTitle,
   Translate,
   useActiveReleases,
   useDocumentVersions,
@@ -56,18 +57,16 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
 
   const {data: documentVersions} = useDocumentVersions({documentId})
 
-  const documentVersionsTitleList = useMemo(
+  const documentVersionReleases = useMemo(
     () =>
-      activeReleases
-        .filter((version) => {
-          const hasDocumentVersion = documentVersions.find((release) => {
-            const r = getVersionFromId(release) ?? ''
-            return getReleaseIdFromReleaseDocumentId(version._id) === r
-          })
-          return hasDocumentVersion && !isCardinalityOneRelease(version)
+      activeReleases.filter((version) => {
+        const hasDocumentVersion = documentVersions.find((release) => {
+          const r = getVersionFromId(release) ?? ''
+          return getReleaseIdFromReleaseDocumentId(version._id) === r
         })
-        .map((version) => version.metadata.title || tCore('release.placeholder-untitled-release')),
-    [activeReleases, documentVersions, tCore],
+        return hasDocumentVersion && !isCardinalityOneRelease(version)
+      }),
+    [activeReleases, documentVersions],
   )
   const tone = currentVersion && getReleaseTone(currentVersion)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -76,9 +75,12 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
     setPerspective(releaseId)
   }, [releaseId, setPerspective])
 
-  if (documentVersionsTitleList.length === 0) {
+  if (documentVersionReleases.length === 0) {
     return null
   }
+
+  const firstRelease = documentVersionReleases[0]
+  const fallback = tCore('release.placeholder-untitled-release')
 
   return (
     <Banner
@@ -87,33 +89,33 @@ export function OpenReleaseToEditBannerInner({documentId}: {documentId: string})
       content={
         <Text size={1}>
           <Flex direction={'row'} gap={1} wrap="wrap">
-            {documentVersionsTitleList.length > 1 ? (
-              <Translate
-                t={t}
-                i18nKey="banners.release.navigate-to-edit-description-multiple"
-                components={{
-                  VersionBadge: () => (
-                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                  ),
-                }}
-                values={{count: documentVersionsTitleList.length - 1}}
-              />
-            ) : (
-              <Translate
-                t={t}
-                i18nKey="banners.release.navigate-to-edit-description-single"
-                components={{
-                  VersionBadge: () => (
-                    <VersionInlineBadge> {documentVersionsTitleList[0]}</VersionInlineBadge>
-                  ),
-                }}
-              />
-            )}
+            <ReleaseTitle title={firstRelease.metadata.title} fallback={fallback}>
+              {({displayTitle}) =>
+                documentVersionReleases.length > 1 ? (
+                  <Translate
+                    t={t}
+                    i18nKey="banners.release.navigate-to-edit-description-multiple"
+                    components={{
+                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
+                    }}
+                    values={{count: documentVersionReleases.length - 1}}
+                  />
+                ) : (
+                  <Translate
+                    t={t}
+                    i18nKey="banners.release.navigate-to-edit-description-single"
+                    components={{
+                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
+                    }}
+                  />
+                )
+              }
+            </ReleaseTitle>
           </Flex>
         </Text>
       }
       action={
-        documentVersionsTitleList.length > 0
+        documentVersionReleases.length > 0
           ? {
               text: t('banners.release.action.open-to-edit'),
               tone: tone,

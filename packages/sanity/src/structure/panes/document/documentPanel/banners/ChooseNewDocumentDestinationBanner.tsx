@@ -9,6 +9,7 @@ import {
   type PerspectiveNotWriteableReason,
   ReleasesNav,
   type ReleasesNavMenuItemPropsGetter,
+  ReleaseTitle,
   type TargetPerspective,
   Translate,
   useTranslation,
@@ -37,6 +38,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
   reason,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const {
     document: {
@@ -55,6 +57,11 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
     [isDraftModelEnabled, schemaType],
   )
 
+  const releaseDoc = isReleaseDocument(selectedPerspective) ? selectedPerspective : undefined
+  const releaseTitle = releaseDoc
+    ? releaseDoc.metadata.title || tCore('release.placeholder-untitled-release')
+    : undefined
+
   return (
     <Banner
       tone="caution"
@@ -66,15 +73,25 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
               t('banners.choose-new-document-destination.cannot-create-published-document')}
             {reason === 'DRAFTS_NOT_WRITEABLE' &&
               t('banners.choose-new-document-destination.cannot-create-draft-document')}
-            {reason === 'RELEASE_NOT_ACTIVE' && isReleaseDocument(selectedPerspective) && (
+            {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
               <Translate
                 t={t}
                 i18nKey="banners.choose-new-document-destination.release-inactive"
                 values={{
-                  title: selectedPerspective.metadata.title,
+                  title: releaseTitle,
                 }}
                 components={{
-                  VersionBadge: getVersionInlineBadge(selectedPerspective),
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(releaseDoc)
+                    return (
+                      <ReleaseTitle
+                        title={releaseDoc.metadata.title}
+                        fallback={tCore('release.placeholder-untitled-release')}
+                      >
+                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                      </ReleaseTitle>
+                    )
+                  },
                 }}
               />
             )}

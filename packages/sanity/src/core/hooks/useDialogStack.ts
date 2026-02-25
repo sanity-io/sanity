@@ -44,6 +44,7 @@ export function useDialogStack({path}: {path?: Path} = {}) {
   const topEntry = stack.length > 0 ? stack[stack.length - 1] : null
   const isTop = context ? topEntry?.id === id : true
   const close = context?.close ?? noop
+  const navigateTo = context?.navigateTo ?? noop
 
   return {
     /** Unique ID for this dialog instance */
@@ -56,5 +57,7 @@ export function useDialogStack({path}: {path?: Path} = {}) {
     isTop,
     /** Close dialogs */
     close,
+    /** Navigate to a specific path, updating the form path and cleaning up the stack */
+    navigateTo,
   }
 }

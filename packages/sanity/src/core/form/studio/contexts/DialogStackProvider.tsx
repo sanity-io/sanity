@@ -123,21 +123,60 @@ export function DialogStackProvider({children}: DialogStackProviderProps): React
     [onPathOpen, findAncestorFullscreenPath, closeAll],
   )
 
-  const close = useCallback(() => {
-    const currentPath = stack[stack.length - 1]?.path
+  const close = useCallback(
+    (options?: {toParent?: boolean}) => {
+      const currentPath = stack[stack.length - 1]?.path
 
-    // Check if there's a fullscreen PTE that we should navigate back to
-    if (currentPath && hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
-      closeWithFullscreen(currentPath)
-      return
-    }
+      // When toParent is set and there's a parent dialog, navigate to it
+      // instead of closing everything
+      if (options?.toParent && stack.length >= 2) {
+        const parentEntry = stack[stack.length - 2]
+        if (parentEntry?.path) {
+          onPathOpen(parentEntry.path)
+          // Remove the top entry, keep the parent and ancestors
+          setStack((prev) => prev.slice(0, -1))
+          return
+        }
+      }
 
-    closeAll()
-  }, [closeWithFullscreen, closeAll, stack, hasAnyFullscreen, allFullscreenPaths])
+      // Check if there's a fullscreen PTE that we should navigate back to
+      if (currentPath && hasAnyFullscreen() && allFullscreenPaths.length >= 1) {
+        closeWithFullscreen(currentPath)
+        return
+      }
+
+      closeAll()
+    },
+    [closeWithFullscreen, closeAll, stack, onPathOpen, hasAnyFullscreen, allFullscreenPaths],
+  )
+
+  const navigateTo = useCallback(
+    (targetPath: Path) => {
+      onPathOpen(targetPath)
+
+      // Keep only stack entries whose paths are strict ancestors of the target path
+      // (dialogs that should remain open because the target is inside them)
+      setStack((prev) =>
+        prev.filter((entry) => {
+          if (!entry.path) return false
+          // Entry must be strictly shorter to be an ancestor
+          if (entry.path.length >= targetPath.length) return false
+          // eslint-disable-next-line max-nested-callbacks
+          return entry.path.every((segment, index) => {
+            const targetSegment = targetPath[index]
+            return isKeySegment(segment) && isKeySegment(targetSegment)
+              ? segment._key === targetSegment._key
+              : segment === targetSegment
+          })
+        }),
+      )
+    },
+    [onPathOpen],
+  )
 
   const value = useMemo(
-    () => ({stack, push, remove, update, close}),
-    [stack, push, remove, update, close],
+    () => ({stack, push, remove, update, close, navigateTo}),
+    [stack, push, remove, update, close, navigateTo],
   )
 
   return <DialogStackContext.Provider value={value}>{children}</DialogStackContext.Provider>

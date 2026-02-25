@@ -2,6 +2,7 @@ import {existsSync} from 'node:fs'
 import fs from 'node:fs/promises'
 
 import {parse as parseJsonc, type ParseError} from 'jsonc-parser'
+import {parse as parseToml} from 'smol-toml'
 
 import {debug} from '../../debug'
 import {EDITOR_CONFIGS, type EditorName} from './editorConfigs'
@@ -18,13 +19,26 @@ interface MCPConfig {
 }
 
 /**
- * Safely parse JSON/JSONC config file content
+ * Safely parse config file content
  * Returns parsed config or null if unparseable
  */
-function parseConfig(content: string): MCPConfig | null {
+function parseConfig(content: string, format: 'jsonc' | 'toml'): MCPConfig | null {
   const trimmed = content.trim()
   if (trimmed === '') {
     return {} // Empty file - safe to write, treat as empty config
+  }
+
+  if (format === 'toml') {
+    try {
+      const parsed = parseToml(content)
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        return null
+      }
+
+      return parsed as MCPConfig
+    } catch {
+      return null
+    }
   }
 
   const errors: ParseError[] = []
@@ -42,7 +56,7 @@ function parseConfig(content: string): MCPConfig | null {
  * Returns null only if config exists but can't be parsed (to avoid data loss).
  */
 async function checkEditorConfig(name: EditorName, configPath: string): Promise<Editor | null> {
-  const {configKey} = EDITOR_CONFIGS[name]
+  const {configKey, format} = EDITOR_CONFIGS[name]
 
   // Config file doesn't exist - can create it
   if (!existsSync(configPath)) {
@@ -52,7 +66,7 @@ async function checkEditorConfig(name: EditorName, configPath: string): Promise<
   // Config exists - try to parse it
   try {
     const content = await fs.readFile(configPath, 'utf-8')
-    const config = parseConfig(content)
+    const config = parseConfig(content, format)
 
     if (config === null) {
       debug('Skipping %s: could not parse %s', name, configPath)

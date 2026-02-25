@@ -1,17 +1,19 @@
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {Text} from '@sanity/ui'
+import {Text, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   getVersionFromId,
   InsufficientPermissionsMessage,
+  isPublishedPerspective,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
+  usePerspective,
   useRelativeTime,
   useSyncState,
   useTranslation,
@@ -20,7 +22,13 @@ import {
 
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
+import {
+  DocumentPublished,
+  PublishButtonDisabledComplete,
+  PublishButtonDisabledStart,
+  TimeToPublishComplete,
+  TimeToPublishStart,
+} from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
   LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
@@ -52,6 +60,7 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release, version} = props
+  const {selectedPerspective} = usePerspective()
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
@@ -62,10 +71,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {changesOpen, documentId, documentType, value} = useDocumentPane()
   const validationStatus = useValidationStatus(value._id, type, !release)
   const syncState = useSyncState(id, type)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState(documentId, documentType, 'default', bundleId)
   const {t} = useTranslation(structureLocaleNamespace)
 
-  const revision = (editState?.draft || editState?.published || {})._rev
+  const revision = (editState?.version || editState?.draft || editState?.published || {})._rev
+  const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
@@ -88,15 +98,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const currentPublishRevision = published?._rev
 
+  const telemetry = useTelemetry()
+
   const doPublish = useCallback(() => {
     publish.execute()
+    telemetry.log(TimeToPublishStart, {documentId: id})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, currentPublishRevision])
+  }, [publish, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
     const validationComplete =
-      !validationStatus.isValidating && validationStatus.revision !== revision
+      !validationStatus.isValidating && validationStatus.revision === revision
 
     if (!publishScheduled || isSyncing || !validationComplete) {
       return
@@ -104,6 +117,13 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     if (!hasValidationErrors) {
       doPublish()
+    } else {
+      // User tried to publish before validation was complete
+      toast.push({
+        title: t('action.publish.validation-issues-toast.title'),
+        description: t('action.publish.validation-issues-toast.description'),
+        status: 'error',
+      })
     }
     setPublishScheduled(false)
   }, [
@@ -115,6 +135,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     revision,
     isValidating,
     validationStatus.isValidating,
+    toast,
+    t,
   ])
 
   useEffect(() => {
@@ -125,15 +147,36 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       publishState?.status === 'publishing' &&
       currentPublishRevision !== publishState.publishRevision
 
+    if (didPublish) {
+      telemetry.log(TimeToPublishComplete, {documentId: id})
+    }
+
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
-  }, [changesOpen, publishState, currentPublishRevision])
+  }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
-  const telemetry = useTelemetry()
+  const isWaitingToPublish = Boolean(
+    (draft || version) &&
+    (publishScheduled || editState?.transactionSyncLock?.enabled || isPermissionsLoading),
+  )
+
+  useEffect(() => {
+    if (!isWaitingToPublish) return undefined
+    telemetry.log(PublishButtonDisabledStart, {
+      documentId: id,
+      isRemoteEvent: editState?.transactionSyncLock?.enabled,
+    })
+    return () => {
+      telemetry.log(PublishButtonDisabledComplete, {
+        documentId: id,
+        isRemoteEvent: editState?.transactionSyncLock?.enabled,
+      })
+    }
+  }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
@@ -161,6 +204,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   ])
 
   return useMemo(() => {
+    if (isPublishedPerspective(selectedPerspective)) {
+      // never show publish action on a published document
+      return null
+    }
+
     if (release && version) {
       // release versions are not publishable by this action, they should be published as part of a release
       return null
@@ -215,9 +263,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       label:
         publishState?.status === 'published'
           ? t('action.publish.published.label')
-          : publishScheduled || publishState?.status === 'publishing'
-            ? t('action.publish.running.label')
-            : t('action.publish.draft.label'),
+          : publishScheduled
+            ? t('action.publish.validation-in-progress.label')
+            : publishState?.status === 'publishing'
+              ? t('action.publish.running.label')
+              : t('action.publish.draft.label'),
       // @todo: Implement loading state, to show a `<Button loading />` state
       // loading: publishScheduled || publishState === 'publishing',
       icon: PublishIcon,
@@ -230,6 +280,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       onHandle: handle,
     }
   }, [
+    selectedPerspective,
     release,
     liveEdit,
     version,

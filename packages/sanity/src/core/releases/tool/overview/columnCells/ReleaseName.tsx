@@ -11,6 +11,7 @@ import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
+import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../util/getReleaseTone'
@@ -65,7 +66,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
       }
 
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
-  const displayTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
 
   return (
     <Box {...cellProps} paddingLeft={3} flex={1} paddingY={1} paddingRight={2} sizing="border">
@@ -73,7 +74,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
         disabled={!release.isDeleted}
         content={
           <Text size={1}>
-            <Translate t={t} i18nKey="deleted-release" values={{title: displayTitle}} />
+            <Translate t={t} i18nKey="deleted-release" values={{title: releaseTitle}} />
           </Text>
         }
       >
@@ -94,8 +95,8 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             selected={isReleasePinned}
             aria-label={
               isReleasePinned
-                ? `${t('dashboard.details.unpin-release')}: "${release.metadata.title}"`
-                : `${t('dashboard.details.pin-release')}: "${release.metadata.title}"`
+                ? `${t('dashboard.details.unpin-release')}: "${releaseTitle}"`
+                : `${t('dashboard.details.pin-release')}: "${releaseTitle}"`
             }
             aria-live="assertive"
           />
@@ -105,10 +106,12 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
                 <ReleaseAvatar tone={getReleaseTone(release)} />
               </Box>
               <Stack flex={1} space={2}>
-                <Flex align="center" gap={2}>
-                  <Text size={1} weight="medium">
-                    {displayTitle}
-                  </Text>
+                <Flex align="center" gap={2} style={{minWidth: 0}}>
+                  <ReleaseTitle
+                    title={release.metadata.title}
+                    fallback={tCore('release.placeholder-untitled-release')}
+                    textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                  />
                 </Flex>
               </Stack>
             </Flex>

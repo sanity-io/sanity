@@ -10,6 +10,7 @@ import {
   getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
+  ReleaseTitle,
   SanityDefaultPreview,
   type SchemaType,
   useActiveReleases,
@@ -72,12 +73,10 @@ const VersionItemPreview = ({
     )
   }, [releases, versionId, documentVariant])
 
-  const getVersionBadgeText = () => {
-    if (documentVariant === 'version') {
-      return release?.metadata?.title || (getVersionFromId(versionId) as string)
-    }
+  const systemTitle = useMemo(() => {
+    if (documentVariant === 'version') return undefined
     return documentVariant === 'published' ? t('release.chip.published') : t('release.chip.draft')
-  }
+  }, [documentVariant, t])
 
   const tone = release
     ? getReleaseTone(release)
@@ -105,9 +104,22 @@ const VersionItemPreview = ({
               <Text size={1}>
                 <ReleaseAvatarIcon tone={tone} />
               </Text>
-              <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
-                {getVersionBadgeText()}
-              </EllipsisText>
+              {documentVariant === 'version' ? (
+                <ReleaseTitle
+                  title={release?.metadata?.title}
+                  fallback={getVersionFromId(versionId) as string}
+                >
+                  {({displayTitle}) => (
+                    <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                      {displayTitle}
+                    </EllipsisText>
+                  )}
+                </ReleaseTitle>
+              ) : (
+                <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                  {systemTitle}
+                </EllipsisText>
+              )}
             </Flex>
           </Card>
         </Card>

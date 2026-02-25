@@ -4,6 +4,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionInlineBadge,
   isCardinalityOneRelease,
+  ReleaseTitle,
   Translate,
   useArchivedReleases,
   useTranslation,
@@ -46,23 +47,31 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     return 'banners.archived-release.description'
   }, [release])
 
-  const title = release?.metadata.title || tCore('release.placeholder-untitled-release')
-
   return (
     <Banner
       tone="caution"
       content={
         <Text size={1}>
-          <Translate
-            t={t}
-            i18nKey={description}
-            values={{
-              title,
-            }}
-            components={{
-              VersionBadge: getVersionInlineBadge(release),
-            }}
-          />
+          <ReleaseTitle
+            title={release?.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+          >
+            {({displayTitle}) => (
+              <Translate
+                t={t}
+                i18nKey={description}
+                values={{
+                  title: displayTitle,
+                }}
+                components={{
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(release)
+                    return <BadgeWithTone>{children}</BadgeWithTone>
+                  },
+                }}
+              />
+            )}
+          </ReleaseTitle>
         </Text>
       }
       action={

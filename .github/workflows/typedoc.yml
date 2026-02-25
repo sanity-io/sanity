@@ -21,6 +21,17 @@ on:
         required: false
         default: false
         type: boolean
+  workflow_call:
+    inputs:
+      upload:
+        description: Upload generated TypeDoc file
+        required: false
+        default: false
+        type: boolean
+      version:
+        description: Version to upload as
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -101,10 +112,14 @@ jobs:
             The TypeDoc JSON file has been generated and validated. All documentation scripts completed successfully.
 
       - name: Extract version from tag
-        if: (startsWith(github.ref, 'refs/tags/v') || github.event.inputs.upload == 'true') && steps.generate.outputs.success == 'true'
+        if: (startsWith(github.ref, 'refs/tags/v') || inputs.upload) && steps.generate.outputs.success == 'true'
         id: version
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          if [[ -n "${{ inputs.version }}" ]]; then
+            VERSION="${{ inputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "📋 Using provided version: $VERSION"
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             # Extract version from git tag (e.g., refs/tags/v1.2.3 -> 1.2.3)
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -117,7 +132,7 @@ jobs:
           fi
 
       - name: Upload TypeDoc to Sanity Docs API
-        if: (startsWith(github.ref, 'refs/tags/v') || github.event.inputs.upload == 'true') && steps.generate.outputs.success == 'true'
+        if: (startsWith(github.ref, 'refs/tags/v') || inputs.upload) && steps.generate.outputs.success == 'true'
         uses: sanity-io/reference-api-typedoc/.github/actions/typedoc-upload@main
         with:
           packageName: "sanity"

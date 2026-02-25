@@ -345,7 +345,7 @@ export default defineConfig([
   },
   // Files to disable i18n literals,
   {
-    files: ['./**/*/__workshop__/**/*', '**/*/debug/**/*'],
+    files: ['**/*/debug/**/*'],
     rules: {
       'i18next/no-literal-string': 'off',
       '@sanity/i18n/no-attribute-string-literals': 'off',
@@ -354,7 +354,7 @@ export default defineConfig([
   },
   // Prefer local components vs certain @sanity/ui imports (in sanity package)
   {
-    ignores: ['**/__workshop__/**', 'src/_singletons/**', 'src/_createContext/**'],
+    ignores: ['src/_singletons/**', 'src/_createContext/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -366,7 +366,6 @@ export default defineConfig([
   },
   {
     files: ['src/core/**'],
-    ignores: ['**/__workshop__/**'],
     rules: {
       'no-restricted-imports': [
         'error',

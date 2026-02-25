@@ -17,8 +17,15 @@ import {
 import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
+import {useClient} from '../../../../../hooks'
 import {useTranslation} from '../../../../../i18n'
+import {useSource} from '../../../../../studio'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {_isType} from '../../../../../util/schemaUtils'
+import {
+  createDatasetFileAssetSource,
+  createDatasetImageAssetSource,
+} from '../../../../studio/assetSourceDataset'
 import {resolveUploadAssetSources} from '../../../../studio/uploads/resolveUploadAssetSources'
 import {type InputOnSelectFileFunctionProps, type UploadEvent} from '../../../../types'
 import {useFormBuilder} from '../../../../useFormBuilder'
@@ -72,6 +79,8 @@ export function uploadTarget<Props>(
     } = props
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
+    const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+    const source = useSource()
 
     const formBuilder = useFormBuilder()
 
@@ -82,6 +91,17 @@ export function uploadTarget<Props>(
       // Only disable upload if there are asset types AND all of them have disableNew
       return assetTypes.length > 0 && assetTypes.every((type) => type.options?.disableNew === true)
     }, [types])
+
+    // Create default asset sources with Uploaders for drag-and-drop fallback
+    // This mirrors the behavior in UploadPlaceholder.tsx
+    const defaultImageAssetSource = useMemo(
+      () => createDatasetImageAssetSource({client, title: source.title || source.name}),
+      [client, source],
+    )
+    const defaultFileAssetSource = useMemo(
+      () => createDatasetFileAssetSource({client, title: source.title || source.name}),
+      [client, source],
+    )
 
     const [filesToUpload, setFilesToUpload] = useState<File[]>([])
     const [showAssetSourceDestinationPicker, setShowAssetSourceDestinationPicker] = useState(false)
@@ -118,12 +138,14 @@ export function uploadTarget<Props>(
     // This is called after the user has dropped or pasted files and selected an asset source destination (if applicable)
     const handleUploadFiles = useCallback(
       (files: File[]) => {
-        const filesAndAssetSources = getFilesAndAssetSources(
+        const filesAndAssetSources = getFilesAndAssetSources({
           files,
           types,
-          assetSourceDestinationName.current,
+          assetSourceDestinationName: assetSourceDestinationName.current,
           formBuilder,
-        )
+          defaultImageAssetSource,
+          defaultFileAssetSource,
+        })
 
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         const rejected = filesAndAssetSources.filter((entry) => entry.assetSource === null)
@@ -141,7 +163,14 @@ export function uploadTarget<Props>(
           })
         }
       },
-      [alertRejectedFiles, formBuilder, onSelectFile, types],
+      [
+        alertRejectedFiles,
+        defaultFileAssetSource,
+        defaultImageAssetSource,
+        formBuilder,
+        onSelectFile,
+        types,
+      ],
     )
 
     // This is called when files are dropped or pasted onto the upload target. It may show the asset source destination picker if needed.
@@ -150,22 +179,28 @@ export function uploadTarget<Props>(
         if (isReadOnly || disableUpload || types.length === 0) {
           return
         }
-        const filesAndAssetSources = getFilesAndAssetSources(
+        const filesAndAssetSources = getFilesAndAssetSources({
           files,
           types,
-          assetSourceDestinationName.current,
+          assetSourceDestinationName: assetSourceDestinationName.current,
           formBuilder,
-        )
+          defaultImageAssetSource,
+          defaultFileAssetSource,
+        })
         const ready = filesAndAssetSources.filter((entry) => entry.assetSource !== null)
         if (ready.length === 0) {
-          alertRejectedFiles(filesAndAssetSources)
+          // Only show warning if there were actual files that couldn't be uploaded
+          // (avoid showing warning when pasting plain text which results in empty files array)
+          if (filesAndAssetSources.length > 0) {
+            alertRejectedFiles(filesAndAssetSources)
+          }
           return
         }
         const allAssetSources = types.flatMap(
           (type) => resolveUploadAssetSources?.(type, formBuilder) ?? [],
         )
         const uniqueAssetSources = uniqBy(allAssetSources, 'name')
-        if (uniqueAssetSources.length > 1 && !assetSourceDestinationName.current) {
+        if (uniqueAssetSources.length > 1 && assetSourceDestinationName.current === null) {
           setShowAssetSourceDestinationPicker(true)
           setFilesToUpload(files)
           return
@@ -174,7 +209,16 @@ export function uploadTarget<Props>(
         setFilesToUpload([])
         handleUploadFiles(ready.map((entry) => entry.file))
       },
-      [alertRejectedFiles, disableUpload, isReadOnly, types, formBuilder, handleUploadFiles],
+      [
+        alertRejectedFiles,
+        defaultFileAssetSource,
+        defaultImageAssetSource,
+        disableUpload,
+        formBuilder,
+        handleUploadFiles,
+        isReadOnly,
+        types,
+      ],
     )
 
     const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
@@ -281,46 +325,97 @@ export function uploadTarget<Props>(
   })
 }
 
-function getFilesAndAssetSources(
-  files: File[],
-  types: SchemaType[],
-  assetSourceDestinationName: string | null,
+/**
+ * Resolves an asset source with fallback to the default source when the resolved source
+ * lacks an Uploader (e.g., sanity-plugin-media). This enables drag-and-drop for such plugins.
+ */
+function resolveAssetSourceWithFallback(
+  resolvedSource: AssetSource | undefined,
+  defaultSource: AssetSource,
+): AssetSource | null {
+  if (resolvedSource === undefined) {
+    return null
+  }
+  if (resolvedSource.Uploader) {
+    return resolvedSource
+  }
+  return defaultSource
+}
+
+function findMatchingAssetSource(
+  schemaType: SchemaType | undefined,
   formBuilder: FIXME,
-): FileEntry[] {
-  // Find the first image and file type in the provided types
-  // Note: these types could be hoisted, so use isType to check
+  file: File,
+  assetSourceDestinationName: string | null,
+): AssetSource | undefined {
+  if (schemaType === undefined) {
+    return undefined
+  }
+  return resolveUploadAssetSources(schemaType, formBuilder, file).find(
+    (source) => assetSourceDestinationName === null || source.name === assetSourceDestinationName,
+  )
+}
+
+interface GetFilesAndAssetSourcesOptions {
+  files: File[]
+  types: SchemaType[]
+  assetSourceDestinationName: string | null
+  formBuilder: FIXME
+  defaultImageAssetSource: AssetSource
+  defaultFileAssetSource: AssetSource
+}
+
+function getFilesAndAssetSources(options: GetFilesAndAssetSourcesOptions): FileEntry[] {
+  const {
+    files,
+    types,
+    assetSourceDestinationName,
+    formBuilder,
+    defaultImageAssetSource,
+    defaultFileAssetSource,
+  } = options
   const imageType = types.find((type) => _isType(type, 'image'))
   const fileType = types.find((type) => _isType(type, 'file'))
 
   return files.map((file) => {
-    const imageAssetSource =
-      (imageType &&
-        resolveUploadAssetSources(imageType, formBuilder, file).find(
-          (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
-        )) ||
-      null
-    const isImage = imageType && file.type.startsWith('image/') && imageAssetSource
-    if (isImage) {
+    const resolvedImageSource = findMatchingAssetSource(
+      imageType,
+      formBuilder,
+      file,
+      assetSourceDestinationName,
+    )
+    const imageAssetSource = resolveAssetSourceWithFallback(
+      resolvedImageSource,
+      defaultImageAssetSource,
+    )
+
+    if (imageType && file.type.startsWith('image/') && imageAssetSource) {
       return {
         file,
         schemaType: imageType,
         assetSource: imageAssetSource,
       }
     }
-    const fileAssetSource =
-      (fileType &&
-        resolveUploadAssetSources(fileType, formBuilder, file).find(
-          (source) => !assetSourceDestinationName || source.name === assetSourceDestinationName,
-        )) ||
-      null
-    const isFile = fileType && fileAssetSource
-    if (isFile) {
+
+    const resolvedFileSource = findMatchingAssetSource(
+      fileType,
+      formBuilder,
+      file,
+      assetSourceDestinationName,
+    )
+    const fileAssetSource = resolveAssetSourceWithFallback(
+      resolvedFileSource,
+      defaultFileAssetSource,
+    )
+
+    if (fileType && fileAssetSource) {
       return {
         file,
         schemaType: fileType,
         assetSource: fileAssetSource,
       }
     }
+
     return {
       file,
       schemaType: null,

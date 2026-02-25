@@ -188,16 +188,6 @@ pnpm test:e2e --ui          # Interactive mode
 
 **Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
 
-### Workshop Tool (Component Development)
-
-The dev studio includes a **Workshop tool** for isolated component development. Access it via the tools menu in the dev studio.
-
-Workshop is useful for:
-
-- Developing UI components in isolation
-- Testing component states without needing full document context
-- Visual regression testing during development
-
 ### Important Note for AI Agents
 
 **What requires authentication:**

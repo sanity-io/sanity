@@ -101,17 +101,17 @@ export default async function buildSanityStudio(
     const result = await compareDependencyVersions(sanityDependencies, workDir)
 
     if (result?.length) {
-      const warning =
+      const versionMismatchWarning =
         `The following local package versions are different from the versions currently served at runtime.\n` +
         `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n`
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')}`
 
       // If it is non-interactive or in unattended mode, we don't want to prompt
       if (isInteractive && !unattendedMode) {
         const choice = await prompt.single({
           type: 'list',
           message: chalk.yellow(
-            `${logSymbols.warning}\n\nDo you want to upgrade local versions before deploying?`,
+            `${logSymbols.warning} ${versionMismatchWarning}\n\nDo you want to upgrade local versions before deploying?`,
           ),
           choices: [
             {
@@ -152,8 +152,8 @@ export default async function buildSanityStudio(
           }
         }
       } else {
-        // if non-interactive or unattended, just show the warning
-        console.warn(`WARNING: ${warning}`)
+        // if non-interactive or unattended, just show the warningMessage
+        console.warn(`WARNING: ${versionMismatchWarning}`)
       }
     }
   }

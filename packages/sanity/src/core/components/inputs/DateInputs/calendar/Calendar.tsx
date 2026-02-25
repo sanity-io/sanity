@@ -48,6 +48,7 @@ export type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   showTimeZone?: boolean
   isPastDisabled?: boolean
   timeZoneScope: TimeZoneScope
+  onTimeZoneOpen?: () => void
 }
 
 // This is used to maintain focus on a child element of the calendar-grid between re-renders
@@ -85,6 +86,7 @@ export const Calendar = forwardRef(function Calendar(
     padding = 2,
     showTimeZone = false,
     timeZoneScope,
+    onTimeZoneOpen,
     ...restProps
   } = props
 
@@ -101,6 +103,7 @@ export const Calendar = forwardRef(function Calendar(
   }, [focusedDate, timeZone?.name])
 
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
+  const handleTimeZoneOpen = onTimeZoneOpen ?? dialogTimeZoneShow
 
   const setFocusedDateMonth = useCallback(
     (month: number) => setFocusedDate(setDate(setMonth(focusedDate, month), 1)),
@@ -393,7 +396,7 @@ export const Calendar = forwardRef(function Calendar(
                   mode="bleed"
                   size="default"
                   text={`${timeZone?.abbreviation}`}
-                  onClick={dialogTimeZoneShow}
+                  onClick={handleTimeZoneOpen}
                 />
               )}
 
@@ -416,8 +419,7 @@ export const Calendar = forwardRef(function Calendar(
               )}
             </>
           )}
-
-          {showTimeZone && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+          {showTimeZone && !onTimeZoneOpen && DialogTimeZone && <DialogTimeZone {...dialogProps} />}
         </Flex>
       </Box>
     </Box>

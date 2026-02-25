@@ -121,9 +121,13 @@ export function useCommentsScroll(opts?: CommentsScrollHookOptions): CommentsScr
   const scrollOpts: StandardBehaviorOptions = useMemo(() => {
     const options = SCROLL_OPTIONS_BY_TYPE[scrollTarget?.type || 'comment']
 
+    // Only apply boundary for 'comment' type scrolls (scrolling within inspector panel)
+    // Field, group, and inline-comment scrolls target the document pane and shouldn't be bounded
+    const shouldApplyBoundary = scrollTarget?.type === 'comment'
+
     return {
       ...options,
-      boundary: boundaryElement,
+      boundary: shouldApplyBoundary ? boundaryElement : undefined,
     }
   }, [boundaryElement, scrollTarget?.type])
 

@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import {useCallback} from 'react'
-import {defineConfig, defineDocumentFieldAction, type PluginOptions} from 'sanity'
+import {defineConfig, defineDocumentFieldAction} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'
@@ -12,11 +12,7 @@ import {largeDocument} from './schema/largeDocument'
 import {simple} from './schema/simple'
 
 export default defineConfig({
-  plugins: [
-    // For some reason we need the explicit type cast here or else the type checker will fail with
-    // TS4082: Default export of the module has or is using private name 'PluginOptions'.
-    structureTool({name: 'desk'}) as PluginOptions,
-  ],
+  plugins: [structureTool({name: 'desk'})],
   title: 'Perf test Studio',
   name: 'default',
   projectId: STUDIO_PROJECT_ID,

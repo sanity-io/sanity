@@ -254,7 +254,28 @@ export default (typeDef: any, visitorContext: any) => {
 
   return {
     ...typeDef,
-    of: of.map(visitorContext.visit),
+    of: of.map((ofMember: any, index: number) => {
+      const visited = visitorContext.visit(ofMember, index)
+
+      if (
+        ofMember.type &&
+        typeof ofMember.type === 'string' &&
+        visitorContext.getType(ofMember.type)?.type === 'document'
+      ) {
+        return {
+          ...visited,
+          _problems: [
+            ...(visited._problems || []),
+            warning(
+              `The type "${ofMember.type}" is a document type and should not be used as a field type directly. Use a "reference" if you want to create a link to the document, or use "object" if you want to embed fields inline.`,
+              HELP_IDS.FIELD_TYPE_IS_DOCUMENT,
+            ),
+          ],
+        }
+      }
+
+      return visited
+    }),
     _problems: problems,
   }
 }

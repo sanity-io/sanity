@@ -4,6 +4,7 @@ import {
   getVersionInlineBadge,
   isGoingToUnpublish,
   isReleaseDocument,
+  ReleaseTitle,
   Translate,
   usePerspective,
   useTranslation,
@@ -23,7 +24,7 @@ export function UnpublishedDocumentBanner() {
   const {t: tCore} = useTranslation()
 
   if (isReleaseDocument(selectedPerspective) && isCurrentVersionGoingToUnpublish) {
-    const title =
+    const releaseTitle =
       selectedPerspective.metadata?.title || tCore('release.placeholder-untitled-release')
 
     return (
@@ -36,10 +37,20 @@ export function UnpublishedDocumentBanner() {
                 t={t}
                 i18nKey="banners.unpublished-release-banner.text"
                 values={{
-                  title,
+                  title: releaseTitle,
                 }}
                 components={{
-                  VersionBadge: getVersionInlineBadge(selectedPerspective),
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(selectedPerspective)
+                    return (
+                      <ReleaseTitle
+                        title={selectedPerspective.metadata?.title}
+                        fallback={tCore('release.placeholder-untitled-release')}
+                      >
+                        {() => <BadgeWithTone>{children}</BadgeWithTone>}
+                      </ReleaseTitle>
+                    )
+                  },
                 }}
               />
             </Text>

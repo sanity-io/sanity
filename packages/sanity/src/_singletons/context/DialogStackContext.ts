@@ -25,8 +25,16 @@ export interface DialogStackContextValue {
   remove: (id: string) => void
   /** Update the path of an existing dialog entry */
   update: (id: string, path?: Path) => void
-  /** Close dialogs */
-  close: () => void
+  /** Close dialogs. Pass `{ toParent: true }` to close only the top dialog and navigate to the parent. */
+  close: (options?: {
+    /**
+     * When true, closes only the top dialog and navigates to its parent path.
+     * When false or omitted, closes all dialogs and resets to the root path.
+     */
+    toParent?: boolean
+  }) => void
+  /** Navigate to a specific path, updating the form path and cleaning up stack entries that are at or deeper than the target. */
+  navigateTo: (path: Path) => void
 }
 
 /**

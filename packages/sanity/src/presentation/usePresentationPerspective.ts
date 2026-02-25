@@ -12,10 +12,11 @@ export function usePresentationPerspective({
 }): PresentationPerspective {
   const {selectedPerspectiveName = 'drafts', selectedReleaseId, perspectiveStack} = usePerspective()
 
-  const perspective = (
-    selectedReleaseId || scheduledDraft
+  return selectedReleaseId || scheduledDraft
+    ? scheduledDraft
       ? [scheduledDraft, ...perspectiveStack]
-      : selectedPerspectiveName
-  ) as PresentationPerspective
-  return perspective
+      : perspectiveStack
+    : selectedPerspectiveName === 'published'
+      ? 'published'
+      : 'drafts'
 }

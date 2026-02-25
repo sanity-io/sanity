@@ -46,6 +46,10 @@ const overflowTextStyle: React.CSSProperties = {
 
 interface DialogBreadcrumbsProps {
   currentPath?: Path
+  /** Callback to navigate to a path, updating the form path and cleaning up the dialog stack. */
+  onNavigate?: (path: Path) => void
+  /** Callback to differentiate between closing all dialogs and closing the top dialog. Used when navigating above all dialog levels. */
+  onClose?: (closeAll?: boolean) => void
 }
 
 interface BreadcrumbItemData {
@@ -77,16 +81,18 @@ function BreadcrumbButton({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   isSelected = false,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   isSelected?: boolean
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
   const telemetry = useTelemetry()
 
@@ -107,6 +113,7 @@ function BreadcrumbButton({
       title={title}
       aria-label={title}
       aria-current={isSelected ? 'location' : false}
+      data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
     >
       <Flex align="center" style={{minWidth: 0}}>
         {siblingInfo && (
@@ -144,14 +151,16 @@ function BreadcrumbMenuItem({
   itemPath,
   documentSchemaType,
   documentValue,
+  currentPath,
   onPathSelect,
 }: {
   itemPath: Path
   documentSchemaType: SchemaType
   documentValue: unknown
+  currentPath?: Path
   onPathSelect: (path: Path) => void
 }) {
-  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue)
+  const title = useBreadcrumbPreview(itemPath, documentSchemaType, documentValue, currentPath)
   const siblingInfo = useBreadcrumbSiblingInfo(itemPath, documentSchemaType, documentValue)
 
   const handleClick = useCallback(() => {
@@ -189,12 +198,20 @@ function BreadcrumbMenuItem({
  * Shows each path segment as a clickable breadcrumb with preview titles.
  * Collapses middle items into a "..." menu when there are too many.
  */
-export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.JSX.Element | null {
+export function DialogBreadcrumbs({
+  currentPath,
+  onNavigate,
+  onClose,
+}: DialogBreadcrumbsProps): React.JSX.Element | null {
   const {onPathOpen} = useFormCallbacks()
   const {schemaType: documentSchemaType} = useFormBuilder()
   const documentValue = useFormValue([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
+
+  // Use onNavigate (which updates both the form path and dialog stack) when available,
+  // falling back to raw onPathOpen for backwards compatibility.
+  const navigate = onNavigate ?? onPathOpen
 
   const handlePathSelect = useCallback(
     (path: Path) => {
@@ -228,7 +245,7 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
               ) {
                 // What this means is that we're opening to the field that was being viewed
                 // Which means that it will focus on the field
-                onPathOpen([...path, nextSegment])
+                navigate([...path, nextSegment])
                 return
               }
             }
@@ -236,12 +253,16 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
         }
 
         // Fallback: open to the item itself
-        onPathOpen(path)
+        navigate(path)
+      } else if (path.length === 1) {
+        // Non-key segment (field name like "animals") — this means navigating above
+        // all dialog levels, so close everything rather than navigating to a field path.
+        onClose?.(true)
       } else {
-        onPathOpen(path)
+        navigate(path)
       }
     },
-    [onPathOpen, documentSchemaType, documentValue, currentPath],
+    [navigate, onClose, documentSchemaType, documentValue, currentPath],
   )
 
   // Calculate max visible items based on container width
@@ -335,6 +356,7 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
                     itemPath={overflowItem.path}
                     documentSchemaType={documentSchemaType}
                     documentValue={documentValue}
+                    currentPath={currentPath}
                     onPathSelect={handlePathSelect}
                   />
                 ))}
@@ -370,6 +392,7 @@ export function DialogBreadcrumbs({currentPath}: DialogBreadcrumbsProps): React.
           itemPath={item.path}
           documentSchemaType={documentSchemaType}
           documentValue={documentValue}
+          currentPath={currentPath}
           isSelected={isSelected}
           onPathSelect={handlePathSelect}
         />

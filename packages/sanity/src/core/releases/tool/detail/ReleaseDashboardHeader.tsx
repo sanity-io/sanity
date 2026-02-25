@@ -2,7 +2,6 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ChevronRightIcon, RestoreIcon} from '@sanity/icons'
 import {
   Box,
-  Breadcrumbs,
   // eslint-disable-next-line no-restricted-imports
   Button, // Custom button with a different textWeight, consider adding textWeight to the shared
   Flex,
@@ -41,17 +40,8 @@ export function ReleaseDashboardHeader(props: {
 
   return (
     <Flex align="flex-start">
-      <Flex flex={1} gap={1}>
-        <Breadcrumbs
-          space={0}
-          separator={
-            <Box paddingY={2}>
-              <Text size={1}>
-                <ChevronRightIcon />
-              </Text>
-            </Box>
-          }
-        >
+      <Flex flex={1} align="center" style={{minWidth: 0}}>
+        <Flex flex="none">
           <Button
             mode="bleed"
             onClick={handleNavigateToReleasesList}
@@ -60,14 +50,22 @@ export function ReleaseDashboardHeader(props: {
             padding={2}
             data-testid="back-to-releases-button"
           />
-          <Button
-            mode="bleed"
-            text={title || tCore('release.placeholder-untitled-release')}
-            textWeight="semibold"
-            padding={2}
-            style={title ? undefined : {opacity: 0.5}}
-          />
-        </Breadcrumbs>
+        </Flex>
+        <Box paddingY={2} flex="none">
+          <Text size={1}>
+            <ChevronRightIcon />
+          </Text>
+        </Box>
+        <Box padding={2} style={{minWidth: 0, maxWidth: '300px'}}>
+          <Text
+            size={1}
+            weight="semibold"
+            textOverflow="ellipsis"
+            style={release.metadata.title ? undefined : {opacity: 0.5}}
+          >
+            {title}
+          </Text>
+        </Box>
       </Flex>
 
       <Flex flex="none" gap={2}>

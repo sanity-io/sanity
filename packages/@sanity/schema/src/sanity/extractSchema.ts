@@ -225,10 +225,18 @@ export function extractSchema(
       return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
     }
 
-    // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
-    // and we return an inline type referencing it instead
     if (schemaType.type?.name && sortedSchemaTypeNames.indexOf(schemaType.type?.name) > -1) {
-      return {type: 'inline', name: schemaType.type?.name} satisfies InlineTypeNode
+      const isDocType = lastType(schemaType.type)?.name === 'document'
+
+      /**
+       * If the referenced type is a type that is not a top level document type, we reference
+       * it with an inline type. If it's a document type we let it flow through through to be
+       * embedded in the output. Less optimal output, but one that is supported by the groq-js
+       * and codegen tooling.
+       */
+      if (!isDocType) {
+        return {type: 'inline', name: schemaType.type?.name} satisfies InlineTypeNode
+      }
     }
 
     if (isStringType(schemaType)) {

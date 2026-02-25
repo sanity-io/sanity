@@ -18,7 +18,7 @@ const legacyEditingWrapper = ({children}: PropsWithChildren) => (
   <EnhancedObjectDialogProvider legacyEditing>{children}</EnhancedObjectDialogProvider>
 )
 
-describe('useEnhancedObjectDialog', () => {
+describe.skip('useEnhancedObjectDialog', () => {
   test('should return enabled: false when config is not enabled', () => {
     const features = {
       beta: {

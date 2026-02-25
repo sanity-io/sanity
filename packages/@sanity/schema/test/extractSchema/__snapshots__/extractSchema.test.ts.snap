@@ -69,8 +69,23 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
         "optional": true,
         "type": "objectAttribute",
         "value": {
-          "name": "author",
-          "type": "inline",
+          "attributes": {
+            "_type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+                "value": "author",
+              },
+            },
+            "name": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
         },
       },
       "inlineAuthors": {
@@ -79,7 +94,15 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
         "value": {
           "of": {
             "attributes": {
-              "_key": {
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "author",
+                },
+              },
+              "name": {
+                "optional": true,
                 "type": "objectAttribute",
                 "value": {
                   "type": "string",
@@ -87,8 +110,15 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
               },
             },
             "rest": {
-              "name": "author",
-              "type": "inline",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
             },
             "type": "object",
           },
@@ -2690,16 +2720,92 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                 },
                 {
                   "attributes": {
-                    "_key": {
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "author",
+                      },
+                    },
+                    "name": {
+                      "optional": true,
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
                       },
                     },
+                    "profilePicture": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "attributes": {
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageAsset.reference",
+                              "type": "inline",
+                            },
+                          },
+                          "attribution": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "caption": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "crop": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                    },
                   },
                   "rest": {
-                    "name": "author",
-                    "type": "inline",
+                    "attributes": {
+                      "_key": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
                   },
                   "type": "object",
                 },
@@ -4308,16 +4414,92 @@ exports[`Extract schema test > Extracts schema general 1`] = `
               "of": [
                 {
                   "attributes": {
-                    "_key": {
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "author",
+                      },
+                    },
+                    "name": {
+                      "optional": true,
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
                       },
                     },
+                    "profilePicture": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "attributes": {
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageAsset.reference",
+                              "type": "inline",
+                            },
+                          },
+                          "attribution": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "caption": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "crop": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                    },
                   },
                   "rest": {
-                    "name": "author",
-                    "type": "inline",
+                    "attributes": {
+                      "_key": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
                   },
                   "type": "object",
                 },
@@ -4399,16 +4581,92 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                                   "value": {
                                     "of": {
                                       "attributes": {
-                                        "_key": {
+                                        "_type": {
+                                          "type": "objectAttribute",
+                                          "value": {
+                                            "type": "string",
+                                            "value": "author",
+                                          },
+                                        },
+                                        "name": {
+                                          "optional": true,
                                           "type": "objectAttribute",
                                           "value": {
                                             "type": "string",
                                           },
                                         },
+                                        "profilePicture": {
+                                          "optional": true,
+                                          "type": "objectAttribute",
+                                          "value": {
+                                            "attributes": {
+                                              "_type": {
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "type": "string",
+                                                  "value": "image",
+                                                },
+                                              },
+                                              "asset": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "name": "sanity.imageAsset.reference",
+                                                  "type": "inline",
+                                                },
+                                              },
+                                              "attribution": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "type": "string",
+                                                },
+                                              },
+                                              "caption": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "type": "string",
+                                                },
+                                              },
+                                              "crop": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "name": "sanity.imageCrop",
+                                                  "type": "inline",
+                                                },
+                                              },
+                                              "hotspot": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "name": "sanity.imageHotspot",
+                                                  "type": "inline",
+                                                },
+                                              },
+                                              "media": {
+                                                "optional": true,
+                                                "type": "objectAttribute",
+                                                "value": {
+                                                  "type": "unknown",
+                                                },
+                                              },
+                                            },
+                                            "type": "object",
+                                          },
+                                        },
                                       },
                                       "rest": {
-                                        "name": "author",
-                                        "type": "inline",
+                                        "attributes": {
+                                          "_key": {
+                                            "type": "objectAttribute",
+                                            "value": {
+                                              "type": "string",
+                                            },
+                                          },
+                                        },
+                                        "type": "object",
                                       },
                                       "type": "object",
                                     },
@@ -4759,16 +5017,92 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                 },
                 {
                   "attributes": {
-                    "_key": {
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "author",
+                      },
+                    },
+                    "name": {
+                      "optional": true,
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
                       },
                     },
+                    "profilePicture": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "attributes": {
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageAsset.reference",
+                              "type": "inline",
+                            },
+                          },
+                          "attribution": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "caption": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "crop": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                    },
                   },
                   "rest": {
-                    "name": "author",
-                    "type": "inline",
+                    "attributes": {
+                      "_key": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
                   },
                   "type": "object",
                 },
@@ -5243,16 +5577,92 @@ exports[`Extract schema test > Extracts schema general 1`] = `
                 },
                 {
                   "attributes": {
-                    "_key": {
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "author",
+                      },
+                    },
+                    "name": {
+                      "optional": true,
                       "type": "objectAttribute",
                       "value": {
                         "type": "string",
                       },
                     },
+                    "profilePicture": {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": {
+                        "attributes": {
+                          "_type": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageAsset.reference",
+                              "type": "inline",
+                            },
+                          },
+                          "attribution": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "caption": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                          "crop": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageCrop",
+                              "type": "inline",
+                            },
+                          },
+                          "hotspot": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "name": "sanity.imageHotspot",
+                              "type": "inline",
+                            },
+                          },
+                          "media": {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "unknown",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                    },
                   },
                   "rest": {
-                    "name": "author",
-                    "type": "inline",
+                    "attributes": {
+                      "_key": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
                   },
                   "type": "object",
                 },
@@ -7335,6 +7745,191 @@ exports[`Extract schema test > will ignore global document reference types at th
       },
     },
     "name": "validDocument",
+    "type": "document",
+  },
+]
+`;
+
+exports[`field with a type defined as a document type is not hoisted 1`] = `
+[
+  {
+    "name": "author.reference",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference",
+          },
+        },
+        "_weak": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean",
+          },
+        },
+      },
+      "dereferencesTo": "author",
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "post",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "author": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "_type": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+                "value": "author",
+              },
+            },
+            "title": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "authorRef": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "author.reference",
+          "type": "inline",
+        },
+      },
+      "hero": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "hero",
+          "type": "inline",
+        },
+      },
+      "title": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "post",
+    "type": "document",
+  },
+  {
+    "name": "hero",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "hero",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "author",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "title": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "author",
     "type": "document",
   },
 ]

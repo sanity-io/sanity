@@ -133,6 +133,7 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
       __unstable_referenceElement: referenceElement,
+      changed: memberItem?.member.item.changed ?? false,
       children: input,
       focused,
       onClose,

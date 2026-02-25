@@ -9,6 +9,7 @@ import {
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import {
@@ -244,7 +245,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
           <EditorProvider
             key={editorInstanceKey}
             initialConfig={{
-              schema: editorSchemaType,
+              schemaDefinition: sanitySchemaToPortableTextSchema(editorSchemaType),
               initialValue: value || EMPTY_ARRAY,
               readOnly,
             }}

@@ -40,7 +40,6 @@ import {
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   draftsEnabledReducer,
-  enhancedObjectDialogEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -748,11 +747,6 @@ function resolveSource({
       eventsAPI: {
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
-      },
-      form: {
-        enhancedObjectDialog: {
-          enabled: enhancedObjectDialogEnabledReducer({config, initialValue: true}),
-        },
       },
       create: {
         startInCreateEnabled: false,

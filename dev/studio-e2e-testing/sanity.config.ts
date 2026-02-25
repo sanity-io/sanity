@@ -162,34 +162,4 @@ export default defineConfig([
     dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
     apiHost: 'https://api.sanity.work',
   },
-  {
-    ...defaultConfig,
-    basePath: '/chromium-no-enhanced-dialog',
-    name: 'chromium-no-enhanced-dialog',
-    title: 'studio-e2e-testing-chromium-no-enhanced-dialog',
-    dataset: process.env.SANITY_E2E_DATASET_CHROMIUM || process.env.SANITY_E2E_DATASET!,
-    apiHost: 'https://api.sanity.work',
-    beta: {
-      form: {
-        enhancedObjectDialog: {
-          enabled: false,
-        },
-      },
-    },
-  },
-  {
-    ...defaultConfig,
-    basePath: '/firefox-no-enhanced-dialog',
-    name: 'firefox-no-enhanced-dialog',
-    title: 'studio-e2e-testing-firefox-no-enhanced-dialog',
-    dataset: process.env.SANITY_E2E_DATASET_FIREFOX || process.env.SANITY_E2E_DATASET!,
-    apiHost: 'https://api.sanity.work',
-    beta: {
-      form: {
-        enhancedObjectDialog: {
-          enabled: false,
-        },
-      },
-    },
-  },
 ])

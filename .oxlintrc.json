@@ -31,8 +31,7 @@
     "*.snap",
     "*.md",
     "packages/@sanity/cli/templates/**/*",
-    "dev/test-studio/sanity.theme.mjs",
-    "dev/test-studio/workshop/scopes.js"
+    "dev/test-studio/sanity.theme.mjs"
   ],
   "categories": {
     "correctness": "error",
@@ -201,7 +200,7 @@
       "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
     },
     {
-      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}", "**/__workshop__/**"],
+      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}"],
       "rules": {
         "no-base-to-string": "off",
         "no-unnecessary-boolean-literal-compare": "off",

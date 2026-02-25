@@ -6,18 +6,24 @@ import {debug} from '../../debug'
 
 const helpText = `
 Options
-  --visibility <mode> Set visibility for this dataset (public/private)
+  --visibility <mode>            Set visibility for this dataset (public/private)
+  --embeddings                   Enable embeddings for this dataset
+  --embeddings-projection <groq> GROQ projection for embeddings indexing
 
 Examples
   sanity dataset create
   sanity dataset create <name>
   sanity dataset create <name> --visibility private
+  sanity dataset create <name> --embeddings
+  sanity dataset create <name> --embeddings --embeddings-projection "{ title, body }"
 `
 
 const allowedModes = ['private', 'public', 'custom']
 
 interface CreateFlags {
-  visibility?: 'private' | 'public' | 'custom'
+  'visibility'?: 'private' | 'public' | 'custom'
+  'embeddings'?: boolean
+  'embeddings-projection'?: string
 }
 
 const createDatasetCommand: CliCommandDefinition<CreateFlags> = {
@@ -58,7 +64,15 @@ const createDatasetCommand: CliCommandDefinition<CreateFlags> = {
     const aclMode = await (defaultAclMode || promptForDatasetVisibility(prompt, output))
 
     try {
-      await client.datasets.create(datasetName, {aclMode})
+      const createOptions: Record<string, unknown> = {aclMode}
+      if (flags.embeddings) {
+        const projection = flags['embeddings-projection']
+        createOptions.embeddings = {
+          enabled: true,
+          ...(projection ? {projection} : {}),
+        }
+      }
+      await client.datasets.create(datasetName, createOptions)
       output.print('Dataset created successfully')
     } catch (err) {
       throw new Error(`Dataset creation failed:\n${err.message}`, {cause: err})

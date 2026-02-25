@@ -107,7 +107,7 @@ export type PluginPostMessageDocumentUpdate = {
   document: SanityDocument | null
 }
 
-export type FileStatus = 'pending' | 'uploading' | 'complete' | 'error'
+export type FileStatus = 'pending' | 'uploading' | 'complete' | 'error' | 'alreadyExists'
 
 /**
  * Message sent from the plugin when files are uploading

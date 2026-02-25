@@ -1,4 +1,4 @@
-import {Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo} from 'react'
 import {
   formatRelativeLocalePublishDate,
@@ -14,6 +14,7 @@ import {
   isReleaseScheduledOrScheduling,
   isVersionId,
   type ReleaseDocument,
+  ReleaseTitle,
   type SanityDocumentLike,
   type TargetPerspective,
   Translate,
@@ -355,55 +356,89 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
         />
       )}
       {filteredReleases.inCreation && (
-        <VersionChip
-          tooltipContent={<TooltipContent release={filteredReleases.inCreation} />}
-          selected
-          onClick={() => {}}
-          locked={false}
-          tone={getReleaseTone(filteredReleases.inCreation)}
-          text={
-            filteredReleases.inCreation.metadata.title || t('release.placeholder-untitled-release')
-          }
-          onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
-          contextValues={{
-            documentId: displayed?._id || '',
-            documentType,
-            disabled: true, // disable the chip context menu, this one is in creation
-            releases: filteredReleases.notCurrentReleases,
-            releasesLoading: loading,
-            bundleId: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation._id),
-            isVersion: true,
-            release: filteredReleases.inCreation,
-          }}
-        />
+        <ReleaseTitle
+          title={filteredReleases.inCreation.metadata.title}
+          fallback={t('release.placeholder-untitled-release')}
+          enableTooltip={false}
+        >
+          {({displayTitle, fullTitle, isTruncated}) => (
+            <VersionChip
+              tooltipContent={
+                isTruncated ? (
+                  <Stack space={2} style={{maxWidth: '300px'}}>
+                    <Text size={1} weight="medium">
+                      {fullTitle}
+                    </Text>
+                    <TooltipContent release={filteredReleases.inCreation!} />
+                  </Stack>
+                ) : (
+                  <TooltipContent release={filteredReleases.inCreation!} />
+                )
+              }
+              selected
+              onClick={() => {}}
+              locked={false}
+              tone={getReleaseTone(filteredReleases.inCreation!)}
+              text={displayTitle}
+              onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+              contextValues={{
+                documentId: displayed?._id || '',
+                documentType,
+                disabled: true,
+                releases: filteredReleases.notCurrentReleases,
+                releasesLoading: loading,
+                bundleId: getReleaseIdFromReleaseDocumentId(filteredReleases.inCreation!._id),
+                isVersion: true,
+                release: filteredReleases.inCreation!,
+              }}
+            />
+          )}
+        </ReleaseTitle>
       )}
 
       {displayed &&
         filteredReleases.currentReleases?.map((release) => (
-          <VersionChip
+          <ReleaseTitle
             key={release._id}
-            tooltipContent={<TooltipContent release={release} />}
-            {...getReleaseChipState(release)}
-            onClick={() => handlePerspectiveChange(release)}
-            text={release.metadata.title || t('release.placeholder-untitled-release')}
-            tone={getReleaseTone(release)}
-            locked={isReleaseScheduledOrScheduling(release)}
-            onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
-            contextValues={{
-              documentId: displayed?._id || '',
-              documentType,
-              releases: filteredReleases.notCurrentReleases,
-              releasesLoading: loading,
-              bundleId: getReleaseIdFromReleaseDocumentId(release._id),
-              isVersion: true,
-              release,
-              // displayed, in this instance is not going to be the version to compare to
-              // since it's going to be the published version
-              isGoingToUnpublish: editState?.version
-                ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
-                : false,
-            }}
-          />
+            title={release.metadata.title}
+            fallback={t('release.placeholder-untitled-release')}
+            enableTooltip={false}
+          >
+            {({displayTitle, fullTitle, isTruncated}) => (
+              <VersionChip
+                tooltipContent={
+                  isTruncated ? (
+                    <Stack space={2} style={{maxWidth: '300px'}}>
+                      <Text size={1} weight="medium">
+                        {fullTitle}
+                      </Text>
+                      <TooltipContent release={release} />
+                    </Stack>
+                  ) : (
+                    <TooltipContent release={release} />
+                  )
+                }
+                {...getReleaseChipState(release)}
+                onClick={() => handlePerspectiveChange(release)}
+                text={displayTitle}
+                tone={getReleaseTone(release)}
+                locked={isReleaseScheduledOrScheduling(release)}
+                onCopyToDraftsNavigate={handleCopyToDraftsNavigate}
+                contextValues={{
+                  documentId: displayed?._id || '',
+                  documentType,
+                  releases: filteredReleases.notCurrentReleases,
+                  releasesLoading: loading,
+                  bundleId: getReleaseIdFromReleaseDocumentId(release._id),
+                  isVersion: true,
+                  release,
+                  isGoingToUnpublish: editState?.version
+                    ? isGoingToUnpublish(editState?.version as SanityDocumentLike)
+                    : false,
+                }}
+              />
+            )}
+          </ReleaseTitle>
         ))}
       <NonReleaseVersionsSelect
         nonReleaseVersions={nonReleaseVersions}

@@ -342,6 +342,10 @@ export interface BlockProps {
    */
   children: ReactNode
   /**
+   * Whether the block has changes compared to the published version.
+   */
+  changed: boolean
+  /**
    * If the block currently is focused by the user.
    */
   focused: boolean

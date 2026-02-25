@@ -4,7 +4,6 @@
   "exclude": [
     "./src/**/__fixtures__",
     "./src/**/__mocks__",
-    "./src/**/__workshop__",
     "./src/**/__test__",
     "./src/**/__tests__",
     "./src/**/*.test.ts",

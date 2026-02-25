@@ -216,7 +216,6 @@ export default [
     name: 'sanity/no-react-compiler-on-test-code',
     files: [
       `**/*/test/**/*`,
-      `**/*/__workshop__/**/*`,
       '**/*/__tests__/**/*',
       '**/*.test.{js,ts,tsx}',
       '**/playwright-ct/**',

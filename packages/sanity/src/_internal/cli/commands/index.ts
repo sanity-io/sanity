@@ -16,6 +16,7 @@ import createDatasetCommand from './dataset/createDatasetCommand'
 import datasetGroup from './dataset/datasetGroup'
 import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
+import embeddingsCommand from './dataset/embeddingsCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
@@ -75,6 +76,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listDatasetsCommand,
   createDatasetCommand,
   datasetVisibilityCommand,
+  embeddingsCommand,
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,

@@ -33,6 +33,10 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
     const {apiClient, cliConfig, output} = context
     const flags = {...defaultFlags, ...args.extOptions}
 
+    if (flags.stack) {
+      throw new Error('--stack is not supported by init. Use --stack-id instead.')
+    }
+
     const [dir] = args.argsWithoutOptions
 
     const client = apiClient({
@@ -50,7 +54,6 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         'type',
         'stack-id',
         'stackId',
-        'stack',
         'stack-name',
         'name',
       ]
@@ -72,7 +75,7 @@ const initBlueprintsCommand: CliCommandDefinition<BlueprintsInitFlags> = {
         'example': flags.example,
         'blueprint-type': flags['blueprint-type'] ?? flags.type,
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
-        'stack-id': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'stack-id': flags['stack-id'] ?? flags.stackId,
         'stack-name': flags['stack-name'] ?? flags.name,
         'verbose': flags.verbose,
       },

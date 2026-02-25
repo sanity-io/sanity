@@ -7,6 +7,7 @@ import yargs from 'yargs'
 
 import {commentPrAfterMerge} from '../src/commands/commentPrAfterMerge'
 import {createOrUpdateChangelogDocs} from '../src/commands/createOrUpdateChangelogDocs'
+import {draftReleaseNotes} from '../src/commands/draftReleaseNotes'
 import {publishReleases} from '../src/commands/publishReleases'
 import {writeCommitCheck} from '../src/commands/writeCommitCheck'
 import {writePrChecks} from '../src/commands/writePrChecks'
@@ -123,6 +124,21 @@ await yargs(process.argv.slice(2))
     command: 'status-check-prs',
     describe: 'Update in-flight release status checks for all open PRs',
     handler: () => writePrChecks().then(() => void 0),
+  })
+  .command({
+    command: 'draft-release-notes',
+
+    describe: 'Draft release notes',
+    builder: (cmd) =>
+      cmd.options({
+        baseVersion: {
+          description:
+            'Current base version. E.g. the current version in package.json / lerna.json',
+          type: 'string',
+          demandOption: true,
+        },
+      }),
+    handler: (args) => draftReleaseNotes({baseVersion: args.baseVersion}).then(() => void 0),
   })
   .command({
     command: 'status-check-commit',

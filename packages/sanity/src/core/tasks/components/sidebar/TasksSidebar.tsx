@@ -8,7 +8,6 @@ import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell'
-import {TasksListFeedbackFooter} from './TaskListFeedbackFooter'
 import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
@@ -101,7 +100,6 @@ export function TasksStudioSidebarInner() {
       >
         {content}
       </ContentFlex>
-      {viewMode === 'list' && <TasksListFeedbackFooter />}
     </RootCard>
   )
 }

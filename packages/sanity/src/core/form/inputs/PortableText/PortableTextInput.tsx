@@ -1,9 +1,7 @@
 import {
-  type EditorChange,
   type EditorEmittedEvent,
   EditorProvider,
   type EditorSelection,
-  type InvalidValue,
   type Patch,
   PortableTextEditor,
   type RangeDecoration,
@@ -11,6 +9,7 @@ import {
   usePortableTextEditor,
 } from '@portabletext/editor'
 import {EventListenerPlugin} from '@portabletext/editor/plugins'
+import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
@@ -37,7 +36,7 @@ import {
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-import {type PortableTextInputProps} from '../../types'
+import {type EditorChange, type PortableTextInputProps} from '../../types'
 import {Compositor} from './Compositor'
 import {useFullscreenPTE} from './contexts/fullscreen'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -146,7 +145,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     })
 
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
-  const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
+  const [invalidValue, setInvalidValue] = useState<Extract<
+    EditorChange,
+    {type: 'invalidValue'}
+  > | null>(null)
   const [isActive, setIsActive] = useState(initialActive ?? true)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const [ready, setReady] = useState(false)
@@ -351,7 +353,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   initialValue: value,
                   readOnly: readOnly || !ready,
                   keyGenerator,
-                  schema: schemaType,
+                  schemaDefinition: sanitySchemaToPortableTextSchema(schemaType),
                 }}
               >
                 <EditorChangePlugin
