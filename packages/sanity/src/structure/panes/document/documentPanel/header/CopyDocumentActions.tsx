@@ -1,4 +1,4 @@
-import {ClipboardIcon, CopyIcon, LinkIcon} from '@sanity/icons'
+import {LinkIcon, ShareIcon, TargetIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu, useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
@@ -97,7 +97,7 @@ export function CopyDocumentActions() {
       id="copy-document-actions"
       button={
         <Button
-          icon={ClipboardIcon}
+          icon={ShareIcon}
           mode="bleed"
           tooltipProps={{content: t('action.copy-document-url.label')}}
           data-testid="copy-document-actions-button"
@@ -112,7 +112,7 @@ export function CopyDocumentActions() {
             data-testid="copy-link-to-document"
           />
           <MenuItem
-            icon={CopyIcon}
+            icon={TargetIcon}
             onClick={handleCopyId}
             text={t('action.copy-document-id.label')}
             data-testid="copy-document-id"
