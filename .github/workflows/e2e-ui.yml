@@ -58,7 +58,14 @@ jobs:
           path: artifacts
 
       # For this trick to work there needs to be a `"@sanity/ui@3": "$@sanity/ui"` override in the root package.json, with a `@sanity/ui` entry in `devDependencies`
-      - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
+      - name: Install @sanity/ui from artifact
+        run: |
+          for i in 1 2 3; do
+            pnpm add -w ./artifacts/sanity-ui-*.tgz && exit 0
+            echo "::warning::pnpm add attempt $i failed, retrying in 15s..."
+            sleep 15
+          done
+          exit 1
 
       - name: Build CLI
         # This warms up the turborepo remote cache
@@ -86,7 +93,14 @@ jobs:
           name: pack-sanity-ui
           path: artifacts
 
-      - run: pnpm add -w ./artifacts/sanity-ui-*.tgz
+      - name: Install @sanity/ui from artifact
+        run: |
+          for i in 1 2 3; do
+            pnpm add -w ./artifacts/sanity-ui-*.tgz && exit 0
+            echo "::warning::pnpm add attempt $i failed, retrying in 15s..."
+            sleep 15
+          done
+          exit 1
 
       - name: Store Playwright's Version
         id: playwright-version
@@ -213,10 +227,16 @@ jobs:
           path: playwright-report
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./playwright-report
+        run: |
+          if [ -d "playwright-report" ] && [ "$(ls -A playwright-report 2>/dev/null)" ]; then
+            npx playwright merge-reports --reporter html ./playwright-report
+          else
+            echo "::warning::No playwright report files found, skipping merge"
+          fi
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v6
+        if: always() && hashFiles('playwright-report/**') != ''
         with:
           name: full-html-report--attempt-${{ github.run_attempt }}
           path: playwright-report
