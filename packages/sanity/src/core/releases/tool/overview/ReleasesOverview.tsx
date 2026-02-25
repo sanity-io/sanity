@@ -47,10 +47,12 @@ import {
   getInitialCardinalityView,
   getInitialFilterDate,
   getInitialReleaseGroupMode,
+  getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
 import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
+import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
@@ -97,6 +99,9 @@ export function ReleasesOverview() {
 
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
+  )
+  const [showReleaseNotFound, setShowReleaseNotFound] = useState<boolean>(() =>
+    getInitialReleaseNotFound(router),
   )
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
 
@@ -198,6 +203,10 @@ export function ReleasesOverview() {
   if (releaseGroupMode === 'paused' && !loadingReleases && !pausedReleases.length) {
     setReleaseGroupMode('active')
   }
+
+  const handleDismissReleaseNotFound = useCallback(() => {
+    setShowReleaseNotFound(false)
+  }, [])
 
   const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
     ({currentTarget: {value: groupMode}}) => {
@@ -371,18 +380,6 @@ export function ReleasesOverview() {
     [router],
   )
 
-  const renderCreateReleaseDialog = () => {
-    if (!isCreateReleaseDialogOpen) return null
-
-    return (
-      <CreateReleaseDialog
-        onCancel={() => setIsCreateReleaseDialogOpen(false)}
-        onSubmit={handleOnCreateRelease}
-        origin="release-plugin"
-      />
-    )
-  }
-
   const renderRowActions = useCallback(
     ({datum}: {datum: TableRelease | unknown}) => {
       const release = datum as TableRelease
@@ -454,6 +451,9 @@ export function ReleasesOverview() {
     return releasesOverviewColumnDefs(t, releaseGroupMode)
   }, [cardinalityView, releaseGroupMode, t])
 
+  const hasBannerAboveTable =
+    showReleaseNotFound || showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner
+
   const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
   const defaultTableSort = isArchivedReleasesView
     ? DEFAULT_ARCHIVED_RELEASES_OVERVIEW_SORT
@@ -475,6 +475,22 @@ export function ReleasesOverview() {
     // Use default text empty state for other cases (archived, etc.)
     return t('no-releases')
   }, [cardinalityView, releaseGroupMode, releasesEmptyStateComponent, t])
+
+  function renderNoReleasesEmptyState() {
+    const isUpsell =
+      (cardinalityView === 'releases' && releasesUpsellMode === 'upsell') ||
+      (cardinalityView === 'drafts' && scheduledDraftsMode === 'upsell')
+
+    if (isUpsell) {
+      return <SchedulesUpsell cardinalityView={cardinalityView} />
+    }
+
+    if (cardinalityView === 'drafts') {
+      return <ScheduledDraftsEmptyState />
+    }
+
+    return <ReleasesEmptyState createReleaseButton={createReleaseButton} />
+  }
 
   return (
     <Flex direction="row" flex={1} style={{height: '100%'}}>
@@ -518,6 +534,9 @@ export function ReleasesOverview() {
               </Flex>
             </Flex>
           </Card>
+          {showReleaseNotFound && (
+            <ReleaseNotFoundBanner onDismiss={handleDismissReleaseNotFound} />
+          )}
           {showDraftsDisabledBanner && (
             <DraftsDisabledBanner
               isDraftModelEnabled={isDraftModelEnabled}
@@ -535,24 +554,12 @@ export function ReleasesOverview() {
           )}
 
           {hasNoReleases ? (
-            <>
-              {cardinalityView === 'releases' ? (
-                releasesUpsellMode === 'upsell' ? (
-                  <SchedulesUpsell cardinalityView={cardinalityView} />
-                ) : (
-                  <ReleasesEmptyState createReleaseButton={createReleaseButton} />
-                )
-              ) : scheduledDraftsMode === 'upsell' ? (
-                <SchedulesUpsell cardinalityView={cardinalityView} />
-              ) : (
-                <ScheduledDraftsEmptyState />
-              )}
-            </>
+            renderNoReleasesEmptyState()
           ) : (
             <Box
               ref={setScrollContainerRef}
-              marginTop={showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner ? 0 : 3}
-              overflow={'auto'}
+              marginTop={hasBannerAboveTable ? 0 : 3}
+              overflow="auto"
             >
               <Table<TableRelease>
                 // for resetting filter and sort on table when filer changed
@@ -573,7 +580,13 @@ export function ReleasesOverview() {
           )}
         </Flex>
       </Flex>
-      {renderCreateReleaseDialog()}
+      {isCreateReleaseDialogOpen && (
+        <CreateReleaseDialog
+          onCancel={() => setIsCreateReleaseDialogOpen(false)}
+          onSubmit={handleOnCreateRelease}
+          origin="release-plugin"
+        />
+      )}
     </Flex>
   )
 }

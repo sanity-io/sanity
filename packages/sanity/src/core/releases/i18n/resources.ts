@@ -227,12 +227,12 @@ const releasesLocaleStrings = {
   'no-paused-release': 'No paused scheduled drafts',
   /** Text for when no releases are found */
   'no-releases': 'No Releases',
-  /** Text for when a release is not found */
-  'not-found': 'Release not found: {{releaseId}}',
+  /** Banner text shown when navigating to a release that does not exist */
+  'banner.release-not-found': 'This release could not be found',
 
   /** Text for the button name for the release tool */
   'overview.action.documentation': 'Documentation',
-  /** Text for when a release is not found */
+  /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
   'overview.description':

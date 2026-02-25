@@ -458,6 +458,40 @@ describe('after releases have loaded', () => {
     })
   })
 
+  describe('with non-existent release', () => {
+    beforeEach(async () => {
+      vi.clearAllMocks()
+
+      mockUseActiveReleases.mockReset()
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [],
+        loading: false,
+      })
+
+      mockUseRouterReturn.state = {
+        releaseId: 'non-existent-id',
+      }
+    })
+
+    it('should redirect to releases overview with releaseNotFound param', async () => {
+      await renderTest()
+
+      await waitFor(() => {
+        expect(mockUseRouterReturn.navigate).toHaveBeenCalledWith({
+          _searchParams: [['releaseNotFound', 'true']],
+        })
+      })
+    })
+
+    it('should not render any release content', async () => {
+      await renderTest()
+
+      expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('release-menu-button')).not.toBeInTheDocument()
+    })
+  })
+
   describe('with release in error state', () => {
     beforeEach(async () => {
       mockUseActiveReleases.mockReset()
