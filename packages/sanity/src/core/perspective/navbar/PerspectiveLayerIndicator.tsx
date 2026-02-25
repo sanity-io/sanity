@@ -1,8 +1,8 @@
 import {Box} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
-const INDICATOR_LEFT_OFFSET = 18
-const INDICATOR_WIDTH = 5
+const INDICATOR_LEFT_OFFSET = 20
+const INDICATOR_WIDTH = 1
 const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
 const INDICATOR_BOTTOM_OFFSET = 4
 
