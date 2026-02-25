@@ -435,13 +435,22 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
 
       if (item.action === 'copy-document-url' && navigator) {
         telemetry.log(DocumentURLCopied)
-        // Chose to copy the user's current URL instead of
-        // the document's edit intent link because
-        // of bugs when resolving a document that has
-        // multiple access paths within Structure
+
+        // Get scheduledDraft from pane params if present
+        const scheduledDraft = params.scheduledDraft
+
+        // Build the intent path with release context
+        // - For content releases: add perspective as search param
+        // - For scheduled drafts: add scheduledDraft as intent param
+        const perspectiveParam =
+          selectedReleaseId && !scheduledDraft ? `?perspective=${selectedReleaseId}` : ''
+        const scheduledDraftParam = scheduledDraft ? `;scheduledDraft=${scheduledDraft}` : ''
+
         const copyUrl = buildStudioUrl({
-          coreUi: (url) => `${url}/intent/edit/id=${documentId};type=${documentType}`,
+          coreUi: (url) =>
+            `${url}/intent/edit/id=${documentId};type=${documentType}${scheduledDraftParam}${perspectiveParam}`,
         })
+
         await navigator.clipboard.writeText(copyUrl)
         pushToast({
           id: 'copy-document-url',
@@ -499,6 +508,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       diffViewRouter,
       value._id,
       toggleInlineChanges,
+      params,
+      selectedReleaseId,
     ],
   )
 
