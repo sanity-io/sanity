@@ -3,7 +3,7 @@ import {type RootTheme} from '@sanity/ui/theme'
 import {type ReactNode} from 'react'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
-import {defaultTheme, type StudioTheme} from '../theme'
+import {getDefaultTheme, type StudioTheme} from '../theme'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 
 interface StudioThemeProviderProps {
@@ -17,6 +17,7 @@ interface StudioThemeProviderProps {
 const isThemerTheme = (theme: StudioTheme): boolean => theme.__themer === true
 
 function getThemeValues(theme: StudioTheme): RootTheme {
+  const defaultTheme = getDefaultTheme()
   return {
     ...defaultTheme,
     v2: theme.v2,
