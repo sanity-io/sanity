@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon, ErrorOutlineIcon, LockIcon, WarningOutlineIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
@@ -7,7 +7,7 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
-import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {getPublishDateFromRelease} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
@@ -67,10 +67,10 @@ export const releasesOverviewColumnDefs: (
           if (release.metadata.releaseType === 'asap' || !publishDate) return 0
           return new Date(publishDate).getTime()
         },
-        width: 250,
+        width: 280,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.when')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => {
@@ -78,14 +78,7 @@ export const releasesOverviewColumnDefs: (
 
           return (
             <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-              <Text muted size={1}>
-                <ReleaseTime release={release} />
-              </Text>
-              {isReleaseScheduledOrScheduling(release) && (
-                <Text size={1} data-testid="release-lock-icon">
-                  <LockIcon />
-                </Text>
-              )}
+              <ReleaseTime release={release} />
             </Flex>
           )
         },
@@ -307,5 +300,10 @@ export const releasesOverviewColumnDefs: (
       },
       'all',
     ),
-  ].filter(Boolean) as Column<TableRelease>[]
+  ].filter(filterNull)
+}
+
+// type guard to filter out undefined and null values
+function filterNull<T>(value: T | undefined | null): value is T {
+  return Boolean(value)
 }

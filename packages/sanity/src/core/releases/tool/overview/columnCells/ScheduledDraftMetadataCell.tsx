@@ -1,4 +1,4 @@
-import {Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Flex, Skeleton, Stack} from '@sanity/ui'
 
 import {AvatarSkeleton, UserAvatar} from '../../../../components'
 import {ReleaseTime} from '../../components/ReleaseTime'
@@ -31,9 +31,7 @@ export const ScheduledDraftMetadataCell: VisibleColumn<TableRelease>['cell'] = (
         {creatorLoading && <AvatarSkeleton $size={1} animated />}
         {!creatorLoading && createdBy && <UserAvatar user={createdBy} size={1} />}
         <Stack space={1}>
-          <Text size={1}>
-            <ReleaseTime release={datum} />
-          </Text>
+          <ReleaseTime release={datum} />
         </Stack>
       </Flex>
     </Flex>

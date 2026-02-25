@@ -421,6 +421,8 @@ const releasesLocaleStrings = {
   'table-header.intended-for': 'Intended for',
   /** Header for the document table in the release tool - time */
   'table-header.time': 'Time',
+  /** Header for the document table in the release tool - when */
+  'table-header.when': 'When',
   /** Header for the  document table in the release tool - release title */
   'table-header.title': 'Release',
   /** Header for the document table in the release tool - type */
@@ -432,7 +434,10 @@ const releasesLocaleStrings = {
   'filter-tab.all': 'All',
   /** Filter tab label for documents with validation errors */
   'filter-tab.errors': 'Errors',
-
+  /** Text for the release time label for scheduled releases  which has been scheduled*/
+  'time.scheduled': 'Scheduled',
+  /** Text for the release time label for scheduled releases  which has not been scheduled yet*/
+  'time.estimated': 'Estimated',
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Description for toast when creating new version of document in release failed */

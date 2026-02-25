@@ -1,5 +1,5 @@
 import {type ReleaseType} from '@sanity/client'
-import {LockIcon, PublishIcon} from '@sanity/icons'
+import {PublishIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
@@ -166,18 +166,10 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     () => (
       <Flex flex={1} gap={2} align={'center'}>
         {releaseTypeIcon}
-        <Text muted size={1} data-testid="release-type-label" weight="medium">
-          {publishDateLabel}
-        </Text>
-
-        {isReleaseScheduled && (
-          <Text size={1}>
-            <LockIcon />
-          </Text>
-        )}
+        <span data-testid="release-type-label">{publishDateLabel}</span>
       </Flex>
     ),
-    [isReleaseScheduled, publishDateLabel, releaseTypeIcon],
+    [publishDateLabel, releaseTypeIcon],
   )
 
   return (
