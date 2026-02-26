@@ -746,6 +746,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.upload-failed.description': 'The upload could not be completed at this time.',
   /** Upload failed */
   'inputs.file.upload-failed.title': 'Upload failed',
+  /** Video error fallback description */
+  'inputs.file.video-error.description': 'Failed to load video',
+  /** Retry button text for video loading errors */
+  'inputs.file.video-error.retry-button.text': 'Retry',
   /** Private access policy badge label */
   'inputs.files.common.access-policy.private.label': 'Private asset',
   /** Private access policy badge tooltip */
