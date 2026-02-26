@@ -21,15 +21,15 @@ function isArchivedRelease(release: ReleaseDocument): boolean {
   return release.state === 'archived' || release.state === 'published'
 }
 
-const ChipSpan = styled.span<{$tone: BadgeTone; $clickable: boolean; $hasDot?: boolean}>(
-  ({$tone, $clickable, $hasDot = true}) => `
+const ChipSpan = styled.span<{$tone: BadgeTone; $clickable: boolean; $hasIcon?: boolean}>(
+  ({$tone, $clickable, $hasIcon = true}) => `
     display: inline-flex;
     align-items: center;
     gap: 1px;
     color: var(--card-badge-${$tone}-fg-color);
     background-color: var(--card-badge-${$tone}-bg-color);
     border-radius: 999px;
-    padding: 2px 7px 2px ${$hasDot ? '3px' : '7px'};
+    padding: 2px 7px 2px ${$hasIcon ? '3px' : '7px'};
     margin: 0 1px;
     cursor: ${$clickable ? 'pointer' : 'default'};
     text-decoration: none;
@@ -62,7 +62,7 @@ const PendingChipSpan = styled.span`
   white-space: nowrap;
 `
 
-const DotIconWrapper = styled.span`
+const IconWrapper = styled.span`
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -155,9 +155,9 @@ function PendingReleaseChip({
   return (
     <>
       <PendingChipSpan ref={setChipElement} data-selected={selected}>
-        <DotIconWrapper>
+        <IconWrapper>
           <ReleaseAvatarIcon tone="default" />
-        </DotIconWrapper>
+        </IconWrapper>
         {t('release-reference.pending')}
       </PendingChipSpan>
       {chipElement && (
@@ -212,9 +212,9 @@ function ResolvedReleaseChip({
   if (loading) {
     return (
       <ChipSpan $clickable={false} $tone="default" data-selected={selected}>
-        <DotIconWrapper>
+        <IconWrapper>
           <ReleaseAvatarIcon tone="default" />
-        </DotIconWrapper>
+        </IconWrapper>
         Loading...
       </ChipSpan>
     )
@@ -222,7 +222,7 @@ function ResolvedReleaseChip({
 
   if (release === null) {
     return (
-      <ChipSpan $clickable={false} $tone="default" $hasDot={false} data-selected={selected}>
+      <ChipSpan $clickable={false} $tone="default" $hasIcon={false} data-selected={selected}>
         {releaseId}
       </ChipSpan>
     )
@@ -242,9 +242,9 @@ function ResolvedReleaseChip({
       onClick={handleClick}
       title={isTruncated ? undefined : t('release-reference.title', {title: fullTitle})}
     >
-      <DotIconWrapper>
-        <ReleaseAvatarIcon tone={tone} />
-      </DotIconWrapper>
+      <IconWrapper>
+        <ReleaseAvatarIcon release={release} />
+      </IconWrapper>
       {isArchived ? <s>{displayTitle}</s> : displayTitle}
     </ChipSpan>
   )

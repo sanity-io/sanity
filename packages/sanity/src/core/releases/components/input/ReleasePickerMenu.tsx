@@ -19,7 +19,6 @@ import {releasesLocaleNamespace} from '../../i18n'
 import {useAllReleases} from '../../store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
-import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 
 function isActiveRelease(release: ReleaseDocument): boolean {
@@ -97,7 +96,6 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
   }, [])
 
   const renderOption = useCallback((option: ReleaseOption) => {
-    const tone = getReleaseTone(option.release)
     const {displayTitle, fullTitle, isTruncated} = getReleaseTitleDetails(
       option.release.metadata.title,
       'Untitled Release',
@@ -106,7 +104,7 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
     const card = (
       <Card as="button" padding={2}>
         <Flex align="center" gap={2}>
-          <ReleaseAvatar tone={tone} fontSize={0} padding={1} />
+          <ReleaseAvatar release={option.release} fontSize={0} padding={1} />
           <Text size={1}>{displayTitle}</Text>
         </Flex>
       </Card>
