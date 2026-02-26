@@ -1,12 +1,10 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInMonths,
-  differenceInSeconds,
-  differenceInWeeks,
-  differenceInYears,
-} from 'date-fns'
+import {differenceInDays} from 'date-fns/differenceInDays'
+import {differenceInHours} from 'date-fns/differenceInHours'
+import {differenceInMinutes} from 'date-fns/differenceInMinutes'
+import {differenceInMonths} from 'date-fns/differenceInMonths'
+import {differenceInSeconds} from 'date-fns/differenceInSeconds'
+import {differenceInWeeks} from 'date-fns/differenceInWeeks'
+import {differenceInYears} from 'date-fns/differenceInYears'
 import {useEffect, useReducer} from 'react'
 
 import {useCurrentLocale, useTranslation} from '../i18n'

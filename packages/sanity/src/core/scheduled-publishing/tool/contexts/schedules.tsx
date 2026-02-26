@@ -1,4 +1,4 @@
-import {isSameDay} from 'date-fns'
+import {isSameDay} from 'date-fns/isSameDay'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 

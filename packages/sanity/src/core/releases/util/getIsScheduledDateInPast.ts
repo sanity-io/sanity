@@ -1,5 +1,5 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {isPast} from 'date-fns'
+import {isPast} from 'date-fns/isPast'
 
 /** @internal */
 export const getIsScheduledDateInPast = (value: EditableReleaseDocument) =>

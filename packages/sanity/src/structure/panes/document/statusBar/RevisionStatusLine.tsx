@@ -1,6 +1,6 @@
 import {RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {useContext} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'

@@ -1,4 +1,8 @@
-import {addDays, eachWeekOfInterval, getWeek, lastDayOfMonth, startOfMonth} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {eachWeekOfInterval} from 'date-fns/eachWeekOfInterval'
+import {getWeek} from 'date-fns/getWeek'
+import {lastDayOfMonth} from 'date-fns/lastDayOfMonth'
+import {startOfMonth} from 'date-fns/startOfMonth'
 
 import {TAIL_WEEKDAYS} from './constants'
 

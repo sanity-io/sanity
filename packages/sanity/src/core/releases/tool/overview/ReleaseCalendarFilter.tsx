@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {AnimatePresence, motion} from 'motion/react'
 import {useMemo, useState} from 'react'
 

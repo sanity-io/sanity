@@ -2,7 +2,14 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon, ChevronRightIcon, EarthGlobeIcon} from '@sanity/icons'
 import {Box, Flex, Grid, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
-import {addDays, addMonths, parse, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {addMonths} from 'date-fns/addMonths'
+import {parse} from 'date-fns/parse'
+import {setDate} from 'date-fns/setDate'
+import {setHours} from 'date-fns/setHours'
+import {setMinutes} from 'date-fns/setMinutes'
+import {setMonth} from 'date-fns/setMonth'
+import {setYear} from 'date-fns/setYear'
 import {
   type ComponentProps,
   type FormEvent,

@@ -1,4 +1,6 @@
-import {addWeeks, isAfter, isBefore} from 'date-fns'
+import {addWeeks} from 'date-fns/addWeeks'
+import {isAfter} from 'date-fns/isAfter'
+import {isBefore} from 'date-fns/isBefore'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'

@@ -1,4 +1,8 @@
-import {format, isBefore, isValid, parse, startOfMinute} from 'date-fns'
+import {format} from 'date-fns/format'
+import {isBefore} from 'date-fns/isBefore'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
+import {startOfMinute} from 'date-fns/startOfMinute'
 import {useCallback} from 'react'
 
 import {LazyTextInput} from '../../../components/inputs/DateInputs/LazyTextInput'

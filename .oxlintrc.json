@@ -79,6 +79,10 @@
           {
             "name": "react/compiler-runtime",
             "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          },
+          {
+            "name": "date-fns",
+            "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
           }
         ],
         "patterns": [

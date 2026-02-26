@@ -1,4 +1,4 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 
 import {type DocumentBadgeComponent} from '../../../../config/document/badges'
 import {DATE_FORMAT} from '../../../../studio/timezones/constants'

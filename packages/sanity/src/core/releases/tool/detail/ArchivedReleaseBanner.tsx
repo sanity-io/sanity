@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {addDays, format} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {format} from 'date-fns/format'
 import {useMemo} from 'react'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'

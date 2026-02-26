@@ -1,6 +1,9 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-import {addDays, addMonths, setHours, setMinutes} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {addMonths} from 'date-fns/addMonths'
+import {setHours} from 'date-fns/setHours'
+import {setMinutes} from 'date-fns/setMinutes'
 import {
   type ComponentProps,
   type ForwardedRef,

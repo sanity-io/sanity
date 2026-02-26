@@ -1,7 +1,8 @@
 import {type ReleaseType} from '@sanity/client'
 import {LockIcon, PublishIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
-import {isBefore, startOfMinute} from 'date-fns'
+import {isBefore} from 'date-fns/isBefore'
+import {startOfMinute} from 'date-fns/startOfMinute'
 import {isEqual} from 'lodash-es'
 import {useCallback, useMemo, useRef, useState} from 'react'
 

@@ -1,4 +1,4 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {type RouterContextValue} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 

@@ -1,6 +1,8 @@
 import {EarthGlobeIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import {format, isValid, parse} from 'date-fns'
+import {format} from 'date-fns/format'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button'

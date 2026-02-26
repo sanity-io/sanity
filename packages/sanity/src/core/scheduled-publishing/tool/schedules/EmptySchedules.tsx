@@ -1,5 +1,5 @@
 import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 
 import {type ScheduleState} from '../../types'
 import BigIconComingSoon from './BigIconComingSoon'

@@ -1,4 +1,5 @@
-import {endOfDay, startOfDay} from 'date-fns'
+import {endOfDay} from 'date-fns/endOfDay'
+import {startOfDay} from 'date-fns/startOfDay'
 
 export type RoundDayValue = 'end' | 'start'
 

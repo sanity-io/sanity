@@ -1,6 +1,7 @@
 import {TZDateMini} from '@date-fns/tz'
 import {UTCDateMini} from '@date-fns/utc'
-import {parse as dateFnsParse, parseISO} from 'date-fns'
+import {parse as dateFnsParse} from 'date-fns/parse'
+import {parseISO} from 'date-fns/parseISO'
 
 import formatMomentLike from './datetime-formatter/formatter'
 import {momentToDateFnsFormat} from './datetime-formatter/momentToDateFnsFormat'

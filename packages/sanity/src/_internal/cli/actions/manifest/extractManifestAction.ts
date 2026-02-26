@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {minutesToMilliseconds} from 'date-fns'
+import {minutesToMilliseconds} from 'date-fns/minutesToMilliseconds'
 import readPkgUp from 'read-pkg-up'
 
 import {

@@ -12,7 +12,8 @@ import {
   TabPanel,
   Text,
 } from '@sanity/ui'
-import {addHours, startOfHour} from 'date-fns'
+import {addHours} from 'date-fns/addHours'
+import {startOfHour} from 'date-fns/startOfHour'
 import {
   type ComponentType,
   type MouseEventHandler,

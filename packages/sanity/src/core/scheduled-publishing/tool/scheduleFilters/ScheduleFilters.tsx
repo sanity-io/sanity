@@ -1,6 +1,6 @@
 import {CheckmarkIcon, CloseIcon, SelectIcon} from '@sanity/icons'
 import {Box, Flex, Menu} from '@sanity/ui'
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../ui-components/button/Button'

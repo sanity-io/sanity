@@ -7,7 +7,8 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {isThisISOWeek, isToday} from 'date-fns'
+import {isThisISOWeek} from 'date-fns/isThisISOWeek'
+import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 

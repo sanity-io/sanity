@@ -1,4 +1,4 @@
-import {format} from 'date-fns'
+import {format} from 'date-fns/format'
 import {type RouterContextValue, type SearchParam} from 'sanity/router'
 
 export type Mode = 'active' | 'paused' | 'archived'

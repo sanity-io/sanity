@@ -1,6 +1,9 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 import {Table} from 'console-table-printer'
-import {isAfter, isValid, lightFormat, parse} from 'date-fns'
+import {isAfter} from 'date-fns/isAfter'
+import {isValid} from 'date-fns/isValid'
+import {lightFormat} from 'date-fns/lightFormat'
+import {parse} from 'date-fns/parse'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
