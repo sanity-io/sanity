@@ -1,5 +1,5 @@
-import {describe, expect, it} from 'vitest'
 import {type PortableTextBlock} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 
 import {
   areDescriptionsEquivalent,

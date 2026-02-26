@@ -6,7 +6,13 @@ import {googleMapsInput} from '@sanity/google-maps-input'
 import {BookIcon, EnvelopeIcon, MobileDeviceIcon, PresentationIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
-import {DECISION_PARAMETERS_SCHEMA, RELEASE_PTE_DESCRIPTION, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {
+  DECISION_PARAMETERS_SCHEMA,
+  RELEASE_PTE_DESCRIPTION,
+  defineConfig,
+  definePlugin,
+  type WorkspaceOptions,
+} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
