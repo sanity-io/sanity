@@ -153,9 +153,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
-      // meaning, if it didn't succeed on publishing but the status is still that it is trying, @
-      // then after the timeout, log a failed event
-      if (!didPublish && publishState?.status === 'publishing') {
+      if (
+        publishState?.status === 'publishing' &&
+        currentPublishRevision === publishState.publishRevision
+      ) {
         telemetry.log(PublishButtonClicked, {documentId: id, stage: 'failed'})
       }
       setPublishState(nextState)
