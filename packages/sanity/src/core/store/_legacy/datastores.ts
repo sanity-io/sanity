@@ -1,10 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
+import {useToast} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -151,6 +153,8 @@ export function useDocumentStore(): DocumentStore {
   }, [workspace.__internal_serverDocumentActions?.enabled])
 
   const telemetry = useTelemetry()
+  const toast = useToast()
+  const {t} = useTranslation()
 
   const handleSyncErrorRecovery = useCallback(
     (error: OutOfSyncError) => {
@@ -172,6 +176,14 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleSlowCommit = useCallback(() => {
+    toast.push({
+      title: t('document-store.slow-commit.title'),
+      description: t('document-store.slow-commit.description'),
+      status: 'warning',
+    })
+  }, [toast, t])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -189,6 +201,7 @@ export function useDocumentStore(): DocumentStore {
         extraOptions: {
           onReportLatency: handleReportLatency,
           onSyncErrorRecovery: handleSyncErrorRecovery,
+          onSlowCommit: handleSlowCommit,
         },
       })
 
@@ -211,6 +224,7 @@ export function useDocumentStore(): DocumentStore {
     serverActionsEnabled,
     handleReportLatency,
     handleSyncErrorRecovery,
+    handleSlowCommit,
   ])
 }
 

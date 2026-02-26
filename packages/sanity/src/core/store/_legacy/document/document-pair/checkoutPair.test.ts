@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
-import {merge, of} from 'rxjs'
+import {merge, NEVER, of, Subject} from 'rxjs'
 import {delay} from 'rxjs/operators'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {checkoutPair} from './checkoutPair'
 
@@ -347,6 +347,103 @@ describe('checkoutPair -- server actions', () => {
         transactionId: expect.any(String),
       },
     )
+
+    sub.unsubscribe()
+  })
+})
+
+describe('checkoutPair -- slow commit warning', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  test('calls onSlowCommit after 50 seconds when commit does not resolve', async () => {
+    const onSlowCommit = vi.fn()
+    const slowDataRequest = vi.fn(() => NEVER)
+
+    const slowClient = {
+      ...client,
+      dataRequest: slowDataRequest,
+    }
+
+    const {draft, published} = checkoutPair(slowClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'slow save'}}]))
+    draft.commit()
+
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(49_999)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(onSlowCommit).toHaveBeenCalledOnce()
+
+    sub.unsubscribe()
+  })
+
+  test('does not call onSlowCommit when commit resolves quickly', async () => {
+    const onSlowCommit = vi.fn()
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'fast save'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
+  test('clears timer when commit resolves before threshold', async () => {
+    const onSlowCommit = vi.fn()
+    const commitSubject = new Subject()
+    const delayedDataRequest = vi.fn(() => commitSubject)
+
+    const delayedClient = {
+      ...client,
+      dataRequest: delayedDataRequest,
+    }
+
+    const {draft, published} = checkoutPair(
+      delayedClient as any as SanityClient,
+      idPair,
+      of(false),
+      {onSlowCommit},
+    )
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'delayed save'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
 
     sub.unsubscribe()
   })

@@ -8,7 +8,17 @@ import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
+import {
+  filter,
+  finalize,
+  map,
+  mergeMap,
+  scan,
+  share,
+  take,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -37,6 +47,9 @@ import {operationsApiClient} from './utils/operationsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
+
+/** Duration after which a commit is considered slow and a warning is surfaced to the user */
+const SLOW_COMMIT_THRESHOLD_MS = 50_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -204,28 +217,34 @@ function submitCommitRequest(
   idPair: IdPair,
   request: CommitRequest,
   serverActionsEnabled: boolean,
+  onSlowCommit?: () => void,
 ): Observable<MultipleActionResult | MutationResult> {
-  return from(
-    serverActionsEnabled
-      ? commitActions(client, idPair, request.mutation.params)
-      : commitMutations(client, idPair, request.mutation.params),
-  ).pipe(
-    tap({
-      error: (error) => {
-        const isBadRequest =
-          'statusCode' in error &&
-          typeof error.statusCode === 'number' &&
-          error.statusCode >= 400 &&
-          error.statusCode <= 500
-        if (isBadRequest) {
-          request.cancel(error)
-        } else {
-          request.failure(error)
-        }
-      },
-      next: () => request.success(),
-    }),
-  )
+  return defer(() => {
+    const slowCommitTimer = setTimeout(() => onSlowCommit?.(), SLOW_COMMIT_THRESHOLD_MS)
+
+    return from(
+      serverActionsEnabled
+        ? commitActions(client, idPair, request.mutation.params)
+        : commitMutations(client, idPair, request.mutation.params),
+    ).pipe(
+      tap({
+        error: (error) => {
+          const isBadRequest =
+            'statusCode' in error &&
+            typeof error.statusCode === 'number' &&
+            error.statusCode >= 400 &&
+            error.statusCode <= 500
+          if (isBadRequest) {
+            request.cancel(error)
+          } else {
+            request.failure(error)
+          }
+        },
+        next: () => request.success(),
+      }),
+      finalize(() => clearTimeout(slowCommitTimer)),
+    )
+  })
 }
 
 type LatencyTrackingEvent = {
@@ -249,7 +268,7 @@ export function checkoutPair(
 ): Pair {
   const {publishedId, draftId, versionId} = idPair
 
-  const {onReportLatency, onSyncErrorRecovery, tag} = options
+  const {onReportLatency, onSyncErrorRecovery, onSlowCommit, tag} = options
 
   const listenerEvents$ = getPairListener(client, idPair, {onSyncErrorRecovery, tag}).pipe(share())
 
@@ -289,7 +308,7 @@ export function checkoutPair(
       serverActionsEnabled.pipe(
         take(1),
         mergeMap((canUseServerActions) =>
-          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
+          submitCommitRequest(client, idPair, commitRequest, canUseServerActions, onSlowCommit),
         ),
       ),
     ),
