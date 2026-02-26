@@ -118,15 +118,11 @@ describe('ObjectInput', () => {
 
     expect(screen.getByTestId('unknown-reference-preview')).toBeInTheDocument()
     expect(screen.getByText(/"_ref": "target-doc-id"/)).toBeInTheDocument()
-    expect(
-      renderPreview.mock.calls.some(
-        ([props]) =>
-          props &&
-          typeof props === 'object' &&
-          'value' in props &&
-          props.value?._ref === 'target-doc-id',
-      ),
-    ).toBe(true)
+    expect(renderPreview).toHaveBeenCalledWith(
+      expect.objectContaining({
+        value: expect.objectContaining({_ref: 'target-doc-id'}),
+      }),
+    )
   })
 
   it('keeps non-reference unknown fields as JSON and allows unsetting', async () => {
