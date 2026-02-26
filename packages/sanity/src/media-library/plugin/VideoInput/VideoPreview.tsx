@@ -19,11 +19,11 @@ import {VideoSkeleton} from './VideoSkeleton'
 
 /** @internal Exported for testing */
 export function getMediaLibraryId(assetRef: string) {
-  const id = assetRef.split(':')?.[1]
-  if (!id || !id.startsWith('ml')) {
+  const parts = assetRef.split(':')
+  if (parts.length !== 3 || parts[0] !== 'media-library' || !parts[1]) {
     throw new Error('Invalid asset reference')
   }
-  return id
+  return parts[1]
 }
 
 export function VideoPreview(props: VideoAssetProps) {

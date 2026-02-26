@@ -11,10 +11,12 @@ describe('getMediaLibraryId', () => {
     expect(getMediaLibraryId('media-library:ml_org-123:video-789')).toBe('ml_org-123')
   })
 
-  it('throws when library ID does not start with "ml"', () => {
-    expect(() => getMediaLibraryId('media-library:lib123:video-456')).toThrow(
-      'Invalid asset reference',
-    )
+  it('extracts media library ID without ml prefix', () => {
+    expect(getMediaLibraryId('media-library:lib123:video-456')).toBe('lib123')
+  })
+
+  it('throws when resource type is not media-library', () => {
+    expect(() => getMediaLibraryId('other:ml123:video-456')).toThrow('Invalid asset reference')
   })
 
   it('throws when asset reference has no colon-separated parts', () => {
