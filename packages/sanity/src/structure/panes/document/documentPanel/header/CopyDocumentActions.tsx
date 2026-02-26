@@ -61,7 +61,7 @@ export function CopyDocumentActions() {
 
     const copyUrl = buildStudioUrl({
       coreUi: (url) => `${url}${intentLink}`,
-      studio: () => `${window.location.origin}${intentLink}`,
+      studio: (url) => `${url}${intentLink}`,
     })
 
     await navigator.clipboard.writeText(copyUrl)
