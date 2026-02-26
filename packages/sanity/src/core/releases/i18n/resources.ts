@@ -546,6 +546,11 @@ const releasesLocaleStrings = {
   'release-reference.pending': 'Select release…',
   /** Title template for a clickable release chip */
   'release-reference.title': 'Click to open {{title}} in new tab',
+
+  /** Aria label for the description editor command list */
+  'description.command-list.aria-label': 'Description editor commands',
+  /** Label for the link release command in the description editor */
+  'description.link-release': 'Link Release',
 }
 
 /**

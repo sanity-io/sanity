@@ -1,7 +1,16 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {SearchIcon} from '@sanity/icons'
 import {Autocomplete, Box, Card, Flex, Text} from '@sanity/ui'
-import {type JSX, type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
+import {
+  type JSX,
+  type ReactNode,
+  type Ref,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
@@ -45,6 +54,11 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {data: releases, loading, error} = useAllReleases()
   const [showAllOptions, setShowAllOptions] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
 
   const activeReleases = useMemo(
     () =>
@@ -81,8 +95,6 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
   const handleOpenButtonClick = useCallback(() => {
     setShowAllOptions(true)
   }, [])
-
-  const handleChange = useCallback((value: string) => onSelect(value), [onSelect])
 
   const renderOption = useCallback((option: ReleaseOption) => {
     const tone = getReleaseTone(option.release)
@@ -179,10 +191,11 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
   return (
     <PickerCard padding={2} radius={2} shadow={2}>
       <Autocomplete
+        ref={inputRef}
         id="release-picker-autocomplete"
         icon={SearchIcon}
         fontSize={1}
-        onChange={handleChange}
+        onChange={onSelect}
         onQueryChange={handleQueryChange}
         openButton={{onClick: handleOpenButtonClick}}
         options={options}
@@ -190,7 +203,6 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
         placeholder={t('release-picker.search-placeholder')}
         renderOption={renderOption}
         renderPopover={renderPopover}
-        autoFocus
       />
     </PickerCard>
   )

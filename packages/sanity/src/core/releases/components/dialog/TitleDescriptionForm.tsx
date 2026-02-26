@@ -178,7 +178,7 @@ export function TitleDescriptionForm({
     ? ''
     : isPTEDescription(localData.description)
       ? pteToString(localData.description)
-      : (localData.description as string)
+      : localData.description
 
   const shouldShowDescription = isReleaseOpen || localData.description
 

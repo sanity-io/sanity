@@ -14,14 +14,23 @@ import {MarkdownShortcutsPlugin} from '@portabletext/plugin-markdown-shortcuts'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {BoldIcon, ItalicIcon, UnderlineIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Box, Card, Flex, useClickOutsideEvent} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {randomKey} from '@sanity/util/content'
-import {type JSX, useCallback, useMemo, useState} from 'react'
+import {isEqual} from 'lodash-es'
+import {
+  type JSX,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {css, styled} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button, Popover, type PopoverProps} from '../../../../ui-components'
 import {UpdateReadOnlyPlugin} from '../../../form/inputs/PortableText/PortableTextInput'
 import {useModifierKey} from '../../../hooks'
 import {releaseDescriptionSchema} from '../../schema/releaseDescriptionSchema'
@@ -30,6 +39,9 @@ import {normalizeDescriptionToPTE} from '../../util/descriptionConversion'
 import {AutoLinkPlugin} from './AutoLinkPlugin'
 import {ReleaseLinkMenuButton} from './ReleaseLinkMenuButton'
 import {ReleaseReferenceChip} from './ReleaseReferenceChip'
+import {SlashCommandMenu, type SlashCommandMenuHandle} from './SlashCommandMenu'
+import {useCursorElement} from './useCursorElement'
+import {useSlashCommands} from './useSlashCommands'
 
 interface ReleaseDescriptionInputProps {
   value: ReleaseDescription | undefined | null
@@ -81,42 +93,148 @@ const PlaceholderWrapper = styled.span((props) => {
   `
 })
 
+const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
+
+const StyledPopover = styled(Popover)(({theme}) => {
+  const {space, radius} = theme.sanity
+  return css`
+    &[data-placement='bottom'] {
+      transform: translateY(${space[1]}px);
+    }
+    &[data-placement='top'] {
+      transform: translateY(-${space[1]}px);
+    }
+    [data-ui='Popover__wrapper'] {
+      border-radius: ${radius[3]}px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      width: 240px;
+    }
+  `
+})
+
 const MARK_BUTTONS = [
-  {mark: 'strong', icon: BoldIcon, title: 'Bold (Cmd+B)'},
-  {mark: 'em', icon: ItalicIcon, title: 'Italic (Cmd+I)'},
-  {mark: 'underline', icon: UnderlineIcon, title: 'Underline (Cmd+U)'},
+  {mark: 'strong', icon: BoldIcon, label: 'Bold'},
+  {mark: 'em', icon: ItalicIcon, label: 'Italic'},
+  {mark: 'underline', icon: UnderlineIcon, label: 'Underline'},
 ] as const
 
-function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
+interface EditorInnerProps {
+  isReadOnly: boolean
+  placeholder: string | undefined
+  renderDecorator: (decoratorProps: {children: React.ReactNode; value: string}) => JSX.Element
+  renderAnnotation: (annotationProps: {
+    children: React.ReactNode
+    value: {_type: string; href?: string}
+  }) => JSX.Element
+  renderChild: RenderChildFunction
+}
+
+function EditorInner(props: EditorInnerProps): JSX.Element {
+  const {isReadOnly, placeholder, renderDecorator, renderAnnotation, renderChild} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
+  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
+  const menuRef = useRef<SlashCommandMenuHandle | null>(null)
 
-  const handleToggleMark = useCallback(
-    (mark: string) => {
-      PortableTextEditor.toggleMark(editor, mark)
-      PortableTextEditor.focus(editor)
+  const {menuOpen, searchTerm, commands, closeMenu, onBeforeInput, executeCommand} =
+    useSlashCommands({
+      editor,
+      disabled: isReadOnly,
+    })
+
+  const cursorElement = useCursorElement({disabled: !menuOpen, rootElement})
+
+  useEffect(() => {
+    menuRef.current?.setSearchTerm(searchTerm)
+  }, [searchTerm])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!menuOpen) return
+      switch (event.key) {
+        case 'Escape':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          event.preventDefault()
+          event.stopPropagation()
+          closeMenu()
+          break
+        case 'Enter':
+          event.preventDefault()
+          event.stopPropagation()
+          break
+        default:
+      }
     },
-    [editor],
+    [menuOpen, closeMenu],
   )
 
-  if (readOnly) return null
+  useClickOutsideEvent(menuOpen && closeMenu, () => [popoverRef.current])
+
+  useEffect(() => {
+    if (menuOpen && selection && !isEqual(selection.anchor, selection.focus)) {
+      closeMenu()
+    }
+  }, [menuOpen, closeMenu, selection])
 
   return (
-    <Box paddingX={2} paddingY={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
-      <Flex gap={1}>
-        {MARK_BUTTONS.map((button) => (
-          <Button
-            key={button.mark}
-            mode="bleed"
-            icon={button.icon}
-            onClick={() => handleToggleMark(button.mark)}
-            tooltipProps={{content: button.title}}
-            selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
+    <div ref={setRootElement}>
+      {!isReadOnly && (
+        <Box paddingX={2} paddingY={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
+          <Flex gap={1}>
+            {MARK_BUTTONS.map((button) => (
+              <Button
+                key={button.mark}
+                mode="bleed"
+                icon={button.icon}
+                onClick={() => {
+                  PortableTextEditor.toggleMark(editor, button.mark)
+                  PortableTextEditor.focus(editor)
+                }}
+                tooltipProps={{content: button.label}}
+                selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
+              />
+            ))}
+            <ReleaseLinkMenuButton selected={false} />
+          </Flex>
+        </Box>
+      )}
+      <StyledPopover
+        arrow={false}
+        constrainSize
+        content={
+          <SlashCommandMenu
+            ref={menuRef}
+            commands={commands}
+            inputElement={editableElement}
+            onSelect={executeCommand}
           />
-        ))}
-        <ReleaseLinkMenuButton selected={false} />
-      </Flex>
-    </Box>
+        }
+        disabled={!menuOpen}
+        fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+        open={menuOpen}
+        placement="bottom"
+        ref={popoverRef}
+        referenceElement={cursorElement}
+      />
+      <StyledEditable
+        ref={setEditableElement}
+        renderPlaceholder={() =>
+          placeholder ? <PlaceholderWrapper>{placeholder}</PlaceholderWrapper> : null
+        }
+        renderDecorator={renderDecorator}
+        renderAnnotation={renderAnnotation}
+        renderChild={renderChild}
+        onBeforeInput={onBeforeInput}
+        onKeyDown={handleKeyDown}
+        data-testid="release-description-input"
+      />
+    </div>
   )
 }
 
@@ -247,15 +365,12 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
             context.schema.decorators.find((d: {name: string}) => d.name === 'em')?.name
           }
         />
-        <Toolbar readOnly={isReadOnly} />
-        <StyledEditable
-          renderPlaceholder={() =>
-            placeholder ? <PlaceholderWrapper>{placeholder}</PlaceholderWrapper> : null
-          }
+        <EditorInner
+          isReadOnly={isReadOnly}
+          placeholder={placeholder}
           renderDecorator={renderDecorator}
           renderAnnotation={renderAnnotation}
           renderChild={renderChild}
-          data-testid="release-description-input"
         />
       </EditorProvider>
     </StyledCard>
