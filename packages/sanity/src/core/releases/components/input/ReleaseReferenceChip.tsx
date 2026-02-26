@@ -1,17 +1,18 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ReleaseDocument} from '@sanity/client'
 import {type Path} from '@sanity/types'
-import {type BadgeTone, useClickOutsideEvent} from '@sanity/ui'
+import {type BadgeTone, Box, Text, useClickOutsideEvent} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type JSX, useCallback, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {Popover} from '../../../../ui-components'
+import {Popover, Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useAllReleases} from '../../store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {ReleasePickerMenu} from './ReleasePickerMenu'
@@ -198,13 +199,17 @@ function ResolvedReleaseChip({
     [release],
   )
 
+  const intentHref = useMemo(
+    () => router.resolveIntentLink('release', {id: releaseId}),
+    [router, releaseId],
+  )
+
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>): void => {
       e.preventDefault()
-      const url = router.resolvePathFromState({releaseId})
-      window.open(url, '_blank', 'noopener,noreferrer')
+      window.open(intentHref, '_blank', 'noopener,noreferrer')
     },
-    [router, releaseId],
+    [intentHref],
   )
 
   if (loading) {
@@ -227,20 +232,39 @@ function ResolvedReleaseChip({
   }
 
   const isArchived = isArchivedRelease(release)
-  const title = release.metadata.title || 'Untitled Release'
+  const {displayTitle, fullTitle, isTruncated} = getReleaseTitleDetails(
+    release.metadata.title,
+    'Untitled Release',
+  )
 
-  return (
+  const chip = (
     <ChipSpan
       $clickable
       $tone={tone}
       data-selected={selected}
       onClick={handleClick}
-      title={t('release-reference.title', {title})}
+      title={isTruncated ? undefined : t('release-reference.title', {title: fullTitle})}
     >
       <DotIconWrapper>
         <ReleaseAvatarIcon tone={tone} />
       </DotIconWrapper>
-      {isArchived ? <s>{title}</s> : title}
+      {isArchived ? <s>{displayTitle}</s> : displayTitle}
     </ChipSpan>
   )
+
+  if (isTruncated) {
+    return (
+      <Tooltip
+        content={
+          <Box style={{maxWidth: '300px'}}>
+            <Text size={1}>{fullTitle}</Text>
+          </Box>
+        }
+      >
+        {chip}
+      </Tooltip>
+    )
+  }
+
+  return chip
 }

@@ -50,15 +50,23 @@ const StyledCard = styled(Card)`
   }
 `
 
-const StyledEditable = styled(PortableTextEditable)`
-  outline: none;
-  min-height: 60px;
-  padding: ${EDITOR_PADDING}px;
+const StyledEditable = styled(PortableTextEditable)((props) => {
+  const {color, font} = getTheme_v2(props.theme)
+  return css`
+    outline: none;
+    min-height: 60px;
+    padding: ${EDITOR_PADDING}px;
+    font-family: ${font.text.family};
+    font-weight: ${font.text.weights.regular};
+    font-size: ${font.text.sizes[2].fontSize}px;
+    line-height: ${font.text.sizes[2].lineHeight}px;
+    color: ${color.input.default.enabled.fg};
 
-  &[data-read-only='true'] {
-    cursor: default;
-  }
-`
+    &[data-read-only='true'] {
+      cursor: default;
+    }
+  `
+})
 
 const PlaceholderWrapper = styled.span((props) => {
   const {color, font} = getTheme_v2(props.theme)

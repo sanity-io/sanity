@@ -22,6 +22,7 @@ import {
   type ConfigContext,
   type ConfigPropertyReducer,
   DECISION_PARAMETERS_SCHEMA,
+  RELEASE_PTE_DESCRIPTION,
   type DecisionParametersConfig,
   type DocumentActionsContext,
   type DocumentBadgesContext,
@@ -566,6 +567,25 @@ export const decisionParametersSchemaReducer = (opts: {
     },
     initialValue,
   )
+
+  return result
+}
+
+export const releasePTEDescriptionReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+    const enabled = innerConfig[RELEASE_PTE_DESCRIPTION]
+
+    if (typeof enabled === 'undefined') return acc
+    if (typeof enabled === 'boolean') return enabled
+
+    throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
+  }, initialValue)
 
   return result
 }

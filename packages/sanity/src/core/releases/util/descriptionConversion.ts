@@ -87,10 +87,11 @@ export function areDescriptionsEquivalent(
   b: ReleaseDescription | undefined,
 ): boolean {
   if (a === b) return true
-  if (!a || !b) return false
 
-  const textA = isStringDescription(a) ? a : pteToString(a)
-  const textB = isStringDescription(b) ? b : pteToString(b)
+  const textA = isStringDescription(a) ? a : pteToString(a ?? [])
+  const textB = isStringDescription(b) ? b : pteToString(b ?? [])
 
-  return textA.trim() === textB.trim()
+  const normalizeWhitespace = (text: string): string => text.trim().replace(/\n+/g, '\n')
+
+  return normalizeWhitespace(textA) === normalizeWhitespace(textB)
 }

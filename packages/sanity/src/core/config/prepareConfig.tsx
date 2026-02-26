@@ -34,6 +34,7 @@ import {
   announcementsEnabledReducer,
   decisionParametersSchemaReducer,
   directUploadsReducer,
+  releasePTEDescriptionReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -74,6 +75,7 @@ import {
   type ConfigContext,
   DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
+  RELEASE_PTE_DESCRIPTION,
   type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
@@ -364,6 +366,10 @@ function resolveSource({
     [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
       config,
       initialValue: undefined,
+    }),
+    [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+      config,
+      initialValue: false,
     }),
   }
 
@@ -797,6 +803,11 @@ function resolveSource({
             }),
         }
       : {enabled: true},
+
+    [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+      config,
+      initialValue: false,
+    }),
   }
 
   return source

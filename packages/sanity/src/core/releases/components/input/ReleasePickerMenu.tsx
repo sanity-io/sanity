@@ -4,10 +4,12 @@ import {Autocomplete, Box, Card, Flex, Text} from '@sanity/ui'
 import {type JSX, type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
+import {Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useAllReleases} from '../../store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTitleDetails} from '../../util/getReleaseTitleDetails'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 
@@ -84,14 +86,35 @@ export function ReleasePickerMenu(props: ReleasePickerMenuProps): JSX.Element {
 
   const renderOption = useCallback((option: ReleaseOption) => {
     const tone = getReleaseTone(option.release)
-    return (
+    const {displayTitle, fullTitle, isTruncated} = getReleaseTitleDetails(
+      option.release.metadata.title,
+      'Untitled Release',
+    )
+
+    const card = (
       <Card as="button" padding={2}>
         <Flex align="center" gap={2}>
           <ReleaseAvatar tone={tone} fontSize={0} padding={1} />
-          <Text size={1}>{option.release.metadata.title || 'Untitled Release'}</Text>
+          <Text size={1}>{displayTitle}</Text>
         </Flex>
       </Card>
     )
+
+    if (isTruncated) {
+      return (
+        <Tooltip
+          content={
+            <Box style={{maxWidth: '300px'}}>
+              <Text size={1}>{fullTitle}</Text>
+            </Box>
+          }
+        >
+          {card}
+        </Tooltip>
+      )
+    }
+
+    return card
   }, [])
 
   const renderPopover = useCallback(

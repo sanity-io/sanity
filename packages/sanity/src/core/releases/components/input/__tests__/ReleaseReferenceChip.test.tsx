@@ -17,14 +17,14 @@ vi.mock('../../../store/useAllReleases', () => ({
   useAllReleases: () => mockUseAllReleases(),
 }))
 
-const mockResolvePathFromState = vi.fn(() => '/releases/test-url')
+const mockResolveIntentLink = vi.fn(() => '/intent/release;id=test-url')
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: () => ({
     state: {},
     navigate: vi.fn(),
-    resolvePathFromState: mockResolvePathFromState,
-    resolveIntentLink: vi.fn(),
+    resolvePathFromState: vi.fn(),
+    resolveIntentLink: mockResolveIntentLink,
     navigateUrl: vi.fn(),
     navigateStickyParams: vi.fn(),
     navigateIntent: vi.fn(),
@@ -84,7 +84,7 @@ describe('ReleaseReferenceChip', () => {
     await userEvent.click(chip)
 
     expect(windowOpenSpy).toHaveBeenCalledWith(
-      '/releases/test-url',
+      '/intent/release;id=test-url',
       '_blank',
       'noopener,noreferrer',
     )
@@ -107,7 +107,7 @@ describe('ReleaseReferenceChip', () => {
     await userEvent.click(chip)
 
     expect(windowOpenSpy).toHaveBeenCalledWith(
-      '/releases/test-url',
+      '/intent/release;id=test-url',
       '_blank',
       'noopener,noreferrer',
     )

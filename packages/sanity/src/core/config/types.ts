@@ -75,6 +75,14 @@ export interface GroupableActionDescription<GroupType = unknown> extends BaseAct
 export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
 
 /**
+ * Symbol for enabling Portable Text Editor for release descriptions.
+ * When set to `true`, release descriptions use a rich text editor with formatting and release linking.
+ * When unset or `false`, release descriptions use a plain text textarea.
+ * @internal
+ */
+export const RELEASE_PTE_DESCRIPTION = Symbol('__releasePTEDescription')
+
+/**
  * Configuration for decision parameters
  * @beta
  */
@@ -269,6 +277,8 @@ export interface ConfigContext {
   i18n: LocaleSource
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
+  /** @internal */
+  [RELEASE_PTE_DESCRIPTION]?: boolean
 }
 
 /** @public */
@@ -520,6 +530,8 @@ export interface PluginOptions {
 
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
+  /** @internal */
+  [RELEASE_PTE_DESCRIPTION]?: boolean
 
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
@@ -648,6 +660,8 @@ export interface WorkspaceOptions extends SourceOptions {
    * @beta
    */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
+  /** @internal */
+  [RELEASE_PTE_DESCRIPTION]?: boolean
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -1061,6 +1075,9 @@ export interface Source {
      */
     enabled: boolean
   }
+
+  /** @internal */
+  [RELEASE_PTE_DESCRIPTION]?: boolean
 }
 
 /** @internal */
