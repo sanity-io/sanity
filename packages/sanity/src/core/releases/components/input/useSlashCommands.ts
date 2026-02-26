@@ -64,22 +64,20 @@ export function useSlashCommands(options: UseSlashCommandsOptions): UseSlashComm
 
       const isInsertText = event.inputType === 'insertText'
       const isDeleteText = event.inputType === 'deleteContentBackward'
-      const isInsertingSlash = isInsertText && event.data === '/'
-
-      const isWhitespaceCharBeforeCursorPosition =
-        focusSpan?.text.slice(cursorOffset - 1, cursorOffset) === ' '
 
       // Open the slash menu when `/` is typed at start of text or after whitespace
-      if (isInsertingSlash && (cursorOffset < 1 || isWhitespaceCharBeforeCursorPosition)) {
-        openMenu()
-        return
+      if (isInsertText && event.data === '/') {
+        const charBeforeCursor = focusSpan?.text.slice(cursorOffset - 1, cursorOffset)
+        if (cursorOffset < 1 || charBeforeCursor === ' ') {
+          openMenu()
+          return
+        }
       }
 
       if (!menuOpen) return
 
       // Typing a space immediately after `/` dismisses the menu
-      const filterStartsWithSpaceChar = isInsertText && event.data === ' ' && !searchTerm
-      if (filterStartsWithSpaceChar) {
+      if (isInsertText && event.data === ' ' && !searchTerm) {
         closeMenu()
         return
       }
@@ -88,27 +86,19 @@ export function useSlashCommands(options: UseSlashCommandsOptions): UseSlashComm
         focusSpan?.text.slice(0, Math.max(0, cursorOffset)).lastIndexOf('/') ?? 0
 
       // Handle delete: if deleting would remove the `/` itself, close the menu
-      if (isDeleteText) {
-        if (
-          focusSpan?.text.length === 1 ||
-          lastIndexOfSlash === (focusSpan?.text.length ?? 0) - 1
-        ) {
-          closeMenu()
-          return
-        }
+      if (
+        isDeleteText &&
+        (focusSpan?.text.length === 1 || lastIndexOfSlash === (focusSpan?.text.length ?? 0) - 1)
+      ) {
+        closeMenu()
+        return
       }
 
-      // Update the search term
       if (isPortableTextSpan(focusChild)) {
         let term = focusChild.text.slice(lastIndexOfSlash + 1, cursorOffset)
 
-        if (isInsertText) {
-          term += event.data
-        }
-
-        if (isDeleteText) {
-          term = term.slice(0, Math.max(0, term.length - 1))
-        }
+        if (isInsertText) term += event.data
+        if (isDeleteText) term = term.slice(0, Math.max(0, term.length - 1))
 
         const hasMatches = commands.some((cmd) =>
           cmd.label.toLowerCase().includes(term.toLowerCase()),
@@ -136,28 +126,31 @@ export function useSlashCommands(options: UseSlashCommandsOptions): UseSlashComm
         PortableTextEditor.focus(editor)
         const offset = PortableTextEditor.getSelection(editor)?.focus.offset
 
-        if (typeof offset !== 'undefined') {
-          // Delete the `/query` text
-          PortableTextEditor.delete(
-            editor,
-            {
-              anchor: {path: spanPath, offset: span.text.lastIndexOf('/')},
-              focus: {path: spanPath, offset},
-            },
-            {mode: 'selected'},
-          )
+        if (offset === undefined) {
+          closeMenu()
+          PortableTextEditor.focus(editor)
+          return
+        }
 
-          if (command.key === 'link-release') {
-            const schemaType = editor.schemaTypes.inlineObjects.find(
-              (inlineType) => inlineType.name === 'releaseReference',
-            )
-            if (schemaType) {
-              PortableTextEditor.insertChild(editor, schemaType, {
-                _type: 'releaseReference',
-                _key: randomKey(12),
-                releaseId: '',
-              })
-            }
+        PortableTextEditor.delete(
+          editor,
+          {
+            anchor: {path: spanPath, offset: span.text.lastIndexOf('/')},
+            focus: {path: spanPath, offset},
+          },
+          {mode: 'selected'},
+        )
+
+        if (command.key === 'link-release') {
+          const schemaType = editor.schemaTypes.inlineObjects.find(
+            (inlineType) => inlineType.name === 'releaseReference',
+          )
+          if (schemaType) {
+            PortableTextEditor.insertChild(editor, schemaType, {
+              _type: 'releaseReference',
+              _key: randomKey(12),
+              releaseId: '',
+            })
           }
         }
       }

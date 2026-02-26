@@ -55,26 +55,24 @@ export const SlashCommandMenu = forwardRef(function SlashCommandMenu(
   }, [commands, searchTerm])
 
   const renderItem = useCallback(
-    (command: SlashCommand) => {
-      return (
-        <Card
-          as="button"
-          onClick={() => onSelect(command)}
-          padding={2}
-          radius={2}
-          style={{cursor: 'pointer'}}
-        >
-          <Flex align="center" gap={3}>
-            <Text size={1}>
-              <command.icon />
-            </Text>
-            <Text size={1} weight="medium">
-              {command.label}
-            </Text>
-          </Flex>
-        </Card>
-      )
-    },
+    (command: SlashCommand) => (
+      <Card
+        as="button"
+        onClick={() => onSelect(command)}
+        padding={2}
+        radius={2}
+        style={{cursor: 'pointer'}}
+      >
+        <Flex align="center" gap={3}>
+          <Text size={1}>
+            <command.icon />
+          </Text>
+          <Text size={1} weight="medium">
+            {command.label}
+          </Text>
+        </Flex>
+      </Card>
+    ),
     [onSelect],
   )
 

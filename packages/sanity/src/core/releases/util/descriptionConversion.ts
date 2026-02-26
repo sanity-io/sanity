@@ -4,17 +4,8 @@ import {randomKey} from '@sanity/util/content'
 
 import {type ReleaseDescription, isStringDescription} from '../types/releaseDescription'
 
-/**
- * Convert a plain text string to Portable Text blocks.
- * Each line becomes a separate paragraph block.
- *
- * @param text - Plain text string to convert
- * @returns Array of Portable Text blocks
- */
 export function stringToPTE(text: string): PortableTextBlock[] {
-  if (!text.trim()) {
-    return []
-  }
+  if (!text.trim()) return []
 
   return text.split('\n').map((line) => ({
     _type: 'block',
@@ -32,56 +23,29 @@ export function stringToPTE(text: string): PortableTextBlock[] {
   }))
 }
 
-/**
- * Convert Portable Text blocks to plain text string.
- * Useful for backwards compatibility and search/export scenarios.
- *
- * @param blocks - Array of Portable Text blocks
- * @returns Plain text string
- */
 export function pteToString(blocks: PortableTextBlock[]): string {
-  if (blocks.length === 0) {
-    return ''
-  }
+  if (blocks.length === 0) return ''
 
   try {
     return toPlainText(blocks)
   } catch (error) {
-    console.warn('Failed to convert PTE to string', error)
+    console.warn('Could not convert portable text blocks to string:', error)
     return ''
   }
 }
 
-/**
- * Normalize description to PTE format for UI rendering.
- * This is the main entry point for view-time conversion.
- * Strings are converted to PTE format in memory without modifying the source.
- *
- * @param description - Release description in either format
- * @returns Portable Text blocks ready for rendering
- */
 export function normalizeDescriptionToPTE(
   description: ReleaseDescription | undefined,
 ): PortableTextBlock[] {
-  if (!description) {
-    return []
-  }
-
-  if (isStringDescription(description)) {
-    return stringToPTE(description)
-  }
-
+  if (!description) return []
+  if (isStringDescription(description)) return stringToPTE(description)
   return description
 }
 
-/**
- * Check if two descriptions are semantically equivalent.
- * Useful for detecting actual content changes vs format conversions.
- *
- * @param a - First description
- * @param b - Second description
- * @returns True if descriptions have the same text content
- */
+function normalizeWhitespace(text: string): string {
+  return text.trim().replace(/\n+/g, '\n')
+}
+
 export function areDescriptionsEquivalent(
   a: ReleaseDescription | undefined,
   b: ReleaseDescription | undefined,
@@ -90,8 +54,6 @@ export function areDescriptionsEquivalent(
 
   const textA = isStringDescription(a) ? a : pteToString(a ?? [])
   const textB = isStringDescription(b) ? b : pteToString(b ?? [])
-
-  const normalizeWhitespace = (text: string): string => text.trim().replace(/\n+/g, '\n')
 
   return normalizeWhitespace(textA) === normalizeWhitespace(textB)
 }

@@ -578,7 +578,7 @@ export const releasePTEDescriptionReducer = (opts: {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])
 
-  const result = flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
+  return flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
     const enabled = innerConfig[RELEASE_PTE_DESCRIPTION]
 
     if (typeof enabled === 'undefined') return acc
@@ -586,8 +586,6 @@ export const releasePTEDescriptionReducer = (opts: {
 
     throw new Error(`Expected a boolean, but received ${getPrintableType(enabled)}`)
   }, initialValue)
-
-  return result
 }
 
 export const partialIndexingEnabledReducer = (opts: {

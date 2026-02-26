@@ -197,7 +197,7 @@ function EditorInner(props: EditorInnerProps): JSX.Element {
                   PortableTextEditor.focus(editor)
                 }}
                 tooltipProps={{content: button.label}}
-                selected={selection ? PortableTextEditor.isMarkActive(editor, button.mark) : false}
+                selected={!!selection && PortableTextEditor.isMarkActive(editor, button.mark)}
               />
             ))}
             <ReleaseLinkMenuButton selected={false} />
@@ -265,15 +265,13 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
           onChange((event.value ?? []) as PortableTextBlock[])
           break
         default:
-          break
       }
     },
     [onBlur, onChange, onFocus],
   )
 
   const renderDecorator = useCallback(
-    (decoratorProps: {children: React.ReactNode; value: string}) => {
-      const {children, value: mark} = decoratorProps
+    ({children, value: mark}: {children: React.ReactNode; value: string}) => {
       switch (mark) {
         case 'strong':
           return <strong>{children}</strong>
@@ -289,49 +287,48 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   )
 
   const renderAnnotation = useCallback(
-    (annotationProps: {children: React.ReactNode; value: {_type: string; href?: string}}) => {
-      const {children, value: annotation} = annotationProps
-      const isLink = annotation._type === 'link' && typeof annotation.href === 'string'
-
-      if (isLink) {
-        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
-          e.preventDefault()
-          if (isReadOnly || e.metaKey || e.ctrlKey) {
-            window.open(annotation.href, '_blank', 'noopener,noreferrer')
-          }
-        }
-
-        return (
-          <a
-            href={annotation.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleClick}
-            style={{
-              textDecoration: 'underline',
-              color: 'var(--card-link-color)',
-              cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text',
-            }}
-            title={annotation.href}
-          >
-            {children}
-          </a>
-        )
+    ({
+      children,
+      value: annotation,
+    }: {
+      children: React.ReactNode
+      value: {_type: string; href?: string}
+    }) => {
+      if (annotation._type !== 'link' || typeof annotation.href !== 'string') {
+        return <>{children}</>
       }
 
-      return <>{children}</>
+      return (
+        <a
+          href={annotation.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            e.preventDefault()
+            if (isReadOnly || e.metaKey || e.ctrlKey) {
+              window.open(annotation.href, '_blank', 'noopener,noreferrer')
+            }
+          }}
+          style={{
+            textDecoration: 'underline',
+            color: 'var(--card-link-color)',
+            cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text',
+          }}
+          title={annotation.href}
+        >
+          {children}
+        </a>
+      )
     },
     [isReadOnly, isModifierPressed],
   )
 
   const renderChild: RenderChildFunction = useCallback(
-    (childProps: BlockChildRenderProps) => {
-      const {children, value: childValue, selected, path} = childProps
-
-      if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
+    ({children, value, selected, path}: BlockChildRenderProps) => {
+      if (value._type === 'releaseReference' && 'releaseId' in value) {
         return (
           <ReleaseReferenceChip
-            releaseId={childValue.releaseId as string}
+            releaseId={value.releaseId as string}
             selected={selected}
             path={path}
             excludeReleaseId={excludeReleaseId}

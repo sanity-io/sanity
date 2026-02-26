@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 const EVENT_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true}
 
@@ -9,16 +9,11 @@ interface CursorElementHookOptions {
 
 export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | null {
   const {disabled, rootElement} = opts
-  const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
-
-  const cursorElement = useMemo(() => {
-    if (!cursorRect) return null
-    return {getBoundingClientRect: () => cursorRect} as HTMLElement
-  }, [cursorRect])
+  const [cursorElement, setCursorElement] = useState<HTMLElement | null>(null)
 
   const handleSelectionChange = useCallback(() => {
     if (disabled) {
-      setCursorRect(null)
+      setCursorElement(null)
       return
     }
 
@@ -27,13 +22,14 @@ export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | 
     if (!sel || !sel.isCollapsed || sel.rangeCount === 0) return
 
     const range = sel.getRangeAt(0)
-    const isWithinRoot = rootElement?.contains(range.commonAncestorContainer)
 
-    if (!isWithinRoot) {
-      setCursorRect(null)
+    if (!rootElement?.contains(range.commonAncestorContainer)) {
+      setCursorElement(null)
       return
     }
-    setCursorRect(range.getBoundingClientRect())
+
+    const rect = range.getBoundingClientRect()
+    setCursorElement({getBoundingClientRect: () => rect} as HTMLElement)
   }, [disabled, rootElement])
 
   useEffect(() => {

@@ -1,12 +1,6 @@
 import {useCallback, useRef, useState} from 'react'
 
-/**
- * Tracks whether the Cmd (macOS) or Ctrl (Windows/Linux) modifier key is currently pressed.
- * Optimized to only attach global listeners when the mouse is over the tracked element.
- *
- * @returns Object containing isPressed state and event handlers for mouse enter/leave
- * @internal
- */
+/** @internal */
 export function useModifierKey(): {
   isPressed: boolean
   onMouseEnter: () => void

@@ -174,11 +174,10 @@ export function TitleDescriptionForm({
     [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const plainTextDescription = isPTE
-    ? ''
-    : isPTEDescription(localData.description)
-      ? pteToString(localData.description)
-      : localData.description
+  const {description: releaseDescription} = localData
+  const plainTextDescription = isPTEDescription(releaseDescription)
+    ? pteToString(releaseDescription)
+    : releaseDescription
 
   const shouldShowDescription = isReleaseOpen || localData.description
 

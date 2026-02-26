@@ -34,16 +34,14 @@ export function useReleaseFormOptimisticUpdating({
   const previousIdRef = useRef(id)
 
   const updateUnfocusedFields = useCallback(
-    (currentFormData: ReleaseFormFields) => {
-      const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>
-      const unfocusedFieldUpdates = Object.fromEntries(
-        formFieldNames
+    (currentFormData: ReleaseFormFields) => ({
+      ...currentFormData,
+      ...Object.fromEntries(
+        (Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>)
           .filter((field) => field !== focusedField)
           .map((field) => [field, incomingFormData[field]]),
-      )
-
-      return {...currentFormData, ...unfocusedFieldUpdates}
-    },
+      ),
+    }),
     [incomingFormData, focusedField],
   )
 

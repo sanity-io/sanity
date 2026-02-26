@@ -525,32 +525,32 @@ const releasesLocaleStrings = {
   'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
 
   /** Text label for the link release toolbar button */
-  'toolbar.link-release.text': 'Link Release',
+  'toolbar.link-release.text': 'Link release',
   /** Tooltip text for the link release toolbar button */
-  'toolbar.link-release.tooltip': 'Link Release',
+  'toolbar.link-release.tooltip': 'Link release',
 
   /** Loading state text for the release picker menu */
-  'release-picker.loading': 'Loading releases...',
+  'release-picker.loading': 'Loading releases…',
   /** Error state text for the release picker menu */
-  'release-picker.error': 'Failed to load releases',
+  'release-picker.error': 'Could not load releases',
   /** Empty state text for the release picker menu */
-  'release-picker.empty': 'No active releases available',
+  'release-picker.empty': 'No active releases',
   /** Aria label for the release picker command list */
   'release-picker.aria-label': 'Select a release to link',
   /** Placeholder text for the release picker search input */
-  'release-picker.search-placeholder': 'Search releases...',
+  'release-picker.search-placeholder': 'Search releases…',
   /** Text shown when no releases match the search query */
-  'release-picker.no-results': 'No matching releases',
+  'release-picker.no-results': 'No releases match your search',
 
   /** Text shown when a release reference placeholder is waiting for selection */
   'release-reference.pending': 'Select release…',
   /** Title template for a clickable release chip */
-  'release-reference.title': 'Click to open {{title}} in new tab',
+  'release-reference.title': 'Open {{title}} in new tab',
 
   /** Aria label for the description editor command list */
   'description.command-list.aria-label': 'Description editor commands',
   /** Label for the link release command in the description editor */
-  'description.link-release': 'Link Release',
+  'description.link-release': 'Link release',
 }
 
 /**

@@ -194,10 +194,7 @@ function ResolvedReleaseChip({
     return releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId) ?? null
   }, [releases, releaseId, loading])
 
-  const tone = useMemo(
-    (): BadgeTone => (release === null ? 'default' : getReleaseTone(release)),
-    [release],
-  )
+  const tone: BadgeTone = release === null ? 'default' : getReleaseTone(release)
 
   const intentHref = useMemo(
     () => router.resolveIntentLink('release', {id: releaseId}),

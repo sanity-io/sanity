@@ -31,9 +31,6 @@ export function getDocumentIsInPerspective(
 
   if (!perspective) return !isVersionId(documentId)
 
-  if (typeof perspective === 'undefined') return false
-  // perspective is `release.${releaseId}`
-
   if (releaseId === 'Published') return false
   return releaseId === perspective
 }
