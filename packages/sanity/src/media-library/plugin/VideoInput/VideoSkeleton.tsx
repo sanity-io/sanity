@@ -1,28 +1,36 @@
 import {ResetIcon} from '@sanity/icons'
-import {Card, Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, Skeleton, Text} from '@sanity/ui'
+import {type CSSProperties} from 'react'
 
 import {useTranslation} from '../../../core/i18n'
 import {Button} from '../../../ui-components/button'
+import {RatioBox} from './styles'
 
 interface VideoSkeletonProps {
   error?: Error
   retry?: () => void
+  aspectRatio?: number
 }
 
-export function VideoSkeleton({error, retry}: VideoSkeletonProps) {
+export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
   const {t} = useTranslation()
+  const ratio = aspectRatio ?? 16 / 9
 
   return (
-    <Card padding={0} radius={0} tone={error ? 'critical' : 'default'}>
-      <Flex align="center" justify="flex-start" padding={2}>
-        <Skeleton padding={3} radius={1} animated={!error} />
-        <Stack flex={1} space={2} marginLeft={3}>
-          <TextSkeleton style={{width: '100%'}} radius={1} animated={!error} />
-          <TextSkeleton style={{width: '100%'}} radius={1} animated={!error} />
-        </Stack>
-      </Flex>
-      {error && (
-        <Stack space={3} padding={3} paddingTop={0}>
+    <RatioBox
+      tone={error ? 'critical' : 'transparent'}
+      $isPortrait={ratio < 0.75}
+      style={{'--aspect-ratio': ratio} as CSSProperties}
+    >
+      {error ? (
+        <Flex
+          align="center"
+          justify="center"
+          direction="column"
+          gap={3}
+          style={{position: 'absolute', inset: 0}}
+          padding={4}
+        >
           <Text size={1} muted>
             {error.message || t('inputs.file.video-error.description')}
           </Text>
@@ -34,8 +42,10 @@ export function VideoSkeleton({error, retry}: VideoSkeletonProps) {
               onClick={retry}
             />
           )}
-        </Stack>
+        </Flex>
+      ) : (
+        <Skeleton style={{position: 'absolute', inset: 0}} radius={1} animated />
       )}
-    </Card>
+    </RatioBox>
   )
 }
