@@ -17,8 +17,8 @@ Actions
   status   Show embeddings settings and status
 
 Options
-  --projection <groq>  GROQ projection for indexing (with enable)
-  --wait               Wait for indexing to complete (with enable)
+  --projection <groq>  GROQ projection defining which fields to embed (with enable)
+  --wait               Wait for embeddings processing to complete (with enable)
 
 Examples
   sanity dataset embeddings status production
@@ -102,7 +102,7 @@ const embeddingsCommand: CliCommandDefinition<EmbeddingsFlags> = {
       if (wait) {
         await waitForReady(output, client, projectId, datasetName, token)
       } else {
-        output.print('Indexing documents in the background. Use --wait to wait for completion.')
+        output.print('Processing documents in the background. Use --wait to wait for completion.')
       }
     } else if (action === 'disable') {
       try {
@@ -118,7 +118,7 @@ const embeddingsCommand: CliCommandDefinition<EmbeddingsFlags> = {
       }
 
       output.print(chalk.green(`Disabled embeddings for dataset ${datasetName}.`))
-      output.print(chalk.yellow('Note: Existing embedding indexes will be removed.'))
+      output.print(chalk.yellow('Note: Existing embedding data will be removed.'))
     }
   },
 }
@@ -130,7 +130,7 @@ async function waitForReady(
   datasetName: string,
   token: string | undefined,
 ): Promise<void> {
-  const spin = output.spinner('Waiting for embeddings indexing to complete...').start()
+  const spin = output.spinner('Waiting for embeddings to be ready...').start()
   const deadline = Date.now() + POLL_TIMEOUT_MS
   let interval = INITIAL_POLL_INTERVAL_MS
 
@@ -145,20 +145,19 @@ async function waitForReady(
       })
 
       if (settings.status === 'ready') {
-        spin.succeed()
-        output.spinner('Embeddings indexing complete.').start().succeed()
+        spin.succeed('Embeddings ready.')
         return
       }
 
       if (settings.status !== 'updating') {
-        spin.fail()
+        spin.fail(`Unexpected status: ${settings.status}`)
         throw new Error(`Embeddings entered unexpected status: ${settings.status}`)
       }
 
-      spin.text = 'Indexing in progress...'
+      spin.text = 'Still processing...'
     }
 
-    spin.fail()
+    spin.fail('Timed out waiting for embeddings.')
     throw new Error('Timed out. Check status with: sanity dataset embeddings status')
   } catch (error) {
     spin.fail()

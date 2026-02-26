@@ -8,7 +8,7 @@ const helpText = `
 Options
   --visibility <mode>            Set visibility for this dataset (public/private)
   --embeddings                   Enable embeddings for this dataset
-  --embeddings-projection <groq> GROQ projection for embeddings indexing
+  --embeddings-projection <groq> GROQ projection for embeddings (e.g. "{ title, body }")
 
 Examples
   sanity dataset create
