@@ -8,18 +8,7 @@ import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
 import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
-import {
-  catchError,
-  filter,
-  map,
-  mergeMap,
-  scan,
-  share,
-  take,
-  tap,
-  timeout,
-  withLatestFrom,
-} from 'rxjs/operators'
+import {filter, map, mergeMap, scan, share, take, tap, withLatestFrom} from 'rxjs/operators'
 
 import {type DocumentVariantType} from '../../../../util/getDocumentVariantType'
 import {
@@ -48,11 +37,6 @@ import {operationsApiClient} from './utils/operationsApiClient'
 
 /** Timeout on request that fetches shard name before reporting latency */
 const FETCH_SHARD_TIMEOUT = 20_000
-
-/** Timeout for commit requests to prevent indefinite hangs on slow server responses.
- * It should take around 1-2 seconds to complete a commit, so we give it 20 seconds to complete.
- */
-const COMMIT_TIMEOUT_MS = 20_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -226,7 +210,6 @@ function submitCommitRequest(
       ? commitActions(client, idPair, request.mutation.params)
       : commitMutations(client, idPair, request.mutation.params),
   ).pipe(
-    timeout(COMMIT_TIMEOUT_MS),
     tap({
       error: (error) => {
         const isBadRequest =
@@ -241,11 +224,6 @@ function submitCommitRequest(
         }
       },
       next: () => request.success(),
-    }),
-    catchError((error) => {
-      console.error('An error occurred during commit', error)
-
-      return EMPTY
     }),
   )
 }
