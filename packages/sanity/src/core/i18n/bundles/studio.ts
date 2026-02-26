@@ -1247,6 +1247,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.untyped-value.title': 'Property value missing <code>_type</code>',
   /** Unset value */
   'inputs.untyped-value.unset-item-button.text': 'Unset value',
+  /** The value of this field is not a valid video. Resetting this field will let you choose a new video. */
+  'inputs.video.invalid-video-warning.description':
+    'The value of this field is not a valid video. Resetting this field will let you choose a new video.',
+  /** Reset value */
+  'inputs.video.invalid-video-warning.reset-button.text': 'Reset value',
+  /** Invalid video value */
+  'inputs.video.invalid-video-warning.title': 'Invalid video value',
 
   /** The fallback explanation if no context is provided */
   'insufficient-permissions-message.not-authorized-explanation':

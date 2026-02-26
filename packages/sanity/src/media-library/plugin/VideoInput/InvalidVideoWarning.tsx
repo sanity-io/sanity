@@ -20,16 +20,16 @@ export function InvalidVideoWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="medium">
-            {t('inputs.file.invalid-file-warning.title')}
+            {t('inputs.video.invalid-video-warning.title')}
           </Text>
-          <Text size={1}>{t('inputs.file.invalid-file-warning.description')}</Text>
+          <Text size={1}>{t('inputs.video.invalid-video-warning.description')}</Text>
         </Stack>
       </Flex>
       <Button
         icon={ResetIcon}
         mode="ghost"
         onClick={onClearValue}
-        text={t('inputs.file.invalid-file-warning.reset-button.text')}
+        text={t('inputs.video.invalid-video-warning.reset-button.text')}
         width="fill"
       />
     </Card>
