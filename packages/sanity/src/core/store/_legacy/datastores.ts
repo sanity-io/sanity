@@ -36,6 +36,10 @@ import {createUserStore, type UserStore} from './user'
  */
 const IGNORE_LATENCY_BELOW_MS = 1000
 
+/** Minimum time between slow commit toast notifications */
+const SLOW_COMMIT_TOAST_COOLDOWN_MS = 30_000
+const slowCommitCooldown = {lastToastAt: 0}
+
 /**
  * @hidden
  * @beta */
@@ -177,6 +181,9 @@ export function useDocumentStore(): DocumentStore {
   )
 
   const handleSlowCommit = useCallback(() => {
+    const now = Date.now()
+    if (now - slowCommitCooldown.lastToastAt < SLOW_COMMIT_TOAST_COOLDOWN_MS) return
+    slowCommitCooldown.lastToastAt = now
     toast.push({
       title: t('document-store.slow-commit.title'),
       description: t('document-store.slow-commit.description'),

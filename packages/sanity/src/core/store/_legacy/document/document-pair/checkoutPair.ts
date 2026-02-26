@@ -7,15 +7,16 @@ import {
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import omit from 'lodash-es/omit.js'
-import {defer, EMPTY, from, merge, type Observable} from 'rxjs'
+import {defer, EMPTY, from, merge, type Observable, timer} from 'rxjs'
 import {
   filter,
-  finalize,
   map,
   mergeMap,
   scan,
   share,
+  switchMap,
   take,
+  takeUntil,
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -49,7 +50,7 @@ import {operationsApiClient} from './utils/operationsApiClient'
 const FETCH_SHARD_TIMEOUT = 20_000
 
 /** Duration after which a commit is considered slow and a warning is surfaced to the user */
-const SLOW_COMMIT_THRESHOLD_MS = 50_000
+const SLOW_COMMIT_TIMEOUT_MS = 50_000
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -217,34 +218,28 @@ function submitCommitRequest(
   idPair: IdPair,
   request: CommitRequest,
   serverActionsEnabled: boolean,
-  onSlowCommit?: () => void,
 ): Observable<MultipleActionResult | MutationResult> {
-  return defer(() => {
-    const slowCommitTimer = setTimeout(() => onSlowCommit?.(), SLOW_COMMIT_THRESHOLD_MS)
-
-    return from(
-      serverActionsEnabled
-        ? commitActions(client, idPair, request.mutation.params)
-        : commitMutations(client, idPair, request.mutation.params),
-    ).pipe(
-      tap({
-        error: (error) => {
-          const isBadRequest =
-            'statusCode' in error &&
-            typeof error.statusCode === 'number' &&
-            error.statusCode >= 400 &&
-            error.statusCode <= 500
-          if (isBadRequest) {
-            request.cancel(error)
-          } else {
-            request.failure(error)
-          }
-        },
-        next: () => request.success(),
-      }),
-      finalize(() => clearTimeout(slowCommitTimer)),
-    )
-  })
+  return from(
+    serverActionsEnabled
+      ? commitActions(client, idPair, request.mutation.params)
+      : commitMutations(client, idPair, request.mutation.params),
+  ).pipe(
+    tap({
+      error: (error) => {
+        const isBadRequest =
+          'statusCode' in error &&
+          typeof error.statusCode === 'number' &&
+          error.statusCode >= 400 &&
+          error.statusCode <= 500
+        if (isBadRequest) {
+          request.cancel(error)
+        } else {
+          request.failure(error)
+        }
+      },
+      next: () => request.success(),
+    }),
+  )
 }
 
 type LatencyTrackingEvent = {
@@ -299,31 +294,47 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const commits$ = merge(
+  const commitRequests$ = merge(
     draft.commitRequest$,
     published.commitRequest$,
     version ? version.commitRequest$ : EMPTY,
-  ).pipe(
+  ).pipe(share())
+
+  const commits$ = commitRequests$.pipe(
     mergeMap((commitRequest) =>
       serverActionsEnabled.pipe(
         take(1),
         mergeMap((canUseServerActions) =>
-          submitCommitRequest(client, idPair, commitRequest, canUseServerActions, onSlowCommit),
+          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
         ),
       ),
     ),
   )
 
+  const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
+
+  // Each new commit request restarts the timer via switchMap.
+  // The timer is cancelled if pending mutations resolve before the threshold.
+  const slowCommitWarning$ = onSlowCommit
+    ? commitRequests$.pipe(
+        switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(pendingEnd$))),
+        tap(() => onSlowCommit()),
+      )
+    : EMPTY
+
   // Note: we're only subscribing to this for the side-effect
   const combinedEvents = defer(() =>
-    onReportLatency
-      ? reportLatency({
-          commits$: commits$,
-          listenerEvents$: listenerEvents$,
-          client,
-          onReportLatency,
-        })
-      : merge(commits$, listenerEvents$),
+    merge(
+      onReportLatency
+        ? reportLatency({
+            commits$: commits$,
+            listenerEvents$: listenerEvents$,
+            client,
+            onReportLatency,
+          })
+        : merge(commits$, listenerEvents$),
+      slowCommitWarning$,
+    ),
   ).pipe(
     mergeMap(() => EMPTY),
     share(),
