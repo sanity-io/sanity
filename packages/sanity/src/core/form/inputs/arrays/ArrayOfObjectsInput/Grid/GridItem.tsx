@@ -90,7 +90,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const {t} = useTranslation()
   const arrayValidation = useArrayValidation()
   const maxReached = arrayValidation?.maxReached
-  const maxReachedReason = maxReached ? t('inputs.array.action.max-reached') : undefined
+  const maxReachedReason = arrayValidation?.maxReachedReason
 
   const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 

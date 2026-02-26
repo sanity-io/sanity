@@ -77,7 +77,7 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const arrayValidation = useArrayValidation()
   const maxReached = arrayValidation?.maxReached
-  const maxReachedReason = maxReached ? t('inputs.array.action.max-reached') : undefined
+  const maxReachedReason = arrayValidation?.maxReachedReason
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
   const menuItems = useMemo(

@@ -1,13 +1,22 @@
 import {type ArraySchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {ArrayValidationProvider, useArrayValidation} from './ArrayValidationContext'
+
+vi.mock('../../../../i18n', () => ({
+  useTranslation: () => ({t: (key: string) => key}),
+}))
 
 // Helper component to test the hook
 function TestConsumer() {
   const validation = useArrayValidation()
-  return <div data-testid="result">{validation?.maxReached ? 'max-reached' : 'not-reached'}</div>
+  return (
+    <div>
+      <div data-testid="result">{validation?.maxReached ? 'max-reached' : 'not-reached'}</div>
+      <div data-testid="reason">{validation?.maxReachedReason ?? 'none'}</div>
+    </div>
+  )
 }
 
 describe('ArrayValidationContext', () => {
@@ -29,7 +38,7 @@ describe('ArrayValidationContext', () => {
     } as ArraySchemaType
   }
 
-  it('should return maxReached=false when no max constraint', () => {
+  it('should return maxReached=false and no reason when no max constraint', () => {
     const schemaType = createMockSchemaType()
 
     render(
@@ -39,9 +48,10 @@ describe('ArrayValidationContext', () => {
     )
 
     expect(screen.getByTestId('result')).toHaveTextContent('not-reached')
+    expect(screen.getByTestId('reason')).toHaveTextContent('none')
   })
 
-  it('should return maxReached=false when item count is below max', () => {
+  it('should return maxReached=false and no reason when item count is below max', () => {
     const schemaType = createMockSchemaType(5)
 
     render(
@@ -51,9 +61,10 @@ describe('ArrayValidationContext', () => {
     )
 
     expect(screen.getByTestId('result')).toHaveTextContent('not-reached')
+    expect(screen.getByTestId('reason')).toHaveTextContent('none')
   })
 
-  it('should return maxReached=true when item count equals max', () => {
+  it('should return maxReached=true and a reason when item count equals max', () => {
     const schemaType = createMockSchemaType(5)
 
     render(
@@ -63,9 +74,10 @@ describe('ArrayValidationContext', () => {
     )
 
     expect(screen.getByTestId('result')).toHaveTextContent('max-reached')
+    expect(screen.getByTestId('reason')).toHaveTextContent('inputs.array.action.max-reached')
   })
 
-  it('should return maxReached=true when item count exceeds max', () => {
+  it('should return maxReached=true and a reason when item count exceeds max', () => {
     const schemaType = createMockSchemaType(5)
 
     render(
@@ -75,16 +87,23 @@ describe('ArrayValidationContext', () => {
     )
 
     expect(screen.getByTestId('result')).toHaveTextContent('max-reached')
+    expect(screen.getByTestId('reason')).toHaveTextContent('inputs.array.action.max-reached')
   })
 
   it('should return null when used outside of provider', () => {
     function TestOutsideProvider() {
       const validation = useArrayValidation()
-      return <div data-testid="result">{validation === null ? 'null' : 'has-value'}</div>
+      return (
+        <div>
+          <div data-testid="result">{validation === null ? 'null' : 'has-value'}</div>
+          <div data-testid="reason">{validation?.maxReachedReason ?? 'none'}</div>
+        </div>
+      )
     }
 
     render(<TestOutsideProvider />)
 
     expect(screen.getByTestId('result')).toHaveTextContent('null')
+    expect(screen.getByTestId('reason')).toHaveTextContent('none')
   })
 })
