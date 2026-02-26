@@ -39,6 +39,7 @@ interface ReleaseDescriptionInputProps {
   readOnly?: boolean
   disabled?: boolean
   placeholder?: string
+  excludeReleaseId?: string
 }
 
 const EDITOR_PADDING = 12
@@ -112,7 +113,8 @@ function Toolbar({readOnly}: {readOnly: boolean}): JSX.Element | null {
 }
 
 export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JSX.Element {
-  const {value, onChange, onFocus, onBlur, readOnly, disabled, placeholder} = props
+  const {value, onChange, onFocus, onBlur, readOnly, disabled, placeholder, excludeReleaseId} =
+    props
   const isReadOnly = readOnly ?? disabled ?? false
   const {isPressed: isModifierPressed, onMouseEnter, onMouseLeave} = useModifierKey()
   const pteValue = useMemo(() => normalizeDescriptionToPTE(value ?? undefined), [value])
@@ -163,46 +165,58 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   const renderAnnotation = useCallback(
     (annotationProps: {children: React.ReactNode; value: {_type: string; href?: string}}) => {
       const {children, value: annotation} = annotationProps
-      if (annotation._type !== 'link' || annotation.href === undefined) {
-        return <>{children}</>
-      }
+      const isLink = annotation._type === 'link' && typeof annotation.href === 'string'
 
-      const handleClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
-        e.preventDefault()
-        if (isReadOnly || e.metaKey || e.ctrlKey) {
-          window.open(annotation.href, '_blank', 'noopener,noreferrer')
+      if (isLink) {
+        const handleClick = (e: React.MouseEvent<HTMLAnchorElement>): void => {
+          e.preventDefault()
+          if (isReadOnly || e.metaKey || e.ctrlKey) {
+            window.open(annotation.href, '_blank', 'noopener,noreferrer')
+          }
         }
+
+        return (
+          <a
+            href={annotation.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleClick}
+            style={{
+              textDecoration: 'underline',
+              color: 'var(--card-link-color)',
+              cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text',
+            }}
+            title={annotation.href}
+          >
+            {children}
+          </a>
+        )
       }
 
-      return (
-        <a
-          href={annotation.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleClick}
-          style={{
-            textDecoration: 'underline',
-            color: 'var(--card-link-color)',
-            cursor: isReadOnly || isModifierPressed ? 'pointer' : 'text',
-          }}
-          title={annotation.href}
-        >
-          {children}
-        </a>
-      )
+      return <>{children}</>
     },
     [isReadOnly, isModifierPressed],
   )
 
-  const renderChild: RenderChildFunction = useCallback((childProps: BlockChildRenderProps) => {
-    const {children, value: childValue, selected} = childProps
+  const renderChild: RenderChildFunction = useCallback(
+    (childProps: BlockChildRenderProps) => {
+      const {children, value: childValue, selected, path} = childProps
 
-    if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
-      return <ReleaseReferenceChip releaseId={childValue.releaseId as string} selected={selected} />
-    }
+      if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
+        return (
+          <ReleaseReferenceChip
+            releaseId={childValue.releaseId as string}
+            selected={selected}
+            path={path}
+            excludeReleaseId={excludeReleaseId}
+          />
+        )
+      }
 
-    return children
-  }, [])
+      return children
+    },
+    [excludeReleaseId],
+  )
 
   return (
     <StyledCard
@@ -219,10 +233,10 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
         <PasteLinkPlugin />
         <MarkdownShortcutsPlugin
           boldDecorator={({context}) =>
-            context.schema.decorators.find((d) => d.name === 'strong')?.name
+            context.schema.decorators.find((d: {name: string}) => d.name === 'strong')?.name
           }
           italicDecorator={({context}) =>
-            context.schema.decorators.find((d) => d.name === 'em')?.name
+            context.schema.decorators.find((d: {name: string}) => d.name === 'em')?.name
           }
         />
         <Toolbar readOnly={isReadOnly} />

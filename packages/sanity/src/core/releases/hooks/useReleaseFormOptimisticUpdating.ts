@@ -36,14 +36,11 @@ export function useReleaseFormOptimisticUpdating({
   const updateUnfocusedFields = useCallback(
     (currentFormData: ReleaseFormFields) => {
       const formFieldNames = Object.keys(incomingFormData) as Array<keyof ReleaseFormFields>
-      const unfocusedFieldUpdates = formFieldNames
-        .filter((field) => field !== focusedField)
-        .reduce<Partial<ReleaseFormFields>>((fieldUpdates, field) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          fieldUpdates[field] = incomingFormData[field] as any
-
-          return fieldUpdates
-        }, {})
+      const unfocusedFieldUpdates = Object.fromEntries(
+        formFieldNames
+          .filter((field) => field !== focusedField)
+          .map((field) => [field, incomingFormData[field]]),
+      )
 
       return {...currentFormData, ...unfocusedFieldUpdates}
     },
@@ -53,8 +50,6 @@ export function useReleaseFormOptimisticUpdating({
   useEffect(() => {
     // New releases don't have _createdAt and should always sync to support local storage
     const isEditingExistingRelease = Boolean(externalValue._createdAt)
-
-    // if tracking a new ID
 
     if (previousIdRef.current === id) {
       setLocalData(isEditingExistingRelease ? updateUnfocusedFields : incomingFormData)

@@ -8,6 +8,7 @@ import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
+import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {ReleaseDescriptionInput} from '../input/ReleaseDescriptionInput'
 
 const TitleTextArea = styled.textarea((props) => {
@@ -57,8 +58,9 @@ function autoResizeTextArea(element: HTMLTextAreaElement | null): void {
   }
 }
 
-export const getIsReleaseOpen = (release: EditableReleaseDocument): boolean =>
-  release.state !== 'archived' && release.state !== 'published'
+export function getIsReleaseOpen(release: EditableReleaseDocument): boolean {
+  return release.state !== 'archived' && release.state !== 'published'
+}
 
 export function TitleDescriptionForm({
   release,
@@ -103,16 +105,16 @@ export function TitleDescriptionForm({
 
   const handleDescriptionChange = useCallback(
     (pteValue: PortableTextBlock[]) => {
-      if (!isReleaseOpen) return
-
-      updateLocalData({description: pteValue})
-      onChange({
-        ...release,
-        metadata: {
-          ...release.metadata,
-          description: pteValue as unknown as string,
-        },
-      })
+      if (isReleaseOpen) {
+        updateLocalData({description: pteValue})
+        onChange({
+          ...release,
+          metadata: {
+            ...release.metadata,
+            description: pteValue as unknown as string,
+          },
+        })
+      }
     },
     [isReleaseOpen, onChange, release, updateLocalData],
   )
@@ -141,6 +143,7 @@ export function TitleDescriptionForm({
           placeholder={t('release.form.placeholder-describe-release')}
           disabled={disabled}
           readOnly={!isReleaseOpen}
+          excludeReleaseId={getReleaseIdFromReleaseDocumentId(release._id)}
         />
       )}
     </Stack>

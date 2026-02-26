@@ -1,54 +1,189 @@
+import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ReleaseDocument} from '@sanity/client'
-import {type JSX, useCallback, useMemo} from 'react'
+import {type Path} from '@sanity/types'
+import {type BadgeTone, useClickOutsideEvent} from '@sanity/ui'
+import {randomKey} from '@sanity/util/content'
+import {type JSX, useCallback, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {Popover} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useAllReleases} from '../../store/useAllReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../util/getReleaseTone'
+import {ReleaseAvatarIcon} from '../ReleaseAvatar'
+import {ReleasePickerMenu} from './ReleasePickerMenu'
 
 function isArchivedRelease(release: ReleaseDocument): boolean {
   return release.state === 'archived' || release.state === 'published'
 }
 
-const ChipSpan = styled.span<{$clickable: boolean; $archived: boolean}>(
-  ({theme, $clickable, $archived}) => {
-    const {regular} = theme.sanity.fonts?.text.weights || {}
-    const caution = theme.sanity.color.selectable?.caution
-
-    return `
+const ChipSpan = styled.span<{$tone: BadgeTone; $clickable: boolean; $hasDot?: boolean}>(
+  ({$tone, $clickable, $hasDot = true}) => `
     display: inline-flex;
     align-items: center;
-    font-weight: ${regular};
-    color: ${$archived ? 'var(--card-muted-fg-color)' : 'var(--card-link-fg-color)'};
-    background-color: ${caution?.enabled?.bg ?? 'var(--card-hovered-bg-color)'};
-    border: 1px solid ${caution?.enabled?.border ?? 'var(--card-border-color)'};
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin: 0 2px;
-    cursor: ${$clickable ? 'pointer' : 'not-allowed'};
+    gap: 1px;
+    color: var(--card-badge-${$tone}-fg-color);
+    background-color: var(--card-badge-${$tone}-bg-color);
+    border-radius: 999px;
+    padding: 2px 7px 2px ${$hasDot ? '3px' : '7px'};
+    margin: 0 1px;
+    cursor: ${$clickable ? 'pointer' : 'default'};
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 0.95em;
+    font-weight: 500;
+    white-space: nowrap;
 
     &:hover {
-      background-color: ${$clickable ? (caution?.hovered?.bg ?? 'var(--card-hovered-bg-color)') : undefined};
+      opacity: ${$clickable ? '0.8' : '1'};
     }
 
     &[data-selected='true'] {
-      background-color: ${caution?.pressed?.bg ?? 'var(--card-selected-bg-color)'};
+      box-shadow: 0 0 0 1.5px var(--card-focus-ring-color);
     }
-  `
-  },
+  `,
 )
+
+const PendingChipSpan = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  color: var(--card-muted-fg-color);
+  background-color: var(--card-badge-default-bg-color);
+  border: 1px dashed var(--card-border-color);
+  border-radius: 999px;
+  padding: 2px 7px 2px 3px;
+  margin: 0 1px;
+  font-size: 0.95em;
+  font-weight: 500;
+  white-space: nowrap;
+`
+
+const DotIconWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 1.1em;
+`
 
 interface ReleaseReferenceChipProps {
   releaseId: string
   selected: boolean
+  path: Path
+  excludeReleaseId?: string
 }
 
 export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Element {
-  const {releaseId, selected} = props
+  const {releaseId, selected, path, excludeReleaseId} = props
+  const isPending = releaseId === ''
+
+  if (isPending) {
+    return (
+      <PendingReleaseChip path={path} selected={selected} excludeReleaseId={excludeReleaseId} />
+    )
+  }
+
+  return <ResolvedReleaseChip releaseId={releaseId} selected={selected} />
+}
+
+function PendingReleaseChip({
+  path,
+  selected,
+  excludeReleaseId,
+}: {
+  path: Path
+  selected: boolean
+  excludeReleaseId?: string
+}): JSX.Element {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const editor = usePortableTextEditor()
+  const [chipElement, setChipElement] = useState<HTMLSpanElement | null>(null)
+  const popoverContentRef = useRef<HTMLDivElement | null>(null)
+  const hasActed = useRef(false)
+
+  const selfSelection = useMemo(
+    (): EditorSelection => ({
+      anchor: {path, offset: 0},
+      focus: {path, offset: 0},
+    }),
+    [path],
+  )
+
+  const handleRemove = useCallback(() => {
+    if (hasActed.current) return
+    hasActed.current = true
+    PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
+    PortableTextEditor.focus(editor)
+  }, [editor, selfSelection])
+
+  const handleSelect = useCallback(
+    (selectedReleaseId: string) => {
+      if (hasActed.current) return
+      hasActed.current = true
+      PortableTextEditor.delete(editor, selfSelection, {mode: 'children'})
+
+      const schemaType = editor.schemaTypes.inlineObjects.find(
+        (inlineType) => inlineType.name === 'releaseReference',
+      )
+
+      if (schemaType === undefined) {
+        console.error('Schema type "releaseReference" not found')
+        return
+      }
+
+      PortableTextEditor.insertChild(editor, schemaType, {
+        _type: 'releaseReference',
+        _key: randomKey(12),
+        releaseId: selectedReleaseId,
+      })
+
+      PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {
+        _type: 'span',
+        text: ' ',
+      })
+
+      PortableTextEditor.focus(editor)
+    },
+    [editor, selfSelection],
+  )
+
+  useClickOutsideEvent(handleRemove, () => [popoverContentRef.current, chipElement])
+
+  return (
+    <>
+      <PendingChipSpan ref={setChipElement} data-selected={selected}>
+        <DotIconWrapper>
+          <ReleaseAvatarIcon tone="default" />
+        </DotIconWrapper>
+        {t('release-reference.pending')}
+      </PendingChipSpan>
+      {chipElement && (
+        <Popover
+          content={
+            <div ref={popoverContentRef}>
+              <ReleasePickerMenu onSelect={handleSelect} excludeReleaseId={excludeReleaseId} />
+            </div>
+          }
+          open
+          portal
+          placement="bottom-start"
+          fallbackPlacements={['top-start', 'bottom-end', 'top-end']}
+          referenceElement={chipElement}
+        />
+      )}
+    </>
+  )
+}
+
+function ResolvedReleaseChip({
+  releaseId,
+  selected,
+}: {
+  releaseId: string
+  selected: boolean
+}): JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
   const router = useRouter()
   const {data: releases, loading} = useAllReleases()
@@ -57,6 +192,11 @@ export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Elem
     if (loading) return null
     return releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId) ?? null
   }, [releases, releaseId, loading])
+
+  const tone = useMemo(
+    (): BadgeTone => (release === null ? 'default' : getReleaseTone(release)),
+    [release],
+  )
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>): void => {
@@ -69,7 +209,10 @@ export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Elem
 
   if (loading) {
     return (
-      <ChipSpan $clickable={false} $archived={false} data-selected={selected}>
+      <ChipSpan $clickable={false} $tone="default" data-selected={selected}>
+        <DotIconWrapper>
+          <ReleaseAvatarIcon tone="default" />
+        </DotIconWrapper>
         Loading...
       </ChipSpan>
     )
@@ -77,25 +220,27 @@ export function ReleaseReferenceChip(props: ReleaseReferenceChipProps): JSX.Elem
 
   if (release === null) {
     return (
-      <ChipSpan $clickable={false} $archived={false} data-selected={selected}>
-        {t('release-reference.unavailable')}
+      <ChipSpan $clickable={false} $tone="default" $hasDot={false} data-selected={selected}>
+        {releaseId}
       </ChipSpan>
     )
   }
 
   const isArchived = isArchivedRelease(release)
   const title = release.metadata.title || 'Untitled Release'
-  const displayText = isArchived ? `${title} (archived)` : title
 
   return (
     <ChipSpan
       $clickable
-      $archived={isArchived}
+      $tone={tone}
       data-selected={selected}
       onClick={handleClick}
-      title={t('release-reference.title', {title: displayText})}
+      title={t('release-reference.title', {title})}
     >
-      {displayText}
+      <DotIconWrapper>
+        <ReleaseAvatarIcon tone={tone} />
+      </DotIconWrapper>
+      {isArchived ? <s>{title}</s> : title}
     </ChipSpan>
   )
 }

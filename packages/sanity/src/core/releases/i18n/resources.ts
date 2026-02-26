@@ -537,9 +537,13 @@ const releasesLocaleStrings = {
   'release-picker.empty': 'No active releases available',
   /** Aria label for the release picker command list */
   'release-picker.aria-label': 'Select a release to link',
+  /** Placeholder text for the release picker search input */
+  'release-picker.search-placeholder': 'Search releases...',
+  /** Text shown when no releases match the search query */
+  'release-picker.no-results': 'No matching releases',
 
-  /** Text shown when a release reference is unavailable */
-  'release-reference.unavailable': 'release unavailable',
+  /** Text shown when a release reference placeholder is waiting for selection */
+  'release-reference.pending': 'Select release…',
   /** Title template for a clickable release chip */
   'release-reference.title': 'Click to open {{title}} in new tab',
 }

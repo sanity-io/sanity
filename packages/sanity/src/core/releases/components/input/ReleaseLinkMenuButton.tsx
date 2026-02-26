@@ -4,140 +4,61 @@ import {
   usePortableTextEditorSelection,
 } from '@portabletext/editor'
 import {CalendarIcon} from '@sanity/icons'
-import {type Path} from '@sanity/types'
-import {useClickOutsideEvent} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {type JSX, useCallback, useEffect, useRef, useState} from 'react'
+import {type JSX, useCallback, useEffect, useRef} from 'react'
 
-import {Button, Popover} from '../../../../ui-components'
+import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {ReleasePickerMenu} from './ReleasePickerMenu'
 
-type InsertPosition = {path: Path; offset: number}
-
-function getEndPosition(editor: PortableTextEditor): InsertPosition | null {
-  const value = PortableTextEditor.getValue(editor)
-  if (!value) return null
-
-  const lastBlock = value.at(-1)
-  if (!lastBlock?.children || !Array.isArray(lastBlock.children)) {
-    return null
-  }
-
-  const lastChild = lastBlock.children.at(-1)
-  if (!lastChild) return null
-
-  const offset =
-    lastChild._type === 'span' && typeof lastChild.text === 'string' ? lastChild.text.length : 0
-
-  return {
-    path: [{_key: lastBlock._key}, 'children', {_key: lastChild._key}],
-    offset,
-  }
-}
-
-interface ReleaseLinkMenuButtonProps {
-  selected: boolean
-}
-
-export function ReleaseLinkMenuButton(props: ReleaseLinkMenuButtonProps): JSX.Element {
-  const {selected} = props
+export function ReleaseLinkMenuButton({selected}: {selected: boolean}): JSX.Element {
   const {t} = useTranslation(releasesLocaleNamespace)
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  const [open, setOpen] = useState(false)
-  const [insertPosition, setInsertPosition] = useState<InsertPosition | null>(null)
-  const pendingOpen = useRef(false)
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
-  const popoverRef = useRef<HTMLDivElement | null>(null)
+  const pendingInsert = useRef(false)
 
-  const handleClose = useCallback(() => {
-    setOpen(false)
-    setInsertPosition(null)
-  }, [])
+  const insertPlaceholder = useCallback(() => {
+    const schemaType = editor.schemaTypes.inlineObjects.find(
+      (inlineType) => inlineType.name === 'releaseReference',
+    )
 
-  useClickOutsideEvent(handleClose, () => [popoverRef.current, buttonRef.current])
-
-  const handleToggle = useCallback(() => {
-    if (open) {
-      handleClose()
+    if (schemaType === undefined) {
+      console.error('Schema type "releaseReference" not found')
       return
     }
 
+    PortableTextEditor.insertChild(editor, schemaType, {
+      _type: 'releaseReference',
+      _key: randomKey(12),
+      releaseId: '',
+    })
+  }, [editor])
+
+  const handleClick = useCallback(() => {
     if (selection) {
-      setInsertPosition(selection.focus)
-      setOpen(true)
+      PortableTextEditor.select(editor, selection)
+      insertPlaceholder()
     } else {
-      pendingOpen.current = true
+      pendingInsert.current = true
       PortableTextEditor.focus(editor)
     }
-  }, [editor, selection, open, handleClose])
+  }, [editor, selection, insertPlaceholder])
 
   useEffect(() => {
-    if (pendingOpen.current && selection) {
-      const endPos = getEndPosition(editor)
-      setInsertPosition(endPos ?? selection.focus)
-      setOpen(true)
-      pendingOpen.current = false
+    if (pendingInsert.current && selection) {
+      pendingInsert.current = false
+      insertPlaceholder()
     }
-  }, [selection, editor])
-
-  const handleSelect = useCallback(
-    (releaseId: string) => {
-      if (insertPosition === null) return
-
-      PortableTextEditor.select(editor, {anchor: insertPosition, focus: insertPosition})
-
-      const schemaType = editor.schemaTypes.inlineObjects.find(
-        (type) => type.name === 'releaseReference',
-      )
-
-      if (schemaType === undefined) {
-        console.error('Schema type "releaseReference" not found')
-        handleClose()
-        return
-      }
-
-      try {
-        PortableTextEditor.insertChild(editor, schemaType, {
-          _type: 'releaseReference',
-          _key: randomKey(12),
-          releaseId,
-        })
-
-        PortableTextEditor.insertChild(editor, editor.schemaTypes.span, {
-          _type: 'span',
-          text: ' ',
-        })
-
-        PortableTextEditor.focus(editor)
-        handleClose()
-      } catch (error) {
-        console.error('Failed to insert release reference', error)
-        handleClose()
-      }
-    },
-    [editor, insertPosition, handleClose],
-  )
+  }, [selection, insertPlaceholder])
 
   return (
-    <Popover
-      ref={popoverRef}
-      content={<ReleasePickerMenu onSelect={handleSelect} />}
-      open={open}
-      portal
-      placement="bottom-start"
-    >
-      <Button
-        ref={buttonRef}
-        mode="bleed"
-        icon={CalendarIcon}
-        text={t('toolbar.link-release.text')}
-        tooltipProps={{content: t('toolbar.link-release.tooltip')}}
-        selected={selected || open}
-        onClick={handleToggle}
-      />
-    </Popover>
+    <Button
+      mode="bleed"
+      icon={CalendarIcon}
+      text={t('toolbar.link-release.text')}
+      tooltipProps={{content: t('toolbar.link-release.tooltip')}}
+      selected={selected}
+      onClick={handleClick}
+    />
   )
 }
