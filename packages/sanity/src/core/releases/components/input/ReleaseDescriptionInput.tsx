@@ -271,7 +271,8 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   )
 
   const renderDecorator = useCallback(
-    ({children, value: mark}: {children: React.ReactNode; value: string}) => {
+    (decoratorProps: {children: React.ReactNode; value: string}) => {
+      const {children, value: mark} = decoratorProps
       switch (mark) {
         case 'strong':
           return <strong>{children}</strong>
@@ -287,13 +288,8 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   )
 
   const renderAnnotation = useCallback(
-    ({
-      children,
-      value: annotation,
-    }: {
-      children: React.ReactNode
-      value: {_type: string; href?: string}
-    }) => {
+    (annotationProps: {children: React.ReactNode; value: {_type: string; href?: string}}) => {
+      const {children, value: annotation} = annotationProps
       if (annotation._type !== 'link' || typeof annotation.href !== 'string') {
         return <>{children}</>
       }
@@ -324,11 +320,11 @@ export function ReleaseDescriptionInput(props: ReleaseDescriptionInputProps): JS
   )
 
   const renderChild: RenderChildFunction = useCallback(
-    ({children, value, selected, path}: BlockChildRenderProps) => {
-      if (value._type === 'releaseReference' && 'releaseId' in value) {
+    ({children, value: childValue, selected, path}: BlockChildRenderProps) => {
+      if (childValue._type === 'releaseReference' && 'releaseId' in childValue) {
         return (
           <ReleaseReferenceChip
-            releaseId={value.releaseId as string}
+            releaseId={childValue.releaseId as string}
             selected={selected}
             path={path}
             excludeReleaseId={excludeReleaseId}

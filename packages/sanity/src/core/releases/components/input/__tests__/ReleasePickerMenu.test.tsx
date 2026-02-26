@@ -91,7 +91,7 @@ describe('ReleasePickerMenu', () => {
 
     render(<ReleasePickerMenu onSelect={vi.fn()} />, {wrapper})
 
-    expect(screen.getByText('No active releases available')).toBeInTheDocument()
+    expect(screen.getByText('No active releases')).toBeInTheDocument()
     expect(screen.queryByRole('option')).not.toBeInTheDocument()
   })
 
@@ -108,6 +108,6 @@ describe('ReleasePickerMenu', () => {
 
     render(<ReleasePickerMenu onSelect={vi.fn()} />, {wrapper})
 
-    expect(screen.getByText('Failed to load releases')).toBeInTheDocument()
+    expect(screen.getByText('Could not load releases')).toBeInTheDocument()
   })
 })

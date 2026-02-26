@@ -579,7 +579,7 @@ export const releasePTEDescriptionReducer = (opts: {
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce((acc: boolean, {config: innerConfig}) => {
-    const enabled = innerConfig[RELEASE_PTE_DESCRIPTION]
+    const enabled = innerConfig.releases?.[RELEASE_PTE_DESCRIPTION]
 
     if (typeof enabled === 'undefined') return acc
     if (typeof enabled === 'boolean') return enabled

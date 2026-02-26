@@ -271,7 +271,6 @@ const defaultWorkspace = defineConfig({
   mediaLibrary: {
     enabled: true,
   },
-  [RELEASE_PTE_DESCRIPTION]: true,
   [DECISION_PARAMETERS_SCHEMA]: {
     audiences: ['aud-a', 'aud-b', 'aud-c'],
     locales: ['en-GB', 'en-US'],
@@ -293,6 +292,7 @@ const defaultWorkspace = defineConfig({
     },
   },
   releases: {
+    [RELEASE_PTE_DESCRIPTION]: true,
     actions: (prev, ctx) => {
       if (ctx.release.state === 'active') {
         return [...prev, useArchiveAndDeleteCustomAction]

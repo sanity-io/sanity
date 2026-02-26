@@ -112,7 +112,7 @@ export function TitleDescriptionForm({
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
   const {t} = useTranslation()
   const workspace = useWorkspace()
-  const isPTE = workspace[RELEASE_PTE_DESCRIPTION] ?? false
+  const isPTE = workspace.releases?.[RELEASE_PTE_DESCRIPTION] ?? false
 
   const {localData, updateLocalData, createFocusHandler, handleBlur} =
     useReleaseFormOptimisticUpdating({

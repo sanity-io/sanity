@@ -277,8 +277,6 @@ export interface ConfigContext {
   i18n: LocaleSource
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
-  /** @internal */
-  [RELEASE_PTE_DESCRIPTION]?: boolean
 }
 
 /** @public */
@@ -530,8 +528,6 @@ export interface PluginOptions {
 
   /** @beta */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
-  /** @internal */
-  [RELEASE_PTE_DESCRIPTION]?: boolean
 
   /** Configuration for Content Releases */
   releases?: DefaultPluginsWorkspaceOptions['releases']
@@ -660,8 +656,6 @@ export interface WorkspaceOptions extends SourceOptions {
    * @beta
    */
   [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
-  /** @internal */
-  [RELEASE_PTE_DESCRIPTION]?: boolean
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -1033,6 +1027,8 @@ export interface Source {
      * Returns an array of actions for the release.
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+    /** @internal */
+    [RELEASE_PTE_DESCRIPTION]?: boolean
   }
 
   /** @internal */
@@ -1075,9 +1071,6 @@ export interface Source {
      */
     enabled: boolean
   }
-
-  /** @internal */
-  [RELEASE_PTE_DESCRIPTION]?: boolean
 }
 
 /** @internal */
@@ -1234,6 +1227,8 @@ export type DefaultPluginsWorkspaceOptions = {
      * Actions for releases.
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+    /** @internal */
+    [RELEASE_PTE_DESCRIPTION]?: boolean
   }
   mediaLibrary?: MediaLibraryConfig
 }

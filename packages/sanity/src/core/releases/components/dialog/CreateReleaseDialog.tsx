@@ -34,7 +34,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
   const workspace = useWorkspace()
-  const isPTE = workspace[RELEASE_PTE_DESCRIPTION] ?? false
+  const isPTE = workspace.releases?.[RELEASE_PTE_DESCRIPTION] ?? false
 
   const [release, setRelease] = useState(() => getReleaseDefaults({pteDescription: isPTE}))
   const [isSubmitting, setIsSubmitting] = useState(false)

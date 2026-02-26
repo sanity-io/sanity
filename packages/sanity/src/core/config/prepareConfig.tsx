@@ -367,10 +367,6 @@ function resolveSource({
       config,
       initialValue: undefined,
     }),
-    [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
-      config,
-      initialValue: false,
-    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -801,13 +797,18 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+            config,
+            initialValue: false,
+          }),
         }
-      : {enabled: true},
-
-    [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
-      config,
-      initialValue: false,
-    }),
+      : {
+          enabled: true,
+          [RELEASE_PTE_DESCRIPTION]: releasePTEDescriptionReducer({
+            config,
+            initialValue: false,
+          }),
+        },
   }
 
   return source
