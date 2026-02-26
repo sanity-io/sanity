@@ -88,9 +88,13 @@ function prepareStudios() {
 
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
-      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      // pnpm inherits `trustPolicy` and `minimumReleaseAge` from `pnpm-workspace.yaml`
+      // but not `trustPolicyExclude` or `minimumReleaseAgeExclude`, so we need to
+      // explicitly override them here to avoid install failures
       await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
         cwd: destinationPath,
+        // eslint-disable-next-line camelcase
+        env: {...process.env, npm_config_minimum_release_age: '0'},
       })
       // We'll want to test the actual integration with the monorepo packages,
       // instead of the versions that is available on npm, so we'll symlink them before running npm install
@@ -104,9 +108,13 @@ function prepareStudios() {
         `${customDocStudioPath}/components/EnvDocument.tsx`,
         `${customDocStudioPath}/_document.tsx`,
       )
-      // --trust-policy off is used because of an issue where pnpm still inherits `trustPolicy` form `pnpm-workspace.yaml` but not `trustPolicyExclude`
+      // pnpm inherits `trustPolicy` and `minimumReleaseAge` from `pnpm-workspace.yaml`
+      // but not `trustPolicyExclude` or `minimumReleaseAgeExclude`, so we need to
+      // explicitly override them here to avoid install failures
       await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
         cwd: customDocStudioPath,
+        // eslint-disable-next-line camelcase
+        env: {...process.env, npm_config_minimum_release_age: '0'},
       })
       // We'll want to test the actual integration with the monorepo packages,
       // instead of the versions that is available on npm, so we'll symlink them before running npm install
