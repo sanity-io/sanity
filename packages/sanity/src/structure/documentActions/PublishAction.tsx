@@ -26,8 +26,7 @@ import {
   DocumentPublished,
   PublishButtonDisabledComplete,
   PublishButtonDisabledStart,
-  TimeToPublishComplete,
-  TimeToPublishStart,
+  PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
 
 const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
@@ -102,7 +101,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
   const doPublish = useCallback(() => {
     publish.execute()
-    telemetry.log(TimeToPublishStart, {documentId: id})
+    telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
   }, [publish, currentPublishRevision, telemetry, id])
 
@@ -148,12 +147,17 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       currentPublishRevision !== publishState.publishRevision
 
     if (didPublish) {
-      telemetry.log(TimeToPublishComplete, {documentId: id})
+      telemetry.log(PublishButtonClicked, {documentId: id, stage: 'completed'})
     }
 
     const nextState = didPublish ? PUBLISHED_STATE : null
     const delay = didPublish ? 200 : 4000
     const timer = setTimeout(() => {
+      // meaning, if it didn't succeed on publishing but the status is still that it is trying, @
+      // then after the timeout, log a failed event
+      if (!didPublish && publishState?.status === 'publishing') {
+        telemetry.log(PublishButtonClicked, {documentId: id, stage: 'failed'})
+      }
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)

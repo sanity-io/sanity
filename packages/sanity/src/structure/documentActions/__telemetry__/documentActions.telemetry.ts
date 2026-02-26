@@ -21,6 +21,10 @@ interface PublishButtonDisabledInfo {
   isRemoteEvent: boolean
 }
 
+interface StageInfo {
+  stage: 'started' | 'completed' | 'failed'
+}
+
 export const DocumentPublished = defineEvent<DocumentPublishedInfo>({
   name: 'Document Published',
   version: 1,
@@ -31,16 +35,10 @@ interface DocumentIdInfo {
   documentId: string
 }
 
-export const TimeToPublishStart = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Clicked - Started',
+export const PublishButtonClicked = defineEvent<DocumentIdInfo & StageInfo>({
+  name: 'Publish Button Clicked',
   version: 1,
-  description: 'Logs when a publish operation starts (user clicks publish)',
-})
-
-export const TimeToPublishComplete = defineEvent<DocumentIdInfo>({
-  name: 'Publish Button Clicked - Completed',
-  version: 1,
-  description: 'Logs when a publish operation completes (revision change confirmed)',
+  description: 'Logs when a publish operation is started, completed, or failed',
 })
 
 export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo & PublishButtonDisabledInfo>({
