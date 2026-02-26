@@ -46,10 +46,8 @@ export function CopyDocumentActions() {
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)
 
-    const includesPerspective = selectedReleaseId && !scheduledDraft
-    const searchParams: [string, string][] = includesPerspective
-      ? [['perspective', selectedReleaseId]]
-      : []
+    const searchParams: [string, string][] =
+      selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
     const intentParams = {
       id: documentId,
@@ -58,10 +56,11 @@ export function CopyDocumentActions() {
     }
 
     const intentLink = resolveIntentLink('edit', intentParams, searchParams)
+    const appendIntentLink = (url: string) => `${url}${intentLink}`
 
     const copyUrl = buildStudioUrl({
-      coreUi: (url) => `${url}${intentLink}`,
-      studio: (url) => `${url}${intentLink}`,
+      coreUi: appendIntentLink,
+      studio: appendIntentLink,
     })
 
     await navigator.clipboard.writeText(copyUrl)

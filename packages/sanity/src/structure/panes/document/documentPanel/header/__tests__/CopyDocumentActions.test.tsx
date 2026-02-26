@@ -1,8 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type HTMLProps} from 'react'
 import {usePerspective} from 'sanity'
-import {type IntentLinkProps} from 'sanity/router'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -17,15 +15,17 @@ const mockBuildStudioUrl = vi.hoisted(() =>
 const mockTelemetryLog = vi.hoisted(() => vi.fn())
 const mockClipboardWriteText = vi.hoisted(() => vi.fn(() => Promise.resolve()))
 
+const DEFAULT_PERSPECTIVE = {
+  selectedPerspectiveName: undefined,
+  selectedReleaseId: undefined,
+  selectedPerspective: 'drafts' as const,
+  perspectiveStack: ['drafts'],
+  excludedPerspectives: [],
+}
+
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  usePerspective: vi.fn(() => ({
-    selectedPerspectiveName: undefined,
-    selectedReleaseId: undefined,
-    selectedPerspective: 'drafts',
-    perspectiveStack: ['drafts'],
-    excludedPerspectives: [],
-  })),
+  usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
     buildStudioUrl: mockBuildStudioUrl,
@@ -35,19 +35,12 @@ vi.mock('sanity', async (importOriginal) => ({
   })),
 }))
 
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useRouter: vi.fn(() => ({
     state: {},
     resolveIntentLink: mockResolveIntentLink,
   })),
-  route: {
-    create: vi.fn(),
-    intents: vi.fn(),
-  },
-  IntentLink(props: IntentLinkProps & HTMLProps<HTMLAnchorElement>) {
-    const {intent, params = {}, ...rest} = props
-    return <a {...rest} href={`/intent/${intent}`} />
-  },
 }))
 
 vi.mock('../../../../../components', () => ({
@@ -86,22 +79,8 @@ describe('CopyDocumentActions', () => {
       clipboard: {writeText: mockClipboardWriteText},
     })
 
-    mockUsePerspective.mockReturnValue({
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedPerspective: 'drafts',
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-    })
-
-    mockUsePaneRouter.mockReturnValue({
-      params: {},
-      setParams: vi.fn(),
-    })
-
-    mockBuildStudioUrl.mockImplementation(
-      ({studio}: {studio?: (url: string) => string}) => studio?.('http://localhost:3333') ?? '',
-    )
+    mockUsePerspective.mockReturnValue(DEFAULT_PERSPECTIVE)
+    mockUsePaneRouter.mockReturnValue({params: {}, setParams: vi.fn()})
   })
 
   async function clickMenuItem(testId: string) {
@@ -111,8 +90,6 @@ describe('CopyDocumentActions', () => {
 
   describe('Copy link to document', () => {
     it('copies URL with no perspective param for drafts', async () => {
-      mockResolveIntentLink.mockReturnValue('/intent/edit/id=doc-123;type=article')
-
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
 
@@ -125,11 +102,11 @@ describe('CopyDocumentActions', () => {
 
     it('copies URL with perspective param for release', async () => {
       mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
-        excludedPerspectives: [],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -142,11 +119,11 @@ describe('CopyDocumentActions', () => {
 
     it('copies URL with scheduledDraft intent param for scheduled drafts', async () => {
       mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
-        excludedPerspectives: [],
       })
 
       mockUsePaneRouter.mockReturnValue({
@@ -166,9 +143,6 @@ describe('CopyDocumentActions', () => {
 
     it('writes the constructed URL to clipboard', async () => {
       mockResolveIntentLink.mockReturnValue('/intent/edit/id=doc-123;type=article')
-      mockBuildStudioUrl.mockReturnValue(
-        'http://localhost:3333/intent/edit/id=doc-123;type=article',
-      )
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
@@ -207,11 +181,10 @@ describe('CopyDocumentActions', () => {
 
     it('copies {docId} for published perspective', async () => {
       mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'published',
-        selectedReleaseId: undefined,
         selectedPerspective: 'published',
         perspectiveStack: ['published'],
-        excludedPerspectives: [],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -222,11 +195,11 @@ describe('CopyDocumentActions', () => {
 
     it('copies versions.{releaseId}.{docId} for release perspective', async () => {
       mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
-        excludedPerspectives: [],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -237,11 +210,11 @@ describe('CopyDocumentActions', () => {
 
     it('copies versions.{releaseId}.{docId} for scheduled draft', async () => {
       mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
-        excludedPerspectives: [],
       })
 
       mockUsePaneRouter.mockReturnValue({

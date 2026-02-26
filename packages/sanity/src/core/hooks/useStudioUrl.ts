@@ -35,7 +35,7 @@ export const useStudioUrl = (defaultUrl?: string): UseStudioUrlReturnType => {
   const appId = studioApp?.appId || ''
   const studioUrl = useMemo(() => {
     if (!isCoreUi || isLoading || !appId || !organizationId) {
-      return defaultUrl || window.location.toString()
+      return defaultUrl || window.location.origin
     }
 
     return getDashboardPath({
