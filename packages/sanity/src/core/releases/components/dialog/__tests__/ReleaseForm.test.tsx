@@ -162,7 +162,7 @@ describe('ReleaseForm', () => {
         wrapper,
       })
 
-      expect(screen.getByText('ASAP')).toBeInTheDocument()
+      expect(screen.getByText('As soon as possible')).toBeInTheDocument()
     })
   })
 

@@ -6,6 +6,7 @@ import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
 import {
+  activeScheduledRelease,
   activeASAPRelease,
   activeUndecidedRelease,
   scheduledRelease,
@@ -34,10 +35,10 @@ const renderTest = async (props: ComponentProps<typeof ReleaseTime>) => {
 }
 
 describe('ReleaseTime', () => {
-  it('renders "ASAP" when releaseType is "asap"', async () => {
+  it('renders "As soon as possible" when releaseType is "asap"', async () => {
     await renderTest({release: activeASAPRelease})
 
-    expect(screen.getByText('ASAP')).toBeInTheDocument()
+    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
   })
 
   it('renders "Undecided" when releaseType is "undecided"', async () => {
@@ -51,7 +52,16 @@ describe('ReleaseTime', () => {
       release: scheduledRelease,
     })
 
+    expect(screen.getByText('Scheduled')).toBeInTheDocument()
     expect(screen.getByText('Oct 10, 2023', {exact: false})).toBeInTheDocument()
+  })
+
+  it('renders "Estimated" for active scheduled releases', async () => {
+    await renderTest({
+      release: activeScheduledRelease,
+    })
+
+    expect(screen.getByText('Estimated')).toBeInTheDocument()
   })
 
   it('renders nothing when releaseType is "scheduled" and publishDate is not available', async () => {

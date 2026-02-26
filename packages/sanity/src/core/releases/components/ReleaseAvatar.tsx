@@ -10,70 +10,18 @@ import {RELEASE_TYPES_TONES} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {isDraftPerspective} from '../util/util'
 
-/** @internal */
-export const ReleaseAvatarIcon = ({
-  tone,
-  release,
-  releaseType,
-}: {
-  /**
-   * @deprecated - Prefer `release` or `releaseType`.
-   */
-  tone?: BadgeTone
-  release?: TargetPerspective
-  releaseType?: ReleaseType
-}) => {
-  const resolvedTone =
-    tone ??
-    (typeof releaseType !== 'undefined'
-      ? RELEASE_TYPES_TONES[releaseType]?.tone
-      : typeof release !== 'undefined'
-        ? isDraftPerspective(release)
-          ? // special case for draft perspective, the icon needs to be caution tone
-            'caution'
-          : getReleaseTone(release)
-        : undefined)
-
-  if (!resolvedTone) return null
-
-  const iconProps: {
-    'data-testid': string
-    'style': CSSProperties & {'--card-icon-color': string}
-  } = {
-    'data-testid': `release-avatar-${resolvedTone}`,
-    'style': {
-      '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
-    },
-  }
-
-  if (releaseType === 'asap') {
-    return <BoltIcon {...iconProps} />
-  }
-  if (releaseType === 'scheduled') {
-    return <ClockIcon {...iconProps} />
-  }
-  if (releaseType === 'undecided') {
-    return <DotIcon {...iconProps} />
-  }
-
-  if (isReleaseDocument(release)) {
-    if (isPausedCardinalityOneRelease(release)) {
-      return <ClockIcon {...iconProps} />
-    }
-    if (release?.metadata?.releaseType === 'asap') {
-      return <BoltIcon {...iconProps} />
-    }
-    if (release?.metadata?.releaseType === 'scheduled') {
-      return <ClockIcon {...iconProps} />
-    }
-    if (release?.metadata?.releaseType === 'undecided') {
-      return <DotIcon {...iconProps} />
-    }
-  }
+interface IconProps {
+  'data-testid': string
+  'style': CSSProperties & {'--card-icon-color': string}
+}
+function renderReleaseTypeIcon(releaseType: ReleaseType, iconProps: IconProps) {
+  if (releaseType === 'asap') return <BoltIcon {...iconProps} />
+  if (releaseType === 'scheduled') return <ClockIcon {...iconProps} />
   return <DotIcon {...iconProps} />
 }
 
-type ReleaseAvatarRenderMode =
+/** @internal */
+type ReleaseAvatarIconProps =
   | {
       release: TargetPerspective
       tone?: never
@@ -93,11 +41,44 @@ type ReleaseAvatarRenderMode =
       releaseType?: never
     }
 
+export const ReleaseAvatarIcon = ({tone, release, releaseType}: ReleaseAvatarIconProps) => {
+  const resolvedTone =
+    tone ??
+    (releaseType
+      ? RELEASE_TYPES_TONES[releaseType]?.tone
+      : release
+        ? isDraftPerspective(release)
+          ? // special case for draft perspective, the icon needs to be caution tone
+            'caution'
+          : getReleaseTone(release)
+        : 'default')
+
+  const iconProps: IconProps = {
+    'data-testid': `release-avatar-${resolvedTone}`,
+    'style': {
+      '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
+    },
+  }
+
+  if (releaseType) {
+    return renderReleaseTypeIcon(releaseType, iconProps)
+  }
+
+  if (isReleaseDocument(release)) {
+    if (isPausedCardinalityOneRelease(release)) {
+      return <ClockIcon {...iconProps} />
+    }
+
+    return renderReleaseTypeIcon(release.metadata.releaseType, iconProps)
+  }
+  return <DotIcon {...iconProps} />
+}
+
 export function ReleaseAvatar({
   fontSize = 1,
   padding = 3,
   ...iconProps
-}: ReleaseAvatarRenderMode & {
+}: ReleaseAvatarIconProps & {
   fontSize?: number
   padding?: number
 }): React.JSX.Element {

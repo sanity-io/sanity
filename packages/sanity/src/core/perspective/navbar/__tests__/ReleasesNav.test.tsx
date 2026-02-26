@@ -152,7 +152,7 @@ describe('ReleasesNav', () => {
         const releaseMenu = within(screen.getByTestId('release-menu'))
 
         // section titles
-        releaseMenu.getByText('ASAP')
+        releaseMenu.getByText('As soon as possible')
         releaseMenu.getByText('At time')
         expect(releaseMenu.queryByText('Undecided')).toBeNull()
 

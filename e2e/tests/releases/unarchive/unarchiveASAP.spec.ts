@@ -61,7 +61,7 @@ test.describe('Unarchive ASAP', () => {
     await unarchiveRelease({sanityClient, dataset, releaseId: asapReleaseIdTestOne})
     await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 
   // Once a release of any type of scheduled, the type should be changed to that, so when it's unarchived, the type should be scheduled
@@ -87,6 +87,6 @@ test.describe('Unarchive ASAP', () => {
     // has unarchived
     await expect(page.getByTestId('retention-policy-card')).not.toBeVisible()
 
-    await expect(page.getByTestId('release-type-picker')).not.toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).not.toHaveText('As soon as possible')
   })
 })

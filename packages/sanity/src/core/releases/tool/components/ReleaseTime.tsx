@@ -1,5 +1,5 @@
 import {LockIcon} from '@sanity/icons'
-import {Inline, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../i18n'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
@@ -32,24 +32,31 @@ export const ReleaseTime: React.FC<{release: TableRelease}> = ({release}) => {
   // For scheduled releases:
 
   return (
-    <Inline space={1}>
+    <Flex gap={1} align="center" wrap="wrap">
       {isReleaseScheduledOrScheduling(release) && (
-        <Text size={1} muted>
-          <LockIcon />
-        </Text>
+        <Box paddingY={1}>
+          <Text size={1} muted>
+            <LockIcon data-testid="release-lock-icon" />
+          </Text>
+        </Box>
       )}
-      <Text size={1} muted>
-        {isReleaseScheduledOrScheduling(release)
-          ? tRelease('time.scheduled')
-          : tRelease('time.estimated')}
-      </Text>
-
-      <Text size={1} muted>
-        {'·'}
-      </Text>
-      <Text size={1} weight="medium">
-        {getReleaseTime(release)}
-      </Text>
-    </Inline>
+      <Box paddingY={1}>
+        <Text size={1} muted>
+          {isReleaseScheduledOrScheduling(release)
+            ? tRelease('time.scheduled')
+            : tRelease('time.estimated')}
+        </Text>
+      </Box>
+      <Box paddingY={1}>
+        <Text size={1} muted>
+          {'·'}
+        </Text>
+      </Box>
+      <Box paddingY={1}>
+        <Text size={1} weight="medium">
+          {getReleaseTime(release)}
+        </Text>
+      </Box>
+    </Flex>
   )
 }

@@ -481,7 +481,7 @@ describe('ReleasesOverview', () => {
     it('shows time as ASAP for asap release types', () => {
       const asapReleaseRow = screen.getAllByTestId('table-row')[0]
 
-      within(asapReleaseRow).getByText('ASAP')
+      within(asapReleaseRow).getByText('As soon as possible')
     })
 
     it('shows time as Undecided for undecided release types', () => {
@@ -507,6 +507,7 @@ describe('ReleasesOverview', () => {
     it('shows lock next to scheduled releases', () => {
       const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
       within(scheduledReleaseRow).getByTestId('release-avatar-suggest')
+
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
     })
 
@@ -718,7 +719,7 @@ describe('ReleasesOverview', () => {
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
       // sort by asc publish at
-      await userEvent.click(screen.getByText('Time'))
+      await userEvent.click(screen.getByText('When'))
       const [
         descPublishSortedFirstRelease,
         descPublishSortedSecondRelease,

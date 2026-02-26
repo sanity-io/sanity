@@ -88,7 +88,7 @@ test.describe('Revert ASAP', () => {
         exact: true,
       }),
     ).toBeVisible()
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 
   // Schedule -> Wait -> Revert -> ASAP release
@@ -118,7 +118,7 @@ test.describe('Revert ASAP', () => {
         exact: true,
       }),
     ).toBeVisible()
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 
   // Schedule -> Unshedule -> Publish -> Revert -> ASAP release
@@ -149,6 +149,6 @@ test.describe('Revert ASAP', () => {
         exact: true,
       }),
     ).toBeVisible()
-    await expect(page.getByTestId('release-type-picker')).toHaveText('ASAP')
+    await expect(page.getByTestId('release-type-picker')).toHaveText('As soon as possible')
   })
 })
