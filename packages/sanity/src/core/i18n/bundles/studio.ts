@@ -890,6 +890,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Read-only field description */
   'inputs.object.unknown-fields.read-only.description':
     'This field is <strong>read only</strong> according to the document’s schema and cannot be unset. If you want to be able to unset this in Studio, make sure you remove the <code>readOnly</code> field from the enclosing type in the schema.',
+  /** Fallback description shown when the unknown reference preview cannot be loaded */
+  'inputs.object.unknown-fields.reference.preview.unavailable':
+    'Unable to load preview for reference "{{documentId}}".',
   /** Remove field */
   'inputs.object.unknown-fields.remove-field-button.text': 'Remove field',
   /** Encountered `{{count}}` fields that are not defined in the schema. */

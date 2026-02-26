@@ -69,8 +69,15 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       return null
     }
 
-    return <UnknownFields fieldNames={unknownFields} value={value} onChange={onChange} />
-  }, [onChange, schemaType.fields, value])
+    return (
+      <UnknownFields
+        fieldNames={unknownFields}
+        value={value}
+        onChange={onChange}
+        renderPreview={renderPreview}
+      />
+    )
+  }, [onChange, renderPreview, schemaType.fields, value])
 
   const selectedGroup = useMemo(() => groups.find(({selected}) => selected), [groups])
 
