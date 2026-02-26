@@ -1,9 +1,9 @@
 import {TrashIcon} from '@sanity/icons'
 import {
+  type ReferenceSchemaType,
   isDocumentSchemaType,
   isReference,
   isReferenceSchemaType,
-  type SchemaType,
 } from '@sanity/types'
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
@@ -110,7 +110,7 @@ function UnknownField({
   fieldName: string
   onUnsetClick: (fieldName: string) => void
   readOnly?: boolean
-  referenceSchemaType: SchemaType | null
+  referenceSchemaType: ReferenceSchemaType | null
   renderPreview: RenderPreviewCallback
   value: unknown
 }) {
