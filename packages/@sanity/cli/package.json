@@ -64,7 +64,7 @@
     "@babel/traverse": "^7.28.6",
     "@sanity/client": "catalog:",
     "@sanity/codegen": "catalog:",
-    "@sanity/runtime-cli": "^14.0.1",
+    "@sanity/runtime-cli": "^14.1.2",
     "@sanity/telemetry": "catalog:",
     "@sanity/template-validator": "^3.0.0",
     "@sanity/worker-channels": "^1.1.0",

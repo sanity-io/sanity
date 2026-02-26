@@ -7,6 +7,7 @@ import {transformHelpText} from '../../util/runtimeCommandHelp'
 export interface BlueprintsInfoFlags {
   stack?: string
   id?: string
+  verbose?: boolean
 }
 
 const defaultFlags: BlueprintsInfoFlags = {
@@ -34,7 +35,7 @@ const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: logger.Logger(output.print),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       stackOverride: flags.stack ?? flags.id,
       token,
     })
@@ -43,7 +44,9 @@ const infoBlueprintsCommand: CliCommandDefinition<BlueprintsInfoFlags> = {
 
     const {success, error} = await blueprintInfoCore({
       ...cmdConfig.value,
-      flags: {},
+      flags: {
+        verbose: flags.verbose,
+      },
     })
 
     if (!success) throw new Error(error)

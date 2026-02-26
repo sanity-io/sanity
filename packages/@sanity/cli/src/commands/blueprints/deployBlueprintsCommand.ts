@@ -7,6 +7,7 @@ import {transformHelpText} from '../../util/runtimeCommandHelp'
 export interface BlueprintsDeployFlags {
   'no-wait'?: boolean
   'stack'?: string
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsDeployFlags = {
@@ -34,7 +35,7 @@ const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: logger.Logger(output.print),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       stackOverride: flags.stack,
       token,
     })
@@ -45,6 +46,7 @@ const deployBlueprintsCommand: CliCommandDefinition<BlueprintsDeployFlags> = {
       ...cmdConfig.value,
       flags: {
         'no-wait': flags['no-wait'],
+        'verbose': flags.verbose,
       },
     })
 
