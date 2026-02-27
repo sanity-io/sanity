@@ -1,6 +1,6 @@
 import {useLayer} from '@sanity/ui'
 import {type ReactNode, useContext, useMemo} from 'react'
-import {ConnectorContext} from 'sanity/_singletons'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -18,10 +18,18 @@ export function ElementWithChangeBar(props: {
   hasFocus?: boolean
   isChanged?: boolean
   withHoverEffect?: boolean
+  isInteractive?: boolean
 }) {
-  const {children, disabled, hasFocus, isChanged, withHoverEffect = true} = props
+  const {
+    children,
+    disabled,
+    hasFocus,
+    isChanged,
+    withHoverEffect = true,
+    isInteractive = true,
+  } = props
 
-  const {onOpenReviewChanges, isReviewChangesOpen} = useContext(ConnectorContext)
+  const {onOpenReviewChanges, isReviewChangesOpen} = useContext(ReviewChangesContext)
   const {zIndex} = useLayer()
   const {t} = useTranslation()
 
@@ -30,7 +38,7 @@ export function ElementWithChangeBar(props: {
       disabled || !isChanged ? null : (
         <ChangeBar data-testid="change-bar" $zIndex={zIndex}>
           <ChangeBarMarker data-testid="change-bar__marker" />
-          <Tooltip content={t('changes.change-bar.aria-label')} portal>
+          <Tooltip content={t('changes.change-bar.aria-label')} portal disabled={!isInteractive}>
             <ChangeBarButton
               aria-label={t('changes.change-bar.aria-label')}
               data-testid="change-bar__button"
@@ -38,11 +46,21 @@ export function ElementWithChangeBar(props: {
               tabIndex={-1}
               type="button"
               $withHoverEffect={withHoverEffect}
+              $isInteractive={isInteractive}
             />
           </Tooltip>
         </ChangeBar>
       ),
-    [disabled, isChanged, isReviewChangesOpen, onOpenReviewChanges, t, withHoverEffect, zIndex],
+    [
+      disabled,
+      isChanged,
+      isInteractive,
+      isReviewChangesOpen,
+      onOpenReviewChanges,
+      t,
+      withHoverEffect,
+      zIndex,
+    ],
   )
 
   return (

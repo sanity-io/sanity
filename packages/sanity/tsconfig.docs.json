@@ -1,0 +1,47 @@
+{
+  "include": ["./src/_exports/**/*.ts", "./src/**/*.ts"],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__test__/**"
+  ],
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "paths": {
+      "sanity/_internal": ["./src/_exports/_internal.ts"],
+      "sanity/_singletons": ["./src/_exports/_singletons.ts"],
+      "sanity/_createContext": ["./src/_exports/_createContext.ts"],
+      "sanity/cli": ["./src/_exports/cli.ts"],
+      "sanity/desk": ["./src/_exports/desk.ts"],
+      "sanity/media-library": ["./src/_exports/media-library.ts"],
+      "sanity/migrate": ["./src/_exports/migrate.ts"],
+      "sanity/presentation": ["./src/_exports/presentation.ts"],
+      "sanity/router": ["./src/_exports/router.ts"],
+      "sanity/structure": ["./src/_exports/structure.ts"],
+      "sanity": ["./src/_exports/index.ts"]
+    }
+  }
+}

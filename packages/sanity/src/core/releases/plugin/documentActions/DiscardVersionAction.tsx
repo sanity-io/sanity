@@ -1,25 +1,29 @@
 import {TrashIcon} from '@sanity/icons'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
+  type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useTranslation} from '../../../i18n'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {DiscardVersionDialog} from '../../components/dialog/DiscardVersionDialog'
+import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
-/**
- * @internal
- */
-export const DiscardVersionAction = (
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+/** @internal */
+export const useDiscardVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation()
+  const {selectedPerspective} = usePerspective()
+  const willUnpublish = version ? isGoingToUnpublish(version) : false
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -53,9 +57,11 @@ export const DiscardVersionAction = (
       type: 'custom',
       component: (
         <DiscardVersionDialog
+          isGoingToUnpublish={willUnpublish}
           documentId={version._id}
           documentType={type}
           onClose={() => setDialogOpen(false)}
+          fromPerspective={selectedPerspective}
         />
       ),
     },
@@ -65,3 +71,6 @@ export const DiscardVersionAction = (
     title: t('release.action.discard-version'),
   }
 }
+
+useDiscardVersionAction.action = 'discardVersion'
+useDiscardVersionAction.displayName = 'DiscardVersionAction'

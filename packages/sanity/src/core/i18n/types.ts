@@ -1,3 +1,4 @@
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 
 /**
@@ -176,8 +177,9 @@ export interface LocaleWeekInfo {
 
   /**
    * An integer between 1 and 7 indicating the minimal days required in the first week of a month or year, for calendar purposes.
+   * @deprecated Kept for backwards compatibility in typings, but not used anywhere.
    */
-  minimalDays: 1 | 2 | 3 | 4 | 5 | 6 | 7
+  minimalDays?: 1 | 2 | 3 | 4 | 5 | 6 | 7
 }
 
 /**

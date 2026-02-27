@@ -114,7 +114,6 @@ describe('userStore', () => {
       expect(client.request).toHaveBeenLastCalledWith({
         uri: `/users/${lastBatch.join(',')}`,
         tag: 'users.get',
-        withCredentials: true,
       })
     })
   })

@@ -15,24 +15,18 @@ beforeEach(() => {
 describe('publish', () => {
   describe('disabled', () => {
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
-      ;(isLiveEditEnabled as Mock).mockImplementation(
-        // eslint-disable-next-line max-nested-callbacks
-        () => true,
-      )
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => true)
 
       expect(
         publish.disabled(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line no-explicit-any
           {} as any,
         ),
       ).toBe('LIVE_EDIT_ENABLED')
     })
 
     it('returns ALREADY_PUBLISHED if there is no draft and there is a published version', () => {
-      ;(isLiveEditEnabled as Mock).mockImplementation(
-        // eslint-disable-next-line max-nested-callbacks
-        () => false,
-      )
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
 
       expect(
         publish.disabled({
@@ -46,10 +40,7 @@ describe('publish', () => {
     })
 
     it("otherwise the operation isn't disabled", () => {
-      ;(isLiveEditEnabled as Mock).mockImplementation(
-        // eslint-disable-next-line max-nested-callbacks
-        () => false,
-      )
+      ;(isLiveEditEnabled as Mock).mockImplementation(() => false)
 
       expect(
         publish.disabled({
@@ -181,7 +172,6 @@ describe('publish', () => {
     it('throws an error if the client has no draft snaphot', () => {
       const client = createMockSanityClient()
 
-      // eslint-disable-next-line max-nested-callbacks
       expect(() => {
         publish.execute({
           client,
@@ -199,7 +189,7 @@ describe('publish', () => {
             },
           },
         } as unknown as OperationArgs)
-      }).toThrow('cannot execute "publish" when draft is missing')
+      }).toThrow('cannot execute "publish" when draft or version is missing')
 
       expect(client.$log).toMatchSnapshot()
     })

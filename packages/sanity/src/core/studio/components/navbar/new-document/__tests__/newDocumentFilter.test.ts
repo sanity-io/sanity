@@ -1,4 +1,4 @@
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {describe, expect, it} from 'vitest'
 
 import {filterOptions} from '../filter'

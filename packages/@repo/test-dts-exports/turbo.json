@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "generate:dts-exports": {
+      "env": ["TEST_DTS_EXPORTS_DIAGNOSTICS"],
+      "dependsOn": ["^build"]
+    }
+  }
+}

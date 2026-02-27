@@ -35,12 +35,11 @@ export function CreateLinkedActions(props: CreateLinkedActionsProps) {
         text={t('edit-in-create-button.text')}
         iconRight={LaunchIcon}
         mode="ghost"
-        paddingY={3}
         href={href}
         target="_blank"
         onClick={onEditInCreateClicked}
       />
-      <Button text={t('unlink-from-create-button.text')} paddingY={3} onClick={confirmUnlink} />
+      <Button text={t('unlink-from-create-button.text')} onClick={confirmUnlink} />
       {unlinkConfirm && (
         <DialogPortalProvider portalElementId={panelPortalElementId}>
           <CreateUnlinkConfirmDialog

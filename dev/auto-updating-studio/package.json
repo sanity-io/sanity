@@ -1,0 +1,23 @@
+{
+  "name": "auto-updating-studio",
+  "version": "5.12.0",
+  "private": true,
+  "keywords": [
+    "sanity"
+  ],
+  "license": "MIT",
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy",
+    "dev": "sanity dev",
+    "start": "sanity preview"
+  },
+  "dependencies": {
+    "@sanity/vision": "workspace:*",
+    "react": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  }
+}

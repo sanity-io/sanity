@@ -8,15 +8,7 @@ import {
 } from '@sanity/icons'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
 import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
@@ -25,6 +17,7 @@ import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {useTranslation} from '../../../i18n'
 import {FieldPresence} from '../../../presence'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
@@ -33,6 +26,7 @@ import {type ObjectItem, type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../arrays/ArrayOfObjectsInput/InsertMenuMenuItems'
+import {useArrayValidation} from '../arrays/common/ArrayValidationContext'
 import {RowLayout} from '../arrays/layouts/RowLayout'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
@@ -45,8 +39,10 @@ import {useReferenceInput} from './useReferenceInput'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 
-interface ReferenceItemProps<Item extends ReferenceItemValue>
-  extends Omit<ObjectItemProps<ReferenceItemValue>, 'renderDefault'> {
+interface ReferenceItemProps<Item extends ReferenceItemValue> extends Omit<
+  ObjectItemProps<ReferenceItemValue>,
+  'renderDefault'
+> {
   value: Item
   schemaType: ReferenceSchemaType
 }
@@ -147,7 +143,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const hasRef = value._ref
   const refTypeName = loadableReferenceInfo.result?.type || value?._strengthenOnPublish?.type
-  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.preview?.published?._id
+  const publishedReferenceExists = hasRef && loadableReferenceInfo.result?.isPublished
 
   const handleRemoveStrengthenOnPublish = useCallback(() => {
     onChange([
@@ -167,27 +163,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
 
   const {t} = useTranslation()
 
-  const OpenLink = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function OpenLink(
-        restProps: ComponentProps<typeof IntentLink>,
-        _ref: ForwardedRef<HTMLAnchorElement>,
-      ) {
-        return (
-          <IntentLink
-            {...restProps}
-            intent="edit"
-            params={{id: value?._ref, type: refType?.name}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={_ref}
-          />
-        )
-      }),
-    [refType?.name, value?._ref],
-  )
-
   const handleReplace = useCallback(() => {
     if (hasRef && isEditing) {
       onPathFocus([])
@@ -203,96 +178,20 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     setContextMenuButtonElement(element)
     menuButtonRef.current = element
   }, [])
+
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = maxReached ? t('inputs.array.action.max-reached') : undefined
   const {insertBefore, insertAfter} = useInsertMenuMenuItems({
     schemaTypes: insertableTypes,
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: maxReached,
+    disabledReason: maxReachedReason,
   })
 
-  const menu = useMemo(
-    () =>
-      readOnly ? null : (
-        <>
-          <MenuButton
-            ref={setMenuButtonRef}
-            onOpen={() => {
-              insertBefore.send({type: 'close'})
-              insertAfter.send({type: 'close'})
-            }}
-            button={
-              <ContextMenuButton
-                selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
-              />
-            }
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu ref={menuRef}>
-                {!readOnly && (
-                  <>
-                    <MenuItem
-                      text={t('inputs.reference.action.remove')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={onRemove}
-                    />
-                    <MenuItem
-                      text={t(
-                        hasRef && isEditing
-                          ? 'inputs.reference.action.replace-cancel'
-                          : 'inputs.reference.action.replace',
-                      )}
-                      icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.copy')}
-                      icon={CopyIcon}
-                      onClick={handleCopy}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.duplicate')}
-                      icon={AddDocumentIcon}
-                      onClick={handleDuplicate}
-                    />
-                    {insertBefore.menuItem}
-                    {insertAfter.menuItem}
-                  </>
-                )}
-
-                {!readOnly && !isEditing && hasRef && <MenuDivider />}
-                {!isEditing && hasRef && (
-                  <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
-                  />
-                )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-          {insertBefore.popover}
-          {insertAfter.popover}
-        </>
-      ),
-    [
-      OpenLink,
-      handleCopy,
-      handleDuplicate,
-      handleReplace,
-      hasRef,
-      inputId,
-      insertAfter,
-      insertBefore,
-      isEditing,
-      onRemove,
-      readOnly,
-      setMenuButtonRef,
-      t,
-    ],
-  )
+  const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
   const handleFixStrengthMismatch = useCallback(() => {
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
@@ -331,9 +230,92 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
       {loadableReferenceInfo.error && (
         <ReferenceMetadataLoadErrorAlertStrip
           errorMessage={loadableReferenceInfo.error.message}
-          onHandleRetry={loadableReferenceInfo.retry!}
+          onHandleRetry={loadableReferenceInfo.retry}
         />
       )}
+    </>
+  )
+
+  const menu = readOnly ? null : (
+    <>
+      <MenuButton
+        ref={setMenuButtonRef}
+        onOpen={() => {
+          insertBefore.send({type: 'close'})
+          insertAfter.send({type: 'close'})
+        }}
+        button={
+          <ContextMenuButton
+            selected={insertBefore.state.open || insertAfter.state.open ? true : undefined}
+            tooltipProps={{
+              fallbackPlacements: ['top', 'bottom'],
+              placement: 'right',
+            }}
+          />
+        }
+        id={`${inputId}-menuButton`}
+        menu={
+          <Menu ref={menuRef}>
+            {!readOnly && (
+              <>
+                {!disableActions.includes('remove') && (
+                  <MenuItem
+                    text={t('inputs.reference.action.remove')}
+                    tone="critical"
+                    icon={TrashIcon}
+                    onClick={onRemove}
+                  />
+                )}
+                <MenuItem
+                  text={t(
+                    hasRef && isEditing
+                      ? 'inputs.reference.action.replace-cancel'
+                      : 'inputs.reference.action.replace',
+                  )}
+                  icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
+                  onClick={handleReplace}
+                />
+                {!disableActions.includes('copy') && (
+                  <MenuItem
+                    text={t('inputs.reference.action.copy')}
+                    icon={CopyIcon}
+                    onClick={handleCopy}
+                  />
+                )}
+                {!disableActions.includes('duplicate') && (
+                  <MenuItem
+                    text={t('inputs.reference.action.duplicate')}
+                    icon={AddDocumentIcon}
+                    onClick={handleDuplicate}
+                  />
+                )}
+                {!(disableActions.includes('add') || disableActions.includes('addBefore')) &&
+                  insertBefore.menuItem}
+                {!disableActions.includes('add') &&
+                  !disableActions.includes('addAfter') &&
+                  insertAfter.menuItem}
+              </>
+            )}
+
+            {!readOnly && !isEditing && hasRef && <MenuDivider />}
+            {!isEditing && hasRef && (
+              <MenuItem
+                as={IntentLink}
+                icon={OpenInNewTabIcon}
+                // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
+                intent="edit"
+                params={{id: value?._ref, type: refType?.name}}
+                rel="noopener noreferrer"
+                target="_blank"
+                text={t('inputs.reference.action.open-in-new-tab')}
+              />
+            )}
+          </Menu>
+        }
+        popover={MENU_POPOVER_PROPS}
+      />
+      {insertBefore.popover}
+      {insertAfter.popover}
     </>
   )
 

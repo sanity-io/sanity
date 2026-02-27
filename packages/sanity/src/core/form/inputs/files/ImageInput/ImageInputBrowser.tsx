@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
@@ -11,19 +11,24 @@ import {type BaseImageInputProps} from './types'
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 
 function ImageInputBrowserComponent(
-  props: Pick<BaseImageInputProps, 'assetSources' | 'readOnly' | 'directUploads' | 'id'> & {
+  props: Pick<BaseImageInputProps, 'assetSources' | 'readOnly' | 'id' | 'schemaType'> & {
     setMenuOpen: (isOpen: boolean) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
   },
   forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {assetSources, readOnly, directUploads, id, setMenuOpen, handleSelectImageFromAssetSource} =
+  const {assetSources, readOnly, id, setMenuOpen, handleSelectImageFromAssetSource, schemaType} =
     props
+  const sourcesFromSchema = schemaType.options?.sources
   const {t} = useTranslation()
+
+  if (sourcesFromSchema?.length === 0) {
+    return null
+  }
 
   if (assetSources && assetSources.length === 0) return null
 
-  if (assetSources && assetSources.length > 1 && !readOnly && directUploads) {
+  if (assetSources && assetSources.length > 1 && !readOnly) {
     return (
       <MenuButton
         id={`${id}_assetImageButton`}
@@ -47,7 +52,6 @@ function ImageInputBrowserComponent(
                     (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
                     startCase(assetSource.name)
                   }
-                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => {
                     setMenuOpen(false)
                     handleSelectImageFromAssetSource(assetSource)
@@ -70,7 +74,6 @@ function ImageInputBrowserComponent(
       text={t('inputs.image.browse-menu.text')}
       icon={SearchIcon}
       mode="bleed"
-      // eslint-disable-next-line react/jsx-no-bind
       onClick={() => {
         setMenuOpen(false)
         handleSelectImageFromAssetSource(assetSources[0])

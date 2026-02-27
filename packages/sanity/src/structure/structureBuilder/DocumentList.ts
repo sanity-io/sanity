@@ -114,14 +114,17 @@ export class DocumentListBuilder extends GenericListBuilder<
   /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: DocumentListInput,
   ) {
     super()
+    this._context = _context
     this.spec = spec || {}
     this.initialValueTemplatesSpecified = Boolean(spec?.initialValueTemplates)
   }
@@ -146,7 +149,7 @@ export class DocumentListBuilder extends GenericListBuilder<
    * @returns document list builder based on the options and filter provided. See {@link DocumentListBuilder}
    */
   filter(filter: string): DocumentListBuilder {
-    return this.clone({options: {...(this.spec.options || {}), filter}})
+    return this.clone({options: {...this.spec.options, filter}})
   }
 
   /** Get Document list filter
@@ -260,7 +263,7 @@ export class DocumentListBuilder extends GenericListBuilder<
    */
   clone(withSpec?: PartialDocumentList): DocumentListBuilder {
     const builder = new DocumentListBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
 
     if (!this.initialValueTemplatesSpecified) {
       builder.spec.initialValueTemplates = inferInitialValueTemplates(this._context, builder.spec)

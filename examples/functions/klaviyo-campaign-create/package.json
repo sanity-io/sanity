@@ -1,0 +1,31 @@
+{
+  "name": "klaviyo-campaign-create",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@portabletext/to-html": "^5.0.1",
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "name": "klaviyo-campaign-create",
+    "type": "sanity.function.document",
+    "src": "./functions/klaviyo-campaign-create",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create",
+        "update"
+      ],
+      "filter": "_type == 'emails' && status != 'sent'",
+      "projection": "{_id, _type, title, slug, body, marketingCampaign, klaviyoListId, 'operation': delta::operation()}"
+    },
+    "env": {
+      "COMMENT": "KLAVIYO_API_KEY and KLAVIYO_LIST_ID env variables are required to create Klaviyo campaigns",
+      "KLAVIYO_API_KEY": "KLAVIYO_API_KEY",
+      "KLAVIYO_LIST_ID": "KLAVIYO_LIST_ID"
+    }
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}

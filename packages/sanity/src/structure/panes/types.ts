@@ -1,4 +1,4 @@
-import {type ReleaseId} from '@sanity/client'
+import {type ReleaseId} from 'sanity'
 
 import {type PaneNode} from '../types'
 

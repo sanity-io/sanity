@@ -5,6 +5,7 @@ import {
   type DocumentInspectorMenuItem,
   type DocumentInspectorUseMenuItemProps,
   type FormNodeValidation,
+  isGoingToUnpublish,
   isValidationError,
   isValidationWarning,
   usePerspective,
@@ -13,16 +14,19 @@ import {
 } from 'sanity'
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'
 
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
-  const {documentId, documentType} = props
+  const {documentType} = props
   const {t} = useTranslation('validation')
   const {selectedReleaseId} = usePerspective()
+  const {value} = useDocumentPane()
+
   const {validation: validationMarkers} = useValidationStatus(
-    documentId,
+    value._id,
     documentType,
-    selectedReleaseId,
+    !selectedReleaseId,
   )
 
   const validation: FormNodeValidation[] = useMemo(
@@ -37,6 +41,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
 
   const hasErrors = validation.some(isValidationError)
   const hasWarnings = validation.some(isValidationWarning)
+  const isDocumentGoingToUnpublish = isGoingToUnpublish(value)
 
   const icon = useMemo(() => {
     if (hasErrors) return ErrorOutlineIcon
@@ -51,7 +56,7 @@ function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspecto
   }, [hasErrors, hasWarnings])
 
   return {
-    hidden: validation.length === 0,
+    hidden: validation.length === 0 || isDocumentGoingToUnpublish,
     icon,
     title: t('panel.title'),
     tone,

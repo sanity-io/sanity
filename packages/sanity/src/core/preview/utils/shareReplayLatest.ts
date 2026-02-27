@@ -61,7 +61,10 @@ function _shareReplayLatest<T>(config: ShareReplayLatestConfig<T>): MonoTypeOper
     )
     const emitLatest = new Observable<T>((subscriber) => {
       if (emitted) {
-        subscriber.next(latest)
+        subscriber.next(
+          // this cast is safe because of the emitted check which asserts that we got T from the source
+          latest as T,
+        )
       }
       subscriber.complete()
     })

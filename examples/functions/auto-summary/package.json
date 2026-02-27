@@ -1,0 +1,25 @@
+{
+  "name": "auto-summary",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "src": "./functions/auto-summary",
+    "name": "auto-summary",
+    "memory": 2,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "create",
+        "update"
+      ],
+      "filter": "_type == 'post' && (delta::changedAny(content) || (delta::operation() == 'create' && defined(content)))",
+      "projection": "{_id}"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

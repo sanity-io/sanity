@@ -106,7 +106,7 @@ interface CommentInputInnerProps {
   focusLock?: boolean
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
-  onKeyDown?: (e: React.KeyboardEvent<Element>) => void
+  onKeyDown?: (e: React.KeyboardEvent) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
   renderBlock: RenderBlockFunction

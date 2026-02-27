@@ -2,28 +2,31 @@ import {type SanityClient} from '@sanity/client'
 import {EMPTY, merge, Observable, of, ReplaySubject, share, timer} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
 
-import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {checkoutPair, type Pair} from './checkoutPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
-// How long to keep listener connected for after last unsubscribe
-const LISTENER_RESET_DELAY = 10_000
+// How long to keep listener connected for after last unsubscribe.
+// Reduced from 10s to 5s to limit concurrent SSE connections during
+// navigation-heavy sessions. 5s still covers most "navigate away and back"
+// patterns while cutting the stale connection window in half.
+const LISTENER_RESET_DELAY = 5_000
 
 export const memoizedPair: (
   client: SanityClient,
   idPair: IdPair,
   typeName: string,
   serverActionsEnabled: Observable<boolean>,
-  pairListenerOptions?: PairListenerOptions,
+  extraOptions?: DocumentStoreExtraOptions,
 ) => Observable<Pair> = memoize(
   (
     client: SanityClient,
     idPair: IdPair,
     _typeName: string,
     serverActionsEnabled: Observable<boolean>,
-    pairListenerOptions?: PairListenerOptions,
+    pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
       const pair = checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)

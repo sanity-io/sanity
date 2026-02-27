@@ -107,7 +107,6 @@ export type SearchOptions = {
   __unstable_extendedProjection?: string
   maxDepth?: number
   comments?: string[]
-  includeDrafts?: boolean
   skipSortByScore?: boolean
   sort?: SearchSort[]
   cursor?: string

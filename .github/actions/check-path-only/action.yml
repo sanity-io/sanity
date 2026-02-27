@@ -1,0 +1,69 @@
+name: "Check Path Only"
+description: "Checks if only files in a specified directory path have changed"
+
+inputs:
+  path:
+    description: "The directory path to check (e.g., 'examples/' or 'packages/@sanity/cli/')"
+    required: true
+
+outputs:
+  path_only:
+    description: "true if only files in the specified path changed, false otherwise"
+    value: ${{ steps.check.outputs.path_only }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check if only specified path files changed
+      id: check
+      shell: bash
+      run: |
+        # Normalize path to ensure trailing slash
+        PATH_TO_CHECK="${{ inputs.path }}"
+        if [[ ! "$PATH_TO_CHECK" =~ /$ ]]; then
+          PATH_TO_CHECK="${PATH_TO_CHECK}/"
+        fi
+
+        echo "Checking for changes in: $PATH_TO_CHECK"
+
+        # Handle different event types
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          # For PRs, check files changed in the PR
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+        elif [ "${{ github.event_name }}" = "push" ]; then
+          # For pushes, check files in the last commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1)
+        else
+          # For other event types (workflow_dispatch, etc.), do not skip
+          echo "Event type ${{ github.event_name }} - not checking, will not skip"
+          echo "path_only=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Debug output
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
+        # Handle empty diffs (no changes)
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No files changed, will not skip"
+          echo "path_only=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Check if all changed files are in the specified path
+        PATH_ONLY="true"
+        while IFS= read -r file; do
+          if [ -n "$file" ] && [[ "$file" != "${PATH_TO_CHECK}"* ]]; then
+            PATH_ONLY="false"
+            break
+          fi
+        done <<< "$CHANGED_FILES"
+
+        echo "path_only=$PATH_ONLY" >> $GITHUB_OUTPUT
+
+        if [ "$PATH_ONLY" = "true" ]; then
+          echo "Only $PATH_TO_CHECK files changed - workflows can skip"
+        else
+          echo "Non-$PATH_TO_CHECK files changed - workflows should run"
+        fi

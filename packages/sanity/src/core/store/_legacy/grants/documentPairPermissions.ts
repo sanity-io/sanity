@@ -15,8 +15,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {type PairListenerOptions, snapshotPair} from '../document'
-import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
+import {type DocumentStoreExtraOptions, snapshotPair} from '../document'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -55,7 +54,6 @@ function getPairPermissions({
   // be considered separately/explicitly in the permissions.
   const effectiveVersion = version || draft || published
   const effectiveVersionType =
-    // eslint-disable-next-line no-nested-ternary
     effectiveVersion === version ? version : effectiveVersion === draft ? 'draft' : 'published'
 
   const {checkDocumentPermission} = grantsStore
@@ -183,7 +181,7 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   serverActionsEnabled: Observable<boolean>
-  pairListenerOptions?: PairListenerOptions
+  pairListenerOptions?: DocumentStoreExtraOptions
 }
 
 /**
@@ -322,9 +320,8 @@ export function useDocumentPairPermissions({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(

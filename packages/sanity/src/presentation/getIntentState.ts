@@ -4,11 +4,7 @@ import {encodeJsonParams, type RouterState, type SearchParam} from 'sanity/route
 
 import {type PresentationSearchParams, type PresentationStateParams} from './types'
 
-const preservedSearchParamKeys: Array<keyof PresentationSearchParams> = [
-  'preview',
-  'perspective',
-  'viewport',
-]
+const preservedSearchParamKeys: Array<keyof PresentationSearchParams> = ['preview', 'viewport']
 
 /**
  * @internal
@@ -21,7 +17,7 @@ export function getIntentState(
 ):
   | (PresentationStateParams & {_searchParams: SearchParam[]})
   | {intent: string; params: Record<string, string>; payload: unknown} {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   const {id, mode, path, presentation, type, ...searchParams} = params
 
   const preservedSearchParams = (routerState?._searchParams || [])

@@ -1,0 +1,8 @@
+{
+  "_type": "post",
+  "title": "Building with Sanity and the Fediverse",
+  "mastodonPost": "Discover how to automatically share your content across decentralized social networks using Sanity Functions. This tutorial shows you how to connect your CMS to Mastodon and other fediverse platforms for seamless content distribution.",
+  "slug": {
+    "current": "building-with-sanity-and-fediverse"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreWorkspaces": [
+    "packages/@sanity/cli",
+    "e2e",
+    "dev/*",
+    "perf/*",
+    "packages/@repo/test-exports",
+    "packages/@repo/test-dts-exports",
+    "packages/@repo/eslint-config",
+    "packages/@repo/test-config",
+    "packages/@repo/tsconfig",
+    "packages/@repo/package.config",
+    "packages/@repo/package.bundle",
+    "packages/sanity/fixtures/examples/*",
+  ],
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true,
+  },
+  "workspaces": {
+    ".": {
+      "project": ["*.{ts,mts,mjs}"],
+      "ignoreDependencies": [
+        // Knip does not have a Lerna plugin yet
+        "@lerna-lite/list",
+        "@lerna-lite/publish",
+        "conventional-changelog-conventionalcommits",
+        // Knip does not parse scripts in actions/github-script
+        "dotenv",
+        // keeping it a dev dependency speeds up 'npx only-allow pnpm' in package.json's preinstall script
+        "only-allow",
+        // Knip does not bind extra args (`-f gha`) behind e.g. `pnpm turbo run lint` to the target binary
+        "eslint-formatter-gha",
+        // See .github/workflows/e2e-ui.yml
+        "@sanity/ui",
+      ],
+      "ignoreBinaries": [
+        // No root packages provide these binaries
+        "npm-check-updates",
+        "sanity-test",
+        "sanity-tsdoc",
+        // Knip doesn't understand `cd perf/studio && pnpm preview`
+        "preview",
+        // Knip doesn't understand `cd dev/efps && pnpm write:report`
+        "write:report",
+      ],
+    },
+    "packages/sanity": {
+      "entry": [
+        "src/_exports/*.ts",
+        "bin/sanity",
+        "package.config.ts",
+        "src/_internal/cli/threads/*.ts",
+        "src/_internal/cli/actions/exec/*.ts",
+        "src/_internal/cli/server/esbuild-register.js",
+        "playwright-ct/template/index.ts",
+        "mock-browser-env-stub-loader.mjs",
+      ],
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "playwright-ct/**/*.{ts,tsx}",
+        "!src/**/__test{,s}__", // These files might actually be safe to delete?
+      ],
+      "ignoreDependencies": ["@vitest/expect", "babel-plugin-styled-components"],
+    },
+    "packages/@sanity/schema": {
+      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@sanity/mutator": {
+      "entry": ["package.config.ts"],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@sanity/types": {
+      "entry": ["package.config.ts"],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@sanity/diff": {
+      "entry": ["package.config.ts"],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@sanity/vision": {
+      "entry": ["package.config.ts"],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["babel-plugin-styled-components"],
+    },
+    "packages/@sanity/util": {
+      "entry": ["src/_exports/*.ts", "package.config.ts"],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/groq": {
+      "entry": [
+        "src/groq.ts",
+        "src/define.ts",
+        "src/_exports.cts.ts",
+        "src/_exports.mts.ts",
+        "package.config.ts",
+      ],
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/bundle-manager": {
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/release-notes": {
+      "project": ["src/**/*.ts"],
+    },
+    "packages/@repo/utils": {
+      "project": ["src/**/*.ts"],
+    },
+    "scripts": {
+      "entry": [
+        // Seems genuinely unused, but important?
+        "updateLicenses.ts",
+        // Hard to find
+        "listPublishedPackages.ts",
+        "symlinkDependencies.cjs",
+      ],
+    },
+  },
+}

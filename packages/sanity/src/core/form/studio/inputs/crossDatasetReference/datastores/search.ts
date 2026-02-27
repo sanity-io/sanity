@@ -26,10 +26,7 @@ export function search(
     maxDepth: options.maxFieldDepth,
   })
 
-  return searchStrategy(textTerm, {
-    includeDrafts: false,
-    isCrossDataset: true,
-  }).pipe(
+  return searchStrategy(textTerm, {isCrossDataset: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
     map((docs) => collate(docs)),
     map((collated) =>

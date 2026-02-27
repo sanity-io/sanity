@@ -1,9 +1,14 @@
+import type * as NodeWorkerThreads from 'node:worker_threads'
 import zlib from 'node:zlib'
 
-import {type CliCommandArguments, type CliCommandContext, type CliConfig} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import tar from 'tar-fs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
+import {
+  type DeployStudioWorkerResult,
+  type DeployStudioWorkerSuccess,
+} from '../../../threads/generateStudioManifest'
 import buildSanityStudio from '../../build/buildAction'
 import deployStudioAction, {type DeployStudioActionFlags} from '../deployAction'
 import * as _helpers from '../helpers'
@@ -14,6 +19,36 @@ vi.mock('tar-fs')
 vi.mock('node:zlib')
 vi.mock('../helpers')
 vi.mock('../../build/buildAction')
+vi.mock('../../schema/deploySchemasAction', () => ({
+  deploySchemasAction: vi.fn().mockResolvedValue(undefined),
+}))
+vi.mock('../../schema/utils/mainfestExtractor', () => ({
+  createManifestExtractor: vi.fn(() => vi.fn()),
+}))
+vi.mock('../../../util/extractClientConfig', () => ({
+  extractClientConfig: vi.fn(() => ({projectId: 'test-project', dataset: 'test-dataset'})),
+}))
+
+// Mock Worker class - defined inside factory to avoid hoisting issues
+const mockWorkerOnce = vi.fn()
+const mockWorkerTerminate = vi.fn().mockResolvedValue(0)
+
+vi.mock('node:worker_threads', async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeWorkerThreads>()
+  return {
+    ...actual,
+    Worker: class MockWorker {
+      once = mockWorkerOnce
+      terminate = mockWorkerTerminate
+    },
+  }
+})
+
+vi.mock('read-pkg-up', () => ({
+  default: {
+    sync: vi.fn(() => ({path: '/fake/path/package.json'})),
+  },
+}))
 
 const helpers = vi.mocked(_helpers)
 const buildSanityStudioMock = vi.mocked(buildSanityStudio)
@@ -41,6 +76,21 @@ describe('deployStudioAction', () => {
     type: 'studio',
   }
 
+  const mockWorkerSuccessResult: DeployStudioWorkerSuccess = {
+    type: 'success',
+    studioManifest: {
+      bundleVersion: 'vX',
+      workspaces: [
+        {
+          name: 'default',
+          projectId: 'example',
+          dataset: 'production',
+          schemaDescriptorId: 'schema-123',
+        },
+      ],
+    },
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
 
@@ -50,12 +100,22 @@ describe('deployStudioAction', () => {
       fail: vi.fn(() => spinnerInstance),
     }
 
+    // Setup worker mock to simulate successful message response
+    mockWorkerOnce.mockImplementation(
+      (event: string, callback: (result: DeployStudioWorkerResult) => void) => {
+        if (event === 'message') {
+          // Simulate async worker response using Promise to ensure it runs after all listeners are registered
+          void Promise.resolve().then(() => callback(mockWorkerSuccessResult))
+        }
+      },
+    )
+
     mockContext = {
       apiClient: vi.fn().mockReturnValue({
         withConfig: vi.fn().mockReturnThis(),
       }),
       workDir: '/fake/work/dir',
-      chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str)},
+      chalk: {cyan: vi.fn((str) => str), red: vi.fn((str) => str), gray: vi.fn((str) => str)},
       output: {
         error: vi.fn((str) => str),
         print: vi.fn(),
@@ -63,6 +123,11 @@ describe('deployStudioAction', () => {
       },
       prompt: {single: vi.fn()},
       cliConfig: {},
+      telemetry: {
+        updateUserProperties: vi.fn(),
+        log: vi.fn(),
+        trace: vi.fn(() => ({start: vi.fn(), error: vi.fn(), complete: vi.fn()}) as any),
+      },
     } as unknown as CliCommandContext
   })
 
@@ -112,7 +177,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isCoreApp: false,
+      manifest: mockWorkerSuccessResult.studioManifest,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
@@ -169,7 +234,7 @@ describe('deployStudioAction', () => {
       version: 'vX',
       isAutoUpdating: false,
       tarball: 'tarball',
-      isCoreApp: false,
+      manifest: mockWorkerSuccessResult.studioManifest,
     })
 
     expect(mockContext.output.print).toHaveBeenCalledWith(
@@ -303,55 +368,130 @@ describe('deployStudioAction', () => {
     expect(mockContext.output.error).toHaveBeenCalledWith('Application limit reached')
   })
 
-  it('handles core app deployment correctly', async () => {
-    // Create a mock application with all required properties
-    const mockCoreApp: UserApplication = {
-      id: 'core-app-id',
-      appHost: 'core-app-host',
+  describe('external deployment', () => {
+    const mockExternalApplication: UserApplication = {
+      id: 'external-app-id',
+      appHost: 'https://my-studio.example.com',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      urlType: 'internal',
-      projectId: null,
+      urlType: 'external',
+      projectId: 'example',
+      organizationId: null,
       title: null,
-      type: 'coreApp',
-      organizationId: 'org-id',
+      type: 'studio',
     }
 
-    mockContext = {
-      ...mockContext,
-      cliConfig: {
-        // eslint-disable-next-line camelcase
-        __experimental_coreAppConfiguration: {
-          appId: 'core-app-id',
-          organizationId: 'org-id',
-        },
-      } as CliConfig,
-    }
+    it('registers an external URL without building', async () => {
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
 
-    helpers.dirIsEmptyOrNonExistent.mockResolvedValueOnce(true)
-    helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
-    helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockCoreApp)
-    helpers.createDeployment.mockResolvedValueOnce({location: 'https://core-app-host'})
-    buildSanityStudioMock.mockResolvedValueOnce({didCompile: true})
-    tarPackMock.mockReturnValue({pipe: vi.fn(() => 'tarball')} as unknown as ReturnType<
-      typeof tar.pack
-    >)
-    zlibCreateGzipMock.mockReturnValue('gzipped' as unknown as ReturnType<typeof zlib.createGzip>)
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
 
-    await deployStudioAction(
-      {
-        argsWithoutOptions: ['customSourceDir'],
-        extOptions: {},
-      } as CliCommandArguments<DeployStudioActionFlags>,
-      mockContext,
-    )
+      // Should NOT call build
+      expect(buildSanityStudioMock).not.toHaveBeenCalled()
 
-    expect(helpers.getOrCreateUserApplicationFromConfig).toHaveBeenCalled()
-    expect(helpers.createDeployment).toHaveBeenCalledWith(
-      expect.objectContaining({
-        isCoreApp: true,
-      }),
-    )
-    expect(mockContext.output.print).toHaveBeenCalledWith('\nSuccess! Application deployed')
+      // Should NOT create tarball (but deployment IS called to register manifest)
+      expect(tarPackMock).not.toHaveBeenCalled()
+
+      // Should call createDeployment without tarball
+      expect(helpers.createDeployment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tarball: undefined,
+          manifest: mockWorkerSuccessResult.studioManifest,
+        }),
+      )
+
+      // Should call getOrCreateStudio with urlType: 'external'
+      expect(helpers.getOrCreateStudio).toHaveBeenCalledWith(
+        expect.objectContaining({
+          urlType: 'external',
+        }),
+      )
+
+      // Should print success message
+      expect(mockContext.output.print).toHaveBeenCalledWith(
+        expect.stringContaining('Success! Studio registered'),
+      )
+    })
+
+    it('uses studioHost from config as external URL', async () => {
+      mockContext.cliConfig = {studioHost: 'https://my-studio.example.com'}
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateUserApplicationFromConfig.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      expect(helpers.getOrCreateUserApplicationFromConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          appHost: 'https://my-studio.example.com',
+          urlType: 'external',
+        }),
+      )
+    })
+
+    it('deploys schemas when --schema-required is passed with --external', async () => {
+      const {deploySchemasAction} = await import('../../schema/deploySchemasAction')
+
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: [],
+          extOptions: {'external': true, 'schema-required': true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should call deploySchemasAction with extract-manifest: true
+      expect(deploySchemasAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'extract-manifest': true,
+          'schema-required': true,
+        }),
+        expect.anything(),
+      )
+    })
+
+    it('skips source directory checks for external deployments', async () => {
+      helpers.getInstalledSanityVersion.mockResolvedValueOnce('vX')
+      helpers.getOrCreateStudio.mockResolvedValueOnce(mockExternalApplication)
+      helpers.createDeployment.mockResolvedValueOnce({
+        location: 'https://my-studio.example.com',
+      })
+
+      await deployStudioAction(
+        {
+          argsWithoutOptions: ['customSourceDir'],
+          extOptions: {external: true},
+        } as CliCommandArguments<DeployStudioActionFlags>,
+        mockContext,
+      )
+
+      // Should NOT check directory emptiness for external
+      expect(helpers.dirIsEmptyOrNonExistent).not.toHaveBeenCalled()
+      expect(helpers.checkDir).not.toHaveBeenCalled()
+    })
   })
 })

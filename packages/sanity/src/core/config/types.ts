@@ -10,6 +10,8 @@ import {
   type SchemaTypeDefinition,
   type SearchStrategy,
 } from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import {type ComponentType, type ErrorInfo, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
@@ -17,7 +19,6 @@ import {type Router, type RouterState} from 'sanity/router'
 
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type ScheduledPublishingPluginOptions} from '../scheduledPublishing/types'
 import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
@@ -33,7 +34,53 @@ import {
   type DocumentInspector,
 } from './document'
 import {type FormComponents} from './form'
+import {type ReleaseActionComponent, type ReleaseActionsContext} from './releases/actions'
 import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface ActionComponent<ActionProps, ActionDescription> {
+  (props: ActionProps): ActionDescription | null
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface BaseActionDescription {
+  disabled?: boolean
+  icon?: ReactNode | ComponentType
+  label: string
+  onHandle?: () => void
+  title?: ReactNode
+  tone?: ButtonTone
+  shortcut?: string | null
+  dialog?: unknown
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface GroupableActionDescription<GroupType = unknown> extends BaseActionDescription {
+  group?: GroupType[]
+}
+
+/**
+ * Symbol for configuring decision parameters schema
+ * @beta
+ */
+export const DECISION_PARAMETERS_SCHEMA = Symbol('__decisionParametersSchema')
+
+/**
+ * Configuration for decision parameters
+ * @beta
+ */
+export interface DecisionParametersConfig {
+  [key: string]: string[]
+}
 
 /**
  * @hidden
@@ -173,6 +220,13 @@ export interface Tool<Options = any> {
     params: Record<string, unknown>,
     payload: unknown,
   ) => boolean | {[key: string]: boolean}
+
+  /**
+   * Internal application type identifier used to classify system tools.
+   *
+   * @internal
+   */
+  __internalApplicationType?: string
 }
 
 /** @public */
@@ -213,6 +267,8 @@ export interface ConfigContext {
    * Localization resources
    */
   i18n: LocaleSource
+  /** @beta */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 }
 
 /** @public */
@@ -299,6 +355,18 @@ export interface DocumentPluginOptions {
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
+
+  drafts?: {
+    /**
+     * Whether the workspace provides the draft model for interacting with documents.
+     *
+     * When switched off, documents may only be edited:
+     *
+     *  - Inside a release.
+     *  - Outside a release if they support live-edit.
+     */
+    enabled?: boolean
+  }
 }
 
 /**
@@ -316,7 +384,9 @@ export interface DocumentLanguageFilterContext extends ConfigContext {
  * @hidden
  * @beta
  */
-export type DocumentLanguageFilterComponent = ComponentType<{schemaType: ObjectSchemaType}>
+export type DocumentLanguageFilterComponent = ComponentType<{
+  schemaType: ObjectSchemaType
+}>
 
 /**
  *
@@ -346,12 +416,48 @@ export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgesContext
 >
 
+/**
+ * @hidden
+ * @public
+ */
+export type ReleaseActionsResolver = ComposableOption<
+  ReleaseActionComponent[],
+  ReleaseActionsContext
+>
+
 /** @hidden @beta */
 export type DocumentInspectorsResolver = ComposableOption<
   DocumentInspector[],
   DocumentInspectorContext
 >
 
+/**
+ * @public
+ * Config for the apps that are available in the studio.
+ */
+export type AppsOptions = {
+  canvas?: {
+    enabled: boolean
+    /**
+     * To allow the "Link to canvas" action on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
+     * provide a fallback origin as a string.
+     *
+     * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
+     *
+     * If the provided fallback Studio does not expose create-manifest.json "Link to canvas" will fail when using the fallback.
+     *
+     * Example: `wonderful.sanity.studio`
+     *
+     * Keep in mind that when fallback origin is used, Canvas will use the schema types and dataset in the *deployed* Studio,
+     * not from localhost.
+     *
+     * To see data synced from Canvas in your localhost Studio, you must ensure that the deployed fallback studio uses the same
+     * workspace and schemas as your local configuration.
+     *
+     */
+    fallbackStudioOrigin?: string
+  }
+}
 /** @beta */
 export interface PluginOptions {
   name: string
@@ -409,6 +515,15 @@ export interface PluginOptions {
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 
+  /** Configuration for Scheduled drafts */
+  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
+
+  /** @beta */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
+
+  /** Configuration for Content Releases */
+  releases?: DefaultPluginsWorkspaceOptions['releases']
+
   /** Configuration for studio beta features.
    * @internal
    */
@@ -424,6 +539,30 @@ export interface PluginOptions {
    */
   announcements?: {
     enabled: boolean
+  }
+
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl?: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
+    enabled?: boolean | ComposableOption<boolean, ConfigContext>
   }
 }
 
@@ -486,14 +625,29 @@ export interface WorkspaceOptions extends SourceOptions {
    * @internal
    */
   releases?: DefaultPluginsWorkspaceOptions['releases']
+  /**
+   * @internal
+   */
+  mediaLibrary?: DefaultPluginsWorkspaceOptions['mediaLibrary']
+  apps?: AppsOptions
 
   /**
    * @hidden
    * @internal
    */
   __internal_serverDocumentActions?: {
+    /**
+     * @deprecated The Mutations API integration will be removed in a future release.
+     */
     enabled?: boolean
   }
+
+  scheduledDrafts?: DefaultPluginsWorkspaceOptions['scheduledDrafts']
+
+  /**
+   * @beta
+   */
+  [DECISION_PARAMETERS_SCHEMA]?: DecisionParametersConfig
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
@@ -550,7 +704,12 @@ export interface ResolveProductionUrlContext extends ConfigContext {
  * @beta
  */
 
-export type DocumentActionsVersionType = 'published' | 'draft' | 'revision' | 'version'
+export type DocumentActionsVersionType =
+  | 'published'
+  | 'draft'
+  | 'revision'
+  | 'version'
+  | 'scheduled-draft'
 
 /**
  * @hidden
@@ -561,9 +720,9 @@ export interface DocumentActionsContext extends ConfigContext {
   schemaType: string
 
   /** releaseId of the open document, it's undefined if it's published or the draft */
-  releaseId?: string
+  releaseId: string | undefined
   /** the type of the currently active document. */
-  versionType?: DocumentActionsVersionType
+  versionType: DocumentActionsVersionType
 }
 
 /**
@@ -675,13 +834,25 @@ export interface Source {
      * @hidden
      * @beta
      */
-    badges: (props: PartialContext<DocumentActionsContext>) => DocumentBadgeComponent[]
+    badges: (props: PartialContext<DocumentBadgesContext>) => DocumentBadgeComponent[]
 
     /**
      * Components for the document.
      * @internal
      */
     components?: DocumentComponents
+
+    drafts: {
+      /**
+       * Whether the workspace provides the draft model for interacting with documents.
+       *
+       * When switched off, documents may only be edited:
+       *
+       *  - Inside a release.
+       *  - Outside a release if they support live-edit.
+       */
+      enabled: boolean
+    }
 
     /** @internal */
     unstable_fieldActions: (
@@ -821,12 +992,34 @@ export interface Source {
      * @internal
      */
     i18next: i18n
+
+    /**
+     * The schema descriptor ID.
+     *
+     * This can be `undefined` in the case where uploading the schema has been disabled.
+     *
+     * @internal
+     */
+    schemaDescriptorId: Promise<string | undefined>
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
 
+  scheduledDrafts?: {
+    enabled: boolean
+  }
   /** @beta */
-  releases?: WorkspaceOptions['releases']
+  releases?: {
+    enabled?: boolean
+    /**
+     * Limit the number of releases that can be created by this workspace.
+     */
+    limit?: number
+    /**
+     * Returns an array of actions for the release.
+     */
+    actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
+  }
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
@@ -843,6 +1036,29 @@ export interface Source {
    * @internal
    */
   announcements?: {
+    enabled: boolean
+  }
+  /**
+   * Config for the Sanity Media Library asset source integration.
+   * @beta
+   */
+  mediaLibrary?: WorkspaceOptions['mediaLibrary']
+
+  /**
+   * Advanced version control provides features such as inline content diffs in Studio to make
+   * resolving conflicts across document versions easier.
+   *
+   * @beta
+   */
+  advancedVersionControl: {
+    /**
+     * Control whether advanced version control functionality is enabled.
+     *
+     * Advanced version control provides features such as inline content diffs in Studio to make
+     * resolving conflicts across document versions easier.
+     *
+     * @beta
+     */
     enabled: boolean
   }
 }
@@ -864,6 +1080,12 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   auth: AuthStore
   projectId: string
   dataset: string
+  /**
+   * API hostname used for requests. Used to determine if the workspace
+   * points to staging or production environment.
+   * @internal
+   */
+  apiHost?: string
   theme: StudioTheme
   schema: Schema
   i18n: LocaleSource
@@ -883,6 +1105,34 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       source: Observable<Source>
     }>
   }
+}
+
+/**
+ * Config for the Scheduled Publishing plugin.
+ * @public
+ */
+export interface ScheduledPublishingPluginOptions {
+  /**
+   * Whether scheduled publishing is enabled for this workspace.
+   */
+  enabled: boolean
+  /**
+   * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
+   * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
+   */
+  inputDateTimeFormat?: string
+
+  /**
+   * @hidden
+   * Whether scheduled publishing is enabled by the workspace.
+   * Sanity is enabling it by default in the config, {@link "../scheduledPublishing/constants.ts"}
+   */
+  __internal__workspaceEnabled?: boolean
+  /**
+   * Whether to show the use releases warning banner in the tool.
+   * @deprecated The banner this controls is no longer being used
+   */
+  showReleasesBanner?: boolean
 }
 
 /**
@@ -910,6 +1160,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    */
   unstable_sources: Source[]
   scheduledPublishing: ScheduledPublishingPluginOptions
+  apps?: AppsOptions
 }
 
 /**
@@ -954,8 +1205,51 @@ export type {
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
+  scheduledDrafts: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
-  releases: {enabled: boolean}
+  releases: {
+    enabled?: boolean
+    /**
+     * Limit the number of releases that can be created by this workspace.
+     */
+    limit?: number
+    /**
+     * Actions for releases.
+     */
+    actions?: ReleaseActionComponent[] | ReleaseActionsResolver
+  }
+  mediaLibrary?: MediaLibraryConfig
+}
+
+/**
+ * Config for the Sanity Media Library asset source integration.
+ * @beta
+ */
+export interface MediaLibraryConfig {
+  /**
+   * Whether the Media Library is enabled.
+   */
+  enabled?: boolean
+  /**
+   * The ID of the Media Library that is connected to the Studio.
+   * If not provided, the Media Library will be automatically detected.
+   */
+  libraryId?: string
+  /**
+   * Internal configuration for the Media Library.
+   * @internal
+   * @hidden
+   */
+  __internal?: {
+    /**
+     * Override the Media Library frontend host URL.
+     * Used for internal testing against local or custom environments.
+     * @example 'http://localhost:3001'
+     * @internal
+     * @hidden
+     */
+    frontendHost?: string
+  }
 }
 
 /**
@@ -963,20 +1257,13 @@ export type DefaultPluginsWorkspaceOptions = {
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  /**
-   * @beta
-   * @hidden
-   * @deprecated beta feature is no longer available.
-   * */
-  treeArrayEditing?: {
-    /**
-     * @deprecated beta feature is no longer available.
-     */
-    enabled: boolean
+  form?: {
+    /** @deprecated `enhancedObjectDialog` has been removed. The enhanced object dialog is now always enabled and is considered the default studio experience. */
+    enhancedObjectDialog?: never
   }
 
   /**
-   * @beta
+   * @deprecated - The Start in Create flow has been removed and will be updated in an upcoming studio release.
    */
   create?: {
     /**
@@ -992,7 +1279,7 @@ export interface BetaFeatures {
     startInCreateEnabled?: boolean
 
     /**
-     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in sanity.io/manage
+     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
      * provide a fallback origin as a string.
      *
      * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.

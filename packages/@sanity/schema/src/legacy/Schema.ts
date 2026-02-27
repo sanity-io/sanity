@@ -1,7 +1,29 @@
+import {startCase} from 'lodash-es'
+
 import * as types from './types'
+import {lazyGetter} from './types/utils'
+
+interface ExtendHelper {
+  /** Creates a new type based on the definition. */
+  (memberDef: any): any
+
+  cached(def: any): any
+  cachedField(fieldDef: any): any
+  cachedObjectField(fieldDef: any): any
+}
 
 function compileRegistry(schemaDef: any) {
-  const registry = Object.assign(Object.create(null), types)
+  const registry = Object.create(null)
+  let localTypeNames: string[]
+
+  if (schemaDef.parent) {
+    Object.assign(registry, schemaDef.parent._registry)
+    localTypeNames = []
+  } else {
+    // For the root schema we inherit from the core types and also register these as the "local" ones.
+    Object.assign(registry, types)
+    localTypeNames = Object.keys(types)
+  }
 
   const defsByName = schemaDef.types.reduce((acc: any, def: any) => {
     if (acc[def.name]) {
@@ -11,9 +33,62 @@ function compileRegistry(schemaDef: any) {
     return acc
   }, {})
 
+  const memberCache = new Map()
+  const fieldCache = new Map()
+  const objectFieldCache = new Map()
+
+  const extendHelper: ExtendHelper = Object.assign(extendMember, {
+    cached(def: any) {
+      let member = memberCache.get(def)
+      if (!member) {
+        member = extendMember(def)
+        memberCache.set(def, member)
+      }
+      return member
+    },
+
+    cachedField(fieldDef: any) {
+      let field = fieldCache.get(fieldDef)
+      if (!field) {
+        const {name, ...type} = fieldDef
+        field = {
+          name,
+          type: extendMember(type),
+        }
+        fieldCache.set(fieldDef, field)
+      }
+      return field
+    },
+
+    cachedObjectField(fieldDef: any) {
+      let field = objectFieldCache.get(fieldDef)
+      if (!field) {
+        const {name, fieldset, group, ...rest} = fieldDef
+
+        field = {
+          name,
+          group,
+          fieldset,
+        }
+
+        lazyGetter(field, 'type', () => {
+          return extendMember({
+            ...rest,
+            title: fieldDef.title || startCase(name),
+          })
+        })
+        objectFieldCache.set(fieldDef, field)
+      }
+      return field
+    },
+  })
+
   schemaDef.types.forEach(add)
 
-  return registry
+  return {
+    registry,
+    localTypeNames,
+  }
 
   function ensure(typeName: any) {
     if (!registry[typeName]) {
@@ -26,7 +101,7 @@ function compileRegistry(schemaDef: any) {
 
   function extendMember(memberDef: any) {
     ensure(memberDef.type)
-    return registry[memberDef.type].extend(memberDef, extendMember).get()
+    return registry[memberDef.type].extend(memberDef, extendHelper).get()
   }
 
   function add(typeDef: any) {
@@ -34,6 +109,7 @@ function compileRegistry(schemaDef: any) {
     if (registry[typeDef.name]) {
       return
     }
+    localTypeNames.push(typeDef.name)
     registry[typeDef.name] = registry[typeDef.type].extend(typeDef, extendMember)
   }
 }
@@ -42,8 +118,9 @@ function compileRegistry(schemaDef: any) {
  * @beta
  */
 export class Schema {
-  _original: {name: string; types: any[]}
+  _original: {name: string; types: any[]; parent?: Schema}
   _registry: {[typeName: string]: any}
+  #localTypeNames: string[]
 
   static compile(schemaDef: any): Schema {
     return new Schema(schemaDef)
@@ -51,11 +128,21 @@ export class Schema {
 
   constructor(schemaDef: any) {
     this._original = schemaDef
-    this._registry = compileRegistry(schemaDef)
+
+    const {registry, localTypeNames} = compileRegistry(schemaDef)
+    this._registry = registry
+    this.#localTypeNames = localTypeNames
   }
 
   get name(): string {
     return this._original.name
+  }
+
+  /**
+   * Returns the parent schema.
+   */
+  get parent(): Schema | undefined {
+    return this._original.parent
   }
 
   get(name: string): any {
@@ -68,6 +155,10 @@ export class Schema {
 
   getTypeNames(): string[] {
     return Object.keys(this._registry)
+  }
+
+  getLocalTypeNames(): string[] {
+    return this.#localTypeNames
   }
 }
 
@@ -86,7 +177,6 @@ export class DeprecatedDefaultSchema extends Schema {
       'The default export of `@sanity/schema` is deprecated. Use `import {Schema} from "@sanity/schema"` instead.',
     ).stack!.replace(/^Error/, 'Warning')
 
-    // eslint-disable-next-line no-console
     console.warn(stack)
   }
 }

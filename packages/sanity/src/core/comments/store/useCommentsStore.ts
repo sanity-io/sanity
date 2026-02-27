@@ -1,12 +1,8 @@
-import {
-  type ListenEvent,
-  type ListenOptions,
-  type ReleaseId,
-  type SanityClient,
-} from '@sanity/client'
+import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
+import {type ReleaseId} from '../../perspective/types'
 import {getPublishedId} from '../../util'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
@@ -67,10 +63,8 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
   const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap, releaseId} = opts
 
-  const query = useMemo(() => {
-    const filters = [...QUERY_FILTERS, releaseId ? VERSION_FILTER : NO_VERSION_FILTER]
-    return `*[${filters.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
-  }, [releaseId])
+  const filters = [...QUERY_FILTERS, releaseId ? VERSION_FILTER : NO_VERSION_FILTER].join(' && ')
+  const query = useMemo(() => `*[${filters}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`, [filters])
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(client !== null)
@@ -174,7 +168,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const listener$ = useMemo(() => {
     if (!client) return of()
 
-    const events$ = client.observable.listen(query, params, LISTEN_OPTIONS).pipe(
+    const events$ = client.observable.listen(`*[${filters}]`, params, LISTEN_OPTIONS).pipe(
       catchError((err) => {
         setError(err)
         return of(err)
@@ -182,7 +176,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     )
 
     return events$
-  }, [client, params, query])
+  }, [client, filters, params])
 
   useEffect(() => {
     const sub = listener$.subscribe(handleListenerEvent)

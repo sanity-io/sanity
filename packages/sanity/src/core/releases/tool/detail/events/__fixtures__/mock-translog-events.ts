@@ -1,6 +1,5 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-
-import {type ReleaseDocument} from '../../../../store/types'
 
 export const RELEASE_STATE_CHANGE: {
   document: ReleaseDocument

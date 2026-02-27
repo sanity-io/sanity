@@ -55,6 +55,7 @@ export function getRemoteTransactionsSubscription({
     })
     if (effectState === 'created' || effectState === 'deleted') {
       onRefetch()
+      remoteTransactions$.next([])
       return
     }
     remoteTransactions$.next([

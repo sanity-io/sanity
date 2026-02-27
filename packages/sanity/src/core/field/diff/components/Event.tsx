@@ -9,7 +9,9 @@ import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ReleaseTitle} from '../../../releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
   type DocumentGroupEvent,
@@ -17,7 +19,6 @@ import {
   isPublishDocumentVersionEvent,
 } from '../../../store/events/types'
 import {useUser} from '../../../store/user/hooks'
-import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {
   TIMELINE_ICON_COMPONENTS,
   TIMELINE_ITEM_EVENT_TONE,
@@ -85,7 +86,7 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex align="center" gap={2} key={userId} padding={1}>
+    <Flex key={userId} align="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
@@ -126,8 +127,7 @@ interface TimelineItemProps {
  */
 export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
   const {t} = useTranslation('studio')
-  const documentVariantType = getDocumentVariantType(event.documentId)
-  const {type, timestamp} = event
+  const {type, timestamp, documentVariantType} = event
 
   const IconComponent = TIMELINE_ICON_COMPONENTS[type]
   const contributors = 'contributors' in event ? event.contributors || [] : []
@@ -157,14 +157,27 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
         </div>
         <Stack space={2}>
           <Text size={1} weight="medium">
-            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[type])}
+            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
                 {event.release ? (
-                  <VersionInlineBadge $tone={getReleaseTone(event.release)}>
-                    {event.release.metadata.title}
-                  </VersionInlineBadge>
+                  <ReleaseTitle
+                    title={event.release.metadata?.title}
+                    fallback={t('release.placeholder-untitled-release')}
+                  >
+                    {({displayTitle}) => (
+                      <VersionInlineBadge
+                        $tone={
+                          isReleaseDocument(event.release!)
+                            ? getReleaseTone(event.release)
+                            : 'default'
+                        }
+                      >
+                        {displayTitle}
+                      </VersionInlineBadge>
+                    )}
+                  </ReleaseTitle>
                 ) : (
                   <VersionInlineBadge $tone="caution">
                     {t('changes.versions.draft')}

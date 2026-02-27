@@ -1,16 +1,14 @@
----
 name: Dedupe lockfile
 
 on:
   push:
-    branches: [next]
+    branches: [main]
     paths:
       - "pnpm-lock.yaml"
   workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -20,49 +18,19 @@ jobs:
     name: Can pnpm-lock.yaml be deduped? 🤔
     runs-on: ubuntu-latest
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
-    if: ${{ github.ref_name == 'next' }}
+    if: ${{ github.ref_name == 'main' }}
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
-
-      - name: Install project dependencies
-        run: pnpm install --config.ignore-scripts=true
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - run: pnpm dedupe --config.ignore-scripts=true
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # v7
+      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
+        id: create-pull-request
         with:
           body: I ran `pnpm dedupe` 🧑‍💻
           branch: actions/dedupe-if-needed
@@ -71,3 +39,9 @@ jobs:
           sign-commits: true
           title: "chore(deps): dedupe pnpm-lock.yaml"
           token: ${{ steps.app-token.outputs.token }}
+
+      - name: Enable automerge on Pull Request
+        if: steps.create-pull-request.outputs.pull-request-operation == 'created'
+        run: gh pr merge --squash --auto "${{ steps.create-pull-request.outputs.pull-request-number }}"
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

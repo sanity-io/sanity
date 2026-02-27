@@ -1,0 +1,48 @@
+name: Run `pnpm generate:dts-exports` if needed
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: Should we run `pnpm generate:dts-exports`? 🤔
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Generate DTS exports
+        run: pnpm generate:dts-exports
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+      - uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
+        id: create-pull-request
+        with:
+          body: "I ran `pnpm generate:dts-exports` 🧑‍💻. If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports` 💡"
+          branch: actions/generate-dts-tests-if-needed
+          commit-message: "chore(tests): generate dts tests 🤖 ✨"
+          labels: 🤖 bot
+          sign-commits: true
+          title: "chore(tests): generate dts tests 🤖 ✨"
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Enable automerge on Pull Request
+        if: steps.create-pull-request.outputs.pull-request-operation == 'created'
+        run: gh pr merge --squash --auto "${{ steps.create-pull-request.outputs.pull-request-number }}"
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

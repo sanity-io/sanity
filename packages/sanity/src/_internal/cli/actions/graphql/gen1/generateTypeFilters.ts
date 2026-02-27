@@ -1,4 +1,4 @@
-import {flatten} from 'lodash'
+import {flatten} from 'lodash-es'
 
 import {isNonUnion} from '../helpers'
 import {

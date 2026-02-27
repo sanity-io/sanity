@@ -7,6 +7,7 @@ import {
   ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
+  isDev,
   LoadingBlock,
   SanityDefaultPreview,
   Translate,
@@ -18,7 +19,7 @@ import {styled} from 'styled-components'
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
-import {type DocumentListPaneItem, type LoadingVariant} from './types'
+import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
 
 const RootBox = styled(Box)<{$opacity?: number}>`
   position: relative;
@@ -39,10 +40,16 @@ interface DocumentListPaneContentProps {
   error: {message: string} | null
   filterIsSimpleTypeConstraint: boolean
   hasMaxItems?: boolean
+  muted?: boolean
   hasSearchQuery: boolean
   isActive?: boolean
   isLazyLoading: boolean
   isLoading: boolean
+  isConnected?: boolean
+  autoRetry?: boolean
+  canRetry: boolean
+  retryCount?: number
+  isRetrying?: boolean
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
@@ -51,6 +58,7 @@ interface DocumentListPaneContentProps {
   paneTitle: string
   searchInputElement: HTMLInputElement | null
   showIcons: boolean
+  sortOrder?: SortOrder
 }
 
 const SKELETON_ITEMS = [...Array(30).keys()]
@@ -61,7 +69,7 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   return (
     <Stack paddingX={3} paddingY={2} paddingTop={0} space={1}>
       {SKELETON_ITEMS.map((num) => (
-        <SanityDefaultPreview isPlaceholder layout={layout} key={num} />
+        <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
     </Stack>
   )
@@ -71,12 +79,18 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {
     childItemId,
     error,
+    isRetrying,
+    autoRetry,
     filterIsSimpleTypeConstraint,
     hasMaxItems,
     hasSearchQuery,
     isActive,
     isLazyLoading,
+    muted,
     isLoading,
+    isConnected,
+    retryCount,
+    canRetry,
     items,
     layout,
     loadingVariant,
@@ -85,6 +99,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     paneTitle,
     searchInputElement,
     showIcons,
+    sortOrder,
   } = props
 
   const schema = useSchema()
@@ -125,13 +140,14 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <>
           <PaneItem
-            icon={showIcons === false ? false : undefined}
+            icon={showIcons ? undefined : false}
             id={publishedId}
             layout={layout}
             marginBottom={1}
             pressed={pressed}
             schemaType={schema.get(item._type)}
             selected={selected}
+            sortOrder={sortOrder}
             value={item}
           />
 
@@ -147,7 +163,18 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         </>
       )
     },
-    [childItemId, isActive, items.length, layout, schema, showIcons, hasMaxItems, isLazyLoading, t],
+    [
+      childItemId,
+      isActive,
+      items.length,
+      layout,
+      schema,
+      showIcons,
+      sortOrder,
+      hasMaxItems,
+      isLazyLoading,
+      t,
+    ],
   )
 
   const noDocumentsContent = useMemo(() => {
@@ -185,6 +212,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return null
     }
 
+    const isOnline = window.navigator.onLine
     if (error) {
       return (
         <Flex align="center" direction="column" height="fill" justify="center">
@@ -192,21 +220,45 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             <Stack paddingX={4} paddingY={5} space={4}>
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
               <Text as="p">
-                <Translate
-                  t={t}
-                  i18nKey="panes.document-list-pane.error.text"
-                  values={{error: error.message}}
-                  components={{Code: ({children}) => <code>{children}</code>}}
-                />
+                {isDev ? (
+                  <Translate
+                    t={t}
+                    i18nKey="panes.document-list-pane.error.text.dev"
+                    values={{error: error.message}}
+                    components={{Code: ({children}) => <code>{children}</code>}}
+                  />
+                ) : isOnline ? (
+                  t('panes.document-list-pane.error.text')
+                ) : (
+                  t('panes.document-list-pane.error.text.offline')
+                )}
               </Text>
-              <ErrorActions error={error} eventId={null} onRetry={onRetry} />
+              <ErrorActions
+                error={error}
+                eventId={null}
+                onRetry={isOnline && canRetry ? onRetry : undefined}
+                isRetrying={isRetrying}
+              />
+              {canRetry ? (
+                <Text as="p" muted size={1}>
+                  {isRetrying
+                    ? t('panes.document-list-pane.error.retrying', {count: retryCount})
+                    : autoRetry
+                      ? t('panes.document-list-pane.error.will-retry-automatically', {
+                          count: retryCount,
+                        })
+                      : t('panes.document-list-pane.error.max-retries-attempted', {
+                          count: retryCount,
+                        })}
+                </Text>
+              ) : null}
             </Stack>
           </Container>
         </Flex>
       )
     }
 
-    if (!isLoading && items.length === 0) {
+    if (isConnected && !isLoading && items.length === 0) {
       return noDocumentsContent
     }
 
@@ -226,16 +278,16 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
+            key={key}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
             inputElement={searchInputElement}
             itemHeight={51}
             items={items}
-            key={key}
             onEndReached={handleEndReached}
             onlyShowSelectionWhenActive
             overscan={10}
@@ -248,18 +300,24 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       </RootBox>
     )
   }, [
+    autoRetry,
+    canRetry,
     collapsed,
     error,
     handleEndReached,
     index,
+    isConnected,
     isLoading,
+    isRetrying,
     items,
     layout,
     loadingVariant,
+    muted,
     noDocumentsContent,
     onRetry,
     paneTitle,
     renderItem,
+    retryCount,
     searchInputElement,
     shouldRender,
     t,

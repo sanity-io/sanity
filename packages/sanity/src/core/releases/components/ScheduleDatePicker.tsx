@@ -1,6 +1,8 @@
 import {EarthGlobeIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import {format, isValid, parse} from 'date-fns'
+import {format} from 'date-fns/format'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../ui-components/button'
@@ -8,26 +10,24 @@ import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/
 import {type CalendarLabels} from '../../components/inputs/DateInputs/calendar/types'
 import {DateTimeInput} from '../../components/inputs/DateInputs/DateTimeInput'
 import {getCalendarLabels} from '../../form/inputs/DateInputs'
+import useDialogTimeZone from '../../hooks/useDialogTimeZone'
+import {type TimeZoneScope, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import useDialogTimeZone from '../../scheduledPublishing/hooks/useDialogTimeZone'
-import useTimeZone from '../../scheduledPublishing/hooks/useTimeZone'
 
 interface ScheduleDatePickerProps {
-  initialValue: Date
+  value: Date | undefined
   onChange: (date: Date) => void
+  timeZoneScope: TimeZoneScope
 }
 
 const inputDateFormat = 'PP HH:mm'
 
-export const ScheduleDatePicker = ({
-  initialValue: inputValue,
-  onChange,
-}: ScheduleDatePickerProps) => {
+export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDatePickerProps) => {
   const {t} = useTranslation()
-  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone()
-  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone()
+  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
+  const {dialogTimeZoneShow, DialogTimeZone, dialogProps} = useDialogTimeZone(timeZoneScope)
 
-  const timezoneAdjustedValue = utcToCurrentZoneDate(inputValue)
+  const timeZoneAdjustedValue = value ? utcToCurrentZoneDate(value) : undefined
 
   const handlePublishAtCalendarChange = (date: Date | null) => {
     if (!date) return
@@ -55,11 +55,12 @@ export const ScheduleDatePicker = ({
         onChange={handlePublishAtCalendarChange}
         onInputChange={handlePublishAtInputChange}
         calendarLabels={calendarLabels}
-        value={timezoneAdjustedValue}
-        inputValue={format(timezoneAdjustedValue, inputDateFormat)}
+        value={timeZoneAdjustedValue}
+        inputValue={timeZoneAdjustedValue ? format(timeZoneAdjustedValue, inputDateFormat) : ''}
         constrainSize={false}
         padding={0}
         isPastDisabled
+        timeZoneScope={timeZoneScope}
       />
 
       <Button

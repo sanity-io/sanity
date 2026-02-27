@@ -1,9 +1,8 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {match, type Path} from 'path-to-regexp'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useEffectEvent, useRef, useState} from 'react'
 import {useClient} from 'sanity'
 import {type RouterState, useRouter} from 'sanity/router'
-import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSION} from './constants'
 import {
@@ -12,7 +11,7 @@ import {
   type MainDocument,
   type MainDocumentState,
   type PresentationNavigate,
-  type PreviewUrlOption,
+  type PresentationPerspective,
 } from './types'
 
 // Helper function to "unwrap" a result when it is either explicitly provided or
@@ -61,22 +60,23 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
   const routes = Array.isArray(route) ? route : [route]
 
   for (route of routes) {
-    let origin: DocumentResolverContext['origin'] = undefined
+    let {origin} = url
     let path = route
 
     // Handle absolute URLs
     if (typeof route === 'string') {
       try {
         const absolute = new URL(route)
+
+        // If we are dealing with an absolute URL, ensure the origins match
+        if (absolute.origin !== origin) continue
+
         origin = absolute.origin
         path = absolute.pathname
       } catch {
         // Ignore, as we assume a relative path
       }
     }
-
-    // If an origin has been explicitly provided, check that it matches
-    if (origin && url.origin !== origin) continue
 
     try {
       const matcher = match<Record<string, string>>(path, {decode: decodeURIComponent})
@@ -87,7 +87,7 @@ export function getRouteContext(route: Path, url: URL): DocumentResolverContext 
         return {origin, params, path}
       }
     } catch (e) {
-      throw new Error(`"${route}" is not a valid route pattern`)
+      throw new Error(`"${route}" is not a valid route pattern`, {cause: e})
     }
   }
   return undefined
@@ -97,10 +97,11 @@ export function useMainDocument(props: {
   navigate?: PresentationNavigate
   navigationHistory: RouterState[]
   path?: string
-  previewUrl?: PreviewUrlOption
+  targetOrigin: string
   resolvers?: DocumentResolver[]
+  perspective: PresentationPerspective
 }): MainDocumentState | undefined {
-  const {navigate, navigationHistory, path, previewUrl, resolvers = []} = props
+  const {navigate, navigationHistory, path, targetOrigin, resolvers = [], perspective} = props
   const {state: routerState} = useRouter()
   const client = useClient({apiVersion: API_VERSION})
   const relativeUrl =
@@ -127,22 +128,17 @@ export function useMainDocument(props: {
       // resultant navigation states.
       if (navigationHistory.at(-1)?.id === navigationHistory.at(-2)?.id) {
         navigate?.({
-          id: doc?._id,
-          type: doc?._type,
+          state: {
+            id: doc?._id,
+            type: doc?._type,
+          },
         })
       }
     }
   })
 
   useEffect(() => {
-    const base =
-      // eslint-disable-next-line no-nested-ternary
-      typeof previewUrl === 'string'
-        ? previewUrl
-        : typeof previewUrl === 'object'
-          ? previewUrl?.origin || location.origin
-          : location.origin
-    const url = new URL(relativeUrl, base)
+    const url = new URL(relativeUrl, targetOrigin)
 
     if (resolvers.length) {
       let result:
@@ -151,7 +147,6 @@ export function useMainDocument(props: {
             resolver: DocumentResolver
           }
         | undefined
-
       for (const resolver of resolvers) {
         const context = getRouteContext(resolver.route, url)
         if (context) {
@@ -163,12 +158,12 @@ export function useMainDocument(props: {
       if (result) {
         const query = getQueryFromResult(result.resolver, result.context)
         const params = getParamsFromResult(result.resolver, result.context)
-
         if (query) {
           const controller = new AbortController()
           const options: ResponseQueryOptions = {
-            perspective: 'drafts',
+            perspective: perspective,
             signal: controller.signal,
+            tag: 'use-main-document',
           }
 
           client
@@ -188,7 +183,7 @@ export function useMainDocument(props: {
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
-  }, [client, previewUrl, relativeUrl, resolvers])
+  }, [client, perspective, relativeUrl, resolvers, targetOrigin])
 
   return mainDocumentState
 }

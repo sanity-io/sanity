@@ -1,5 +1,5 @@
 import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {motion, type Variants} from 'framer-motion'
+import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -7,6 +7,7 @@ import {
   type DocumentGroupEvent,
   getDocumentVariantType,
   isCreateDocumentVersionEvent,
+  isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
   LoadingBlock,
@@ -133,9 +134,10 @@ export const EventsTimeline = ({
         return <PublishedEventMenu event={event} />
       }
       if (
-        isPublishDocumentVersionEvent(event) &&
-        documentVariantType === 'draft' &&
-        event.creationEvent
+        (isPublishDocumentVersionEvent(event) &&
+          documentVariantType === 'draft' &&
+          event.creationEvent) ||
+        (isDeleteDocumentVersionEvent(event) && event.creationEvent)
       ) {
         return (
           <ExpandableTimelineItemButton
@@ -178,9 +180,9 @@ export const EventsTimeline = ({
       }
       return (
         <TimelineItemWrapper
+          key={event.timestamp}
           paddingBottom={1}
           paddingRight={1}
-          key={event.timestamp}
           animate="animate"
           exit="exit"
           initial="initial"

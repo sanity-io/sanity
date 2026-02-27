@@ -1,4 +1,4 @@
-import {type ReleaseDocument} from './types'
+import {type ReleaseDocument} from '@sanity/client'
 
 interface BundleDeletedAction {
   id: string

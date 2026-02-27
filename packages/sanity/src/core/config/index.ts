@@ -1,3 +1,7 @@
+export {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 export * from './components'
 export * from './ConfigPropertyError'
 export * from './ConfigResolutionError'
@@ -8,6 +12,7 @@ export * from './document'
 export * from './flattenConfig'
 export * from './form'
 export * from './prepareConfig'
+export * from './releases'
 export * from './resolveConfig'
 export * from './resolveSchemaTypes'
 export * from './SchemaError'

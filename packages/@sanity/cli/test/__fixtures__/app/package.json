@@ -1,0 +1,35 @@
+{
+  "name": "test-app",
+  "version": "1.0.0",
+  "private": true,
+  "keywords": [
+    "sanity"
+  ],
+  "license": "UNLICENSED",
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev",
+    "start": "sanity start"
+  },
+  "dependencies": {
+    "@sanity/sdk": "^2.1.2",
+    "@sanity/sdk-react": "^0.0.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "catalog:",
+    "@types/react": "^19.2.11",
+    "eslint": "^9.39.2",
+    "prettier": "^3.8.1",
+    "sanity": "^3.99.0",
+    "typescript": "^5.9.3"
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "printWidth": 100,
+    "semi": false,
+    "singleQuote": true
+  }
+}

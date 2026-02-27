@@ -1,5 +1,8 @@
 import {Card, Text, type Theme} from '@sanity/ui'
-import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
+import {isAfter} from 'date-fns/isAfter'
+import {isBefore} from 'date-fns/isBefore'
+import {isSameDay} from 'date-fns/isSameDay'
+import {isSameMonth} from 'date-fns/isSameMonth'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
 

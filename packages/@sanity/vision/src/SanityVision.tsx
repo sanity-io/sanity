@@ -1,4 +1,4 @@
-import {type Tool, useClient, usePerspective} from 'sanity'
+import {type Tool, useClient} from 'sanity'
 
 import {DEFAULT_API_VERSION} from './apiVersions'
 import {VisionContainer} from './containers/VisionContainer'
@@ -11,7 +11,6 @@ interface SanityVisionProps {
 
 function SanityVision(props: SanityVisionProps) {
   const client = useClient({apiVersion: '1'})
-  const perspective = usePerspective()
   const config: VisionConfig = {
     defaultApiVersion: DEFAULT_API_VERSION,
     ...props.tool.options,
@@ -19,7 +18,7 @@ function SanityVision(props: SanityVisionProps) {
 
   return (
     <VisionErrorBoundary>
-      <VisionContainer client={client} config={config} pinnedPerspective={perspective} />
+      <VisionContainer client={client} config={config} />
     </VisionErrorBoundary>
   )
 }

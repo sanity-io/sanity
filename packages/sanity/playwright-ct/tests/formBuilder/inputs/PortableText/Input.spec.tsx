@@ -1,6 +1,5 @@
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type EditorChange, type PortableTextEditor} from '@portabletext/editor'
-import {type RefObject} from 'react'
 
 import {testHelpers} from '../../../utils/testHelpers'
 import {InputStory} from './InputStory'
@@ -8,7 +7,7 @@ import {InputStory} from './InputStory'
 test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {
     test(`Show call to action on focus`, async ({mount}) => {
-      const component = await mount(<InputStory />)
+      const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -18,7 +17,7 @@ test.describe('Portable Text Input', () => {
     })
 
     test(`Show call to action on hover`, async ({mount}) => {
-      const component = await mount(<InputStory />)
+      const component = await mount(<InputStory ptInputProps={{initialActive: false}} />)
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -29,6 +28,14 @@ test.describe('Portable Text Input', () => {
 
     test(`Immediately activate on mount when 'initialActive' is true`, async ({mount}) => {
       const component = await mount(<InputStory ptInputProps={{initialActive: true}} />)
+
+      const $portableTextInput = component.getByTestId('field-body')
+      const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
+      await expect($activeOverlay).not.toBeAttached()
+    })
+
+    test(`Immediately activate on mount when 'initialActive' is unset`, async ({mount}) => {
+      const component = await mount(<InputStory />)
 
       const $portableTextInput = component.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
@@ -58,14 +65,19 @@ test.describe('Portable Text Input', () => {
       page,
     }) => {
       const {getFocusedPortableTextEditor} = testHelpers({page})
-      let ref: undefined | RefObject<PortableTextEditor | null>
-      const getRef = (editorRef: RefObject<PortableTextEditor | null>) => {
-        ref = editorRef
-      }
-      await mount(<InputStory getRef={getRef} />)
+      let editorIstance: PortableTextEditor | undefined
+      await mount(
+        <InputStory
+          editorRef={(editor) => {
+            if (editor) {
+              editorIstance = editor
+            }
+          }}
+        />,
+      )
       await getFocusedPortableTextEditor('field-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
-      expect(ref?.current?.schemaTypes.block).toBeDefined()
+      expect(editorIstance?.schemaTypes.block).toBeDefined()
     })
   })
 

@@ -4,12 +4,10 @@ import {type BaseSchemaDefinition} from './common'
 import {type StringOptions, type StringRule} from './string'
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TextRule extends StringRule {}
 
 /** @public */
 // redefined to allow separate options for text and string as needed for extensions
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TextOptions extends StringOptions {}
 
 /** @public */

@@ -67,7 +67,6 @@ function TaskList(props: TaskListProps) {
                   dueBy={task.dueBy}
                   assignedTo={task.assignedTo}
                   target={task.target}
-                  // eslint-disable-next-line react/jsx-no-bind
                   onSelect={() => onTaskSelect(task._id)}
                   status={task.status}
                 />

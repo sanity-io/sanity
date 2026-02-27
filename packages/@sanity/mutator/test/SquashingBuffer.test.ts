@@ -112,8 +112,8 @@ test('de-duplicate createIfNotExists', () => {
 test.each(['create', 'createIfNotExists', 'createOrReplace'])(
   '%s defaults to current created at time',
   (createFnc) => {
-    const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
-    const globalDateSpy = vi.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2020-01-01T12:34:55.000Z'))
 
     const sb = new SquashingBuffer(null)
 
@@ -134,13 +134,13 @@ test.each(['create', 'createIfNotExists', 'createOrReplace'])(
       a: 'A string value',
     })
 
-    globalDateSpy.mockRestore()
+    vi.useRealTimers()
   },
 )
 
 test('de-duplicate create respects deletes', () => {
-  const globalMockDate = new Date('2020-01-01T12:34:55.000Z')
-  const globalDateSpy = vi.spyOn(global, 'Date').mockReturnValue(globalMockDate)
+  vi.useFakeTimers()
+  vi.setSystemTime(new Date('2020-01-01T12:34:55.000Z'))
 
   const initial = {_id: '1', _type: 'test', a: 'A string value', c: 'Some value'}
   const sb = new SquashingBuffer(initial)
@@ -175,7 +175,7 @@ test('de-duplicate create respects deletes', () => {
     c: 'Changed',
   })
 
-  globalDateSpy.mockRestore()
+  vi.useRealTimers()
 })
 
 test('de-duplicate create respects rebasing', () => {

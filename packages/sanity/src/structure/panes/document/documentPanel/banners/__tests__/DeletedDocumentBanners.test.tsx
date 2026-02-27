@@ -6,11 +6,11 @@ import {
   usePerspective,
   useReleasesIds,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
+import {useDocumentPane} from '../../../useDocumentPane'
 import {DeletedDocumentBanners} from '../DeletedDocumentBanners'
 
 vi.mock('../../../useDocumentPane', () => ({
@@ -64,7 +64,11 @@ describe('DeletedDocumentBanners', () => {
   })
 
   it('prefers to show release deleted banner when document was in a release', async () => {
-    const mockReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
+    const mockReleaseDocument = {
+      _id: '_.releases.rtest',
+      _type: 'system.release',
+      state: 'archived',
+    } as ReleaseDocument
     mockUsePerspective.mockReturnValue({selectedPerspective: mockReleaseDocument} as ReturnType<
       typeof usePerspective
     >)
@@ -77,8 +81,10 @@ describe('DeletedDocumentBanners', () => {
       releasesIds: [mockReleaseDocument._id],
     })
     mockUseDocumentPane.mockReturnValue({
+      documentId: 'foo',
       isDeleted: true,
       isDeleting: false,
+      ready: true,
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest()

@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {
   type I18nTextRecord,
   type Path,
@@ -9,8 +8,9 @@ import {
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
+import {type ReleaseId} from '../../../perspective/types'
 import {type DocumentAvailability} from '../../../preview'
-import {type VersionsRecord} from '../../../preview/utils/getPreviewStateObservable'
+import {type PreviewState} from '../../../preview/utils/getPreviewStateObservable'
 import {type ObjectInputProps} from '../../types'
 
 export type PreviewDocumentValue = PreviewValue & {
@@ -22,13 +22,9 @@ export type PreviewDocumentValue = PreviewValue & {
 export interface ReferenceInfo {
   id: string
   type: string | undefined
+  isPublished: boolean | null
   availability: DocumentAvailability
-  preview: {
-    draft: PreviewDocumentValue | undefined
-    published: PreviewDocumentValue | undefined
-    version: PreviewDocumentValue | undefined
-    versions: VersionsRecord
-  }
+  preview: PreviewState
 }
 
 export interface ReferenceTemplate {
@@ -43,6 +39,9 @@ export interface EditReferenceEvent {
   version?: ReleaseId
 }
 
+/**
+ * @internal
+ */
 export interface CreateReferenceOption {
   id: string
   title: string
@@ -67,12 +66,13 @@ export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSea
 export interface ReferenceSearchHit {
   id: string
   type: string
-  draft?: {_id: string; _type: string}
-  published?: {_id: string; _type: string}
+  published: boolean
 }
 
-export interface ReferenceInputProps<Value = Reference>
-  extends ObjectInputProps<Value, ReferenceSchemaType> {
+export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps<
+  Value,
+  ReferenceSchemaType
+> {
   suffix?: ReactNode
   liveEdit?: boolean
   onSearch: ReferenceSearchFunction
@@ -87,5 +87,4 @@ export interface ReferenceInputProps<Value = Reference>
 
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
-  version?: string
 }

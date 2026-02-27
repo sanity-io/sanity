@@ -1,0 +1,33 @@
+{
+  "name": "auto-changelog",
+  "version": "1.0.0",
+  "description": "Sanity Function that automatically generates changelog entries for documents when meaningful changes are made",
+  "keywords": [
+    "ai",
+    "automation",
+    "changelog",
+    "function",
+    "sanity"
+  ],
+  "license": "MIT",
+  "author": "Sanity",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "auto-changelog",
+    "src": "functions/auto-changelog",
+    "memory": 2,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "update"
+      ],
+      "filter": "_type == 'post' && delta::changedAny(content)",
+      "projection": "{_id, 'oldContent': pt::text(before().content), 'newContent': pt::text(after().content), changelog}"
+    }
+  }
+}

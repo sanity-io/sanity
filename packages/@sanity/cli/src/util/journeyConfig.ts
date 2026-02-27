@@ -58,7 +58,7 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
     const indexContent = await assembleJourneyIndexContent(documentTypes)
     await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
   } catch (error) {
-    throw new Error(`Failed to fetch remote schema: ${error.message}`)
+    throw new Error(`Failed to fetch remote schema: ${error.message}`, {cause: error})
   }
 }
 
@@ -86,7 +86,6 @@ export async function getAndWriteJourneySchemaWorker(
     const worker = new Worker(workerPath, {
       workerData,
       env: {
-        // eslint-disable-next-line no-process-env
         ...process.env,
         // Dynamic HTTPS imports are currently behind a Node flag
         NODE_OPTIONS: '--experimental-network-imports',
@@ -154,7 +153,7 @@ export async function fetchJourneyConfig(
       schemaUrl: response.schemaUrl,
       isFirstProject: true,
     }
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to fetch remote schema config: ${projectId}`)
   }
 }
@@ -169,7 +168,7 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
   try {
     const response = await import(schemaUrl)
     return response.default
-  } catch (err) {
+  } catch {
     throw new Error(`Failed to fetch remote schema: ${schemaUrl}`)
   }
 }

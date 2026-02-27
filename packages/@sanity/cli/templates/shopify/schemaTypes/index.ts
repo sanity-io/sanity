@@ -39,6 +39,7 @@ import {seoType} from './objects/seoType'
 import {shopifyCollectionType} from './objects/shopify/shopifyCollectionType'
 import {shopifyProductType} from './objects/shopify/shopifyProductType'
 import {shopifyProductVariantType} from './objects/shopify/shopifyProductVariantType'
+import {shopType} from './objects/shopify/shopType'
 import {spotType} from './objects/hotspot/spotType'
 
 // Objects used as annotations must be imported first
@@ -82,6 +83,7 @@ const objects = [
   shopifyCollectionType,
   shopifyProductType,
   shopifyProductVariantType,
+  shopType,
   spotType,
 ]
 

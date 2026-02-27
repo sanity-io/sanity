@@ -3,7 +3,7 @@ import {writeFile} from 'node:fs/promises'
 import path from 'node:path'
 
 import {type CliCommandDefinition} from '@sanity/cli'
-import {deburr} from 'lodash'
+import {deburr} from 'lodash-es'
 
 import {MIGRATIONS_DIRECTORY} from './constants'
 import {minimalAdvanced} from './templates/minimalAdvanced'
@@ -21,7 +21,7 @@ Examples:
   sanity migration create "Rename field from location to address"
 `
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CreateMigrationFlags {}
 
 const TEMPLATES = [

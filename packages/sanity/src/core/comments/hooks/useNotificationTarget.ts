@@ -12,6 +12,7 @@ interface NotificationTargetHookOptions {
   documentId: string
   documentType: string
   getCommentLink?: (commentId: string) => string
+  documentVersionId?: string
 }
 
 interface NotificationTargetHookValue {
@@ -31,28 +32,30 @@ interface NotificationTargetHookValue {
 export function useNotificationTarget(
   opts: NotificationTargetHookOptions,
 ): NotificationTargetHookValue {
-  const {documentId, documentType, getCommentLink} = opts || {}
+  const {documentId, documentType, getCommentLink, documentVersionId} = opts || {}
   const schemaType = useSchema().get(documentType)
-  const {title: workspaceTitle} = useWorkspace()
+  const {title: workspaceTitle, name: workspaceName} = useWorkspace()
 
   const documentPreviewStore = useDocumentPreviewStore()
 
   const previewStateObservable = useMemo(() => {
     if (!documentId || !schemaType) return of(null)
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, '')
-  }, [documentId, documentPreviewStore, schemaType])
+    const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
+    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
+  }, [documentId, documentPreviewStore, schemaType, documentVersionId])
   const previewState = useObservable(previewStateObservable)
 
-  const {published, draft} = previewState || {}
-  const documentTitle = (draft?.title || published?.title || 'Sanity document') as string
+  const {snapshot, original} = previewState || {}
+  const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(
     ({commentId}: {commentId: string}) => ({
       documentTitle,
       url: getCommentLink?.(commentId),
       workspaceTitle,
+      workspaceName,
     }),
-    [documentTitle, getCommentLink, workspaceTitle],
+    [documentTitle, getCommentLink, workspaceTitle, workspaceName],
   )
 
   return {

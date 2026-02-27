@@ -16,13 +16,15 @@ export interface DocumentBadgeDescription {
 /**
  * @hidden
  * @beta */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DocumentBadgeProps extends EditStateFor {}
 
 /**
  * @hidden
  * @beta */
-export interface DocumentBadgeComponent
-  extends HookCollectionActionHook<DocumentBadgeProps, DocumentBadgeDescription> {
+export interface DocumentBadgeComponent extends HookCollectionActionHook<
+  DocumentBadgeProps,
+  DocumentBadgeDescription
+> {
   (props: DocumentBadgeProps): DocumentBadgeDescription | null
 }

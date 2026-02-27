@@ -21,14 +21,13 @@ pnpm dev
 # Release/workflow guidelines
 
 - `current` always points to the last released version
-- Anything in the `next` branch is scheduled for the next release and should always be ready to released
-- To work on something new, create a descriptively named branch off of `next` (ie: `feat/some-new-feature`)
+- Anything in the `main` branch is scheduled for the next release and should always be ready to released
+- To work on something new, create a descriptively named branch off of `main` (ie: `feat/some-new-feature`)
 - Commit to that branch locally and regularly push your work to the same named branch on the remote
-- Rebase your feature branch regularly against `next`. Make sure its even with `next` before merging
-- Once it's done, open a pull request targeting `next`
-- After at least two reviewers has approved the pull request, you can merge it into `next` when you feel ready (if you're on the Sanity team, obviously)
+- Rebase your feature branch regularly against `main`. Make sure its even with `main` before merging
+- Once it's done, open a pull request targeting `main`
+- After at least two reviewers has approved the pull request, you can merge it into `main` when you feel ready (if you're on the Sanity team, obviously)
 - Pull requests should be as ready as possible for merge. Unless stated otherwise, it should be safe to assume that:
-
   - The changes/feature are reviewed and tested by you
   - You think it's production ready
   - The code is linted and the test suite is passing
@@ -41,8 +40,8 @@ Prefer squash + merge. If it makes sense to keep individual commits (e.g. differ
 
 ## Branches
 
-- `current`: This contains all the features and fixes included in the latest official release.
-- `next`: This includes everything scheduled for the next, upcoming release.
+- `main`: The main branch, where official releases goes out from (i.e. on the `latest` npm tag). When a PR is merged to `main` it should be considered safe to release. Also development branches are typically made from here.
+- `stable`: Releases on the `stable` tag goes out from here. Commits in this branch is typically released every Tuesday and typically only includes changes that has been released from `main` and been out for a few days.
 
 # How to file an issue
 
@@ -69,6 +68,27 @@ When filing an issue, make sure to answer these six questions:
 ## How to suggest a feature or enhancement
 
 If you find yourself wishing for a feature that doesn't exist in Sanity, you are probably not alone. There are bound to be others out there with similar needs. Many of the features that Sanity has today have been added because our users saw the need. Open an issue on our issues list on GitHub which describes the feature you would like to see, why you need it, and how it should work.
+
+## What to expect after filing an issue
+
+We're grateful for every issue you report and truly value your contributions to making Sanity better. To help us manage the community's needs effectively, we have a gentle automated follow-up process for issues where we need additional information from you.
+
+### If we need more details
+
+When we need more context or clarification, a team member will add the `needs-more-info` label and leave a comment explaining what would be helpful. Here's what happens next:
+
+- **After 10 days**: If we haven't received the information, you'll get a friendly automated reminder, and we'll add a `stale-warned` label to help us track the follow-up
+- **After 14 days total**: If we still haven't heard back, the issue will be automatically closed to keep our tracker organized
+
+**Please don't worry** - this isn't permanent! You're always welcome to reopen the issue or create a new one when you have the information ready. We understand that life gets busy and sometimes issues become less relevant over time.
+
+### If you respond
+
+As soon as you comment with the requested information, both labels are automatically removed, you'll receive a thank you message, and your issue moves back into our active review queue.
+
+### Need more time?
+
+If you need more time to gather information, just leave a quick comment letting us know - even a simple "I'm working on this" will reset the timer and keep your issue active.
 
 # Troubleshooting
 

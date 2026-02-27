@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
-import {flatten, groupBy, orderBy, sortBy} from 'lodash'
+import {flatten, groupBy, orderBy, sortBy} from 'lodash-es'
 import {
   type CSSProperties,
   Fragment,
@@ -268,7 +266,7 @@ const PresenceDock = memo(function PresenceDock(props: {
   )
 
   return (
-    <div data-dock={position} key={`sticky-${position}`} style={style}>
+    <div key={`sticky-${position}`} data-dock={position} style={style}>
       <FieldPresenceInner
         position={position}
         maxAvatars={MAX_AVATARS_DOCK}
@@ -312,7 +310,6 @@ function PresenceInside(props: {
               <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
                 <FieldPresenceInner
                   stack={!nearTop && !nearBottom}
-                  // eslint-disable-next-line no-nested-ternary
                   position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
                   maxAvatars={maxAvatars}
                   presence={presence}

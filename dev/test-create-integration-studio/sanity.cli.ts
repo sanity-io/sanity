@@ -1,9 +1,15 @@
 import {defineCliConfig} from 'sanity/cli'
 
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID
+const dataset = process.env.SANITY_STUDIO_DATASET
+
 export default defineCliConfig({
   api: {
-    projectId: 'ppsg7ml5',
-    dataset: 'test',
+    projectId,
+    dataset,
+  },
+  vite: (viteConfig) => {
+    return viteConfig
   },
 
   studioHost: 'create-integration-test',

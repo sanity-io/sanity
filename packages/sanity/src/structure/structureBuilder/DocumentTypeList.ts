@@ -25,14 +25,17 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   /** Document list options. See {@link PartialDocumentList} */
   protected spec: PartialDocumentList
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: DocumentListInput,
   ) {
     super(_context)
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 
@@ -52,7 +55,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
   clone(withSpec?: PartialDocumentList): DocumentTypeListBuilder {
     const parent = super.clone(withSpec)
     const builder = new DocumentTypeListBuilder(this._context)
-    builder.spec = {...this.spec, ...parent.getSpec(), ...(withSpec || {})}
+    builder.spec = {...this.spec, ...parent.getSpec(), ...withSpec}
     return builder
   }
 
@@ -69,7 +72,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
     builder.spec = {
       ...parent.getSpec(),
       ...this.spec,
-      ...(withSpec || {}),
+      ...withSpec,
       ...override,
     }
     return builder

@@ -34,32 +34,36 @@ const StyledCard = styled(Card)<{$fill?: boolean}>(({$fill}) => {
     flex-direction: column;
     justify-content: center;
 
-    ${$fill
-      ? css`
-          bottom: 0;
-          height: 100%;
-          left: 0;
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: 100%;
-        `
-      : css`
-          min-height: 75px;
-          height: stretch;
-          height: -webkit-fill-available;
-          width: stretch;
-          width: -webkit-fill-available;
-        `}
+    ${
+      $fill
+        ? css`
+            bottom: 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+          `
+        : css`
+            min-height: 75px;
+            height: stretch;
+            height: -webkit-fill-available;
+            width: stretch;
+            width: -webkit-fill-available;
+          `
+    }
 
-    ${DEBUG_MODE &&
-    css`
-      background: linear-gradient(#5555ca, #daf9f9);
-      border: 2px solid black;
-      > * {
-        mix-blend-mode: multiply;
-      }
-    `}
+    ${
+      DEBUG_MODE &&
+      css`
+        background: linear-gradient(#5555ca, #daf9f9);
+        border: 2px solid black;
+        > * {
+          mix-blend-mode: multiply;
+        }
+      `
+    }
 
     > * {
       position: absolute;
@@ -85,9 +89,11 @@ const StyledSpinner = styled(Spinner)<{$animatePosition: boolean}>(({$animatePos
         transform: translateY(-15px);
       }
     }
-    animation: ${$animatePosition
-      ? `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideUp`
-      : `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn`};
+    animation: ${
+      $animatePosition
+        ? `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running slideUp`
+        : `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running fadeIn`
+    };
   `
 })
 

@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 
 import {usePaneRouter} from '../../components'
+import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
@@ -84,7 +85,6 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       ? {
           path: pathFromString(parentRefPath),
           state:
-            // eslint-disable-next-line no-nested-ternary
             groupIndex >= routerPanesStateLength - 1
               ? 'none'
               : groupIndex >= routerPanesStateLength - 2
@@ -138,16 +138,18 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
     >
       {/* NOTE: this is a temporary location for this provider until we */}
       {/* stabilize the reference input options formally in the form builder */}
-      {/* eslint-disable-next-line react/jsx-pascal-case */}
       <ReferenceInputOptionsProvider
         EditReferenceLinkComponent={ReferenceChildLink}
         onEditReference={handleEditReference}
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CommentsWrapper documentId={options.id} documentType={options.type}>
-          <DocumentLayout documentId={options.id} documentType={options.type} />
-        </CommentsWrapper>
+        <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
+          <CommentsWrapper documentId={options.id} documentType={options.type}>
+            {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
+            <DocumentLayout documentId={options.id} documentType={options.type} />
+          </CommentsWrapper>
+        </DiffViewDocumentLayout>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProviderWrapper>
   )

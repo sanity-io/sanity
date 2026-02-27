@@ -20,7 +20,7 @@ function createMockClient(data: {requests?: Record<string, any>} = {}): SanityCl
   const mockClient = {
     config: () => mockConfig,
     withConfig: () => mockClient,
-    request: vi.fn((opts: {uri: string; tag?: string; withCredentials: boolean}) => {
+    request: vi.fn((opts: {uri: string; tag?: string; withCredentials?: boolean}) => {
       const path = opts.uri.slice(requestUriPrefix.length)
 
       if (data?.requests?.[path]) {
@@ -65,7 +65,6 @@ describe('checkDocumentPermission', () => {
         {
           tag: 'acl.get',
           uri: '/projects/mock-project-id/datasets/mock-data-set/acl',
-          withCredentials: true,
         },
       ],
     ])

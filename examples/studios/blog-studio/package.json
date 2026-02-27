@@ -1,0 +1,35 @@
+{
+  "name": "blog-studio",
+  "version": "3.92.0",
+  "private": true,
+  "description": "Content studio running with schema from the blog init template",
+  "keywords": [
+    "blog-studio",
+    "cms",
+    "content",
+    "headless",
+    "realtime",
+    "sanity"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "examples/studios/blog-studio"
+  },
+  "main": "package.json",
+  "scripts": {
+    "start": "sanity dev --port 3336"
+  },
+  "dependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  }
+}

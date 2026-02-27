@@ -1,14 +1,6 @@
-import {LockIcon} from '@sanity/icons'
-import {
-  type BadgeTone,
-  Box,
-  Button, // eslint-disable-line no-restricted-imports
-  Flex,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
-// eslint-disable-next-line camelcase
+import {type ReleaseDocument} from '@sanity/client'
+import {ComposeSparklesIcon, LockIcon, UnlockIcon} from '@sanity/icons'
+import {type BadgeTone, useClickOutsideEvent, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {
   memo,
   type MouseEvent,
@@ -19,46 +11,45 @@ import {
   useRef,
   useState,
 } from 'react'
-import {css, styled} from 'styled-components'
+import {useObservable} from 'react-rx'
 
 import {Popover, Tooltip} from '../../../../ui-components'
-import {getVersionId} from '../../../util/draftUtils'
-import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
+import {useTranslation} from '../../../i18n'
+import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {useSingleDocRelease} from '../../../singleDocRelease/context/SingleDocReleaseProvider'
+import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
+import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
+import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
-import {type ReleaseDocument, type ReleaseState} from '../../store/types'
+import {LATEST, PUBLISHED} from '../../util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {Chip} from '../Chip'
 import {DiscardVersionDialog} from '../dialog/DiscardVersionDialog'
-import {ReleaseAvatar} from '../ReleaseAvatar'
+import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenu} from './contextMenu/VersionContextMenu'
+import {CopyToDraftsDialog} from './dialog/CopyToDraftsDialog'
 import {CopyToNewReleaseDialog} from './dialog/CopyToNewReleaseDialog'
 
-interface ChipStyleProps {
-  $isArchived?: boolean
+type VersionChipDialogState = 'idle' | 'discard-version' | 'create-release' | 'copy-to-drafts'
+
+const useVersionIsLinked = (documentId: string, fromRelease: string) => {
+  const versionId = useMemo(() => {
+    if (fromRelease === 'published') return getPublishedId(documentId)
+    if (fromRelease === 'draft') return getDraftId(documentId)
+    return getVersionId(documentId, fromRelease)
+  }, [documentId, fromRelease])
+
+  const companionDocsStore = useCanvasCompanionDocsStore()
+  const companionDocs$ = useMemo(
+    () => companionDocsStore.getCompanionDocs(documentId),
+    [documentId, companionDocsStore],
+  )
+  const companionDocs = useObservable(companionDocs$)
+  return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 
-const ChipButton = styled(Button)<ChipStyleProps>(({$isArchived}) => {
-  return css`
-    flex: none;
-    transition: none;
-    cursor: pointer;
-
-    // target enabled state
-    &:not([data-disabled='true']) {
-      --card-border-color: var(--card-badge-default-bg-color);
-    }
-
-    &[data-disabled='true'] {
-      color: var(--card-muted-fg-color);
-      cursor: default;
-
-      // archived will be disabled but should have bg color
-      ${$isArchived &&
-      css`
-        background-color: var(--card-badge-default-bg-color);
-      `}
-    }
-  `
-})
+const CONTEXT_MENU_CLOSED = {open: false as const}
 
 /**
  * @internal
@@ -66,21 +57,25 @@ const ChipButton = styled(Button)<ChipStyleProps>(({$isArchived}) => {
 export const VersionChip = memo(function VersionChip(props: {
   disabled?: boolean
   selected: boolean
-  tooltipContent: ReactNode
+  tooltipContent?: ReactNode
   onClick: () => void
   text: string
+  // if the VersionChip itself is contained in a portal (e.g., as in the NonReleaseVersionSelect)
+  // there is no need to also make the context menu a portal (and it also breaks useClickOutside)
+  contextMenuPortal?: boolean
   tone: BadgeTone
   locked?: boolean
+  onCopyToDraftsNavigate: () => void
   contextValues: {
     documentId: string
+    documentType: string
     releases: ReleaseDocument[]
     releasesLoading: boolean
-    documentType: string
-    menuReleaseId: string
-    fromRelease: string
-    releaseState?: ReleaseState
+    bundleId: string
     isVersion: boolean
     disabled?: boolean
+    isGoingToUnpublish?: boolean
+    release?: ReleaseDocument
   }
 }) {
   const {
@@ -89,28 +84,30 @@ export const VersionChip = memo(function VersionChip(props: {
     tooltipContent,
     onClick,
     text,
+    contextMenuPortal = true,
     tone,
     locked = false,
+    onCopyToDraftsNavigate,
     contextValues: {
       documentId,
       releases,
       releasesLoading,
       documentType,
-      menuReleaseId,
-      fromRelease,
-      releaseState,
+      bundleId,
       isVersion,
       disabled: contextMenuDisabled = false,
+      isGoingToUnpublish = false,
+      release,
     },
   } = props
+  const releasesToolAvailable = useReleasesToolAvailable()
+  const isLinked = useVersionIsLinked(documentId, bundleId)
 
-  const [contextMenuPoint, setContextMenuPoint] = useState<{x: number; y: number} | undefined>(
-    undefined,
-  )
+  const [contextMenu, setContextMenu] = useState<
+    {open: true; translate: {x: number; y: number}} | {open: false}
+  >({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
-  const [isDiscardDialogOpen, setIsDiscardDialogOpen] = useState(false)
-  const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
-  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
+  const [dialogState, setDialogState] = useState<VersionChipDialogState>('idle')
 
   const chipRef = useRef<HTMLButtonElement | null>(null)
 
@@ -118,26 +115,28 @@ export const VersionChip = memo(function VersionChip(props: {
     if (selected) chipRef.current?.scrollIntoView({inline: 'center'})
   }, [selected])
 
-  const docId = isVersion ? getVersionId(documentId, fromRelease) : documentId // operations recognises publish and draft as empty
+  const docId = isVersion ? getVersionId(documentId, bundleId) : documentId // operations recognises publish and draft as empty
 
   const {createVersion} = useVersionOperations()
+  const toast = useToast()
+  const {t} = useTranslation()
+  const {onSetScheduledDraftPerspective} = useSingleDocRelease()
 
-  const close = useCallback(() => setContextMenuPoint(undefined), [])
+  const close = useCallback(() => setContextMenu(CONTEXT_MENU_CLOSED), [])
+  const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
   const handleContextMenu = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-
-    setContextMenuPoint({x: event.clientX, y: event.clientY})
+    const elementRect = event.currentTarget?.getBoundingClientRect()
+    setContextMenu({
+      open: true,
+      // note: this offsets the context menu popover position
+      // and depends on placement=bottom-start
+      translate: {x: event.clientX - elementRect.left, y: elementRect.top - event.clientY},
+    })
   }, [])
 
-  useClickOutsideEvent(
-    () => {
-      if (contextMenuPoint?.x && contextMenuPoint?.y) {
-        close()
-      }
-    },
-    () => [popoverRef.current],
-  )
+  useClickOutsideEvent(close, () => [popoverRef.current])
 
   useGlobalKeyDown(
     useCallback(
@@ -151,125 +150,151 @@ export const VersionChip = memo(function VersionChip(props: {
   )
 
   const openDiscardDialog = useCallback(() => {
-    setIsDiscardDialogOpen(true)
-  }, [setIsDiscardDialogOpen])
+    setDialogState('discard-version')
+  }, [])
 
-  const openCreateReleaseDialog = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setIsCreateReleaseDialogOpen(true)),
-    [guardWithReleaseLimitUpsell],
-  )
+  const openCreateReleaseDialog = useCallback(() => {
+    setDialogState('create-release')
+  }, [])
+
+  const openCopyToDraftsDialog = useCallback(() => {
+    setDialogState('copy-to-drafts')
+  }, [])
 
   const handleAddVersion = useCallback(
     async (targetRelease: string) => {
-      await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      try {
+        await createVersion(getReleaseIdFromReleaseDocumentId(targetRelease), docId)
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('release.action.create-version.failure'),
+          description: err.message,
+        })
+      }
+
       close()
     },
-    [createVersion, docId, close],
+    [close, createVersion, docId, t, toast],
   )
 
-  const referenceElement = useMemo(() => {
-    if (!contextMenuPoint) {
-      return null
-    }
+  const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
-    return {
-      getBoundingClientRect() {
-        return {
-          x: contextMenuPoint.x,
-          y: contextMenuPoint.y,
-          left: contextMenuPoint.x,
-          top: contextMenuPoint.y,
-          right: contextMenuPoint.x,
-          bottom: contextMenuPoint.y,
-          width: 0,
-          height: 0,
-        }
-      },
-    } as HTMLElement
-  }, [contextMenuPoint])
+  const isScheduledDraft = release && isVersion && isCardinalityOneRelease(release)
 
-  const contextMenuHandler = disabled ? undefined : handleContextMenu
+  const handleEditScheduleComplete = useCallback(() => {
+    if (!release) return
+    onSetScheduledDraftPerspective(getReleaseIdFromReleaseDocumentId(release._id))
+  }, [release, onSetScheduledDraftPerspective])
+
+  const scheduledDraftMenuActions = useScheduledDraftMenuActions({
+    release,
+    documentType,
+    documentId,
+    disabled: contextMenuDisabled,
+    onActionComplete: handleEditScheduleComplete,
+  })
+
+  const isPaused = isPausedCardinalityOneRelease(release)
+  const sourceReleasePerspective =
+    release ?? (bundleId === 'published' ? PUBLISHED : bundleId === 'draft' ? LATEST : bundleId)
+
+  const rightIcon = useMemo(() => {
+    if (isLinked) return <ComposeSparklesIcon />
+    if (isPaused) return <UnlockIcon />
+    if (locked) return <LockIcon />
+    return undefined
+  }, [isLinked, isPaused, locked])
 
   return (
     <>
       <Tooltip content={tooltipContent} fallbackPlacements={[]} portal placement="bottom">
         {/* This span is needed to make the tooltip work in disabled buttons */}
-        <span style={{display: 'inline-flex'}}>
-          <ChipButton
-            ref={chipRef}
+        <span ref={chipRef}>
+          <Chip
+            data-testid={`document-header-${text.replaceAll(' ', '-')}-chip`}
+            ref={setReferenceElement}
             disabled={disabled}
-            mode="bleed"
+            mode={disabled ? 'ghost' : 'bleed'}
             onClick={onClick}
             selected={selected}
             tone={tone}
-            iconRight={locked && LockIcon}
             onContextMenu={contextMenuHandler}
-            padding={1}
-            paddingRight={2}
-            radius="full"
-            $isArchived={releaseState === 'archived'}
-          >
-            <Flex align="center" gap={0}>
-              <ReleaseAvatar padding={1} tone={tone} />
-              <Box flex="none" padding={1}>
-                <Text size={1}>{text}</Text>
-              </Box>
-            </Flex>
-          </ChipButton>
+            icon={<ReleaseAvatarIcon release={sourceReleasePerspective} />}
+            iconRight={rightIcon}
+            text={text}
+          />
         </span>
       </Tooltip>
 
       <Popover
+        animate={false}
         content={
           <VersionContextMenu
             documentId={documentId}
             releases={releases}
             releasesLoading={releasesLoading}
-            fromRelease={fromRelease}
+            fromRelease={bundleId}
             isVersion={isVersion}
             onDiscard={openDiscardDialog}
             onCreateRelease={openCreateReleaseDialog}
+            onCopyToDrafts={openCopyToDraftsDialog}
+            onCopyToDraftsNavigate={onCopyToDraftsNavigate}
             disabled={contextMenuDisabled}
             onCreateVersion={handleAddVersion}
             locked={locked}
             type={documentType}
+            isGoingToUnpublish={isGoingToUnpublish}
+            release={release}
+            isScheduledDraft={isScheduledDraft}
+            scheduledDraftMenuActions={scheduledDraftMenuActions}
           />
         }
         fallbackPlacements={[]}
-        open={Boolean(referenceElement)}
-        portal
+        open={contextMenu.open}
+        portal={contextMenuPortal}
         placement="bottom-start"
         ref={popoverRef}
         referenceElement={referenceElement}
         zOffset={10}
+        style={
+          contextMenu.open
+            ? {transform: `translate(${contextMenu.translate.x}px, ${contextMenu.translate.y}px)`}
+            : undefined
+        }
       />
 
-      {isDiscardDialogOpen && (
+      {dialogState === 'discard-version' && (
         <DiscardVersionDialog
-          onClose={() => setIsDiscardDialogOpen(false)}
-          documentId={
-            isVersion
-              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
-              : documentId
-          }
+          onClose={() => setDialogState('idle')}
+          documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
+          fromPerspective={text}
           documentType={documentType}
+          isGoingToUnpublish={isGoingToUnpublish}
         />
       )}
 
-      {isCreateReleaseDialogOpen && (
+      {dialogState === 'create-release' && (
         <CopyToNewReleaseDialog
-          onClose={() => setIsCreateReleaseDialogOpen(false)}
+          onClose={() => setDialogState('idle')}
           onCreateVersion={handleAddVersion}
-          documentId={
-            isVersion
-              ? getVersionId(documentId, getReleaseIdFromReleaseDocumentId(menuReleaseId))
-              : documentId
-          }
+          documentId={isVersion ? getVersionId(documentId, bundleId) : documentId}
           documentType={documentType}
-          tone={tone}
+          release={sourceReleasePerspective}
           title={text}
         />
       )}
+
+      {dialogState === 'copy-to-drafts' && (
+        <CopyToDraftsDialog
+          onClose={() => setDialogState('idle')}
+          documentId={documentId}
+          fromRelease={bundleId}
+          onNavigate={onCopyToDraftsNavigate}
+        />
+      )}
+      {isScheduledDraft && scheduledDraftMenuActions.dialogs}
     </>
   )
 })

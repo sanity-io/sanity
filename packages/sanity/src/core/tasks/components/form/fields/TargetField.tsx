@@ -122,6 +122,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
       <Flex gap={1} align={'center'} justify={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
+            documentType={documentType}
             documentId={value.document._ref}
             layout={'compact'}
             presence={documentPresence}

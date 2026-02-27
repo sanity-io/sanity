@@ -1,6 +1,13 @@
-import {isReference, type Validators} from '@sanity/types'
+import {
+  type Asset as MediaLibraryAsset,
+  type AssetInstanceDocument,
+} from '@sanity/media-library-types'
+import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
-import {genericValidators} from './genericValidator'
+import {getPublishedId} from '../../util'
+import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
+import {pathToString} from '../util/pathToString'
+import {genericValidators, SLOW_VALIDATOR_TIMEOUT} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']
 
@@ -26,7 +33,7 @@ export const objectValidators: Validators = {
       return true
     }
 
-    const {type, getDocumentExists, i18n} = context
+    const {type, document, getDocumentExists, i18n} = context
 
     if (!isReference(value)) {
       return message || i18n.t('validation:object.not-reference')
@@ -44,6 +51,11 @@ export const objectValidators: Validators = {
       throw new Error(`\`getDocumentExists\` was not provided in validation context`)
     }
 
+    const documentId = document?._id
+    if (documentId && value._ref == getPublishedId(documentId)) {
+      // a document should be able to reference itself without first being published
+      return true
+    }
     const exists = await getDocumentExists({id: value._ref})
     if (!exists) {
       return i18n.t('validation:object.reference-not-published', {documentId: value._ref})
@@ -54,9 +66,111 @@ export const objectValidators: Validators = {
 
   assetRequired: (flag, value, message, {i18n}) => {
     if (!value || !value.asset || !value.asset._ref) {
-      return message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''})
+      return {
+        // eslint-disable-next-line camelcase
+        __internal_metadata: {
+          name: 'assetRequired',
+        },
+        message:
+          message || i18n.t('validation:object.asset-required', {context: flag.assetType || ''}),
+      }
     }
 
     return true
+  },
+
+  media: async (fn, value, message, context) => {
+    const slowTimer = setTimeout(() => {
+      // only show this warning in the studio
+      if (context.environment !== 'studio') return
+
+      console.warn(
+        `Media validator at ${pathToString(
+          context.path,
+        )} has taken more than ${SLOW_VALIDATOR_TIMEOUT}ms to respond`,
+      )
+    }, SLOW_VALIDATOR_TIMEOUT)
+
+    // If no value is provided, we assume the validation passes. This should be handled by the 'isRequired' validator.
+    if (!value) {
+      return true
+    }
+
+    // If the value is not an object or does not have a media reference, we return an error message.
+    // It should not be allowed to use regular dataset assets with this validator.
+    if (!value || !value.media || !value.media._ref) {
+      return context.i18n.t('validation:object.not-media-library-asset')
+    }
+
+    let result: CustomValidatorResult = true
+
+    try {
+      const [type, libraryId, documentId] = value.media._ref.split(':', 3)
+      // TODO: replace this with stable resource config when available
+      const resourceConfig = {resource: {type, id: libraryId}}
+      const asset = await context
+        .getClient({apiVersion: '2025-02-19'})
+        .withConfig(resourceConfig)
+        .fetch<(MediaLibraryAsset & {currentVersion: AssetInstanceDocument}) | null>(
+          `*[_id == $id] { ..., 'currentVersion': @.currentVersion-> { ... }  }[0]`,
+          {
+            id: documentId,
+          },
+        )
+      if (!asset) {
+        console.warn(
+          `${context.i18n.t('validation:object.media-not-found')}\nAsset ID: ${value.media._ref}`,
+        )
+        return context.i18n.t('validation:object.media-not-found')
+      }
+
+      result = await fn(
+        {
+          media: {
+            asset,
+          },
+          value,
+        },
+        context,
+      )
+    } catch (err) {
+      const error = new Error(
+        `Media validator at ${pathToString(
+          context.path,
+        )} failed with an error: ${err instanceof Error ? err.message : String(err)}`,
+        {cause: err},
+      )
+      throw error
+    } finally {
+      clearTimeout(slowTimer)
+    }
+
+    const validationErrorMetadata = {
+      // eslint-disable-next-line camelcase
+      __internal_metadata: {
+        name: 'media',
+      },
+    }
+
+    // Valid, no errors
+    if (result === true) {
+      return result
+    }
+
+    // Ensure we always return ValidationMarker with metadata
+    return Array.isArray(result)
+      ? result
+      : [result].map((res) => {
+          if (typeof res === 'string') {
+            return {...validationErrorMetadata, message: message || res}
+          }
+          if (isLocalizedMessages(res)) {
+            return {
+              ...validationErrorMetadata,
+              message: message || localizeMessage(res, context.i18n),
+            }
+          }
+          return {...validationErrorMetadata, ...res, message: message || res.message}
+        })
   },
 }

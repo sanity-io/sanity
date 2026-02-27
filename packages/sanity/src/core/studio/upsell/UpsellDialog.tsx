@@ -38,7 +38,8 @@ const Image = styled.img`
 `
 
 interface UpsellDialogProps {
-  data: UpsellData
+  data?: UpsellData | null
+  open?: boolean
   onClose: () => void
   onPrimaryClick: () => void
   onSecondaryClick: () => void
@@ -46,7 +47,11 @@ interface UpsellDialogProps {
 }
 
 export function UpsellDialog(props: UpsellDialogProps) {
-  const {data, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
+  const {data, open = true, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
+
+  if (!data || !open) {
+    return null
+  }
 
   return (
     <Dialog
@@ -56,6 +61,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       __unstable_hideCloseButton
       bodyHeight="fill"
       padding={false}
+      zOffset={800}
       footer={{
         cancelButton: data.secondaryButton?.text
           ? {
@@ -75,7 +81,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
         confirmButton: {
           text: data.ctaButton?.text,
           mode: 'default',
-          tone: 'primary',
+          tone: 'default',
           ...(data.ctaButton.url && {
             target: '_blank',
             rel: 'noopener noreferrer',

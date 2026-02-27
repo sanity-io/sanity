@@ -26,11 +26,11 @@ export function tryGitInit(rootDir: string, commitMessage?: string): boolean {
       cwd: rootDir,
     })
     return true
-  } catch (e) {
+  } catch {
     if (didInit) {
       try {
         rimrafSync(path.join(rootDir, '.git'))
-      } catch (_) {
+      } catch {
         // intentional noop
       }
     }
@@ -42,7 +42,7 @@ function isInGitRepository(rootDir: string): boolean {
   try {
     execSync('git rev-parse --is-inside-work-tree', {stdio: 'ignore', cwd: rootDir})
     return true
-  } catch (_) {
+  } catch {
     // intentional noop
   }
   return false
@@ -52,7 +52,7 @@ function isInMercurialRepository(rootDir: string): boolean {
   try {
     execSync('hg --cwd . root', {stdio: 'ignore', cwd: rootDir})
     return true
-  } catch (_) {
+  } catch {
     // intentional noop
   }
   return false

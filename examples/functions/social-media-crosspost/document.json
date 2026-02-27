@@ -1,0 +1,12 @@
+{
+  "_type": "socialPost",
+  "_id": "test-social-post-123",
+  "platforms": ["mastodon", "bluesky"],
+  "body": "Testing Sanity Functions.",
+  "platformOverrides": [
+    {
+      "platform": "bluesky",
+      "body": "Testing Sanity Functions on Bluesky API."
+    }
+  ]
+}

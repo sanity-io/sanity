@@ -1,10 +1,5 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
-import appGroup from './app/appGroup'
-import appBuildCommand from './app/buildCommand'
-import appDeployCommand from './app/deployCommand'
-import appDevCommand from './app/devCommand'
-import appStartCommand from './app/startCommand'
 import backupGroup from './backup/backupGroup'
 import disableBackupCommand from './backup/disableBackupCommand'
 import downloadBackupCommand from './backup/downloadBackupCommand'
@@ -21,6 +16,7 @@ import createDatasetCommand from './dataset/createDatasetCommand'
 import datasetGroup from './dataset/datasetGroup'
 import datasetVisibilityCommand from './dataset/datasetVisibilityCommand'
 import deleteDatasetCommand from './dataset/deleteDatasetCommand'
+import embeddingsCommand from './dataset/embeddingsCommand'
 import exportDatasetCommand from './dataset/exportDatasetCommand'
 import importDatasetCommand from './dataset/importDatasetCommand'
 import listDatasetsCommand from './dataset/listDatasetsCommand'
@@ -46,25 +42,33 @@ import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
 import extractManifestCommand from './manifest/extractManifestCommand'
 import manifestGroup from './manifest/manifestGroup'
+import createAspectCommand from './media/createAspectCommand'
+import deleteAspectCommand from './media/deleteAspectCommand'
+import deployAspectCommand from './media/deployAspectCommand'
+import exportMediaCommand from './media/exportMediaCommand'
+import importMediaCommand from './media/importMediaCommand'
+import mediaGroup from './media/mediaGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
 import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
+import deleteSchemaCommand from './schema/deleteSchemaCommand'
+import deploySchemaCommand from './schema/deploySchemaCommand'
 import extractSchemaCommand from './schema/extractSchemaCommand'
 import schemaGroup from './schema/schemaGroup'
+import fetchSchemaCommand from './schema/schemaListCommand'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
+import addTokenCommand from './tokens/addTokenCommand'
+import deleteTokenCommand from './tokens/deleteTokenCommand'
+import listTokensCommand from './tokens/listTokensCommand'
+import tokensGroup from './tokens/tokensGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
-  appGroup,
-  appDeployCommand,
-  appDevCommand,
-  appBuildCommand,
-  appStartCommand,
   buildCommand,
   datasetGroup,
   deployCommand,
@@ -72,6 +76,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listDatasetsCommand,
   createDatasetCommand,
   datasetVisibilityCommand,
+  embeddingsCommand,
   exportDatasetCommand,
   importDatasetCommand,
   deleteDatasetCommand,
@@ -86,6 +91,10 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   listCorsOriginsCommand,
   addCorsOriginCommand,
   deleteCorsOriginCommand,
+  tokensGroup,
+  listTokensCommand,
+  addTokenCommand,
+  deleteTokenCommand,
   usersGroup,
   inviteUserCommand,
   listUsersCommand,
@@ -118,6 +127,15 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   execCommand,
   manifestGroup,
   extractManifestCommand,
+  mediaGroup,
+  exportMediaCommand,
+  importMediaCommand,
+  createAspectCommand,
+  deleteAspectCommand,
+  deployAspectCommand,
+  fetchSchemaCommand,
+  deploySchemaCommand,
+  deleteSchemaCommand,
 ]
 
 /**

@@ -2,7 +2,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Stack, Text} from '@sanity/ui'
-// eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useEffect} from 'react'
 import {css, keyframes, styled} from 'styled-components'
@@ -72,7 +71,7 @@ const Root = styled.div((props) => {
 const ButtonRoot = styled.div`
   z-index: 1;
   position: absolute;
-  top: 0px;
+  top: 2px;
   right: 6px;
 `
 

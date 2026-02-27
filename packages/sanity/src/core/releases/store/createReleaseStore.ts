@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type ReleaseType, type SanityClient} from '@sanity/client'
 import {
   BehaviorSubject,
   catchError,
@@ -25,7 +25,7 @@ import {listenQuery} from '../../store/_legacy'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
-import {type ReleaseDocument, type ReleaseStore, type ReleaseType} from './types'
+import {type ReleaseStore} from './types'
 
 type ActionWrapper = {action: ReleasesReducerAction}
 type ResponseWrapper = {response: ReleaseDocument[]}

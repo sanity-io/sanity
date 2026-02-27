@@ -4,8 +4,12 @@ import {type RenderCustomMarkers} from 'sanity'
 export const renderCustomMarkers: RenderCustomMarkers = (markers) => {
   return (
     <Stack space={1}>
-      {markers.map((marker, index) => (
-        <Card key={index} padding={2} tone="transparent">
+      {markers.map((marker) => (
+        <Card
+          key={`marker-${marker.type}-${JSON.stringify(marker.path)}`}
+          padding={2}
+          tone="transparent"
+        >
           <Text size={1}>{String(marker.data)}</Text>
         </Card>
       ))}

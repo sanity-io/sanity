@@ -1,0 +1,36 @@
+{
+  "name": "@repo/test-dts-exports",
+  "version": "5.12.0",
+  "private": true,
+  "description": "Checks that we're exporting typings correctly",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "generate:dts-exports": "node generate.mjs",
+    "postgenerate:dts-exports": "oxfmt test/fixtures/**",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sanity/cli": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
+    "@sanity/vision": "workspace:*",
+    "groq": "workspace:*",
+    "sanity": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "ts-morph": "^26.0.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zod": "^4.1.12"
+  }
+}

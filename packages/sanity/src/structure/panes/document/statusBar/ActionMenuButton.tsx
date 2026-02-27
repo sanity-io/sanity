@@ -79,7 +79,6 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
             aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
             data-testid="action-menu-button"
-            size="large"
             tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
           />
         }
@@ -87,11 +86,11 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
           <Menu padding={1}>
             {actionStates.map((actionState, idx) => (
               <ActionMenuListItem
+                // oxlint-disable-next-line no-array-index-key
+                key={idx}
                 actionState={actionState}
                 disabled={disabled}
                 index={idx}
-                // eslint-disable-next-line react/no-array-index-key
-                key={idx}
                 onAction={handleAction}
               />
             ))}

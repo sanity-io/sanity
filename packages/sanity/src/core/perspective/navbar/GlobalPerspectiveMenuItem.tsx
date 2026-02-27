@@ -1,7 +1,8 @@
-import {DotIcon, ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
+import {type ReleaseDocument} from '@sanity/client'
+import {ErrorOutlineIcon, EyeClosedIcon, EyeOpenIcon, LockIcon} from '@sanity/icons'
 // eslint-disable-next-line no-restricted-imports -- custom use for MenuItem & Button not supported by ui-components
 import {Box, Button, Flex, MenuItem, Stack, Text} from '@sanity/ui'
-import {type CSSProperties, forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
+import {forwardRef, type MouseEvent, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
@@ -10,17 +11,18 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useExcludedPerspective} from '../../perspective/useExcludedPerspective'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
-import {isReleaseDocument, type ReleaseDocument} from '../../releases/store/types'
-import {type LATEST} from '../../releases/util/const'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
+import {isReleaseDocument} from '../../releases/store/types'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseTone} from '../../releases/util/getReleaseTone'
 import {
   formatRelativeLocalePublishDate,
   isDraftPerspective,
-  isPublishedPerspective,
   isReleaseScheduledOrScheduling,
 } from '../../releases/util/util'
+import {useWorkspace} from '../../studio/workspace'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {GlobalPerspectiveMenuItemIndicator} from './PerspectiveLayerIndicator'
 
 export interface LayerRange {
@@ -53,21 +55,20 @@ const ToggleLayerButton = styled(Button)<{$visible: boolean}>(
   `,
 )
 
-const ExcludedLayerDot = () => (
-  <Box padding={3}>
-    <Text size={1}>
-      <DotIcon
-        style={
-          {
-            opacity: 0,
-          } as CSSProperties
-        }
-      />
-    </Text>
-  </Box>
-)
-
 type rangePosition = 'first' | 'within' | 'last' | undefined
+const IconWrapperBox = styled(Box)<{$isExcluded: boolean}>(
+  ({$isExcluded}) => css`
+    position: relative;
+    z-index: 1;
+    border-radius: 50%;
+    /* background-color: var(--card-background-color);  */
+    opacity: ${$isExcluded ? 0 : 1};
+    // The icon needs a white background to visually sit on top of the line indicator
+    & svg {
+      background-color: var(--card-bg-color);
+    }
+  `,
+)
 
 export function getRangePosition(range: LayerRange, index: number): rangePosition {
   const {lastIndex} = range
@@ -85,9 +86,18 @@ export const GlobalPerspectiveMenuItem = forwardRef<
   {
     release: ReleaseDocument | 'published' | typeof LATEST
     rangePosition: rangePosition
+    menuItemProps?: ReleasesNavMenuItemPropsGetter
   }
 >((props, ref) => {
   const {release, rangePosition} = props
+
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
+  const defaultPerspective = isDraftModelEnabled ? LATEST : PUBLISHED
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   const setPerspective = useSetPerspective()
   const {toggleExcludedPerspective, isPerspectiveExcluded} = useExcludedPerspective()
@@ -95,20 +105,15 @@ export const GlobalPerspectiveMenuItem = forwardRef<
     ? getReleaseIdFromReleaseDocumentId(release._id)
     : release
 
+  const isDefaultPerspective = release === defaultPerspective
+
   const active = selectedPerspectiveName
     ? releaseId === selectedPerspectiveName
-    : isDraftPerspective(release)
+    : isDefaultPerspective
 
   const isReleasePerspectiveExcluded = isPerspectiveExcluded(releaseId)
 
   const {t} = useTranslation()
-
-  const displayTitle = useMemo(() => {
-    if (isPublishedPerspective(release)) return t('release.navbar.published')
-    if (isDraftPerspective(release)) return t('release.navbar.drafts')
-
-    return release.metadata.title || t('release.placeholder-untitled-release')
-  }, [release, t])
 
   const handleToggleReleaseVisibility = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -132,7 +137,7 @@ export const GlobalPerspectiveMenuItem = forwardRef<
 
   return (
     <GlobalPerspectiveMenuItemIndicator
-      $isDraft={isDraftPerspective(release)}
+      $isDefaultPerspective={isDefaultPerspective}
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
       $inRange={Boolean(rangePosition)}
@@ -142,24 +147,22 @@ export const GlobalPerspectiveMenuItem = forwardRef<
         onClick={handleOnReleaseClick}
         padding={1}
         pressed={active}
+        selected={active}
         data-testid={`release-${releaseId}`}
+        {...props.menuItemProps?.({perspective: release})}
       >
         <Flex align="flex-start" gap={1}>
-          <Box
+          <IconWrapperBox
+            $isExcluded={isReleasePerspectiveExcluded}
             flex="none"
-            style={{
-              position: 'relative',
-              zIndex: 1,
-            }}
+            data-testid="release-indicator-icon"
+            paddingX={3}
+            paddingY={2}
           >
             <Text size={1}>
-              {isReleasePerspectiveExcluded ? (
-                <ExcludedLayerDot />
-              ) : (
-                <ReleaseAvatar tone={getReleaseTone(release)} />
-              )}
+              <ReleaseAvatarIcon release={release} />
             </Text>
-          </Box>
+          </IconWrapperBox>
           <Stack
             flex={1}
             paddingY={2}
@@ -167,12 +170,24 @@ export const GlobalPerspectiveMenuItem = forwardRef<
             space={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
+              maxWidth: '200px',
+              minWidth: 0,
             }}
           >
-            <Flex gap={3} align="center">
-              <Text size={1} weight="medium">
-                {displayTitle}
-              </Text>
+            <Flex gap={3} align="center" style={{minWidth: 0}}>
+              {isReleaseDocument(release) ? (
+                <ReleaseTitle
+                  title={release.metadata.title}
+                  fallback={t('release.placeholder-untitled-release')}
+                  textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+                />
+              ) : (
+                <Text size={1} weight="medium" style={{minWidth: 0}}>
+                  {isDraftPerspective(release)
+                    ? t('release.navbar.drafts')
+                    : t('release.navbar.published')}
+                </Text>
+              )}
               {isReleaseDocument(release) &&
                 typeof release.error !== 'undefined' &&
                 release.state === 'active' && (

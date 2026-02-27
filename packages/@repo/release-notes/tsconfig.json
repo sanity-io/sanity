@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./bin"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "lib": ["es2024"],
+    "noUncheckedIndexedAccess": true
+  }
+}

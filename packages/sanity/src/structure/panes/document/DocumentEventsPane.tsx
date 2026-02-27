@@ -1,4 +1,3 @@
-import {type ReleaseId} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
@@ -43,7 +42,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
 
   const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !editState?.draft
   const {rev, since} = params
-  const historyVersion = params.historyVersion as ReleaseId | undefined
+  const historyVersion = params.historyVersion
 
   const documentId = useMemo(() => {
     if (showingPublishedOnDraft) {
@@ -64,7 +63,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     if (selectedPerspectiveName === 'published') {
       return getPublishedId(options.id)
     }
-    if (selectedReleaseId) {
+    if (selectedPerspectiveName.length !== 0) {
       return getVersionId(options.id, selectedPerspectiveName)
     }
     return options.id
@@ -74,7 +73,6 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     selectedPerspectiveName,
     options.id,
     showingPublishedOnDraft,
-    selectedReleaseId,
   ])
 
   const eventsStore = useEventsStore({documentId, documentType: options.type, rev, since})
@@ -83,7 +81,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     () => ({
       error: eventsStore.error,
       revisionId: eventsStore.revision?.revisionId || null,
-      onOlderRevision: Boolean(eventsStore.revision?.document && eventsStore.revision?.revisionId),
+      onOlderRevision: Boolean(rev && !eventsStore.revision?.loading),
       revisionDocument: eventsStore.revision?.document || null,
       sinceDocument: eventsStore.sinceRevision?.document || null,
       ready: !eventsStore.loading,
@@ -93,7 +91,7 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
           (e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e),
         )?.id || null,
     }),
-    [eventsStore],
+    [eventsStore, rev],
   )
 
   const value = useMemo(() => eventsStore, [eventsStore])

@@ -1,5 +1,5 @@
 import {type Reference} from '@sanity/types'
-import {isValid} from 'date-fns'
+import {isValid} from 'date-fns/isValid'
 
 import {useSchema} from '../../../../../../../hooks'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'

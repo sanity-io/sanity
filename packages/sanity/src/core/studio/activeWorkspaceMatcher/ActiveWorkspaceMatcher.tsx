@@ -64,7 +64,7 @@ export function ActiveWorkspaceMatcher({
     case 'not-found':
       return <NotFoundComponent onNavigateToDefaultWorkspace={handleNavigateToDefaultWorkspace} />
     default:
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TS thinks this will never happen, but the point of the error is if it somehow did
+      // oxlint-disable-next-line no-explicit-any
       throw new Error(`Unknown type: ${(result as any).type}`)
   }
 }

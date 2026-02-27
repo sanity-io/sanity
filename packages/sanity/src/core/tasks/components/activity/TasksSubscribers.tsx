@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {AvatarStack, Flex} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -68,14 +68,14 @@ export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
         {subscriberIds.map((subscriberId) => (
           <motion.div
             key={subscriberId}
-            exit={{opacity: 0, translateX: '2px', scale: 0.9}}
+            exit={{opacity: 0, x: '2px', scale: 0.9}}
             animate={{
               opacity: 1,
-              translateX: 0,
+              x: 0,
               scale: 1,
-              transition: {type: 'just', duration: 0.2},
+              transition: {type: 'spring', visualDuration: 0.2},
             }}
-            initial={{opacity: 0, translateX: '2px', scale: 0.9}}
+            initial={{opacity: 0, x: '2px', scale: 0.9}}
           >
             <TasksUserAvatar user={{id: subscriberId}} size={0} />
           </motion.div>

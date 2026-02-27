@@ -2,7 +2,7 @@ import {type PreviewValue, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {unstable_useValuePreview as useValuePreview} from '../../../../preview/useValuePreview'
+import {useValuePreview} from '../../../../preview/useValuePreview'
 
 interface UseValuePreviewWithFallbackProps {
   schemaType?: SchemaType
@@ -30,7 +30,7 @@ export function useValuePreviewWithFallback(props: UseValuePreviewWithFallbackPr
     (): ReturnType => ({
       ...preview,
       value: {
-        ...(preview?.value || {}),
+        ...preview?.value,
         title: preview?.value?.title || t('preview.default.title-fallback'),
       },
     }),

@@ -1,10 +1,10 @@
-import {act, render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {defineConfig, type PerspectiveContextValue, useSearchState} from 'sanity'
-import {type DocumentListPaneNode, type StructureToolContextValue} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
+import {type DocumentListPaneNode, type StructureToolContextValue} from '../../../types'
 import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {PaneContainer} from '../PaneContainer'
 
@@ -29,7 +29,7 @@ vi.mock('sanity', async (importOriginal) => ({
   useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn(
     (): PerspectiveContextValue => ({
-      perspectiveStack: [],
+      perspectiveStack: ['drafts'],
       excludedPerspectives: [],
       selectedPerspective: 'drafts',
       selectedPerspectiveName: undefined,
@@ -72,7 +72,7 @@ describe('PaneContainer', () => {
       {wrapper},
     )
 
-    await waitFor(() => expect(screen.getByTestId('document-list-pane')).toBeInTheDocument())
+    await screen.findByTestId('document-list-pane')
     expect(screen.queryByTestId('document-sheet-list-pane')).toBeNull()
   })
 

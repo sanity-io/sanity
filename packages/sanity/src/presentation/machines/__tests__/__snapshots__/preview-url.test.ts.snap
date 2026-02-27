@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Preview URL machine > checks permissions > the check permission actor is required 1`] = `[Error: The 'check permission' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'check permission': fromObservable(({input}: {input: CheckPermissionInput}) => ...)}})]`;
+
+exports[`Preview URL machine > preview mode > creates preview url secrets > handles secret expiry 1`] = `"http://localhost:3000/api/preview?sanity-preview-secret=123&sanity-preview-perspective=drafts&sanity-preview-pathname=%2F"`;
+
+exports[`Preview URL machine > preview mode > creates preview url secrets > the create preview secret actor is required 1`] = `[Error: The 'create preview secret' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'create preview secret': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > preview mode > reads shared preview secrets if missing permissions to create preview secrets > the read shared preview secret actor is required 1`] = `[Error: The 'read shared preview secret' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'read shared preview secret': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > preview mode > resolves preview mode options > the resolve preview mode actor is required 1`] = `[Error: The 'resolve preview mode' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve preview mode': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > preview mode > resolves preview mode url > the resolve preview mode url actor is required 1`] = `[Error: The 'resolve preview mode url' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve preview mode url': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow '://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow '://*/foo/bar?foo=bar#hash' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'http://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'https://*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > doesn't allow 'https://username:password@*' 1`] = `[Error: It's insecure to allow any hostname, it could disclose data to a malicious site]`;
+
+exports[`Preview URL machine > resolves allow patterns > the resolve allow patterns actor is required 1`] = `[Error: The 'resolve allow patterns' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve allow pattern': fromPromise(...)}})]`;
+
+exports[`Preview URL machine > resolves initial url > the resolve initial url actor is required 1`] = `[Error: The 'resolve initial url' actor is not implemented. Add it to previewUrlMachine.provide({actors: {'resolve initial url': fromPromise(...)}})]`;

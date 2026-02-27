@@ -1,4 +1,4 @@
-import {subcribeToVercelProtectionBypass} from '@sanity/preview-url-secret/toggle-vercel-protection-bypass'
+import {subscribeToVercelProtectionBypass} from '@sanity/preview-url-secret/toggle-vercel-protection-bypass'
 import {useEffect, useReducer, useState} from 'react'
 import {useClient} from 'sanity'
 
@@ -20,7 +20,7 @@ export function useVercelBypassSecret(): [
   )
 
   useEffect(() => {
-    const unsubscribe = subcribeToVercelProtectionBypass(client, (secret) => {
+    const unsubscribe = subscribeToVercelProtectionBypass(client, (secret) => {
       setVercelProtectionBypassSecret(secret)
       ready()
     })

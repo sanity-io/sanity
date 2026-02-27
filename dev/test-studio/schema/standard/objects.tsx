@@ -64,6 +64,28 @@ export default defineType({
     {name: 'readOnly', title: 'Read only', options: {collapsible: true}},
   ],
   fields: [
+    defineField({
+      name: 'arrayOfObjects',
+      type: 'array',
+      of: [
+        {
+          title: 'Unnamed Object',
+          type: 'object',
+          fields: [
+            {
+              name: 'valueWithNestedValidation',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'someValue',
+              type: 'boolean',
+              initialValue: true,
+            },
+          ],
+        },
+      ],
+    }),
     {
       type: 'object',
       name: 'objectWithColumns',

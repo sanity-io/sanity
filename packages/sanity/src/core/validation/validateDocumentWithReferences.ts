@@ -1,5 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {
+  isGlobalDocumentReference,
   isReference,
   type SanityDocument,
   type Schema,
@@ -18,6 +19,7 @@ import {
   of,
   timer,
 } from 'rxjs'
+import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {
   distinct,
   distinctUntilChanged,
@@ -30,13 +32,12 @@ import {
   skip,
   throttleTime,
 } from 'rxjs/operators'
-import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../config/types'
 import {type LocaleSource} from '../i18n/types'
 import {type DocumentPreviewStore} from '../preview/documentPreviewStore'
-import {getVersionFromId} from '../util/draftUtils'
+import {getVersionFromId} from '../util'
 import {validateDocumentObservable} from './validateDocument'
 
 /**
@@ -57,7 +58,7 @@ function findReferenceIds(obj: any): Set<string> {
   return reduceJSON(
     obj,
     (acc, node) => {
-      if (isReference(node)) {
+      if (isReference(node) && !isGlobalDocumentReference(node)) {
         acc.add(node._ref)
       }
       return acc
@@ -76,7 +77,13 @@ const listenDocumentExists = (
   versionId: string | undefined,
 ): Observable<boolean> =>
   observeDocumentAvailability(id, {version: versionId}).pipe(
-    map(({published, version}) => published.available || version?.available || false),
+    map(({published, version}) => {
+      if (!version?.available && version?.reason === 'VERSION_DELETED') {
+        return false
+      }
+
+      return published.available || version?.available || false
+    }),
   )
 
 // throttle delay for referenced document updates (i.e. time between responding to changes in referenced documents)
@@ -98,31 +105,38 @@ export function validateDocumentWithReferences(
     i18n: LocaleSource
   },
   document$: Observable<SanityDocument | null | undefined>,
+  // whether to require all references to exist as published documents
+  // set to false to allow references to versions as long they exist in the same bundle
+  requirePublishedReferences: boolean,
 ): Observable<ValidationStatus> {
   const referenceIds$ = document$.pipe(
     map((document) => findReferenceIds(document)),
     mergeMap((ids) => from(ids)),
   )
 
-  const versionId$ = document$.pipe(
-    map((doc) => ({versionId: getVersionFromId(doc?._id || '')})),
-    distinctUntilChanged(),
-  )
+  const versionId$ = document$.pipe(distinctUntilChanged())
 
   // Note: we only use this to trigger a re-run of validation when a referenced document is published/unpublished
   const referenceExistence$ = combineLatest([versionId$, referenceIds$]).pipe(
-    groupBy(([_, id]) => id, {duration: () => timer(1000 * 60 * 30)}),
-    mergeMap((id$) =>
-      id$.pipe(
+    groupBy(([_, referenceId]) => referenceId, {duration: () => timer(1000 * 60 * 30)}),
+    mergeMap((refIds$) =>
+      refIds$.pipe(
         distinct(),
-        mergeMap(([{versionId}, id]) =>
-          listenDocumentExists(ctx.observeDocumentPairAvailability, id, versionId).pipe(
-            map(
-              // eslint-disable-next-line max-nested-callbacks
-              (result) => [id, result] as const,
-            ),
-          ),
-        ),
+        mergeMap(([document, referenceId]) => {
+          // listen for reference document existence
+          // if we're require the referenced document to be published: pass undefined as version id
+          // as that will check for existence of published document
+          // Otherwise, pass the version of the referencing document
+          // to validate that the version exists in the same bundle
+          const versionId = requirePublishedReferences
+            ? undefined
+            : getVersionFromId(document?._id || '')
+          return listenDocumentExists(
+            ctx.observeDocumentPairAvailability,
+            referenceId,
+            versionId,
+          ).pipe(map((result) => [referenceId, result] as const))
+        }),
       ),
     ),
     scan((acc: Record<string, boolean>, [id, result]): Record<string, boolean> => {

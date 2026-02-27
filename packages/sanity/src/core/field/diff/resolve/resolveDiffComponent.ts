@@ -45,7 +45,6 @@ function tryResolve(
 
   for (const resolver of resolvers) {
     if (typeof resolver !== 'function') {
-      // eslint-disable-next-line no-console
       console.error('Diff component resolver is not a function: ', resolver)
       continue
     }

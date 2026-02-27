@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {keyBy} from 'lodash'
+import {keyBy} from 'lodash-es'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 

@@ -6,15 +6,15 @@ import {Button, type ButtonProps} from '../../ui-components'
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
   ['aria-label']: HTMLProps<HTMLButtonElement>['aria-label']
-  forwardedAs?: string
-  disabled?: boolean | {reason: ReactNode}
-  mode?: ButtonProps['mode']
-  iconRight?: undefined
+  'forwardedAs'?: string
+  'disabled'?: boolean | {reason: ReactNode}
+  'mode'?: ButtonProps['mode']
+  'iconRight'?: undefined
 }
 
 const StyledButton = styled(Button)`
   position: relative;
-  // The children in button is rendered inside a span, we need to absolutely position it.
+  /* The children in button is rendered inside a span, we need to absolutely position it. */
   & > span:nth-child(2) {
     position: absolute;
     top: 6px;
@@ -37,7 +37,7 @@ export const StatusButton = forwardRef(function StatusButton(
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
-    'disabled': disabledProp,
+    disabled: disabledProp,
     icon,
     'aria-label': label,
     mode = 'bleed',

@@ -35,6 +35,16 @@ export default {
   'presentation-error.label': 'Error message',
   /** The text shown when the preview frame cannot connect to Presentation */
   'preview-frame.connection.error.text': 'Could not connect to the preview',
+  /** The title of the error toast that shows when the preview iframe times out while waiting for a connection over comlink to establish, and the root cause is discovered to be that the iframe is loading on an URL origin that's not in the allow list. */
+  'preview-frame.configuration.error.title': 'Preview URL origin mismatch',
+  /** The toast description for the error message explaining that the iframe is blocked from loading due to a security mismatch. */
+  'preview-frame.configuration.error.description':
+    'The preview iframe is configured to load <Code>{{targetOrigin}}</Code>, but the reported origin is <Code>{{reportedOrigin}}</Code>. Presentation Tool is unable to connect to unknown origins for security purposes. Update your <Code>presentationTool.allowOrigins</Code> configuration to allow connecting to Visual Editing and Loaders.',
+  /** The title of the error toast that shows when attempting to navigate to a preview URL origin that's not in the allow list. */
+  'preview-search-param.configuration.error.title': 'Blocked preview URL',
+  /** The toast description for the error message explaining that the iframe won't navigate to the new preview URL due to an URL origin security mismatch. */
+  'preview-search-param.configuration.error.description':
+    'The router wants to navigate to <Code>{{previewSearchParam}}</Code>, but the origin <Code>{{blockedOrigin}}</Code> is not allowed. Update your <Code>presentationTool.allowOrigins</Code> configuration to allow it.',
   /** The text shown on the button for dismissing the error overlay after a timeout */
   'preview-frame.continue-button.text': 'Continue anyway',
   /** The label for the loader's connection status */

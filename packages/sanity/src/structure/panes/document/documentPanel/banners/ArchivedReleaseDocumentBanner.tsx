@@ -1,14 +1,17 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionInlineBadge,
+  isCardinalityOneRelease,
+  ReleaseTitle,
   Translate,
   useArchivedReleases,
   useTranslation,
 } from 'sanity'
-import {structureLocaleNamespace, usePaneRouter} from 'sanity/structure'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 
 export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
@@ -32,37 +35,53 @@ export function ArchivedReleaseDocumentBanner(): React.JSX.Element {
     )
   }, [archivedReleases, params?.historyVersion])
 
-  const description =
-    release?.state === 'published'
-      ? 'banners.published-release.description'
-      : 'banners.archived-release.description'
+  const description = useMemo(() => {
+    if (release?.state === 'published') {
+      return 'banners.published-release.description'
+    }
 
-  const title = release?.metadata.title || tCore('release.placeholder-untitled-release')
+    if (release && isCardinalityOneRelease(release)) {
+      return 'banners.archived-scheduled-draft.description'
+    }
+
+    return 'banners.archived-release.description'
+  }, [release])
 
   return (
     <Banner
       tone="caution"
-      paddingY={2}
       content={
-        <Flex align="center" justify="space-between" gap={1} flex={1}>
-          <Text size={1}>
-            <Translate
-              t={t}
-              i18nKey={description}
-              values={{
-                title,
-              }}
-              components={{
-                VersionBadge: getVersionInlineBadge(release),
-              }}
-            />
-          </Text>
-        </Flex>
+        <Text size={1}>
+          <ReleaseTitle
+            title={release?.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+          >
+            {({displayTitle}) => (
+              <Translate
+                t={t}
+                i18nKey={description}
+                values={{
+                  title: displayTitle,
+                }}
+                components={{
+                  VersionBadge: ({children}) => {
+                    const BadgeWithTone = getVersionInlineBadge(release)
+                    return <BadgeWithTone>{children}</BadgeWithTone>
+                  },
+                }}
+              />
+            )}
+          </ReleaseTitle>
+        </Text>
       }
-      action={{
-        text: 'Go back to published version',
-        onClick: handleGoBack,
-      }}
+      action={
+        params?.archivedRelease
+          ? undefined
+          : {
+              text: 'Go back to published version',
+              onClick: handleGoBack,
+            }
+      }
     />
   )
 }

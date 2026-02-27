@@ -22,7 +22,6 @@ import {
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
-import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 
 interface UseTimelineControllerOpts {
   documentId: string
@@ -35,7 +34,7 @@ interface UseTimelineControllerOpts {
 /** @internal */
 export interface TimelineState {
   chunks: Chunk[]
-  diff: ObjectDiff<Annotation, Record<string, any>> | null
+  diff: ObjectDiff<Annotation> | null
   /** null is used here when the chunks hasn't loaded / is not known */
   hasMoreChunks: boolean | null
   isLoading: boolean
@@ -139,7 +138,7 @@ export function useTimelineStore({
     controller.setRange(since || null, rev || null)
     timelineController$.next(controller)
 
-    controller.handler = (err, innerController) => {
+    controller.setHandler((err, innerController) => {
       if (err) {
         timelineController$.error(err)
       } else {
@@ -154,16 +153,15 @@ export function useTimelineStore({
           timelineController$.next(innerController)
         }, 0)
       }
-    }
+    })
     controller.resume()
     return () => controller.suspend()
   }, [rev, since, controller, timelineController$])
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
 
   /**
    * Fetch document snapshots and update the mutable controller.
@@ -217,7 +215,7 @@ export function useTimelineStore({
                 chunks,
                 diff: innerController.sinceTime ? innerController.currentObjectDiff() : null,
                 isLoading: innerController.isLoading,
-                isPristine: timelineReady ? chunks.length === 0 && hasMoreChunks === false : null,
+                isPristine: timelineReady ? chunks.length === 0 && !hasMoreChunks : null,
                 hasMoreChunks: !innerController.timeline.reachedEarliestEntry,
                 lastNonDeletedRevId: lastNonDeletedChunk?.[0]?.id,
                 onOlderRevision: innerController.onOlderRevision(),

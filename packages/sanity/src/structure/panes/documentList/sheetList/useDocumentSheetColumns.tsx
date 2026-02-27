@@ -18,6 +18,7 @@ import {
   type SanityDocument,
   type SchemaType,
   useDocumentPreviewStore,
+  useDocumentVersionInfo,
 } from 'sanity'
 
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
@@ -33,15 +34,16 @@ const PreviewCell = (props: {
   }
 }) => {
   const {documentPreviewStore, row, schemaType} = props
-  const title = 'Document title'
   const previewStateObservable = useMemo(
-    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id, title),
+    () => getPreviewStateObservable(documentPreviewStore, schemaType, row.original._id),
     [documentPreviewStore, row.original._id, schemaType],
   )
-  const {draft, published, isLoading} = useObservable(previewStateObservable, {
-    draft: null,
+
+  const versionsInfo = useDocumentVersionInfo(row.original._id)
+
+  const {snapshot, isLoading} = useObservable(previewStateObservable, {
+    snapshot: null,
     isLoading: true,
-    published: null,
   })
   if (isLoading) {
     return (
@@ -50,10 +52,15 @@ const PreviewCell = (props: {
       </Text>
     )
   }
-  const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
+  const displayValue = (snapshot?.title ?? 'Untitled') as string
+
   return (
     <Flex align="center" gap={3}>
-      <DocumentStatusIndicator draft={draft} published={published} versions={undefined} />
+      <DocumentStatusIndicator
+        draft={versionsInfo.draft}
+        published={versionsInfo.published}
+        versions={undefined}
+      />
       <Text size={1}>{displayValue}</Text>
     </Flex>
   )
@@ -62,10 +69,7 @@ const PreviewCell = (props: {
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 
-type Columns = (
-  | AccessorKeyColumnDef<SanityDocument, unknown>
-  | GroupColumnDef<SanityDocument, unknown>
-)[]
+type Columns = (AccessorKeyColumnDef<SanityDocument> | GroupColumnDef<SanityDocument>)[]
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
   return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
@@ -100,16 +104,16 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
 // Type guard function to check if a column is of type GroupColumnDef
 function isAccessorKeyColumnDef(
   column: Columns[number],
-): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+): column is AccessorKeyColumnDef<SanityDocument> {
   return 'accessorKey' in column
 }
 function isGroupColumnDef(
-  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
-): column is GroupColumnDef<SanityDocument, unknown> {
+  column: AccessorKeyColumnDef<SanityDocument> | GroupColumnDef<SanityDocument>,
+): column is GroupColumnDef<SanityDocument> {
   return 'columns' in column
 }
 
-const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument>[] => {
   return cols.flatMap((col) => {
     if (isAccessorKeyColumnDef(col)) {
       return col

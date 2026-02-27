@@ -1,71 +1,62 @@
 import {type SanityDocument} from '@sanity/types'
 import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
-import {
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react'
+import {type Ref, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {useClient} from 'sanity'
 
-export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
-  props: {itemId: string},
-  ref: ForwardedRef<{actionHandlers: Record<string, () => void>}>,
-) {
-  const {itemId} = props
+export function JsonDocumentDump(props: {
+  itemId: string
+  ref: Ref<{actionHandlers: Record<string, () => void>}>
+}) {
+  const {itemId, ref} = props
+  const draftId = `drafts.${itemId}`
+  const query = '*[_id in [$itemId, $draftId]]'
+
   const client = useClient({apiVersion: '2022-09-09'})
-  const [state, setState] = useState<{document?: SanityDocument; isLoading: boolean}>({
-    isLoading: true,
-  })
-  const {isLoading, document} = state
+  const [isLoading, setIsLoading] = useState(true)
+  const [document, setDocument] = useState<SanityDocument | null>(null)
+  const subscriptionRef = useRef<Subscription | undefined>(undefined)
 
-  const sub1Ref = useRef<Subscription | undefined>()
-  const sub2Ref = useRef<Subscription | undefined>()
-
-  const setup = useCallback(() => {
-    setState({isLoading: true, document: undefined})
-
-    const draftId = `drafts.${itemId}`
-    const query = '*[_id in [$itemId, $draftId]]'
-    const params = {itemId, draftId}
-
-    sub1Ref.current = client.observable
-      .fetch(`${query} | order(_updatedAt desc) [0]`, params)
-      .subscribe((nextDocument) =>
-        setState({document: nextDocument || undefined, isLoading: false}),
-      )
-
-    sub2Ref.current = client.observable
-      .listen(query, params, {includeAllVersions: true})
-      .subscribe((mut) => setState({document: mut.result || undefined, isLoading: false}))
-  }, [client, itemId])
-
-  const teardown = useCallback(() => {
-    sub1Ref.current?.unsubscribe()
-    sub2Ref.current?.unsubscribe()
-  }, [])
+  const fetchDocument = useCallback(() => {
+    return client.observable
+      .fetch(`${query} | order(_updatedAt desc) [0]`, {itemId, draftId})
+      .subscribe((nextDocument) => {
+        setDocument(nextDocument || null)
+        setIsLoading(false)
+      })
+  }, [client.observable, draftId, itemId])
 
   useImperativeHandle(
     ref,
     () => ({
       actionHandlers: {
         reload: () => {
-          teardown()
-          setup()
+          subscriptionRef.current?.unsubscribe()
+          setIsLoading(true)
+          subscriptionRef.current = fetchDocument()
         },
       },
     }),
-    [setup, teardown],
+    [fetchDocument],
   )
 
   useEffect(() => {
-    setup()
-    return () => teardown()
-  }, [setup, teardown])
+    const subscription = client.observable
+      .listen(query, {itemId, draftId}, {includeAllVersions: true})
+      .subscribe((mut) => {
+        setDocument(mut.result || null)
+      })
+    return () => subscription.unsubscribe()
+  }, [client.observable, draftId, itemId])
+
+  const hasDocument = document !== null
+  useEffect(() => {
+    if (hasDocument) return undefined
+    const subscription = fetchDocument()
+    subscriptionRef.current = subscription
+
+    return () => subscription.unsubscribe()
+  }, [fetchDocument, hasDocument])
 
   if (isLoading) {
     return (
@@ -95,4 +86,4 @@ export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
       </Code>
     </Box>
   )
-})
+}

@@ -47,7 +47,7 @@ const getDocumentsCommand: CliCommandDefinition<GetDocumentFlags> = {
 
       output.print(pretty ? colorizeJson(doc, chalk) : JSON.stringify(doc, null, 2))
     } catch (err) {
-      throw new Error(`Failed to fetch document:\n${err.message}`)
+      throw new Error(`Failed to fetch document:\n${err.message}`, {cause: err})
     }
   },
 }

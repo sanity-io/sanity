@@ -1,0 +1,25 @@
+{
+  "name": "product-mapping",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "name": "product-mapping",
+    "type": "sanity.function.document",
+    "src": "./functions/product-mapping",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create",
+        "update"
+      ],
+      "filter": "_type == 'product' && (delta::changedAny(store.tags) || (delta::operation() == 'create' && defined(store.tags)))",
+      "projection": "{_id, _type, store, colorVariant, productMap, 'operation': delta::operation()}"
+    }
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}

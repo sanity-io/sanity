@@ -4,7 +4,7 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
-import {readPackageJson} from './readPackageJson'
+import {readPackageJson, readPackageManifest} from './readPackageManifest'
 
 interface PackageInfo {
   name: string
@@ -19,17 +19,17 @@ interface PackageInfo {
 // NOTE: when doing changes here, also remember to update versions in help docs at
 // https://sanity.io/admin/structure/docs;helpArticle;upgrade-packages
 const PACKAGES = [
-  {name: 'react', supported: ['^18 || ^19'], deprecatedBelow: null},
-  {name: 'react-dom', supported: ['^18 || ^19'], deprecatedBelow: null},
+  {name: 'react', supported: ['^19.2.2'], deprecatedBelow: null},
+  {name: 'react-dom', supported: ['^19.2.2'], deprecatedBelow: null},
   {name: 'styled-components', supported: ['^6'], deprecatedBelow: null},
-  {name: '@sanity/ui', supported: ['^2'], deprecatedBelow: null},
+  {name: '@sanity/ui', supported: ['^2', '^3'], deprecatedBelow: '^3'},
 ]
 
-export function checkStudioDependencyVersions(workDir: string): void {
-  const manifest = readPackageJson(path.join(workDir, 'package.json'))
+export async function checkStudioDependencyVersions(workDir: string): Promise<void> {
+  const manifest = await readPackageJson(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
 
-  const packageInfo = PACKAGES.map((pkg): PackageInfo | false => {
+  const packageInfo = PACKAGES.map(async (pkg): Promise<PackageInfo | false> => {
     const dependency = dependencies[pkg.name]
     if (!dependency) {
       return false
@@ -37,7 +37,9 @@ export function checkStudioDependencyVersions(workDir: string): void {
 
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg.name, 'package.json'))
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, ''),
+      manifestPath
+        ? (await readPackageManifest(manifestPath)).version
+        : dependency.replace(/[\D.]/g, ''),
     )
 
     if (!installed) {
@@ -49,11 +51,11 @@ export function checkStudioDependencyVersions(workDir: string): void {
     // "Untested" is usually the case where we have not upgraded the React version requirements
     // before a release, but given that is usually works in a backwards-compatible way, we want
     // to indicate that it's _untested_, not necessarily _unsupported_
-    // Ex: Installed is react@19.0.0, but we've only _tested_ with react@^18
+    // Ex: Installed is react@20.0.0, but we've only _tested_ with react@^19
     const isUntested = !semver.satisfies(installed, supported) && semver.gtr(installed, supported)
 
     // "Unsupported" in that the installed version is _lower than_ the minimum version
-    // Ex: Installed is react@15.0.0, but we require react@^16
+    // Ex: Installed is react@18.0.0, but we require react@^19.2
     const isUnsupported = !semver.satisfies(installed, supported) && !isUntested
 
     // "Deprecated" in that we will stop supporting it at some point in the near future,
@@ -69,13 +71,14 @@ export function checkStudioDependencyVersions(workDir: string): void {
     }
   })
 
-  const installedPackages = packageInfo.filter((inp): inp is PackageInfo => inp !== false)
+  const installedPackages = (await Promise.all(packageInfo)).filter(
+    (inp): inp is PackageInfo => inp !== false,
+  )
   const unsupported = installedPackages.filter((pkg) => pkg.isUnsupported)
   const deprecated = installedPackages.filter((pkg) => !pkg.isUnsupported && pkg.isDeprecated)
   const untested = installedPackages.filter((pkg) => pkg.isUntested)
 
   if (deprecated.length > 0) {
-    // eslint-disable-next-line no-console
     console.warn(`
 [WARN] The following package versions have been deprecated and should be upgraded:
 
@@ -88,7 +91,6 @@ Support for these will be removed in a future release!
   }
 
   if (untested.length > 0) {
-    // eslint-disable-next-line no-console
     console.warn(`
 [WARN] The following package versions have not yet been marked as supported:
 
@@ -101,7 +103,6 @@ You _may_ encounter bugs while using these versions.
   }
 
   if (unsupported.length > 0) {
-    // eslint-disable-next-line no-console
     console.error(`
 [ERROR] The following package versions are no longer supported and needs to be upgraded:
 
@@ -127,11 +128,12 @@ function listPackages(pkgs: PackageInfo[]) {
 function getUpgradeInstructions(pkgs: PackageInfo[]) {
   const inst = pkgs
     .map((pkg) => {
-      const [highestSupported] = pkg.supported
+      const [recommendedVersion] = pkg.supported
+        .concat(pkg.deprecatedBelow || [])
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@${highestSupported}"`
+      return `"${pkg.name}@^${recommendedVersion}"`
     })
     .join(' ')
 
@@ -158,7 +160,7 @@ function getDowngradeInstructions(pkgs: PackageInfo[]) {
         .map((version) => (semver.coerce(version) || {version: ''}).version)
         .sort(semver.rcompare)
 
-      return `"${pkg.name}@${highestSupported}"`
+      return `"${pkg.name}@^${highestSupported}"`
     })
     .join(' ')
 

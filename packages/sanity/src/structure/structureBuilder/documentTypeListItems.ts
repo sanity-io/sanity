@@ -1,6 +1,6 @@
 import {StackCompactIcon, StackIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 
 import {structureLocaleNamespace} from '../i18n'
 import {type DocumentListBuilder} from './DocumentList'

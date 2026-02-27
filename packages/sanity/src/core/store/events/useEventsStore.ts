@@ -8,12 +8,12 @@ import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
-import {fetchFeatureToggle} from '../_legacy/document/document-pair/utils/fetchFeatureToggle'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {
   type DocumentGroupEvent,
   type EventsStore,
+  isCreateDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
@@ -42,7 +42,7 @@ export function useEventsStore({
 }: {
   documentId: string
   documentType: string
-  rev?: string | '@lastEdited'
+  rev?: string | '@lastEdited' | '@lastPublished'
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
@@ -51,9 +51,8 @@ export function useEventsStore({
 
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
-    // If it's explicitly set, let it override the feature toggle
-    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
-  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+    return typeof configFlag === 'boolean' ? of(configFlag) : of(true)
+  }, [workspace.__internal_serverDocumentActions?.enabled])
   const schema = useSchema()
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const isLiveEdit = Boolean(schemaType?.liveEdit)
@@ -89,11 +88,29 @@ export function useEventsStore({
       return publishEvent?.id || null
     }
     if (rev === '@lastEdited') {
-      const editEvent = events.find((event) => isEditDocumentVersionEvent(event))
+      const editEvent = events.find(isEditDocumentVersionEvent)
       if (editEvent) return editEvent.revisionId
     }
+    if (rev?.startsWith('@release:')) {
+      const releaseId = rev.split(':')[1]
+      const releaseEvent = events.find(
+        (event) => isPublishDocumentVersionEvent(event) && event.releaseId === releaseId,
+      )
+      if (releaseEvent) return releaseEvent.id
+      if (events.length > 0 && !loading) eventsStore.loadMoreEvents()
+    }
+
+    if (!rev) {
+      const [lastEvent] = events
+
+      // if the most recent event was a publish, use that event as the revision
+      if (lastEvent && isPublishDocumentVersionEvent(lastEvent)) {
+        return lastEvent.id
+      }
+    }
+
     return rev
-  }, [events, rev])
+  }, [events, rev, eventsStore, loading])
 
   const revision$ = useMemo(
     () =>
@@ -107,9 +124,16 @@ export function useEventsStore({
     if (!events) return null
 
     if (since === '@lastPublished' || !since) {
-      // Skip the first published, the since and rev cannot be the same.
-      const lastPublishedId = events.slice(1).find(isPublishDocumentVersionEvent)?.id
+      const revisionIndex = events.findIndex((e) => e.id === revisionId)
+      // Skip the revision event and find the next published event
+      const lastPublishedId = events
+        .slice(revisionIndex + 1)
+        .find(isPublishDocumentVersionEvent)?.id
       if (lastPublishedId) return lastPublishedId
+
+      // If it doesn't have a published event used the creation event as the since.
+      const creationEvent = events.find(isCreateDocumentVersionEvent)
+      if (creationEvent) return creationEvent.id
     }
 
     // rev has not been selected, the is seeing the last version of the document, select the event that comes after
@@ -173,7 +197,7 @@ export function useEventsStore({
   const findRangeForSince = useCallback(
     (nextSince: string): [string | null, string | null] => {
       if (!events) return [null, null]
-      if (!revisionId) return [nextSince, null]
+      if (!rev || !revisionId) return [nextSince, null]
       const revisionIndex = events.findIndex((event) => event.id === revisionId)
       const sinceIndex = events.findIndex((event) => event.id === nextSince)
       if (sinceIndex === -1 || revisionIndex === -1) return [nextSince, null]
@@ -181,7 +205,7 @@ export function useEventsStore({
       if (sinceIndex === revisionIndex) return [nextSince, null]
       return [nextSince, revisionId]
     },
-    [events, revisionId],
+    [events, rev, revisionId],
   )
 
   return {

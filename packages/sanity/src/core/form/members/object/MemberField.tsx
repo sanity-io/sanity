@@ -12,7 +12,12 @@ import {
 } from '../../types'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
-import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'
+import {
+  isMemberArrayOfObjects,
+  isMemberArrayOfPrimitives,
+  isMemberObject,
+  isMemberPrimitive,
+} from './fields/asserters'
 import {ObjectField} from './fields/ObjectField'
 import {PrimitiveField} from './fields/PrimitiveField'
 
@@ -88,5 +93,9 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
     )
   }
 
-  return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
+  if (isMemberPrimitive(member)) {
+    return <PrimitiveField member={member} renderField={renderField} renderInput={renderInput} />
+  }
+
+  return null
 })

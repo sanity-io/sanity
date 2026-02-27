@@ -1,6 +1,6 @@
 import {type NumberSchemaType} from '@sanity/types'
 
-import {NumberInput} from '../../inputs/NumberInput'
+import {NumberInput} from '../../inputs/NumberInput/NumberInput'
 import {SelectInput} from '../../inputs/SelectInput'
 import {getOption} from './helpers'
 

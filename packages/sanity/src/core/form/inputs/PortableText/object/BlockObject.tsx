@@ -1,6 +1,11 @@
-/* eslint-disable complexity */
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
-import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
+import {
+  isImage,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type UploadState,
+} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
@@ -14,11 +19,13 @@ import {
 } from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {UPLOAD_STATUS_KEY} from '../../../studio/uploads/constants'
 import {
   type BlockProps,
   type RenderAnnotationCallback,
@@ -34,6 +41,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -105,9 +113,13 @@ export function BlockObject(props: BlockObjectProps) {
   } = props
   const {onChange} = useFormCallbacks()
   const {Markers} = useFormBuilder().__internal.components
-  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
+  const hoveredChange = useHoveredChange()
+  const changeHovered =
+    hoveredChange && pathToString(hoveredChange.path).startsWith(pathToString(path))
+
   const markers = usePortableTextMarkers(path)
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const isDeleting = useRef<boolean>(false)
@@ -119,9 +131,6 @@ export function BlockObject(props: BlockObjectProps) {
     }),
     [relativePath],
   )
-
-  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
-  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
@@ -146,9 +155,8 @@ export function BlockObject(props: BlockObjectProps) {
       PortableTextEditor.delete(editor, selfSelection, {mode: 'blocks'})
     } catch (err) {
       console.error(err)
-    } finally {
-      isDeleting.current = true
     }
+    isDeleting.current = true
   }, [editor, selfSelection])
 
   // Focus the editor if this object is removed because it was deleted.
@@ -183,7 +191,7 @@ export function BlockObject(props: BlockObjectProps) {
   }, [isFullscreen, renderBlockActions])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
-  const parentSchemaType = editor.schemaTypes.portableText
+  const parentSchemaType = schemaTypes.portableText
   const hasMarkers = Boolean(markers.length > 0)
 
   const presence = useChildPresence(path, true)
@@ -214,11 +222,12 @@ export function BlockObject(props: BlockObjectProps) {
   const nodePath = memberItem?.node.path || EMPTY_ARRAY
   const referenceElement = divElement
 
-  const componentProps: BlockProps = useMemo(
+  const componentProps = useMemo(
     () => ({
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
       __unstable_referenceElement: referenceElement,
+      changed: memberItem?.member.item.changed ?? false,
       children: input,
       focused,
       markers,
@@ -246,9 +255,11 @@ export function BlockObject(props: BlockObjectProps) {
     }),
     [
       floatingBoundary,
+      referenceBoundary,
       referenceElement,
       input,
       focused,
+      memberItem?.member.item.changed,
       markers,
       onClose,
       onOpen,
@@ -259,7 +270,6 @@ export function BlockObject(props: BlockObjectProps) {
       nodePath,
       rootPresence,
       readOnly,
-      referenceBoundary,
       renderAnnotation,
       renderBlock,
       renderField,
@@ -287,77 +297,64 @@ export function BlockObject(props: BlockObjectProps) {
     [memberItem, setElementRef, setDivElement],
   )
 
-  return useMemo(
-    () => (
-      <Box ref={setRef} contentEditable={false}>
-        <Flex paddingBottom={1} marginY={3} style={debugRender()}>
-          <PreviewContainer {...innerPaddingProps}>
-            <Box flex={1}>
-              <Tooltip
-                placement="top"
-                portal="editor"
-                // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
-                disabled={isOpen ? true : !tooltipEnabled}
-                content={toolTipContent}
-              >
-                <div>{renderBlock && renderBlock(componentProps)}</div>
-              </Tooltip>
-            </Box>
+  return (
+    <Box ref={setRef} contentEditable={false}>
+      <Flex paddingBottom={1} marginY={3} style={debugRender()}>
+        <PreviewContainer {...innerPaddingProps}>
+          <Box flex={1}>
+            <Tooltip
+              placement="top"
+              portal="editor"
+              // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
+              disabled={isOpen ? true : !tooltipEnabled}
+              content={toolTipContent}
+            >
+              <div>
+                {renderBlock && <RenderBlock {...componentProps} renderBlock={renderBlock} />}
+              </div>
+            </Tooltip>
+          </Box>
 
-            {blockActionsEnabled && (
-              <BlockActionsOuter contentEditable={false} marginRight={3}>
-                <BlockActionsInner>
-                  {focused && (
-                    <BlockActions
-                      block={value}
-                      onChange={onChange}
-                      renderBlockActions={renderBlockActions}
-                    />
-                  )}
-                </BlockActionsInner>
-              </BlockActionsOuter>
-            )}
+          {blockActionsEnabled && (
+            <BlockActionsOuter contentEditable={false} marginRight={3}>
+              <BlockActionsInner>
+                {focused && (
+                  <BlockActions
+                    block={value}
+                    onChange={onChange}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
 
-            {changeIndicatorVisible && (
-              <ChangeIndicatorWrapper
-                $hasChanges={memberItem.member.item.changed}
-                contentEditable={false}
-                onMouseEnter={handleChangeIndicatorMouseEnter}
-                onMouseLeave={handleChangeIndicatorMouseLeave}
-              >
-                <StyledChangeIndicatorWithProvidedFullPath
-                  hasFocus={focused}
-                  isChanged={memberItem.member.item.changed}
-                  path={memberItem.member.item.path}
-                  withHoverEffect={false}
-                />
-              </ChangeIndicatorWrapper>
-            )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-          </PreviewContainer>
-        </Flex>
-      </Box>
-    ),
-    [
-      blockActionsEnabled,
-      changeIndicatorVisible,
-      componentProps,
-      focused,
-      handleChangeIndicatorMouseLeave,
-      handleChangeIndicatorMouseEnter,
-      innerPaddingProps,
-      memberItem,
-      onChange,
-      renderBlock,
-      renderBlockActions,
-      reviewChangesHovered,
-      setRef,
-      toolTipContent,
-      tooltipEnabled,
-      value,
-      isOpen,
-    ],
+          {changeIndicatorVisible && (
+            <ChangeIndicatorWrapper
+              $hasChanges={memberItem.member.item.changed}
+              contentEditable={false}
+            >
+              <StyledChangeIndicatorWithProvidedFullPath
+                hasFocus={focused}
+                isChanged={memberItem.member.item.changed}
+                path={memberItem.member.item.path}
+                withHoverEffect={false}
+              />
+            </ChangeIndicatorWrapper>
+          )}
+          {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
+        </PreviewContainer>
+      </Flex>
+    </Box>
   )
+}
+
+// Workaround for React Compiler being very strict on refs
+function RenderBlock(
+  props: Omit<BlockProps, 'renderDefault'> & {renderBlock: RenderBlockCallback},
+) {
+  const {renderBlock, ...componentProps} = props
+  return renderBlock(componentProps)
 }
 
 export const DefaultBlockObjectComponent = (props: BlockProps) => {
@@ -387,8 +384,12 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const hasMarkers = Boolean(markers.length > 0)
   const tone = selected || focused ? 'primary' : 'default'
 
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
+
   const handleDoubleClickToOpen = useCallback(
-    (e: MouseEvent<Element, globalThis.MouseEvent>) => {
+    (e: MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
       onOpen()
@@ -424,6 +425,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
               value={value}
             />
           ),
+          progress: uploadProgress,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,
           skipVisibilityCheck: true,

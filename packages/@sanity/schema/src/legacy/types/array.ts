@@ -1,7 +1,7 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -21,9 +21,11 @@ export const ArrayType = {
       type: ARRAY_CORE,
     })
     lazyGetter(parsed, 'of', () => {
-      return subTypeDef.of.map((ofTypeDef: any) => {
-        return createMemberType(ofTypeDef)
-      })
+      return subTypeDef.of.map((ofTypeDef: any) => createMemberType.cached(ofTypeDef))
+    })
+    lazyGetter(parsed, OWN_PROPS_NAME, () => ({...subTypeDef, of: parsed.of}), {
+      enumerable: false,
+      writable: false,
     })
 
     return subtype(parsed)
@@ -37,9 +39,11 @@ export const ArrayType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const ownProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, ownProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, ownProps)
           return subtype(current)
         },
       }

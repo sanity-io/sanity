@@ -1,14 +1,14 @@
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioNames, testClient} from './shared/environment'
 
 describeCliTest('CLI: `sanity dataset`', () => {
-  describe.each(studioVersions)('%s', (version) => {
-    const testRunArgs = getTestRunArgs(version)
+  describe.each(studioNames)('%s', (studioName) => {
+    const testRunArgs = getTestRunArgs()
 
     testConcurrent('dataset create', async () => {
-      const result = await runSanityCmdCommand(version, [
+      const result = await runSanityCmdCommand(studioName, [
         'dataset',
         'create',
         testRunArgs.dataset,
@@ -25,7 +25,7 @@ describeCliTest('CLI: `sanity dataset`', () => {
     })
 
     testConcurrent('dataset list', async () => {
-      const result = await runSanityCmdCommand(version, ['dataset', 'list'])
+      const result = await runSanityCmdCommand(studioName, ['dataset', 'list'])
 
       expect(result.stdout.split('\n')).toContain('production')
       expect(result.code).toBe(0)
@@ -33,7 +33,7 @@ describeCliTest('CLI: `sanity dataset`', () => {
 
     testConcurrent('dataset visibility', async () => {
       // get
-      let result = await runSanityCmdCommand(version, [
+      let result = await runSanityCmdCommand(studioName, [
         'dataset',
         'visibility',
         'get',
@@ -43,7 +43,7 @@ describeCliTest('CLI: `sanity dataset`', () => {
       expect(result.code).toBe(0)
 
       // set
-      result = await runSanityCmdCommand(version, [
+      result = await runSanityCmdCommand(studioName, [
         'dataset',
         'visibility',
         'set',
@@ -54,7 +54,7 @@ describeCliTest('CLI: `sanity dataset`', () => {
       expect(result.code).toBe(0)
 
       // get
-      result = await runSanityCmdCommand(version, [
+      result = await runSanityCmdCommand(studioName, [
         'dataset',
         'visibility',
         'get',

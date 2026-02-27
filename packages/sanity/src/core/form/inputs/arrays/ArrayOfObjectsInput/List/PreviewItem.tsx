@@ -1,6 +1,5 @@
-/* eslint-disable no-nested-ternary, react/jsx-no-bind */
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 
@@ -11,15 +10,20 @@ import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
 import {getSchemaTypeTitle} from '../../../../../schema'
-import {FormFieldValidationStatus} from '../../../../components'
+import {EnhancedObjectDialog, FormFieldValidationStatus} from '../../../../components'
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {
+  EnhancedObjectDialogProvider,
+  useEnhancedObjectDialog,
+} from '../../../../studio/tree-editing'
+import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
+import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
@@ -67,15 +71,18 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = arrayValidation?.maxReachedReason
 
-  const treeEditing = useTreeEditingEnabled()
-  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
-  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
 
   // The edit portal should open if the item is open and:
-  // - tree array editing is disabled
-  // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!treeEditing.enabled || legacyEditing)
+  // - EnhancedObjectDialog is disabled
+  // - the EnhancedObjectDialog is not available
+  const openPortal = open && !enhancedObjectDialogEnabled
+
+  const openEnhancedDialog = open && enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -88,8 +95,14 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     [previewCardElement],
   )
 
+  // An item may be focused whilst it only exists in a virtualized list, e.g. in
+  // Presentation a focus can be initiated from outside of the document pane. In
+  // this case `open` may be true, but `previewCardElement` may be null. We need
+  // to ensure that the element actually exists in the DOM before scrolling it
+  // into view.
+  const canScrollIntoView = open && previewCardElement !== null
   // this is here to make sure the item is visible if it's being edited behind a modal
-  useScrollIntoViewOnFocusWithin(previewCardRef, open)
+  useScrollIntoViewOnFocusWithin(previewCardRef, canScrollIntoView)
 
   useDidUpdate(focused, (hadFocus, hasFocus) => {
     if (!hadFocus && hasFocus && previewCardRef.current) {
@@ -99,6 +112,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   })
 
   const resolvingInitialValue = (value as any)._resolvingInitialValue
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
   const handleDuplicate = useCallback(() => {
     onInsert({
@@ -148,6 +164,8 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: maxReached,
+    disabledReason: maxReachedReason,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
@@ -224,6 +242,22 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   )
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
+
+  // Prevent default on mousedown to stop focus from shifting before click completes.
+  // This fixes a Safari issue where focus events trigger re-renders that interrupt the click.
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    event.preventDefault()
+  }, [])
+
+  // Handle click: open the dialog and stop propagation to prevent onClickOutside from firing.
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      onOpen()
+    },
+    [onOpen],
+  )
+
   const item = (
     <RowLayout
       menu={menu}
@@ -241,7 +275,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={1}
         disabled={resolvingInitialValue}
-        onClick={onOpen}
+        // Use mousedown to trigger open before focus events cause re-renders.
+        // This fixes a Safari-specific issue where the array container receives focus first,
+        // triggering a state update that causes a re-render before the click event completes.
+        // The click handler checks if already open and stops propagation to prevent
+        // the dialog's onClickOutside from detecting this as an "outside" click.
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
@@ -253,6 +293,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           layout: 'default',
           // Don't do visibility check for virtualized items as the calculation will be incorrect causing it to scroll
           skipVisibilityCheck: true,
+          progress: uploadProgress,
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
@@ -263,7 +304,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
   return (
-    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
+    <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
@@ -285,6 +326,23 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+      {openEnhancedDialog && (
+        <EnhancedObjectDialog
+          header={
+            readOnly
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
+          }
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
+          width={parentSchemaType?.options?.modal?.width ?? 1}
+          id={value._key}
+          onClose={onClose}
+          autofocus={focused}
+          legacy_referenceElement={previewCardElement}
+        >
+          {children}
+        </EnhancedObjectDialog>
+      )}
+    </EnhancedObjectDialogProvider>
   )
 }

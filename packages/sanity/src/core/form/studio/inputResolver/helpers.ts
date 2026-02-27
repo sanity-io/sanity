@@ -1,12 +1,12 @@
 import {isArraySchemaType, type SchemaType} from '@sanity/types'
-import {get} from 'lodash'
+import {get} from 'lodash-es'
 
 export function getOption(type: SchemaType, optionName: string) {
   return get(type.options, optionName)
 }
 
 const PSEUDO_OBJECTS = ['array', 'file', 'image', 'reference', 'slug']
-const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak']
+const HIDDEN_FIELDS = ['asset', 'crop', 'hotspot', '_ref', '_weak', 'media']
 const NO_LEVEL_LAYOUTS = ['tags']
 const NO_LEVEL_TYPES = ['slug']
 

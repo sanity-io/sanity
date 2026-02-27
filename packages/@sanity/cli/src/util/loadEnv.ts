@@ -8,7 +8,6 @@
  * Vite is MIT licensed, copyright (c) Yuxi (Evan) You and Vite contributors.
  */
 
-/* eslint-disable no-process-env */
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -64,7 +63,9 @@ export function loadEnv(
     // custom error handling until https://github.com/motdotla/dotenv-expand/issues/65 is fixed upstream
     // check for message "TypeError: Cannot read properties of undefined (reading 'split')"
     if (e.message.includes('split')) {
-      throw new Error('dotenv-expand failed to expand env vars. Maybe you need to escape `$`?')
+      throw new Error('dotenv-expand failed to expand env vars. Maybe you need to escape `$`?', {
+        cause: e,
+      })
     }
     throw e
   }
@@ -96,7 +97,6 @@ function lookupFile(
 ): string | undefined {
   for (const format of formats) {
     const fullPath = path.join(dir, format)
-    // eslint-disable-next-line no-sync
     if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
       return fullPath
     }

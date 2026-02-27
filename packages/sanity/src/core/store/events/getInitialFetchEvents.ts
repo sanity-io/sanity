@@ -5,9 +5,15 @@ import {catchError, map, scan, shareReplay, startWith, switchMap, tap} from 'rxj
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {getEditEvents} from './getEditEvents'
-import {type DocumentGroupEvent, isCreateDocumentVersionEvent} from './types'
+import {
+  type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
+  type HistoryClearedEvent,
+  isCreateDocumentVersionEvent,
+} from './types'
 import {addEventId, removeDupes} from './utils'
 
+export const HISTORY_CLEARED_EVENT_ID = 'history-cleared'
 export interface EventsObservableValue {
   events: DocumentGroupEvent[]
   nextCursor: string
@@ -63,7 +69,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
       )
   }
 
-  const fetchTransactions = (events: DocumentGroupEvent[]) => {
+  const fetchEditEvents = (events: DocumentGroupEvent[]) => {
     const eventWithRevision =
       documentVariantType === 'version'
         ? events.find(isCreateDocumentVersionEvent)
@@ -74,15 +80,36 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
       'versionRevisionId' in eventWithRevision &&
       eventWithRevision.versionRevisionId
 
-    if (!revisionId) {
-      return of([])
-    }
     return from(
       getDocumentTransactions({
         client,
         documentId,
-        fromTransaction: revisionId,
+        fromTransaction: revisionId || '',
         toTransaction: undefined, // We need to get up to the present moment
+      }),
+    ).pipe(
+      map((transactions) => {
+        const editEvents: (EditDocumentVersionEvent | HistoryClearedEvent)[] = getEditEvents(
+          transactions,
+          documentId,
+          false,
+        )
+        const needsHistoryClearedEvent =
+          events.length === 0 && transactions.length > 0 && editEvents.length > 0
+        if (needsHistoryClearedEvent) {
+          const clearedEventTimestamp =
+            new Date(editEvents[editEvents.length - 1].timestamp).getTime() - 1
+
+          editEvents.unshift({
+            type: 'historyCleared',
+            documentId,
+            id: HISTORY_CLEARED_EVENT_ID,
+            timestamp: new Date(clearedEventTimestamp).toISOString(),
+            author: '',
+            documentVariantType,
+          })
+        }
+        return editEvents
       }),
     )
   }
@@ -100,9 +127,8 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
               // For the published document we don't need to fetch the edit transactions.
               return of({...response, origin})
             }
-            return fetchTransactions(response.events).pipe(
-              map((transactions) => {
-                const editEvents = getEditEvents(transactions, documentId, false)
+            return fetchEditEvents(response.events).pipe(
+              map((editEvents) => {
                 return {...response, events: [...editEvents, ...response.events], origin}
               }),
             )

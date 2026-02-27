@@ -21,7 +21,6 @@ export const assistFieldActionGroup = defineDocumentFieldAction({
               iconRight: PrivateIcon,
               title: 'Instruction 1',
               onAction() {
-                // eslint-disable-next-line no-console
                 console.log('run 1', path)
               },
             },
@@ -30,7 +29,6 @@ export const assistFieldActionGroup = defineDocumentFieldAction({
               icon: SparklesIcon,
               title: 'Instruction 2',
               onAction() {
-                // eslint-disable-next-line no-console
                 console.log('run 2', path)
               },
             },
@@ -40,7 +38,6 @@ export const assistFieldActionGroup = defineDocumentFieldAction({
           type: 'action',
           title: 'Manage instructions',
           onAction() {
-            // eslint-disable-next-line no-console
             console.log('manage', path)
           },
           selected: true,

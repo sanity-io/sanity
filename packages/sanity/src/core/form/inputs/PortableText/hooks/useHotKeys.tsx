@@ -1,9 +1,11 @@
-import {type HotkeyOptions, usePortableTextEditor} from '@portabletext/editor'
+import {type HotkeyOptions} from '@portabletext/editor'
 import {useMemo, useState} from 'react'
+
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
 // This hook will create final hotkeys for the editor from on those from props.
 export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
-  const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
 
   // Guard that hotkeys from props will be a stable object.
   // If this props is defined inline and is always a new object, there will be issues with key handling and cursor!
@@ -15,7 +17,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
   }
   return useMemo(() => {
     const defaultHotkeys: {marks: Record<string, string>} = {marks: {}}
-    editor.schemaTypes.decorators.forEach((dec) => {
+    schemaTypes.decorators.forEach((dec) => {
       switch (dec.value) {
         case 'strong':
           defaultHotkeys.marks['mod+b'] = dec.value
@@ -36,7 +38,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
       marks: {...defaultHotkeys.marks, ...(initialHotkeys || {}).marks},
       custom: initialHotkeys.custom,
     }
-  }, [editor, initialHotkeys])
+  }, [schemaTypes.decorators, initialHotkeys])
 }
 
 // If we want to have a hotkey to open up a focused object, we can use this:

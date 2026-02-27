@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
 
 import {testHelpers} from '../utils/testHelpers'
@@ -53,15 +52,16 @@ test.describe('Comments', () => {
       let resolve!: () => void
       const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
 
-      // eslint-disable-next-line react/jsx-handler-names
       await mount(<CommentsInputStory onSubmit={submitted.resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
-      $editable.waitFor({state: 'visible'})
+      await $editable.waitFor({state: 'visible'})
       await expect($editable).toBeEditable()
       // Test that blank comments can't be submitted
       await page.keyboard.press('Enter')
       await insertPortableText('This is a comment!', $editable)
       await expect($editable).toHaveText('This is a comment!')
+      const $sendButton = page.getByTestId('comment-input-send-button')
+      await expect($sendButton).toBeEnabled()
       await page.keyboard.press('Enter')
       await submitted
     })

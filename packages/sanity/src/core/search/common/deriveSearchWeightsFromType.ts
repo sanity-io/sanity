@@ -111,7 +111,6 @@ function getLeafWeights(
         }
       } else if (t.jsonType === 'array' && !!t.of?.length) {
         for (const arrayItemType of t.of) {
-          // eslint-disable-next-line no-param-reassign
           recursiveResult = traverse(arrayItemType, `${path}[]`, depth + 1, recursiveResult)
         }
       }

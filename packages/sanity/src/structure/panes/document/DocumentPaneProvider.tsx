@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-import {isActionEnabled} from '@sanity/schema/_internal'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
   type ObjectSchemaType,
@@ -7,69 +5,53 @@ import {
   type SanityDocument,
   type SanityDocumentLike,
 } from '@sanity/types'
-import {useToast} from '@sanity/ui'
-import {fromString as pathFromString, pathFor, resolveKeyedPath} from '@sanity/util/paths'
-import {omit, throttle} from 'lodash'
-import {memo, useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
-import deepEquals from 'react-fast-compare'
+import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionsContext,
   type DocumentActionsVersionType,
   type DocumentFieldAction,
-  type DocumentInspector,
-  type DocumentPresence,
+  type EditStateFor,
   EMPTY_ARRAY,
-  getDraftId,
-  getExpandOperations,
   getPublishedId,
-  getVersionFromId,
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
   isGoingToUnpublish,
-  isPublishedPerspective,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSanityCreateLinkedDocument,
+  isPausedCardinalityOneRelease,
+  isPerspectiveWriteable,
   isVersionId,
-  type OnPathFocusPayload,
   type PartialContext,
-  type PatchEvent,
-  setAtPath,
-  type StateTree,
-  toMutationPatches,
-  useConnectionState,
+  pathToString,
+  type ReleaseDocument,
+  selectUpstreamVersion,
+  useActiveReleases,
   useCopyPaste,
-  useDocumentOperation,
-  useDocumentValuePermissions,
-  useEditState,
-  useFormState,
-  useInitialValue,
+  useDocumentForm,
+  useDocumentIdStack,
   usePerspective,
-  usePresenceStore,
   useSchema,
   useSource,
-  useTemplates,
   useTranslation,
   useUnique,
-  useValidationStatus,
+  useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
+import {useDiffViewRouter} from '../../diffView/hooks/useDiffViewRouter'
+import {useDocumentLastRev} from '../../hooks/useDocumentLastRev'
 import {structureLocaleNamespace} from '../../i18n'
 import {type PaneMenuItem} from '../../types'
-import {useStructureTool} from '../../useStructureTool'
-import {CreatedDraft, DocumentURLCopied} from './__telemetry__'
-import {
-  DEFAULT_MENU_ITEM_GROUPS,
-  EMPTY_PARAMS,
-  HISTORY_INSPECTOR_NAME,
-  INSPECT_ACTION_PREFIX,
-} from './constants'
+import {InlineChangesSwitchedOff, InlineChangesSwitchedOn} from './__telemetry__'
+import {DEFAULT_MENU_ITEM_GROUPS, EMPTY_PARAMS, INSPECT_ACTION_PREFIX} from './constants'
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
-import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
+import {useDocumentPaneInspector} from './useDocumentPaneInspector'
 import {usePreviewUrl} from './usePreviewUrl'
 
 interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
@@ -79,9 +61,19 @@ interface DocumentPaneProviderProps extends DocumentPaneProviderWrapperProps {
 /**
  * @internal
  */
-// eslint-disable-next-line complexity, max-statements
-export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
-  const {children, index, pane, paneKey, onFocusPath, forcedVersion, historyStore} = props
+// eslint-disable-next-line max-statements
+export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
+  const {
+    children,
+    index,
+    pane,
+    paneKey,
+    onFocusPath,
+    onSetMaximizedPane,
+    maximized = false,
+    forcedVersion,
+    historyStore,
+  } = props
   const {
     store: timelineStore,
     error: timelineError,
@@ -95,24 +87,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   } = historyStore
 
   const schema = useSchema()
-  const templates = useTemplates()
   const {setDocumentMeta} = useCopyPaste()
   const {
-    __internal_tasks,
     document: {
       actions: documentActions,
       badges: documentBadges,
       unstable_fieldActions: fieldActionsResolver,
       unstable_languageFilter: languageFilterResolver,
-      inspectors: inspectorsResolver,
+      drafts: {enabled: draftsEnabled},
     },
   } = useSource()
   const telemetry = useTelemetry()
-  const presenceStore = usePresenceStore()
+  const router = useRouter()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {features} = useStructureTool()
-  const {push: pushToast} = useToast()
   const {
     options,
     menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
@@ -124,122 +112,234 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const documentId = getPublishedId(documentIdRaw)
   const documentType = options.type
   const params = useUnique(paneRouter.params) || EMPTY_PARAMS
-
   const perspective = usePerspective()
 
-  const {isReleaseLocked, selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+    beta,
+  } = useWorkspace()
+
+  const enhancedObjectDialogEnabled = true
+
+  const {selectedReleaseId, selectedPerspectiveName} = useMemo(() => {
     // TODO: COREL - Remove this after updating sanity-assist to use <PerspectiveProvider>
     if (forcedVersion) {
       return forcedVersion
     }
+
     return {
       selectedPerspectiveName: perspective.selectedPerspectiveName,
       selectedReleaseId: perspective.selectedReleaseId,
-      isReleaseLocked: isReleaseDocument(perspective.selectedPerspective)
-        ? isReleaseScheduledOrScheduling(perspective.selectedPerspective)
-        : false,
     }
-  }, [
-    forcedVersion,
-    perspective.selectedPerspectiveName,
-    perspective.selectedReleaseId,
-    perspective.selectedPerspective,
-  ])
+  }, [forcedVersion, perspective.selectedPerspectiveName, perspective.selectedReleaseId])
 
-  const panePayload = useUnique(paneRouter.payload)
-  const {templateName, templateParams} = useMemo(
-    () =>
-      getInitialValueTemplateOpts(templates, {
-        documentType,
-        templateName: paneOptions.template,
-        templateParams: paneOptions.templateParameters,
-        panePayload,
-        urlTemplate: params.template,
-      }),
-    [documentType, paneOptions, params, panePayload, templates],
-  )
-  const initialValueRaw = useInitialValue({
+  const {data: releases = EMPTY_ARRAY} = useActiveReleases()
+
+  const diffViewRouter = useDiffViewRouter()
+
+  const initialValue = useDocumentPaneInitialValue({
+    paneOptions,
     documentId,
     documentType,
-    templateName,
-    templateParams,
-    version: params.version,
+    params,
   })
 
-  const initialValue = useUnique(initialValueRaw)
   const isInitialValueLoading = initialValue.loading
-
-  const {patch} = useDocumentOperation(documentId, documentType, selectedReleaseId)
-  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const editState = useEditState(documentId, documentType, 'default', selectedReleaseId)
-  const {validation: validationRaw} = useValidationStatus(
-    documentId,
-    documentType,
-    selectedReleaseId,
-  )
-  const connectionState = useConnectionState(documentId, documentType, selectedReleaseId)
-  const liveEdit = Boolean(schemaType?.liveEdit)
-
-  const value: SanityDocumentLike = useMemo(() => {
-    if (selectedReleaseId) {
-      return editState.version || editState.draft || editState.published || initialValue.value
-    }
-    if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
-      return (
-        editState.published ||
-        (liveEdit ? initialValue.value : {_id: documentId, _type: documentType})
-      )
-    }
-    return editState.draft || editState.published || initialValue.value
-  }, [
-    documentId,
-    documentType,
-    editState.draft,
-    editState.published,
-    editState.version,
-    initialValue.value,
-    liveEdit,
-    selectedPerspectiveName,
-    selectedReleaseId,
-  ])
+  const {
+    changesOpen,
+    currentInspector,
+    inspectors,
+    closeInspector,
+    openInspector,
+    handleHistoryClose,
+    handleHistoryOpen,
+    handleInspectorAction,
+    inspectOpen,
+    handleLegacyInspectClose,
+  } = useDocumentPaneInspector({documentId, documentType, params, setParams: setPaneParams})
 
   const [isDeleting, setIsDeleting] = useState(false)
+  const {lastRevisionDocument} = useDocumentLastRev(documentId, documentType)
 
-  const getDocumentVersionType = useCallback(() => {
-    let version: DocumentActionsVersionType
-    switch (true) {
-      case Boolean(params.rev):
-        version = 'revision'
-        break
-      case selectedReleaseId && isVersionId(value._id):
-        version = 'version'
-        break
-      case selectedPerspectiveName === 'published':
-        version = 'published'
-        break
-      default:
-        version = 'draft'
-    }
+  /**
+   * Determine if the current document is deleted.
+   *
+   * When the timeline is available – we check for the absence of an editable document pair
+   * (both draft + published versions) as well as a non 'pristine' timeline (i.e. a timeline that consists
+   * of at least one chunk).
+   *
+   * In the _very rare_ case where the timeline cannot be loaded – we skip this check and always assume
+   * the document is NOT deleted. Since we can't accurately determine document deleted status without history,
+   * skipping this check means that in these cases, users will at least be able to create new documents
+   * without them being incorrectly marked as deleted.
+   */
+  const getIsDeleted = useCallback(
+    (editState: EditStateFor) => {
+      if (!timelineReady) return false
+      return (
+        Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
+      )
+    },
+    [timelineReady, isPristine],
+  )
 
-    return version
-  }, [selectedPerspectiveName, selectedReleaseId, params, value._id])
+  const getComparisonValue = useCallback(
+    (upstreamEditState: EditStateFor) => {
+      const upstream = selectUpstreamVersion(upstreamEditState)
+      if (changesOpen) {
+        return sinceDocument || upstream
+      }
+      return upstream || null
+    },
+    [changesOpen, sinceDocument],
+  )
 
-  const actionsPerspective = useMemo(() => getDocumentVersionType(), [getDocumentVersionType])
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  const documentActionsProps: PartialContext<DocumentActionsContext> = useMemo(
+  const getIsReadOnly = useCallback(
+    (editState: EditStateFor): boolean => {
+      const isDeleted = getIsDeleted(editState)
+      const seeingHistoryDocument = Boolean(params.rev)
+
+      // Check if current perspective is a paused scheduled draft
+      const currentRelease = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+      const isPaused = isPausedCardinalityOneRelease(currentRelease)
+
+      return (
+        seeingHistoryDocument ||
+        isDeleting ||
+        isDeleted ||
+        (!isPaused &&
+          !isPerspectiveWriteable({
+            selectedPerspective: perspective.selectedPerspective,
+            isDraftModelEnabled,
+            schemaType,
+          }).result)
+      )
+    },
+    [
+      getIsDeleted,
+      isDeleting,
+      isDraftModelEnabled,
+      params.rev,
+      perspective.selectedPerspective,
+      schemaType,
+      releases,
+      selectedReleaseId,
+    ],
+  )
+
+  const getDisplayed = useCallback(
+    (value: SanityDocumentLike) => {
+      if (onOlderRevision) {
+        return revisionDocument || {_id: value._id, _type: value._type}
+      }
+
+      // If the document is deleted (no draft, published, or version), return the last revision
+      const isDeleted = !value._createdAt && !value._updatedAt
+      if (isDeleted && lastNonDeletedRevId) {
+        // Return the fetched last revision document if available
+        if (lastRevisionDocument) {
+          return lastRevisionDocument
+        }
+      }
+
+      return value
+    },
+    [onOlderRevision, revisionDocument, lastNonDeletedRevId, lastRevisionDocument],
+  )
+
+  const {
+    editState,
+    upstreamEditState,
+    hasUpstreamVersion,
+    connectionState,
+    focusPath,
+    onChange,
+    validation,
+    ready: formReady,
+    value,
+    formState,
+    permissions,
+    onPathOpen,
+    isPermissionsLoading,
+    formStateRef,
+    onProgrammaticFocus,
+
+    collapsedFieldSets,
+    collapsedPaths,
+    onBlur,
+    onFocus,
+    onSetActiveFieldGroup,
+    onSetCollapsedPath,
+    onSetCollapsedFieldSet,
+    openPath,
+  } = useDocumentForm({
+    changesOpen,
+    documentType,
+    documentId,
+    initialValue: initialValue,
+    comparisonValue: getComparisonValue,
+    releaseId: selectedPerspectiveName,
+    selectedPerspectiveName,
+    initialFocusPath: params.path ? pathFromString(params.path) : EMPTY_ARRAY,
+    readOnly: getIsReadOnly,
+    onFocusPath,
+    getFormDocumentValue: getDisplayed,
+    displayInlineChanges: router.stickyParams.displayInlineChanges === 'true',
+  })
+
+  const actionsVersionType = useMemo(
+    () =>
+      getDocumentVersionType(
+        params,
+        selectedReleaseId,
+        value,
+        selectedPerspectiveName,
+        draftsEnabled,
+        releases,
+      ),
+    [params, selectedReleaseId, value, selectedPerspectiveName, draftsEnabled, releases],
+  )
+
+  const documentActionsContext: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
       schemaType: documentType,
       documentId,
-      versionType: actionsPerspective,
-      ...(selectedReleaseId && {versionName: selectedReleaseId}),
+      versionType: actionsVersionType,
+      releaseId: selectedReleaseId,
     }),
-    [documentType, documentId, actionsPerspective, selectedReleaseId],
+    [documentType, documentId, actionsVersionType, selectedReleaseId],
   )
 
   // Resolve document actions
   const actions = useMemo(
-    () => documentActions(documentActionsProps),
-    [documentActions, documentActionsProps],
+    () => documentActions(documentActionsContext),
+    [documentActions, documentActionsContext],
+  )
+
+  const handlePathOpen = useCallback(
+    (path: Path) => {
+      // Update internal open path
+      onPathOpen(path)
+
+      if (enhancedObjectDialogEnabled) {
+        /**
+         * Before we used to set the path open based on the focus path
+         * Now we set it based on open path, which changes what it represents and is something that could become a source of confusion.
+         * There is upcoming work to refactor this and other aspects of the control of the focus path which means that this might return to the focus path in the future.
+         */
+        const nextPath = pathToString(path)
+        if (params.path !== nextPath) {
+          setPaneParams({...params, path: nextPath})
+        }
+      }
+    },
+    [onPathOpen, params, setPaneParams, enhancedObjectDialogEnabled],
   )
 
   // Resolve document badges
@@ -254,75 +354,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [documentId, documentType, languageFilterResolver],
   )
 
-  const validation = useUnique(validationRaw)
   const views = useUnique(viewsProp)
 
-  const [focusPath, setFocusPath] = useState<Path>(() =>
-    params.path ? pathFromString(params.path) : EMPTY_ARRAY,
-  )
-  const focusPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
-
-  /**
-   * Determine if the current document is deleted.
-   *
-   * When the timeline is available – we check for the absence of an editable document pair
-   * (both draft + published versions) as well as a non 'pristine' timeline (i.e. a timeline that consists
-   * of at least one chunk).
-   *
-   * In the _very rare_ case where the timeline cannot be loaded – we skip this check and always assume
-   * the document is NOT deleted. Since we can't accurately determine document deleted status without history,
-   * skipping this check means that in these cases, users will at least be able to create new documents
-   * without them being incorrectly marked as deleted.
-   */
-  const isDeleted = useMemo(() => {
-    if (!timelineReady) {
-      return false
-    }
-    return Boolean(!editState?.draft && !editState?.published && !editState?.version) && !isPristine
-  }, [editState?.draft, editState?.published, editState?.version, isPristine, timelineReady])
 
   // TODO: this may cause a lot of churn. May be a good idea to prevent these
   // requests unless the menu is open somehow
   const previewUrl = usePreviewUrl(value)
 
-  const [presence, setPresence] = useState<DocumentPresence[]>([])
-  useEffect(() => {
-    const subscription = presenceStore.documentPresence(value._id).subscribe((nextPresence) => {
-      setPresence(nextPresence)
-    })
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [presenceStore, value._id])
-
-  const inspectors: DocumentInspector[] = useMemo(
-    () => inspectorsResolver({documentId, documentType}),
-    [documentId, documentType, inspectorsResolver],
-  )
-
-  const [inspectorName, setInspectorName] = useState<string | null>(() => params.inspect || null)
-
-  // Handle inspector name changes from URL
-  const inspectParamRef = useRef<string | undefined>(params.inspect)
-  useEffect(() => {
-    if (inspectParamRef.current !== params.inspect) {
-      inspectParamRef.current = params.inspect
-      setInspectorName(params.inspect || null)
-    }
-  }, [params.inspect])
-
-  const currentInspector = inspectors?.find((i) => i.name === inspectorName)
-  const resolvedChangesInspector = inspectors.find((i) => i.name === HISTORY_INSPECTOR_NAME)
-
-  const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
-
   const {t} = useTranslation(structureLocaleNamespace)
-
-  const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = changesOpen
-    ? sinceDocument
-    : editState?.published || null
 
   const fieldActions: DocumentFieldAction[] = useMemo(
     () => (schemaType ? fieldActionsResolver({documentId, documentType, schemaType}) : []),
@@ -341,15 +381,19 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * we skip this readiness check to ensure that users aren't locked out of editing. Trying to select
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
-  const ready =
-    connectionState === 'connected' &&
-    editState.ready &&
-    (!params.rev || timelineReady || !!timelineError)
+  const ready = formReady && (!params.rev || timelineReady || !!timelineError)
 
   const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => (onOlderRevision ? revisionDocument || {_id: value._id, _type: value._type} : value),
-    [onOlderRevision, revisionDocument, value],
+    () => getDisplayed(value),
+    [getDisplayed, value],
   )
+
+  const {previousId} = useDocumentIdStack({
+    strict: true,
+    displayed,
+    documentId,
+    editState,
+  })
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -362,152 +406,25 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [params, setPaneParams],
   )
 
-  const handleBlur = useCallback(
-    (blurredPath: Path) => {
-      if (disableBlurRef.current) {
-        return
-      }
-
-      setFocusPath(EMPTY_ARRAY)
-
-      if (focusPathRef.current !== EMPTY_ARRAY) {
-        focusPathRef.current = EMPTY_ARRAY
-        onFocusPath?.(EMPTY_ARRAY)
-      }
-
-      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-      // user clicks outside a field without focusing another one
-    },
-    [onFocusPath, setFocusPath],
-  )
-
-  const closeInspector = useCallback(
-    (closeInspectorName?: string) => {
-      // inspector?: DocumentInspector
-      const inspector = closeInspectorName && inspectors.find((i) => i.name === closeInspectorName)
-
-      if (closeInspectorName && !inspector) {
-        console.warn(`No inspector named "${closeInspectorName}"`)
-        return
-      }
-
-      if (!currentInspector) {
-        return
-      }
-
-      if (inspector) {
-        const result = inspector.onClose?.({params}) ?? {params}
-
-        setInspectorName(null)
-        inspectParamRef.current = undefined
-
-        setPaneParams({...result.params, inspect: undefined})
-
-        return
-      }
-
-      if (currentInspector) {
-        const result = currentInspector.onClose?.({params}) ?? {params}
-
-        setInspectorName(null)
-        inspectParamRef.current = undefined
-
-        setPaneParams({...result.params, inspect: undefined})
-      }
-    },
-    [currentInspector, inspectors, params, setPaneParams],
-  )
-
-  const openInspector = useCallback(
-    (nextInspectorName: string, paneParams?: Record<string, string>) => {
-      const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
-
-      if (!nextInspector) {
-        console.warn(`No inspector named "${nextInspectorName}"`)
-        return
-      }
-
-      // if the inspector is already open, only update params
-      if (currentInspector?.name === nextInspector.name) {
-        setPaneParams({...params, ...paneParams, inspect: nextInspector.name})
-        return
-      }
-
-      let currentParams = params
-
-      if (currentInspector) {
-        const closeResult = nextInspector.onClose?.({params: currentParams}) ?? {
-          params: currentParams,
-        }
-
-        currentParams = closeResult.params
-      }
-
-      const result = nextInspector.onOpen?.({params: currentParams}) ?? {params: currentParams}
-
-      setInspectorName(nextInspector.name)
-      inspectParamRef.current = nextInspector.name
-
-      setPaneParams({...result.params, ...paneParams, inspect: nextInspector.name})
-    },
-    [currentInspector, inspectors, params, setPaneParams],
-  )
-
-  const handleHistoryClose = useCallback(() => {
-    if (resolvedChangesInspector) {
-      closeInspector(resolvedChangesInspector.name)
-    }
-  }, [closeInspector, resolvedChangesInspector])
-
-  const handleHistoryOpen = useCallback(() => {
-    if (!features.reviewChanges) {
-      return
-    }
-
-    if (resolvedChangesInspector) {
-      openInspector(resolvedChangesInspector.name, {changesInspectorTab: 'review'})
-    }
-  }, [features.reviewChanges, openInspector, resolvedChangesInspector])
-
   const handlePaneClose = useCallback(() => paneRouter.closeCurrent(), [paneRouter])
 
   const handlePaneSplit = useCallback(() => paneRouter.duplicateCurrent(), [paneRouter])
 
-  const toggleLegacyInspect = useCallback(
-    (toggle = !inspectOpen) => {
-      if (toggle) {
-        setPaneParams({...params, inspect: 'on'})
-      } else {
-        setPaneParams(omit(params, 'inspect'))
-      }
-    },
-    [inspectOpen, params, setPaneParams],
-  )
+  const toggleInlineChanges = useCallback(() => {
+    const nextState = router.stickyParams.displayInlineChanges !== 'true'
+    telemetry.log(nextState ? InlineChangesSwitchedOn : InlineChangesSwitchedOff)
+
+    router.navigate({
+      stickyParams: {
+        displayInlineChanges: String(nextState),
+      },
+    })
+  }, [router, telemetry])
 
   const handleMenuAction = useCallback(
-    (item: PaneMenuItem) => {
+    async (item: PaneMenuItem) => {
       if (item.action === 'production-preview' && previewUrl) {
         window.open(previewUrl)
-        return true
-      }
-
-      if (item.action === 'copy-document-url' && navigator) {
-        telemetry.log(DocumentURLCopied)
-        // Chose to copy the user's current URL instead of
-        // the document's edit intent link because
-        // of bugs when resolving a document that has
-        // multiple access paths within Structure
-        navigator.clipboard.writeText(window.location.toString())
-        pushToast({
-          id: 'copy-document-url',
-          status: 'info',
-          title: t('panes.document-operation-results.operation-success_copy-url'),
-        })
-        return true
-      }
-
-      if (item.action === 'inspect') {
-        toggleLegacyInspect(true)
         return true
       }
 
@@ -516,258 +433,70 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         return true
       }
 
-      if (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX)) {
-        const nextInspectorName = item.action.slice(INSPECT_ACTION_PREFIX.length)
-        const nextInspector = inspectors.find((i) => i.name === nextInspectorName)
+      if (
+        item.action === 'inspect' ||
+        (typeof item.action === 'string' && item.action.startsWith(INSPECT_ACTION_PREFIX))
+      ) {
+        handleInspectorAction(item)
+      }
 
-        if (nextInspector) {
-          if (nextInspector.name === inspectorName) {
-            closeInspector(nextInspector.name)
-          } else {
-            openInspector(nextInspector.name)
-          }
-          return true
-        }
+      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          previousDocument: {
+            type: documentType,
+            id: previousId,
+          },
+          nextDocument: {
+            type: documentType,
+            id: value._id,
+          },
+        })
+        return true
+      }
+
+      if (item.action === 'toggleInlineChanges') {
+        toggleInlineChanges()
+        return true
       }
 
       return false
     },
     [
-      t,
-      closeInspector,
-      handleHistoryOpen,
-      inspectorName,
-      inspectors,
-      openInspector,
       previewUrl,
-      toggleLegacyInspect,
-      pushToast,
-      telemetry,
+      previousId,
+      documentType,
+      handleHistoryOpen,
+      handleInspectorAction,
+      diffViewRouter,
+      value._id,
+      toggleInlineChanges,
     ],
   )
-
-  const handleLegacyInspectClose = useCallback(
-    () => toggleLegacyInspect(false),
-    [toggleLegacyInspect],
-  )
-
-  const [openPath, onSetOpenPath] = useState<Path>([])
-  const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
-  const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
-  const [collapsedFieldSets, onSetCollapsedFieldSets] = useState<StateTree<boolean>>()
-
-  const handleOnSetCollapsedPath = useCallback((path: Path, collapsed: boolean) => {
-    onSetCollapsedPath((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
-
-  const handleOnSetCollapsedFieldSet = useCallback((path: Path, collapsed: boolean) => {
-    onSetCollapsedFieldSets((prevState) => setAtPath(prevState, path, collapsed))
-  }, [])
-
-  const handleSetActiveFieldGroup = useCallback(
-    (path: Path, groupName: string) =>
-      onSetFieldGroupState((prevState) => setAtPath(prevState, path, groupName)),
-    [],
-  )
-
-  const requiredPermission = value._createdAt ? 'update' : 'create'
-  const docId = value._id ? value._id : 'dummy-id'
-  const docPermissionsInput = useMemo(() => {
-    return {
-      ...value,
-      _id: liveEdit ? getPublishedId(docId) : getDraftId(docId),
-    }
-  }, [liveEdit, value, docId])
-
-  const [permissions, isPermissionsLoading] = useDocumentValuePermissions({
-    document: docPermissionsInput,
-    permission: requiredPermission,
-  })
-
-  const isCreateLinked = isSanityCreateLinkedDocument(value)
-  const isNonExistent = !value?._id
-  const willBeUnpublished = isGoingToUnpublish(value)
-
-  const readOnly = useMemo(() => {
-    const hasNoPermission = !isPermissionsLoading && !permissions?.granted
-    const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
-    const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
-    const reconnecting = connectionState === 'reconnecting'
-    const isLocked = editState.transactionSyncLock?.enabled
-    // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
-    if (liveEdit && editState.draft?._id) {
-      return true
-    }
-    if (!liveEdit && selectedPerspectiveName === 'published') {
-      return true
-    }
-
-    // If a release is selected, validate that the document id matches the selected release id
-    if (selectedReleaseId && getVersionFromId(value._id) !== selectedReleaseId) {
-      return true
-    }
-
-    return (
-      willBeUnpublished ||
-      !ready ||
-      revisionId !== null ||
-      hasNoPermission ||
-      updateActionDisabled ||
-      createActionDisabled ||
-      reconnecting ||
-      isLocked ||
-      isDeleting ||
-      isDeleted ||
-      isCreateLinked ||
-      isReleaseLocked
-    )
-  }, [
-    isPermissionsLoading,
-    permissions?.granted,
-    schemaType,
-    isNonExistent,
-    connectionState,
-    editState.transactionSyncLock?.enabled,
-    editState.draft?._id,
-    liveEdit,
-    selectedPerspectiveName,
-    selectedReleaseId,
-    value._id,
-    willBeUnpublished,
-    ready,
-    revisionId,
-    isDeleting,
-    isDeleted,
-    isCreateLinked,
-    isReleaseLocked,
-  ])
-
-  const patchRef = useRef<(event: PatchEvent) => void>(() => {
-    throw new Error(
-      'Attempted to patch the Sanity document during initial render or in an `useInsertionEffect`. Input components should only call `onChange()` in a useEffect or an event handler.',
-    )
-  })
-
-  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
-
-  useInsertionEffect(() => {
-    // Create-linked documents enter a read-only state in Studio. However, unlinking a Create-linked
-    // document necessitates patching it. This renders it impossible to unlink a Create-linked
-    // document.
-    //
-    // Excluding Create-linked documents from this check is a simple way to ensure they can be
-    // unlinked.
-    //
-    // This does mean `handleChange` can be used to patch any part of a Create-linked document,
-    // which would otherwise be read-only.
-    if (readOnly && !isCreateLinked) {
-      patchRef.current = () => {
-        throw new Error('Attempted to patch a read-only document')
-      }
-    } else {
-      // note: this needs to happen in an insertion effect to make sure we're ready to receive patches from child components when they run their effects initially
-      // in case they do e.g. `useEffect(() => props.onChange(set("foo")), [])`
-      // Note: although we discourage patch-on-mount, we still support it.
-      patchRef.current = (event: PatchEvent) => {
-        // when creating a new draft
-        if (!editState.draft && !editState.published) {
-          telemetry.log(CreatedDraft)
-        }
-
-        patch.execute(toMutationPatches(event.patches), initialValue.value)
-      }
-    }
-  }, [
-    editState.draft,
-    editState.published,
-    initialValue.value,
-    patch,
-    telemetry,
-    readOnly,
-    isCreateLinked,
-  ])
-
-  const formState = useFormState({
-    schemaType: schemaType!,
-    documentValue: displayed,
-    readOnly,
-    comparisonValue: compareValue,
-    focusPath,
-    openPath,
-    collapsedPaths,
-    presence,
-    validation,
-    collapsedFieldSets,
-    fieldGroupState,
-    changesOpen,
-  })
 
   useEffect(() => {
     setDocumentMeta({
       documentId,
       documentType,
       schemaType: schemaType!,
-      onChange: handleChange,
+      onChange,
     })
-  }, [documentId, documentType, schemaType, handleChange, setDocumentMeta])
+  }, [documentId, documentType, schemaType, onChange, setDocumentMeta])
 
-  const formStateRef = useRef(formState)
-  useEffect(() => {
-    formStateRef.current = formState
-  }, [formState])
-
-  const setOpenPath = useCallback(
-    (path: Path) => {
-      const ops = getExpandOperations(formStateRef.current!, path)
-      ops.forEach((op) => {
-        if (op.type === 'expandPath') {
-          onSetCollapsedPath((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'expandFieldSet') {
-          onSetCollapsedFieldSets((prevState) => setAtPath(prevState, op.path, false))
-        }
-        if (op.type === 'setSelectedGroup') {
-          onSetFieldGroupState((prevState) => setAtPath(prevState, op.path, op.groupName))
-        }
-      })
-      onSetOpenPath(path)
-    },
-    [formStateRef],
+  const compareValue = useMemo(
+    () => getComparisonValue(upstreamEditState),
+    [upstreamEditState, getComparisonValue],
   )
 
-  const updatePresence = useCallback(
-    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      presenceStore.setLocation([
-        {
-          type: 'document',
-          documentId: value._id,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-          selection: payload?.selection,
-        },
-      ])
-    },
-    [presenceStore, value._id],
-  )
+  const isDeleted = useMemo(() => getIsDeleted(editState), [editState, getIsDeleted])
+  const revisionNotFound = onOlderRevision && !revisionDocument && ready
 
-  const updatePresenceThrottled = useMemo(
-    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
-    [updatePresence],
-  )
-
-  const handleFocus = useCallback(
-    (_nextFocusPath: Path, payload?: OnPathFocusPayload) => {
-      const nextFocusPath = pathFor(_nextFocusPath)
-      if (nextFocusPath !== focusPathRef.current) {
-        setFocusPath(pathFor(nextFocusPath))
-        setOpenPath(pathFor(nextFocusPath.slice(0, -1)))
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-      updatePresenceThrottled(nextFocusPath, payload)
-    },
-    [onFocusPath, setOpenPath, updatePresenceThrottled],
-  )
+  const currentDisplayed = useMemo(() => {
+    if (editState.version && isGoingToUnpublish(editState.version)) {
+      return editState.published
+    }
+    return displayed
+  }, [editState.version, editState.published, displayed])
 
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
@@ -781,7 +510,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         collapsedPaths,
         compareValue,
         connectionState,
-        displayed,
+        displayed: currentDisplayed,
         documentId,
         documentIdRaw,
         documentType,
@@ -790,20 +519,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         focusPath,
         inspector: currentInspector || null,
         inspectors,
-        __internal_tasks,
-        onBlur: handleBlur,
-        onChange: handleChange,
-        onFocus: handleFocus,
-        onPathOpen: setOpenPath,
+        onBlur,
+        onChange,
+        onFocus,
+        onPathOpen: handlePathOpen,
         onHistoryClose: handleHistoryClose,
         onHistoryOpen: handleHistoryOpen,
         onInspectClose: handleLegacyInspectClose,
         onMenuAction: handleMenuAction,
         onPaneClose: handlePaneClose,
         onPaneSplit: handlePaneSplit,
-        onSetActiveFieldGroup: handleSetActiveFieldGroup,
-        onSetCollapsedPath: handleOnSetCollapsedPath,
-        onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+        onSetActiveFieldGroup,
+        onSetCollapsedPath,
+        onSetCollapsedFieldSet,
+        onSetMaximizedPane,
+        maximized,
         openInspector,
         openPath,
         index,
@@ -814,6 +544,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         previewUrl,
         ready,
         schemaType: schemaType!,
+        hasUpstreamVersion,
         isPermissionsLoading,
         isInitialValueLoading,
         permissions,
@@ -830,7 +561,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
         formState,
         unstable_languageFilter: languageFilter,
         revisionId,
+        revisionNotFound,
         lastNonDeletedRevId,
+        lastRevisionDocument,
       }) satisfies DocumentPaneContextValue,
     [
       actions,
@@ -842,7 +575,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       collapsedPaths,
       compareValue,
       connectionState,
-      displayed,
+      currentDisplayed,
       documentId,
       documentIdRaw,
       documentType,
@@ -851,20 +584,21 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       focusPath,
       currentInspector,
       inspectors,
-      __internal_tasks,
-      handleBlur,
-      handleChange,
-      handleFocus,
-      setOpenPath,
+      onBlur,
+      onChange,
+      onFocus,
+      handlePathOpen,
       handleHistoryClose,
       handleHistoryOpen,
       handleLegacyInspectClose,
       handleMenuAction,
       handlePaneClose,
       handlePaneSplit,
-      handleSetActiveFieldGroup,
-      handleOnSetCollapsedPath,
-      handleOnSetCollapsedFieldSet,
+      onSetActiveFieldGroup,
+      onSetCollapsedPath,
+      onSetCollapsedFieldSet,
+      onSetMaximizedPane,
+      maximized,
       openInspector,
       openPath,
       index,
@@ -875,6 +609,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       previewUrl,
       ready,
       schemaType,
+      hasUpstreamVersion,
       isPermissionsLoading,
       isInitialValueLoading,
       permissions,
@@ -890,60 +625,87 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       formState,
       languageFilter,
       revisionId,
+      revisionNotFound,
       lastNonDeletedRevId,
+      lastRevisionDocument,
     ],
   )
 
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>
-    if (connectionState === 'reconnecting') {
-      timeout = setTimeout(() => {
-        pushToast({
-          id: 'sanity/structure/reconnecting',
-          status: 'warning',
-          title: t('panes.document-pane-provider.reconnecting.title'),
-        })
-      }, 2000) // 2 seconds, we can iterate on the value
-    }
-    return () => {
-      if (timeout) clearTimeout(timeout)
-    }
-  }, [connectionState, pushToast, t])
-
-  const disableBlurRef = useRef(false)
-
-  // Reset `focusPath` when `documentId` or `params.path` changes
+  const pathRef = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (ready && params.path) {
       const {path, ...restParams} = params
-      const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
 
-      disableBlurRef.current = true
-
-      // Reset focus path when url params path changes
-      if (!deepEquals(focusPathRef.current, pathFromUrl)) {
-        setFocusPath(pathFromUrl)
-        setOpenPath(pathFromUrl)
-        focusPathRef.current = pathFromUrl
-        onFocusPath?.(pathFromUrl)
+      // Only trigger a programmatic focus when the URL path changed AND the
+      // form's openPath doesn't already reflect it.  When handlePathOpen updates
+      // both the form state and the URL, the form is already in sync — calling
+      // onProgrammaticFocus again would re-set focusPath/openPath and cause
+      // cascading state updates that flicker nested dialogs.
+      const currentOpenPathString = pathToString(openPath)
+      if (path !== pathRef.current && path !== currentOpenPathString) {
+        const pathFromUrl = resolveKeyedPath(formStateRef.current?.value, pathFromString(path))
+        onProgrammaticFocus(pathFromUrl)
       }
 
-      const timeout = setTimeout(() => {
-        disableBlurRef.current = false
-      }, 0)
-
-      // remove the `path`-param from url after we have consumed it as the initial focus path
-      paneRouter.setParams(restParams)
-
-      return () => clearTimeout(timeout)
+      if (!enhancedObjectDialogEnabled) {
+        // remove the `path`-param from url after we have consumed it as the initial focus path
+        paneRouter.setParams(restParams)
+      }
     }
+    pathRef.current = params.path
 
     return undefined
-  }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
+  }, [
+    formStateRef,
+    onProgrammaticFocus,
+    paneRouter,
+    params,
+    ready,
+    enhancedObjectDialogEnabled,
+    openPath,
+  ])
 
   return (
     <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
   )
-})
+}
 
-DocumentPaneProvider.displayName = 'Memo(DocumentPaneProvider)'
+// eslint-disable-next-line max-params
+function getDocumentVersionType(
+  params: Record<string, string | undefined> | undefined,
+  selectedReleaseId: string | undefined,
+  value: SanityDocumentLike,
+  selectedPerspectiveName: string | undefined,
+  draftsEnabled: boolean,
+  releases: ReleaseDocument[],
+) {
+  let version: DocumentActionsVersionType
+  switch (true) {
+    case Boolean(params?.rev):
+      version = 'revision'
+      break
+    case selectedReleaseId && isVersionId(value._id): {
+      // Check if this is a scheduled draft (cardinality one release)
+      const releaseDocument = releases.find(
+        (r) => getReleaseIdFromReleaseDocumentId(r._id) === selectedReleaseId,
+      )
+
+      if (releaseDocument && isCardinalityOneRelease(releaseDocument)) {
+        version = 'scheduled-draft'
+      } else {
+        version = 'version'
+      }
+      break
+    }
+    case selectedPerspectiveName === 'published':
+      version = 'published'
+      break
+    case draftsEnabled:
+      version = 'draft'
+      break
+    default:
+      version = 'published'
+  }
+
+  return version
+}

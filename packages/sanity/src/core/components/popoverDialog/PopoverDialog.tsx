@@ -9,7 +9,7 @@ import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
   return css`
-    // Make the popover scrollable if it overflows the viewport
+    /* Make the popover scrollable if it overflows the viewport */
     [data-ui='Popover__wrapper'] {
       overflow: auto;
     }
@@ -53,7 +53,7 @@ export function PopoverDialog(props: PopoverDialogProps) {
 
   // @todo: these use the same styles as dialogs, can this be shared?
   const content = (
-    <PopoverContainer width={width}>
+    <PopoverContainer width={width} data-testid="popover-dialog">
       <TrapFocus autoFocus>
         <Stack ref={containerRef}>
           <StickyLayer>

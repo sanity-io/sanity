@@ -24,7 +24,7 @@ export const pasteAction = defineDocumentFieldAction({
 
     const onAction = useCallback(() => {
       const value = getFormValue([]) as FormDocumentValue
-      onPaste(path, value, {
+      void onPaste(path, value, {
         context: {source: isDocument ? 'documentFieldAction' : 'fieldAction'},
       })
     }, [getFormValue, onPaste, path, isDocument])

@@ -1,95 +1,63 @@
-import {AddIcon} from '@sanity/icons'
-import {Box, Flex, MenuDivider, Spinner} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {type JSX, type RefObject, useMemo} from 'react'
+import {styled} from 'styled-components'
 
-import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
-import {useCreateReleaseMetadata} from '../../releases/hooks/useCreateReleaseMetadata'
-import {type ReleaseDocument, type ReleaseType} from '../../releases/store/types'
+import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {useReleaseOperations} from '../../releases/store/useReleaseOperations'
-import {useReleasePermissions} from '../../releases/store/useReleasePermissions'
-import {LATEST} from '../../releases/util/const'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {getReleaseDefaults} from '../../releases/util/util'
+import {useWorkspace} from '../../studio/workspace'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {
   getRangePosition,
   GlobalPerspectiveMenuItem,
   type LayerRange,
 } from './GlobalPerspectiveMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
+import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const orderedReleaseTypes: ReleaseType[] = ['asap', 'scheduled', 'undecided']
 
-const ASAP_RANGE_OFFSET = 2
-
-const StyledBox = styled(Box)`
+const ScrollWrapper = styled(Stack)`
   overflow: auto;
   max-height: 75vh;
 `
-
-const StyledPublishedBox = styled(Box)<{$reducePadding: boolean; $removePadding?: boolean}>(({
-  $reducePadding,
-  $removePadding,
-}) => {
-  const padding = $reducePadding ? '4px' : '16px'
-  return css`
-    position: sticky;
-    top: 0;
-    background-color: var(--card-bg-color);
-    z-index: 10;
-    padding-bottom: ${$removePadding ? '0px' : padding};
-  `
-})
 
 export function ReleasesList({
   areReleasesEnabled,
   setScrollContainer,
   onScroll,
   isRangeVisible,
-  selectedReleaseId,
-  setCreateBundleDialogOpen,
+  selectedPerspectiveName,
+  handleOpenBundleDialog,
   scrollElementRef,
+  menuItemProps,
 }: {
   areReleasesEnabled: boolean
   setScrollContainer: (el: HTMLDivElement) => void
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void
   isRangeVisible: boolean
-  selectedReleaseId: string | undefined
-  setCreateBundleDialogOpen: (open: boolean) => void
+  selectedPerspectiveName: string | undefined
+  handleOpenBundleDialog: () => void
   scrollElementRef: RefObject<ScrollElement>
-}): React.JSX.Element {
-  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
-  const {loading, data: releases} = useActiveReleases()
-  const {createRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
-  const createReleaseMetadata = useCreateReleaseMetadata()
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
+}): JSX.Element {
+  const {loading, data: allReleases} = useActiveReleases()
 
-  const {t} = useTranslation()
-
-  const isMounted = useRef(false)
-  useEffect(() => {
-    isMounted.current = true
-
-    checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults())).then(
-      (hasPermission) => {
-        if (isMounted.current) setHasCreatePermission(hasPermission)
-      },
-    )
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, createRelease, createReleaseMetadata])
-
-  const handleCreateBundleClick = useCallback(
-    () => guardWithReleaseLimitUpsell(() => setCreateBundleDialogOpen(true)),
-    [guardWithReleaseLimitUpsell, setCreateBundleDialogOpen],
+  const releases = useMemo(
+    () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
+    [allReleases],
   )
+
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
 
   const sortedReleaseTypeReleases = useMemo(
     () =>
@@ -104,16 +72,16 @@ export function ReleasesList({
   )
 
   const range: LayerRange = useMemo(() => {
-    let lastIndex = 0
+    const isDraftsPerspective = typeof selectedPerspectiveName === 'undefined'
+    let lastIndex = isDraftsPerspective ? 1 : 0
 
+    const systemStack = [PUBLISHED, isDraftModelEnabled ? LATEST : []].flat()
     const {asap, scheduled} = sortedReleaseTypeReleases
-    const countAsapReleases = asap.length
-    const countScheduledReleases = scheduled.length
 
     const offsets = {
-      asap: ASAP_RANGE_OFFSET,
-      scheduled: ASAP_RANGE_OFFSET + countAsapReleases,
-      undecided: ASAP_RANGE_OFFSET + countAsapReleases + countScheduledReleases,
+      asap: systemStack.length,
+      scheduled: systemStack.length + asap.length,
+      undecided: systemStack.length + asap.length + scheduled.length,
     }
 
     const adjustIndexForReleaseType = (type: ReleaseType) => {
@@ -123,7 +91,7 @@ export function ReleasesList({
       groupSubsetReleases.forEach((release, groupReleaseIndex) => {
         const index = offset + groupReleaseIndex
 
-        if (selectedReleaseId === getReleaseIdFromReleaseDocumentId(release._id)) {
+        if (selectedPerspectiveName === getReleaseIdFromReleaseDocumentId(release._id)) {
           lastIndex = index
         }
       })
@@ -135,7 +103,7 @@ export function ReleasesList({
       lastIndex,
       offsets,
     }
-  }, [selectedReleaseId, sortedReleaseTypeReleases])
+  }, [isDraftModelEnabled, selectedPerspectiveName, sortedReleaseTypeReleases])
 
   if (loading) {
     return (
@@ -146,51 +114,46 @@ export function ReleasesList({
   }
 
   return (
-    <>
-      <StyledBox ref={setScrollContainer} onScroll={onScroll}>
-        <StyledPublishedBox
-          $reducePadding={!releases.length || !areReleasesEnabled}
-          $removePadding={!areReleasesEnabled}
-        >
+    <Card radius={3} overflow="hidden">
+      <Card borderBottom padding={1}>
+        <Stack space={1}>
           <GlobalPerspectiveMenuItem
             rangePosition={isRangeVisible ? getRangePosition(range, 0) : undefined}
             release={'published'}
+            menuItemProps={menuItemProps}
           />
-          <GlobalPerspectiveMenuItem
-            rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
-            release={LATEST}
-          />
-        </StyledPublishedBox>
-        {areReleasesEnabled && (
-          <>
-            {orderedReleaseTypes.map((releaseType) => (
-              <ReleaseTypeMenuSection
-                key={releaseType}
-                releaseType={releaseType}
-                releases={sortedReleaseTypeReleases[releaseType]}
-                range={range}
-                currentGlobalBundleMenuItemRef={scrollElementRef}
-              />
-            ))}
-          </>
-        )}
-      </StyledBox>
+          {isDraftModelEnabled && (
+            <GlobalPerspectiveMenuItem
+              rangePosition={isRangeVisible ? getRangePosition(range, 1) : undefined}
+              release={LATEST}
+              menuItemProps={menuItemProps}
+            />
+          )}
+        </Stack>
+      </Card>
       {areReleasesEnabled && (
-        <>
-          <MenuDivider />
-          <MenuItem
-            icon={AddIcon}
-            disabled={!hasCreatePermission || mode === 'disabled'}
-            onClick={handleCreateBundleClick}
-            text={t('release.action.create-new')}
-            data-testid="create-new-release-button"
-            tooltipProps={{
-              disabled: hasCreatePermission === true,
-              content: t('release.action.permission.error'),
-            }}
-          />
-        </>
+        <ScrollWrapper ref={setScrollContainer} onScroll={onScroll} data-ui="scroll-wrapper">
+          {orderedReleaseTypes.map((releaseType) => (
+            <ReleaseTypeMenuSection
+              key={releaseType}
+              releaseType={releaseType}
+              releases={sortedReleaseTypeReleases[releaseType]}
+              range={range}
+              currentGlobalBundleMenuItemRef={scrollElementRef}
+              menuItemProps={menuItemProps}
+            />
+          ))}
+        </ScrollWrapper>
       )}
-    </>
+      {areReleasesEnabled && (
+        <Card borderTop paddingY={1} paddingX={2}>
+          <Stack space={1}>
+            <ScheduledDraftsMenuItem />
+            <ViewContentReleasesMenuItem />
+            <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+          </Stack>
+        </Card>
+      )}
+    </Card>
   )
 }

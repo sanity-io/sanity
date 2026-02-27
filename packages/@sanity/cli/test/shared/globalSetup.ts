@@ -1,4 +1,3 @@
-/* eslint-disable no-process-exit */
 import {execFileSync, spawnSync} from 'node:child_process'
 import {copyFile, mkdir, readFile, rename, rm, stat, writeFile} from 'node:fs/promises'
 import {hostname} from 'node:os'
@@ -24,13 +23,14 @@ import {
   nodePath,
   npmPath,
   packPath,
+  pnpmPath,
+  studioNames,
   studiosPath,
-  studioVersions,
   testClient,
   testIdPath,
 } from './environment'
 
-const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
+const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.cjs')
 
 export async function setup(): Promise<void> {
   // Write a file with the test id, so it can be shared across workers
@@ -38,7 +38,6 @@ export async function setup(): Promise<void> {
   const testId = `${localHost}-${process.ppid || process.pid}`
 
   // Set Staging Env Var
-  // eslint-disable-next-line no-process-env
   process.env.SANITY_INTERNAL_ENV = 'staging'
 
   await mkdir(baseTestPath, {recursive: true})
@@ -82,32 +81,44 @@ async function prepareStaticFixtures() {
 function prepareStudios() {
   // Copy the studios and install dependencies
   return Promise.all(
-    studioVersions.map(async (version) => {
-      const sourceStudioPath = path.join(fixturesPath, version)
-      const destinationPath = path.join(studiosPath, version)
-      const customDocStudioPath = path.join(studiosPath, `${version}-custom-document`)
+    studioNames.map(async (studioName) => {
+      const sourceStudioPath = path.join(fixturesPath, studioName)
+      const destinationPath = path.join(studiosPath, studioName)
+      const customDocStudioPath = path.join(studiosPath, `${studioName}-custom-document`)
 
       await mkdir(destinationPath, {recursive: true})
       await copy(`${sourceStudioPath}/**/{*,.*}`, destinationPath, {dereference: true})
-      if (version === 'v3') {
-        // We'll want to test the actual integration with the monorepo packages,
-        // instead of the versions that is available on npm, so we'll symlink them before running npm install
-        await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
-        await exec(npmPath, ['install', '--no-package-lock'], {cwd: destinationPath})
+      // pnpm inherits `trustPolicy` and `minimumReleaseAge` from `pnpm-workspace.yaml`
+      // but not `trustPolicyExclude` or `minimumReleaseAgeExclude`, so we need to
+      // explicitly override them here to avoid install failures
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: destinationPath,
+        // eslint-disable-next-line camelcase
+        env: {...process.env, npm_config_minimum_release_age: '0'},
+      })
+      // We'll want to test the actual integration with the monorepo packages,
+      // instead of the versions that is available on npm, so we'll symlink them before running npm install
+      await exec(nodePath, [SYMLINK_SCRIPT, destinationPath], {cwd: destinationPath})
 
-        // Make a copy of the studio and include a custom document component, in order to see
-        // that it resolves. We "cannot" use the same studio as it would _always_ use the
-        // custom document component, thus not testing the path of the _default_ component
-        await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
-        await copyFile(
-          `${customDocStudioPath}/components/EnvDocument.tsx`,
-          `${customDocStudioPath}/_document.tsx`,
-        )
-        // We'll want to test the actual integration with the monorepo packages,
-        // instead of the versions that is available on npm, so we'll symlink them before running npm install
-        await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
-        await exec(npmPath, ['install', '--no-package-lock'], {cwd: customDocStudioPath})
-      }
+      // Make a copy of the studio and include a custom document component, in order to see
+      // that it resolves. We "cannot" use the same studio as it would _always_ use the
+      // custom document component, thus not testing the path of the _default_ component
+      await copy(`${sourceStudioPath}/**/{*,.*}`, customDocStudioPath, {dereference: true})
+      await copyFile(
+        `${customDocStudioPath}/components/EnvDocument.tsx`,
+        `${customDocStudioPath}/_document.tsx`,
+      )
+      // pnpm inherits `trustPolicy` and `minimumReleaseAge` from `pnpm-workspace.yaml`
+      // but not `trustPolicyExclude` or `minimumReleaseAgeExclude`, so we need to
+      // explicitly override them here to avoid install failures
+      await exec(pnpmPath, ['install', '--ignore-workspace', '--trust-policy', 'off'], {
+        cwd: customDocStudioPath,
+        // eslint-disable-next-line camelcase
+        env: {...process.env, npm_config_minimum_release_age: '0'},
+      })
+      // We'll want to test the actual integration with the monorepo packages,
+      // instead of the versions that is available on npm, so we'll symlink them before running npm install
+      await exec(nodePath, [SYMLINK_SCRIPT, customDocStudioPath], {cwd: customDocStudioPath})
     }),
   )
 }
@@ -145,13 +156,13 @@ async function prepareDatasets() {
     apiHost: cliApiHost,
   })
 
-  for (const version of studioVersions) {
-    const args = getTestRunArgs(version)
+  for (const version of studioNames) {
+    const args = getTestRunArgs()
     const datasets = [args.documentsDataset, args.graphqlDataset, args.aclDataset]
 
     await Promise.all(
       datasets.map((ds) => {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.log(`Creating dataset ${ds}...`)
         return client.datasets.create(ds, {aclMode: 'public'}).catch((err) => {
           err.message = `Failed to create dataset "${ds}":\n${err.message}`
@@ -199,21 +210,22 @@ async function packCli(): Promise<string> {
   // Run `npm pack` so we can create a fully isolated install, replicating what a user would get
   await mkdir(packPath, {recursive: true})
   const cwd = path.join(__dirname, '..', '..')
-  const pack = await exec(npmPath, ['pack', '--json'], {cwd})
+  const pack = await exec(pnpmPath, ['pack', '--json'], {cwd})
   if (pack.code !== 0) {
     throw new Error(pack.stderr)
   }
 
-  // `--json` returns an array - we only need the first entry to tell us where the tarball is
-  const [packResult] = JSON.parse(pack.stdout) || []
-  if (!packResult || !packResult.id) {
-    throw new Error('Unexpected `npm pack` result')
+  // note: the output from `pnpm pack --json` is different from the output of `npm pack --json`
+  // if changing back to npm, be aware that `pnpm pack --json` returns an array, and we only
+  // need the first entry to tell us where the tarball is (see earlier revision of this file for
+  // a working example)
+  const packResult = JSON.parse(pack.stdout) || {}
+  if (!packResult || !packResult.name) {
+    throw new Error('Unexpected `pnpm pack` result')
   }
 
-  // Ironically, the filename returned isn't actually correct for scoped modules 🙄
-  const packedFileName = packResult.filename.replace(/^@/, '').replace(/\//, '-')
-  const packedFilePath = path.join(cwd, packedFileName)
-  const destinationPath = path.join(packPath, packedFileName)
+  const packedFilePath = path.join(cwd, packResult.filename)
+  const destinationPath = path.join(packPath, packResult.filename)
   await stat(packedFilePath)
 
   // Move it to the pack folder (`--pack-destination` is not available on older node/npm versions)
@@ -233,19 +245,19 @@ export async function teardown(): Promise<void> {
     return
   }
 
-  for (const version of studioVersions) {
-    const args = getTestRunArgs(version)
+  try {
+    const args = getTestRunArgs()
     await deleteCorsOrigins(args.corsOrigin)
     await deleteAliases(args.alias)
     await deleteGraphQLAPIs(args.graphqlDataset)
     await deleteDatasets(args)
+
+    await rm(baseTestPath, {recursive: true, force: true, maxRetries: 2})
+  } finally {
+    // Very hacky, but good enough for now:
+    // Force a cleanup of dangling entities left over from previous test runs
+    await cleanupDangling()
   }
-
-  await rm(baseTestPath, {recursive: true, force: true})
-
-  // Very hacky, but good enough for now:
-  // Force a cleanup of dangling entities left over from previous test runs
-  await cleanupDangling()
 }
 
 function getErrorWarner(entity: string, id: string) {

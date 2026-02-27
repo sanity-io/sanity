@@ -1,4 +1,3 @@
-/* eslint-disable i18next/no-literal-string -- will not support i18n in error boundaries */
 import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {type ViteHotContext} from 'vite/types/hot.js'

@@ -6,14 +6,14 @@ import {
   type ObjectDefinition,
   type ObjectField,
 } from '@sanity/types'
-import {castArray, flatMap, pick, startCase} from 'lodash'
+import {castArray, flatMap, pick, startCase} from 'lodash-es'
 
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import createPreviewGetter from '../preview/createPreviewGetter'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {resolveSearchConfig} from '../searchConfig/resolve'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {lazyGetter} from './utils'
+import {ALL_FIELDS_GROUP_NAME, DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   ...DEFAULT_OVERRIDEABLE_FIELDS,
@@ -35,28 +35,20 @@ export const ObjectType = {
   extend(rawSubTypeDef: any, createMemberType: any) {
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
-    const options = {...(subTypeDef.options || {})}
-    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), subTypeDef, {
-      type: this.get(),
+    const options = {...subTypeDef.options}
+
+    const ownProps = {
+      ...subTypeDef,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
-      fields: subTypeDef.fields.map((fieldDef: any) => {
-        const {name, fieldset, group, ...rest} = fieldDef
+      fields: subTypeDef.fields.map((fieldDef: any) =>
+        createMemberType.cachedObjectField(fieldDef),
+      ),
+    }
 
-        const compiledField = {
-          name,
-          group,
-          fieldset,
-        }
-
-        return lazyGetter(compiledField, 'type', () => {
-          return createMemberType({
-            ...rest,
-            title: fieldDef.title || startCase(name),
-          })
-        })
-      }),
+    const parsed = Object.assign(pick(this.get(), OVERRIDABLE_FIELDS), ownProps, {
+      type: this.get(),
     })
 
     lazyGetter(parsed, 'fieldsets', () => {
@@ -68,6 +60,16 @@ export const ObjectType = {
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
 
     lazyGetter(
       parsed,
@@ -100,14 +102,18 @@ export const ObjectType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }
+
+          const subOwnProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          subOwnProps.title =
+            extensionDef.title ||
+            subTypeDef.title ||
+            (subTypeDef.name ? startCase(subTypeDef.name) : 'Object')
+
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
-            title:
-              extensionDef.title ||
-              subTypeDef.title ||
-              (subTypeDef.name ? startCase(subTypeDef.name) : 'Object'),
             type: parent,
           })
           lazyGetter(current, '__experimental_search', () => parent.__experimental_search)
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }
@@ -200,5 +206,9 @@ function createFieldsGroups(typeDef: ObjectDefinition, fields: ObjectField[]): F
     })
   })
 
-  return flatMap(groupsByName).filter((group) => group.fields.length > 0)
+  return flatMap(groupsByName).filter(
+    // All fields group is added by default in structure.
+    // To pass the properties from the schema to the form state, we need to include it in the list of groups.
+    (group) => group.fields.length > 0 || group.name === ALL_FIELDS_GROUP_NAME,
+  )
 }

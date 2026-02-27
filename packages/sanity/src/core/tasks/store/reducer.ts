@@ -92,7 +92,7 @@ export function tasksReducer(
     }
 
     case 'TASK_RECEIVED': {
-      const nextTaskResult = action.payload as TaskDocument
+      const nextTaskResult = action.payload
 
       return {
         ...state,
@@ -104,7 +104,6 @@ export function tasksReducer(
     }
 
     case 'TASK_DELETED': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const {[action.id]: _, ...restTasks} = state.tasks
 
       return {

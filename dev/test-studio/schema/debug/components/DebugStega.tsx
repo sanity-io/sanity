@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-nested-ternary */
+// oxlint-disable no-explicit-any
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
@@ -64,7 +63,6 @@ function DocumentDebugger() {
 }
 
 function InputDebugger(props: InputProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const value = props.value as any
   const paneRouter = usePaneRouter()
   const {
@@ -91,8 +89,9 @@ function InputDebugger(props: InputProps) {
         .filter(Boolean)
         .join('')}`,
     ]
+    const key = `$['${sourcePath}']`
     const mappings = {
-      [`$['${sourcePath}']`]: {
+      [key]: {
         source: {
           document: 0,
           path: 0,
@@ -109,8 +108,7 @@ function InputDebugger(props: InputProps) {
       stegaEncodeSourceMap({[sourcePath]: value}, resultSourceMap, {
         enabled: true,
         studioUrl: '/stega',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any),
+      }),
     [resultSourceMap, value],
   )
   const stegaEditLinks = useMemo(
@@ -132,14 +130,13 @@ function InputDebugger(props: InputProps) {
 
               return (
                 <Button
-                  as="a"
                   key={href}
+                  as="a"
                   href={href}
                   tone="primary"
                   size={0}
                   fontSize={0}
                   padding={2}
-                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={(event) => {
                     if (prettyPath) {
                       event.preventDefault()

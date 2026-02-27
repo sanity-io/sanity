@@ -1,0 +1,164 @@
+name: Publish Pull Requests with pkg.pr.new
+
+permissions:
+  pull-requests: write
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+
+jobs:
+  publish:
+    if: >
+      github.repository == 'sanity-io/sanity' &&
+      (github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'trigger: preview')))
+
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - id: pre-flight
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          PACKAGES=$(pnpx tsx scripts/listPublishedPackages.ts)
+          echo "packages=${PACKAGES}" >> "$GITHUB_OUTPUT"
+          VERSION="$(jq -r .version lerna.json)-pr.$PR_NUMBER+$(git rev-parse --short HEAD)"
+          echo "process.env.PKG_VERSION will be set to ${VERSION} when building"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - run: pnpm build
+        env:
+          # Makes sure the right version is set in packages/sanity/src/core/version.ts
+          # Note that version fields in package.json for all packages will be unchanged
+          PKG_VERSION: ${{ steps.pre-flight.outputs.version }}
+
+      - run: |
+          echo "Publishing to pkg.pr.new: ${{ steps.pre-flight.outputs.packages }}"
+          pnpx pkg-pr-new publish --pnpm --no-template --json output.json --comment=off --compact ${{ steps.pre-flight.outputs.packages }}
+
+      - name: Post or update comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('node:fs')
+
+            const output = JSON.parse(fs.readFileSync('output.json', 'utf8'))
+
+            // Package managers to show install instructions for
+            const PACKAGE_MANAGERS = [
+              {
+                name: 'pnpm',
+                installCommand: 'pnpm install',
+                logoUrl: 'https://avatars.githubusercontent.com/u/21320719?s=200&v=4',
+              },
+              {
+                name: 'npm',
+                installCommand: 'npm install',
+                logoUrl: 'https://avatars.githubusercontent.com/u/6078720?s=200&v=4',
+              },
+            ]
+
+            // these are the packages folks commonly use as dependencies
+            const COMMON_PACKAGE_NAMES = ['sanity', '@sanity/vision']
+
+            const BOT_COMMENT_IDENTIFIER = '<!-- pkg.pr.new -->'
+            const BACKTICKS = '```'
+
+            function renderPackages(pkgManager, pkgs) {
+              return pkgs
+                .map(
+                  (pkg) =>
+                    `##### :package: \`${pkg.name}\`
+            ${BACKTICKS}sh
+            ${pkgManager.installCommand} ${pkg.url}
+            ${BACKTICKS}
+            `,
+                )
+                .join('\n')
+            }
+
+            const commonPackages = output.packages.filter((p) => COMMON_PACKAGE_NAMES.includes(p.name))
+            const otherPackages = output.packages.filter((p) => !COMMON_PACKAGE_NAMES.includes(p.name))
+
+            function renderInstallInstructions() {
+              return PACKAGE_MANAGERS.map(
+                (pkgManager) =>
+                  `#### <img height="16" align="center" alt="${pkgManager.name} logo" src="${pkgManager.logoUrl}" /> Using ${pkgManager.name}
+
+            ${renderPackages(pkgManager, commonPackages)}
+
+            <details>
+            <summary><b>:package: Other packages…</b></summary>
+
+            ${renderPackages(pkgManager, otherPackages)}
+
+            </details>
+
+            `,
+              ).join('\n')
+            }
+
+            const sha = context.payload.pull_request?.head?.sha
+
+            const body = `## Preview this PR with [pkg.pr.new](https://pkg.pr.new)
+
+            ### Run the Sanity CLI
+
+            ${BACKTICKS}
+            npx https://pkg.pr.new/@sanity/cli@23db03f <command>
+            ${BACKTICKS}
+
+            ### ...Or upgrade project dependencies
+
+            ${renderInstallInstructions()}
+
+            [View Commit](${`https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${sha}`}) (${sha})
+
+            ${BOT_COMMENT_IDENTIFIER}
+            `
+
+            async function findBotComment(issueNumber) {
+              if (!issueNumber) return null
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              })
+              return comments.data.find((comment) => comment.body.includes(BOT_COMMENT_IDENTIFIER))
+            }
+
+            async function createOrUpdateComment(issueNumber) {
+              if (!issueNumber) {
+                console.log('No issue number provided. Cannot post or update comment.')
+                return
+              }
+
+              const existingComment = await findBotComment(issueNumber)
+              if (existingComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingComment.id,
+                  body: body,
+                })
+              } else {
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body,
+                })
+              }
+            }
+
+            if (context.eventName === 'pull_request') {
+              await createOrUpdateComment(context.issue.number)
+            } else {
+              throw new Error('This job can only run for pull requests')
+            }

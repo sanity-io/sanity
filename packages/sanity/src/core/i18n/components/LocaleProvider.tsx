@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
 import {type i18n} from 'i18next'
 import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import {I18nextProvider} from 'react-i18next'
@@ -78,7 +79,7 @@ export function LocaleProviderBase({
     <Suspense fallback={<LoadingBlock />}>
       <I18nextProvider i18n={i18next}>
         {/* Use locale as key to force re-render, updating non-reactive parts */}
-        <LocaleContext.Provider value={context} key={currentLocale.id}>
+        <LocaleContext.Provider key={currentLocale.id} value={context}>
           {children}
         </LocaleContext.Provider>
       </I18nextProvider>

@@ -1,36 +1,34 @@
-import {memo, useMemo} from 'react'
+import {useImperativeHandle, useMemo, useState} from 'react'
 
 import {HookCollectionState} from './HookCollectionState'
 import {type GetHookCollectionStateProps} from './types'
-import {useHookCollectionKeys} from './useHookCollectionKeys'
 import {useHookCollectionStates} from './useHookCollectionStates'
 
-const GetHookCollectionStateComponent = memo(
-  <Args, State>(props: GetHookCollectionStateProps<Args, State>) => {
-    const {hooks, args, children, group, onReset} = props
-
-    const {handleReset, keys} = useHookCollectionKeys(onReset)
-    const {states, handleNext} = useHookCollectionStates({hooks, group})
-
-    const result = useMemo(() => children({states}), [children, states])
-
-    return (
-      <>
-        <HookCollectionState
-          hooks={hooks as any}
-          keys={keys}
-          args={args}
-          handleNext={handleNext}
-          handleReset={handleReset}
-        />
-        {result}
-      </>
-    )
-  },
-)
-GetHookCollectionStateComponent.displayName = 'Memo(GetHookCollectionState)'
-
 /** @internal */
-export const GetHookCollectionState = GetHookCollectionStateComponent as <Args, State>(
+export function GetHookCollectionState<Args, State>(
   props: GetHookCollectionStateProps<Args, State>,
-) => React.JSX.Element
+) {
+  const {hooks, args, children, resetRef} = props
+
+  const {states, handleNext} = useHookCollectionStates({hooks})
+
+  const result = useMemo(() => children({states}), [children, states])
+
+  /**
+   * Legacy pattern that should not be used in new code
+   */
+  const [forceReset, setForceReset] = useState(0)
+  useImperativeHandle(resetRef, () => () => setForceReset((n) => n + 1), [])
+
+  return (
+    <>
+      <HookCollectionState<Args, State>
+        key={`render-${forceReset}`}
+        hooks={hooks}
+        args={args}
+        handleNext={handleNext}
+      />
+      {result}
+    </>
+  )
+}

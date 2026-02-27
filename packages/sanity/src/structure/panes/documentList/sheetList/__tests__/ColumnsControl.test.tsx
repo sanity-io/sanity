@@ -1,11 +1,9 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
-
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {type ColumnDef, useReactTable} from '@tanstack/react-table'
-import {fireEvent, render, screen} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type SanityDocument} from 'sanity'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {describe, expect, it} from 'vitest'
 
 import {ColumnsControl} from '../ColumnsControl'
 
@@ -33,83 +31,109 @@ const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
   return <ColumnsControl table={table} />
 }
 
+const renderTest = async () => {
+  return render(
+    <ThemeProvider theme={studioTheme}>
+      <TableHarness
+        columns={[
+          {header: 'First Column', enableHiding: true},
+          {header: 'Second Column', enableHiding: true},
+          {header: 'Third Column', enableHiding: false},
+          {
+            header: 'Fourth Column',
+            enableHiding: true,
+            columns: [
+              {header: 'Nested First Column', enableHiding: true},
+              {header: 'Nested Second Column', enableHiding: true},
+            ],
+          },
+          {header: 'Fifth Column', enableHiding: true},
+          {header: 'Sixth Column', enableHiding: true},
+        ]}
+      />
+    </ThemeProvider>,
+  )
+}
+
+const openColumnsMenu = async () => {
+  await userEvent.click(screen.getByRole('button', {name: 'sheet-list.edit-columns'}))
+
+  const menu = await waitFor(() => {
+    const element = document.querySelector('[role="menu"]') as HTMLElement | null
+
+    if (!element) {
+      throw new Error('Menu not rendered yet')
+    }
+
+    return element
+  })
+
+  return menu
+}
+
 describe('ColumnsControl', () => {
-  beforeEach(() => {
-    render(
-      <ThemeProvider theme={studioTheme}>
-        <TableHarness
-          columns={[
-            {header: 'First Column', enableHiding: true},
-            {header: 'Second Column', enableHiding: true},
-            {header: 'Third Column', enableHiding: false},
-            {
-              header: 'Fourth Column',
-              enableHiding: true,
-              columns: [
-                {header: 'Nested First Column', enableHiding: true},
-                {header: 'Nested Second Column', enableHiding: true},
-              ],
-            },
-            {header: 'Fifth Column', enableHiding: true},
-            {header: 'Sixth Column', enableHiding: true},
-          ]}
-        />
-      </ThemeProvider>,
-    )
+  it('should set default column visibilities', async () => {
+    await renderTest()
+
+    const menu = await openColumnsMenu()
+
+    expect(within(menu).getByLabelText('First Column')).toBeChecked()
+    expect(within(menu).getByLabelText('Nested First Column')).toBeChecked()
+    expect(within(menu).getByLabelText('Sixth Column')).not.toBeChecked()
   })
 
-  afterEach(() => {
-    vi.clearAllMocks()
+  it('should not allow unhideable columns to be hidden', async () => {
+    await renderTest()
+
+    const menu = await openColumnsMenu()
+    expect(within(menu).queryByLabelText('Third Column')).toBeNull()
   })
 
-  it('should set default column visibilities', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
-    expect(screen.getByRole('checkbox', {name: 'First Column'})).toBeChecked()
-    expect(screen.getByRole('checkbox', {name: 'Nested First Column'})).toBeChecked()
-    expect(screen.getByRole('checkbox', {name: 'Sixth Column'})).not.toBeChecked()
+  it('should toggle column visibility', async () => {
+    await renderTest()
+
+    const menu = await openColumnsMenu()
+    const firstColumn = within(menu).getByLabelText('First Column')
+    await userEvent.click(firstColumn)
+    expect(within(menu).getByLabelText('First Column')).not.toBeChecked()
   })
 
-  it('should not allow unhideable columns to be hidden', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
-    expect(screen.queryByRole('checkbox', {name: 'Third Column'})).toBeNull()
+  it('should not allow more than 5 columns to be visible', async () => {
+    await renderTest()
+
+    const menu = await openColumnsMenu()
+
+    expect(within(menu).getByLabelText('Sixth Column')).toBeDisabled()
   })
 
-  it('should toggle column visibility', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
-    expect(screen.getByRole('checkbox', {name: 'First Column'})).not.toBeChecked()
+  it('should not allow the last visible column to be hidden', async () => {
+    await renderTest()
+
+    const menu = await openColumnsMenu()
+
+    await userEvent.click(within(menu).getByLabelText('First Column'))
+    await userEvent.click(within(menu).getByLabelText('Second Column'))
+    await userEvent.click(within(menu).getByLabelText('Nested Second Column'))
+    await userEvent.click(within(menu).getByLabelText('Nested First Column'))
+
+    expect(within(menu).getByLabelText('Fifth Column')).toBeDisabled()
   })
 
-  it('should not allow more than 5 columns to be visible', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
+  it('should reset column visibility', async () => {
+    await renderTest()
 
-    expect(screen.getByRole('checkbox', {name: 'Sixth Column'})).toBeDisabled()
-  })
+    const menu = await openColumnsMenu()
 
-  it('should not allow the last visible column to be hidden', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
+    await userEvent.click(within(menu).getByLabelText('First Column'))
+    await userEvent.click(within(menu).getByLabelText('Second Column'))
+    await userEvent.click(within(menu).getByLabelText('Nested Second Column'))
+    await userEvent.click(within(menu).getByLabelText('Nested First Column'))
 
-    fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Second Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested Second Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested First Column'}))
+    await userEvent.click(within(menu).getByText('sheet-list.reset-columns'))
 
-    expect(screen.getByRole('checkbox', {name: 'Fifth Column'})).toBeDisabled()
-  })
-
-  it('should reset column visibility', () => {
-    fireEvent.click(screen.getByText('sheet-list.edit-columns'))
-
-    fireEvent.click(screen.getByRole('checkbox', {name: 'First Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Second Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested Second Column'}))
-    fireEvent.click(screen.getByRole('checkbox', {name: 'Nested First Column'}))
-
-    fireEvent.click(screen.getByText('sheet-list.reset-columns'))
-
-    expect(screen.getByRole('checkbox', {name: 'First Column'})).toBeChecked()
-    expect(screen.getByRole('checkbox', {name: 'Second Column'})).toBeChecked()
-    expect(screen.getByRole('checkbox', {name: 'Nested Second Column'})).toBeChecked()
-    expect(screen.getByRole('checkbox', {name: 'Nested First Column'})).toBeChecked()
+    expect(within(menu).getByLabelText('First Column')).toBeChecked()
+    expect(within(menu).getByLabelText('Second Column')).toBeChecked()
+    expect(within(menu).getByLabelText('Nested Second Column')).toBeChecked()
+    expect(within(menu).getByLabelText('Nested First Column')).toBeChecked()
   })
 })

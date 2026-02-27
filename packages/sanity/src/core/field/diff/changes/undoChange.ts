@@ -40,12 +40,15 @@ export function undoChange(
   change: ChangeNode,
   rootDiff: ObjectDiff | null,
   documentOperations: FieldOperationsAPI,
+  stubbed?: Set<string>,
 ): void {
   if (!rootDiff) {
     return
   }
 
   const patches: PatchOperations[] = []
+  // Track stubbed paths to prevent duplicates when reverting group changes
+  const stubbedPaths = stubbed ?? new Set<string>()
 
   if (change.type === 'group') {
     const allChanges = flattenChangeNode(change)
@@ -54,8 +57,9 @@ export function undoChange(
 
     allChanges
       .filter((child) => !isAddedAction(child))
-      .forEach((child) => undoChange(child, rootDiff, documentOperations))
-
+      .forEach((child) => {
+        undoChange(child, rootDiff, documentOperations, stubbedPaths)
+      })
     patches.push(
       ...buildUnsetPatches(rootDiff, unsetChanges.map((unsetChange) => unsetChange.path).reverse()),
     )
@@ -75,7 +79,7 @@ export function undoChange(
     patches.push(...buildMovePatches(change.itemDiff, change.parentDiff, change.path))
   } else {
     // For all other operations, try to find the most optimal case
-    patches.push(...buildUndoPatches(change.diff, rootDiff, change.path))
+    patches.push(...buildUndoPatches(change.diff, rootDiff, change.path, stubbedPaths))
   }
 
   documentOperations.patch.execute(patches)
@@ -195,7 +199,12 @@ function buildMovePatches(
   ]
 }
 
-function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOperations[] {
+function buildUndoPatches(
+  diff: Diff,
+  rootDiff: ObjectDiff,
+  path: Path,
+  stubbedPaths: Set<string>,
+): PatchOperations[] {
   const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
 
   const inserts = patches
@@ -206,7 +215,6 @@ function buildUndoPatches(diff: Diff, rootDiff: ObjectDiff, path: Path): PatchOp
     .filter((patch): patch is UnsetPatch => patch.op === 'unset')
     .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
 
-  const stubbedPaths = new Set<string>()
   const stubs: PatchOperations[] = []
 
   let hasSets = false
@@ -254,8 +262,17 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
       !getValueAtPath(nextValue, path.slice(0, i + 1))
     ) {
       const indexAtPrev = findIndex(itemValue, nextSegment)
-      const prevItem = itemValue[indexAtPrev - 1]
       const nextItem = getValueAtPath(value, subPath.concat(nextSegment))
+
+      // Skip if already stubbed (prevents duplicate keys when reverting group changes)
+      const itemPath = pathToString(subPath.concat(nextSegment))
+      if (stubbed.has(itemPath)) {
+        i++
+        continue
+      }
+      stubbed.add(itemPath)
+
+      const prevItem = itemValue[indexAtPrev - 1]
       const prevSeg = isKeyedObject(prevItem) ? {_key: prevItem._key} : indexAtPrev - 1
       const after = pathToString(subPath.concat(indexAtPrev < 1 ? 0 : prevSeg))
       stubs.push({setIfMissing: {[pathStr]: []}})
@@ -301,6 +318,7 @@ function onlyContainsStubs(
     return false
   }
 
+  // oxlint-disable-next-line no-for-in-array - a bit risky to refactor this to no longer use for-in, do it later
   for (const child in item) {
     if (!Object.prototype.hasOwnProperty.call(item, child)) {
       continue

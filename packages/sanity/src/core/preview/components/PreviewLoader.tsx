@@ -3,7 +3,8 @@ import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
 import {type PreviewProps} from '../../components'
 import {type RenderPreviewCallbackProps} from '../../form'
 import {useTranslation} from '../../i18n'
-import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
+import {type PerspectiveStack} from '../../perspective/types'
+import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
@@ -19,6 +20,7 @@ import {_extractUploadState} from './_extractUploadState'
 export function PreviewLoader(
   props: RenderPreviewCallbackProps & {
     component: ComponentType<Omit<PreviewProps, 'renderDefault'>>
+    perspectiveStack?: PerspectiveStack
   },
 ): React.JSX.Element {
   const {
@@ -28,6 +30,7 @@ export function PreviewLoader(
     style: styleProp,
     schemaType,
     skipVisibilityCheck,
+    perspectiveStack,
     ...restProps
   } = props
 
@@ -47,6 +50,7 @@ export function PreviewLoader(
     enabled: skipVisibilityCheck || isVisible,
     schemaType,
     value,
+    perspectiveStack,
   })
 
   const style: CSSProperties = useMemo(
@@ -71,7 +75,12 @@ export function PreviewLoader(
     }
 
     if (!preview?.value?.media) {
-      return schemaType.icon
+      // Only fall back to schema icon if there's no custom prepare function.
+      // When a prepare function is defined and doesn't return media,
+      // the user intentionally omitted it - don't show the schema icon.
+      // See: https://github.com/sanity-io/sanity/issues/1200
+      const hasCustomPrepare = typeof schemaType.preview?.prepare === 'function'
+      return hasCustomPrepare ? undefined : schemaType.icon
     }
 
     // @todo: fix `TS2769: No overload matches this call.`

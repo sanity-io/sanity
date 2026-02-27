@@ -1,3 +1,5 @@
+import {type SingleActionResult} from '@sanity/client'
+
 import {isErrorWithDetails} from '../../error/types/isErrorWithDetails'
 import {type useReleasePermissionsValue} from './useReleasePermissions'
 
@@ -34,7 +36,9 @@ export function createReleasePermissionsStore(
    * @param args - the arguments to pass to the action (release id, etc)
    * @returns true or false depending if the user can perform the action
    */
-  const checkWithPermissionGuard = async <T extends (...args: any[]) => Promise<void> | void>(
+  const checkWithPermissionGuard = async <
+    T extends (...args: any[]) => Promise<void | SingleActionResult>,
+  >(
     action: T,
     ...args: Parameters<T>
   ): Promise<boolean> => {
@@ -48,10 +52,13 @@ export function createReleasePermissionsStore(
 
     if (permissions[action.name] === undefined) {
       try {
-        await action(...args, {
-          dryRun: true,
-          skipCrossDatasetReferenceValidation: true,
-        })
+        await action(
+          ...args,
+          {
+            dryRun: true,
+            skipCrossDatasetReferenceValidation: true,
+          },
+        )
         permissions = {...permissions, [action.name]: true}
 
         return true

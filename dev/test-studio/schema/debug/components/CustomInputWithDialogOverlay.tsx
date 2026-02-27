@@ -1,35 +1,56 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Button, Dialog} from '@sanity/ui'
-import {type FocusEvent, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
-import {type DocumentPresence, FieldPresence, PresenceOverlay, setIfMissing} from 'sanity'
+import {
+  type FocusEvent,
+  type ForwardedRef,
+  forwardRef,
+  Fragment,
+  // useCallback,
+  useState,
+} from 'react'
+import {
+  type DocumentPresence,
+  FieldPresence,
+  PresenceOverlay,
+  // setIfMissing
+} from 'sanity'
 
 export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithDialogOverlay(
   props: {
-    focusPath?: Path
-    level?: number
-    onBlur: () => void
-    onChange: (patches: any) => void
+    // focusPath?: Path
+    // level?: number
+    // onBlur: () => void
+    // onChange: (patches: any) => void
     onFocus: (pathOrEvent?: Path | FocusEvent) => void
     presence: DocumentPresence[]
     schemaType: ObjectSchemaType
-    value?: any
+    // value?: any
   },
   ref: ForwardedRef<HTMLDivElement>,
 ) {
-  const {focusPath, level = 0, onBlur, onChange, onFocus, presence, schemaType, value} = props
+  const {
+    // focusPath,
+    // level = 0,
+    // onBlur,
+    // onChange,
+    onFocus,
+    presence,
+    schemaType,
+    // value,
+  } = props
 
-  const handleFieldChange = useCallback(
-    (field: any, fieldPatchEvent: any) => {
-      // Whenever the field input emits a patch event, we need to make sure to each of the included patches
-      // are prefixed with its field name, e.g. going from:
-      // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
-      // and ensure this input's value exists
-      onChange(
-        fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: schemaType.name})),
-      )
-    },
-    [onChange, schemaType.name],
-  )
+  // const handleFieldChange = useCallback(
+  //   (field: any, fieldPatchEvent: any) => {
+  //     // Whenever the field input emits a patch event, we need to make sure to each of the included patches
+  //     // are prefixed with its field name, e.g. going from:
+  //     // {path: [], set: <nextvalue>} to {path: [<fieldName>], set: <nextValue>}
+  //     // and ensure this input's value exists
+  //     onChange(
+  //       fieldPatchEvent.prefixAll(field.name).prepend(setIfMissing({_type: schemaType.name})),
+  //     )
+  //   },
+  //   [onChange, schemaType.name],
+  // )
 
   const [isOpen, setIsOpen] = useState(false)
   return (
@@ -38,10 +59,10 @@ export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithD
         <Dialog id="todo" onClose={() => setIsOpen(false)}>
           <PresenceOverlay>
             <div style={{padding: 10}}>
-              {schemaType.fields.map((field, i) => (
+              {schemaType.fields.map((field) => (
                 // Delegate to the generic FormBuilderInput. It will resolve and insert the actual input component
                 // for the given field type
-                <>TODO</>
+                <Fragment key={field.name}>TODO</Fragment>
                 // <FormBuilderInput
                 //   level={level + 1}
                 //   key={field.name}

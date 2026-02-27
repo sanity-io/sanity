@@ -17,7 +17,6 @@ function joinReferences(schemaType: SchemaType, path: string[], strict: boolean 
       if (strict) {
         throw new Error(errorMessage)
       } else {
-        // eslint-disable-next-line no-console
         console.warn(errorMessage)
       }
     }

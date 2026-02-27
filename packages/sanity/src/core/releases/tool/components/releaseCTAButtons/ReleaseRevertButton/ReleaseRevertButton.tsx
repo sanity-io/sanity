@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {RestoreIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Checkbox, Flex, Text, useToast} from '@sanity/ui'
@@ -9,10 +10,8 @@ import {Dialog} from '../../../../../../ui-components/dialog'
 import {Translate, useTranslation} from '../../../../../i18n'
 import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
-import {useIsReleasesPlus} from '../../../../hooks/useIsReleasesPlus'
 import {releasesLocaleNamespace} from '../../../../i18n'
 import {isReleaseLimitError} from '../../../../store/isReleaseLimitError'
-import {type ReleaseDocument} from '../../../../store/types'
 import {useReleaseOperations} from '../../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../../store/useReleasePermissions'
 import {createReleaseId} from '../../../../util/createReleaseId'
@@ -42,6 +41,9 @@ const ConfirmReleaseDialog = ({
   release: ReleaseDocument
 }) => {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
+  const releaseDisplayTitle =
+    release.metadata.title || tCore('release.placeholder-untitled-release')
   const hasPostPublishTransactions = usePostPublishTransactions(documents)
   const getDocumentRevertStates = useDocumentRevertStates(documents)
   const [stageNewRevertRelease, setStageNewRevertRelease] = useState(true)
@@ -62,7 +64,8 @@ const ConfirmReleaseDialog = ({
 
     const revertReleaseId = createReleaseId()
 
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       if (!documentRevertStates) {
         throw new Error('Unable to find documents to revert')
       }
@@ -71,8 +74,12 @@ const ConfirmReleaseDialog = ({
         revertReleaseId,
         documentRevertStates,
         {
-          title: t('revert-release.title', {title: release.metadata.title}),
-          description: t('revert-release.description', {title: release.metadata.title}),
+          title: t('revert-release.title', {
+            title: releaseDisplayTitle,
+          }),
+          description: t('revert-release.description', {
+            title: releaseDisplayTitle,
+          }),
           releaseType: 'asap',
         },
         stageNewRevertRelease ? 'staged' : 'immediate',
@@ -98,6 +105,7 @@ const ConfirmReleaseDialog = ({
                         marginBottom: '0.5rem',
                         display: 'flex',
                       }}
+                      data-testid="revert-stage-success-link"
                     >
                       {t('toast.revert-stage.success-link')}
                     </Text>
@@ -105,7 +113,9 @@ const ConfirmReleaseDialog = ({
                 }}
                 t={t}
                 i18nKey="toast.revert-stage.success"
-                values={{title: release.metadata.title}}
+                values={{
+                  title: releaseDisplayTitle,
+                }}
               />
             </Text>
           ),
@@ -121,33 +131,38 @@ const ConfirmReleaseDialog = ({
               <Translate
                 t={t}
                 i18nKey="toast.immediate-revert.success"
-                values={{title: release.metadata.title}}
+                values={{
+                  title: releaseDisplayTitle,
+                }}
               />
             </Text>
           ),
         })
       }
-    } catch (revertError) {
-      if (isReleaseLimitError(revertError)) return
-
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
-          </Text>
-        ),
-      })
-      console.error(revertError)
-    } finally {
-      setRevertReleaseStatus('idle')
     }
+    await run()
+      .catch((revertError) => {
+        if (isReleaseLimitError(revertError)) return
+
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate t={t} i18nKey="toast.revert.error" values={{error: revertError.message}} />
+            </Text>
+          ),
+        })
+        console.error(revertError)
+      })
+      .finally(() => {
+        setRevertReleaseStatus('idle')
+      })
   }, [
     setRevertReleaseStatus,
     getDocumentRevertStates,
     revertRelease,
     t,
-    release.metadata.title,
+    releaseDisplayTitle,
     stageNewRevertRelease,
     telemetry,
     toast,
@@ -162,7 +177,9 @@ const ConfirmReleaseDialog = ({
   return (
     <Dialog
       id="confirm-revert-dialog"
-      header={t('revert-dialog.confirm-revert.title', {title: release.metadata.title})}
+      header={t('revert-dialog.confirm-revert.title', {
+        title: releaseDisplayTitle,
+      })}
       onClose={() => setRevertReleaseStatus('idle')}
       footer={{
         confirmButton: {
@@ -192,13 +209,13 @@ const ConfirmReleaseDialog = ({
       <Flex align="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}
-          id="stage-release"
+          id="immediate-revert-release"
           style={{display: 'block'}}
-          checked={stageNewRevertRelease}
+          checked={!stageNewRevertRelease}
         />
         <Box flex={1} paddingLeft={3}>
           <Text muted size={1}>
-            <label htmlFor="stage-release">
+            <label htmlFor="immediate-revert-release">
               {t('revert-dialog.confirm-revert.stage-revert-checkbox-label')}
             </label>
           </Text>
@@ -222,7 +239,7 @@ export const ReleaseRevertButton = ({
 }: ReleasePublishAllButtonProps) => {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {guardWithReleaseLimitUpsell, mode} = useReleasesUpsell()
+  const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
   const [revertReleaseStatus, setRevertReleaseStatus] = useState<RevertReleaseStatus>('idle')
   const [isPendingGuardResponse, setIsPendingGuardResponse] = useState<boolean>(false)
   const {createRelease} = useReleaseOperations()
@@ -235,12 +252,10 @@ export const ReleaseRevertButton = ({
     setIsPendingGuardResponse(false)
   }, [guardWithReleaseLimitUpsell])
 
-  const isReleasesPlus = useIsReleasesPlus()
-
   const isMounted = useRef(false)
   useEffect(() => {
     isMounted.current = true
-    checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
+    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
       if (isMounted.current) setHasCreatePermission(hasPermissions)
     })
 
@@ -248,8 +263,6 @@ export const ReleaseRevertButton = ({
       isMounted.current = false
     }
   }, [checkWithPermissionGuard, createRelease])
-
-  if (!isReleasesPlus) return null
 
   return (
     <>
@@ -268,7 +281,8 @@ export const ReleaseRevertButton = ({
          * Permissions to create a request (implemented)
          * @todo Permissions to create each schema type within the release (not implemented)
          */
-        disabled={isPendingGuardResponse || !hasCreatePermission || disabled || mode === 'disabled'}
+        disabled={isPendingGuardResponse || !hasCreatePermission || disabled}
+        data-testid="revert-button"
       />
       {revertReleaseStatus !== 'idle' && (
         <ConfirmReleaseDialog

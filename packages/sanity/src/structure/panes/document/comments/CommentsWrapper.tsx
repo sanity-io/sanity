@@ -6,6 +6,7 @@ import {
   useCommentsEnabled,
   usePerspective,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
@@ -39,9 +40,11 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {enabled} = useCommentsEnabled()
   const {connectionState, onPathOpen, inspector, openInspector} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
-  const {params, setParams, createPathWithParams} = usePaneRouter()
+  const {params, setParams} = usePaneRouter()
+  const {resolveIntentLink} = useRouter()
 
   const selectedCommentId = params?.comment
+  const scheduledDraft = params?.scheduledDraft
   const paramsRef = useRef(params)
 
   useLayoutEffect(() => {
@@ -50,18 +53,23 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
 
   const getCommentLink = useCallback(
     (commentId: string) => {
-      // Generate a path based on the current pane params.
-      // We force a value for `inspect` to ensure that this is included in URLs when comments
-      // are created outside of the inspector context (i.e. directly on the field)
-      // @todo: consider filtering pane router params and culling all non-active RHS panes prior to generating this link
-      const path = createPathWithParams({
-        ...paramsRef.current,
-        comment: commentId,
-        inspect: COMMENTS_INSPECTOR_NAME,
-      })
-      return `${window.location.origin}${path}`
+      const searchParams: [string, string][] =
+        selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
+
+      const intentLink = resolveIntentLink(
+        'edit',
+        {
+          id: documentId,
+          type: documentType,
+          inspect: COMMENTS_INSPECTOR_NAME,
+          comment: commentId,
+          ...(scheduledDraft ? {scheduledDraft} : {}),
+        },
+        searchParams,
+      )
+      return `${window.location.origin}${intentLink}`
     },
-    [createPathWithParams],
+    [documentId, documentType, resolveIntentLink, scheduledDraft, selectedReleaseId],
   )
 
   const handleClearSelectedComment = useCallback(() => {

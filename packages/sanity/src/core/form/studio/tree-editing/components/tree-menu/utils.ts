@@ -1,5 +1,5 @@
-import {type TreeEditingMenuItem} from '../../types'
+import {type DialogItem} from '../../types'
 
-export function getSiblingHasChildren(items: TreeEditingMenuItem[]): boolean {
+export function getSiblingHasChildren(items: DialogItem[]): boolean {
   return items.some((sibling) => sibling.children && sibling.children.length > 0)
 }

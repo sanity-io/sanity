@@ -1,13 +1,11 @@
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInMonths,
-  differenceInSeconds,
-  differenceInWeeks,
-  differenceInYears,
-} from 'date-fns'
-import {useCallback, useEffect, useReducer} from 'react'
+import {differenceInDays} from 'date-fns/differenceInDays'
+import {differenceInHours} from 'date-fns/differenceInHours'
+import {differenceInMinutes} from 'date-fns/differenceInMinutes'
+import {differenceInMonths} from 'date-fns/differenceInMonths'
+import {differenceInSeconds} from 'date-fns/differenceInSeconds'
+import {differenceInWeeks} from 'date-fns/differenceInWeeks'
+import {differenceInYears} from 'date-fns/differenceInYears'
+import {useEffect, useReducer} from 'react'
 
 import {useCurrentLocale, useTranslation} from '../i18n'
 import {intlCache} from '../i18n/intlCache'
@@ -95,29 +93,26 @@ function useFormatRelativeTime(
   const {timeZone, minimal} = opts
   const parsedDate = date instanceof Date ? date : new Date(date)
   const useTemporalPhrase = Boolean(opts.useTemporalPhrase)
-  const format = useCallback(
-    function formatWithUnit(count: number, unit: Intl.RelativeTimeFormatUnit): string {
-      const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
-      const isNextOrPrevWeek = unit === 'week' && Math.abs(count) === 1
+  const format = (count: number, unit: Intl.RelativeTimeFormatUnit): string => {
+    const isNextOrPrevDay = unit === 'day' && Math.abs(count) === 1
+    const isNextOrPrevWeek = unit === 'week' && Math.abs(count) === 1
 
-      if (useTemporalPhrase || isNextOrPrevDay) {
-        return intlCache
-          .relativeTimeFormat(currentLocale, {
-            // Force 'long' formatting for dates within the next/previous week as `Intl.RelativeTimeFormat`
-            // will display these as `next wk.` or `last wk.` – which we don't want!
-            // Idiomatic dates should always be displayed in full. There may be a more elegant way to handle this.
-            style: minimal && !isNextOrPrevWeek ? 'short' : 'long',
-            numeric: 'auto',
-          })
-          .format(count, unit)
-      }
-
+    if (useTemporalPhrase || isNextOrPrevDay) {
       return intlCache
-        .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
-        .format(Math.abs(count))
-    },
-    [currentLocale, useTemporalPhrase, minimal],
-  )
+        .relativeTimeFormat(currentLocale, {
+          // Force 'long' formatting for dates within the next/previous week as `Intl.RelativeTimeFormat`
+          // will display these as `next wk.` or `last wk.` – which we don't want!
+          // Idiomatic dates should always be displayed in full. There may be a more elegant way to handle this.
+          style: minimal && !isNextOrPrevWeek ? 'short' : 'long',
+          numeric: 'auto',
+        })
+        .format(count, unit)
+    }
+
+    return intlCache
+      .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
+      .format(Math.abs(count))
+  }
 
   // Invalid date? Return empty timestamp and `null` as refresh interval, to save us from
   // continuously trying to format an invalid date. The `useEffect` calls in the hook will

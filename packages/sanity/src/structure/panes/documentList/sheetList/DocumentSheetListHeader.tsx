@@ -63,11 +63,11 @@ export function DocumentSheetListHeader(props: DocumentSheetListHeaderProps) {
 
   return (
     <HeaderTag
+      key={header.id}
       style={{
         left: header.column.getStart('left') ?? undefined,
         borderRight: `${borderWidth}px solid var(--card-border-color)`,
       }}
-      key={header.id}
       data-testid={`header-${header.id}`}
       width={header.getSize()}
     >

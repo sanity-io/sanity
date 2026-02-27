@@ -1,10 +1,23 @@
+/* eslint-disable import/extensions */
+import {createRequire, register} from 'node:module'
+import {pathToFileURL} from 'node:url'
+
 import {ResizeObserver} from '@juggle/resize-observer'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
 import jsdomGlobal from 'jsdom-global'
 import {addHook} from 'pirates'
 import resolveFrom from 'resolve-from'
 
-import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
+import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables.ts'
+import {setupImportErrorHandler} from './importErrorHandler.ts'
+
+const require = createRequire(import.meta.url)
+
+// Handle require(esm) cases that breaks free from esbuild-register+pirates
+register(
+  './mock-browser-env-stub-loader.mjs',
+  pathToFileURL(require.resolve('sanity/package.json')),
+)
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -20,7 +33,15 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     }
   }
 
+  // Set up import error handler before esbuild-register to silently ignore themer.sanity.build URLs
+  const importErrorHandler = setupImportErrorHandler()
+
+  const btoa = global.btoa
   const domCleanup = jsdomGlobal(jsdomDefaultHtml, {url: 'http://localhost:3333/'})
+
+  // Don't use jsdom's btoa as it's using the deprecatd `abab` package.
+  if (typeof btoa === 'function') global.btoa = btoa
+
   const windowCleanup = () => global.window.close()
   const globalCleanup = provideFakeGlobals(basePath)
   const cleanupFileLoader = addHook(
@@ -42,6 +63,8 @@ export function mockBrowserEnvironment(basePath: string): () => void {
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
       // define the `import.meta.env` global
       ...getStudioEnvironmentVariables({prefix: 'import.meta.env.', jsonEncode: true}),
+      // define the `import.meta.hot` global, so we don't get `"import.meta" is not available with the "cjs" output format and will be empty` warnings
+      'import.meta.hot': 'false',
     },
   })
 
@@ -51,6 +74,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     globalCleanup()
     windowCleanup()
     domCleanup()
+    importErrorHandler.cleanup()
   }
 }
 
@@ -76,11 +100,9 @@ const getFakeGlobals = (basePath: string) => ({
 const getFakeDocumentProps = () => ({
   execCommand: function execCommand(
     // Provide the right arity for the function, even if unused
-    /* eslint-disable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
     _commandName: string,
     _showDefaultUI: boolean,
     _valueArgument: unknown,
-    /* eslint-enable @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars */
   ) {
     // Return false to indicate "unsupported"
     return false
@@ -155,7 +177,7 @@ function tryGetAceGlobal(basePath: string) {
   try {
     // eslint-disable-next-line import/no-dynamic-require
     return require(acePath)
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

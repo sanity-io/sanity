@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
-import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {refCountDelay} from 'rxjs-etc/operators'
+import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
 
 import {debugGrants$} from './debug'
@@ -24,7 +24,6 @@ async function getDatasetGrants(
   const grants: Grant[] = await client.request({
     uri: `/projects/${projectId}/datasets/${dataset}/acl`,
     tag: 'acl.get',
-    withCredentials: true,
   })
 
   return grants

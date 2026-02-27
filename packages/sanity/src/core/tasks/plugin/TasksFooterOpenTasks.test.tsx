@@ -10,7 +10,7 @@ import {type TaskDocument} from '../types'
 import {SetActiveDocument} from './structure/SetActiveDocument'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 
-vi.mock('../../hooks/useFeatureEnabled', () => ({
+vi.mock('../../hooks', () => ({
   useFeatureEnabled: vi.fn().mockReturnValue({enabled: true, isLoading: false}),
 }))
 vi.mock('../../studio/workspace', () => ({

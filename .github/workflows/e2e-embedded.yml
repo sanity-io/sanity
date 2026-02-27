@@ -1,0 +1,116 @@
+name: End-to-End Embedded Tests
+permissions:
+  contents: read # for checkout
+  pull-requests: write # for comment
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  install:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    outputs:
+      examples_only: ${{ steps.check_examples.outputs.path_only }}
+      cli_only: ${{ steps.check_cli.outputs.path_only }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - name: Check if only CLI files changed
+        id: check_cli
+        uses: ./.github/actions/check-path-only
+        with:
+          path: packages/@sanity/cli/
+
+      - uses: ./.github/actions/setup
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+
+      - name: Store Playwright's Version
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true'
+        id: cache-playwright-browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+
+      - name: Install Playwright Browsers
+        if: steps.check_examples.outputs.path_only != 'true' && steps.check_cli.outputs.path_only != 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+  test:
+    if: needs.install.outputs.examples_only != 'true' && needs.install.outputs.cli_only != 'true'
+    timeout-minutes: 30
+    needs: [install]
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+      SANITY_E2E_DATASET: ${{ vars.SANITY_E2E_DATASET_STAGING }}
+      SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW_STAGING }}
+    strategy:
+      fail-fast: true
+      matrix:
+        project: [chromium, firefox]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - name: Store Playwright's Version
+        id: playwright-version
+        run: |
+          PLAYWRIGHT_VERSION=$(npx playwright --version | sed 's/Version //')
+          echo "Playwright's Version: $PLAYWRIGHT_VERSION"
+          echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright Browsers for Playwright's Version
+        id: cache-playwright-browsers
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers
+
+      - name: Install Playwright Browsers
+        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run E2E Embedded Tests
+        run: pnpm embedded-studio-vite:test --project ${{ matrix.project }}
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: |
+            dev/e2e-embedded-studio-vite/blob-report
+            dev/e2e-embedded-studio-vite/test-results
+          retention-days: 30

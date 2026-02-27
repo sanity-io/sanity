@@ -33,7 +33,17 @@ export function AuthBoundary({
   useEffect(() => {
     const subscription = activeWorkspace.auth.state.subscribe({
       next: ({authenticated, currentUser}) => {
-        if (currentUser?.roles?.length === 0) {
+        /**
+         * If a user has never had any roles on for the given workspace project
+         * e.g. because they've only ever been an organization member thereby
+         * giving them implicit access to the studio then they will have no roles
+         * array on their user so to account for this case or the case that they have
+         * had roles removed then we need to set the logged in state to unauthorized.
+         */
+        if (
+          authenticated &&
+          (!Array.isArray(currentUser?.roles) || currentUser.roles.length === 0)
+        ) {
           setLoggedIn('unauthorized')
           if (currentUser?.provider) setLoginProvider(currentUser.provider)
           return

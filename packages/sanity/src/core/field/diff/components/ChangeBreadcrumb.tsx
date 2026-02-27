@@ -24,7 +24,8 @@ export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: Ch
           return null
         }
 
-        return <ChangeTitleSegment change={change} key={idx} segment={titleSegment} />
+        // oxlint-disable-next-line no-array-index-key
+        return <ChangeTitleSegment key={idx} change={change} segment={titleSegment} />
       })}
     </Breadcrumbs>
   )

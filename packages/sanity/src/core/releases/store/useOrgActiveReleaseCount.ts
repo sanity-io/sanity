@@ -26,6 +26,7 @@ function createOrgActiveReleaseCountStore(
     switchMap((state) => {
       if (
         state === null ||
+        // oxlint-disable-next-line no-unnecessary-boolean-literal-compare
         staleFlag$.getValue() === true ||
         activeReleaseCountAtFetch.getValue() !== activeReleasesCount
       ) {
@@ -33,7 +34,7 @@ function createOrgActiveReleaseCountStore(
 
         return fetchReleaseLimits(client, 'orgActiveReleaseCount').pipe(
           tap(() => activeReleaseCountAtFetch.next(activeReleasesCount)),
-          map((data) => data.orgActiveReleaseCount),
+          map((data) => data.orgMeteredActiveReleaseCount),
           catchError((error) => {
             console.error('Failed to fetch org release count', error)
 
@@ -77,7 +78,7 @@ function createOrgActiveReleaseCountStore(
 export const useOrgActiveReleaseCount = () => {
   const resourceCache = useResourceCache()
   const {data: activeReleases} = useActiveReleases()
-  const client = useClient()
+  const client = useClient({apiVersion: 'v2025-02-19'})
 
   const activeReleasesCount = activeReleases?.length || 0
 

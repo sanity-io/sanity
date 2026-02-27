@@ -75,7 +75,7 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex align="center" gap={2} key={userId} padding={1}>
+    <Flex key={userId} align="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
@@ -159,6 +159,7 @@ export function TimelineItem({
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
             <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
+              {/* eslint-disable-next-line react-hooks/static-components -- this is intentional and how the middleware components has to work */}
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>

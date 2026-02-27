@@ -1,5 +1,5 @@
 import {LockIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {
   formatRelativeLocalePublishDate,
   getReleaseTone,
@@ -23,22 +23,17 @@ export function ScheduledReleaseBanner({
   return (
     <Banner
       tone={tone}
-      paddingY={0}
+      icon={LockIcon}
       content={
-        <Flex align="center" justify="space-between" gap={1} flex={1}>
-          <Text size={1}>
-            <Flex align="center" justify="center" gap={2}>
-              <LockIcon />{' '}
-              <Translate
-                t={tCore}
-                i18nKey="release.banner.scheduled-for-publishing-on"
-                values={{
-                  date: formatRelativeLocalePublishDate(currentRelease),
-                }}
-              />
-            </Flex>
-          </Text>
-        </Flex>
+        <Text size={1}>
+          <Translate
+            t={tCore}
+            i18nKey="release.banner.scheduled-for-publishing-on"
+            values={{
+              date: formatRelativeLocalePublishDate(currentRelease),
+            }}
+          />
+        </Text>
       }
     />
   )

@@ -137,6 +137,9 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       changed: member.item.changed,
       level: member.item.level,
       value: member.item.value as FIXME,
+      compareValue: member.item.compareValue,
+      __unstable_computeDiff: member.item.__unstable_computeDiff,
+      hasUpstreamVersion: member.item.hasUpstreamVersion,
       readOnly: member.item.readOnly,
       schemaType: member.item.schemaType as FIXME,
       id: member.item.id,
@@ -146,11 +149,15 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
       validation: member.item.validation,
       presence: member.item.presence,
       elementProps,
+      displayInlineChanges: member.item.displayInlineChanges ?? false,
     }
   }, [
     member.item.changed,
+    member.item.__unstable_computeDiff,
     member.item.level,
     member.item.value,
+    member.item.compareValue,
+    member.item.hasUpstreamVersion,
     member.item.readOnly,
     member.item.schemaType,
     member.item.id,
@@ -158,11 +165,10 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     member.item.focused,
     member.item.validation,
     member.item.presence,
+    member.item.displayInlineChanges,
     handleChange,
     elementProps,
   ])
-
-  const renderedInput = useMemo(() => renderInput(inputProps), [inputProps, renderInput])
 
   const onRemove = useCallback(() => {
     onChange(PatchEvent.from([unset([member.index])]))
@@ -178,7 +184,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const handleCopy = useCallback(
     (_: ArrayInputCopyEvent<unknown>) => {
       const documentValue = getFormValue([]) as FormDocumentValue
-      onCopy(member.item.path, documentValue, {
+      void onCopy(member.item.path, documentValue, {
         context: {source: 'arrayItem'},
         patchType: 'append',
       })
@@ -186,51 +192,53 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     [getFormValue, member.item.path, onCopy],
   )
 
-  const itemProps = useMemo((): Omit<PrimitiveItemProps, 'renderDefault'> => {
-    return {
-      key: member.key,
-      index: member.index,
-      level: member.item.level,
-      value: member.item.value as FIXME,
-      title: member.item.schemaType.title,
-      description: member.item.schemaType.description,
-      schemaType: member.item.schemaType as FIXME,
-      parentSchemaType: member.parentSchemaType,
-      onInsert,
-      onCopy: handleCopy,
-      onRemove,
-      presence: member.item.presence,
-      validation: member.item.validation,
-      readOnly: member.item.readOnly,
-      focused: member.item.focused,
-      onFocus: handleFocus,
-      onBlur: handleBlur,
-      inputId: member.item.id,
-      path: member.item.path,
-      children: renderedInput,
-    }
-  }, [
-    member.key,
-    member.index,
-    member.item.level,
-    member.item.value,
-    member.item.schemaType,
-    member.item.presence,
-    member.item.validation,
-    member.item.readOnly,
-    member.item.focused,
-    member.item.id,
-    member.item.path,
-    member.parentSchemaType,
-    onInsert,
-    handleCopy,
-    onRemove,
-    handleFocus,
-    handleBlur,
-    renderedInput,
-  ])
+  return (
+    <RenderItem
+      key={member.key}
+      index={member.index}
+      level={member.item.level}
+      value={member.item.value as FIXME}
+      changed={member.item.changed}
+      __unstable_computeDiff={member.item.__unstable_computeDiff}
+      hasUpstreamVersion={member.item.hasUpstreamVersion}
+      title={member.item.schemaType.title}
+      description={member.item.schemaType.description}
+      schemaType={member.item.schemaType as FIXME}
+      parentSchemaType={member.parentSchemaType}
+      onInsert={onInsert}
+      onCopy={handleCopy}
+      onRemove={onRemove}
+      presence={member.item.presence}
+      validation={member.item.validation}
+      readOnly={member.item.readOnly}
+      focused={member.item.focused}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      inputId={member.item.id}
+      path={member.item.path}
+      render={renderItem}
+    >
+      <RenderInput {...inputProps} render={renderInput} />
+    </RenderItem>
+  )
+}
 
-  return <>{useMemo(() => renderItem(itemProps as PrimitiveItemProps), [itemProps, renderItem])}</>
+// The RenderInput and RenderItem wrappers workaround the strict refs checks in React Compiler
+function RenderInput({
+  render,
+  ...props
+}: Omit<PrimitiveInputProps, 'renderDefault'> & {
+  render: RenderInputCallback
+}) {
+  return render(props)
+}
+function RenderItem({
+  render,
+  ...props
+}: Omit<PrimitiveItemProps, 'renderDefault'> & {
+  render: RenderArrayOfPrimitivesItemCallback
+}) {
+  return render(props)
 }
 
 function resolveNativeInputValue(

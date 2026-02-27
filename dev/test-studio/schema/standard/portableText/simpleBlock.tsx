@@ -1,25 +1,7 @@
 import {toPlainText} from '@portabletext/react'
-import {defineArrayMember, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 import {CalloutPreview} from './components/CalloutPreview'
-
-const linkType = defineArrayMember({
-  type: 'object',
-  name: 'link',
-  fields: [
-    {
-      type: 'string',
-      name: 'href',
-      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}).required(),
-    },
-  ],
-  options: {
-    modal: {
-      type: 'popover',
-      width: 2,
-    },
-  },
-})
 
 const myStringType = defineArrayMember({
   type: 'object',
@@ -39,6 +21,16 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+    },
+    {
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {source: 'title'},
+    },
+    {
+      name: 'isMain',
+      type: 'boolean',
     },
     {
       name: 'body',
@@ -64,6 +56,26 @@ export default defineType({
                       }).warning(
                         `This is not an external link. Consider using internal links instead.`,
                       ),
+                  },
+                  {
+                    name: 'url2',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url3',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url4',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url5',
+                    type: 'string',
+                  },
+                  {
+                    name: 'url6',
+                    type: 'string',
                   },
                 ],
               },
@@ -182,5 +194,16 @@ export default defineType({
         },
       ],
     },
+
+    defineField({
+      name: 'slugs',
+      title: 'Slugs',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'slug',
+        }),
+      ],
+    }),
   ],
 })

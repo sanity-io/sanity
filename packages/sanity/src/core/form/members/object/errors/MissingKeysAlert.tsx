@@ -22,7 +22,7 @@ export function MissingKeysAlert(props: Props) {
     onChange(
       PatchEvent.from((error.value || []).map((val, i) => setIfMissing(randomKey(), [i, '_key']))),
     )
-  }, [error.value, onChange])
+  }, [error, onChange])
 
   const {t} = useTranslation()
 

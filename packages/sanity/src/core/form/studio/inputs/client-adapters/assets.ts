@@ -3,6 +3,7 @@ import {type FileAsset, type ImageAsset} from '@sanity/types'
 import {Observable, of as observableOf} from 'rxjs'
 import {catchError, map, mergeMap} from 'rxjs/operators'
 
+import {type VideoAsset} from '../../../../../media-library/plugin/schemas/types'
 import {type DocumentPreviewStore} from '../../../../preview'
 import {type UploadOptions} from '../../uploads/types'
 import {withMaxConcurrency} from '../../utils'
@@ -99,6 +100,10 @@ function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string)
 
 export function observeImageAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
   return observeAssetDoc(documentPreviewStore, id) as Observable<ImageAsset>
+}
+
+export function observeVideoAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
+  return observeAssetDoc(documentPreviewStore, id) as Observable<VideoAsset>
 }
 
 export function observeFileAsset(documentPreviewStore: DocumentPreviewStore, id: string) {

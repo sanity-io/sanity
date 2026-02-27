@@ -10,6 +10,7 @@ import {
   useRelativeTime,
   useSchema,
 } from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useUser} from '../../../../store'
 import {TASK_STATUS} from '../../../constants'
 import {useDocumentPreviewValues} from '../../../hooks'
@@ -54,12 +55,14 @@ export function UserName({userId}: {userId: string}) {
 const DUE_BY_DATE_OPTIONS: UseDateTimeFormatOptions = {
   month: 'short',
   day: 'numeric',
+  timeZone: 'UTC',
 }
 
 function DueByChange({date}: {date: string}) {
   const dueBy = new Date(date)
   const dateFormatter = useDateTimeFormat(DUE_BY_DATE_OPTIONS)
   const formattedDate = dateFormatter.format(dueBy)
+
   return (
     <Strong>
       <NoWrap>{formattedDate}</NoWrap>
@@ -81,9 +84,11 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   const documentId = target.document._ref
   const documentType = target.documentType
   const documentSchema = schema.get(documentType)
+  const {perspectiveStack} = usePerspective()
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
+    perspectiveStack,
   })
 
   if (isLoading) {

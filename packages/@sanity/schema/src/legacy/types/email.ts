@@ -1,7 +1,8 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import primitivePreview from '../preview/primitivePreview'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 
@@ -12,15 +13,29 @@ const EMAIL_CORE = {
   jsonType: 'string',
 }
 
+lazyGetter(
+  EMAIL_CORE,
+  OWN_PROPS_NAME,
+  () => ({
+    ...EMAIL_CORE,
+    validation: (Rule: any) => Rule.email(),
+  }),
+  {enumerable: false},
+)
+
 export const EmailType = {
   get() {
     return EMAIL_CORE
   },
   extend(subTypeDef: any) {
-    const parsed = Object.assign(pick(EMAIL_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
-      type: EMAIL_CORE,
+    const ownProps = {
+      ...subTypeDef,
       preview: primitivePreview,
+    }
+    const parsed = Object.assign(pick(EMAIL_CORE, OVERRIDABLE_FIELDS), ownProps, {
+      type: EMAIL_CORE,
     })
+    hiddenGetter(parsed, OWN_PROPS_NAME, ownProps)
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -29,9 +44,11 @@ export const EmailType = {
           return parent
         },
         extend: (extensionDef: any) => {
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const subOwnProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }

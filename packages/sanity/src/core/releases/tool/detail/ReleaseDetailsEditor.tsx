@@ -1,7 +1,8 @@
+import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {getIsReleaseOpen, TitleDescriptionForm} from '../../components/dialog/TitleDescriptionForm'
-import {type EditableReleaseDocument, type ReleaseDocument, useReleaseOperations} from '../../index'
+import {useReleaseOperations} from '../../index'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
 
 export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): React.JSX.Element {
@@ -18,7 +19,7 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
       /** @todo I wasn't able to get this working with the debouncer that we use in other parts */
       const newTimer = setTimeout(() => {
         if (hasUpdatePermission) {
-          updateRelease(changedValue)
+          void updateRelease(changedValue)
         }
       }, 200)
 
@@ -34,7 +35,7 @@ export function ReleaseDetailsEditor({release}: {release: ReleaseDocument}): Rea
     if (getIsReleaseOpen(release)) {
       // title and description will be readOnly if release is not 'open'
       // so only need to check permission to edit if release is 'open'
-      checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
+      void checkWithPermissionGuard(updateRelease, release).then((hasPermission) => {
         if (isMounted.current) setHasUpdatePermission(hasPermission)
       })
     }

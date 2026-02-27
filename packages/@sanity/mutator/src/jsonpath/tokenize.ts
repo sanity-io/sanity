@@ -205,7 +205,7 @@ class Tokenizer {
     if (number !== null) {
       return {
         type: 'number',
-        value: negative ? -number : +number,
+        value: negative ? -Number(number) : +number,
         raw: negative ? `-${number}` : number,
       }
     }

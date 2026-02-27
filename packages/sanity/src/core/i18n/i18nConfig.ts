@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-i18next-import */
 import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
 
@@ -193,7 +194,7 @@ function getI18NextOptions(
  * @internal
  */
 function reduceLocaleDefinition(definition: LocaleDefinition): Locale {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line no-unused-vars
   const {bundles, ...locale} = definition
   return locale
 }

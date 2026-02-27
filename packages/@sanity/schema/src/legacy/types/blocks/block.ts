@@ -1,12 +1,13 @@
-import {pick} from 'lodash'
+import {pick} from 'lodash-es'
 
 import createPreviewGetter from '../../preview/createPreviewGetter'
-import {lazyGetter} from '../utils'
+import {OWN_PROPS_NAME} from '../constants'
+import {hiddenGetter, lazyGetter} from '../utils'
 import {
   BLOCK_STYLES,
+  DEFAULT_ANNOTATIONS,
   DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
-  DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
@@ -64,22 +65,28 @@ export const BlockType = {
       subTypeDef.fields || [],
     )
 
-    const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), rest, {
+    const ownProps = {...rest, options}
+
+    const parsed = Object.assign(pick(BLOCK_CORE, INHERITED_FIELDS), ownProps, {
       type: BLOCK_CORE,
-      options: options,
     })
 
     lazyGetter(parsed, 'fields', () => {
-      return fields.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: extendMember(type),
-        }
-      })
+      return fields.map((fieldDef) => extendMember.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'preview', createPreviewGetter(subTypeDef))
+
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...ownProps,
+        fields: parsed.fields,
+        preview: parsed.preview,
+      }),
+      {enumerable: false, writable: false},
+    )
 
     return subtype(parsed)
 
@@ -92,9 +99,11 @@ export const BlockType = {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "block"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, INHERITED_FIELDS), {
+          const subOwnProps = pick(extensionDef, INHERITED_FIELDS)
+          const current = Object.assign({}, parent, subOwnProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, subOwnProps)
           return subtype(current)
         },
       }
@@ -129,8 +138,6 @@ function createListItemField(lists: any) {
     },
   }
 }
-
-const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
 function createChildrenField(marks: any, of = []) {
   return {

@@ -19,7 +19,6 @@ export function getInitialValueTemplateOpts(
   const structureNodeTemplate = opts.templateName
 
   if (opts.urlTemplate && structureNodeTemplate && structureNodeTemplate !== opts.urlTemplate) {
-    // eslint-disable-next-line no-console
     console.warn(
       `Conflicting templates: URL says "${opts.urlTemplate}", structure node says "${structureNodeTemplate}". Using "${structureNodeTemplate}".`,
     )

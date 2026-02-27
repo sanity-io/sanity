@@ -6,6 +6,7 @@ import common from './validation/types/common'
 import crossDatasetReference from './validation/types/crossDatasetReference'
 import documentVisitor from './validation/types/document'
 import file from './validation/types/file'
+import globalDocumentReference from './validation/types/globalDocumentReference'
 import image from './validation/types/image'
 import object from './validation/types/object'
 import reference from './validation/types/reference'
@@ -22,6 +23,7 @@ const typeVisitors = {
   document: documentVisitor,
   reference: reference,
   crossDatasetReference: crossDatasetReference,
+  globalDocumentReference,
 }
 
 const getNoopVisitor = (visitorContext: any) => (schemaDef: any) => ({
@@ -45,19 +47,35 @@ function combine(...visitors: any) {
   }
 }
 
+interface Options {
+  transformTypeVisitors?: (visitors: typeof typeVisitors) => Partial<typeof typeVisitors>
+  transformCommonVisitors?: (visitors: any[]) => any[]
+}
+
 /**
  * @internal
  */
-export function validateSchema(schemaTypes: _FIXME_) {
+export function validateSchema(
+  schemaTypes: _FIXME_,
+  {
+    transformTypeVisitors = (visitors) => visitors,
+    transformCommonVisitors = (visitors) => visitors,
+  }: Options = {},
+) {
   return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
-      (schemaDef && schemaDef.type && (typeVisitors as any)[schemaDef.type]) ||
+      (schemaDef &&
+        schemaDef.type &&
+        (transformTypeVisitors(typeVisitors) as any)[schemaDef.type]) ||
       getNoopVisitor(visitorContext)
 
+    // Transform common visitors for extensibility
+    const commonVisitors = transformCommonVisitors([common])
+
     if (visitorContext.isRoot) {
-      return combine(rootType, common, typeVisitor)(schemaDef, visitorContext)
+      return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
     }
 
-    return combine(common, typeVisitor)(schemaDef, visitorContext)
+    return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)
   })
 }

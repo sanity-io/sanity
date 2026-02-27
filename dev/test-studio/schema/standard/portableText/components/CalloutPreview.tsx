@@ -1,16 +1,7 @@
 import {Box, Card, type CardTone, Flex, Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
-}
-
-function isString(value: unknown): value is string {
-  return typeof value === 'string'
-}
-
 export function CalloutPreview(props: PreviewProps) {
-  const {value} = props
   const tone = props.tone || 'default'
 
   return (

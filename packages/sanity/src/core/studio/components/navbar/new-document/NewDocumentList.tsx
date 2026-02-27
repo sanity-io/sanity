@@ -35,7 +35,7 @@ export function NewDocumentList(props: NewDocumentListProps) {
   }, [onDocumentClick])
 
   const getItemDisabled = useCallback(
-    (index: number) => options[index]?.hasPermission === false,
+    (index: number) => options[index]?.hasPermission ?? true,
     [options],
   )
 
@@ -43,8 +43,8 @@ export function NewDocumentList(props: NewDocumentListProps) {
     (item: NewDocumentOption) => {
       return (
         <NewDocumentListOption
-          currentUser={currentUser}
           key={item.id}
+          currentUser={currentUser}
           onClick={handleDocumentClick}
           option={item}
           preview={preview}

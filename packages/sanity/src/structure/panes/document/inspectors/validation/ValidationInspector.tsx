@@ -13,7 +13,7 @@ import {
 } from '@sanity/types'
 import {Box, Card, type CardTone, Flex, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
-import {type DocumentInspectorProps, useTranslation} from 'sanity'
+import {type DocumentInspectorProps, isGoingToUnpublish, useTranslation} from 'sanity'
 
 import {ErrorBoundary} from '../../../../../ui-components'
 import {DocumentInspectorHeader} from '../../documentInspector'
@@ -34,7 +34,7 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
-  const {onFocus, onPathOpen, schemaType, validation, value} = useDocumentPane()
+  const {onFocus, onPathOpen, schemaType, validation, value, editState} = useDocumentPane()
   const {t} = useTranslation('validation')
 
   const handleOpen = useCallback(
@@ -44,6 +44,9 @@ export function ValidationInspector(props: DocumentInspectorProps) {
     },
     [onFocus, onPathOpen],
   )
+
+  const isVersionGoingToUnpublish =
+    editState && editState.version && isGoingToUnpublish(editState.version)
 
   return (
     <Flex direction="column" height="fill" overflow="hidden">
@@ -56,27 +59,36 @@ export function ValidationInspector(props: DocumentInspectorProps) {
       />
 
       <Card flex={1} overflow="auto" padding={3}>
-        {validation.length === 0 && (
+        {isVersionGoingToUnpublish ? (
           <Box padding={2}>
             <Text muted size={1}>
-              {t('panel.no-errors-message')}
+              {t('panel.unpublish-message')}
             </Text>
           </Box>
-        )}
-
-        {validation.length > 0 && (
-          <Stack space={2}>
-            {validation.map((marker, i) => (
-              <ValidationCard
-                // eslint-disable-next-line react/no-array-index-key
-                key={i}
-                marker={marker}
-                onOpen={handleOpen}
-                schemaType={schemaType}
-                value={value}
-              />
-            ))}
-          </Stack>
+        ) : (
+          <>
+            {validation.length === 0 && (
+              <Box padding={2}>
+                <Text muted size={1}>
+                  {t('panel.no-errors-message')}
+                </Text>
+              </Box>
+            )}
+            {validation.length > 0 && (
+              <Stack space={2}>
+                {validation.map((marker, i) => (
+                  <ValidationCard
+                    // oxlint-disable-next-line no-array-index-key
+                    key={i}
+                    marker={marker}
+                    onOpen={handleOpen}
+                    schemaType={schemaType}
+                    value={value}
+                  />
+                ))}
+              </Stack>
+            )}
+          </>
         )}
       </Card>
     </Flex>
@@ -157,6 +169,7 @@ function DocumentNodePathBreadcrumbs(props: {
   return (
     <Text size={1}>
       {pathTitles.map((t, i) => (
+        // oxlint-disable-next-line no-array-index-key
         <Fragment key={i}>
           {i > 0 && <span style={{color: 'var(--card-muted-fg-color)', opacity: 0.5}}> / </span>}
           <span style={{fontWeight: 500}}>{t.title || t.name}</span>

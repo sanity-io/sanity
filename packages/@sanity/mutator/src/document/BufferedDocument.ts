@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 
 import {debug} from './debug'
 import {Document} from './Document'

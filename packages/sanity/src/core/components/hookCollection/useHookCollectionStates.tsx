@@ -1,10 +1,10 @@
-import {type ThrottleSettings} from 'lodash'
+import {type ThrottleSettings} from 'lodash-es'
 import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 
 import {isNonNullable, useThrottledCallback} from '../../util'
+import {postTask} from '../../util/postTask'
 import {getHookId} from './actionId'
-import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 import {type GetHookCollectionStateProps} from './types'
 
 const throttleOptions: ThrottleSettings = {trailing: true}
@@ -23,19 +23,29 @@ function mapHooksToStates<Args, State>(
 
 export function useHookCollectionStates<Args, State>({
   hooks,
-  group,
-}: Pick<GetHookCollectionStateProps<Args, State>, 'hooks' | 'group'>) {
+}: Pick<GetHookCollectionStateProps<Args, State>, 'hooks'>) {
   const [states] = useState(() => new Map<string, State>())
   const [snapshot, setSnapshot] = useState<NonNullable<State>[]>(() =>
     mapHooksToStates(states, {hooks}),
   )
 
-  const timeoutRef = useRef(0)
-  const updateSnapshot = useCallback(() => {
-    cancelIdleCallback(timeoutRef.current)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-    timeoutRef.current = requestIdleCallback(() => {
-      setSnapshot(mapHooksToStates(states, {hooks}))
+  const updateSnapshot = useCallback(() => {
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = new AbortController()
+
+    postTask(
+      () => {
+        setSnapshot(mapHooksToStates(states, {hooks}))
+      },
+      {signal: abortControllerRef.current.signal},
+    )?.catch((error) => {
+      if (error.name === 'AbortError') {
+        return
+      }
+
+      throw error
     })
   }, [hooks, states])
 
@@ -46,11 +56,10 @@ export function useHookCollectionStates<Args, State>({
   ) as typeof updateSnapshot
 
   const handleNext = useCallback(
-    (id: string, hookState: any) => {
+    (id: string, hookState: State | null) => {
       let shouldUpdateSnapshot = true
 
-      const hookGroup = hookState?.group || ['default']
-      if (hookState === null || (group && !hookGroup.includes(group))) {
+      if (hookState === null) {
         states.delete(id)
       } else {
         if (states.has(id)) {
@@ -64,7 +73,7 @@ export function useHookCollectionStates<Args, State>({
         requestUpdateSnapshot()
       }
     },
-    [group, requestUpdateSnapshot, states],
+    [requestUpdateSnapshot, states],
   )
 
   return {states: snapshot, handleNext}

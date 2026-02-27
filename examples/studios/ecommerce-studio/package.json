@@ -1,0 +1,39 @@
+{
+  "name": "ecommerce-studio",
+  "version": "3.92.0",
+  "private": true,
+  "description": "",
+  "keywords": [
+    "cms",
+    "content",
+    "ecommerce-studio",
+    "headless",
+    "realtime",
+    "sanity"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "examples/studios/ecommerce-studio"
+  },
+  "main": "package.json",
+  "scripts": {
+    "clean": "rimraf lib dest",
+    "start": "sanity dev --port 3337"
+  },
+  "dependencies": {
+    "@sanity/cli": "workspace:*",
+    "@sanity/ui": "catalog:",
+    "react": "catalog:",
+    "react-barcode": "^1.6.1",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  }
+}

@@ -1,14 +1,16 @@
 import {createServer, type Server} from 'node:http'
 import path from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type SanityDocument} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
-import {getMonorepoAliases} from '../../server/sanityMonorepo'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function toArray<T>(asyncIterator: AsyncIterable<T>) {
   const arr: T[] = []
@@ -79,7 +81,8 @@ const documents: SanityDocument[] = [
   },
 ]
 
-describe('validateDocuments', () => {
+// Skip: the Worker requires Node.js native TypeScript support to run
+describe.skipIf(parseInt(process.versions.node.split('.')[0], 10) < 24)('validateDocuments', () => {
   vi.setConfig({testTimeout: 30000})
 
   let server!: Server
@@ -197,27 +200,11 @@ describe('validateDocuments', () => {
       studioHost: localhost,
     }
 
-    const filepath = new URL('../validateDocuments.ts', import.meta.url).pathname
-
-    const worker = new Worker(
-      `
-        const moduleAlias = require('module-alias')
-        const { register } = require('esbuild-register/dist/node')
-
-        moduleAlias.addAliases(${JSON.stringify(await getMonorepoAliases(path.resolve(__dirname, '../../../../../../..')))})
-
-        const { unregister } = register({
-          target: 'node18',
-          format: 'cjs',
-          extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
-          jsx: 'automatic',
-        })
-
-        require(${JSON.stringify(filepath)})
-
-      `,
-      {eval: true, env: {...process.env, API_HOST: localhost}, workerData},
-    )
+    const worker = new Worker(new URL('../validateDocuments.ts', import.meta.url), {
+      execArgv: ['--import', 'tsx'],
+      env: {...process.env, API_HOST: localhost},
+      workerData,
+    })
 
     receiver = createReceiver<ValidationWorkerChannel>(worker)
   })

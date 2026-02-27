@@ -24,17 +24,17 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
   const {workspaces} = prepareConfig(config)
 
   return combineLatest(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     workspaces.flatMap((workspaceSummary) =>
       combineLatest(workspaceSummary.__internal.sources.map(({source}) => source)).pipe(
-        map(
-          (sources): Workspace => ({
-            ...workspaceSummary,
+        map((sources): Workspace => {
+          const {releases: _releases, ...workspaceMetadata} = workspaceSummary
+          return {
+            ...workspaceMetadata,
             ...sources[0],
             unstable_sources: sources,
             type: 'workspace',
-          }),
-        ),
+          }
+        }),
       ),
     ),
   )

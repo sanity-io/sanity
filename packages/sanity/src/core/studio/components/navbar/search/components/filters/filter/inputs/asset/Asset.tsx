@@ -1,13 +1,13 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
-import {get, startCase} from 'lodash'
+import {get, startCase} from 'lodash-es'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'
-import {FileSource, ImageSource} from '../../../../../../../../../form/studio/assetSource'
+import {sourceName as defaultSourceName} from '../../../../../../../../../form/studio/assetSourceDataset'
 import {useClient} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioClient'
@@ -50,9 +50,9 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const assetSources = useMemo(() => {
       switch (type) {
         case 'file':
-          return file.assetSources.filter((a) => a.name === FileSource.name)
+          return file.assetSources.filter((a) => a.name === defaultSourceName)
         case 'image':
-          return image.assetSources.filter((a) => a.name === ImageSource.name)
+          return image.assetSources.filter((a) => a.name === defaultSourceName)
         default:
           throw Error('Unknown asset source found')
       }
@@ -118,6 +118,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             <Portal>
               <AssetSourceComponent
                 assetType={type}
+                assetSource={selectedAssetSource}
                 dialogHeaderTitle={t('search.action.select-asset', {context: type})}
                 onClose={handleCloseAssetSource}
                 onSelect={handleSelectAssetFromSource}
@@ -154,9 +155,8 @@ export function SearchFilterAssetInput(type?: AssetType) {
                       <Menu>
                         {assetSources.map((source) => (
                           <MenuItem
-                            icon={source.icon || ImageIcon}
                             key={source.name}
-                            // eslint-disable-next-line react/jsx-no-bind
+                            icon={source.icon || ImageIcon}
                             onClick={() => handleSelectAssetSource(source)}
                             text={
                               (source.i18nKey ? t(source.i18nKey) : source.title) ||
@@ -176,7 +176,6 @@ export function SearchFilterAssetInput(type?: AssetType) {
                   <Button
                     icon={value ? UndoIcon : SearchIcon}
                     mode="ghost"
-                    // eslint-disable-next-line react/jsx-no-bind
                     onClick={() => handleSelectAssetSource(assetSources[0])}
                     width={value ? 'fill' : undefined}
                     text={buttonText}

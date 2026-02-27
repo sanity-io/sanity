@@ -5,7 +5,7 @@ import {isDraftId, isVersionId} from './draftUtils'
  * Draft documents are prefixed with `drafts.`.
  * Version documents are prefixed with `versions.<versionName>`
  * The rest are considered published documents.
- * @beta
+ * @public
  */
 export type DocumentVariantType = 'draft' | 'version' | 'published'
 
@@ -14,7 +14,7 @@ export type DocumentVariantType = 'draft' | 'version' | 'published'
  * If it's a document that starts with `version.` it's a `version` document.
  * If it's a document that starts with `drafts.` it's a `draft` document.
  * Otherwise, it's a `published` document.
- * @beta
+ * @public
  * */
 export function getDocumentVariantType(documentId: string): DocumentVariantType {
   if (isDraftId(documentId)) return 'draft'

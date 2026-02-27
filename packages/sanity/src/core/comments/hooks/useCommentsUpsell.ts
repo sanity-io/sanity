@@ -11,6 +11,7 @@ export function useCommentsUpsell(): CommentsUpsellContextValue {
     return {
       upsellData: null,
       handleOpenDialog: () => null,
+      handleClose: () => null,
       upsellDialogOpen: false,
       telemetryLogs: {
         dialogSecondaryClicked: () => null,

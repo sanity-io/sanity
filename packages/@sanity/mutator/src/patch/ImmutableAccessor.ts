@@ -23,6 +23,16 @@ export class ImmutableAccessor implements Probe {
     return 'primitive'
   }
 
+  valueType() {
+    if (this._value === null) {
+      return 'null'
+    }
+    if (Array.isArray(this._value)) {
+      return 'array'
+    }
+    return typeof this._value
+  }
+
   // Common reader, supported by all containers
   get(): unknown {
     return this._value

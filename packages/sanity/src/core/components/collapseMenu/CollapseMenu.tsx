@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {difference} from 'lodash'
+import {difference} from 'lodash-es'
 import {
   Children,
   cloneElement,
@@ -249,7 +249,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
     () =>
       menuOptions.filter((optionElement) => {
         const intersection = collapsedIntersections[optionElement.key as string]
-        return intersection?.intersects === false
+        return !intersection?.intersects
       }),
     [menuOptions, collapsedIntersections],
   )
@@ -258,7 +258,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
   const visibleMenuOptions = shouldCollapse
     ? collapsedElements.filter((optionElement) => {
         const intersection = collapsedIntersections[optionElement.key as string]
-        return intersection?.intersects === true
+        return intersection?.intersects
       })
     : menuOptions
 
@@ -350,7 +350,6 @@ const RenderHidden = memo(function RenderHidden(props: {
 
             <OptionObserveElement
               options={intersectionOptions}
-              // eslint-disable-next-line react/jsx-no-bind
               onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
             >
               <Flex>

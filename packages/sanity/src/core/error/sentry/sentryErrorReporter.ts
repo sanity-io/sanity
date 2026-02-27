@@ -23,7 +23,7 @@ import {
 import {type Transport} from '@sentry/types'
 
 import {isDev} from '../../environment'
-import {hasSanityPackageInImportMap} from '../../environment/hasSanityPackageInImportMap'
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
@@ -69,7 +69,13 @@ export function getSentryErrorReporter(): ErrorReporter {
   let client: BrowserClient | undefined
   let scope: Scope | undefined
 
-  function initialize() {
+  // Keep tabs of events reported before initialized.
+  const preInitErrors: {
+    error: Error
+    options: ErrorInfo
+  }[] = []
+
+  function _initialize() {
     // If this _Sanity_ implementation of the reporter is already initialized, do not re-instantiate
     if (client) {
       return
@@ -131,9 +137,17 @@ export function getSentryErrorReporter(): ErrorReporter {
     scope = getCurrentScope()
   }
 
+  function initialize() {
+    _initialize()
+    if (client && preInitErrors.length > 0) {
+      preInitErrors.forEach(({error, options}) => reportError(error, options))
+      preInitErrors.length = 0
+    }
+  }
+
   function reportError(error: Error, options: ErrorInfo = {}) {
     if (!client) {
-      console.warn('[reportError] called before reporter is initialized, skipping')
+      preInitErrors.push({error, options})
       return null
     }
 
@@ -181,13 +195,13 @@ export function getSentryErrorReporter(): ErrorReporter {
   function enable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(true)
+      void transport.setConsent(true)
     }
   }
   function disable() {
     const transport = client?.getTransport()
     if (isBufferedTransport(transport)) {
-      transport.setConsent(false)
+      void transport.setConsent(false)
     }
   }
 
@@ -230,7 +244,7 @@ function isError(thing: unknown): thing is Error & {cause?: Error} {
 function isInstanceOf(thing: unknown, base: any): boolean {
   try {
     return thing instanceof base
-  } catch (_e) {
+  } catch {
     return false
   }
 }
@@ -322,7 +336,7 @@ function sanityDedupeIntegration() {
           }
           return null
         }
-      } catch (_) {
+      } catch {
         /* empty */
       }
 

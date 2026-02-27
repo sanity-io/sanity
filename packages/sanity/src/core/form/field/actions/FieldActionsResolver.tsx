@@ -94,7 +94,7 @@ export const FieldActionsResolver = memo(function FieldActionsResolver(props: Fi
     <>
       {FieldActions.map((FieldAction, key) => (
         <FieldAction
-          // eslint-disable-next-line react/no-array-index-key
+          // oxlint-disable-next-line no-array-index-key
           key={key}
         />
       ))}

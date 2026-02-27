@@ -1,0 +1,22 @@
+{
+  "name": "cli-test-studio",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A Sanity studio for CI testing.",
+  "keywords": [
+    "fixture"
+  ],
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "scripts": {
+    "build": "sanity build",
+    "start": "sanity dev"
+  },
+  "dependencies": {
+    "groq": "^3.99.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sanity": "^5.4.0",
+    "styled-components": "^6.3.11"
+  }
+}

@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Card, type CardTone, Text} from '@sanity/ui'
-import {isWeekend} from 'date-fns'
+import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback} from 'react'
 
 export interface CalendarDayProps {

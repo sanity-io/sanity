@@ -1,7 +1,7 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {type FormNodePresence} from '../../../../presence'
@@ -27,7 +27,6 @@ export function usePresenceCursorDecorations(
 
     // Update the range decoration with the new selection.
     setPresenceCursorDecorations((prev) => {
-      // eslint-disable-next-line max-nested-callbacks
       const next = prev.map((p) => {
         if (p.payload?.sessionId === rangeDecoration.payload?.sessionId) {
           const nextDecoration: RangeDecoration = {

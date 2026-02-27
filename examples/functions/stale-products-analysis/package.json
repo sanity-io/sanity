@@ -1,0 +1,25 @@
+{
+  "name": "stale-products-analysis",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "name": "stale-products-analysis",
+    "type": "sanity.function.document",
+    "src": "./functions/stale-products-analysis",
+    "memory": 1,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "create",
+        "update"
+      ],
+      "filter": "_type == 'page' && (delta::changedAny(modules) || (delta::operation() == 'create' && defined(modules)))",
+      "projection": "{_id, _type, modules}"
+    }
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}

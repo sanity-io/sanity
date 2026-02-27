@@ -21,7 +21,6 @@ export interface ObjectOptions extends BaseSchemaTypeOptions {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ObjectRule extends RuleDef<ObjectRule, Record<string, unknown>> {}
 
 /** @public */

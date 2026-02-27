@@ -195,7 +195,7 @@ Object.keys(cases).forEach((path) => {
     if (expected) {
       expect(parseJsonPath(path)).toEqual(expected)
     } else {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(`Result of parsing '${path}'`, JSON.stringify(parseJsonPath(path)))
     }
   })

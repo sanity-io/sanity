@@ -12,11 +12,10 @@ import {
 } from '@sanity/icons'
 
 import {defineSearchFilter, type SearchFilterDefinition} from './filters'
-import {type SearchOperatorType} from './operators/defaultOperators'
 
 export const filterDefinitions: SearchFilterDefinition[] = [
   // 'Pinned' filters
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldPath: '_updatedAt',
     icon: CalendarIcon,
     operators: [
@@ -33,7 +32,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     name: 'updatedAt',
     type: 'pinned',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldPath: '_createdAt',
     icon: CalendarIcon,
     operators: [
@@ -50,7 +49,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     name: 'createdAt',
     type: 'pinned',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     icon: LinkIcon,
     operators: [
       {name: 'referencesDocument', type: 'item'},
@@ -62,7 +61,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     type: 'pinned',
   }),
   // 'Field' filters
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'array',
     icon: UlistIcon,
     name: 'array',
@@ -82,7 +81,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'array',
     icon: UlistIcon,
     name: 'arrayList',
@@ -105,7 +104,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'array',
     icon: UlistIcon,
     name: 'arrayReferences',
@@ -128,7 +127,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'boolean',
     icon: CheckmarkCircleIcon,
     name: 'boolean',
@@ -139,7 +138,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'date',
     icon: CalendarIcon,
     name: 'date',
@@ -158,7 +157,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'datetime',
     icon: CalendarIcon,
     name: 'datetime',
@@ -177,7 +176,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'email',
     icon: StringIcon,
     name: 'email',
@@ -193,7 +192,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'file',
     icon: DocumentIcon,
     name: 'file',
@@ -206,7 +205,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'image',
     icon: ImageIcon,
     name: 'image',
@@ -219,7 +218,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'number',
     icon: NumberIcon,
     name: 'number',
@@ -239,7 +238,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'array',
     icon: BlockContentIcon,
     name: 'portableText',
@@ -255,7 +254,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'reference',
     icon: LinkIcon,
     name: 'reference',
@@ -268,7 +267,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'slug',
     icon: StringIcon,
     name: 'slug',
@@ -284,7 +283,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'string',
     icon: StringIcon,
     name: 'string',
@@ -300,7 +299,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'string',
     icon: ChevronDownIcon,
     name: 'stringList',
@@ -316,7 +315,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'text',
     icon: StringIcon,
     name: 'text',
@@ -332,7 +331,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
     ],
     type: 'field',
   }),
-  defineSearchFilter<SearchOperatorType>({
+  defineSearchFilter({
     fieldType: 'url',
     icon: StringIcon,
     name: 'url',

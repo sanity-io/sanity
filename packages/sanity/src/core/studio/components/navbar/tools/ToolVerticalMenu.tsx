@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {forwardRef, type Ref, useMemo} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -33,7 +33,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
           })
 
           return (
-            <Stack as="li" key={tool.name}>
+            <Stack key={tool.name} as="li">
               <Button
                 as={Link}
                 justify="flex-start"

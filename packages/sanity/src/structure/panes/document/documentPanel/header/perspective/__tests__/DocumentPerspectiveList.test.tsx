@@ -1,14 +1,16 @@
-import {type ReleaseId} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
 import {
   getDraftId,
   getVersionId,
   type ReleaseDocument,
+  type ReleaseId,
   useActiveReleases,
   useDocumentVersions,
+  useFilteredReleases,
   usePerspective,
 } from 'sanity'
+import {SingleDocReleaseContext} from 'sanity/_singletons'
 import {type IntentLinkProps} from 'sanity/router'
 import {
   beforeEach,
@@ -28,8 +30,14 @@ import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useDocumentVersions: vi.fn(),
+  useFilteredReleases: vi.fn(),
+  useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
+  useDocumentVersions: vi.fn().mockReturnValue({
+    data: [],
+    error: null,
+    loading: true,
+  }),
   useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   SANITY_VERSION: '0.0.0',
@@ -63,11 +71,15 @@ const mockUseDocumentPane = useDocumentPane as MockedFunction<
   () => Partial<DocumentPaneContextValue>
 >
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
-const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
+
+const mockUseFilteredReleases = useFilteredReleases as Mock<typeof useFilteredReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
+const mockUseDocumentVersions = useDocumentVersions as Mock<typeof useDocumentVersions>
+
 const mockCurrent: ReleaseDocument = {
   _updatedAt: '2024-07-12T10:39:32Z',
   _id: '_.releases.rSpringDrop',
+  name: 'rSpringDrop',
   _type: 'system.release',
   _rev: 'r123',
   metadata: {
@@ -80,7 +92,7 @@ const mockCurrent: ReleaseDocument = {
 }
 
 const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
-  const wrapper = await createTestProvider({
+  const BaseWrapper = await createTestProvider({
     config: {
       schema: {
         types: [
@@ -94,27 +106,41 @@ const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
       },
     },
   })
-  return wrapper
+
+  // Wrap with SingleDocReleaseContext.Provider
+  return function Wrapper({children}: {children: React.ReactNode}) {
+    return (
+      <BaseWrapper>
+        <SingleDocReleaseContext.Provider value={{onSetScheduledDraftPerspective: vi.fn()}}>
+          {children}
+        </SingleDocReleaseContext.Provider>
+      </BaseWrapper>
+    )
+  }
 }
 
 const usePerspectiveMockValue: Mocked<ReturnType<typeof usePerspective>> = {
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  setPerspective: vi.fn(),
   selectedPerspective: 'drafts',
-  toggleExcludedPerspective: vi.fn(),
-  isPerspectiveExcluded: vi.fn(),
   perspectiveStack: [],
+  excludedPerspectives: [],
 } as const
 
 const getPaneMock = ({
   isCreatingDocument,
   displayedVersion = 'draft',
   editStateDocuments,
+  displayed,
+  selectedReleaseId,
+  selectedPerspectiveName,
 }: {
   isCreatingDocument?: boolean
   displayedVersion?: ReleaseId | 'published' | 'draft'
   editStateDocuments?: Array<'draft' | 'published' | 'version'>
+  displayed?: Record<string, unknown>
+  selectedReleaseId?: ReleaseId
+  selectedPerspectiveName?: 'published' | ReleaseId
 } = {}) => {
   const publishedId = 'foo'
   const editStateDocument = {
@@ -128,6 +154,8 @@ const getPaneMock = ({
   return {
     documentType: 'testAuthor',
     documentId: publishedId,
+    selectedReleaseId,
+    selectedPerspectiveName,
     editState: {
       id: publishedId,
       type: 'testAuthor',
@@ -142,17 +170,18 @@ const getPaneMock = ({
       liveEditSchemaType: false,
       release: displayedVersion.startsWith('r') ? displayedVersion : undefined,
     },
-    displayed: {
-      _id:
-        // eslint-disable-next-line no-nested-ternary
-        displayedVersion === 'published'
-          ? publishedId
-          : displayedVersion === 'draft'
-            ? getDraftId(publishedId)
-            : getVersionId(publishedId, displayedVersion),
-      _type: 'testAuthor',
-      _createdAt: isCreatingDocument ? undefined : '2023-01-01T00:00:00Z',
-    },
+    displayed: displayed
+      ? displayed
+      : {
+          _id:
+            displayedVersion === 'published'
+              ? publishedId
+              : displayedVersion === 'draft'
+                ? getDraftId(publishedId)
+                : getVersionId(publishedId, displayedVersion),
+          _type: 'testAuthor',
+          _createdAt: isCreatingDocument ? undefined : '2023-01-01T00:00:00Z',
+        },
   }
 }
 
@@ -165,10 +194,16 @@ describe('DocumentPerspectiveList', () => {
       data: [mockCurrent],
       dispatch: vi.fn(),
     })
+
     mockUseDocumentVersions.mockReturnValue({
-      data: ['versions.rSpringDrop.KJAiOpAH5r6P3dWt1df9ql'],
       loading: false,
-      error: null,
+      data: [],
+    })
+
+    mockUseFilteredReleases.mockReturnValue({
+      currentReleases: [mockCurrent],
+      notCurrentReleases: [],
+      inCreation: null,
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()
@@ -196,7 +231,18 @@ describe('DocumentPerspectiveList', () => {
         getPaneMock({isCreatingDocument: true, displayedVersion: 'rSpringDrop'}),
       )
       // no document versions are available, but the user is creating this document, so we want to show the chip anyways.
-      mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: [],
+      })
+
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [mockCurrent],
+        notCurrentReleases: [],
+        inCreation: null,
+      })
+
       // the selected perspective is the release perspective
       mockUsePerspective.mockReturnValue({
         ...usePerspectiveMockValue,
@@ -213,6 +259,14 @@ describe('DocumentPerspectiveList', () => {
   })
 
   describe('disabled chips', () => {
+    beforeEach(() => {
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [],
+        notCurrentReleases: [],
+        inCreation: null,
+      })
+    })
+
     it('should disable the "Published" chip when there is no published document and not live edit, draft should be enabled', async () => {
       mockUseDocumentPane.mockReturnValue(getPaneMock())
 
@@ -248,6 +302,35 @@ describe('DocumentPerspectiveList', () => {
       render(<DocumentPerspectiveList />, {wrapper})
 
       expect(screen.getByRole('button', {name: 'Published'})).toBeEnabled()
+    })
+
+    it('should disable the "Draft" chip when the document only has one version, no pinned version', async () => {
+      mockUseDocumentPane.mockReturnValue(
+        getPaneMock({
+          editStateDocuments: [],
+          displayedVersion: 'rSpringDrop',
+          isCreatingDocument: true,
+        }),
+      )
+
+      mockUsePerspective.mockReturnValue({
+        ...usePerspectiveMockValue,
+        selectedPerspectiveName: undefined,
+      })
+      mockUseDocumentVersions.mockReturnValue({
+        loading: false,
+        data: ['versions.foo.xyz'],
+      })
+      mockUseFilteredReleases.mockReturnValue({
+        currentReleases: [mockCurrent],
+        notCurrentReleases: [],
+        inCreation: null,
+      })
+
+      const wrapper = await getTestProvider({liveEdit: false})
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Draft'})).toBeDisabled()
     })
   })
 
@@ -333,6 +416,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -420,6 +505,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: [],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -427,7 +514,16 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: ['versions.rSpringDrop.foo'],
+        })
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()
@@ -438,8 +534,8 @@ describe('DocumentPerspectiveList', () => {
         mockUseDocumentPane.mockReturnValue(
           getPaneMock({
             editStateDocuments: ['draft'],
-            displayedVersion: 'rSpringDrop',
-            isCreatingDocument: true,
+            displayedVersion: 'draft',
+            isCreatingDocument: false,
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -447,12 +543,21 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+
+        mockUseDocumentVersions.mockReturnValue({
+          loading: false,
+          data: [],
+        })
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).toBeEnabled()
         expect(screen.getByRole('button', {name: 'Published'})).not.toBeEnabled()
-        expect(screen.getByRole('button', {name: 'Spring Drop'})).toHaveAttribute('data-selected')
       })
       it('no draft, published and no version - perspective is version', async () => {
         mockUseDocumentPane.mockReturnValue(
@@ -460,6 +565,8 @@ describe('DocumentPerspectiveList', () => {
             editStateDocuments: ['published'],
             displayedVersion: 'rSpringDrop',
             isCreatingDocument: true,
+            selectedReleaseId: 'rSpringDrop',
+            selectedPerspectiveName: 'rSpringDrop',
           }),
         )
         mockUsePerspective.mockReturnValue({
@@ -467,7 +574,12 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        mockUseDocumentVersions.mockReturnValue({data: [], loading: false, error: null})
+
+        mockUseFilteredReleases.mockReturnValue({
+          currentReleases: [mockCurrent],
+          notCurrentReleases: [],
+          inCreation: null,
+        })
         const wrapper = await getTestProvider({liveEdit: false})
         render(<DocumentPerspectiveList />, {wrapper})
         expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()

@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`duplicate > applies the \`mapDocument\` function to the created document 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [],
+    "create": [
+      [
+        {
+          "_id": "drafts.my-duplicate-id",
+          "_rev": "exampleRev",
+          "_type": "example",
+          "appendValue": "appended",
+          "newValue": "hey",
+        },
+        {
+          "tag": "document.duplicate",
+        },
+      ],
+    ],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
+  },
+  "request": [],
+  "transaction": [],
+}
+`;
+
+exports[`duplicate > execute > creates a new document based on the source document 1`] = `
+{
+  "listen": [],
+  "observable": {
+    "action": [],
+    "create": [
+      [
+        {
+          "_id": "drafts.my-duplicate-id",
+          "_rev": "exampleRev",
+          "_type": "example",
+          "newValue": "hey",
+        },
+        {
+          "tag": "document.duplicate",
+        },
+      ],
+    ],
+    "fetch": [],
+    "getDocuments": [],
+    "listen": [],
+    "request": [],
+  },
+  "request": [],
+  "transaction": [],
+}
+`;

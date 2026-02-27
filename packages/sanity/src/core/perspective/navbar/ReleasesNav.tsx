@@ -1,53 +1,62 @@
-import {CloseIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Box, Button, Card, Flex} from '@sanity/ui'
-import {AnimatePresence} from 'framer-motion'
+import {Card} from '@sanity/ui'
+import {type ComponentType} from 'react'
+import {styled} from 'styled-components'
 
 import {usePerspective} from '../../perspective/usePerspective'
-import {useSetPerspective} from '../../perspective/useSetPerspective'
-import {LATEST} from '../../releases/util/const'
-import {isDraftPerspective} from '../../releases/util/util'
-import {useWorkspace} from '../../studio'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
+import {useWorkspace} from '../../studio/workspace'
 import {ReleasesToolLink} from '../ReleasesToolLink'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {CurrentGlobalPerspectiveLabel} from './currentGlobalPerspectiveLabel'
 import {GlobalPerspectiveMenu} from './GlobalPerspectiveMenu'
 
-export function ReleasesNav(): React.JSX.Element {
-  const areReleasesEnabled = !!useWorkspace().releases?.enabled
+const ReleasesNavContainer = styled(Card)`
+  position: relative;
+  display: flex;
+  &:not([hidden]) {
+    display: flex;
+  }
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  margin: -3px 0;
 
-  const {selectedPerspective, selectedReleaseId} = usePerspective()
-  const setPerspective = useSetPerspective()
+  /* The children in button is rendered inside a span, we need to absolutely position the dot for the error. */
+  span:has(> [data-ui='error-status-icon']) {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 0;
+  }
 
-  const handleClearPerspective = () => setPerspective(LATEST)
+  a:hover,
+  button:hover {
+    position: relative;
+    z-index: 2;
+  }
+`
 
+interface Props {
+  withReleasesToolButton?: boolean
+  menuItemProps?: ReleasesNavMenuItemPropsGetter
+}
+
+/**
+ * @internal
+ */
+export const ReleasesNav: ComponentType<Props> = ({withReleasesToolButton, menuItemProps}) => {
+  const releasesToolAvailable = useReleasesToolAvailable()
+  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
   return (
-    <Card flex="none" border marginRight={1} radius="full" tone="inherit" style={{margin: -1}}>
-      <Flex gap={0}>
-        {areReleasesEnabled && (
-          <Box data-testid="releases-tool-link" flex="none">
-            <ReleasesToolLink />
-          </Box>
-        )}
-        <AnimatePresence>
-          <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-        </AnimatePresence>
-        <GlobalPerspectiveMenu
-          selectedReleaseId={selectedReleaseId}
-          areReleasesEnabled={areReleasesEnabled}
-        />
-        {!isDraftPerspective(selectedPerspective) && (
-          <div>
-            <Button
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={handleClearPerspective}
-              data-testid="clear-perspective-button"
-              padding={2}
-              radius="full"
-            />
-          </div>
-        )}
-      </Flex>
-    </Card>
+    <ReleasesNavContainer flex="none" tone="inherit" radius="full" data-ui="ReleasesNav" border>
+      {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
+      <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
+      <GlobalPerspectiveMenu
+        selectedPerspectiveName={selectedPerspectiveName}
+        areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+        menuItemProps={menuItemProps}
+      />
+    </ReleasesNavContainer>
   )
 }

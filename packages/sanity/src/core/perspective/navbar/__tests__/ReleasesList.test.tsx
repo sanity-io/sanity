@@ -1,5 +1,7 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui'
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -33,7 +35,15 @@ vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
 }))
 
-const setCreateBundleDialogOpen = vi.fn()
+vi.mock('../ViewContentReleasesMenuItem', () => ({
+  ViewContentReleasesMenuItem: () => null,
+}))
+
+vi.mock('../ScheduledDraftsMenuItem', () => ({
+  ScheduledDraftsMenuItem: () => null,
+}))
+
+const handleOpenBundleDialog = vi.fn()
 
 describe('ReleasesList', () => {
   describe('when releases are enabled', () => {
@@ -43,6 +53,9 @@ describe('ReleasesList', () => {
         data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
       })
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('renders releases when not loading', async () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -50,68 +63,147 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
           />
         </Menu>,
         {wrapper},
       )
-    })
 
-    it('renders releases when not loading', async () => {
       expect(screen.getByText('active asap Release')).toBeInTheDocument()
       expect(screen.getByText('active Release')).toBeInTheDocument()
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
     })
 
-    it('calls setCreateBundleDialogOpen when create new release button is clicked', async () => {
+    it('calls handleOpenBundleDialog when create new release button is clicked', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+
       await waitFor(() =>
         expect(screen.getByTestId('create-new-release-button')).not.toBeDisabled(),
       )
 
-      fireEvent.click(screen.getByTestId('create-new-release-button'))
-      expect(setCreateBundleDialogOpen).toHaveBeenCalledWith(true)
+      await userEvent.click(screen.getByTestId('create-new-release-button'))
+      expect(handleOpenBundleDialog).toHaveBeenCalled()
+    })
+  })
+
+  describe('when releases with cardinality filtering are enabled', () => {
+    beforeEach(async () => {
+      const releaseWithCardinalityOne: ReleaseDocument = {
+        ...activeASAPRelease,
+        _id: '_.releases.rCardinalityOne',
+        metadata: {
+          ...activeASAPRelease.metadata,
+          title: 'Cardinality One Release',
+          cardinality: 'one',
+        },
+      }
+
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [
+          activeASAPRelease,
+          activeScheduledRelease,
+          activeUndecidedRelease,
+          releaseWithCardinalityOne,
+        ],
+      })
+
+      mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+    })
+
+    it('filters out releases with cardinality "one"', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled
+          />
+        </Menu>,
+        {wrapper},
+      )
+
+      expect(screen.getByText('active asap Release')).toBeInTheDocument()
+      expect(screen.getByText('active Release')).toBeInTheDocument()
+      expect(screen.getByText('undecided Release')).toBeInTheDocument()
+
+      expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
     })
   })
 
   describe('when releases are disabled', () => {
-    beforeEach(() => {
-      beforeEach(async () => {
-        mockUseActiveReleases.mockReturnValue({
-          ...useActiveReleasesMockReturn,
-          data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
-        })
-        const wrapper = await createTestProvider()
-        render(
-          <Menu>
-            <ReleasesList
-              setScrollContainer={vi.fn()}
-              onScroll={vi.fn()}
-              isRangeVisible={false}
-              selectedReleaseId={undefined}
-              setCreateBundleDialogOpen={setCreateBundleDialogOpen}
-              scrollElementRef={{current: null}}
-              areReleasesEnabled={false}
-            />
-          </Menu>,
-          {wrapper},
-        )
+    beforeEach(async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
       })
     })
 
     it('should hide the releases list, but show publish and draft', async () => {
-      waitFor(() => {
-        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
-        expect(screen.queryByTestId('release-drafts')).toBeInTheDocument()
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled={false}
+          />
+        </Menu>,
+        {wrapper},
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
         expect(screen.queryByTestId('release-rASAP')).not.toBeInTheDocument()
         expect(screen.queryByTestId('release-rScheduled')).not.toBeInTheDocument()
         expect(screen.queryByTestId('release-rActive')).not.toBeInTheDocument()
       })
+      expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
     })
 
     it('should hide the create new release', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <ReleasesList
+            setScrollContainer={vi.fn()}
+            onScroll={vi.fn()}
+            isRangeVisible={false}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            scrollElementRef={{current: null}}
+            areReleasesEnabled={false}
+          />
+        </Menu>,
+        {wrapper},
+      )
+
       expect(screen.queryByTestId('create-new-release-button')).toBeNull()
     })
   })
@@ -123,6 +215,9 @@ describe('ReleasesList', () => {
         data: [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease],
       })
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnFalse)
+    })
+
+    it('calls doesnt open the create dialog user has no permissions', async () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -130,17 +225,14 @@ describe('ReleasesList', () => {
             setScrollContainer={vi.fn()}
             onScroll={vi.fn()}
             isRangeVisible={false}
-            selectedReleaseId={undefined}
-            setCreateBundleDialogOpen={setCreateBundleDialogOpen}
+            selectedPerspectiveName={undefined}
+            handleOpenBundleDialog={handleOpenBundleDialog}
             scrollElementRef={{current: null}}
             areReleasesEnabled
           />
         </Menu>,
         {wrapper},
       )
-    })
-
-    it('calls doesnt open the create dialog user has no permissions', async () => {
       await waitFor(() => expect(screen.getByTestId('create-new-release-button')).toBeDisabled())
     })
   })

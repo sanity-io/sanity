@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, useEffect, useState} from 'react'
 import {FreeTrialContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -42,24 +42,21 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     }
   }, [showDialog, data, showOnLoad, telemetry])
 
-  // This is casted to a string to make it stable across renders so it doesn't trigger multiple times the effect.
-  const searchParamsAsString = new URLSearchParams(router.state._searchParams).toString()
+  // See if we have any parameters from the current route
+  // to pass onto our query
+  const searchParams = new URLSearchParams(router.state._searchParams)
+  // Allows us to override the current state of the trial to
+  // get back certain modals based on the current experience
+  // can be 'growth-trial', 'growth-trial-ending', or 'post-growth-trial'
+  const trialState = searchParams.get('trialState')
+  // Allows us to set whether we've seen the modals before
+  // or whether this is our first time seeing them (i.e. show a popup)
+  const seenBefore = searchParams.get('seenBefore')
 
   useEffect(() => {
-    // See if we have any parameters from the current route
-    // to pass onto our query
-    const searchParams = new URLSearchParams(searchParamsAsString)
-
     const queryParams = new URLSearchParams()
     queryParams.append('studioVersion', SANITY_VERSION)
-    // Allows us to override the current state of the trial to
-    // get back certain modals based on the current experience
-    // can be 'growth-trial', 'growth-trial-ending', or 'post-growth-trial'
-    const trialState = searchParams.get('trialState')
     if (trialState) queryParams.append('trialState', trialState)
-    // Allows us to set whether we've seen the modals before
-    // or whether this is our first time seeing them (i.e. show a popup)
-    const seenBefore = searchParams.get('seenBefore')
     if (seenBefore) queryParams.append('seenBefore', seenBefore)
     // If we have trialState, query the override endpoint so that we
     // get back trial modals for that state
@@ -84,28 +81,24 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     return () => {
       request.unsubscribe()
     }
-  }, [client, searchParamsAsString])
+  }, [client, seenBefore, trialState])
 
-  const toggleShowContent = useCallback(
-    (closeAndReOpen = false) => {
-      if (showOnLoad) {
-        setShowOnLoad(false)
-        // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
-        setShowDialog(closeAndReOpen)
-        if (data?.showOnLoad?.id) {
-          client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
-        }
-      } else {
-        setShowDialog((p) => !p)
+  const toggleShowContent = (closeAndReOpen = false) => {
+    if (showOnLoad) {
+      setShowOnLoad(false)
+      // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
+      setShowDialog(closeAndReOpen)
+      if (data?.showOnLoad?.id) {
+        void client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
       }
-    },
-    [client, showOnLoad, data?.showOnLoad?.id],
-  )
+    } else {
+      setShowDialog((p) => !p)
+    }
+  }
 
-  const value = useMemo(
-    () => ({data, showDialog, toggleShowContent, showOnLoad}),
-    [data, showDialog, showOnLoad, toggleShowContent],
+  return (
+    <FreeTrialContext.Provider value={{data, showDialog, toggleShowContent, showOnLoad}}>
+      {children}
+    </FreeTrialContext.Provider>
   )
-
-  return <FreeTrialContext.Provider value={value}>{children}</FreeTrialContext.Provider>
 }

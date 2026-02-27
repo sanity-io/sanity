@@ -33,7 +33,7 @@ export function FormInput(props: InputProps) {
 
         <Flex align="center" gap={4}>
           {Object.entries(COMPONENT_COLORS).map(([key, value]) => (
-            <Inline space={2} key={key}>
+            <Inline key={key} space={2}>
               <div style={{width: '1em', height: '1em', background: value, borderRadius: '50%'}} />
               <Text size={1} weight="semibold">
                 {key.charAt(0).toUpperCase() + key.slice(1)}

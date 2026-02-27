@@ -20,9 +20,8 @@ export function CreateDraft() {
       })
     } catch (e) {
       setError(e)
-    } finally {
-      setCreatingDraft(false)
     }
+    setCreatingDraft(false)
   }, [client, documentId, documentType, value])
 
   return (

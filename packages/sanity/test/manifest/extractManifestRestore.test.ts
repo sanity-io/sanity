@@ -5,11 +5,12 @@ import {
   type ObjectSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import pick from 'lodash/pick'
+import {pick} from 'lodash-es'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
 import {createSchema} from '../../src/core'
+import {mediaLibrarySchemas} from '../../src/media-library/plugin/schemas'
 
 describe('Extract studio manifest', () => {
   test('extracted schema types should be mappable to a createSchema compatible version', () => {
@@ -17,10 +18,28 @@ describe('Extract studio manifest', () => {
     const sourceSchema = createSchema({
       name: 'test',
       types: [
+        ...mediaLibrarySchemas,
+        defineType({
+          type: 'object',
+          name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
+          fields: [{name: 'number', type: 'number'}],
+        }),
         defineType({
           name: documentType,
           type: 'document',
           fields: [
+            defineField({
+              name: 'conflictingInlineObjectNameArray',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  // this is the type name as the object type above, but it is a different type, since this is an inline array item object def
+                  name: 'reusedObjectName',
+                  fields: [{name: 'string', type: 'string'}],
+                }),
+              ],
+            }),
             defineField({name: 'string', type: 'string'}),
             defineField({name: 'text', type: 'text'}),
             defineField({name: 'number', type: 'number'}),
@@ -32,6 +51,7 @@ describe('Extract studio manifest', () => {
             defineField({name: 'file', type: 'file'}),
             defineField({name: 'slug', type: 'slug'}),
             defineField({name: 'url', type: 'url'}),
+
             defineField({name: 'object', type: documentType}),
             defineField({
               type: 'object',
@@ -96,6 +116,20 @@ describe('Extract studio manifest', () => {
               ],
             }),
             defineField({
+              type: 'globalDocumentReference',
+              name: 'globalRef',
+              to: [
+                {
+                  type: documentType,
+                  preview: {
+                    select: {title: 'title'},
+                  },
+                },
+              ],
+              resourceId: 'a.b',
+              resourceType: 'dataset',
+            }),
+            defineField({
               name: 'refArray',
               type: 'array',
               of: [
@@ -145,6 +179,10 @@ describe('Extract studio manifest', () => {
                 }),
               ],
             }),
+            defineField({
+              name: 'video',
+              type: 'sanity.video',
+            }),
           ],
         }),
       ],
@@ -157,7 +195,23 @@ describe('Extract studio manifest', () => {
       types: extracted,
     })
 
-    expect(restoredSchema._validation).toEqual([])
+    expect(restoredSchema._validation).toEqual([
+      {
+        path: [
+          {kind: 'type', name: 'basic', type: 'document'},
+          {kind: 'property', name: 'fields'},
+          {kind: 'type', name: 'conflictingInlineObjectNameArray', type: 'array'},
+        ],
+        problems: [
+          {
+            helpId: 'schema-array-of-type-global-type-conflict',
+            message:
+              'Found array member declaration with the same name as the global schema type "reusedObjectName". It\'s recommended to use a unique name to avoid possibly incompatible data types that shares the same name.',
+            severity: 'warning',
+          },
+        ],
+      },
+    ])
     expect(restoredSchema.getTypeNames().sort()).toEqual(sourceSchema.getTypeNames().sort())
 
     const restoredDocument = restoredSchema.get(documentType) as ObjectSchemaType

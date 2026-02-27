@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import {type CliCommandDefinition, type CliPrompter} from '@sanity/cli'
-import exportDataset from '@sanity/export'
+import {exportDataset, type ExportMode, type ExportProgress} from '@sanity/export'
 import {absolutify} from '@sanity/util/fs'
 import prettyMs from 'pretty-ms'
 
@@ -48,7 +48,7 @@ interface ParsedExportFlags {
   overwrite?: boolean
   types?: string[]
   assetConcurrency?: number
-  mode?: string
+  mode?: ExportMode
 }
 
 function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
@@ -81,25 +81,19 @@ function parseFlags(rawFlags: ExportFlags): ParsedExportFlags {
     flags.overwrite = Boolean(rawFlags.overwrite)
   }
 
-  if (typeof rawFlags.mode !== 'undefined') {
+  if (rawFlags.mode === 'stream' || rawFlags.mode === 'cursor') {
     flags.mode = rawFlags.mode
   }
 
   return flags
 }
 
-interface ProgressEvent {
-  step: string
-  update?: boolean
-  current: number
-  total: number
-}
-
 const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
   name: 'export',
   group: 'dataset',
   signature: '[NAME] [DESTINATION]',
-  description: 'Export dataset to local filesystem as a gzipped tarball',
+  description: `Export dataset to local filesystem as a gzipped tarball.
+      Assets failing with HTTP status codes 401, 403 and 404 upon download are ignored and excluded from export.`,
   helpText,
   action: async (args, context) => {
     const {apiClient, output, chalk, workDir, prompt} = context
@@ -158,7 +152,7 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
 
     let currentStep = 'Exporting documents...'
     let spinner = output.spinner(currentStep).start()
-    const onProgress = (progress: ProgressEvent) => {
+    const onProgress = (progress: ExportProgress) => {
       if (progress.step !== currentStep) {
         spinner.succeed()
         spinner = output.spinner(progress.step).start()
@@ -174,7 +168,7 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
       await exportDataset({
         client,
         dataset,
-        outputPath,
+        outputPath: outputPath === '-' ? process.stdout : outputPath,
         onProgress,
         ...flags,
       })
@@ -188,7 +182,6 @@ const exportDatasetCommand: CliCommandDefinition<ExportFlags> = {
   },
 }
 
-// eslint-disable-next-line complexity
 async function getOutputPath(
   destination: string,
   dataset: string,

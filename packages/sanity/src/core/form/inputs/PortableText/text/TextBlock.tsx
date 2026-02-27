@@ -2,9 +2,10 @@ import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
 import {pathToString} from '../../../../field'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useFormCallbacks} from '../../../studio'
@@ -24,6 +25,7 @@ import {useFormBuilder} from '../../../useFormBuilder'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
 import {BlockActions} from '../BlockActions'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
+import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
@@ -97,12 +99,29 @@ export function TextBlock(props: TextBlockProps) {
     value,
   } = props
   const {Markers} = useFormBuilder().__internal.components
-  const [reviewChangesHovered, setReviewChangesHovered] = useState<boolean>(false)
   const markers = usePortableTextMarkers(path)
   const [divElement, setDivElement] = useState<HTMLDivElement | null>(null)
   const memberItem = usePortableTextMemberItem(pathToString(path))
   const editor = usePortableTextEditor()
+  const schemaTypes = usePortableTextMemberSchemaTypes()
   const {onChange} = useFormCallbacks()
+  const hoveredChange = useHoveredChange()
+
+  /**
+   * Save the last valid memberItem data to prevent DOM mutations during text selection.
+   * When memberItem becomes undefined
+   * (due to the performance optimization that removes unfocused blocks from the context),
+   * we keep the ChangeIndicatorWrapper mounted
+   */
+  const [memberItemRef, setMemberItemRef] = useState(memberItem)
+  useEffect(() => {
+    if (memberItem) {
+      setMemberItemRef(memberItem)
+    }
+  }, [memberItem])
+
+  const changeHovered =
+    hoveredChange && pathToString(hoveredChange?.path || []) === pathToString(path)
 
   const presence = useChildPresence(path, true)
   // Include all presence paths pointing either directly to a block, or directly to a block child
@@ -114,9 +133,6 @@ export function TextBlock(props: TextBlockProps) {
         (p.path.slice(-3)[1] === 'children' && p.path.length - path.length === 2),
     )
   }, [path, presence])
-
-  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
-  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const {validation, hasError, hasWarning, hasInfo} = useMemberValidation(memberItem?.node)
 
@@ -185,7 +201,7 @@ export function TextBlock(props: TextBlockProps) {
   }, [value])
 
   const isOpen = Boolean(memberItem?.member.open)
-  const parentSchemaType = editor.schemaTypes.portableText
+  const parentSchemaType = schemaTypes.portableText
   const referenceElement = divElement
 
   const componentProps: BlockProps = useMemo(
@@ -193,6 +209,7 @@ export function TextBlock(props: TextBlockProps) {
       __unstable_floatingBoundary: floatingBoundary,
       __unstable_referenceBoundary: referenceBoundary,
       __unstable_referenceElement: referenceElement,
+      changed: memberItem?.member.item.changed ?? false,
       children: text,
       focused,
       markers,
@@ -223,6 +240,7 @@ export function TextBlock(props: TextBlockProps) {
       focused,
       isOpen,
       markers,
+      memberItem?.member.item.changed,
       memberItem?.node.path,
       onItemClose,
       onOpen,
@@ -264,7 +282,8 @@ export function TextBlock(props: TextBlockProps) {
   )
 
   const blockActionsEnabled = renderBlockActions && !readOnly
-  const changeIndicatorVisible = isFullscreen && memberItem
+
+  const changeIndicatorVisible = isFullscreen && memberItemRef
 
   const setRef = useCallback(
     (elm: HTMLDivElement) => {
@@ -276,91 +295,70 @@ export function TextBlock(props: TextBlockProps) {
     [memberItem, setElementRef, setDivElement],
   )
 
-  return useMemo(
-    () => (
-      <Box {...outerPaddingProps} data-testid="text-block" ref={setRef} style={debugRender()}>
-        <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex flex={1} {...innerPaddingProps}>
-            <Box flex={1}>
-              <Tooltip
-                content={toolTipContent}
-                disabled={!tooltipEnabled}
-                placement="top"
-                portal="editor"
+  return (
+    <Box
+      {...outerPaddingProps}
+      data-testid="text-block"
+      data-fullscreen={isFullscreen}
+      ref={setRef}
+      style={debugRender()}
+    >
+      <TextBlockFlexWrapper data-testid="text-block__wrapper">
+        <Flex flex={1} {...innerPaddingProps}>
+          <Box flex={1}>
+            <Tooltip
+              content={toolTipContent}
+              disabled={!tooltipEnabled}
+              placement="top"
+              portal="editor"
+            >
+              <TextRoot
+                $level={value.level || 1}
+                data-error={hasError ? '' : undefined}
+                data-list-item={value.listItem}
+                data-markers={hasMarkers ? '' : undefined}
+                data-read-only={readOnly}
+                data-testid="text-block__text"
+                data-warning={hasWarning ? '' : undefined}
+                spellCheck={spellCheck}
               >
-                <TextRoot
-                  $level={value.level || 1}
-                  data-error={hasError ? '' : undefined}
-                  data-list-item={value.listItem}
-                  data-markers={hasMarkers ? '' : undefined}
-                  data-read-only={readOnly}
-                  data-testid="text-block__text"
-                  data-warning={hasWarning ? '' : undefined}
-                  spellCheck={spellCheck}
-                >
-                  {renderBlock && renderBlock(componentProps)}
-                </TextRoot>
-              </Tooltip>
-            </Box>
+                {renderBlock && renderBlock(componentProps)}
+              </TextRoot>
+            </Tooltip>
+          </Box>
 
-            {blockActionsEnabled && (
-              <BlockActionsOuter contentEditable={false} marginRight={3}>
-                <BlockActionsInner>
-                  {focused && (
-                    <BlockActions
-                      block={value}
-                      onChange={onChange}
-                      renderBlockActions={renderBlockActions}
-                    />
-                  )}
-                </BlockActionsInner>
-              </BlockActionsOuter>
-            )}
+          {blockActionsEnabled && (
+            <BlockActionsOuter contentEditable={false} marginRight={3}>
+              <BlockActionsInner>
+                {focused && (
+                  <BlockActions
+                    block={value}
+                    onChange={onChange}
+                    renderBlockActions={renderBlockActions}
+                  />
+                )}
+              </BlockActionsInner>
+            </BlockActionsOuter>
+          )}
 
-            {changeIndicatorVisible && (
-              <ChangeIndicatorWrapper
-                $hasChanges={memberItem.member.item.changed}
-                contentEditable={false}
-                onMouseEnter={handleChangeIndicatorMouseEnter}
-                onMouseLeave={handleChangeIndicatorMouseLeave}
-              >
-                <StyledChangeIndicatorWithProvidedFullPath
-                  hasFocus={focused}
-                  isChanged={memberItem.member.item.changed}
-                  path={memberItem.member.item.path}
-                  withHoverEffect={false}
-                />
-              </ChangeIndicatorWrapper>
-            )}
-            {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-          </Flex>
-        </TextBlockFlexWrapper>
-      </Box>
-    ),
-    [
-      blockActionsEnabled,
-      changeIndicatorVisible,
-      componentProps,
-      focused,
-      handleChangeIndicatorMouseEnter,
-      handleChangeIndicatorMouseLeave,
-      hasError,
-      hasMarkers,
-      hasWarning,
-      innerPaddingProps,
-      memberItem,
-      onChange,
-      outerPaddingProps,
-      readOnly,
-      renderBlock,
-      renderBlockActions,
-      reviewChangesHovered,
-      setRef,
-      spellCheck,
-      toolTipContent,
-      tooltipEnabled,
-      value,
-    ],
+          {changeIndicatorVisible && (
+            <ChangeIndicatorWrapper
+              // Use current memberItem when available for accurate data, fallback to cached for stability
+              $hasChanges={(memberItem ?? memberItemRef).member.item.changed}
+              contentEditable={false}
+            >
+              <StyledChangeIndicatorWithProvidedFullPath
+                hasFocus={focused}
+                isChanged={(memberItem ?? memberItemRef).member.item.changed}
+                path={(memberItem ?? memberItemRef).member.item.path}
+                withHoverEffect={false}
+              />
+            </ChangeIndicatorWrapper>
+          )}
+          {changeHovered && <ReviewChangesHighlightBlock $fullScreen={Boolean(isFullscreen)} />}
+        </Flex>
+      </TextBlockFlexWrapper>
+    </Box>
   )
 }
 

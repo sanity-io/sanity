@@ -1,3 +1,5 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {getVersionNameFromId, type VersionId} from '@sanity/id-utils'
 import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
@@ -5,12 +7,12 @@ import {Dialog} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components'
 import {useDocumentOperation, useSchema} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
+import {type TargetPerspective} from '../../../perspective/types'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {Preview, unstable_useValuePreview as useValuePreview} from '../../../preview'
-import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
+import {Preview} from '../../../preview'
+import {getPublishedId, getVersionFromId, isDraftId, isVersionId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 /**
@@ -20,42 +22,48 @@ export function DiscardVersionDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
+  fromPerspective: string | TargetPerspective
+  isGoingToUnpublish: boolean
 }): React.JSX.Element {
-  const {onClose, documentId, documentType} = props
+  const {onClose, documentId, documentType, fromPerspective, isGoingToUnpublish} = props
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: coreT} = useTranslation()
   const {discardChanges} = useDocumentOperation(getPublishedId(documentId), documentType)
-  const toast = useToast()
   const {selectedPerspective} = usePerspective()
   const {discardVersion} = useVersionOperations()
   const schema = useSchema()
+  const toast = useToast()
   const [isDiscarding, setIsDiscarding] = useState(false)
+  const discardType = isDraftId(documentId) ? 'draft' : 'release'
+  const rawReleaseName =
+    typeof fromPerspective === 'string' ? fromPerspective : fromPerspective.metadata.title
+  const currentRelease = getVersionNameFromId(documentId as VersionId)
+  const releaseName = rawReleaseName || coreT('release.placeholder-untitled-release')
 
   const schemaType = schema.get(documentType)
-
-  const preview = useValuePreview({schemaType, value: {_id: documentId}})
 
   const handleDiscardVersion = useCallback(async () => {
     setIsDiscarding(true)
 
     if (isVersionId(documentId)) {
-      await discardVersion(
-        getVersionFromId(documentId) ||
-          getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
-        documentId,
-      )
-
-      toast.push({
-        closable: true,
-        status: 'success',
-        description: (
-          <Translate
-            t={coreT}
-            i18nKey={'release.action.discard-version.success'}
-            values={{title: preview.value?.title || documentId}}
-          />
-        ),
-      })
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = async () => {
+        await discardVersion(
+          getVersionFromId(documentId) ||
+            getReleaseIdFromReleaseDocumentId((selectedPerspective as ReleaseDocument)._id),
+          documentId,
+        )
+      }
+      try {
+        await run()
+      } catch (err) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: coreT('release.action.discard-version.failure'),
+          description: err.message,
+        })
+      }
     } else {
       // on the document header you can also discard the draft
       discardChanges.execute()
@@ -64,21 +72,18 @@ export function DiscardVersionDialog(props: {
     setIsDiscarding(false)
 
     onClose()
-  }, [
-    documentId,
-    onClose,
-    discardVersion,
-    selectedPerspective,
-    toast,
-    coreT,
-    preview.value?.title,
-    discardChanges,
-  ])
+  }, [documentId, onClose, discardVersion, selectedPerspective, toast, coreT, discardChanges])
 
   return (
     <Dialog
       id={'discard-version-dialog'}
-      header={t('discard-version-dialog.header')}
+      header={
+        <Translate
+          t={t}
+          i18nKey={`discard-version-dialog.header-${discardType}`}
+          values={{releaseTitle: releaseName}}
+        />
+      }
       onClose={onClose}
       width={0}
       padding={false}
@@ -88,7 +93,7 @@ export function DiscardVersionDialog(props: {
           onClick: onClose,
         },
         confirmButton: {
-          text: t('discard-version-dialog.title'),
+          text: t(`discard-version-dialog.title-${discardType}`),
           onClick: handleDiscardVersion,
           disabled: isDiscarding,
         },
@@ -96,13 +101,21 @@ export function DiscardVersionDialog(props: {
     >
       <Stack space={3} paddingX={3} marginBottom={2}>
         {schemaType ? (
-          <Preview value={{_id: documentId}} schemaType={schemaType} />
+          <Preview
+            value={{_id: isGoingToUnpublish ? getPublishedId(documentId) : documentId}}
+            schemaType={schemaType}
+            perspectiveStack={isGoingToUnpublish ? [] : [currentRelease]}
+          />
         ) : (
           <LoadingBlock />
         )}
-        <Box paddingX={2}>
+        <Box paddingX={2} style={{maxWidth: '400px'}}>
           <Text size={1} muted>
-            {t('discard-version-dialog.description')}
+            <Translate
+              t={t}
+              i18nKey={`discard-version-dialog.description-${discardType}`}
+              values={{releaseTitle: releaseName}}
+            />
           </Text>
         </Box>
       </Stack>

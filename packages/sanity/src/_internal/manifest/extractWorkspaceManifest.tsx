@@ -1,5 +1,5 @@
 import DOMPurify from 'isomorphic-dompurify'
-import startCase from 'lodash/startCase'
+import {startCase} from 'lodash-es'
 import {renderToString} from 'react-dom/server'
 import {
   type ArraySchemaType,
@@ -9,6 +9,7 @@ import {
   createSchema,
   type CrossDatasetReferenceSchemaType,
   type FileSchemaType,
+  type GlobalDocumentReferenceSchemaType,
   type MultiFieldSet,
   type NumberSchemaType,
   type ObjectField,
@@ -23,14 +24,15 @@ import {
   type StringSchemaType,
   type Workspace,
 } from 'sanity'
-import {ServerStyleSheet} from 'styled-components'
 
 import {SchemaIcon, type SchemaIconProps} from './Icon'
 import {
   getCustomFields,
+  getDefinedTypeName,
   isCrossDatasetReference,
   isCustomized,
   isDefined,
+  isGlobalDocumentReference,
   isPrimitive,
   isRecord,
   isReference,
@@ -72,7 +74,6 @@ type ManifestValidationFlag = ManifestValidationRule['flag']
 type ValidationRuleTransformer = (rule: RuleSpec) => ManifestValidationRule | undefined
 
 const MAX_CUSTOM_PROPERTY_DEPTH = 5
-const INLINE_TYPES = ['document', 'object', 'image', 'file']
 
 export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWorkspaceManifest {
   const serializedSchema = extractManifestSchemaTypes(workspace.schema)
@@ -90,6 +91,7 @@ export function extractCreateWorkspaceManifest(workspace: Workspace): CreateWork
       title: workspace.title,
       subtitle: workspace.subtitle,
     }),
+    mediaLibrary: workspace.mediaLibrary,
     schema: serializedSchema,
     tools: serializedTools,
   }
@@ -124,9 +126,12 @@ function transformCommonTypeFields(
   const crossDatasetRefProps = isCrossDatasetReference(type)
     ? transformCrossDatasetReference(type)
     : {}
+  const globalRefProps = isGlobalDocumentReference(type)
+    ? transformGlobalDocumentReference(type)
+    : {}
 
   const objectFields: ObjectFields =
-    type.jsonType === 'object' && type.type && INLINE_TYPES.includes(typeName) && isCustomized(type)
+    type.jsonType === 'object' && type.type && isCustomized(type)
       ? {
           fields: getCustomFields(type).map((objectField) => transformField(objectField, context)),
         }
@@ -140,6 +145,7 @@ function transformCommonTypeFields(
     ...arrayProps,
     ...referenceProps,
     ...crossDatasetRefProps,
+    ...globalRefProps,
     ...ensureConditional('readOnly', type.readOnly),
     ...ensureConditional('hidden', type.hidden),
     ...transformFieldsets(type),
@@ -271,8 +277,7 @@ function retainSerializableProps(maybeSerializable: unknown, depth = 0): Seriali
 
 function transformField(field: ObjectField & {fieldset?: string}, context: Context): ManifestField {
   const fieldType = field.type
-  const typeNameExists = !!context.schema.get(fieldType.name)
-  const typeName = typeNameExists ? fieldType.name : (fieldType.type?.name ?? fieldType.name)
+  const typeName = getDefinedTypeName(fieldType) ?? fieldType.name
   return {
     ...transformCommonTypeFields(fieldType, typeName, context),
     name: field.name,
@@ -289,8 +294,7 @@ function transformArrayMember(
 ): Pick<ManifestField, 'of'> {
   return {
     of: arrayMember.of.map((type) => {
-      const typeNameExists = !!context.schema.get(type.name)
-      const typeName = typeNameExists ? type.name : (type.type?.name ?? type.name)
+      const typeName = getDefinedTypeName(type) ?? type.name
       return {
         ...transformCommonTypeFields(type, typeName, context),
         type: typeName,
@@ -314,6 +318,23 @@ function transformReference(reference: ReferenceSchemaType): Pick<ManifestSchema
 
 function transformCrossDatasetReference(
   reference: CrossDatasetReferenceSchemaType,
+): Pick<ManifestSchemaType, 'to' | 'preview'> {
+  return {
+    to: (reference.to ?? []).map((crossDataset) => {
+      const preview = crossDataset.preview?.select
+        ? {preview: {select: crossDataset.preview.select}}
+        : {}
+      return {
+        type: crossDataset.type,
+        ...ensureCustomTitle(crossDataset.type, crossDataset.title),
+        ...preview,
+      }
+    }),
+  }
+}
+
+function transformGlobalDocumentReference(
+  reference: GlobalDocumentReferenceSchemaType,
 ): Pick<ManifestSchemaType, 'to' | 'preview'> {
   return {
     to: (reference.to ?? []).map((crossDataset) => {
@@ -534,28 +555,11 @@ const extractManifestTools = (tools: Workspace['tools']): ManifestTool[] =>
     } satisfies ManifestTool
   })
 
-const resolveIcon = (props: SchemaIconProps): string | null => {
-  const sheet = new ServerStyleSheet()
-
+export const resolveIcon = (props: SchemaIconProps): string | null => {
   try {
-    /**
-     * You must render the element first so
-     * the style-sheet above can be populated
-     */
-    const element = renderToString(sheet.collectStyles(<SchemaIcon {...props} />))
-    const styleTags = sheet.getStyleTags()
-
-    /**
-     * We can then create a single string
-     * of HTML combining our styles and element
-     * before purifying below.
-     */
-    const html = `${styleTags}${element}`.trim()
-
-    return DOMPurify.sanitize(html, config)
-  } catch (error) {
+    const html = renderToString(<SchemaIcon {...props} />)
+    return DOMPurify.sanitize(html.trim(), config)
+  } catch {
     return null
-  } finally {
-    sheet.seal()
   }
 }

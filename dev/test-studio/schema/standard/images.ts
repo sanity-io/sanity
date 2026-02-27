@@ -1,5 +1,5 @@
 import {ImagesIcon} from '@sanity/icons'
-import {defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 // import petsAssetSource from '../../parts/assetSources/pets'
 // import noopAssetSource from '../../parts/assetSources/noop'
 
@@ -197,5 +197,72 @@ export default defineType({
       title: 'No asset source',
       options: {sources: []},
     },
+    {
+      name: 'hotspotImage',
+      title: 'Hotspot image',
+      type: 'image',
+      description: 'Should have custom hotspot preview aspect ratios',
+      options: {
+        hotspot: {
+          previews: [
+            {title: '2:1', aspectRatio: 2 / 1},
+            {title: '4:5', aspectRatio: 4 / 5},
+            {title: '9:16', aspectRatio: 9 / 16},
+          ],
+        },
+      },
+    },
+    {
+      name: 'imageWithMediaLibraryFilters',
+      title: 'Image with Media Library filter',
+      type: 'image',
+      description: 'Should have custom Media Library filters',
+      options: {
+        mediaLibrary: {
+          filters: [
+            // {
+            //   name: 'Has colourDetails aspect',
+            //   query: 'defined(aspects.colourDetails)',
+            // },
+            {
+              name: 'Greater than 4000px wide',
+              query: 'currentVersion->metadata.dimensions.width > 4000',
+            },
+          ],
+        },
+      },
+    },
+    defineField({
+      name: 'imageWithDisabledUpload',
+      title: 'Image with disabled upload',
+      type: 'image',
+      description:
+        'Can only select existing assets from the media library, direct upload is disabled',
+      options: {
+        disableNew: true,
+        hotspot: true,
+      },
+    }),
+    defineField({
+      name: 'arrayOfImagesWithDisabledUpload',
+      title: 'Array of images (upload disabled)',
+      description: 'disableNew is true for all images in the array',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: {
+            disableNew: true,
+            hotspot: true,
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'arrayOfImagesWithEnabledUpload',
+      title: 'Array of images (upload enabled)',
+      type: 'array',
+      of: [{type: 'image'}],
+    }),
   ],
 })

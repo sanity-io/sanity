@@ -300,11 +300,6 @@ const ALLOWED_ATTR: Config['ALLOWED_ATTR'] = [...SVG_ATTRIBUTES, ...HTML_ATTRIBU
 const config = {
   ALLOWED_ATTR,
   ALLOWED_TAGS,
-  /**
-   * Required to allow for the use of `style` tags,
-   * namely rendering the style tags from `styled-components`
-   */
-  FORCE_BODY: true,
 } satisfies Config
 
 export {config}

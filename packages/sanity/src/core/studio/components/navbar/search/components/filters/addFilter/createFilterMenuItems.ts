@@ -1,6 +1,6 @@
 import {type Schema, type SchemaType} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
-import {difference, startCase} from 'lodash'
+import {difference, startCase} from 'lodash-es'
 
 import {type TFunction} from '../../../../../../../i18n'
 import {isNonNullable} from '../../../../../../../util'
@@ -40,7 +40,7 @@ export function createFilterMenuItems({
   schema: Schema
   titleFilter: string
   types: SchemaType[]
-  t: TFunction<'studio', undefined>
+  t: TFunction<'studio'>
 }): FilterMenuItem[] {
   // Construct field filters based on available definitions and current title fitler
   const fieldFilters = Object.values(fieldDefinitions)
@@ -148,7 +148,7 @@ function buildFieldMenuItemsNarrowed({
   filters: SearchFilter[]
   schema: Schema
   types: SchemaType[]
-  t: TFunction<'studio', undefined>
+  t: TFunction<'studio'>
 }) {
   const sharedFilters = filters.filter((filter) => {
     const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
@@ -180,7 +180,7 @@ function buildFieldMenuItemsNarrowed({
     })
     // Sort groups by title
     .sort((a, b) => a.title.localeCompare(b.title))
-    .map(({documentType, title}) => {
+    .flatMap(({documentType, title}) => {
       const groupFilters = filters.filter((filter) => {
         const fieldDefinition = getFieldFromFilter(fieldDefinitions, filter)
         return includesDocumentTypes([documentType], fieldDefinition)
@@ -193,7 +193,6 @@ function buildFieldMenuItemsNarrowed({
         headerTitle: title,
       })
     })
-    .flat()
 
   return [...sharedItems, ...groupedItems]
 }

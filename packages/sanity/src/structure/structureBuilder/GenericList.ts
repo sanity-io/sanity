@@ -116,9 +116,10 @@ export interface GenericListInput extends StructureNode {
  *
  * @public
  */
-export abstract class GenericListBuilder<TList extends BuildableGenericList, ConcreteImpl>
-  implements Serializable<GenericList>
-{
+export abstract class GenericListBuilder<
+  TList extends BuildableGenericList,
+  ConcreteImpl,
+> implements Serializable<GenericList> {
   /** Check if initial value templates are set */
   protected initialValueTemplatesSpecified = false
   /** Generic list option object */
@@ -250,7 +251,7 @@ export abstract class GenericListBuilder<TList extends BuildableGenericList, Con
    */
   showIcons(enabled = true): ConcreteImpl {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcons: enabled},
+      displayOptions: {...this.spec.displayOptions, showIcons: enabled},
     })
   }
 

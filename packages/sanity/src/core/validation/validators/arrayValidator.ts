@@ -5,7 +5,7 @@ import {
   type Validators,
 } from '@sanity/types'
 
-import {deepEquals} from '../util/deepEquals'
+import {deepEqualsIgnoreKey} from '../util/deepEqualsIgnoreKey'
 import {genericValidators} from './genericValidator'
 
 export const arrayValidators: Validators = {
@@ -55,7 +55,7 @@ export const arrayValidators: Validators = {
     const paths: Path[] = []
     for (let i = 0; i < values.length; i++) {
       const value = values[i]
-      if (allowedValues.some((expected) => deepEquals(expected, value))) {
+      if (allowedValues.some((expected) => deepEqualsIgnoreKey(expected, value))) {
         continue
       }
 
@@ -80,7 +80,7 @@ export const arrayValidators: Validators = {
         const itemA = value[x]
         const itemB = value[y]
 
-        if (!deepEquals(itemA, itemB)) {
+        if (!deepEqualsIgnoreKey(itemA, itemB)) {
           continue
         }
 

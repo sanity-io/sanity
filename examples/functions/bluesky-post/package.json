@@ -1,0 +1,30 @@
+{
+  "name": "bluesky-post",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@humanwhocodes/crosspost": "^0.1.1",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "bluesky-post",
+    "src": "./functions/bluesky-post",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'post' && defined(blueskyPost)",
+      "projection": "{title, blueskyPost, slug}"
+    },
+    "env": {
+      "COMMENT": "BLUESKY_USERNAME and BLUESKY_PASSWORD are required. BLUESKY_HOST defaults to bsky.social",
+      "BLUESKY_USERNAME": "BLUESKY_USERNAME",
+      "BLUESKY_PASSWORD": "BLUESKY_PASSWORD",
+      "BLUESKY_HOST": "BLUESKY_HOST"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

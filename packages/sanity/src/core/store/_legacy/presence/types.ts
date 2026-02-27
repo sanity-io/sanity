@@ -36,6 +36,11 @@ export interface DocumentPresence {
   user: User
   path: Path
   sessionId: string
+  /**
+   * this is the specific id of the document that the user is in
+   * e.g. if the user is in the draft, this will be the draft id, if the user is in a version, it will be the version id
+   * */
+  documentId?: string
   lastActiveAt: string // iso date
 }
 

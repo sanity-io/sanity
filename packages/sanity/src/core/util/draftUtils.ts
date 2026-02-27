@@ -1,24 +1,37 @@
+import {type StackablePerspective} from '@sanity/client'
+import {
+  type DraftId,
+  DRAFTS_FOLDER,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isDraftId,
+  isPublishedId,
+  isVersionId,
+  type PublishedId,
+  VERSION_FOLDER,
+} from '@sanity/client/csm'
 import {type SanityDocument, type SanityDocumentLike} from '@sanity/types'
 
 import {isNonNullable} from './isNonNullable'
 
-/** @internal */
-// nominal/opaque type hack
-export type Opaque<T, K> = T & {__opaqueId__: K}
+export {
+  type DraftId,
+  DRAFTS_FOLDER,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isDraftId,
+  isPublishedId,
+  isVersionId,
+  type PublishedId,
+  VERSION_FOLDER,
+}
 
-/** @internal */
-export type DraftId = Opaque<string, 'draftId'>
-
-/** @internal */
-export type PublishedId = Opaque<string, 'publishedId'>
-
-/** @internal */
-export const DRAFTS_FOLDER = 'drafts'
-/** @internal */
-export const VERSION_FOLDER = 'versions'
 const PATH_SEPARATOR = '.'
 const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
-const VERSION_PREFIX = `${VERSION_FOLDER}${PATH_SEPARATOR}`
 
 /**
  *
@@ -54,16 +67,6 @@ export function isDraft(document: SanityDocumentLike): boolean {
   return isDraftId(document._id)
 }
 
-/** @internal */
-export function isDraftId(id: string): id is DraftId {
-  return id.startsWith(DRAFTS_PREFIX)
-}
-
-/** @internal */
-export function isVersionId(id: string): boolean {
-  return id.startsWith(VERSION_PREFIX)
-}
-
 /**
  * TODO: Improve return type based on presence of `version` option.
  *
@@ -91,56 +94,79 @@ export function getIdPair(
   }
 }
 
+/**
+ * System bundles are sets of documents owned by the system.
+ *
+ * - Draft documents contain data that has not yet been published. These documents all exist in the "drafts" path.
+ * - Published documents contain data that has been published. These documents all exist in the root path.
+ *
+ * These differ to user bundles, which are created when a user establishes a custom set of documents
+ * (e.g. by creating a release).
+ *
+ * @public
+ */
+export const systemBundles = ['drafts', 'published'] as const
+
+/**
+ * System bundles are sets of documents owned by the system.
+ *
+ * - Draft documents contain data that has not yet been published. These documents all exist in the "drafts" path.
+ * - Published documents contain data that has been published. These documents all exist in the root path.
+ *
+ * These differ to user bundles, which are created when a user establishes a custom set of documents
+ * (e.g. by creating a release).
+ *
+ * @public
+ */
+export type SystemBundle = 'drafts' | 'published'
+
 /** @internal */
-export function isPublishedId(id: string): id is PublishedId {
-  return !isDraftId(id) && !isVersionId(id)
+export function isSystemBundle(maybeSystemBundle: unknown): maybeSystemBundle is SystemBundle {
+  return systemBundles.includes(maybeSystemBundle as SystemBundle)
 }
 
 /** @internal */
-export function getDraftId(id: string): DraftId {
-  if (isVersionId(id)) {
-    const publishedId = getPublishedId(id)
-    return (DRAFTS_PREFIX + publishedId) as DraftId
-  }
+const systemBundleNames = ['draft', 'published'] as const
 
-  return isDraftId(id) ? id : ((DRAFTS_PREFIX + id) as DraftId)
-}
+/** @internal */
+type SystemBundleName = 'draft' | 'published'
 
-/**  @internal */
-export function getVersionId(id: string, version: string): string {
-  if (version === 'drafts' || version === 'published') {
-    throw new Error('Version can not be "published" or "drafts"')
-  }
-
-  return `${VERSION_PREFIX}${version}${PATH_SEPARATOR}${getPublishedId(id)}`
+/**
+ * `isSystemBundle` should be preferred, but some parts of the codebase currently use the singular
+ * "draft" name instead of the plural "drafts".
+ *
+ * @internal
+ */
+export function isSystemBundleName(
+  maybeSystemBundleName: unknown,
+): maybeSystemBundleName is SystemBundleName {
+  return systemBundleNames.includes(maybeSystemBundleName as SystemBundleName)
 }
 
 /**
  *  @internal
- *  Given an id, returns the versionId if it exists.
- *  e.g. `versions.summer-drop.foo` = `summer-drop`
- *  e.g. `drafts.foo` = `undefined`
- *  e.g. `foo` = `undefined`
+ *  Given a perspective stack and a document id, returns true if the document id matches any of the provided perspectives
+ *  e.g. `idMatchesPerspective('['summer'], 'versions.summer.foo') === true`
+ *  e.g. `idMatchesPerspective('['drafts', 'summer'], 'versions.summer.foo') === true`
+ *  e.g. `idMatchesPerspective('['drafts'], 'versions.summer.foo') === false`
+ *  e.g. `idMatchesPerspective('['drafts', 'summer'], 'versions.winter.foo') === false`
+ *
+ * Note: a published id will match any perspective
+ *   e.g. `idMatchesPerspective('['drafts', 'summer'], 'foo') === true`
  */
-export function getVersionFromId(id: string): string | undefined {
-  if (!isVersionId(id)) return undefined
-  const [_versionPrefix, versionId, ..._publishedId] = id.split(PATH_SEPARATOR)
-
-  return versionId
-}
-
-/** @internal */
-export function getPublishedId(id: string): PublishedId {
-  if (isVersionId(id)) {
-    // make sure to only remove the versions prefix and the bundle name
-    return id.split(PATH_SEPARATOR).slice(2).join(PATH_SEPARATOR) as PublishedId as PublishedId
+export function idMatchesPerspective(
+  perspectiveStack: StackablePerspective[],
+  documentId: string,
+): boolean {
+  if (isPublishedId(documentId)) {
+    return true
   }
-
-  if (isDraftId(id)) {
-    return id.slice(DRAFTS_PREFIX.length) as PublishedId
-  }
-
-  return id as PublishedId
+  return perspectiveStack.some((perspective) => {
+    if (perspective === 'drafts') {
+      return isDraftId(documentId)
+    }
+    return getVersionFromId(documentId) === perspective
+  })
 }
 
 /** @internal */
@@ -181,6 +207,7 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   type: string
   draft?: T
   published?: T
+  versions: T[]
 }
 
 /** @internal */
@@ -189,11 +216,28 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
     const publishedId = getPublishedId(doc._id)
     let entry = res.get(publishedId)
     if (!entry) {
-      entry = {id: publishedId, type: doc._type, published: undefined, draft: undefined}
+      entry = {
+        id: publishedId,
+        type: doc._type,
+        published: undefined,
+        draft: undefined,
+        versions: [],
+      }
       res.set(publishedId, entry)
     }
 
-    entry[publishedId === doc._id ? 'published' : 'draft'] = doc
+    if (isPublishedId(doc._id)) {
+      entry.published = doc
+    }
+
+    if (isDraftId(doc._id)) {
+      entry.draft = doc
+    }
+
+    if (isVersionId(doc._id)) {
+      entry.versions.push(doc)
+    }
+
     return res
   }, new Map())
 
@@ -204,6 +248,6 @@ export function collate<T extends {_id: string; _type: string}>(documents: T[]):
 // Removes published documents that also has a draft
 export function removeDupes(documents: SanityDocumentLike[]): SanityDocumentLike[] {
   return collate(documents)
-    .map((entry) => entry.draft || entry.published)
+    .map((entry) => entry.draft || entry.published || entry.versions[0])
     .filter(isNonNullable)
 }

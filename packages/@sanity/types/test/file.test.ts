@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
@@ -155,5 +154,3 @@ describe('file types', () => {
     assignableToFile = defineType(assignableToFile)
   })
 })
-
-export {}

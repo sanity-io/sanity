@@ -2,9 +2,9 @@ import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents'
 import {type Reference} from '../reference'
+import {type FileSchemaType, type ImageSchemaType, type SchemaType} from '../schema'
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyProps {}
 
 /** @public */
@@ -62,6 +62,7 @@ export interface ImageMetadata {
   palette?: ImagePalette
   lqip?: string
   blurHash?: string
+  thumbHash?: string
   hasAlpha: boolean
   isOpaque: boolean
 }
@@ -135,17 +136,36 @@ export type AssetFromSource = {
   kind: 'assetDocumentId' | 'file' | 'base64' | 'url'
   value: string | File
   assetDocumentProps?: ImageAsset
+  mediaLibraryProps?: {
+    mediaLibraryId: string
+    assetId: string
+    assetInstanceId: string
+  }
 }
 
 /** @public */
+export type AssetSourceComponentAction = 'select' | 'upload' | 'openInSource'
+
+/** @public */
 export interface AssetSourceComponentProps {
-  assetType?: 'file' | 'image'
+  action?: AssetSourceComponentAction
+  assetSource: AssetSource
+  assetType?: 'file' | 'image' | 'sanity.video'
   accept: string
   selectionType: 'single'
   dialogHeaderTitle?: React.ReactNode
   selectedAssets: Asset[]
   onClose: () => void
   onSelect: (assetFromSource: AssetFromSource[]) => void
+  onChangeAction?: (action: AssetSourceComponentAction) => void
+  schemaType?: ImageSchemaType | FileSchemaType
+  /** @beta */
+  uploader?: AssetSourceUploader
+  /**
+   * The asset to open in source. Only provided when action is 'openInSource'.
+   * @beta
+   */
+  assetToOpen?: Asset
 }
 
 /** @public */
@@ -156,7 +176,21 @@ export type AssetMetadataType =
   | 'palette'
   | 'lqip'
   | 'blurhash'
+  | 'thumbhash'
   | 'none'
+
+/** @beta */
+export type AssetSourceUploaderClass = new (...args: any[]) => AssetSourceUploader
+
+/**
+ * The result of calling `AssetSource.openInSource`.
+ * @beta
+ */
+export type AssetSourceOpenInSourceResult =
+  | {type: 'url'; url: string; target?: '_blank' | '_self'}
+  | {type: 'component'}
+  | false
+  | undefined
 
 /** @public */
 export interface AssetSource {
@@ -166,5 +200,129 @@ export interface AssetSource {
 
   i18nKey?: string
   component: ComponentType<AssetSourceComponentProps>
-  icon?: ComponentType<EmptyProps>
+  icon?: ComponentType
+  /** @beta */
+  Uploader?: AssetSourceUploaderClass
+  /**
+   * Resolve how to open an asset in its original source.
+   *
+   * This function is called for each AssetSource when determining if
+   * "Open in Source" should be available. The plugin should check
+   * `asset.source.name` to determine if it can handle this asset.
+   *
+   * Return values:
+   * - `{ type: 'url', url: string }` - Open the URL (in new window by default)
+   * - `{ type: 'component' }` - Render the asset source component with action='openInSource'
+   * - `false` or `undefined` - This plugin cannot handle this asset
+   *
+   * @beta
+   */
+  openInSource?: (asset: Asset) => AssetSourceOpenInSourceResult
 }
+
+/** @beta */
+export interface AssetSourceUploadFile {
+  id: string
+  file: globalThis.File
+  progress: number // 0 to 100
+  status: 'pending' | 'uploading' | 'complete' | 'error' | 'aborted' | 'alreadyExists'
+  error?: Error
+  result?: unknown // The upload result in the source
+}
+/** @beta */
+export interface AssetSourceUploader {
+  upload(
+    files: globalThis.File[],
+    options?: {
+      /**
+       * The schema type of the field the asset is being uploaded to.
+       * May be of interest to the uploader to read file and image options.
+       */
+      schemaType?: SchemaType
+      /**
+       * The uploader may send patches directly to the field
+       * Typed 'unknown' as we don't have patch definitions in sanity/types yet.
+       */
+      onChange?: (patch: unknown) => void
+    },
+  ): AssetSourceUploadFile[]
+  /**
+   * Abort the upload of a file
+   */
+  abort(file?: AssetSourceUploadFile): void
+  /**
+   * Get the files that are currently being uploaded
+   */
+  getFiles(): AssetSourceUploadFile[]
+  /**
+   * Subscribe to upload events from the uploader
+   */
+  subscribe(subscriber: (event: AssetSourceUploadEvent) => void): () => void
+  /**
+   * Update the status of a file. Will be emitted to subscribers.
+   */
+  updateFile(fileId: string, data: {progress?: number; status?: string; error?: Error}): void
+  /**
+   * Reset the uploader (clear files). Should be called by the uploader when all files are done.
+   */
+  reset(): void
+}
+
+/**
+ * Emitted when a file upload is progressing
+ * @beta */
+export type AssetSourceUploadEventProgress = {
+  type: 'progress'
+  file: AssetSourceUploadFile
+  progress: number
+}
+
+/**
+ * Emitted when a file upload is changing status
+ * @beta */
+export type AssetSourceUploadEventStatus = {
+  type: 'status'
+  file: AssetSourceUploadFile
+  status: AssetSourceUploadFile['status']
+}
+
+/**
+ * Emitted when all files are done, either successfully, aborted or with errors
+ * @beta */
+export type AssetSourceUploadEventAllComplete = {
+  type: 'all-complete'
+  files: AssetSourceUploadFile[]
+}
+
+/**
+ * Emitted when all files are done, either successfully, aborted or with errors
+ * @beta */
+export type AssetSourceUploadEventError = {
+  type: 'error'
+  /**
+   * Files errored
+   */
+  files: AssetSourceUploadFile[]
+}
+
+/**
+ * Emitted when all files are done, either successfully, aborted or with errors
+ * @beta */
+export type AssetSourceUploadEventAbort = {
+  type: 'abort'
+  /**
+   * Files aborted
+   */
+  files: AssetSourceUploadFile[]
+}
+
+/** @beta */
+export type AssetSourceUploadEvent =
+  | AssetSourceUploadEventProgress
+  | AssetSourceUploadEventStatus
+  | AssetSourceUploadEventAllComplete
+  | AssetSourceUploadEventError
+  | AssetSourceUploadEventAbort
+
+/** @beta */
+export type AssetSourceUploadSubscriber = (event: AssetSourceUploadEvent) => void

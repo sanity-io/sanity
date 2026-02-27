@@ -4,7 +4,6 @@ import {type InitialValueProperty} from '../../types'
 import {type BaseSchemaDefinition, type BaseSchemaTypeOptions, type EnumListProps} from './common'
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NumberOptions extends EnumListProps<number>, BaseSchemaTypeOptions {}
 
 /** @public */

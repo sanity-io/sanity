@@ -1,5 +1,5 @@
 import {toString as pathToString} from '@sanity/util/paths'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {useRouter, useRouterState} from 'sanity/router'
@@ -47,7 +47,7 @@ export function PaneRouterProvider(props: {
         nextGroup,
         ...routerPaneGroups.slice(groupIndex + 1),
       ]
-      const nextRouterState = {...(routerState || {}), panes: nextPanes}
+      const nextRouterState = {...routerState, panes: nextPanes}
 
       return nextRouterState
     },
@@ -55,9 +55,12 @@ export function PaneRouterProvider(props: {
   )
 
   const modifyCurrentGroup = useCallback(
-    (modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup) => {
+    (
+      modifier: (siblings: RouterPaneGroup, item: RouterPaneSibling) => RouterPaneGroup,
+      stickyParams?: Record<string, string>,
+    ) => {
       const nextRouterState = createNextRouterState(modifier)
-      setTimeout(() => navigate(nextRouterState), 0)
+      setTimeout(() => navigate(nextRouterState, stickyParams ? {stickyParams} : undefined), 0)
       return nextRouterState
     },
     [createNextRouterState, navigate],
@@ -88,12 +91,15 @@ export function PaneRouterProvider(props: {
   )
 
   const setParams: PaneRouterContextValue['setParams'] = useCallback(
-    (nextParams) => {
-      modifyCurrentGroup((siblings, item) => [
-        ...siblings.slice(0, siblingIndex),
-        {...item, params: nextParams},
-        ...siblings.slice(siblingIndex + 1),
-      ])
+    (nextParams, stickyParams) => {
+      modifyCurrentGroup(
+        (siblings, item) => [
+          ...siblings.slice(0, siblingIndex),
+          {...item, params: nextParams},
+          ...siblings.slice(siblingIndex + 1),
+        ],
+        stickyParams,
+      )
     },
     [modifyCurrentGroup, siblingIndex],
   )
@@ -186,7 +192,7 @@ export function PaneRouterProvider(props: {
           expand(lastPane.element)
         }
         navigate({
-          panes: [...routerPaneGroups.slice(0, groupIndex)],
+          panes: routerPaneGroups.slice(0, groupIndex),
         })
       },
 

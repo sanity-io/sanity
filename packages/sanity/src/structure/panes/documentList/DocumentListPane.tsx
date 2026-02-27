@@ -4,10 +4,13 @@ import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   type GeneralPreviewLayoutKey,
   useActiveReleases,
+  useClient,
   useI18nText,
   usePerspective,
+  useReconnectingToast,
   useSchema,
   useTranslation,
   useUnique,
@@ -102,18 +105,28 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const sortOrder = useUnique(sortWithOrderingFn)
 
+  const client = useClient({
+    ...DEFAULT_STUDIO_CLIENT_OPTIONS,
+    apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
+  })
+
   const {
     error,
     isLoadingFullList,
     isLoading: documentListIsLoading,
     items,
     fromCache,
+    isRetrying,
+    autoRetry,
+    canRetry,
+    retryCount,
+    connected,
     onLoadFullList,
     onRetry,
   } = useDocumentList({
-    apiVersion,
+    client,
     filter,
-    perspective: perspectiveStack.length === 0 ? 'raw' : perspectiveStack,
+    perspective: perspectiveStack,
     params,
     searchQuery: searchQuery?.trim(),
     sortOrder,
@@ -162,15 +175,15 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   }, [paneKey, handleClearSearch])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
-    if (isLoading && enableSearchSpinner === paneKey) {
+    if (connected && isLoading && enableSearchSpinner === paneKey) {
       return 'spinner'
     }
-    if (fromCache) {
+    if (connected && fromCache) {
       return 'subtle'
     }
 
     return 'initial'
-  }, [enableSearchSpinner, fromCache, isLoading, paneKey])
+  }, [connected, enableSearchSpinner, fromCache, isLoading, paneKey])
 
   const textInputIcon = useMemo(() => {
     if (loadingVariant === 'spinner') {
@@ -182,6 +195,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return SearchIcon
   }, [loadingVariant, searchInputValue])
 
+  useReconnectingToast(!connected)
+
   return (
     <>
       <Box paddingX={3} paddingBottom={3}>
@@ -190,11 +205,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
           autoComplete="off"
           border={false}
           clearButton={Boolean(searchQuery)}
-          disabled={Boolean(error)}
           fontSize={[2, 2, 1]}
           icon={textInputIcon}
           iconRight={
-            loadingVariant === 'subtle' && !searchInputValue ? DelayedSubtleSpinnerIcon : null
+            !connected || (loadingVariant === 'subtle' && !searchInputValue)
+              ? DelayedSubtleSpinnerIcon
+              : null
           }
           onChange={handleQueryChange}
           onClear={handleClearSearch}
@@ -208,6 +224,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         />
       </Box>
       <DocumentListPaneContent
+        key={paneKey}
         childItemId={childItemId}
         error={error}
         filterIsSimpleTypeConstraint={!!typeName}
@@ -216,15 +233,21 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         isActive={isActive}
         isLazyLoading={isLoadingFullList}
         isLoading={isLoading}
+        autoRetry={autoRetry}
+        canRetry={canRetry}
+        retryCount={retryCount}
+        isRetrying={isRetrying}
+        isConnected={connected}
         items={items}
-        key={paneKey}
         layout={layout}
+        muted={loadingVariant === 'subtle'}
         loadingVariant={loadingVariant}
         onEndReached={onLoadFullList}
         onRetry={onRetry}
         paneTitle={title}
         searchInputElement={searchInputElement}
         showIcons={showIcons}
+        sortOrder={sortOrder}
       />
     </>
   )

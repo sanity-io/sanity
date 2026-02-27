@@ -50,15 +50,12 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
   // @todo: add validation?
   const unknownModal: any = dialog
 
-  // eslint-disable-next-line no-console
   console.warn(`Unsupported modal type ${unknownModal.type}`)
 
   return (
     <Dialog
       id={modalId}
-      // eslint-disable-next-line react/jsx-handler-names
       onClose={unknownModal.onClose}
-      // eslint-disable-next-line react/jsx-handler-names
       onClickOutside={unknownModal.onClose}
       width={1}
     >

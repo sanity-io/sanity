@@ -5,26 +5,26 @@
  */
 import {inspect} from 'node:util'
 
-import {dim, red} from 'chalk'
+import chalk from 'chalk'
 import cleanStack from 'clean-stack'
 
 const options = {pretty: process.platform !== 'win32'}
 
 export function neatStack(error: string | Error): string {
   if (typeof error === 'string') {
-    return red(cleanStack(error, options))
+    return chalk.red(cleanStack(error, options))
   }
 
   if (error === null || typeof error !== 'object' || typeof error.stack !== 'string') {
-    return red(inspect(error))
+    return chalk.red(inspect(error))
   }
 
   const title = error.toString()
   const stack = cleanStack(error.stack, options)
 
   if (!stack.startsWith(title)) {
-    return red(stack)
+    return chalk.red(stack)
   }
 
-  return red(`${title}${dim(cleanStack(error.stack, options).slice(title.length))}`)
+  return chalk.red(`${title}${chalk.dim(cleanStack(error.stack, options).slice(title.length))}`)
 }

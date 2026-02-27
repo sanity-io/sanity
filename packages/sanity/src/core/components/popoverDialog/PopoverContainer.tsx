@@ -4,7 +4,6 @@ import {
   type ContainerProps,
   rem,
   type ResponsiveWidthStyleProps,
-  useArrayProp,
 } from '@sanity/ui'
 import {forwardRef, type ReactNode, type Ref} from 'react'
 import {styled} from 'styled-components'
@@ -32,8 +31,14 @@ export const PopoverContainer = forwardRef(function PopoverContainer(
   props: PopoverContainerProps,
   ref: Ref<HTMLDivElement>,
 ) {
-  const {width, ...restProps} = props
-  const widthArr = useArrayProp(width)
+  const {width = [], ...restProps} = props
 
-  return <StyledContainer {...restProps} data-ui="PopoverContainer" $width={widthArr} ref={ref} />
+  return (
+    <StyledContainer
+      {...restProps}
+      data-ui="PopoverContainer"
+      $width={Array.isArray(width) ? width : [width]}
+      ref={ref}
+    />
+  )
 })

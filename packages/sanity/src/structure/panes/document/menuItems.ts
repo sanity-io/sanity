@@ -1,7 +1,13 @@
-import {EarthAmericasIcon, JsonIcon, LinkIcon} from '@sanity/icons'
-import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
+import {CheckmarkIcon, EarthAmericasIcon, JsonIcon, TransferIcon} from '@sanity/icons'
+import {
+  type DocumentIdStack,
+  type DocumentInspector,
+  type DocumentInspectorMenuItem,
+  type TFunction,
+} from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
+import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
@@ -10,8 +16,10 @@ interface GetMenuItemsParams {
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
+  documentIdStack?: DocumentIdStack
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
+  displayInlineChanges: boolean
 }
 
 function getInspectorItems({
@@ -30,7 +38,7 @@ function getInspectorItems({
         action: `${INSPECT_ACTION_PREFIX}${inspector.name}`,
         group: menuItem.showAsAction ? undefined : 'inspectors',
         icon: menuItem.icon,
-        isDisabled: !hasValue,
+        disabled: !hasValue,
         selected: currentInspector?.name === inspector.name,
         shortcut: menuItem.hotkeys?.join('+'),
         showAsAction: menuItem.showAsAction,
@@ -47,8 +55,33 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
     group: 'inspectors',
     title: t('document-inspector.menu-item.title'),
     icon: JsonIcon,
-    isDisabled: !hasValue,
+    disabled: !hasValue,
     shortcut: 'Ctrl+Alt+I',
+  }
+}
+
+function getCompareVersionsItem({documentIdStack, t}: GetMenuItemsParams): PaneMenuItem | null {
+  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
+    reason: t('compare-versions.menu-item.disabled-reason'),
+  }
+
+  return {
+    action: 'compareVersions',
+    group: 'inspectors',
+    title: t('compare-versions.menu-item.title'),
+    icon: TransferIcon,
+    disabled,
+  }
+}
+
+function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): PaneMenuItem {
+  return {
+    action: 'toggleInlineChanges',
+    group: 'inspectors',
+    title: t('toggle-inline-changes.menu-item.title'),
+    // The simplest way to render no icon, while preserving an icon-sized space, is to render a
+    // hidden icon.
+    icon: displayInlineChanges ? CheckmarkIcon : HiddenCheckmarkIcon,
   }
 }
 
@@ -69,16 +102,11 @@ export function getMenuItems(params: GetMenuItemsParams): PaneMenuItem[] {
   const items = [
     // Get production preview item
     getProductionPreviewItem(params),
+    getCompareVersionsItem(params),
+    getInlineChangesItem(params),
   ].filter(Boolean) as PaneMenuItem[]
 
   return [
-    // Always present document menu item to copy current url to clipboard
-    {
-      action: 'copy-document-url',
-      showAsAction: true,
-      title: params.t('action.copy-document-url.label'),
-      icon: LinkIcon,
-    },
     ...inspectorItems,
 
     // TODO: convert to inspector or document view?

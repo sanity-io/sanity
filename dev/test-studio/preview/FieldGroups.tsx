@@ -1,4 +1,4 @@
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 
 import {useQuery} from './loader'
 
@@ -18,9 +18,18 @@ export function FieldGroups(): React.JSX.Element {
           field8: string | null
         } | null
       } | null
+      objectArray:
+        | [
+            {
+              _key: string
+              stringAlpha: string | null
+              stringBeta: string | null
+            },
+          ]
+        | null
     }[]
   >(
-    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}}}`,
+    /* groq */ `*[_type == "fieldGroupsWithFieldsetsHidden"][0..10]{_id,field1,field2,nested{field3,field4,field5,nested{field6,field7,field8}},objectArray}`,
   )
 
   if (error) {
@@ -28,7 +37,17 @@ export function FieldGroups(): React.JSX.Element {
   }
 
   if (loading) {
-    return <p>Loading...</p>
+    return (
+      <Flex
+        align="center"
+        direction="column"
+        height="fill"
+        justify="center"
+        style={{width: '100%'}}
+      >
+        <Spinner />
+      </Flex>
+    )
   }
 
   return (
@@ -53,6 +72,14 @@ export function FieldGroups(): React.JSX.Element {
                   )}
                 </Stack>
               )}
+              <Stack space={4} paddingLeft={2}>
+                {item.objectArray?.map((object) => (
+                  <Stack key={object._key} space={4} paddingLeft={2}>
+                    <Text>{object.stringAlpha || 'N/A'}</Text>
+                    <Text>{object.stringBeta || 'N/A'}</Text>
+                  </Stack>
+                ))}
+              </Stack>
             </Stack>
           </Card>
         )

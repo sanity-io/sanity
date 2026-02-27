@@ -1,0 +1,32 @@
+{
+  "name": "algolia-document-sync",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3",
+    "algoliasearch": "^5.27.0"
+  },
+  "blueprintResourceItem": {
+    "name": "algolia-document-sync",
+    "type": "sanity.function.document",
+    "src": "./functions/algolia-document-sync",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "filter": "_type == 'post'",
+      "projection": "{_id, title, hideFromSearch, 'operation': delta::operation()}"
+    },
+    "env": {
+      "COMMENT": "ALGOLIA_APP_ID and ALGOLIA_WRITE_KEY env variables are required to sync documents to Algolia",
+      "ALGOLIA_APP_ID": "ALGOLIA_APP_ID",
+      "ALGOLIA_WRITE_KEY": "ALGOLIA_WRITE_KEY"
+    }
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}

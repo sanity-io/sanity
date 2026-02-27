@@ -14,7 +14,6 @@ export function absolutify(dir: string): string {
 
 function pathIsEmpty(dir: string): boolean {
   try {
-    // eslint-disable-next-line no-sync
     const content = fs.readdirSync(dir)
     return content.length === 0
   } catch (err) {

@@ -15,9 +15,10 @@ import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
 import {debug} from '../../debug'
-import {MIGRATIONS_DIRECTORY} from './constants'
+import {DEFAULT_API_VERSION, MIGRATIONS_DIRECTORY} from './constants'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
+import {ensureApiVersionFormat} from './utils/ensureApiVersionFormat'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = `
@@ -27,6 +28,7 @@ Options
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
   --project <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
+  --api-version <version> API version to use when migrating. Defaults to ${DEFAULT_API_VERSION}.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
   --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
 
@@ -44,12 +46,12 @@ Examples
 
 interface CreateFlags {
   ['dry-run']?: boolean
-  concurrency?: number
+  'concurrency'?: number
   ['from-export']?: string
-  progress?: boolean
-  dataset?: string
-  project?: string
-  confirm?: boolean
+  'progress'?: boolean
+  'dataset'?: string
+  'project'?: string
+  'confirm'?: boolean
 }
 
 function parseCliFlags(args: {argv?: string[]}) {
@@ -60,6 +62,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('dataset', {type: 'string'})
     .options('from-export', {type: 'string'})
     .options('project', {type: 'string'})
+    .options('api-version', {type: 'string'})
     .options('confirm', {type: 'boolean', default: true}).argv
 }
 
@@ -81,6 +84,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const dry = flags.dryRun
     const dataset = flags.dataset
     const project = flags.project
+    const apiVersion = flags.apiVersion
 
     if ((dataset && !project) || (project && !dataset)) {
       throw new Error('If either --dataset or --project is provided, both must be provided')
@@ -110,6 +114,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       register({
         target: `node${process.version.slice(1)}`,
         supported: {'dynamic-import': true},
+        format: 'cjs',
       })
     }
 
@@ -174,15 +179,25 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       )
     }
 
+    const actualDataset =
+      dataset ||
+      (projectConfig.dataset === '~dummy-placeholder-dataset-' ? undefined : projectConfig.dataset)
+
+    if (!actualDataset) {
+      throw new Error(
+        'sanity.cli.js does not contain a dataset name ("api.dataset") and no --dataset option was provided.',
+      )
+    }
+
     const apiConfig = {
-      dataset: dataset ?? projectConfig.dataset!,
+      dataset: actualDataset,
       projectId: project ?? projectConfig.projectId!,
-      apiHost: projectConfig.apiHost!,
+      apiHost: projectConfig.apiHost,
       token: projectConfig.token!,
-      apiVersion: 'v2024-01-29',
+      apiVersion: ensureApiVersionFormat(apiVersion ?? DEFAULT_API_VERSION),
     } as const
     if (dry) {
-      dryRunHandler()
+      void dryRunHandler()
       return
     }
 

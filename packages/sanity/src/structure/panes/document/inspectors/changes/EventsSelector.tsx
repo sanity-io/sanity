@@ -12,11 +12,11 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
+import {useDocumentPane} from '../../useDocumentPane'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
@@ -59,7 +59,8 @@ export function EventsSelector({showList}: {showList: boolean}) {
 
   const selectRev = useCallback(
     (event: DocumentGroupEvent) => {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         if (
           isDeleteDocumentVersionEvent(event) ||
           isDeleteDocumentGroupEvent(event) ||
@@ -72,6 +73,9 @@ export function EventsSelector({showList}: {showList: boolean}) {
         }
         const [since, rev] = findRangeForRevision(event.id)
         setTimelineRange(since, rev)
+      }
+      try {
+        run()
       } catch (err) {
         toast.push({
           closable: true,

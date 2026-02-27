@@ -1,5 +1,4 @@
-/* eslint-disable max-statements,@typescript-eslint/no-shadow */
-import {studioPath} from '@sanity/client/csm'
+/* eslint-disable @typescript-eslint/no-shadow */
 import {
   type Controller,
   createConnectionMachine,
@@ -17,26 +16,34 @@ import {
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
 import {BoundaryElementProvider, Flex} from '@sanity/ui'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {useActorRef, useSelector} from '@xstate/react'
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
-  type Path,
   type SanityDocument,
   type Tool,
   useDataset,
-  usePerspective,
   useProjectId,
   useUnique,
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE} from './constants'
 import PostMessageFeatures from './features/PostMessageFeatures'
-import {debounce} from './lib/debounce'
+import {presentationMachine} from './machines/presentation-machine'
+import {type PreviewUrlRef} from './machines/preview-url'
 import {SharedStateProvider} from './overlays/SharedStateProvider'
 import {Panel} from './panels/Panel'
 import {Panels} from './panels/Panels'
@@ -47,28 +54,23 @@ import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
 import {Preview} from './preview/Preview'
 import {
-  ACTION_IFRAME_LOADED,
-  ACTION_IFRAME_REFRESH,
-  ACTION_VISUAL_EDITING_OVERLAYS_TOGGLE,
-  presentationReducer,
-  presentationReducerInit,
-} from './reducers/presentationReducer'
-import {
   type FrameState,
   type PresentationNavigate,
-  type PresentationPerspective,
   type PresentationPluginOptions,
   type PresentationStateParams,
   type PresentationViewport,
   type StructureDocumentPaneParams,
   type VisualEditingConnection,
 } from './types'
+import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
-import {usePreviewUrl} from './usePreviewUrl'
+import {usePresentationPerspective} from './usePresentationPerspective'
 import {useStatus} from './useStatus'
+import {useTargetOrigin} from './useTargetOrigin'
+import {debounce} from './util/debounce'
 
 const LiveQueries = lazy(() => import('./loader/LiveQueries'))
 const PostMessageDocuments = lazy(() => import('./overlays/PostMessageDocuments'))
@@ -84,20 +86,25 @@ const Container = styled(Flex)`
 
 export default function PresentationTool(props: {
   tool: Tool<PresentationPluginOptions>
-  canCreateUrlPreviewSecrets: boolean
   canToggleSharePreviewAccess: boolean
   canUseSharedPreviewAccess: boolean
   vercelProtectionBypass: string | null
+  initialPreviewUrl: URL
+  previewUrlRef: PreviewUrlRef
 }): React.JSX.Element {
   const {
-    canCreateUrlPreviewSecrets,
     canToggleSharePreviewAccess,
     canUseSharedPreviewAccess,
     tool,
     vercelProtectionBypass,
+    initialPreviewUrl,
+    previewUrlRef,
   } = props
+
+  const allowOrigins = useAllowPatterns(previewUrlRef)
+  const targetOrigin = useTargetOrigin(previewUrlRef)
+
   const components = tool.options?.components
-  const _previewUrl = tool.options?.previewUrl
   const name = tool.name || DEFAULT_TOOL_NAME
   const {unstable_navigator, unstable_header} = components || {}
 
@@ -105,39 +112,11 @@ export default function PresentationTool(props: {
     state: PresentationStateParams
   }
   const routerSearchParams = useUnique(Object.fromEntries(routerState._searchParams || []))
-  const {perspectiveStack, selectedPerspectiveName = 'drafts', selectedReleaseId} = usePerspective()
-  const perspective = (
-    selectedReleaseId ? perspectiveStack : selectedPerspectiveName
-  ) as PresentationPerspective
 
-  const initialPreviewUrl = usePreviewUrl(
-    _previewUrl || '/',
-    name,
-    perspective,
-    routerSearchParams.preview || null,
-    canCreateUrlPreviewSecrets,
+  const canSharePreviewAccess = useSelector(
+    previewUrlRef,
+    (state) => state.context.previewMode?.shareAccess !== false,
   )
-  const canSharePreviewAccess = useMemo<boolean>(() => {
-    if (
-      _previewUrl &&
-      typeof _previewUrl === 'object' &&
-      'draftMode' in _previewUrl &&
-      _previewUrl.draftMode
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn('previewUrl.draftMode is deprecated, use previewUrl.previewMode instead')
-      return _previewUrl.draftMode.shareAccess !== false
-    }
-    if (
-      _previewUrl &&
-      typeof _previewUrl === 'object' &&
-      'previewMode' in _previewUrl &&
-      _previewUrl.previewMode
-    ) {
-      return _previewUrl.previewMode.shareAccess !== false
-    }
-    return false
-  }, [_previewUrl])
 
   const [devMode] = useState(() => {
     const option = tool.options?.devMode
@@ -147,10 +126,6 @@ export default function PresentationTool(props: {
 
     return typeof window !== 'undefined' && window.location.hostname === 'localhost'
   })
-
-  const targetOrigin = useMemo(() => {
-    return initialPreviewUrl.origin
-  }, [initialPreviewUrl.origin])
 
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
@@ -164,24 +139,17 @@ export default function PresentationTool(props: {
     url: undefined,
   })
 
-  const {
-    navigate: _navigate,
-    navigationHistory,
-    params,
-    searchParams,
-    structureParams,
-  } = useParams({
-    initialPreviewUrl,
-    routerNavigate,
-    routerState,
-    routerSearchParams,
-    frameStateRef,
-  })
+  const {isSameDocument, navigate, navigationHistory, params, searchParams, structureParams} =
+    useParams({
+      initialPreviewUrl,
+      routerNavigate,
+      routerState,
+      routerSearchParams,
+      frameStateRef,
+    })
+  const perspective = usePresentationPerspective({scheduledDraft: params.scheduledDraft})
 
-  // Most navigation events should be debounced, so use this unless explicitly needed
-  const navigate = useMemo(() => debounce<PresentationNavigate>(_navigate, 50), [_navigate])
-
-  const [state, dispatch] = useReducer(presentationReducer, {}, presentationReducerInit)
+  const presentationRef = useActorRef(presentationMachine)
 
   const viewport = useMemo(() => (params.viewport ? 'mobile' : 'desktop'), [params.viewport])
 
@@ -191,12 +159,12 @@ export default function PresentationTool(props: {
   const dataset = useDataset()
 
   const mainDocumentState = useMainDocument({
-    // Prevent flash of content by using immediate navigation
-    navigate: _navigate,
+    navigate,
     navigationHistory,
     path: params.preview,
-    previewUrl: tool.options?.previewUrl,
+    targetOrigin,
     resolvers: tool.options?.resolve?.mainDocuments,
+    perspective,
   })
 
   const [overlaysConnection, setOverlaysConnection] = useStatus()
@@ -205,7 +173,7 @@ export default function PresentationTool(props: {
 
   const {open: handleOpenPopup} = usePopups(controller)
 
-  const isLoading = state.iframe.status === 'loading'
+  const isLoading = useSelector(presentationRef, (state) => state.matches('loading'))
 
   useEffect(() => {
     const target = iframeRef.current?.contentWindow
@@ -222,10 +190,12 @@ export default function PresentationTool(props: {
     }
   }, [targetOrigin, isLoading])
 
-  const handleNavigate = useEffectEvent<typeof navigate>(
-    (nextState, nextSearchState, forceReplace) =>
-      navigate(nextState, nextSearchState, forceReplace),
-  )
+  const handleNavigate = useEffectEvent<PresentationNavigate>((options) => {
+    navigate(options)
+  })
+
+  const refreshRef = useRef<number>(undefined)
+
   useEffect(() => {
     if (!controller) return undefined
 
@@ -243,27 +213,46 @@ export default function PresentationTool(props: {
     comlink.on('visual-editing/focus', (data) => {
       if (!('id' in data)) return
       handleNavigate({
-        type: data.type,
-        id: data.id,
-        path: data.path,
+        state: {
+          type: data.type,
+          id: data.id,
+          path: data.path,
+        },
       })
     })
 
     comlink.on('visual-editing/navigate', (data) => {
-      const {title, url} = data
-      if (frameStateRef.current.url !== url) {
+      const {title} = data
+      let url = data.url
+      /**
+       * The URL is relative, we need to resolve it to an absolute URL
+       */
+      if (!url.startsWith('http')) {
         try {
+          url = new URL(url, targetOrigin).toString()
+        } catch {
+          // ignore
+        }
+      }
+
+      if (frameStateRef.current.url !== url) {
+        // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+        const run = () => {
           // Handle bypass params being forwarded to the final URL
           const [urlWithoutSearch, search] = url.split('?')
           const searchParams = new URLSearchParams(search)
           searchParams.delete(urlSearchParamVercelProtectionBypass)
           searchParams.delete(urlSearchParamVercelSetBypassCookie)
-          handleNavigate(
-            {},
-            {preview: `${urlWithoutSearch}${searchParams.size > 0 ? '?' : ''}${searchParams}`},
-          )
+          handleNavigate({
+            params: {
+              preview: `${urlWithoutSearch}${searchParams.size > 0 ? '?' : ''}${searchParams}`,
+            },
+          })
+        }
+        try {
+          run()
         } catch {
-          handleNavigate({}, {preview: url})
+          handleNavigate({params: {preview: url}})
         }
       }
       frameStateRef.current = {title, url}
@@ -274,16 +263,13 @@ export default function PresentationTool(props: {
     })
 
     comlink.on('visual-editing/toggle', (data) => {
-      dispatch({
-        type: ACTION_VISUAL_EDITING_OVERLAYS_TOGGLE,
-        enabled: data.enabled,
-      })
+      presentationRef.send({type: 'toggle visual editing overlays', enabled: data.enabled})
     })
 
     comlink.on('visual-editing/documents', (data) => {
       setDocumentsOnPage(
         'visual-editing',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line no-explicit-any
         data.perspective as unknown as any,
         data.documents,
       )
@@ -294,12 +280,12 @@ export default function PresentationTool(props: {
       if (data.source === 'manual') {
         clearTimeout(refreshRef.current)
       } else if (data.source === 'mutation') {
-        dispatch({type: ACTION_IFRAME_REFRESH})
+        presentationRef.send({type: 'iframe refresh'})
       }
     })
 
     comlink.on('visual-editing/refreshed', () => {
-      dispatch({type: ACTION_IFRAME_LOADED})
+      presentationRef.send({type: 'iframe loaded'})
     })
 
     comlink.onStatus(setOverlaysConnection)
@@ -310,7 +296,7 @@ export default function PresentationTool(props: {
       stop()
       setVisualEditingComlink(null)
     }
-  }, [controller, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
+  }, [controller, presentationRef, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
 
   useEffect(() => {
     if (!controller) return undefined
@@ -331,7 +317,7 @@ export default function PresentationTool(props: {
       if (data.projectId === projectId && data.dataset === dataset) {
         setDocumentsOnPage(
           'preview-kit',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line no-explicit-any
           data.perspective as unknown as any,
           data.documents,
         )
@@ -341,28 +327,52 @@ export default function PresentationTool(props: {
     return comlink.start()
   }, [controller, dataset, projectId, setDocumentsOnPage, setPreviewKitConnection, targetOrigin])
 
-  const handleFocusPath = useCallback(
-    (nextPath: Path) => {
-      // Don’t need to explicitly set the id here because it was either already set via postMessage or is the same if navigating in the document pane
-      navigate({path: studioPath.toString(nextPath)}, {}, true)
-    },
-    [navigate],
+  const handleFocusPath = useMemo(
+    () =>
+      // When moving from one field to another, blur and focus events will trigger
+      // this handler. We debounce to avoid unwanted intermediate navigations this
+      // would cause.
+      debounce<(state: Required<PresentationStateParams>) => void>((state) => {
+        // We only ever want to update the path if we are still viewing the
+        // document that was active when the focus event was triggered
+        if (isSameDocument(state)) {
+          navigate({
+            state,
+            replace: true,
+          })
+        }
+      }, 0),
+    [isSameDocument, navigate],
   )
 
   const handlePreviewPath = useCallback(
     (nextPath: string) => {
-      const url = new URL(nextPath, initialPreviewUrl.origin)
-      const preview = url.pathname + url.search
-      if (url.origin === initialPreviewUrl.origin && preview !== params.preview) {
-        navigate({}, {preview})
+      const url = new URL(nextPath, targetOrigin)
+      const preview = url.toString()
+      if (params.preview === preview) {
+        return
+      }
+      if (Array.isArray(allowOrigins)) {
+        if (allowOrigins.some((pattern) => pattern.test(preview))) {
+          navigate({params: {preview}})
+        }
+      } else if (url.origin === targetOrigin) {
+        navigate({params: {preview}})
       }
     },
-    [initialPreviewUrl, params, navigate],
+    [targetOrigin, params.preview, allowOrigins, navigate],
   )
 
   const handleStructureParams = useCallback(
-    (structureParams: StructureDocumentPaneParams) => {
-      navigate({}, structureParams)
+    (params: StructureDocumentPaneParams) => {
+      navigate({params})
+    },
+    [navigate],
+  )
+
+  const handleEditReference = useCallback<PresentationNavigate>(
+    (options) => {
+      navigate(options)
     },
     [navigate],
   )
@@ -383,12 +393,32 @@ export default function PresentationTool(props: {
       params.preview &&
       frameStateRef.current.url !== params.preview
     ) {
+      try {
+        const frameOrigin = new URL(frameStateRef.current.url, targetOrigin).origin
+        const previewOrigin = new URL(params.preview, targetOrigin).origin
+        if (frameOrigin !== previewOrigin) {
+          return
+        }
+      } catch {
+        // ignore
+      }
+
       frameStateRef.current.url = params.preview
-      if (overlaysConnection !== 'connected' && iframeRef.current) {
-        iframeRef.current.src = `${targetOrigin}${params.preview}`
-      } else {
+      if (overlaysConnection === 'connected') {
+        /**
+         * Translate the possibly absolute params url back to a relative URL
+         */
+        let url = params.preview
+        if (url.startsWith('http')) {
+          try {
+            const newUrl = new URL(params.preview, targetOrigin)
+            url = newUrl.pathname + newUrl.search + newUrl.hash
+          } catch {
+            // ignore
+          }
+        }
         visualEditingComlink?.post('presentation/navigate', {
-          url: params.preview,
+          url,
           type: 'replace',
         })
       }
@@ -433,10 +463,9 @@ export default function PresentationTool(props: {
     unstable_navigator,
   })
 
-  const refreshRef = useRef<number>(undefined)
   const handleRefresh = useCallback(
     (fallback: () => void) => {
-      dispatch({type: ACTION_IFRAME_REFRESH})
+      presentationRef.send({type: 'iframe refresh'})
       if (visualEditingComlink) {
         // We only wait 300ms for the iframe to ack the refresh request before running the fallback logic
         refreshRef.current = window.setTimeout(fallback, 300)
@@ -449,7 +478,7 @@ export default function PresentationTool(props: {
       }
       fallback()
     },
-    [loadersConnection, previewKitConnection, visualEditingComlink],
+    [loadersConnection, presentationRef, previewKitConnection, visualEditingComlink],
   )
 
   const workspace = useWorkspace()
@@ -481,7 +510,10 @@ export default function PresentationTool(props: {
       // Omit the viewport URL search param if the next viewport state is the
       // default: 'desktop'
       const viewport = next === 'desktop' ? undefined : 'mobile'
-      navigate({}, {viewport}, true)
+      navigate({
+        params: {viewport},
+        replace: true,
+      })
     },
     [navigate],
   )
@@ -499,7 +531,7 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container height="fill">
+              <Container data-testid="presentation-root" height="fill">
                 <Panels>
                   <PresentationNavigator />
                   <Panel
@@ -511,14 +543,13 @@ export default function PresentationTool(props: {
                     <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
                       <BoundaryElementProvider element={boundaryElement}>
                         <Preview
+                          // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
                           // Make sure the iframe is unmounted if the targetOrigin has changed
                           key={targetOrigin}
                           canSharePreviewAccess={canSharePreviewAccess}
                           canToggleSharePreviewAccess={canToggleSharePreviewAccess}
                           canUseSharedPreviewAccess={canUseSharedPreviewAccess}
-                          dispatch={dispatch}
                           header={unstable_header}
-                          iframe={state.iframe}
                           initialUrl={initialPreviewUrl}
                           loadersConnection={loadersConnection}
                           navigatorEnabled={navigatorEnabled}
@@ -534,8 +565,9 @@ export default function PresentationTool(props: {
                           toggleNavigator={toggleNavigator}
                           toggleOverlay={toggleOverlay}
                           viewport={viewport}
-                          visualEditing={state.visualEditing}
                           vercelProtectionBypass={vercelProtectionBypass}
+                          presentationRef={presentationRef}
+                          previewUrlRef={previewUrlRef}
                         />
                       </BoundaryElementProvider>
                     </Flex>
@@ -546,6 +578,7 @@ export default function PresentationTool(props: {
                     documentType={params.type}
                     getCommentIntent={getCommentIntent}
                     mainDocumentState={mainDocumentState}
+                    onEditReference={handleEditReference}
                     onFocusPath={handleFocusPath}
                     onStructureParams={handleStructureParams}
                     searchParams={searchParams}
@@ -600,10 +633,12 @@ export default function PresentationTool(props: {
   )
 }
 
+// @TODO reconcile with core utils
 function isAltKey(event: KeyboardEvent): boolean {
   return event.key === 'Alt'
 }
 
+// @TODO reconcile with core utils
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 const MODIFIERS: Record<string, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'> = {
@@ -612,6 +647,7 @@ const MODIFIERS: Record<string, 'altKey' | 'ctrlKey' | 'metaKey' | 'shiftKey'> =
   mod: IS_MAC ? 'metaKey' : 'ctrlKey',
   shift: 'shiftKey',
 }
+// @TODO reconcile with core utils
 function isHotkey(keys: string[], event: KeyboardEvent): boolean {
   return keys.every((key) => {
     if (MODIFIERS[key]) {

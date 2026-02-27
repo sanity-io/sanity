@@ -10,7 +10,15 @@ import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 export type TabProps = Pick<
   UITabProps,
   'aria-controls' | 'focused' | 'icon' | 'id' | 'label' | 'selected' | 'tone'
->
+> & {
+  /**
+   * Icon right does't exist as a prop yet in Sanity UI <Tab> component.
+   * But the Tab is at the end a button, and a button can have an icon right.
+   * So we can use this prop to add an icon right to the Tab.
+   * PR to update sanity ui https://github.com/sanity-io/ui/pull/2173
+   */
+  iconRight?: React.ReactNode
+}
 
 /**
  * Customized Sanity UI <Tab> with limited layout options.

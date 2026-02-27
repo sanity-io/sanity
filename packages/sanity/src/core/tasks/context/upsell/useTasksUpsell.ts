@@ -20,6 +20,7 @@ export function useTasksUpsell(): TasksUpsellContextValue {
 const FALLBACK_CONTEXT_VALUE = {
   upsellData: null,
   handleOpenDialog: () => null,
+  handleClose: () => null,
   upsellDialogOpen: false,
   telemetryLogs: {
     dialogSecondaryClicked: () => null,

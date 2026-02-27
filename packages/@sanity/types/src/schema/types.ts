@@ -2,8 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {type ComponentType} from 'react'
 
 import {type SanityDocument} from '../documents'
+import {type Path} from '../paths'
 import {type CurrentUser} from '../user'
-import {type Rule} from '../validation'
+import {type Rule, type ValidationContext} from '../validation'
 import {type SchemaTypeDefinition} from './definition/schemaDefinition'
 import {
   type BlockDecoratorDefinition,
@@ -36,7 +37,6 @@ export {defineArrayMember, defineField, defineType, typed} from './define'
  *
  * @beta
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type AutocompleteString = string & {}
 
 /**
@@ -97,6 +97,17 @@ export interface Schema {
   get: (name: string) => SchemaType | undefined
   has: (name: string) => boolean
   getTypeNames: () => string[]
+
+  /**
+   * Returns the types which were explicitly defined in this schema,
+   * as opposed to the types which were inherited from the parent.
+   */
+  getLocalTypeNames: () => string[]
+
+  /**
+   * Returns the parent schema.
+   */
+  parent?: Schema
 }
 
 /** @beta */
@@ -121,11 +132,12 @@ export interface ConditionalPropertyCallbackContext {
   document: SanityDocument | undefined
   // `any` should be fine here. leaving this as `unknown` would cause more
   // friction for end users
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   parent: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line no-explicit-any
   value: any
   currentUser: Omit<CurrentUser, 'role'> | null
+  path: Path
 }
 
 /** @public */
@@ -197,7 +209,7 @@ export type SchemaValidationValue =
   | undefined
   | Rule
   | SchemaValidationValue[]
-  | ((rule: Rule) => SchemaValidationValue)
+  | ((rule: Rule, context?: ValidationContext) => SchemaValidationValue)
 
 /** @public */
 export type DeprecatedSchemaType<TSchemaType extends BaseSchemaType = BaseSchemaType> =
@@ -227,6 +239,9 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
     input?: ComponentType<any>
     item?: ComponentType<any>
     preview?: ComponentType<any>
+    portableText?: {
+      plugins?: ComponentType<any>
+    }
   }
 
   /**
@@ -489,7 +504,7 @@ export interface FileSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: FileOptions
 }
 
-/** @internal */
+/** @public */
 export interface ImageSchemaType extends Omit<ObjectSchemaType, 'options'> {
   options?: ImageOptions
 }

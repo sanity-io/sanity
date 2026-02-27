@@ -1,11 +1,13 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type SelectedPerspective} from '../../perspective/types'
+import {type TargetPerspective} from '../../perspective/types'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {isReleaseDocument} from '../store/types'
+import {RELEASE_TYPES_TONES} from './const'
 import {isDraftPerspective, isPublishedPerspective} from './util'
 
 /** @internal */
-export function getReleaseTone(release: SelectedPerspective): BadgeTone {
+export function getReleaseTone(release: TargetPerspective): BadgeTone {
   if (isPublishedPerspective(release)) return 'positive'
   if (isDraftPerspective(release)) return 'default'
 
@@ -15,15 +17,19 @@ export function getReleaseTone(release: SelectedPerspective): BadgeTone {
     }
 
     if (release?.metadata?.releaseType === 'asap') {
-      return 'critical'
+      return RELEASE_TYPES_TONES.asap.tone
     }
 
     if (release?.metadata?.releaseType === 'undecided') {
-      return 'suggest'
+      return RELEASE_TYPES_TONES.undecided.tone
+    }
+
+    if (isPausedCardinalityOneRelease(release)) {
+      return 'caution'
     }
 
     if (release?.metadata?.releaseType === 'scheduled') {
-      return 'primary'
+      return RELEASE_TYPES_TONES.scheduled.tone
     }
   }
 

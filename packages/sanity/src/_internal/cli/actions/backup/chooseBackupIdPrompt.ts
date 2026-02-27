@@ -37,7 +37,9 @@ async function chooseBackupIdPrompt(
       return selected
     }
   } catch (err) {
-    throw new Error(`Failed to fetch backups for dataset ${datasetName}: ${err.message}`)
+    throw new Error(`Failed to fetch backups for dataset ${datasetName}: ${err.message}`, {
+      cause: err,
+    })
   }
 
   throw new Error('No backups found')

@@ -1,11 +1,14 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {ReviewChangesContextValue} from '../../core/form/studio/contexts/reviewChanges/types'
+import type {ConnectorContextValue} from '../../core/changeIndicators/ConnectorContext'
 
-/**
- * @internal
- */
-export const ReviewChangesContext = createContext<ReviewChangesContextValue | null>(
+/** @internal */
+export const ReviewChangesContext = createContext<ConnectorContextValue>(
   'sanity/_singletons/context/review-changes',
-  null,
+  {
+    onOpenReviewChanges: () => undefined,
+    onSetFocus: () => undefined,
+    isReviewChangesOpen: false,
+    isInteractive: true,
+  },
 )

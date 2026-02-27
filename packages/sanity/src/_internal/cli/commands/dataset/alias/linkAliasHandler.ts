@@ -71,6 +71,6 @@ export const linkAliasHandler: CliCommandAction = async (args, context) => {
     await aliasClient.updateAlias(client, aliasName, datasetName)
     output.print(`Dataset alias ${aliasOutputName} linked to ${datasetName} successfully`)
   } catch (err) {
-    throw new Error(`Dataset alias link failed:\n${err.message}`)
+    throw new Error(`Dataset alias link failed:\n${err.message}`, {cause: err})
   }
 }

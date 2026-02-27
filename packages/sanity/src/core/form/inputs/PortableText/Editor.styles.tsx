@@ -7,16 +7,16 @@ import {css, styled} from 'styled-components'
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
-export const Root = styled(Card)`
+export const Root = styled(Card)<{$isOneLine: boolean}>`
   &[data-fullscreen='true'] {
     height: 100%;
   }
 
   &[data-fullscreen='false'] {
     min-height: 5em;
-    resize: vertical;
+    resize: ${({$isOneLine}) => ($isOneLine ? 'none' : 'vertical')};
     overflow: auto;
-    height: 19em;
+    height: ${({$isOneLine}) => ($isOneLine ? 'auto' : '19em')};
   }
 
   &:not([hidden]) {
@@ -68,7 +68,7 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?: boolean}>`
+export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
   height: 100%;
   width: 100%;
   counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
@@ -86,7 +86,14 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
 
     ${TEXT_LEVELS.map((l) => {
       return css`
-        & > .pt-list-item-number[class~='pt-list-item-level-${l}'] {
+        /* Reset the list count each time a list index of 1 is encountered
+         * for the current level.
+         */
+        & [data-level='${l}'][data-list-index='1'] {
+          counter-set: ${createListName(l)} 1;
+        }
+        /* Otherwise, increment the list count for the current level. */
+        & [data-level='${l}']:not([data-list-index='1']) {
           counter-increment: ${createListName(l)};
         }
       `
@@ -101,18 +108,6 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       margin-top: ${({theme}) => theme.sanity.space[2]}px;
     }
 
-    /* Reset the list count if the element is not a numbered list item */
-    & > :not(.pt-list-item-number) {
-      counter-set: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
-    }
-
-    /* Reset the list count all the sub-list items */
-    & > .pt-list-item-number.pt-list-item-level-${TEXT_LEVELS[0]} {
-      counter-set: ${TEXT_LEVELS.slice(1)
-        .map((l) => createListName(l))
-        .join(' ')};
-    }
-
     & > .pt-list-item + :not(.pt-list-item) {
       margin-top: ${({theme}) => theme.sanity.space[3]}px;
     }
@@ -121,7 +116,8 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
     }
 
-    padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+    padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
+      $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     & > .pt-block {
       margin: 0 auto;
@@ -141,12 +137,12 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       right: calc(
         ${({$isFullscreen, theme}) =>
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
+          $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
           1px
       );
       width: calc(

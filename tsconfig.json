@@ -4,6 +4,7 @@
   "include": ["./scripts", "./test"],
   "files": [],
   "compilerOptions": {
-    "rootDir": "."
+    "rootDir": ".",
+    "module": "esnext"
   }
 }

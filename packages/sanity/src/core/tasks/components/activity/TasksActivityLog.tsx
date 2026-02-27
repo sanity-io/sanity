@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {useCallback, useMemo, useState} from 'react'
+import {AnimatePresence, motion, type Variants} from 'motion/react'
+import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {
@@ -62,7 +62,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path, activityData = []} = props
   const currentUser = useCurrentUser()
 
-  const {title: workspaceTitle, basePath} = useWorkspace()
+  const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
   const {comments, mentionOptions, operation, getComment} = useComments()
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
   const [commentDeleteError, setCommentDeleteError] = useState<Error | null>(null)
@@ -70,136 +70,115 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const loading = comments.loading
   const taskComments = comments.data.open
-  const handleGetNotificationValue = useCallback(
-    (message: CommentInputProps['value'], commentId: string) => {
-      const studioUrl = new URL(`${window.location.origin}${basePath ? `${basePath}/` : ''}`)
+  const handleGetNotificationValue = (message: CommentInputProps['value'], commentId: string) => {
+    const studioUrl = new URL(`${window.location.origin}${basePath ? `${basePath}/` : ''}`)
 
-      studioUrl.searchParams.set('sidebar', 'tasks')
-      studioUrl.searchParams.set('selectedTask', value?._id)
-      studioUrl.searchParams.set('viewMode', 'edit')
-      studioUrl.searchParams.set('commentId', commentId)
+    studioUrl.searchParams.set('sidebar', 'tasks')
+    studioUrl.searchParams.set('selectedTask', value?._id)
+    studioUrl.searchParams.set('viewMode', 'edit')
+    studioUrl.searchParams.set('commentId', commentId)
 
-      const mentionedUsers = getMentionedUsers(message)
-      const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
+    const mentionedUsers = getMentionedUsers(message)
+    const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
 
-      return {
-        documentTitle: value.title || 'Sanity task',
-        url: studioUrl.toString(),
-        workspaceTitle: workspaceTitle,
-        subscribers: subscribers,
-      }
-    },
-    [basePath, value?._id, value.title, workspaceTitle, value.subscribers],
-  )
+    return {
+      documentTitle: value.title || 'Sanity task',
+      url: studioUrl.toString(),
+      workspaceTitle,
+      workspaceName,
+      subscribers,
+    }
+  }
 
-  const handleCommentCreate = useCallback(
-    (message: CommentInputProps['value']) => {
-      const commentId = uuid()
-      const notification = handleGetNotificationValue(message, commentId)
+  const handleCommentCreate = async (message: CommentInputProps['value']) => {
+    const commentId = uuid()
+    const notification = handleGetNotificationValue(message, commentId)
 
-      const nextComment: CommentCreatePayload = {
-        id: commentId,
-        type: 'task',
-        message,
-        parentCommentId: undefined,
-        reactions: EMPTY_ARRAY,
-        status: 'open',
-        threadId: uuid(),
-        context: {
-          notification,
-        },
-      }
+    const nextComment: CommentCreatePayload = {
+      id: commentId,
+      type: 'task',
+      message,
+      parentCommentId: undefined,
+      reactions: EMPTY_ARRAY,
+      status: 'open',
+      threadId: uuid(),
+      context: {
+        notification,
+      },
+    }
 
-      onChange(set(notification.subscribers, ['subscribers']))
+    onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create(nextComment)
-    },
-    [operation, handleGetNotificationValue, onChange],
-  )
+    await operation.create(nextComment)
+  }
 
-  const handleCommentReply = useCallback(
-    (nextComment: CommentBaseCreatePayload) => {
-      const commentId = uuid()
+  const handleCommentReply = async (nextComment: CommentBaseCreatePayload) => {
+    const commentId = uuid()
 
-      const notification = handleGetNotificationValue(nextComment.message, commentId)
+    const notification = handleGetNotificationValue(nextComment.message, commentId)
 
-      onChange(set(notification.subscribers, ['subscribers']))
+    onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
-        id: commentId,
-        type: 'task',
-        message: nextComment.message,
-        parentCommentId: nextComment.parentCommentId,
-        reactions: EMPTY_ARRAY,
-        status: 'open',
-        threadId: nextComment.threadId,
-        context: {
-          notification,
-        },
-      })
-    },
-    [operation, handleGetNotificationValue, onChange],
-  )
+    await operation.create({
+      id: commentId,
+      type: 'task',
+      message: nextComment.message,
+      parentCommentId: nextComment.parentCommentId,
+      reactions: EMPTY_ARRAY,
+      status: 'open',
+      threadId: nextComment.threadId,
+      context: {
+        notification,
+      },
+    })
+  }
 
-  const handleCommentCreateRetry = useCallback(
-    (id: string) => {
-      // Get the optimistically created comment and use it
-      // when retrying the creation.
-      const comment = getComment(id)
-      if (!comment) return
+  const handleCommentCreateRetry = async (id: string) => {
+    // Get the optimistically created comment and use it
+    // when retrying the creation.
+    const comment = getComment(id)
+    if (!comment) return
 
-      const notification = handleGetNotificationValue(comment.message, comment._id)
+    const notification = handleGetNotificationValue(comment.message, comment._id)
 
-      onChange(set(notification.subscribers, ['subscribers']))
+    onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
-        type: 'task',
-        id: comment._id,
-        message: comment.message,
-        parentCommentId: comment.parentCommentId,
-        reactions: comment.reactions || EMPTY_ARRAY,
-        status: comment.status,
-        threadId: comment.threadId,
-        context: {
-          notification,
-        },
-      })
-    },
-    [getComment, operation, handleGetNotificationValue, onChange],
-  )
+    await operation.create({
+      type: 'task',
+      id: comment._id,
+      message: comment.message,
+      parentCommentId: comment.parentCommentId,
+      reactions: comment.reactions || EMPTY_ARRAY,
+      status: comment.status,
+      threadId: comment.threadId,
+      context: {
+        notification,
+      },
+    })
+  }
 
-  const handleCommentReact = useCallback(
-    (id: string, reaction: CommentReactionOption) => {
-      operation.react(id, reaction)
-    },
-    [operation],
-  )
+  const handleCommentReact = async (id: string, reaction: CommentReactionOption) => {
+    await operation.react(id, reaction)
+  }
 
-  const handleDeleteCommentStart = useCallback((id: string) => setCommentToDeleteId(id), [])
-  const handleDeleteCommentCancel = useCallback(() => setCommentToDeleteId(null), [])
+  const handleDeleteCommentStart = (id: string) => setCommentToDeleteId(id)
+  const handleDeleteCommentCancel = () => setCommentToDeleteId(null)
 
-  const handleDeleteCommentConfirm = useCallback(
-    async (id: string) => {
-      try {
-        setCommentDeleteLoading(true)
-        setCommentDeleteError(null)
-        await operation.remove(id)
-        setCommentToDeleteId(null)
-      } catch (err) {
-        setCommentDeleteError(err)
-      } finally {
-        setCommentDeleteLoading(false)
-      }
-    },
-    [operation],
-  )
+  const handleDeleteCommentConfirm = async (id: string) => {
+    try {
+      setCommentDeleteLoading(true)
+      setCommentDeleteError(null)
+      await operation.remove(id)
+      setCommentToDeleteId(null)
+    } catch (err) {
+      setCommentDeleteError(err)
+    }
+    setCommentDeleteLoading(false)
+  }
 
-  const handleCommentEdit = useCallback(
-    (id: string, next: CommentUpdatePayload) => {
-      operation.update(id, next)
-    },
-    [operation],
-  )
+  const handleCommentEdit = async (id: string, next: CommentUpdatePayload) => {
+    await operation.update(id, next)
+  }
 
   const activity: Activity[] = useMemo(() => {
     const taskActivity: Activity[] = activityData.map((item) => ({
@@ -280,8 +259,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
                     return (
                       <TasksActivityCommentItem
-                        currentUser={currentUser}
                         key={item.payload.parentComment._id}
+                        currentUser={currentUser}
                         mentionOptions={mentionOptions}
                         onCreateRetry={handleCommentCreateRetry}
                         onDelete={handleDeleteCommentStart}

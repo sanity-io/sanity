@@ -23,7 +23,7 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
     () => (
       <Stack sizing="border">
         {items.map((item) => (
-          <Flex align="center" gap={2} key={item.user.id}>
+          <Flex key={item.user.id} align="center" gap={2}>
             <div>
               <UserAvatar user={item.user} status="online" />
             </div>

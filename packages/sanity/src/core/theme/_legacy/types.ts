@@ -1,13 +1,17 @@
 import {type ColorTintKey} from '@sanity/color'
 
-/** @internal */
-// eslint-disable-next-line no-unused-vars
+/**
+ * @internal
+ * @deprecated – Will be removed in upcoming major version
+ */
+
 export type LegacyThemeTints = {[key in ColorTintKey]: string}
 
 /**
  * Properties that can be used to override the default theme.
  *
  * @public
+ * @deprecated – Will be removed in upcoming major version
  */
 export interface LegacyThemeProps {
   '--font-family-monospace': string

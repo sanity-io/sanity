@@ -24,6 +24,7 @@ export const deprecatedFields = defineType({
         reason: 'This string field is deprecated',
       },
       type: 'namedDeprecatedObject',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'namedDeprecatedArray',
@@ -32,6 +33,18 @@ export const deprecatedFields = defineType({
         reason: 'This string field is deprecated',
       },
       type: 'namedDeprecatedArray',
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      deprecated: {
+        reason: 'This string list is deprecated',
+      },
+      name: 'type',
+      type: 'string',
+      title: 'list',
+      initialValue: 'foo',
+      options: {list: ['Frukt', 'Dyr', 'Fjell']},
     }),
     defineField({
       deprecated: {
@@ -46,21 +59,12 @@ export const deprecatedFields = defineType({
     }),
     defineField({
       deprecated: {
-        reason: 'This string list is deprecated',
-      },
-      name: 'type',
-      type: 'string',
-      title: 'list',
-      initialValue: 'foo',
-      options: {list: ['Frukt', 'Dyr', 'Fjell']},
-    }),
-    defineField({
-      deprecated: {
         reason: 'This number field is deprecated',
       },
       name: 'number',
       title: 'number',
       type: 'number',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       deprecated: {
@@ -69,6 +73,7 @@ export const deprecatedFields = defineType({
       name: 'boolean',
       title: 'boolean',
       type: 'boolean',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       deprecated: {

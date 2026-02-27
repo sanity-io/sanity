@@ -1,1 +1,3 @@
-export default require('debug')('sanity:backup')
+import debug from 'debug'
+
+export default debug('sanity:backup')

@@ -7,6 +7,7 @@ Options
   --workspace <name> The name of the workspace to use when validating all schema types.
   --format <pretty|ndjson|json> The output format used to print schema errors and warnings.
   --level <error|warning> The minimum level reported out. Defaults to warning.
+  --debug-metafile-path <path> Optional path where a metafile
 
 Examples
   # Validates all schema types in a Sanity project with more than one workspace
@@ -17,6 +18,9 @@ Examples
 
   # Report out only errors
   sanity schema validate --level error
+
+  # Generate a report which can be analyzed with https://esbuild.github.io/analyze/
+  sanity schema validate --debug-metafile-path metafile.json
 `
 
 const validateDocumentsCommand: CliCommandDefinition = {

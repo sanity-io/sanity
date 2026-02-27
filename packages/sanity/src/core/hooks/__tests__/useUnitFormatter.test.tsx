@@ -23,7 +23,7 @@ describe('useUnitFormatter', () => {
           {
             id: 'fr-FR',
             title: 'Français',
-            weekInfo: {firstDay: 1, minimalDays: 2, weekend: [6, 7]},
+            weekInfo: {firstDay: 1, weekend: [6, 7]},
           },
         ]}
         i18next={i18next}

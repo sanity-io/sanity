@@ -1,11 +1,12 @@
 import {type ArraySchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
 
-import {type FieldsetState} from './fieldsetState'
+import {type FieldsetMembers, type FieldsetState} from './fieldsetState'
 import {type ArrayItemError, type FieldError} from './memberErrors'
 import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
 
 /** @public */
-export type ObjectMember = FieldMember | FieldSetMember | FieldError
+export type ObjectMember = FieldMember | FieldSetMember | FieldError | DecorationMember
 
 /**
  * @hidden
@@ -100,6 +101,12 @@ export interface FieldMember<Node extends BaseFormNode = BaseFormNode> {
 }
 
 /**
+ * @hidden
+ * @public
+ */
+export type FieldsetRenderMembersCallback = (members: FieldsetMembers[]) => FieldsetMembers[]
+
+/**
  * Represents a member of a field set.
  * @public
  */
@@ -124,4 +131,21 @@ export interface FieldSetMember {
    * The state of the field set.
    */
   fieldSet: FieldsetState
+  /**
+   * @hidden
+   * @beta
+   * The callback to render the members of the field set.
+   */
+  renderMembers?: FieldsetRenderMembersCallback
+}
+
+/**
+ * Represents a decoration member for a form.
+ * @hidden
+ * @public
+ */
+export interface DecorationMember {
+  kind: 'decoration'
+  key: string
+  component: React.JSX.Element | ComponentType
 }

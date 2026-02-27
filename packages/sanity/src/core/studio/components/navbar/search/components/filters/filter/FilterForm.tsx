@@ -72,9 +72,9 @@ export function FilterForm({filter}: FilterFormProps) {
           {Component && (
             <Card borderTop padding={3}>
               <Component
-                fieldDefinition={fieldDefinition}
                 // re-render on new operators
                 key={filter.operatorType}
+                fieldDefinition={fieldDefinition}
                 onChange={handleValueChange}
                 value={filter.value}
               />

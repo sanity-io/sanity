@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 import {type DocumentInspectorProps} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
+import {useAddonDataset} from '../../../studio/addonDataset'
 import {
   CommentDeleteDialog,
   CommentsList,
@@ -31,7 +32,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
+import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
 interface CommentToDelete {
@@ -74,6 +75,7 @@ function CommentsInspectorInner(
   const [deleteError, setDeleteError] = useState<Error | null>(null)
 
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
   const currentUser = useCurrentUser()
   const {
@@ -90,13 +92,15 @@ function CommentsInspectorInner(
     onPathOpen,
   } = useComments()
   const commentIdParamRef = useRef<string | undefined>(selectedCommentId)
-
+  const {error: addonDatasetError} = useAddonDataset()
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
   const {isTopLayer} = useLayer()
 
-  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
+  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll({
+    boundaryElement: rootElement,
+  })
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
   const telemetry = useCommentsTelemetry()
@@ -145,7 +149,7 @@ function CommentsInspectorInner(
       const comment = getComment(id)
       if (!comment) return
 
-      operation.create({
+      void operation.create({
         type: 'field',
         fieldPath: comment.target.path?.field || '',
         id: comment._id,
@@ -191,7 +195,7 @@ function CommentsInspectorInner(
     (nextComment: CommentBaseCreatePayload) => {
       const fieldPath = nextComment?.payload?.fieldPath || ''
 
-      operation.create({
+      void operation.create({
         type: 'field',
         fieldPath,
         message: nextComment.message,
@@ -212,7 +216,7 @@ function CommentsInspectorInner(
 
   const handleReply = useCallback(
     (nextComment: CommentBaseCreatePayload) => {
-      operation.create({
+      void operation.create({
         ...nextComment,
         type: 'field',
         fieldPath: nextComment?.payload?.fieldPath || '',
@@ -223,7 +227,7 @@ function CommentsInspectorInner(
 
   const handleEdit = useCallback(
     (id: string, nextComment: CommentUpdatePayload) => {
-      operation.update(id, nextComment)
+      void operation.update(id, nextComment)
     },
     [operation],
   )
@@ -251,16 +255,15 @@ function CommentsInspectorInner(
         closeDeleteDialog()
       } catch (err) {
         setDeleteError(err)
-      } finally {
-        setDeleteLoading(false)
       }
+      setDeleteLoading(false)
     },
     [closeDeleteDialog, operation],
   )
 
   const handleStatusChange = useCallback(
     (id: string, nextStatus: CommentStatus) => {
-      operation.update(id, {
+      void operation.update(id, {
         status: nextStatus,
       })
 
@@ -287,7 +290,7 @@ function CommentsInspectorInner(
 
   const handleReactionSelect = useCallback(
     (id: string, reaction: CommentReactionOption) => {
-      operation.react(id, reaction)
+      void operation.react(id, reaction)
     },
     [operation],
   )
@@ -301,6 +304,11 @@ function CommentsInspectorInner(
       setSelectedPath(null)
     }
   }, [isTopLayer, selectedPath, setSelectedPath])
+
+  const setRootRef = useCallback((element: HTMLDivElement | null) => {
+    rootRef.current = element
+    setRootElement(element)
+  }, [])
 
   useClickOutsideEvent(
     (event) => {
@@ -338,17 +346,20 @@ function CommentsInspectorInner(
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
     const commentToScrollTo = getComment(commentIdParamRef.current || '')
 
-    if (!loading && commentToScrollTo && didScrollToCommentFromParam.current === false) {
+    if (!loading && commentToScrollTo && !didScrollToCommentFromParam.current) {
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
-      setSelectedPath({
+      handlePathSelect({
         fieldPath: commentToScrollTo.target.path?.field || null,
         origin: 'url',
         threadId: commentToScrollTo.threadId || null,
       })
 
-      scrollToComment(commentToScrollTo._id)
+      // Defer the comment scroll to prevent React batching from overwriting the field scroll
+      requestAnimationFrame(() => {
+        scrollToComment(commentToScrollTo._id)
+      })
 
       didScrollToCommentFromParam.current = true
       commentIdParamRef.current = undefined
@@ -359,10 +370,10 @@ function CommentsInspectorInner(
     }
   }, [
     getComment,
+    handlePathSelect,
     loading,
     onClearSelectedComment,
     scrollToComment,
-    setSelectedPath,
     setStatus,
     telemetry,
   ])
@@ -372,9 +383,7 @@ function CommentsInspectorInner(
       return (
         <CommentsUpsellPanel
           data={upsellData}
-          // eslint-disable-next-line react/jsx-handler-names
           onPrimaryClick={upsellTelemetryLogs.panelPrimaryClicked}
-          // eslint-disable-next-line react/jsx-handler-names
           onSecondaryClick={upsellTelemetryLogs.panelSecondaryClicked}
         />
       )
@@ -406,7 +415,7 @@ function CommentsInspectorInner(
         height="fill"
         onClick={handleDeselectPath}
         overflow="hidden"
-        ref={rootRef}
+        ref={setRootRef}
       >
         <CommentsOnboardingPopover
           onDismiss={setDismissed}
@@ -420,7 +429,7 @@ function CommentsInspectorInner(
             mode={mode}
           />
         </CommentsOnboardingPopover>
-
+        {addonDatasetError && <CommentsInspectorError error={addonDatasetError} />}
         {currentUser && (
           <CommentsList
             beforeListNode={beforeListNode}
@@ -444,7 +453,6 @@ function CommentsInspectorInner(
             status={status}
           />
         )}
-        {mode === 'default' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )

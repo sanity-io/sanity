@@ -18,6 +18,7 @@ describe('typeString', () => {
   })
 
   it('returns a type string string using the constructor', () => {
+    // oxlint-disable-next-line no-extraneous-class
     class ExampleClass {}
     expect(typeString(new ExampleClass())).toBe('ExampleClass')
   })

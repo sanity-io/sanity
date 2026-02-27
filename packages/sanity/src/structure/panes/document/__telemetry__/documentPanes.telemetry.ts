@@ -10,11 +10,28 @@ export const DocumentURLCopied = defineEvent({
 })
 
 /**
- * When a draft is successfully created
  * @internal
  */
-export const CreatedDraft = defineEvent({
-  name: 'New Draft Created',
+export const DocumentIDCopied = defineEvent({
+  name: 'DocumentIDCopied',
   version: 1,
-  description: 'User created a new draft',
+  description: 'User copied document ID to clipboard',
+})
+
+/**
+ * @internal
+ */
+export const InlineChangesSwitchedOn = defineEvent({
+  name: 'InlineChangesSwitchedOn',
+  version: 1,
+  description: 'User switched on display of inline changes',
+})
+
+/**
+ * @internal
+ */
+export const InlineChangesSwitchedOff = defineEvent({
+  name: 'InlineChangesSwitchedOff',
+  version: 1,
+  description: 'User switched off display of inline changes',
 })

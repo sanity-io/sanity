@@ -1,0 +1,46 @@
+{
+  "name": "efps-tests",
+  "version": "5.12.0",
+  "private": true,
+  "description": "Sanity Studio eFPS perf suite",
+  "keywords": [],
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "imports": {
+    "#config": "./placeholderConfig.ts"
+  },
+  "scripts": {
+    "build": "sanity build",
+    "dev": "sanity dev",
+    "lint": "eslint .",
+    "start": "tsx ./index.ts",
+    "test": "pnpm start",
+    "write:report": "tsx ./formatefpsResult.ts"
+  },
+  "dependencies": {
+    "styled-components": "catalog:",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/yargs": "^17.0.35",
+    "babel-plugin-react-compiler": "1.0.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.6.1",
+    "eslint": "catalog:",
+    "globby": "^11.1.0",
+    "ora": "^8.2.0",
+    "playwright": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "source-map": "^0.7.6",
+    "yargs": "^17.7.2"
+  }
+}

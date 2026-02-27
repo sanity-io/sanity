@@ -9,7 +9,7 @@ export type DocumentChangeContextInstance = {
   schemaType: SchemaType
   rootDiff: ObjectDiff | null
   isComparingCurrent: boolean
-  FieldWrapper: ComponentType<{path: Path; children: ReactNode; hasHover: boolean}>
+  FieldWrapper: ComponentType<{path: Path; children: ReactNode; hasRevertHover: boolean}>
   value: Partial<SanityDocument>
   /**
    * When comparing two values it decides if it shows the original "from" value in the Diff components.

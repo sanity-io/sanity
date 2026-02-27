@@ -46,12 +46,14 @@ export const MiddleRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug
 
     visibility: none;
 
-    ${$debug &&
-    css`
-      background: rgba(255, 0, 0, 0.25);
-      outline: 1px solid #00b;
-      visibility: visible;
-    `}
+    ${
+      $debug &&
+      css`
+        background: rgba(255, 0, 0, 0.25);
+        outline: 1px solid #00b;
+        visibility: visible;
+      `
+    }
   `
 })
 

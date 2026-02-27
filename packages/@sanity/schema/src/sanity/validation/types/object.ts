@@ -1,4 +1,4 @@
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash-es'
 
 import inspect from '../../inspect'
 import {error, HELP_IDS, warning} from '../createValidationResult'
@@ -14,7 +14,7 @@ interface PreviewConfig {
   select?: {
     [key: string]: string
   }
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   prepare?: Function
 }
 
@@ -58,7 +58,7 @@ function validateFieldName(name: any): Array<any> {
   return []
 }
 
-export function validateField(field: any, _visitorContext: any) {
+export function validateField(field: any, visitorContext: any) {
   if (!isPlainObject(field)) {
     return [
       error(
@@ -75,6 +75,20 @@ export function validateField(field: any, _visitorContext: any) {
       : [error('Missing field name', HELP_IDS.OBJECT_FIELD_NAME_INVALID)]),
   )
   problems.push(...validateComponent(field))
+
+  if (
+    field.type &&
+    typeof field.type === 'string' &&
+    visitorContext.getType(field.type)?.type === 'document'
+  ) {
+    problems.push(
+      warning(
+        `The type "${field.type}" is a document type and should not be used as a field type directly. Use a "reference" if you want to create a link to the document, or use "object" if you want to embed fields inline.`,
+        HELP_IDS.FIELD_TYPE_IS_DOCUMENT,
+      ),
+    )
+  }
+
   return problems
 }
 

@@ -2,11 +2,9 @@ import {useMemo} from 'react'
 
 import {type ToolMenuProps} from '../../../../config'
 import {SCHEDULED_PUBLISHING_TOOL_NAME} from '../../../../scheduledPublishing/constants'
-import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/tool/contexts/ScheduledPublishingEnabledProvider'
+import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
-
-const HIDDEN_STUDIO_MENU_TOOLS = ['releases']
 
 /**
  * @hidden
@@ -21,7 +19,7 @@ export function StudioToolMenu(props: ToolMenuProps) {
         if (tool.name === SCHEDULED_PUBLISHING_TOOL_NAME && !scheduledPublishingEnabled) {
           return false
         }
-        return !HIDDEN_STUDIO_MENU_TOOLS.includes(tool.name)
+        return true
       }),
     [scheduledPublishingEnabled, tools],
   )

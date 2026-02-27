@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Stack, Text, useToast} from '@sanity/ui'
 import {type CSSProperties, useCallback, useState} from 'react'
 
@@ -6,12 +7,11 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {unstable_useValuePreview as useValuePreview} from '../../../preview'
+import {useValuePreview} from '../../../preview'
 import {Preview} from '../../../preview/components/Preview'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -33,14 +33,14 @@ export function UnpublishVersionDialog(props: {
   const {data} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
 
-  const releaseInDetail = data
+  const release = data
     .concat(archivedReleases)
     .find(
       (candidate) =>
         getReleaseIdFromReleaseDocumentId(candidate._id) === getVersionFromId(documentVersionId),
     )
 
-  const tone = getReleaseTone(releaseInDetail as ReleaseDocument)
+  const tone = getReleaseTone(release as ReleaseDocument)
   const schemaType = schema.get(documentType)
 
   const preview = useValuePreview({schemaType, value: {_id: documentVersionId}})
@@ -48,19 +48,33 @@ export function UnpublishVersionDialog(props: {
   const handleUnpublish = useCallback(async () => {
     setIsUnpublishing(true)
 
-    await unpublishVersion(documentVersionId)
+    // The run() wrapper instead of doing it inline in try/catch is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
+      await unpublishVersion(documentVersionId)
+      toast.push({
+        closable: true,
+        status: 'success',
+        description: (
+          <Translate
+            t={coreT}
+            i18nKey={'release.action.unpublish-version.success'}
+            values={{title: preview?.value?.title || documentVersionId}}
+          />
+        ),
+      })
+    }
+    try {
+      await run()
+    } catch (err) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: coreT('release.action.unpublish-version.failure'),
+        description: err.message,
+      })
+    }
+
     setIsUnpublishing(false)
-    toast.push({
-      closable: true,
-      status: 'success',
-      description: (
-        <Translate
-          t={coreT}
-          i18nKey={'release.action.unpublish-version.success'}
-          values={{title: preview?.value?.title || documentVersionId}}
-        />
-      ),
-    })
 
     onClose()
   }, [coreT, documentVersionId, onClose, preview?.value?.title, toast, unpublishVersion])
@@ -93,13 +107,12 @@ export function UnpublishVersionDialog(props: {
         ) : (
           <LoadingBlock />
         )}
-
         <Text muted size={1}>
           <Translate
             t={t}
             i18nKey="unpublish-dialog.description.to-draft"
             values={{
-              title: releaseInDetail?.metadata.title,
+              title: release?.metadata.title || coreT('release.placeholder-untitled-release'),
             }}
             components={{
               Label: ({children}) => {
@@ -123,7 +136,6 @@ export function UnpublishVersionDialog(props: {
             }}
           />
         </Text>
-
         <Text muted size={1}>
           {t('unpublish-dialog.description.lost-changes')}
         </Text>

@@ -1,4 +1,8 @@
 import {type SanityClient} from '@sanity/client'
+import {
+  type Asset as MediaLibraryAsset,
+  type AssetInstanceDocument,
+} from '@sanity/media-library-types'
 
 import {type SanityDocument} from '../documents'
 import {type ValidationMarker} from '../markers'
@@ -158,7 +162,9 @@ export interface Rule {
   either(children: Rule[]): Rule
   optional(): Rule
   required(): Rule
+  skip(): Rule
   custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
+  media<T extends MediaAssetTypes = MediaAssetTypes>(fn: MediaValidator<T>): Rule
   min(len: number | string | FieldReference): Rule
   max(len: number | string | FieldReference): Rule
   length(len: number | FieldReference): Rule
@@ -209,15 +215,16 @@ export type RuleSpec =
   | {flag: 'either'; constraint: Rule[]}
   | {flag: 'presence'; constraint: 'optional' | 'required'}
   | {flag: 'custom'; constraint: CustomValidator}
-  | {flag: 'min'; constraint: number | string}
-  | {flag: 'max'; constraint: number | string}
-  | {flag: 'length'; constraint: number}
+  | {flag: 'min'; constraint: number | string | FieldReference}
+  | {flag: 'max'; constraint: number | string | FieldReference}
+  | {flag: 'length'; constraint: number | FieldReference}
   | {flag: 'valid'; constraint: unknown[]}
-  | {flag: 'precision'; constraint: number}
-  | {flag: 'lessThan'; constraint: number}
-  | {flag: 'greaterThan'; constraint: number}
+  | {flag: 'precision'; constraint: number | FieldReference}
+  | {flag: 'lessThan'; constraint: number | FieldReference}
+  | {flag: 'greaterThan'; constraint: number | FieldReference}
   | {flag: 'stringCasing'; constraint: 'uppercase' | 'lowercase'}
   | {flag: 'assetRequired'; constraint: {assetType: 'asset' | 'image' | 'file'}}
+  | {flag: 'media'; constraint: MediaValidator<any>}
   | {
       flag: 'regex'
       constraint: {
@@ -275,6 +282,10 @@ export interface ValidationContext {
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /**
+   * Whether this field is hidden for any reason (either itself or any of its ancestors).
+   */
+  hidden?: boolean
 }
 
 /**
@@ -286,7 +297,6 @@ export interface ValidationContext {
  *
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Validator<T = any, Value = any> = (
   constraint: T,
   value: Value,
@@ -320,7 +330,7 @@ export type Validator<T = any, Value = any> = (
  */
 export type Validators = Partial<{
   [P in RuleSpec['flag']]: Validator<
-    ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>
+    Exclude<ConditionalIndexAccess<Extract<RuleSpec, {flag: P}>, 'constraint'>, FieldReference>
   >
 }>
 
@@ -369,6 +379,14 @@ export interface ValidationError {
   path?: Path
 
   /**
+   * Extra metadata for the validation error. Currently used by the Media Library asset source to ignore
+   * certain validation markers when validating asset source media library assets.
+   *
+   * @internal
+   */
+  __internal_metadata?: unknown
+
+  /**
    * Same as `path` but allows more than one value. If provided, the same
    * message will create two markers from each path with the same message
    * provided.
@@ -405,6 +423,34 @@ export type CustomValidatorResult =
 export interface CustomValidator<T = unknown> {
   (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
   bypassConcurrencyLimit?: boolean
+}
+
+/** @public */
+export type MediaAssetTypes = AssetInstanceDocument['_type']
+
+/** @public */
+export interface MediaValidator<T extends MediaAssetTypes = MediaAssetTypes> {
+  (
+    value: MediaValidationValue<T>,
+    context: ValidationContext,
+  ): CustomValidatorResult | Promise<CustomValidatorResult>
+}
+
+/** @public */
+export interface MediaValidationValue<T extends MediaAssetTypes = MediaAssetTypes> {
+  /**
+   * Media information
+   */
+  media: {
+    /**
+     * The Media Library Asset.
+     */
+    asset: MediaLibraryAsset & {currentVersion: Extract<AssetInstanceDocument, {_type: T}>}
+  }
+  /**
+   * The field value which the media is used in.
+   */
+  value: unknown
 }
 
 /** @public */

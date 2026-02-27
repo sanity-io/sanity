@@ -1,5 +1,5 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -7,7 +7,6 @@ import {RelativeTime} from '../../../components/RelativeTime'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {Translate, useTranslation} from '../../../i18n'
-import {useDocumentPreviewValues} from '../../../tasks/hooks'
 import {releasesLocaleNamespace} from '../../i18n'
 import {ReleaseDocumentPreview} from '../components/ReleaseDocumentPreview'
 import {
@@ -49,18 +48,12 @@ const ReleaseEventDocumentPreview = ({
   releaseId: string
   event: AddDocumentToReleaseEvent | DiscardDocumentFromReleaseEvent
 }) => {
-  const {value, isLoading} = useDocumentPreviewValues({
-    documentId: event.documentId,
-    documentType: event.documentType,
-  })
   return (
     <Stack space={2}>
       <ReleaseDocumentPreview
         releaseId={releaseId}
         documentId={event.documentId}
         documentTypeName={event.documentType}
-        isLoading={isLoading}
-        previewValues={{...value, subtitle: ''}}
         layout="block"
       />
     </Stack>

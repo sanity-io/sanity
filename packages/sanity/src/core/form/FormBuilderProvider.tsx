@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {type ReactNode, useMemo} from 'react'
 import {FormBuilderContext} from 'sanity/_singletons'
@@ -32,7 +30,7 @@ export interface FormBuilderProviderProps {
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal */
-  __internal_patchChannel?: PatchChannel // eslint-disable-line camelcase
+  __internal_patchChannel?: PatchChannel
 
   autoFocus?: boolean
   changesOpen?: boolean
@@ -117,7 +115,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
 
   const __internal: FormBuilderContextValue['__internal'] = useMemo(
     () => ({
-      patchChannel, // eslint-disable-line camelcase
+      patchChannel,
       components: {
         ArrayFunctions: ArrayOfObjectsFunctions,
         CustomMarkers: unstable?.CustomMarkers || DefaultCustomMarkers,
@@ -128,12 +126,12 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
       },
       file: {
         assetSources: file.assetSources,
-        directUploads: file?.directUploads !== false,
+        directUploads: file?.directUploads ?? true,
       },
       filterField: filterField || (() => true),
       image: {
         assetSources: image.assetSources,
-        directUploads: image?.directUploads !== false,
+        directUploads: image?.directUploads ?? true,
       },
       onChange,
     }),

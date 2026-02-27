@@ -8,7 +8,7 @@ describe.skip('CLI: `sanity telemetry status`', () => {
   test(
     'sanity telemetry status: granted',
     async () => {
-      await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
+      await runSanityCmdCommand('cli-test-studio', ['telemetry', 'enable'], {
         env: {
           DEBUG: 'sanity:*',
           CI: 'false',
@@ -17,7 +17,7 @@ describe.skip('CLI: `sanity telemetry status`', () => {
         },
       })
 
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'status'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -41,13 +41,13 @@ https://www.sanity.io/telemetry
   test(
     'sanity telemetry status: denied',
     async () => {
-      await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      await runSanityCmdCommand('cli-test-studio', ['telemetry', 'disable'], {
         env: {
           CI: 'false',
         },
       })
 
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'status'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -72,7 +72,7 @@ https://www.sanity.io/telemetry
   test(
     'sanity telemetry status: denied using DO_NOT_TRACK',
     async () => {
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'status'], {
         env: {
           CI: 'false',
           DO_NOT_TRACK: '1',
@@ -102,13 +102,13 @@ describe.skip('CLI: `sanity telemetry enable`', () => {
   test(
     'sanity telemetry enable: success',
     async () => {
-      await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      await runSanityCmdCommand('cli-test-studio', ['telemetry', 'disable'], {
         env: {
           CI: 'false',
         },
       })
 
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'enable'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -132,7 +132,7 @@ https://www.sanity.io/telemetry
   test(
     'sanity telemetry enable: success (already enabled)',
     async () => {
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'enable'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -158,13 +158,13 @@ describe.skip('CLI: `sanity telemetry disable`', () => {
   test(
     'sanity telemetry disable: success',
     async () => {
-      await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
+      await runSanityCmdCommand('cli-test-studio', ['telemetry', 'enable'], {
         env: {
           CI: 'false',
         },
       })
 
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'disable'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -189,7 +189,7 @@ https://www.sanity.io/telemetry
   test(
     'sanity telemetry disable: success (already denied)',
     async () => {
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'disable'], {
         env: {
           CI: 'false',
           // Disables color for snapshot report
@@ -214,7 +214,7 @@ https://www.sanity.io/telemetry
   test(
     'sanity telemetry disable: success (already denied using DO_NOT_TRACK)',
     async () => {
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      const result = await runSanityCmdCommand('cli-test-studio', ['telemetry', 'disable'], {
         env: {
           CI: 'false',
           DO_NOT_TRACK: '1',

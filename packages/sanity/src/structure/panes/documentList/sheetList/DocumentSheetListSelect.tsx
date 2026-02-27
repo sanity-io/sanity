@@ -53,7 +53,6 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
       disabled={!props.row.getCanSelect()}
       // onChange doesn't have shiftKey in event, but want to control this checkbox
       // need to define noop onChange to suppress the warning
-      // eslint-disable-next-line react/jsx-no-bind
       onChange={() => null}
       onClick={handleOnClick}
     />

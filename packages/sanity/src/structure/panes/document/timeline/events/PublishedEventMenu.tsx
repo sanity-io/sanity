@@ -9,27 +9,36 @@ import {
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
+  getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
+  isReleaseDocument,
   type PublishDocumentVersionEvent,
   RELEASES_INTENT,
+  ReleaseTitle,
   Translate,
   useSetPerspective,
   useTranslation,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 
 import {MenuButton} from '../../../../../ui-components'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const portalContext = usePortal()
   const {params, setParams} = usePaneRouter()
   const setPerspective = useSetPerspective()
+  const {document} = useWorkspace()
+  const {
+    drafts: {enabled: isDraftModelEnabled},
+  } = document
 
   const handleOpenReleaseDocument = useCallback(() => {
     setParams({
@@ -51,24 +60,45 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
     setTimeout(() => {
       // A bug is generated when we change the perspective and the params at the same time
       // Resetting the params to the value it had before, because the paneRouter uses the previous value
-      setPerspective('drafts')
+      setPerspective(isDraftModelEnabled ? 'drafts' : 'published')
     }, 100)
-  }, [setParams, params, event.versionRevisionId, setPerspective])
+  }, [setParams, params, event.versionRevisionId, setPerspective, isDraftModelEnabled])
+
+  const releaseTitle = event.release?.metadata?.title
+  const releaseFallback = tCore('release.placeholder-untitled-release')
 
   const VersionBadge = ({children}: {children: React.ReactNode}) => {
     return (
-      <VersionInlineBadge $tone={event.release ? getReleaseTone(event.release) : undefined}>
+      <VersionInlineBadge
+        $tone={
+          event.release
+            ? isReleaseDocument(event.release)
+              ? getReleaseTone(event.release)
+              : 'default'
+            : undefined
+        }
+      >
         {children}
       </VersionInlineBadge>
     )
   }
+  const isMenuDisabled = event.release && !isReleaseDocument(event.release)
   return (
     <MenuButton
       id={`timeline-item-menu-button-${event.versionId}`}
       button={
         <ContextMenuButton
           aria-label={t('timeline-item.menu-button.aria-label')}
-          tooltipProps={{content: t('timeline-item.menu-button.tooltip')}}
+          tooltipProps={{
+            content: isMenuDisabled
+              ? t('timeline-item.not-found-release.tooltip', {
+                  releaseId: event.release?._id
+                    ? getReleaseIdFromReleaseDocumentId(event.release._id)
+                    : undefined,
+                })
+              : t('timeline-item.menu-button.tooltip'),
+          }}
+          disabled={isMenuDisabled}
         />
       }
       menu={
@@ -77,39 +107,47 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
             <>
               <IntentLink
                 intent={RELEASES_INTENT}
-                params={{id: event.release?.name}}
+                params={{id: getReleaseIdFromReleaseDocumentId(event.release._id)}}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>
-                  <Flex align={'center'}>
+                  <Flex align={'center'} justify="flex-start">
                     <Text size={1} style={{textDecoration: 'none'}}>
-                      <Translate
-                        components={{
-                          VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
-                        }}
-                        i18nKey="events.open.release"
-                        values={{
-                          releaseTitle: event.release.metadata.title,
-                        }}
-                        t={t}
-                      />
+                      <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
+                        {({displayTitle}) => (
+                          <Translate
+                            components={{
+                              VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
+                            }}
+                            i18nKey="events.open.release"
+                            values={{
+                              releaseTitle: displayTitle,
+                            }}
+                            t={t}
+                          />
+                        )}
+                      </ReleaseTitle>
                     </Text>
                   </Flex>
                 </MenuItem>
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
-                <Flex align={'center'}>
+                <Flex align={'center'} justify="flex-start">
                   <Text size={1}>
-                    <Translate
-                      components={{
-                        VersionBadge: ({children}) => <VersionBadge>{children} </VersionBadge>,
-                      }}
-                      i18nKey="events.inspect.release"
-                      values={{
-                        releaseTitle: event.release.metadata.title,
-                      }}
-                      t={t}
-                    />
+                    <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
+                      {({displayTitle}) => (
+                        <Translate
+                          components={{
+                            VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
+                          }}
+                          i18nKey="events.inspect.release"
+                          values={{
+                            releaseTitle: displayTitle,
+                          }}
+                          t={t}
+                        />
+                      )}
+                    </ReleaseTitle>
                   </Text>
                 </Flex>
               </MenuItem>

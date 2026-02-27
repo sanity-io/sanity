@@ -14,7 +14,7 @@ import {type DiffComponent, type ObjectDiff} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 
 const IMAGE_META_FIELDS = ['crop', 'hotspot']
-const BASE_IMAGE_FIELDS = ['asset', ...IMAGE_META_FIELDS]
+const BASE_IMAGE_FIELDS = ['asset', 'media', ...IMAGE_META_FIELDS]
 
 const CARD_STYLES = {
   flex: 1,

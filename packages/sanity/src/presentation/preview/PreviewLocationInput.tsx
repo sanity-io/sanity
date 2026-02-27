@@ -2,7 +2,6 @@ import {ResetIcon} from '@sanity/icons'
 import {TextInput, type TextInputClearButtonProps} from '@sanity/ui'
 import {
   type ChangeEvent,
-  type FunctionComponent,
   type KeyboardEvent,
   type ReactNode,
   useCallback,
@@ -14,17 +13,22 @@ import {
 import {useActiveWorkspace, useTranslation} from 'sanity'
 
 import {presentationLocaleNamespace} from '../i18n'
+import {type PreviewUrlRef} from '../machines/preview-url'
+import {useAllowPatterns} from '../useAllowPatterns'
+import {useTargetOrigin} from '../useTargetOrigin'
 
-export const PreviewLocationInput: FunctionComponent<{
+export function PreviewLocationInput(props: {
   fontSize?: number
   onChange: (value: string) => void
-  origin: string
+  previewUrlRef: PreviewUrlRef
   padding?: number
   prefix?: ReactNode
   suffix?: ReactNode
   value: string
-}> = function (props) {
-  const {fontSize = 1, onChange, origin, padding = 3, prefix, suffix, value} = props
+}): React.JSX.Element {
+  const {fontSize = 1, onChange, padding = 3, prefix, suffix, value, previewUrlRef} = props
+  const allowOrigins = useAllowPatterns(previewUrlRef)
+  const targetOrigin = useTargetOrigin(previewUrlRef)
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const {basePath = '/'} = useActiveWorkspace()?.activeWorkspace || {}
@@ -44,29 +48,41 @@ export const PreviewLocationInput: FunctionComponent<{
           return
         }
 
-        const absoluteValue =
-          sessionValue.startsWith('/') || sessionValue === ''
-            ? `${origin}${sessionValue}`
-            : sessionValue
-
-        if (!absoluteValue.startsWith(`${origin}/`) && absoluteValue !== origin) {
-          setCustomValidity(t('preview-location-input.error', {origin, context: 'missing-origin'}))
-          return
+        let absoluteValue = sessionValue
+        try {
+          absoluteValue = new URL(sessionValue, targetOrigin).toString()
+        } catch {
+          // ignore
         }
-        // `origin` is an empty string '' if the Studio is embedded, and that's when we need to protect against recursion
-        if (!origin && (absoluteValue.startsWith(`${basePath}/`) || absoluteValue === basePath)) {
+
+        if (Array.isArray(allowOrigins)) {
+          if (!allowOrigins.some((pattern) => pattern.test(absoluteValue))) {
+            setCustomValidity(
+              t('preview-location-input.error', {
+                origin: targetOrigin,
+                context: 'origin-not-allowed',
+              }),
+            )
+            event.currentTarget.reportValidity()
+            return
+          }
+          // `origin` is an empty string '' if the Studio is embedded, and that's when we need to protect against recursion
+        } else if (
+          !targetOrigin &&
+          (absoluteValue.startsWith(`${basePath}/`) || absoluteValue === basePath)
+        ) {
           setCustomValidity(
             t('preview-location-input.error', {basePath, context: 'same-base-path'}),
           )
           return
         }
 
-        const nextValue = absoluteValue === origin ? `${origin}/` : absoluteValue
+        const nextValue = absoluteValue === targetOrigin ? `${targetOrigin}/` : absoluteValue
 
         setCustomValidity(undefined)
         setSessionValue(undefined)
 
-        onChange(nextValue.slice(origin.length))
+        onChange(nextValue)
 
         inputRef.current?.blur()
       }
@@ -76,7 +92,7 @@ export const PreviewLocationInput: FunctionComponent<{
         setSessionValue(undefined)
       }
     },
-    [basePath, onChange, origin, sessionValue, t],
+    [allowOrigins, basePath, onChange, sessionValue, t, targetOrigin],
   )
 
   const handleBlur = useCallback(() => {
@@ -84,10 +100,21 @@ export const PreviewLocationInput: FunctionComponent<{
     setSessionValue(undefined)
   }, [])
 
+  const handleClear = useCallback(() => {
+    setCustomValidity(undefined)
+    let nextValue = value
+    try {
+      nextValue = new URL(value, targetOrigin).toString()
+    } catch {
+      // ignore
+    }
+    setSessionValue(nextValue)
+  }, [targetOrigin, value])
+
   useEffect(() => {
     setCustomValidity(undefined)
     setSessionValue(undefined)
-  }, [origin, value])
+  }, [targetOrigin, value])
 
   const resetButton: TextInputClearButtonProps = useMemo(() => ({icon: ResetIcon}), [])
 
@@ -98,10 +125,7 @@ export const PreviewLocationInput: FunctionComponent<{
         customValidity={customValidity}
         fontSize={fontSize}
         onBlur={handleBlur}
-        onClear={() => {
-          setCustomValidity(undefined)
-          setSessionValue(origin + value)
-        }}
+        onClear={handleClear}
         onChange={handleChange}
         onKeyDownCapture={handleKeyDown}
         padding={padding}
@@ -111,7 +135,7 @@ export const PreviewLocationInput: FunctionComponent<{
         ref={inputRef}
         space={padding}
         suffix={suffix}
-        value={sessionValue === undefined ? `${origin}${value}` : sessionValue}
+        value={sessionValue === undefined ? new URL(value, targetOrigin).toString() : sessionValue}
       />
     </>
   )

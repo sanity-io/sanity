@@ -1,15 +1,17 @@
-import {ErrorOutlineIcon, LockIcon} from '@sanity/icons'
-import {Flex, Text} from '@sanity/ui'
+import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {Card, Flex, Text} from '@sanity/ui'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {Fragment} from 'react'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {RelativeTime} from '../../../components'
-import {getPublishDateFromRelease, isReleaseScheduledOrScheduling} from '../../util/util'
+import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
+import {getPublishDateFromRelease} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
+import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
@@ -25,7 +27,7 @@ const enableColumnFormMode =
   }
 
 export const releasesOverviewColumnDefs: (
-  t: TFunction<'releases', undefined>,
+  t: TFunction<'releases'>,
   releaseGroupMode: Mode,
 ) => Column<TableRelease>[] = (t, releaseGroupMode) => {
   const checkColumnMode = enableColumnFormMode(releaseGroupMode)
@@ -65,39 +67,57 @@ export const releasesOverviewColumnDefs: (
           if (release.metadata.releaseType === 'asap' || !publishDate) return 0
           return new Date(publishDate).getTime()
         },
-        width: 250,
+        width: 280,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.time')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.when')} {...props} />
           </Flex>
         ),
-        cell: ({cellProps, datum: release}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-            <Text muted size={1}>
+        cell: ({cellProps, datum: release}) => {
+          if (release.isLoading) return null
+
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
               <ReleaseTime release={release} />
-            </Text>
-            {isReleaseScheduledOrScheduling(release) && (
-              <Text size={1} data-testid="release-lock-icon">
-                <LockIcon />
-              </Text>
-            )}
-          </Flex>
-        ),
+            </Flex>
+          )
+        },
       },
       'active',
+    ),
+    // This is a hidden column only used for sorting when
+    // no other sort column is selected (the default state)
+    checkColumnMode(
+      {
+        id: 'lastActivity',
+        hidden: true,
+        sorting: true,
+        width: 100,
+        sortTransform: ({publishedAt, _updatedAt}) => {
+          // the default sort is always descending, so -Infinity pushes missing values to end
+          const lastActivity = publishedAt ?? _updatedAt
+
+          return lastActivity ? new Date(lastActivity).getTime() : -Infinity
+        },
+      },
+      'archived',
     ),
     checkColumnMode(
       {
         id: 'publishedAt',
         sorting: true,
-        sortTransform: (release) => {
+        sortTransform: (release, direction) => {
+          if (release.state !== 'published') {
+            if (direction === 'asc') return Infinity
+            return -Infinity
+          }
           if (!release.publishedAt) return release._updatedAt
           return new Date(release.publishedAt).getTime()
         },
         width: 250,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3} sizing="border">
-            <Headers.SortHeaderButton text={t('table-header.publishedAt')} {...props} />
+            <Headers.SortHeaderButton text={t('table-header.published-at')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => (
@@ -121,8 +141,12 @@ export const releasesOverviewColumnDefs: (
       {
         id: '_updatedAt',
         sorting: true,
-        sortTransform: (release) => {
-          if (release.state !== 'archived') return Infinity
+        sortTransform: (release, direction) => {
+          if (release.state !== 'archived') {
+            if (direction === 'asc') return Infinity
+            return -Infinity
+          }
+
           return new Date(release._updatedAt).getTime()
         },
         width: 250,
@@ -180,25 +204,39 @@ export const releasesOverviewColumnDefs: (
         id: 'error',
         sorting: false,
         width: 40,
-        header: () => <Fragment />,
-        cell: ({datum: {error, state}, cellProps}) => (
-          <Flex
-            {...cellProps}
-            align="center"
-            paddingX={2}
-            paddingY={3}
-            sizing="border"
-            data-testid="error-indicator"
-          >
-            {typeof error !== 'undefined' && state === 'active' && (
-              <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
-                <Text size={1}>
-                  <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                </Text>
-              </Tooltip>
-            )}
-          </Flex>
-        ),
+        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+        cell: ({datum, cellProps}) => {
+          const {error, state} = datum
+          const hasError = typeof error !== 'undefined' && state === 'active'
+          const hasWarning = state === 'active' && getIsScheduledDateInPast(datum)
+
+          return (
+            <Flex
+              {...cellProps}
+              align="center"
+              gap={2}
+              paddingX={2}
+              paddingY={3}
+              sizing="border"
+              data-testid="error-indicator"
+            >
+              {hasError && (
+                <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
+                  <Text size={1}>
+                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                  </Text>
+                </Tooltip>
+              )}
+              {hasWarning && (
+                <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
+                  <Text size={1}>
+                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
+                  </Text>
+                </Tooltip>
+              )}
+            </Flex>
+          )
+        },
       },
       'all',
     ),
@@ -212,21 +250,60 @@ export const releasesOverviewColumnDefs: (
             <Headers.BasicHeader text={t('table-header.documents')} />
           </Flex>
         ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
-            {!isDeleted && (
-              <ReleaseDocumentsCounter
-                documentCount={
-                  state === 'archived' || state === 'published'
-                    ? finalDocumentStates?.length
-                    : documentsMetadata?.documentCount
-                }
-              />
-            )}
-          </Flex>
-        ),
+        cell: ({
+          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, _id},
+          cellProps,
+        }) => {
+          return (
+            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+              {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
+
+              {/**
+               * Show a checkmark for scheduled releases
+               * A scheduled release can't be anything other than valid
+               * Since it can't be edited via the API or the UI
+               * However we should still gives a visual indicator of that instead of showing nothing
+               */}
+              {state === 'scheduled' && (
+                <Card
+                  padding={0}
+                  radius="full"
+                  tone="neutral"
+                  style={{
+                    background: 'transparent',
+                  }}
+                >
+                  <Flex gap={2}>
+                    <Text size={1}>
+                      <Tooltip content={t('summary.all-documents-validated')}>
+                        <CheckmarkCircleIcon />
+                      </Tooltip>
+                    </Text>
+                  </Flex>
+                </Card>
+              )}
+
+              {!isDeleted && (
+                <>
+                  <ReleaseDocumentsCounter
+                    documentCount={
+                      state === 'archived' || state === 'published'
+                        ? finalDocumentStates?.length
+                        : documentsMetadata?.documentCount
+                    }
+                  />
+                </>
+              )}
+            </Flex>
+          )
+        },
       },
       'all',
     ),
-  ].filter(Boolean) as Column<TableRelease>[]
+  ].filter(filterNull)
+}
+
+// type guard to filter out undefined and null values
+function filterNull<T>(value: T | undefined | null): value is T {
+  return Boolean(value)
 }

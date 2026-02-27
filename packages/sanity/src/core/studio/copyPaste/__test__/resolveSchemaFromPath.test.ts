@@ -160,14 +160,11 @@ describe('resolveSchemaTypeForPath', () => {
     expect(schemaTypeObject?.name).toEqual('color')
     expect(schemaTypeObject?.jsonType).toEqual('object')
   })
-  test.fails(
-    'fail to get schema type from nested path in array with multiple types without providing value',
-    () => {
-      const authorSchema = schema.get('editor')!
-      const path = ['arrayOfMultipleTypes', {_key: 'color-1'}, 'title']
-      const schemaType = resolveSchemaTypeForPath(authorSchema, path) as ReferenceSchemaType
-      expect(schema._validation).toHaveLength(0)
-      expect(schemaType).toEqual('string')
-    },
-  )
+  test.fails('fail to get schema type from nested path in array with multiple types without providing value', () => {
+    const authorSchema = schema.get('editor')!
+    const path = ['arrayOfMultipleTypes', {_key: 'color-1'}, 'title']
+    const schemaType = resolveSchemaTypeForPath(authorSchema, path) as ReferenceSchemaType
+    expect(schema._validation).toHaveLength(0)
+    expect(schemaType).toEqual('string')
+  })
 })

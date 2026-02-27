@@ -1,5 +1,3 @@
-/* eslint-disable max-nested-callbacks */
-
 // import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
 
@@ -76,8 +74,8 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
-      await expect(await getClipboardItemsAsText()).toContain('A string to copy')
-      await expect(await getClipboardItemsAsText()).toContain('This is the second field')
+      expect(await getClipboardItemsAsText()).toContain('A string to copy')
+      expect(await getClipboardItemsAsText()).toContain('This is the second field')
 
       await page.getByTestId('field-objectWithColumns.string1').locator('input').focus()
       await page.keyboard.press('Meta+A')
@@ -138,8 +136,8 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByText(`Field "Object with columns" copied`)).toBeVisible()
 
       // Check that the plain text version is set
-      await expect(await getClipboardItemsAsText()).toContain('A string to copy')
-      await expect(await getClipboardItemsAsText()).toContain('This is the second field')
+      expect(await getClipboardItemsAsText()).toContain('A string to copy')
+      expect(await getClipboardItemsAsText()).toContain('This is the second field')
 
       await $object.focus()
       await expect($object).toBeFocused()
@@ -183,7 +181,7 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByText(`Field "Title" copied`)).toBeVisible()
 
       // Check that the plain text version is set
-      await expect(await getClipboardItemsAsText()).toContain('A string to copy')
+      expect(await getClipboardItemsAsText()).toContain('A string to copy')
 
       await page.getByTestId('field-title').locator('input').fill('')
 
@@ -227,7 +225,7 @@ test.describe('Copy and pasting fields', () => {
       await expect(page.getByText(`Field "Array of primitives" copied`)).toBeVisible()
 
       // Check that the plain text version is set
-      await expect(await getClipboardItemsAsText()).toContain('One, Two')
+      expect(await getClipboardItemsAsText()).toContain('One, Two')
 
       const $rowActionTrigger = page.locator('[id="arrayOfPrimitives[0]-menuButton"]')
 
@@ -241,10 +239,10 @@ test.describe('Copy and pasting fields', () => {
 
       await $removeButton.press('Enter')
 
-      expect(
+      await expect(
         page.getByTestId(`field-arrayOfPrimitives`).getByTestId('string-input').first(),
       ).not.toHaveValue('One')
-      expect(
+      await expect(
         page.getByTestId(`field-arrayOfPrimitives`).getByTestId('string-input').first(),
       ).toHaveValue('Two')
 
@@ -258,7 +256,7 @@ test.describe('Copy and pasting fields', () => {
 
       await expect(page.getByText(`Field "Array of primitives" updated`)).toBeVisible()
 
-      expect(
+      await expect(
         page.getByTestId(`field-arrayOfPrimitives`).getByTestId('string-input').first(),
       ).toHaveValue('One')
 

@@ -37,9 +37,9 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
   const prev = useRefValue<FileAsset>(fromAsset?._ref)
   const next = useRefValue<FileAsset>(toAsset?._ref)
   const formatUnit = useUnitFormatter({unitDisplay: 'short', maximumFractionDigits: 2})
-
+  const ignoredFields = ['_type', 'media']
   const changedFields = Object.entries(fields)
-    .filter(([name, field]) => field.isChanged && name !== '_type')
+    .filter(([name, field]) => field.isChanged && !ignoredFields.includes(name))
     .map(([name]) => name)
 
   const didAssetChange = changedFields.includes('asset')

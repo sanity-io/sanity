@@ -109,6 +109,28 @@ export const editorDocument = defineType({
       ],
     }),
     defineField({
+      name: 'arrayWithAnonymousAndNamedObject',
+      title: 'Array with anonymous and named objects',
+      description: 'This array contains objects of type as defined inline',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          title: 'Something',
+          fields: [
+            {name: 'first', type: 'string', title: 'First string'},
+            {name: 'second', type: 'string', title: 'Second string'},
+          ],
+        },
+        {
+          type: 'object',
+          name: 'item2',
+          title: 'Item 2',
+          fields: [{name: 'title', type: 'string', title: 'Title'}],
+        },
+      ],
+    }),
+    defineField({
       type: 'object',
       name: 'color',
       title: 'Color with a long title',

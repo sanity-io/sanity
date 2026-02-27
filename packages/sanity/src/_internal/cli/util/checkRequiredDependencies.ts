@@ -1,13 +1,14 @@
-import {readFile} from 'node:fs/promises'
 import path from 'node:path'
 
-import {type CliCommandContext, type PackageJson} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
 import execa from 'execa'
 import oneline from 'oneline'
-import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
 import {peerDependencies} from '../../../../package.json'
+import {determineIsApp} from './determineIsApp'
+import {readModuleVersion} from './readModuleVersion'
+import {type PartialPackageManifest, readPackageManifest} from './readPackageManifest'
 
 const defaultStudioManifestProps: PartialPackageManifest = {
   name: 'studio',
@@ -31,10 +32,10 @@ interface CheckResult {
  * Additionally, returns the version of the 'sanity' dependency from the package.json.
  */
 export async function checkRequiredDependencies(context: CliCommandContext): Promise<CheckResult> {
-  // currently there's no check needed for core apps,
+  // currently there's no check needed for custom apps,
   // but this should be removed once they are more mature
-  const isCoreApp = context.cliConfig && '__experimental_coreAppConfiguration' in context.cliConfig
-  if (isCoreApp) {
+  const isApp = determineIsApp(context.cliConfig)
+  if (isApp) {
     return {didInstall: false, installedSanityVersion: ''}
   }
 
@@ -73,15 +74,18 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
     return {didInstall: true, installedSanityVersion}
   }
 
+  // We ignore catalog identifiers since we check the actual version anyway
+  const isStyledComponentsVersionRangeInCatalog =
+    declaredStyledComponentsVersion.startsWith('catalog:')
   // Theoretically the version specified in package.json could be incorrect, eg `foo`
   let minDeclaredStyledComponentsVersion: SemVer | null = null
   try {
     minDeclaredStyledComponentsVersion = semver.minVersion(declaredStyledComponentsVersion)
-  } catch (err) {
+  } catch {
     // Intentional fall-through (variable will be left as null, throwing below)
   }
 
-  if (!minDeclaredStyledComponentsVersion) {
+  if (!minDeclaredStyledComponentsVersion && !isStyledComponentsVersionRangeInCatalog) {
     throw new Error(oneline`
       Declared dependency \`styled-components\` has an invalid version range:
       \`${declaredStyledComponentsVersion}\`.
@@ -95,8 +99,9 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   // to anything is going to be challenging, so only compare "simple" ranges/versions
   // (^x.x.x / ~x.x.x / x.x.x)
   if (
+    !isStyledComponentsVersionRangeInCatalog &&
     isComparableRange(declaredStyledComponentsVersion) &&
-    !semver.satisfies(minDeclaredStyledComponentsVersion, wantedStyledComponentsVersionRange)
+    !semver.satisfies(minDeclaredStyledComponentsVersion!, wantedStyledComponentsVersionRange)
   ) {
     output.warn(oneline`
       Declared version of styled-components (${declaredStyledComponentsVersion})
@@ -124,44 +129,6 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   }
 
   return {didInstall: false, installedSanityVersion}
-}
-
-/**
- * Reads the version number of the _installed_ module, or returns `null` if not found
- *
- * @param studioPath - Path of the studio
- * @param moduleName - Name of module to get installed version for
- * @returns Version number, of null
- */
-async function readModuleVersion(studioPath: string, moduleName: string): Promise<string | null> {
-  const manifestPath = resolveFrom.silent(studioPath, path.join(moduleName, 'package.json'))
-  return manifestPath ? (await readPackageManifest(manifestPath)).version : null
-}
-
-/**
- * Read the `package.json` file at the given path and return an object that guarantees
- * the presence of name, version, dependencies, dev dependencies and peer dependencies
- *
- * @param packageJsonPath - Path to package.json to read
- * @returns Reduced package.json with guarantees for name, version and dependency fields
- */
-async function readPackageManifest(
-  packageJsonPath: string,
-  defaults: Partial<PartialPackageManifest> = {},
-): Promise<PackageManifest> {
-  let manifest: unknown
-  try {
-    manifest = {...defaults, ...(await readPackageJson(packageJsonPath))}
-  } catch (err) {
-    throw new Error(`Failed to read "${packageJsonPath}": ${err.message}`)
-  }
-
-  if (!isPackageManifest(manifest)) {
-    throw new Error(`Failed to read "${packageJsonPath}": Invalid package manifest`)
-  }
-
-  const {name, version, dependencies = {}, devDependencies = {}} = manifest
-  return {name, version, dependencies, devDependencies}
 }
 
 /**
@@ -204,29 +171,6 @@ async function installDependencies(
   await installNewPackages({packages, packageManager: pkgManager}, context)
 }
 
-function isPackageManifest(item: unknown): item is PartialPackageManifest {
-  return typeof item === 'object' && item !== null && 'name' in item && 'version' in item
-}
-
 function isComparableRange(range: string): boolean {
   return /^[\^~]?\d+(\.\d+)?(\.\d+)?$/.test(range)
-}
-
-function readPackageJson(filePath: string): Promise<PackageJson> {
-  return readFile(filePath, 'utf8').then((res) => JSON.parse(res))
-}
-
-interface PackageManifest extends DependencyDeclarations {
-  name: string
-  version: string
-}
-
-interface PartialPackageManifest extends Partial<DependencyDeclarations> {
-  name: string
-  version: string
-}
-
-interface DependencyDeclarations {
-  dependencies: Record<string, string | undefined>
-  devDependencies: Record<string, string | undefined>
 }

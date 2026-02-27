@@ -1,6 +1,13 @@
-import {type Rect} from './2d/shapes'
-
 export type CropMethod = 'full_width' | 'letterbox' | 'full_height'
+export interface Size {
+  width: number
+  height: number
+}
+
+export interface Rect extends Size {
+  left: number
+  top: number
+}
 
 export interface Hotspot {
   x: number
@@ -16,28 +23,9 @@ export interface Crop {
   left: number
 }
 
-export interface EdgeOffsets {
-  top: number
-  right: number
-  bottom: number
-  left: number
-}
-
 export interface CropAndHotspot {
   hotspot: Hotspot
   crop: Crop
-}
-
-export interface Offsets {
-  top: number
-  right: number
-  bottom: number
-  left: number
-}
-
-export interface Dimensions {
-  width: number
-  height: number
 }
 
 export interface Coordinate {
@@ -45,21 +33,23 @@ export interface Coordinate {
   y: number
 }
 
-export interface CropHandles {
-  left: Rect
-  right: Rect
-  top: Rect
-  topLeft: Rect
-  topRight: Rect
-  bottom: Rect
-  bottomLeft: Rect
-  bottomRight: Rect
-}
-
-export interface ToolCanvasProps {
+export interface ToolSVGProps {
   value: Partial<CropAndHotspot>
-  image: HTMLCanvasElement
+  image: HTMLImageElement
   onChange: (value: {hotspot: Hotspot} | {crop: Crop}) => void
   onChangeEnd: (value: {hotspot: Hotspot} | {crop: Crop}) => void
   readOnly: boolean
+  size: Size
 }
+
+export type ToolFocusTarget = 'hotspot' | 'crop'
+export type ToolInteractionTarget = ToolFocusTarget | 'hotspotHandle' | 'cropHandle'
+export type ToolHandleType =
+  | 'crop-top'
+  | 'crop-right'
+  | 'crop-bottom'
+  | 'crop-left'
+  | 'crop-topLeft'
+  | 'crop-topRight'
+  | 'crop-bottomLeft'
+  | 'crop-bottomRight'

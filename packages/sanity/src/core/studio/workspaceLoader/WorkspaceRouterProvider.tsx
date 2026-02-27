@@ -1,4 +1,4 @@
-import {escapeRegExp, isEqual} from 'lodash'
+import {escapeRegExp, isEqual} from 'lodash-es'
 import {
   type ComponentType,
   type MutableRefObject,
@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
-import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 
 import {ErrorBoundary} from '../../../ui-components'
 import {type Tool, type Workspace} from '../../config'
@@ -66,12 +66,13 @@ function useRouterFromWorkspaceHistory(
   // If we don't, we risk hot reload seeing stale workspace configs as the user is editing them.
   const store = useMemo(() => {
     const routerBasePath = router.getBasePath()
-    // this regex ends with a `(\\/|$)` (forward slash or end) to prevent false
-    // matches where the pathname is a false subset of the current pathname.
-    const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|$)`, 'i')
+    // this regex ends with patterns that match end of path, query params, or trailing slash
+    // to prevent false matches where the pathname is a false subset of the current pathname.
+    const routerBasePathRegex = new RegExp(`^${escapeRegExp(routerBasePath)}(\\/|\\?|$)`, 'i')
     const shouldHandle = (pathname: string) =>
       // this is necessary to prevent emissions intended for other workspaces.
       routerBasePath === '/' ? true : routerBasePathRegex.test(pathname)
+
     return {
       subscribe: (onStoreChange: () => void) => history.listen(onStoreChange),
       getSnapshot: () => `${history.location.pathname}${history.location.search || ''}`,
@@ -111,7 +112,6 @@ function useRouterFromWorkspaceHistory(
   }, [event?.state, event?.type, history, router, tools])
 
   // Handles redirects to intents, e.g. `/test/intent/create/template=codeTest;type=codeTest/` -> `/test/content/input-plugin;codeTest;c7e1aa3e-5555-40f5-b0af-c7309df6edcc%2Ctemplate%3DcodeTest`
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     const resolvedIntent = maybeResolveIntent(event, router, tools, prevEvent)
     // If resolvedIntent is truthy then we have a redirect to perform. Most of the time it'll be `null`

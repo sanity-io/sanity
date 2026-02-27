@@ -1,6 +1,5 @@
 import {describe, it} from 'vitest'
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {type BooleanDefinition, type EmailDefinition} from '../src/schema/definition'
 import {defineType} from '../src/schema/types'
 
@@ -32,5 +31,3 @@ describe('email types', () => {
     })
   })
 })
-
-export {}

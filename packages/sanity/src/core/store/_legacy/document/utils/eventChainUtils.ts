@@ -23,7 +23,7 @@ export function toOrderedChains<T extends {previousRev: string; resultRev: strin
   // get entries without a parent (if there's more than one, we have a problem)
   const orphans = Object.entries(parents).filter(([, parent]) => {
     return !parent
-  })!
+  })
 
   return orphans.map((orphan) => {
     const [headRev] = orphan

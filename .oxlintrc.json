@@ -1,0 +1,280 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "react",
+    "react-perf",
+    "oxc",
+    "import",
+    "jsx-a11y",
+    "node",
+    "promise"
+  ],
+  "ignorePatterns": [
+    "**/etc/*",
+    "**/.sanity/*",
+    "**/public/*",
+    "**/build/*",
+    "**/.next/*",
+    "**/static/*",
+    "**/coverage/*",
+    "**/lib/*",
+    "**/node_modules/*",
+    "**/dist/*",
+    "*.json",
+    "*.css",
+    "*.snap",
+    "*.md",
+    "packages/@sanity/cli/templates/**/*",
+    "dev/test-studio/sanity.theme.mjs"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "importNames": ["default"],
+            "message": "Please use `import {styled} from 'styled-components'` instead."
+          },
+          {
+            "name": "styled-components",
+            "importNames": ["ServerStyleSheet"],
+            "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+          },
+          {
+            "name": "react",
+            "importNames": ["default"],
+            "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
+          },
+          {
+            "name": "react",
+            "importNames": ["createElement"],
+            "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
+          },
+          {
+            "name": "react",
+            "importNames": ["createRef"],
+            "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
+          },
+          {
+            "name": "react/jsx-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/jsx-dev-runtime",
+            "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
+          },
+          {
+            "name": "react/compiler-runtime",
+            "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
+          },
+          {
+            "name": "date-fns",
+            "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["**/scheduled-publishing/**"],
+            "message": "Importing from scheduled-publishing folder is discouraged since we are dropping support for it in the near future"
+          },
+          {
+            "group": ["lodash.*", "lodash/*", "lodash"],
+            "message": "Please use the default import from 'lodash-es' instead."
+          }
+        ]
+      }
+    ],
+    "typescript/ban-ts-comment": "error",
+    "typescript/prefer-ts-expect-error": "error",
+    "react/jsx-key": "error",
+    "unicorn/no-abusive-eslint-disable": "error",
+    // Not relevant as we use the modern jsx-runtime transform
+    "react-in-jsx-scope": "off",
+    // Not relevant due to React Compiler
+    "react_perf/jsx-no-new-array-as-prop": "off",
+    "react_perf/jsx-no-new-object-as-prop": "off",
+    "react_perf/jsx-no-new-function-as-prop": "off",
+    "react_perf/jsx-no-jsx-as-prop": "off",
+    // False negatives
+    "jsx_a11y/anchor-is-valid": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-standalone-expect": "off",
+    "jest/no-commented-out-tests": "off",
+    "jest/no-disabled-tests": "off",
+    "jest/require-to-throw-message": "off",
+    "jest/no-export": "off",
+    "jest/expect-expect": "off",
+    "jest/valid-expect": "off",
+    "jest/valid-title": "off",
+    "jest/valid-describe-callback": "off",
+    "vitest/no-disabled-tests": "off",
+    "vitest/no-test-prefixes": "off",
+    "jsx_a11y/no-autofocus": "off",
+    "jsx_a11y/no-static-element-interactions": "off", // Allow event handlers on static elements
+    "unicorn/require-post-message-target-origin": "off", // disabled since it can't distinguish between `window.postMessage` and node `Worker#postMessage`
+    // Handy rules that are disabled by default
+    "react/exhaustive-deps": "error",
+    "react/rules-of-hooks": "error",
+    "eslint/no-console": ["error", {"allow": ["warn", "error"]}],
+    // We no longer allow commonjs as we ship ESM only (except for in CLI scenarios for legacy reasons)
+    "import/no-commonjs": "error",
+    "no-restricted-globals": [
+      "error",
+      {"name": "__dirname", "message": "Use path.dirname(fileURLToPath(import.meta.url)) instead"},
+      {"name": "__filename", "message": "Use fileURLToPath(import.meta.url) instead"}
+    ],
+    // These rules should be enabled in the future, they are disabled for now to reduce the PR scope for landing oxlint
+    "typescript/no-explicit-any": "warn",
+    "eslint/no-await-in-loop": "warn",
+    "unicorn/no-new-array": "warn",
+    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/no-useless-spread": "warn",
+    "unicorn/no-await-in-promise-methods": "warn",
+    "eslint/no-useless-catch": "warn",
+    "eslint/no-unneeded-ternary": "warn",
+    "eslint/no-unused-vars": "warn",
+    "unicorn/no-useless-fallback-in-spread": "warn",
+    "import/no-named-as-default": "warn",
+    "unicorn/prefer-string-starts-ends-with": "warn",
+    "unicorn/no-single-promise-in-promise-methods": "warn",
+    "import/no-named-as-default-member": "warn",
+    "import/default": "warn",
+    "oxc/no-async-endpoint-handlers": "warn",
+    "unicorn/prefer-array-find": "warn",
+    "jsx_a11y/alt-text": "warn",
+    "eslint/no-constant-binary-expression": "warn",
+    "eslint/no-extend-native": "warn",
+    "jsx_a11y/anchor-has-content": "warn",
+    "react/no-array-index-key": "warn",
+    "oxc/no-accumulating-spread": "warn",
+    "jsx_a11y/prefer-tag-over-role": "warn",
+    "jsx_a11y/click-events-have-key-events": "warn",
+    "jsx_a11y/role-has-required-aria-props": "warn",
+    "unicorn/no-instanceof-builtins": "warn",
+    "jsx_a11y/aria-role": "warn",
+    "jsx_a11y/label-has-associated-control": "warn",
+    "unicorn/prefer-add-event-listener": "warn",
+    "jsx_a11y/role-supports-aria-props": "warn",
+    "unicorn/no-useless-length-check": "warn",
+    "react/iframe-missing-sandbox": "warn",
+    "jsx_a11y/iframe-has-title": "warn",
+    "promise/no-callback-in-promise": "warn",
+    "eslint/no-unsafe-optional-chaining": "warn",
+    "promise/always-return": ["error", {"ignoreLastCallback": true}],
+    "require-module-specifiers": "warn",
+    // handy type-aware rules
+    "no-unnecessary-boolean-literal-compare": "error",
+    // Powerful type-aware rules that should be enabled in the future, but have too many violations to be handled in a single PR
+    "no-base-to-string": "warn",
+    "no-duplicate-type-constituents": "warn",
+    "no-implied-eval": "warn",
+    "no-misused-spread": "warn",
+    "no-multiple-resolved": "warn",
+    "no-redundant-type-constituents": "warn",
+    "no-unnecessary-template-expression": "warn",
+    "no-unnecessary-type-arguments": "warn",
+    "no-unnecessary-type-assertion": "warn",
+    "no-unsafe-type-assertion": "warn",
+    "restrict-template-expressions": "warn",
+    "unbound-method": "warn",
+    // Temporarily disabled, will be re-enabled in the near term
+    "unicorn/prefer-set-has": "off",
+    // Requires polyfills for older browsers
+    "no-array-reverse": "off",
+    "no-array-sort": "off",
+    "oxc/no-map-spread": "off",
+    "jsx_a11y/aria-proptypes": "off"
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**/*", "examples/functions/**/*"],
+      "rules": {"no-console": "off", "no-unsafe-type-assertion": "off"}
+    },
+    {
+      "files": ["**/*.test.{ts,tsx,cjs,mjs,js,jsx}"],
+      "rules": {
+        "no-base-to-string": "off",
+        "no-unnecessary-boolean-literal-compare": "off",
+        "no-unnecessary-template-expression": "off",
+        "no-unnecessary-type-assertion": "off",
+        "no-unsafe-type-assertion": "off",
+        "unbound-method": "off"
+      }
+    },
+    {
+      // We still allow CJS in some places, for legacy reasons
+      "files": [
+        "packages/@sanity/cli/**/*",
+        "packages/sanity/src/_internal/cli/**/*",
+        "scripts/**/*",
+        "**/*.cjs",
+        "**/*.cts.ts",
+        "**/perf/**/*"
+      ],
+      "rules": {
+        "import/no-commonjs": "off",
+        "no-restricted-globals": "off"
+      }
+    },
+    {
+      // Vitest matchers legitimately use `this` context for matcher API
+      "files": ["**/test/matchers/**/*.ts"],
+      "rules": {
+        "oxc/no-this-in-exported-function": "off"
+      }
+    },
+    {
+      "files": ["e2e/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
+      "files": ["dev/test-studio/**/*"],
+      "rules": {
+        "eslint/no-console": "off",
+        "no-explicit-any": "off",
+        "jsx_a11y/iframe-has-title": "off",
+        "react/iframe-missing-sandbox": "off",
+        "unicorn/prefer-array-find": "off",
+        "no-restricted-globals": "off",
+        "import/no-commonjs": "off"
+      }
+    },
+    {
+      "files": ["dev/design-studio/**/*"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["packages/@repo/test-dts-exports/**/*"],
+      "rules": {
+        "no-console": "off",
+        "no-await-in-loop": "off",
+        "no-explicit-any": "off",
+        "no-unused-vars": "error",
+        "no-unnecessary-type-arguments": "off"
+      }
+    },
+    {
+      "files": ["packages/@repo/bundle-manager/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    }
+  ]
+}

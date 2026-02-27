@@ -1,4 +1,4 @@
-import {compact} from 'lodash'
+import {compact} from 'lodash-es'
 
 import {type Expression} from './Expression'
 import {Matcher} from './Matcher'

@@ -62,7 +62,7 @@ export function getLocalStorage(namespace: string): LocalStorageish {
     try {
       const stored = JSON.parse(localStorage.getItem(storageKey) || '{}')
       return isPlainObject(stored) ? stored : {}
-    } catch (err) {
+    } catch {
       return {}
     }
   }
@@ -74,7 +74,7 @@ function supportsLocalStorage() {
     localStorage.setItem(mod, mod)
     localStorage.removeItem(mod)
     return true
-  } catch (err) {
+  } catch {
     return false
   }
 }

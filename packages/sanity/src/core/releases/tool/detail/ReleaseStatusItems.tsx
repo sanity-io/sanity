@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
@@ -5,7 +6,6 @@ import {AvatarSkeleton, RelativeTime, UserAvatar} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store/types'
 import {StatusItem} from '../components/StatusItem'
 import {
   isArchiveReleaseEvent,

@@ -1,5 +1,9 @@
 import {Box, Flex} from '@sanity/ui'
-import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
+import {addDays} from 'date-fns/addDays'
+import {addMonths} from 'date-fns/addMonths'
+import {isAfter} from 'date-fns/isAfter'
+import {isBefore} from 'date-fns/isBefore'
+import {set} from 'date-fns/set'
 import {
   type ComponentProps,
   type KeyboardEvent,

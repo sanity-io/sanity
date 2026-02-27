@@ -8,7 +8,6 @@ export interface BooleanOptions extends BaseSchemaTypeOptions {
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BooleanRule extends RuleDef<BooleanRule, boolean> {}
 
 /** @public */

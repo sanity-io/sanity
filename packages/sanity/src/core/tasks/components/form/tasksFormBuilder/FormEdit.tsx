@@ -4,11 +4,11 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {CommentsProvider} from '../../../../comments'
+import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
 import {ContextMenuButton, LoadingBlock} from '../../../../components'
 import {
   type FormPatch,
@@ -118,7 +118,7 @@ function FormEditInner(props: ObjectInputProps) {
   if (!statusField) {
     throw new Error('Status field not found')
   }
-  if (!props.value?._id) {
+  if (!value?._id) {
     return <LoadingBlock />
   }
 
@@ -166,13 +166,13 @@ function FormEditInner(props: ObjectInputProps) {
       </Card>
 
       {props.renderDefault(props)}
-      <CommentsProvider
-        documentId={value._id}
-        documentType="tasks.task"
-        sortOrder="asc"
-        type="task"
-      >
-        <CurrentWorkspaceProvider>
+      <CurrentWorkspaceProvider>
+        <CommentsProvider
+          documentId={value._id}
+          documentType="tasks.task"
+          sortOrder="asc"
+          type="task"
+        >
           <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
             <TasksActivityLog
               value={value}
@@ -181,8 +181,8 @@ function FormEditInner(props: ObjectInputProps) {
               activityData={activityData}
             />
           </Card>
-        </CurrentWorkspaceProvider>
-      </CommentsProvider>
+        </CommentsProvider>
+      </CurrentWorkspaceProvider>
     </>
   )
 }
@@ -190,6 +190,7 @@ function FormEditInner(props: ObjectInputProps) {
 export function FormEdit(props: ObjectInputProps) {
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
+  const subscribers = useMemo(() => value.subscribers || [], [value.subscribers])
 
   const transformPatches = useCallback(
     (patches: FormPatch[]) => {
@@ -203,7 +204,6 @@ export function FormEdit(props: ObjectInputProps) {
         return patches
       }
 
-      const subscribers = value.subscribers || []
       const newSubscribers = [...subscribers]
 
       // If the assignee field is changing, we should subscribe the new assignee to the task.
@@ -250,7 +250,7 @@ export function FormEdit(props: ObjectInputProps) {
 
       return patches
     },
-    [currentUser, value.subscribers, value.description],
+    [currentUser, subscribers, value.description],
   )
 
   return (

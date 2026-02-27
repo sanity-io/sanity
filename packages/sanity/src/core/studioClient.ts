@@ -1,6 +1,7 @@
-import {type SanityClient} from '@sanity/client'
+import {type ClientConfig, type SanityClient} from '@sanity/client'
 
 import {type SourceClientOptions} from './config'
+import {SANITY_VERSION} from './version'
 
 /**
  * Unless otherwise specified, this is the API version we use for controlled
@@ -13,6 +14,15 @@ import {type SourceClientOptions} from './config'
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
   apiVersion: '2025-02-19',
+}
+
+/**
+ * The headers that are applied to all studio client requests
+ *
+ * @internal
+ */
+export const DEFAULT_STUDIO_CLIENT_HEADERS: ClientConfig['headers'] = {
+  'x-sanity-app': `studio@${SANITY_VERSION}`,
 }
 
 export const versionedClient = (client: SanityClient, apiVersion?: string): SanityClient => {

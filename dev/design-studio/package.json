@@ -1,41 +1,47 @@
 {
   "name": "design-studio",
-  "version": "3.77.1",
+  "version": "5.12.0",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
-    "sanity",
     "cms",
+    "content",
+    "design-studio",
     "headless",
     "realtime",
-    "content",
-    "design-studio"
+    "sanity"
   ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
     "directory": "packages/design-studio"
   },
-  "license": "MIT",
-  "author": "Sanity.io <hello@sanity.io>",
   "main": "package.json",
   "scripts": {
-    "build": "../.bin/sanity build",
+    "build": "sanity build",
     "clean": "rimraf .sanity dist",
-    "dev": "../.bin/sanity dev --port 4000",
-    "lint": "eslint --cache .",
-    "start": "../.bin/sanity start --port 4000"
+    "dev": "sanity dev --port 4000",
+    "lint": "eslint .",
+    "start": "sanity preview --port 4000"
   },
   "dependencies": {
-    "@sanity/icons": "^3.6.0",
-    "@sanity/ui": "^2.14.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@repo/eslint-config": "workspace:*",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.0"
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "catalog:",
+    "rimraf": "^5.0.10"
   }
 }

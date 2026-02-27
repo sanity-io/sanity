@@ -95,8 +95,8 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
 
         {languageOptions.map((lang) => (
           <LanguageFilterOption
-            id={lang.id}
             key={lang.id}
+            id={lang.id}
             onToggle={toggleLanguage}
             selected={selectedLanguages.includes(lang.id)}
             title={lang.title}

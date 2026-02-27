@@ -2,7 +2,7 @@ import {type BadgeTone} from '@sanity/ui'
 import {type FC, type PropsWithChildren} from 'react'
 import {css, styled} from 'styled-components'
 
-import {type ReleaseDocument} from '../store/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 
@@ -31,7 +31,7 @@ export const VersionInlineBadge = ({
 /**
  * @internal
  */
-export const getVersionInlineBadge = (release?: ReleaseDocument) => {
+export const getVersionInlineBadge = (release?: TargetPerspective) => {
   const tone = getReleaseTone(release ?? LATEST)
 
   const ReturnComponent: FC<PropsWithChildren> = ({children}) => (

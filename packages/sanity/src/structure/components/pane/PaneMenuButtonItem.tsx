@@ -40,9 +40,9 @@ export function PaneMenuButtonItem(props: {
           {isAfterGroup && <MenuDivider />}
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
+              key={child.key}
               disabled={disabled || Boolean(node.disabled)}
               isAfterGroup={node.children[childIndex - 1]?.type === 'group'}
-              key={child.key}
               node={child}
             />
           ))}
@@ -61,9 +61,9 @@ export function PaneMenuButtonItem(props: {
         >
           {node.children.map((child, childIndex) => (
             <PaneMenuButtonItem
+              key={child.key}
               disabled={disabled || Boolean(node.disabled)}
               isAfterGroup={node.children[childIndex - 1]?.type === 'group'}
-              key={child.key}
               node={child}
             />
           ))}
@@ -97,16 +97,17 @@ function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   )
   const {title} = useI18nText(node)
 
+  const showSelectionIndicator = node.selected && !node.hideSelectionIndicator
+
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
       <MenuItem
         disabled={disabled || Boolean(node.disabled)}
         hotkeys={node.hotkey?.split('+')}
         icon={node.icon}
-        iconRight={node.iconRight || (node.selected && CheckmarkIcon)}
-        // eslint-disable-next-line react/jsx-handler-names
+        iconRight={node.iconRight || (showSelectionIndicator && CheckmarkIcon)}
         onClick={node.onAction}
-        pressed={node.selected}
+        pressed={showSelectionIndicator}
         text={title}
         tone={node.tone}
         data-testid={`action-${toLowerCaseNoSpaces(node.title)}`}
@@ -136,6 +137,8 @@ function PaneContextIntentMenuItem(props: {
 
   const {title} = useI18nText(node)
 
+  const showSelectionIndicator = node.selected && !node.hideSelectionIndicator
+
   return (
     <TooltipOfDisabled content={tooltipContent} placement="left">
       <MenuItem
@@ -144,9 +147,9 @@ function PaneContextIntentMenuItem(props: {
         hotkeys={node.hotkey?.split('+')}
         href={intentLink.href}
         icon={node.icon}
-        iconRight={node.selected ? CheckmarkIcon : undefined}
+        iconRight={showSelectionIndicator ? CheckmarkIcon : undefined}
         onClick={handleClick}
-        pressed={node.selected}
+        pressed={showSelectionIndicator}
         text={title}
         tone={node.tone}
       />

@@ -3,6 +3,7 @@
 exports[`array > exact length constraint > exact length: too long 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must have exactly 2 items",
     },
@@ -16,6 +17,7 @@ exports[`array > exact length constraint > exact length: too long 1`] = `
 exports[`array > exact length constraint > exact length: too short 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must have exactly 2 items",
     },
@@ -31,6 +33,7 @@ exports[`array > exact length constraint > exact length: valid 1`] = `[]`;
 exports[`array > max length constraint > max length: too long 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must have at most 2 items",
     },
@@ -46,6 +49,7 @@ exports[`array > max length constraint > max length: valid 1`] = `[]`;
 exports[`array > min length constraint > min length: too short 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must have at least 2 items",
     },
@@ -63,6 +67,7 @@ exports[`array > required constraint > required: empty array 1`] = `[]`;
 exports[`array > required constraint > required: null 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Expected type "Array", got "null"",
     },
@@ -71,6 +76,7 @@ exports[`array > required constraint > required: null 1`] = `
     "path": [],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Required",
     },
@@ -84,6 +90,7 @@ exports[`array > required constraint > required: null 1`] = `
 exports[`array > required constraint > required: undefined 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Required",
     },
@@ -99,6 +106,7 @@ exports[`array > required constraint > required: valid 1`] = `[]`;
 exports[`array > unique constraint (default, array values) > array unique: duplicates 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -109,6 +117,7 @@ exports[`array > unique constraint (default, array values) > array unique: dupli
     ],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -126,6 +135,7 @@ exports[`array > unique constraint (default, array values) > array unique: valid
 exports[`array > unique constraint (default, bool values) > boolean unique: duplicates 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -136,6 +146,7 @@ exports[`array > unique constraint (default, bool values) > boolean unique: dupl
     ],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -153,6 +164,7 @@ exports[`array > unique constraint (default, bool values) > boolean unique: vali
 exports[`array > unique constraint (default, numeric values) > numeric unique: duplicates 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -163,6 +175,7 @@ exports[`array > unique constraint (default, numeric values) > numeric unique: d
     ],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -180,6 +193,7 @@ exports[`array > unique constraint (default, numeric values) > numeric unique: v
 exports[`array > unique constraint (default, object values) > object unique: duplicates 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -190,6 +204,7 @@ exports[`array > unique constraint (default, object values) > object unique: dup
     ],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -207,6 +222,7 @@ exports[`array > unique constraint (default, object values) > object unique: val
 exports[`array > unique constraint (default, simple values) > simple unique: duplicates 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },
@@ -217,6 +233,7 @@ exports[`array > unique constraint (default, simple values) > simple unique: dup
     ],
   },
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Can't be a duplicate",
     },

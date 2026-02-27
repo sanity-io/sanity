@@ -1,5 +1,3 @@
-import {type Schema} from '@sanity/types'
-
 import {createSchema} from '../../../../schema'
 import {authorDocument} from './author'
 import {bookDocument} from './documents/book'
@@ -36,6 +34,17 @@ export const mockTypes = [
       },
     ],
   },
+  // Document with marks/markDefs fields that is NOT a PTE type
+  // Used to test that empty marks/markDefs are NOT preserved outside of PTE context
+  {
+    name: 'nonPteWithMarksFields',
+    type: 'document',
+    fields: [
+      {name: 'title', type: 'string'},
+      {name: 'marks', type: 'array', of: [{type: 'string'}]},
+      {name: 'markDefs', type: 'array', of: [{type: 'string'}]},
+    ],
+  },
   authorDocument,
   editorDocument,
   postDocument,
@@ -49,4 +58,4 @@ export const mockTypes = [
 export const schema = createSchema({
   name: 'default',
   types: mockTypes,
-}) as Schema
+})

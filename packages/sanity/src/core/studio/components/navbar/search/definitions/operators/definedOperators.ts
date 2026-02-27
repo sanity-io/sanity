@@ -11,8 +11,6 @@ export const definedOperators = {
   notDefined: defineSearchOperator({
     nameKey: 'search.operator.not-defined.name',
     descriptionKey: 'search.operator.not-defined.description',
-
-    i18nKey: 'search.operator.not-defined',
     groqFilter: ({fieldPath}) => (fieldPath ? `!defined(${fieldPath})` : null),
     type: 'notDefined',
   }),

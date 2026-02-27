@@ -1,13 +1,19 @@
-/* eslint-disable camelcase */
-
-import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type ValidationMarker,
+} from '@sanity/types'
 import {useMemo, useState} from 'react'
 
+import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence'
+import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
 import {useCurrentUser} from '../../store'
+import {EMPTY_ARRAY} from '../../util/empty'
 import {createCallbackResolver} from './conditional-property/createCallbackResolver'
 import {createPrepareFormState} from './formState'
-import {type ObjectFormNode, type StateTree} from './types'
+import {type NodeChronologyProps, type ObjectFormNode, type StateTree} from './types'
 import {immutableReconcile} from './utils/immutableReconcile'
 
 /** @internal */
@@ -17,12 +23,13 @@ export type FormState<
 > = ObjectFormNode<T, S>
 
 /** @internal */
-export interface UseFormStateOptions {
+export interface UseFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
   openPath: Path
   focusPath: Path
+  perspective: TargetPerspective
   presence: FormNodePresence[]
   validation: ValidationMarker[]
   fieldGroupState?: StateTree<string> | undefined
@@ -30,6 +37,7 @@ export interface UseFormStateOptions {
   collapsedPaths?: StateTree<boolean> | undefined
   readOnly?: boolean
   changesOpen?: boolean
+  displayInlineChanges?: boolean
 }
 
 /** @internal */
@@ -49,6 +57,9 @@ export function useFormState<
   readOnly: inputReadOnly,
   changesOpen,
   schemaType,
+  perspective,
+  hasUpstreamVersion,
+  displayInlineChanges,
 }: UseFormStateOptions): FormState<T, S> | null {
   // note: feel free to move these state pieces out of this hook
   const currentUser = useCurrentUser()
@@ -119,6 +130,11 @@ export function useFormState<
     inputReadOnly,
   ])
 
+  // if a version is going to be unpublished, we don't want to show the validation errors
+  // in the form
+  const isVersionGoingToUnpublish =
+    documentValue && isGoingToUnpublish(documentValue as SanityDocument)
+
   return useMemo(() => {
     return prepareFormState({
       schemaType,
@@ -133,8 +149,11 @@ export function useFormState<
       hidden,
       currentUser,
       presence,
-      validation,
+      validation: isVersionGoingToUnpublish ? EMPTY_ARRAY : validation,
       changesOpen,
+      perspective,
+      hasUpstreamVersion,
+      displayInlineChanges,
     }) as ObjectFormNode<T, S>
   }, [
     prepareFormState,
@@ -146,11 +165,15 @@ export function useFormState<
     comparisonValue,
     focusPath,
     openPath,
+    perspective,
     readOnly,
     hidden,
     currentUser,
     presence,
+    isVersionGoingToUnpublish,
     validation,
     changesOpen,
+    hasUpstreamVersion,
+    displayInlineChanges,
   ])
 }

@@ -108,7 +108,9 @@ export function FormProvider(props: FormProviderProps) {
     [Field],
   )
   const renderItem = useCallback(
-    ({key, ...itemProps}: Omit<ItemProps, 'renderDefault'>) => <Item key={key} {...itemProps} />,
+    (itemProps: Omit<ItemProps, 'renderDefault'>) => (
+      <Item key={itemProps.inputId} {...itemProps} />
+    ),
     [Item],
   )
   const renderPreview = useCallback(

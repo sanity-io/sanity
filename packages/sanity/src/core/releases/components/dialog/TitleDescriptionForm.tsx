@@ -1,3 +1,4 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -5,11 +6,11 @@ import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type EditableReleaseDocument} from '../../index'
+import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 const MAX_DESCRIPTION_HEIGHT = 200
 
-const TitleInput = styled.input((props) => {
+const TitleTextArea = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
   return css`
     resize: none;
@@ -26,12 +27,12 @@ const TitleInput = styled.input((props) => {
     font-weight: ${font.text.weights.bold};
     font-size: ${font.text.sizes[4].fontSize}px;
     line-height: ${font.text.sizes[4].lineHeight}px;
+    min-height: ${font.text.sizes[4].lineHeight}px;
     margin: 0;
     position: relative;
     z-index: 1;
     display: block;
-    transition: height 500ms;
-    /* NOTE: This is a hack to disable Chrome’s autofill styles */
+    /* NOTE: This is a hack to disable Chrome's autofill styles */
     &:-webkit-autofill,
     &:-webkit-autofill:hover,
     &:-webkit-autofill:focus,
@@ -94,36 +95,59 @@ export function TitleDescriptionForm({
   disabled?: boolean
 }): React.JSX.Element {
   const isReleaseOpen = getIsReleaseOpen(release)
+  const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const descriptionRef = useRef<HTMLTextAreaElement | null>(null)
-
   const [scrollHeight, setScrollHeight] = useState(46)
-  const [value, setValue] = useState((): EditableReleaseDocument => {
-    return {
-      _id: release?._id,
-      metadata: {
-        title: release?.metadata.title,
-        description: release?.metadata.description,
-      },
-    } as const
-  })
   const {t} = useTranslation()
+
+  const {localData, updateLocalData, createFocusHandler, handleBlur} =
+    useReleaseFormOptimisticUpdating({
+      externalValue: release,
+      id: release._id,
+      extractData: useCallback(
+        ({metadata}: EditableReleaseDocument) => ({
+          title: metadata.title,
+          description: metadata.description,
+        }),
+        [],
+      ),
+    })
 
   useEffect(() => {
     // make sure that the text area for the description has the right height initially
     if (descriptionRef.current) {
       setScrollHeight(descriptionRef.current.scrollHeight)
     }
+    // Auto-resize title textarea
+    if (titleRef.current) {
+      titleRef.current.style.height = 'auto'
+      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+    }
   }, [])
 
+  useEffect(() => {
+    // Auto-resize title textarea when value changes
+    if (titleRef.current) {
+      titleRef.current.style.height = 'auto'
+      titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+    }
+  }, [release.metadata.title])
+
   const handleTitleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
       event.preventDefault()
       const title = event.target.value
-      onChange({...value, metadata: {...release.metadata, title}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...release.metadata, title}})
+      updateLocalData({title})
+      onChange({...release, metadata: {...release.metadata, title}})
+
+      // Auto-resize the textarea
+      if (titleRef.current) {
+        titleRef.current.style.height = 'auto'
+        titleRef.current.style.height = `${titleRef.current.scrollHeight}px`
+      }
     },
-    [onChange, release.metadata, value],
+    [onChange, release, updateLocalData],
   )
 
   const handleDescriptionChange = useCallback(
@@ -132,9 +156,9 @@ export function TitleDescriptionForm({
       if (!isReleaseOpen) return
 
       const description = event.target.value
-      onChange({...value, metadata: {...release.metadata, description}})
       // save the values to make input snappier while requests happen in the background
-      setValue({...value, metadata: {...release.metadata, description}})
+      updateLocalData({description})
+      onChange({...release, metadata: {...release.metadata, description}})
 
       /** we must reset the height in order to make sure that if the text area shrinks,
        * that the actual input will change height as well */
@@ -150,16 +174,19 @@ export function TitleDescriptionForm({
 
       setScrollHeight(event.currentTarget.scrollHeight)
     },
-    [isReleaseOpen, onChange, release.metadata, value],
+    [isReleaseOpen, onChange, release, updateLocalData],
   )
 
-  const shouldShowDescription = isReleaseOpen || value.metadata.description
+  const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
-    <Stack space={4}>
-      <TitleInput
+    <Stack space={3}>
+      <TitleTextArea
+        ref={titleRef}
         onChange={handleTitleChange}
-        value={value.metadata.title}
+        onFocus={createFocusHandler('title')}
+        onBlur={handleBlur}
+        value={localData.title}
         placeholder={t('release.placeholder-untitled-release')}
         data-testid="release-form-title"
         readOnly={!isReleaseOpen}
@@ -168,10 +195,12 @@ export function TitleDescriptionForm({
       {shouldShowDescription && (
         <DescriptionTextArea
           ref={descriptionRef}
-          autoFocus={!value}
-          value={value.metadata.description}
+          autoFocus={!localData.title}
+          value={localData.description}
           placeholder={t('release.form.placeholder-describe-release')}
           onChange={handleDescriptionChange}
+          onFocus={createFocusHandler('description')}
+          onBlur={handleBlur}
           style={{
             height: `${scrollHeight}px`,
             maxHeight: MAX_DESCRIPTION_HEIGHT,

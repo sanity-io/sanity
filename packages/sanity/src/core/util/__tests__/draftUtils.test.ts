@@ -14,13 +14,30 @@ import {
 test('collate()', () => {
   const foo = {_type: 'foo', _id: 'foo'}
   const fooDraft = {_type: 'foo', _id: 'drafts.foo'}
+  const fooAlphaVersion = {_type: 'foo', _id: 'versions.alpha.foo'}
+  const fooBetaVersion = {_type: 'foo', _id: 'versions.beta.foo'}
   const barDraft = {_type: 'foo', _id: 'drafts.bar'}
   const baz = {_type: 'foo', _id: 'baz'}
 
-  expect(collate([foo, fooDraft, barDraft, baz])).toEqual([
-    {type: 'foo', id: 'foo', draft: fooDraft, published: foo},
-    {type: 'foo', id: 'bar', draft: barDraft},
-    {type: 'foo', id: 'baz', published: baz},
+  expect(collate([foo, fooDraft, barDraft, baz, fooAlphaVersion, fooBetaVersion])).toEqual([
+    {
+      type: 'foo',
+      id: 'foo',
+      draft: fooDraft,
+      published: foo,
+      versions: [
+        {
+          _id: 'versions.alpha.foo',
+          _type: 'foo',
+        },
+        {
+          _id: 'versions.beta.foo',
+          _type: 'foo',
+        },
+      ],
+    },
+    {type: 'foo', id: 'bar', draft: barDraft, versions: []},
+    {type: 'foo', id: 'baz', published: baz, versions: []},
   ])
 })
 

@@ -1,12 +1,13 @@
 import {
+  Box,
   // eslint-disable-next-line no-restricted-imports
   Button,
   Flex,
   Skeleton,
   Text,
 } from '@sanity/ui'
-import {motion} from 'framer-motion'
-import {useEffect, useLayoutEffect, useMemo, useState} from 'react'
+import {AnimatePresence, motion} from 'motion/react'
+import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
   isPublishedPerspective,
@@ -32,6 +33,15 @@ const RELATIVE_TIME_OPTIONS = {
 } as const
 
 const MotionButton = motion.create(Button)
+const MotionBox = motion.create(Box)
+
+function getDocumentStatusKey(timelineKey: string): string {
+  // the status line should show a different label than timeline changes view
+  if (timelineKey === 'timeline.operation.published') {
+    return 'document-status.last-published'
+  }
+  return timelineKey
+}
 
 const ButtonSkeleton = () => {
   return (
@@ -61,7 +71,8 @@ const DocumentStatusButton = ({
     <MotionButton
       data-testid="pane-footer-document-status"
       animate={{opacity: 1}}
-      initial={{opacity: 0}} // Width of the skeleton
+      initial={{opacity: 0}}
+      exit={{opacity: 0}}
       mode="bleed"
       onClick={inspector?.name === HISTORY_INSPECTOR_NAME ? onHistoryClose : onHistoryOpen}
       padding={2}
@@ -85,40 +96,34 @@ const FallbackStatus = () => {
   const {editState} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
 
-  const status = useMemo(() => {
+  function getStatus() {
     if (isPublishedPerspective(selectedPerspective) && editState?.published?._updatedAt) {
       return {
-        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion,
+        translationKey: TIMELINE_ITEM_I18N_KEY_MAPPING.published.createDocumentVersion,
         timestamp: editState.published._updatedAt,
       }
     }
     if (editState?.version?._updatedAt) {
       return {
         translationKey:
-          editState?.version?._updatedAt === editState?.version?._createdAt
-            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
-            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+          editState.version._updatedAt === editState.version._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.version.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.version.editDocumentVersion,
         timestamp: editState.version._updatedAt,
       }
     }
     if (editState?.draft?._updatedAt) {
       return {
         translationKey:
-          editState?.draft?._updatedAt === editState?.draft?._createdAt
-            ? TIMELINE_ITEM_I18N_KEY_MAPPING.createDocumentVersion
-            : TIMELINE_ITEM_I18N_KEY_MAPPING.editDocumentVersion,
+          editState.draft._updatedAt === editState.draft._createdAt
+            ? TIMELINE_ITEM_I18N_KEY_MAPPING.draft.createDocumentVersion
+            : TIMELINE_ITEM_I18N_KEY_MAPPING.draft.editDocumentVersion,
         timestamp: editState.draft._updatedAt,
       }
     }
     return null
-  }, [
-    selectedPerspective,
-    editState?.published?._updatedAt,
-    editState?.version?._updatedAt,
-    editState?.version?._createdAt,
-    editState?.draft?._updatedAt,
-    editState?.draft?._createdAt,
-  ])
+  }
+  const status = getStatus()
   if (!status) {
     return null
   }
@@ -145,7 +150,9 @@ const EventsStatus = () => {
   return (
     <DocumentStatusButton
       author={event.author}
-      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING[event.type]}
+      translationKey={getDocumentStatusKey(
+        TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type],
+      )}
       timestamp={event.timestamp}
     />
   )
@@ -168,7 +175,7 @@ const TimelineStatus = () => {
   return (
     <DocumentStatusButton
       author={author}
-      translationKey={TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type]}
+      translationKey={getDocumentStatusKey(TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type])}
       timestamp={event.endTimestamp}
     />
   )
@@ -214,13 +221,20 @@ export function DocumentStatusLine() {
     }
   }, [syncState.isSyncing, lastUpdated])
 
-  if (status) {
-    return <DocumentStatusPulse status={status || undefined} />
-  }
-
-  if (eventsEnabled) {
-    return <EventsStatus />
-  }
-
-  return <TimelineStatus />
+  return (
+    <AnimatePresence>
+      {status ? (
+        <MotionBox
+          paddingLeft={2}
+          animate={{opacity: 1}}
+          initial={{opacity: 0}}
+          exit={{opacity: 0}}
+        >
+          <DocumentStatusPulse status={status || undefined} />
+        </MotionBox>
+      ) : (
+        <>{eventsEnabled ? <EventsStatus /> : <TimelineStatus />}</>
+      )}
+    </AnimatePresence>
+  )
 }

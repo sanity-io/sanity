@@ -1,0 +1,148 @@
+name: Release @next
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release-next:
+    concurrency:
+      group: release_next
+
+    # this runs in main, and we want to skip running it when release PRs are merged
+    # format of the commit message is specified in lerna.json
+    if: >
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+    permissions:
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      # Publish packages to npm under the `next` tag on new commits to main.
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Bump canary versions
+        # Note: ubuntu-latest ships with lerna installed on the system
+        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
+        # It's important that we call lerna using npx in the command below so we get the
+        # locally installed lerna instead of the one installed on the system
+        run: |
+          npx lerna version \
+            --conventional-commits \
+            --conventional-prerelease \
+            --preid=next \
+            --force-publish \
+            --no-git-tag-version \
+            --exact \
+            --yes
+
+      - name: Rewrite version
+        # Q: Why are we doing this?
+        # A:
+        # lerna version does not support --canary (for some reason, it's only supported for lerna publish)
+        # When publishing tagged next releases, we want the version to be:
+        # <conventional-commit-bump>.<commits-ahead>+<commit-hash>
+        # However, the lerna version command we run above does not append the commit hash, and it
+        # always sets the <commits-ahead> part to "0"
+        # So, in order to get the desired target version, we need to post-process package versions
+        # by manually getting the number of commits in the branch since last release, and replace the "0"
+        # with the correct number of commits ahead, and finally append the commit hash.
+        run: |
+          COMMIT_COUNT="0" # fallback refcount value
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
+          TAG_INFO=$(git describe --tags --long --first-parent)
+
+          if [[ $TAG_INFO =~ ^(.+)-([0-9]+)-g([0-9a-f]+)$ ]]; then
+            COMMIT_COUNT="${BASH_REMATCH[2]}"
+          fi
+
+          echo "COMMITS AHEAD: $COMMIT_COUNT"
+          echo "COMMIT HASH: $COMMIT_HASH"
+
+          for pkg in $(lerna list --all --json | jq -r '.[].location'); do
+            jq --arg commit_count "$COMMIT_COUNT" --arg commit_hash "$COMMIT_HASH" '.version |= sub("\\.0$"; "." + $commit_count + "+"+$commit_hash)' "$pkg/package.json" > "$pkg/package.tmp.json"
+            mv "$pkg/package.tmp.json" "$pkg/package.json"
+          done
+
+      - name: Re-install after version bump
+        run: pnpm install --fix-lockfile
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Publish packages to npm
+        run: pnpm -r publish --tag next --no-git-checks
+        env:
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: Build bundles for staging
+        env:
+          SANITY_INTERNAL_ENV: "staging" # sets the __SANITY_STAGING__ global variable to true in built bundles
+        run: pnpm run build:bundle
+
+      # Note: we need to run this after publish so we get the updated version numbers from npx lerna publish
+      # ideally, the flow should be 1) bump packages using lerna version, 2) upload to module cdn, 3) lerna publish to npm from packages
+      - name: Upload bundles to staging bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next
+
+      - name: Build bundles for production
+        run: pnpm run build:bundle
+
+      - name: Upload bundles to production bucket
+        env:
+          GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+          GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+        run: pnpm bundle-manager publish --tag=next
+
+  notify-on-failure:
+    needs: [release-next]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": ":alert-dot: The workflow \"${{github.workflow}}\" on <${{ github.server_url }}/${{ github.repository }}|${{github.repository}}> failed in branch <${{ github.server_url }}/${{ github.repository }}/tree/${{github.ref_name}}|${{github.ref_name}}> (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run >)"
+            }

@@ -26,14 +26,14 @@ export function createServerStorage({client: _client}: ServerStorageOptions): Se
     const value = await client
       .request<KeyValuePair[]>({
         uri: `/users/me/keyvalue/${keys.join(',')}`,
-        withCredentials: true,
       })
       .catch((error) => {
         console.error('Error fetching data:', error)
         return Array(keys.length).fill(null)
       })
 
-    const keyValuePairs = value.reduce(
+    // there are instances where the valeu might be null
+    const keyValuePairs = (value || []).reduce(
       (acc, next) => {
         if (next?.key) {
           acc[next.key] = next.value
@@ -56,7 +56,6 @@ export function createServerStorage({client: _client}: ServerStorageOptions): Se
         method: 'PUT',
         uri: `/users/me/keyvalue`,
         body: [{key, value: nextValue}],
-        withCredentials: true,
       })
       .then(
         (response) => {

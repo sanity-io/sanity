@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
-
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {flatten, groupBy, isEqual, omit, uniq} from 'lodash'
+import {flatten, groupBy, isEqual, omit, uniq} from 'lodash-es'
 import {nanoid} from 'nanoid'
 import {
   BehaviorSubject,
@@ -32,6 +30,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
+import {documentIdEquals} from '../../../util'
 import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
 import {debugParams$} from '../debugParams'
 import {type UserStore} from '../user'
@@ -58,7 +57,10 @@ export interface PresenceStore {
   /**
    * @internal
    */
-  documentPresence: (documentId: string) => Observable<DocumentPresence[]>
+  documentPresence: (
+    documentId: string,
+    options?: {excludeVersions?: boolean},
+  ) => Observable<DocumentPresence[]>
 
   /**
    * @internal
@@ -95,7 +97,7 @@ const generate = () => nanoid(16)
 function getSessionId() {
   try {
     return window.sessionStorage.getItem(KEY)
-  } catch (err) {
+  } catch {
     // We don't want to fail hard if session storage can't be accessed for some reason
   }
   return null
@@ -104,7 +106,7 @@ function getSessionId() {
 function setSessionId(id: string) {
   try {
     window.sessionStorage.setItem(KEY, id)
-  } catch (err) {
+  } catch {
     // We don't want to fail hard if session storage can't be accessed for some reason
   }
   return id
@@ -183,7 +185,7 @@ export function createPresenceStore(context: {
   const useMock$ = debugPresenceParam$.pipe(
     filter((args) => args.includes('fake_others')),
     tap(() => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
         'Faking other users present in the studio. They will hang out in the document with _type: "presence" and _id: "presence-debug"',
       )
@@ -262,21 +264,18 @@ export function createPresenceStore(context: {
     }),
     withLatestFrom(debugIntrospect$),
     map(([userAndSessions, debugIntrospect]) =>
-      userAndSessions.filter((userAndSession) => {
-        if (debugIntrospect) {
-          return true
-        }
-
-        const isCurrent = userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID)
-
-        return !isCurrent
-      }),
+      userAndSessions.filter(
+        (userAndSession) =>
+          debugIntrospect || !userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID),
+      ),
     ),
     map((userAndSessions) =>
       userAndSessions.map((userAndSession) => ({
         user: userAndSession.user,
         status: 'online',
-        lastActiveAt: userAndSession.sessions.sort()[0]?.lastActiveAt,
+        lastActiveAt: userAndSession.sessions.sort((a, b) =>
+          b.lastActiveAt.localeCompare(a.lastActiveAt),
+        )[0]?.lastActiveAt,
         locations: flatten(
           (userAndSession.sessions || []).map((session) => session.locations || []),
         )
@@ -312,11 +311,27 @@ export function createPresenceStore(context: {
     shareReplay(1),
   )
 
-  // export
-  const documentPresence = (documentId: string): Observable<DocumentPresence[]> => {
+  /**
+   * Returns document presence for the given documennt id
+   * Presence are returned for all versions of the document
+   */
+  const documentPresence = (
+    documentId: string,
+    options?: {excludeVersions?: boolean},
+  ): Observable<DocumentPresence[]> => {
     return allDocumentsPresence$.pipe(
       map((allPresence) =>
-        allPresence.filter((item) => item.documentId === documentId).map((item) => item.presence),
+        allPresence
+          .filter((item) =>
+            options?.excludeVersions
+              ? item.documentId === documentId
+              : documentIdEquals(item.documentId, documentId),
+          )
+          .map((item) => ({
+            ...item.presence,
+            //documentId: getPublishedId(item.documentId),
+            documentId: item.documentId,
+          })),
       ),
       // Only emit if the presence has changed for this document id
       distinctUntilChanged((prev, curr) => isEqual(prev, curr)),

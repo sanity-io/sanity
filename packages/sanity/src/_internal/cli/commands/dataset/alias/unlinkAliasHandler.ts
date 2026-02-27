@@ -67,6 +67,6 @@ export const unlinkAliasHandler: CliCommandAction<UnlinkFlags> = async (args, co
       `Dataset alias ${aliasOutputName} unlinked from ${result.datasetName} successfully`,
     )
   } catch (err) {
-    throw new Error(`Dataset alias unlink failed:\n${err.message}`)
+    throw new Error(`Dataset alias unlink failed:\n${err.message}`, {cause: err})
   }
 }

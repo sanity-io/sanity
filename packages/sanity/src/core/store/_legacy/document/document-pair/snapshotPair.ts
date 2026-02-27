@@ -4,15 +4,22 @@ import {type Observable} from 'rxjs'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
 
 import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
-import {type PairListenerOptions} from '../getPairListener'
-import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
+import {
+  type IdPair,
+  type PendingMutationsEvent,
+  type ReconnectEvent,
+  type WelcomeEvent,
+} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentVersion} from './checkoutPair'
 import {memoizedPair} from './memoizedPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
 // return true if the event comes with a document snapshot
-function isSnapshotEvent(event: BufferedDocumentEvent | ReconnectEvent): event is SnapshotEvent & {
+function isSnapshotEvent(
+  event: BufferedDocumentEvent | ReconnectEvent | WelcomeEvent,
+): event is SnapshotEvent & {
   version: 'published' | 'draft'
 } {
   return event.type === 'snapshot'
@@ -68,7 +75,7 @@ export const snapshotPair = memoize(
     idPair: IdPair,
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
-    pairListenerOptions?: PairListenerOptions,
+    pairListenerOptions?: DocumentStoreExtraOptions,
   ): Observable<SnapshotPair> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled, pairListenerOptions).pipe(
       map(({published, draft, version, transactionsPendingEvents$}): SnapshotPair => {

@@ -26,6 +26,43 @@ export default defineType({
       },
     },
     {
+      name: 'aDateTimeWithDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with switchable display time zone',
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: true,
+      },
+    },
+    {
+      name: 'aDateTimeWithTimezoneSwitchNoDefault',
+      type: 'datetime',
+      title: 'A datetime field with timezone switch but no displayTimeZone',
+      description: 'The timezone switch button should be visible',
+      options: {
+        allowTimeZoneSwitch: true,
+      },
+    },
+    {
+      name: 'aDateTimeWithDisplayTimezoneInAmericaLosAngeles',
+      type: 'datetime',
+      title: 'A datetime field in America/Los_Angeles',
+      options: {
+        displayTimeZone: 'America/Los_Angeles',
+        allowTimeZoneSwitch: false,
+      },
+    },
+    {
+      name: 'aDateTimeWithFixedDisplayTimezone',
+      type: 'datetime',
+      title: 'A datetime field with fixed display time zone',
+      options: {
+        displayTimeZone: 'Europe/Oslo',
+        allowTimeZoneSwitch: false,
+      },
+    },
+
+    {
       name: 'justARegularStringFieldInBetween',
       type: 'string',
       title: 'Some string',
@@ -90,10 +127,40 @@ export default defineType({
               name: 'date',
               type: 'datetime',
               title: 'A datetime field with custom date format',
+              options: {
+                allowTimeZoneSwitch: true,
+                displayTimeZone: 'Europe/Oslo',
+              },
             },
           ],
         },
       ],
+    },
+    {
+      name: 'datetimesDirectlyInArray',
+      type: 'array',
+      title: 'Datetimes directly in array (for SAPP-3018 testing)',
+      description:
+        'Tests timezone persistence for datetime fields directly in arrays without wrapper objects',
+      of: [
+        {
+          type: 'datetime',
+          options: {
+            displayTimeZone: 'Europe/Oslo',
+            allowTimeZoneSwitch: true,
+          },
+        },
+      ],
+    },
+    {
+      name: 'dateWithCustomLocale',
+      type: 'datetime',
+      title: 'A datetime field with custom locale',
+      options: {
+        dateFormat: 'LL',
+        timeFormat: 'LT',
+        timeStep: 15,
+      },
     },
   ],
 })

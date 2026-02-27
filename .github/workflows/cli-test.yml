@@ -5,7 +5,7 @@ on:
   pull_request:
   # Build on commits pushed to branches without a PR if it's in the allowlist
   push:
-    branches: [next]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -14,18 +14,20 @@ concurrency:
 jobs:
   cli-test:
     timeout-minutes: 60
-    name: CLI Tests (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
+    name: CLI Tests (node ${{ matrix.node }})
+    runs-on: ubuntu-8core
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      GITHUB_JOB_INDEX: ${{ strategy.job-index }} # For uniqueness in integration tests
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For rate limiting with GitHub API
+      SANITY_CLI_API_RATE_LIMIT_BYPASS: ${{ secrets.SANITY_CLI_API_RATE_LIMIT_BYPASS }}
     continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        node: [18, 20, 22]
+        node: [20.19.0, 20, 22.14.0, 22, 24.0.0, 24]
         experimental: [false]
         # include:
         #   - os: windows-latest
@@ -33,48 +35,44 @@ jobs:
         #     experimental: true
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check if this is a release PR or commit
+        # Provide a way to skip running cli tests on release PRs or when the release PR is merged because
+        # the CLI tests will attempt to install the not-yet-released packages from npm
+        id: check_release
+        run: |
+          SKIP="false"
+          if [[ $MESSAGE =~ ^chore\(release\):\ publish\  ]]; then
+            SKIP="true"
+          fi
+          echo "skip=$SKIP" >> $GITHUB_OUTPUT
+        env:
+          MESSAGE: ${{ (github.event_name == 'pull_request' && github.event.pull_request.title) ||  (github.event_name == 'push' && github.event.head_commit.message)  }}
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+        if: steps.check_release.outputs.skip != 'true'
+        with:
+          fetch-depth: 0
+
+      - name: Check if only examples files changed
+        if: steps.check_release.outputs.skip != 'true'
+        id: check_examples
+        uses: ./.github/actions/check-path-only
+        with:
+          path: examples/
+
+      - uses: ./.github/actions/setup
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
-
-      - name: Install project dependencies
-        run: pnpm install
-
       - name: Build CLI
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
+        if: steps.check_release.outputs.skip != 'true' && steps.check_examples.outputs.path_only != 'true'
         id: test
         run: pnpm test:vitest --retry 4 --silent --project=@sanity/cli
         env:
-          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
+          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to main
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}

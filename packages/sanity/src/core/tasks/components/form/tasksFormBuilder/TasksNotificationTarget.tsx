@@ -1,5 +1,5 @@
 import {isImageSource} from '@sanity/asset-utils'
-import imageUrlBuilder from '@sanity/image-url'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import {useCallback, useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 import {useRouterState} from 'sanity/router'
@@ -7,6 +7,7 @@ import {useRouterState} from 'sanity/router'
 import {isDev} from '../../../../environment'
 import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
 import {useClient} from '../../../../hooks'
+import {usePerspective} from '../../../../perspective/usePerspective'
 import {useWorkspace} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDocumentPreviewValues} from '../../../hooks'
@@ -36,15 +37,17 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     ),
   )
   const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
-  const {title: workspaceTitle, basePath} = useWorkspace()
+  const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
+  const imageBuilder = useMemo(() => createImageUrlBuilder(client), [client])
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 
+  const {perspectiveStack} = usePerspective()
   const {isLoading: previewValuesLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
+    perspectiveStack,
   })
   const targetContentTitle = value?.title || null
   const imageUrl = isImageSource(value?.media)
@@ -62,6 +65,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       workspaceTitle,
       targetContentImageUrl: imageUrl,
       targetContentTitle: targetContentTitle,
+      workspaceName,
     }
   }, [
     context?.notification?.url,
@@ -69,6 +73,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     basePath,
     activeToolName,
     workspaceTitle,
+    workspaceName,
     imageUrl,
     targetContentTitle,
   ])

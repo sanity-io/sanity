@@ -1,9 +1,9 @@
 import arrify from 'arrify'
-import {capitalize, pick} from 'lodash'
+import {capitalize, pick} from 'lodash-es'
 
 import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
-import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
-import {lazyGetter} from './utils'
+import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
+import {hiddenGetter, lazyGetter} from './utils'
 
 export const REF_FIELD = {
   name: '_ref',
@@ -79,13 +79,7 @@ export const CrossDatasetReferenceType = {
     )
 
     lazyGetter(parsed, 'fields', () => {
-      return REFERENCE_FIELDS.map((fieldDef) => {
-        const {name, ...type} = fieldDef
-        return {
-          name: name,
-          type: createMemberType(type),
-        }
-      })
+      return REFERENCE_FIELDS.map((fieldDef) => createMemberType.cachedField(fieldDef))
     })
 
     lazyGetter(parsed, 'to', () => {
@@ -100,6 +94,18 @@ export const CrossDatasetReferenceType = {
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
 
+    lazyGetter(
+      parsed,
+      OWN_PROPS_NAME,
+      () => ({
+        ...subTypeDef,
+        fields: parsed.fields,
+        to: parsed.to,
+        title: parsed.title,
+      }),
+      {enumerable: false, writable: false},
+    )
+
     return subtype(parsed)
 
     function subtype(parent: any) {
@@ -111,9 +117,11 @@ export const CrossDatasetReferenceType = {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` of subtypes of "reference"')
           }
-          const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
+          const ownProps = pick(extensionDef, OVERRIDABLE_FIELDS)
+          const current = Object.assign({}, parent, ownProps, {
             type: parent,
           })
+          hiddenGetter(current, OWN_PROPS_NAME, ownProps)
           return subtype(current)
         },
       }

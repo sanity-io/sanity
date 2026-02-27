@@ -1,6 +1,6 @@
-import {type ReleaseId} from '@sanity/client'
 import {type Path} from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
+import {type ReleaseId} from 'sanity'
 
 import {type RouterPanes, type RouterPaneSibling} from '../../types'
 
@@ -149,7 +149,10 @@ export interface PaneRouterContextValue {
   /**
    * Set the parameters for the current pane
    */
-  setParams: (params: Record<string, string | undefined>) => void
+  setParams: (
+    params: Record<string, string | undefined>,
+    stickyParams?: Record<string, string>,
+  ) => void
 
   /**
    * Set the payload for the current pane

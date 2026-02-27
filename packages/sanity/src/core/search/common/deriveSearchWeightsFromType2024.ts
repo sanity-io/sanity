@@ -33,7 +33,12 @@ const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
 // weights.
 //
 // Some types, such as `slug`, may instead determine weights using a specialised implementation.
-const ignoredBuiltInObjectTypes = ['reference', 'crossDatasetReference', 'slug']
+const ignoredBuiltInObjectTypes = [
+  'reference',
+  'crossDatasetReference',
+  'slug',
+  'globalDocumentReference',
+]
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
   type ? [type, ...getTypeChain(type.type)] : []
@@ -119,7 +124,6 @@ function getLeafWeights(
         }
       } else if (t.jsonType === 'array' && !!t.of?.length) {
         for (const arrayItemType of t.of) {
-          // eslint-disable-next-line no-param-reassign
           recursiveResult = traverse(arrayItemType, `${path}[]`, depth + 1, recursiveResult)
         }
       }
@@ -190,7 +194,7 @@ const getPreviewWeights = (
           weight:
             PREVIEW_FIELD_WEIGHT_MAP[
               selectionKeysBySelectionPath[path] as keyof typeof PREVIEW_FIELD_WEIGHT_MAP
-            ],
+            ] ?? 0,
         },
       ]),
   )
@@ -204,7 +208,8 @@ const getPreviewWeights = (
             path,
             type: 'string',
             weight:
-              PREVIEW_FIELD_WEIGHT_MAP[previewFieldName as keyof typeof PREVIEW_FIELD_WEIGHT_MAP],
+              PREVIEW_FIELD_WEIGHT_MAP[previewFieldName as keyof typeof PREVIEW_FIELD_WEIGHT_MAP] ??
+              0,
           },
         ]
       }),

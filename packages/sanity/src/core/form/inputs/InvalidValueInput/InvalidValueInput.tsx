@@ -1,5 +1,5 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash-es'
 import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'
@@ -120,7 +120,7 @@ export const InvalidValueInput = forwardRef(
             {validTypes.length !== 1 && (
               <Stack as="ul" space={2}>
                 {validTypes.map((validType) => (
-                  <Text as="li" key={validType}>
+                  <Text key={validType} as="li">
                     <code>{validType}</code>
                   </Text>
                 ))}
@@ -149,8 +149,8 @@ export const InvalidValueInput = forwardRef(
               <Stack space={1}>
                 {converters.map((converter) => (
                   <ConvertButton
-                    converter={converter}
                     key={`${converter.from}-${converter.to}`}
+                    converter={converter}
                     onConvert={handleConvertTo}
                     value={value}
                   />

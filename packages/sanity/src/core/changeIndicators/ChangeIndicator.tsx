@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {useLayer} from '@sanity/ui'
+import {Text, useLayer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {
   type ComponentProps,
@@ -7,12 +7,16 @@ import {
   memo,
   type MouseEvent,
   useCallback,
+  useContext,
   useMemo,
   useState,
 } from 'react'
 import deepCompare from 'react-fast-compare'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {EMPTY_ARRAY} from '../util'
+import {pathToString} from '../validation/util/pathToString'
+import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'
 
@@ -23,6 +27,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     hasFocus: boolean
     isChanged?: boolean
     withHoverEffect?: boolean
+    isInteractive?: boolean
   },
 ) {
   const {
@@ -34,6 +39,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     onMouseLeave: onMouseLeaveProp,
     path = EMPTY_ARRAY,
     withHoverEffect,
+    isInteractive,
     ...restProps
   } = props
   const layer = useLayer()
@@ -62,9 +68,10 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     () => ({
       element,
       path: path,
-      isChanged: isChanged,
+      isChanged: Boolean(isChanged),
       hasFocus: hasFocus,
       hasHover: hasHover,
+      hasRevertHover: false,
       zIndex: layer.zIndex,
     }),
     [element, hasFocus, hasHover, isChanged, layer.zIndex, path],
@@ -82,7 +89,13 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
         isChanged={isChanged}
         disabled={disabled}
         withHoverEffect={withHoverEffect}
+        isInteractive={isInteractive}
       >
+        {DEBUG && (
+          <Text size={1} weight="medium">
+            {pathToString(path)}
+          </Text>
+        )}
         {children}
       </ElementWithChangeBar>
     </div>
@@ -102,6 +115,7 @@ export function ChangeIndicator(
   props: ChangeIndicatorProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
   const {children, hasFocus, isChanged, path, withHoverEffect, ...restProps} = props
+  const {isInteractive} = useContext(ReviewChangesContext)
 
   return (
     <ChangeBarWrapper
@@ -110,6 +124,7 @@ export function ChangeIndicator(
       hasFocus={hasFocus}
       isChanged={isChanged}
       withHoverEffect={withHoverEffect}
+      isInteractive={isInteractive}
     >
       {children}
     </ChangeBarWrapper>

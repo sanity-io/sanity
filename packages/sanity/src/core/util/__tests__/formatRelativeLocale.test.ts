@@ -1,4 +1,4 @@
-import {formatRelative} from 'date-fns'
+import {formatRelative} from 'date-fns/formatRelative'
 import {describe, expect, it} from 'vitest'
 
 import {formatRelativeLocale} from '../formatRelativeLocale'

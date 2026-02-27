@@ -3,7 +3,7 @@ import {
   type ConditionalPropertyCallbackContext,
   type CurrentUser,
 } from '@sanity/types'
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {isRecord} from '../../util'
@@ -21,7 +21,7 @@ export function useCheckCondition(
   checkPropertyName: string,
   context: ConditionalPropertyCallbackContext,
 ): boolean {
-  const {currentUser, document, parent, value} = context
+  const {currentUser, document, parent, value, path} = context
 
   return useMemo(() => {
     let isTrueIsh = false
@@ -36,6 +36,7 @@ export function useCheckCondition(
         parent,
         value,
         currentUser,
+        path,
       })
     } catch (err) {
       console.error(
@@ -58,5 +59,5 @@ export function useCheckCondition(
     }
 
     return isTrueIsh
-  }, [checkProperty, document, parent, value, currentUser, checkPropertyName])
+  }, [checkProperty, document, parent, value, currentUser, checkPropertyName, path])
 }

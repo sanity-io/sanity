@@ -6,6 +6,7 @@ import {
   Dialog as UIDialog,
   type DialogProps as UIDialogProps,
   Flex,
+  Text,
 } from '@sanity/ui'
 import {type ComponentProps, forwardRef, type HTMLProps, type ReactNode, type Ref} from 'react'
 import {useTranslation} from 'react-i18next'
@@ -15,6 +16,7 @@ export type DialogProps = Pick<
   UIDialogProps,
   | '__unstable_autoFocus'
   | '__unstable_hideCloseButton'
+  | 'animate'
   | 'contentRef'
   | 'header'
   | 'id'
@@ -33,9 +35,14 @@ export type DialogProps = Pick<
    */
   bodyHeight?: BoxHeight
   children?: ReactNode
+  zOffset?: number
   footer?: {
     cancelButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
     confirmButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
+    /**
+     * Description to be displayed side by side with the buttons.
+     */
+    description?: string
   }
   /**
    * If enabled, removes all default padding from dialog content.
@@ -50,10 +57,12 @@ export type DialogProps = Pick<
  */
 export const Dialog = forwardRef(function Dialog(
   {
+    animate = true,
     bodyHeight,
     children,
     footer,
     padding = true,
+    zOffset,
     ...props
   }: DialogProps & Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
   ref: Ref<HTMLDivElement>,
@@ -63,11 +72,19 @@ export const Dialog = forwardRef(function Dialog(
   return (
     <UIDialog
       {...props}
-      animate
+      animate={animate}
+      zOffset={zOffset}
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex width="full" gap={3} justify="flex-end" padding={3}>
+          <Flex width="full" gap={3} justify="flex-end" padding={3} align="center">
+            {footer?.description && (
+              <Box flex={1} paddingLeft={1}>
+                <Text size={1} muted>
+                  {footer.description}
+                </Text>
+              </Box>
+            )}
             {props.onClose && (
               <UIButton
                 mode="bleed"

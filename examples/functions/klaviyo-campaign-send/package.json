@@ -1,0 +1,29 @@
+{
+  "name": "klaviyo-campaign-send",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "name": "klaviyo-campaign-send",
+    "type": "sanity.function.document",
+    "src": "./functions/klaviyo-campaign-send",
+    "memory": 1,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "update"
+      ],
+      "filter": "_type == 'marketingCampaign' && status == 'ready'",
+      "projection": "{_id, _type, title, email, klaviyoCampaignId}"
+    },
+    "env": {
+      "COMMENT": "KLAVIYO_API_KEY and KLAVIYO_LIST_ID env variables are required to create Klaviyo campaigns",
+      "KLAVIYO_API_KEY": "KLAVIYO_API_KEY",
+      "KLAVIYO_LIST_ID": "KLAVIYO_LIST_ID"
+    }
+  },
+  "exampleInstructions": "Add this configuration to your blueprint config's resources array. Go to README.md for more details."
+}

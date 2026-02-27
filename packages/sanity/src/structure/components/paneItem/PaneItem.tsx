@@ -4,6 +4,7 @@ import {
   type PreviewValue,
   type SanityDocument,
   type SchemaType,
+  type SortOrdering,
 } from '@sanity/types'
 import {Box, type CardProps, Text} from '@sanity/ui'
 import {
@@ -19,6 +20,7 @@ import {
 import {
   type FIXME,
   type GeneralPreviewLayoutKey,
+  getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
   useDocumentPresence,
@@ -37,6 +39,7 @@ interface PaneItemProps {
   icon?: ComponentType<any> | false
   pressed?: boolean
   selected?: boolean
+  sortOrder?: Pick<SortOrdering, 'by'>
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
@@ -69,6 +72,7 @@ export function PaneItem(props: PaneItemProps) {
     pressed,
     schemaType,
     selected,
+    sortOrder,
     title,
     value,
     margin,
@@ -94,6 +98,7 @@ export function PaneItem(props: PaneItemProps) {
           icon={getIconWithFallback(icon, schemaType, DocumentIcon)}
           layout={layout}
           schemaType={schemaType}
+          sortOrder={sortOrder}
           value={value}
           presence={documentPresence}
         />
@@ -121,6 +126,7 @@ export function PaneItem(props: PaneItemProps) {
     icon,
     layout,
     schemaType,
+    sortOrder,
     title,
     value,
     documentPresence,
@@ -181,7 +187,7 @@ export function PaneItem(props: PaneItemProps) {
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {
   const {documentId, documentType} = props
   // Preload the edit state for the document, and keep it alive until mouse leave
-  useEditState(documentId, documentType)
+  useEditState(getPublishedId(documentId), documentType)
 
   return null
 }

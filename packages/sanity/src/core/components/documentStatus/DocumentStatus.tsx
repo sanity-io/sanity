@@ -1,21 +1,23 @@
 import {type PreviewValue, type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
-import {type VersionsRecord} from '../../preview/utils/getPreviewStateObservable'
+import {type TargetPerspective} from '../../perspective/types'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   ReleaseAvatar,
   useActiveReleases,
+  type VersionInfoDocumentStub,
 } from '../../releases'
+import {LATEST, PUBLISHED} from '../../releases/util/const'
+import {useWorkspace} from '../../studio/workspace'
 
 interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   published?: PreviewValue | Partial<SanityDocument> | null
-  versions?: VersionsRecord | Record<string, {snapshot: DocumentStatusProps['draft']}>
+  versions?: Record<string, VersionInfoDocumentStub | undefined>
   singleLine?: boolean
 }
 
@@ -34,6 +36,12 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
   const versionsList = useMemo(() => Object.entries(versions ?? {}), [versions])
   const {t} = useTranslation()
 
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
@@ -46,28 +54,34 @@ export function DocumentStatus({draft, published, versions, singleLine}: Documen
           title={t('release.chip.published')}
           mode="published"
           timestamp={published._updatedAt}
-          tone={'positive'}
+          release={PUBLISHED}
         />
       )}
-      {draft && (
+      {isDraftModelEnabled && draft && (
         <VersionStatus
           title={t('release.chip.draft')}
           mode="draft"
           timestamp={draft._updatedAt}
-          tone="caution"
+          release={LATEST}
         />
       )}
-      {versionsList.map(([versionName, {snapshot}]) => {
+      {versionsList.map(([versionName, snapshot]) => {
+        if (!snapshot) {
+          return null
+        }
         const release = releases?.find(
           (r) => getReleaseIdFromReleaseDocumentId(r._id) === versionName,
         )
+        if (!release) {
+          return null
+        }
         return (
           <VersionStatus
             key={versionName}
-            mode={snapshot?._updatedAt === snapshot?._createdAt ? 'created' : 'edited'}
-            title={release?.metadata.title}
+            mode={snapshot._updatedAt === snapshot._createdAt ? 'created' : 'edited'}
+            title={release?.metadata.title || t('release.placeholder-untitled-release')}
             timestamp={snapshot?._updatedAt}
-            tone={release ? getReleaseTone(release) : 'default'}
+            release={release}
           />
         )
       })}
@@ -79,7 +93,7 @@ type Mode = 'edited' | 'created' | 'draft' | 'published'
 
 const labels: Record<Mode, string> = {
   draft: 'document-status.edited',
-  published: 'document-status.date',
+  published: 'document-status.published',
   edited: 'document-status.edited',
   created: 'document-status.created',
 }
@@ -88,12 +102,12 @@ const VersionStatus = ({
   title,
   timestamp,
   mode,
-  tone,
+  release,
 }: {
-  title: string | undefined
+  title: string
   mode: Mode
   timestamp?: string
-  tone: BadgeTone
+  release: TargetPerspective
 }) => {
   const {t} = useTranslation()
 
@@ -104,9 +118,9 @@ const VersionStatus = ({
 
   return (
     <Flex align="center" gap={2}>
-      <ReleaseAvatar tone={tone} padding={0} />
+      <ReleaseAvatar release={release} padding={0} />
       <Text size={1}>
-        {title || t('release.placeholder-untitled-release')}{' '}
+        {title} -{' '}
         <span style={{color: 'var(--card-muted-fg-color)'}}>
           {t(labels[mode], {date: relativeTime})}
         </span>

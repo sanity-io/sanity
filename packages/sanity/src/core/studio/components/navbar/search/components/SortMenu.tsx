@@ -1,6 +1,6 @@
 import {SortIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback, useId, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -86,12 +86,12 @@ export function SortMenu() {
             <Menu>
               {menuOrderings.map((item, index) => {
                 if (isSearchDivider(item)) {
-                  // eslint-disable-next-line react/no-array-index-key
+                  // oxlint-disable-next-line no-array-index-key
                   return <MenuDivider key={index} />
                 }
                 return (
                   <CustomMenuItem
-                    // eslint-disable-next-line react/no-array-index-key
+                    // oxlint-disable-next-line no-array-index-key
                     key={index}
                     ordering={item}
                   />

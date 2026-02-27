@@ -1,5 +1,4 @@
 import {getIt, type MiddlewareResponse} from 'get-it'
-// eslint-disable-next-line import/extensions
 import {keepAlive, promise} from 'get-it/middleware'
 
 import debug from './debug'
@@ -10,7 +9,7 @@ const READ_TIMEOUT = 3 * 60 * 1000 // 3 minutes
 
 const request = getIt([keepAlive(), promise()])
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line no-explicit-any
 async function downloadDocument(url: string): Promise<any> {
   const response = await withRetry<MiddlewareResponse>(() =>
     request({

@@ -1,0 +1,37 @@
+{
+  "name": "movies-studio",
+  "version": "3.92.0",
+  "private": true,
+  "description": "Content studio running with schema from the moviedb init template",
+  "keywords": [
+    "cms",
+    "content",
+    "headless",
+    "movies-studio",
+    "realtime",
+    "sanity"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "examples/studios/movies-studio"
+  },
+  "main": "package.json",
+  "scripts": {
+    "clean": "rimraf lib dest",
+    "start": "sanity dev --port 3334"
+  },
+  "dependencies": {
+    "@sanity/google-maps-input": "^4.2.1",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  }
+}

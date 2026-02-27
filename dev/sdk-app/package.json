@@ -1,0 +1,28 @@
+{
+  "name": "example-sdk-app",
+  "version": "5.12.0",
+  "private": true,
+  "keywords": [
+    "sanity"
+  ],
+  "license": "UNLICENSED",
+  "main": "package.json",
+  "scripts": {
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "dev": "sanity dev",
+    "start": "sanity start"
+  },
+  "dependencies": {
+    "@sanity/sdk": "^2.5.0",
+    "@sanity/sdk-react": "^2.5.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10",
+    "sanity": "workspace:"
+  }
+}

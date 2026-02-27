@@ -49,7 +49,7 @@ export default {
       authorName: 'author.name',
       publicationYear: 'publicationYear',
     },
-    prepare(thesis, options = {}) {
+    prepare(thesis) {
       return Object.assign({}, thesis, {
         title: thesis.title,
         subtitle: formatSubtitle(thesis),

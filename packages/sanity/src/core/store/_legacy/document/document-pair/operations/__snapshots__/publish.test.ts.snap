@@ -5,6 +5,7 @@ exports[`publish > execute > calls createOrReplace with _revision_lock_pseudo_fi
   "listen": [],
   "observable": {
     "action": [],
+    "create": [],
     "fetch": [],
     "getDocuments": [],
     "listen": [],
@@ -61,6 +62,7 @@ exports[`publish > execute > removes the \`_updatedAt\` field 1`] = `
   "listen": [],
   "observable": {
     "action": [],
+    "create": [],
     "fetch": [],
     "getDocuments": [],
     "listen": [],
@@ -107,6 +109,7 @@ exports[`publish > execute > takes in any and strengthens references where _stre
   "listen": [],
   "observable": {
     "action": [],
+    "create": [],
     "fetch": [],
     "getDocuments": [],
     "listen": [],

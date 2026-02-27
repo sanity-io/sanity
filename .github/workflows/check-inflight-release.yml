@@ -1,0 +1,66 @@
+name: Update in-flight release status checks
+
+on:
+  pull_request:
+    # synchronize is needed for check-pr-release-status
+    types: [opened, closed, reopened, ready_for_review, converted_to_draft, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  update-release-status:
+    name: "Update status checks for open PRs"
+    runs-on: ubuntu-latest
+
+    if: |
+      (github.head_ref == 'ci/release-main' &&
+        (github.event.action == 'ready_for_review' || github.event.action == 'converted_to_draft'))
+      || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'ci/release-main')
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Update in-flight release status check for open PRs
+        run: |
+          pnpm --silent release-notes status-check-prs
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+  check-pr-release-status:
+    runs-on: ubuntu-latest
+    name: "Update status check for PR"
+
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Check if there is an in-flight release
+        run: |
+          pnpm --silent release-notes status-check-commit \
+            --commit=${{ github.event.pull_request.head.sha }} \
+            --pr=${{ github.event.pull_request.number }}
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

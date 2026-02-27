@@ -61,6 +61,6 @@ export const createAliasHandler: CliCommandAction = async (args, context) => {
       } successfully`,
     )
   } catch (err) {
-    throw new Error(`Dataset alias creation failed:\n${err.message}`)
+    throw new Error(`Dataset alias creation failed:\n${err.message}`, {cause: err})
   }
 }

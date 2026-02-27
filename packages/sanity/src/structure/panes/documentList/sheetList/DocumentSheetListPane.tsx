@@ -1,6 +1,3 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-table and react compiler: https://github.com/TanStack/table/issues/5567
-
 import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
@@ -99,13 +96,13 @@ function DocumentSheetListPaneInner({
   const renderRow = useCallback((row: Row<SanityDocument>) => {
     return (
       <Box
-        as="tr"
         key={row.original._id + row.id}
+        as="tr"
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
       >
         {row.getVisibleCells().map((cell) => (
-          <SheetListCell {...cell} key={row.original._id + cell.id} />
+          <SheetListCell key={row.original._id + cell.id} {...cell} />
         ))}
       </Box>
     )
@@ -128,7 +125,7 @@ function DocumentSheetListPaneInner({
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <Box as="tr" key={headerGroup.id}>
+                <Box key={headerGroup.id} as="tr">
                   {headerGroup.headers.map((header) => (
                     <DocumentSheetListHeader
                       key={header.id}

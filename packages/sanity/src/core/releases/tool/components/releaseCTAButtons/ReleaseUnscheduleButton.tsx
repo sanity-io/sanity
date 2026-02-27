@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {CloseCircleIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text, useToast} from '@sanity/ui'
@@ -7,7 +8,6 @@ import {Button, Dialog} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {UnscheduledRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {type ReleaseDocument} from '../../../index'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {type DocumentInRelease} from '../../detail/useBundleDocuments'
 
@@ -25,45 +25,40 @@ export const ReleaseUnscheduleButton = ({
   const toast = useToast()
   const {unschedule} = useReleaseOperations()
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   const telemetry = useTelemetry()
   const [status, setStatus] = useState<'idle' | 'confirm' | 'unscheduling'>('idle')
 
   const handleConfirmSchedule = useCallback(async () => {
-    try {
+    // The run().catch().finally() syntax instead of try/catch/finally is because of the React Compiler not fully supporting the syntax yet
+    const run = async () => {
       setStatus('unscheduling')
       await unschedule(release._id)
       telemetry.log(UnscheduledRelease)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.unschedule.success"
-              values={{title: release.metadata.title}}
-            />
-          </Text>
-        ),
-      })
-    } catch (schedulingError) {
-      toast.push({
-        status: 'error',
-        title: (
-          <Text muted size={1}>
-            <Translate
-              t={t}
-              i18nKey="toast.unschedule.error"
-              values={{title: release.metadata.title, error: schedulingError.message}}
-            />
-          </Text>
-        ),
-      })
-      console.error(schedulingError)
-    } finally {
-      setStatus('idle')
     }
-  }, [unschedule, release._id, release.metadata.title, telemetry, toast, t])
+    await run()
+      .catch((schedulingError) => {
+        toast.push({
+          status: 'error',
+          title: (
+            <Text muted size={1}>
+              <Translate
+                t={t}
+                i18nKey="toast.unschedule.error"
+                values={{
+                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+                  error: schedulingError.message,
+                }}
+              />
+            </Text>
+          ),
+        })
+        console.error(schedulingError)
+      })
+      .finally(() => {
+        setStatus('idle')
+      })
+  }, [unschedule, release._id, release.metadata.title, telemetry, toast, t, tCore])
 
   const confirmScheduleDialog = useMemo(() => {
     if (status === 'idle') return null
@@ -92,7 +87,7 @@ export const ReleaseUnscheduleButton = ({
               t={t}
               i18nKey="unschedule-dialog.confirm-description"
               values={{
-                title: release.metadata.title,
+                title: release.metadata.title || tCore('release.placeholder-untitled-release'),
                 documentsLength: documents.length,
                 count: documents.length,
               }}
@@ -101,7 +96,7 @@ export const ReleaseUnscheduleButton = ({
         </Text>
       </Dialog>
     )
-  }, [release.metadata.title, documents.length, handleConfirmSchedule, status, t])
+  }, [release.metadata.title, documents.length, handleConfirmSchedule, status, t, tCore])
 
   return (
     <>

@@ -1,6 +1,6 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
-import path from 'node:path'
+import path, {dirname} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
 import {globSync} from 'glob'
 
@@ -9,7 +9,10 @@ interface LernaConfig {
 }
 
 const config: LernaConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', '..', 'lerna.json'), 'utf8'),
+  fs.readFileSync(
+    path.join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'lerna.json'),
+    'utf8',
+  ),
 )
 
 if (!('packages' in config) || !Array.isArray(config.packages)) {

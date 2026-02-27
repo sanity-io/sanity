@@ -1,9 +1,9 @@
-import {range} from 'lodash'
+import {range} from 'lodash-es'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 import {FieldPresence, type ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
 
 export const CustomInputWithDefaultPresence = forwardRef(function CustomInputWithDefaultPresence(
-  props: ObjectInputProps<Record<string, any>>,
+  props: ObjectInputProps,
   ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {elementProps, onPathFocus, value, onChange, presence, readOnly, schemaType} = props

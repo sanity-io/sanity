@@ -1,9 +1,6 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
 import {Box} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
-import {AnimatePresence} from 'framer-motion'
+import {AnimatePresence} from 'motion/react'
 import {useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 

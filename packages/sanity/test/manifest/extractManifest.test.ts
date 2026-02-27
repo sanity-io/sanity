@@ -2,10 +2,37 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
-import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'
-import {createSchema} from '../../src/core'
+import {
+  extractCreateWorkspaceManifest,
+  extractManifestSchemaTypes,
+} from '../../src/_internal/manifest/extractWorkspaceManifest'
+import {createSchema, createWorkspaceFromConfig} from '../../src/core'
 
 describe('Extract studio manifest', () => {
+  describe('extract workspace config', () => {
+    test('should extract workspace config', async () => {
+      const projectId = 'ppsg7ml5'
+      const dataset = 'production'
+
+      const workspaceConfig = await createWorkspaceFromConfig({
+        projectId,
+        dataset,
+        name: 'default',
+        mediaLibrary: {
+          enabled: true,
+          libraryId: undefined,
+        },
+      })
+
+      const extracted = extractCreateWorkspaceManifest(workspaceConfig)
+      expect(extracted).toMatchObject({
+        name: 'default',
+        projectId,
+        dataset,
+        mediaLibrary: {enabled: true, libraryId: undefined},
+      })
+    })
+  })
   describe('serialize schema for manifest', () => {
     test('extracted schema should only include user defined types (and no built-in types)', () => {
       const documentType = 'basic'
@@ -81,6 +108,7 @@ describe('Extract studio manifest', () => {
               reason: 'old',
             },
             options: {
+              // @ts-expect-error - this is a test
               custom: 'value',
             },
             initialValue: {title: 'Default'},
@@ -144,12 +172,12 @@ describe('Extract studio manifest', () => {
     test('schema should include most userland properties', () => {
       const documentType = 'basic'
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       const recursiveObject: any = {
         repeat: 'string',
       }
       recursiveObject.recurse = recursiveObject
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line no-explicit-any
       const customization: any = {
         recursiveObject, // this one will be cut off at max-depth
         serializableProp: 'dummy',
@@ -819,6 +847,21 @@ describe('Extract studio manifest', () => {
                 ],
               }),
               defineField({
+                type: 'globalDocumentReference',
+                name: 'globalRef',
+                to: [
+                  {
+                    type: documentType,
+                    preview: {
+                      select: {title: 'title'},
+                    },
+                  },
+                ],
+                resourceId: 'a.b',
+                resourceType: 'dataset',
+                weak: true,
+              }),
+              defineField({
                 title: 'Reference array',
                 name: 'refArray',
                 type: 'array',
@@ -860,6 +903,21 @@ describe('Extract studio manifest', () => {
                 },
               },
             ],
+          },
+          {
+            type: 'globalDocumentReference',
+            name: 'globalRef',
+            weak: true,
+            to: [
+              {
+                type: documentType,
+                preview: {
+                  select: {title: 'title'},
+                },
+              },
+            ],
+            resourceId: 'a.b',
+            resourceType: 'dataset',
           },
           {
             name: 'refArray',
@@ -985,6 +1043,64 @@ describe('Extract studio manifest', () => {
         name: 'basic-document',
         type: 'document',
       })
+    })
+
+    test('should use the inline type, not the global type for the array.of name-conflicting inline array object items', () => {
+      const documentType = 'basic-document'
+      const schema = createSchema({
+        name: 'test',
+        types: [
+          defineType({
+            type: 'object',
+            name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
+            fields: [{name: 'number', type: 'number'}],
+          }),
+          defineType({
+            name: documentType,
+            type: 'document',
+            fields: [
+              defineField({
+                name: 'conflictingInlineObjectNameArray',
+                type: 'array',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    // this is the type name as the object type above, but it is a different type, since this is an inline array item object def
+                    name: 'reusedObjectName',
+                    fields: [{name: 'string', type: 'string'}],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      })
+
+      const extracted = extractManifestSchemaTypes(schema)
+      expect(extracted).toEqual([
+        {
+          type: 'object',
+          name: 'reusedObjectName', // this is the same as the item in conflictingInlineObjectNameArray below, but it has different fields
+          fields: [{name: 'number', type: 'number'}],
+        },
+        {
+          name: documentType,
+          type: 'document',
+          fields: [
+            {
+              name: 'conflictingInlineObjectNameArray',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'reusedObjectName',
+                  fields: [{name: 'string', type: 'string'}],
+                },
+              ],
+            },
+          ],
+        },
+      ])
     })
   })
 })

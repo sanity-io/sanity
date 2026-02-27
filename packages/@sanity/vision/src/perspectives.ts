@@ -1,4 +1,14 @@
-export const SUPPORTED_PERSPECTIVES = ['pinnedRelease', 'raw', 'published', 'drafts'] as const
+import {type ClientPerspective} from '@sanity/client'
+import isEqual from 'react-fast-compare'
+import {type PerspectiveContextValue, type PerspectiveStack} from 'sanity'
+
+export const SUPPORTED_PERSPECTIVES = [
+  'pinnedRelease',
+  'scheduledDrafts',
+  'raw',
+  'published',
+  'drafts',
+] as const
 
 export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
 
@@ -8,9 +18,10 @@ export type SupportedPerspective = (typeof SUPPORTED_PERSPECTIVES)[number]
  * interact with data.
  *
  * For example, the `pinnedRelease` virtual perspective is transformed to the real perspective
- * currently pinned in Studio.
+ * currently pinned in Studio, and `scheduledDrafts` is transformed to a stack of all scheduled
+ * draft release IDs.
  */
-export const VIRTUAL_PERSPECTIVES = ['pinnedRelease'] as const
+export const VIRTUAL_PERSPECTIVES = ['pinnedRelease', 'scheduledDrafts'] as const
 
 export type VirtualPerspective = (typeof VIRTUAL_PERSPECTIVES)[number]
 
@@ -25,4 +36,37 @@ export function isVirtualPerspective(
     typeof maybeVirtualPerspective === 'string' &&
     VIRTUAL_PERSPECTIVES.includes(maybeVirtualPerspective as VirtualPerspective)
   )
+}
+
+export function hasPinnedPerspective({selectedPerspectiveName}: PerspectiveContextValue): boolean {
+  return typeof selectedPerspectiveName !== 'undefined'
+}
+
+export function hasPinnedPerspectiveChanged(
+  previous: PerspectiveContextValue,
+  next: PerspectiveContextValue,
+): boolean {
+  const hasPerspectiveStackChanged = !isEqual(previous.perspectiveStack, next.perspectiveStack)
+
+  return (
+    previous.selectedPerspectiveName !== next.selectedPerspectiveName || hasPerspectiveStackChanged
+  )
+}
+
+export function getActivePerspective({
+  visionPerspective,
+  perspectiveStack,
+  scheduledDraftsStack,
+}: {
+  visionPerspective: ClientPerspective | SupportedPerspective | undefined
+  perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  scheduledDraftsStack?: PerspectiveStack
+}): ClientPerspective | undefined {
+  if (visionPerspective === 'pinnedRelease') {
+    return perspectiveStack
+  }
+  if (visionPerspective === 'scheduledDrafts') {
+    return scheduledDraftsStack
+  }
+  return visionPerspective
 }

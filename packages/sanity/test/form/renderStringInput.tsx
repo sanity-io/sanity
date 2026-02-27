@@ -1,6 +1,7 @@
 import {type FieldDefinition, type StringSchemaType} from '@sanity/types'
 
 import {type PrimitiveInputElementProps, type StringInputProps} from '../../src/core'
+import {prepareDiffProps} from '../../src/core/form/store/formState'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
 import {type TestRenderProps} from './types'
 
@@ -29,10 +30,15 @@ export async function renderStringInput(options: {
         ...elementProps,
         value: value as string,
       },
-      changed: false,
       schemaType: schemaType as StringSchemaType,
       value: value as string,
       renderDefault: noopRenderDefault,
+      ...prepareDiffProps({
+        schemaType,
+        comparisonValue: value,
+        hasUpstreamVersion: false,
+      }),
+      changed: false,
     }
   }
 

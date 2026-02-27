@@ -2,8 +2,8 @@ import {useEffect, useMemo, useState} from 'react'
 
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
-import {useSanityCreateConfig} from '../context/useSanityCreateConfig'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
+import {useAppIdCache} from './AppIdCacheProvider'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
 
 export interface ResolvedStudioApp {
@@ -16,9 +16,12 @@ export interface ResolvedStudioApp {
  *
  * @internal
  */
-export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioApp {
+export function useStudioAppIdStore(config: {
+  enabled: boolean
+  fallbackStudioOrigin?: string
+}): ResolvedStudioApp {
   const client = useClient({apiVersion: '2024-09-01'})
-  const config = useSanityCreateConfig()
+  const cache = useAppIdCache()
   const {projectId} = useSource()
 
   const appIdFetcher: AppIdFetcher = useMemo(() => {
@@ -34,7 +37,7 @@ export function useStudioAppIdStore(cache: AppIdCache): ResolvedStudioApp {
     projectId,
     cache,
     appIdFetcher,
-    enabled: config.startInCreateEnabled,
+    enabled: config.enabled,
   })
 }
 
@@ -60,11 +63,10 @@ export function useStudioAppIdStoreInner(props: {
       try {
         const entry = await cache.get({projectId, appIdFetcher})
         if (mounted) setStudioApp(entry)
-      } catch (err) {
+      } catch {
         if (mounted) setStudioApp(undefined)
-      } finally {
-        if (mounted) setLoading(false)
       }
+      if (mounted) setLoading(false)
     }
 
     if (enabled) {

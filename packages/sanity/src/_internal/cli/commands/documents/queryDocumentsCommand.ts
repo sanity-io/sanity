@@ -101,13 +101,12 @@ export default {
 
       output.print(pretty ? colorizeJson(docs, chalk) : JSON.stringify(docs, null, 2))
     } catch (err) {
-      throw new Error(`Failed to run query:\n${err.message}`)
+      throw new Error(`Failed to run query:\n${err.message}`, {cause: err})
     }
   },
 }
 
 function parseCliFlags(args: CliCommandArguments<CliQueryCommandFlags>) {
-  // eslint-disable-next-line no-process-env
   const fallbackApiVersion = process.env.SANITY_CLI_QUERY_API_VERSION
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .option('pretty', {type: 'boolean', default: false})

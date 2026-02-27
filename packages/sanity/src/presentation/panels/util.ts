@@ -44,7 +44,6 @@ export function getNextWidths(
   let pivotPanel = delta < 0 ? panelBefore : panelAfter
   let index = panels.findIndex((panel) => panel.id === pivotPanel.id)
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const panel = panels[index]
     const width = widths[index]
@@ -92,7 +91,6 @@ export function getPanelWidth(panels: PanelElement[], id: string, widths: number
   const index = panels.findIndex((panel) => panel.id === id)
   const width = widths[index]
 
-  // eslint-disable-next-line no-eq-null
   if (width == null) return '0'
 
   return width.toPrecision(10)
@@ -162,7 +160,6 @@ export function validateWidths(
       }
 
       const width = Math.min(
-        // eslint-disable-next-line no-negated-condition
         maxWidth != null ? maxWidth : 100,
         Math.max(minWidth, widths[index] + remainingWidth),
       )

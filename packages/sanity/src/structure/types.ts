@@ -8,8 +8,10 @@ import {
   type I18nTextRecord,
   type InitialValueTemplateItem,
   type LocaleSource,
+  type PerspectiveStack,
 } from 'sanity'
 
+import {type _PaneMenuItem} from './components/pane/types'
 import {
   type DefaultDocumentNodeResolver,
   type Intent,
@@ -58,6 +60,14 @@ export interface StructureResolverContext extends ConfigContext {
 
   /** @alpha */
   i18n: LocaleSource
+
+  /**
+   * The stacked array of perspective ids ordered chronologically to represent the state of documents at the given point in time.
+   * It can be used as the perspective param in the client to get the correct view of the documents.
+   * ["published"] | ["drafts"] | ["releaseId2", "releaseId1", "drafts"]
+   * See {@link PerspectiveStack}
+   */
+  perspectiveStack: PerspectiveStack
 }
 
 /**
@@ -249,7 +259,7 @@ export {type StructureToolMenuItem}
 export interface PaneMenuItem extends StructureToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
   // currently, they are only used in the `DocumentPaneProvider`
-  isDisabled?: boolean
+  disabled?: _PaneMenuItem['disabled']
   shortcut?: string
   selected?: boolean
   tone?: 'primary' | 'positive' | 'caution' | 'critical'
@@ -295,6 +305,11 @@ export interface DocumentPaneNode extends BaseResolvedPaneNode<'document'> {
   }
   source?: string
   views?: View[]
+  /**
+   * View IDs to open as split panes by default when the document is opened.
+   * Only populated if 2+ valid view IDs are configured.
+   */
+  defaultPanes?: string[]
 }
 
 /** @internal */
@@ -332,6 +347,14 @@ export interface PaneListItem<TParams = unknown> {
 /** @internal */
 export interface PaneListItemDivider {
   type: 'divider'
+  /**
+   * The title of the divider.
+   */
+  title?: string
+  /**
+   * The i18n key and namespace used to populate the localized title
+   */
+  i18n?: I18nTextRecord<'title'>
 }
 
 /** @internal */
@@ -373,4 +396,27 @@ export type UnresolvedPaneNode =
  * @beta */
 export type DocumentFieldMenuActionNode = DocumentFieldActionNode & {
   intent?: Intent
+}
+
+/**
+ * @internal
+ */
+export interface StrictVersionLayeringOptions {
+  /**
+   * By default, version layering includes all document versions, regardless of their expected
+   * publication time—or lack thereof. For example, it includes all ASAP and undecided versions,
+   * despite ASAP and undecided versions having no fixed chronology. There is no way to determine
+   * which ASAP or undecided version is expected to be published before another.
+   *
+   * It also includes any existing draft, which has no fixed chronology, either.
+   *
+   * This functionality is useful for listing all document versions in a deterministic order, but
+   * doesn't accurately portray the upstream and downstream versions based on expected publication
+   * time.
+   *
+   * In strict mode, version layering instead only includes versions that have a fixed chronology.
+   * **Cross-version layering is only effective for scheduled versions, with all other
+   * versions being layered directly onto the published version (if it exists).**
+   */
+  strict?: boolean
 }

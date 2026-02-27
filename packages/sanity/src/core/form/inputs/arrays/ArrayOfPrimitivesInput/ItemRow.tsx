@@ -10,6 +10,7 @@ import {FieldPresence} from '../../../../presence'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {InsertMenuGroup} from '../ArrayOfObjectsInput/InsertMenuGroups'
+import {useArrayValidation} from '../common/ArrayValidationContext'
 import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
 
@@ -74,6 +75,9 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const {t} = useTranslation()
 
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = arrayValidation?.maxReachedReason
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
 
   const menuItems = useMemo(
@@ -106,24 +110,40 @@ export const ItemRow = forwardRef(function ItemRow(
         ),
         !(disableActions.includes('add') || disableActions.includes('addBefore')) && (
           <InsertMenuGroup
+            key="add-before"
             pos="before"
             types={insertableTypes}
             onInsert={handleInsert}
             text={t('inputs.array.action.add-before')}
             icon={InsertAboveIcon}
+            disabled={maxReached}
+            disabledReason={maxReachedReason}
           />
         ),
         !disableActions.includes('add') && !disableActions.includes('addAfter') && (
           <InsertMenuGroup
+            key="add-after"
             pos="after"
             types={insertableTypes}
             onInsert={handleInsert}
             text={t('inputs.array.action.add-after')}
             icon={InsertBelowIcon}
+            disabled={maxReached}
+            disabledReason={maxReachedReason}
           />
         ),
       ].filter(Boolean),
-    [disableActions, handleCopy, handleDuplicate, handleInsert, insertableTypes, onRemove, t],
+    [
+      maxReached,
+      maxReachedReason,
+      disableActions,
+      handleCopy,
+      handleDuplicate,
+      handleInsert,
+      insertableTypes,
+      onRemove,
+      t,
+    ],
   )
 
   const menu = useMemo(

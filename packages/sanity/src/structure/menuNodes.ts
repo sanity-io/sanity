@@ -1,6 +1,4 @@
-/* eslint-disable camelcase */
-
-import {negate} from 'lodash'
+import {negate} from 'lodash-es'
 
 import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
 import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
@@ -56,12 +54,13 @@ export function resolveMenuNodes(params: {
     const item = menuItems[i]
 
     let group = item.group && groups.find((g) => g.key === item.group)
+    const disabled = typeof item.disabled === 'string' ? {reason: item.disabled} : item.disabled
 
     if (item.group && !group) {
       group = {
         type: 'group',
         key: item.group,
-
+        disabled,
         expanded: true,
         icon: item.icon,
         title: item.group,
@@ -76,9 +75,11 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
+        disabled,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
@@ -91,9 +92,11 @@ export function resolveMenuNodes(params: {
         type: 'item',
         key: `${keyOffset + i}-item`,
 
+        hideSelectionIndicator: item.params?.hideSelectionIndicator === true,
         hotkey: item.shortcut,
         icon: item.icon,
         intent: item.intent,
+        disabled,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,

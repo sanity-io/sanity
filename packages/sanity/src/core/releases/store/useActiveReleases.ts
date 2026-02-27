@@ -1,10 +1,10 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
 import {type ReleasesReducerAction} from './reducer'
-import {type ReleaseDocument} from './types'
 import {useReleasesStore} from './useReleasesStore'
 
 interface ReleasesState {

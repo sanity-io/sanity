@@ -1,5 +1,5 @@
 {
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
   "npmClient": "pnpm",
   "packages": [
     "dev/*",
@@ -8,9 +8,16 @@
     "examples/*",
     "packages/@repo/*",
     "packages/@sanity/*",
-    "packages/create-sanity",
     "packages/groq",
     "packages/sanity"
   ],
-  "version": "3.77.1"
+  "version": "5.12.0",
+  "command": {
+    "version": {
+      "changelogPreset": "conventionalcommits",
+      "message": "chore(release): publish %s",
+      "changelogIncludeCommitsGitAuthor": " by %a (%e)",
+      "remoteClient": "github"
+    }
+  }
 }

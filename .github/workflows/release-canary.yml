@@ -1,0 +1,105 @@
+name: Release @canary
+
+on:
+  push:
+    branches:
+      - canary
+
+permissions:
+  contents: read # for checkout
+
+jobs:
+  release-canary:
+    concurrency:
+      group: release_canary
+
+    permissions:
+      id-token: write # to enable use of OIDC for npm provenance
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      EXPECTED_NPM_USER: sanity-svc.npm
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      # Publish packages to npm under the `canary` tag on new commits to the canary branch.
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Bump canary versions
+        # Note: ubuntu-latest ships with lerna installed on the system
+        # (see https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#project-management)
+        # It's important that we call lerna using npx in the command below so we get the
+        # locally installed lerna instead of the one installed on the system
+        run: |
+          npx lerna version \
+            --conventional-commits \
+            --conventional-prerelease \
+            --preid=canary \
+            --force-publish \
+            --no-git-tag-version \
+            --exact \
+            --yes
+
+      - name: Rewrite version
+        # Q: Why are we doing this?
+        # A:
+        # lerna version does not support --canary (for some reason, it's only supported for lerna publish)
+        # When publishing tagged canary releases, we want the version to be:
+        # <conventional-commit-bump>.<commits-ahead>+<commit-hash>
+        # However, the lerna version command we run above does not append the commit hash, and it
+        # always sets the <commits-ahead> part to "0"
+        # So, in order to get the desired target version, we need to post-process package versions
+        # by manually getting the number of commits in the branch since last release, and replace the "0"
+        # with the correct number of commits ahead, and finally append the commit hash.
+        run: |
+          COMMIT_COUNT="0" # fallback refcount value
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+
+          TAG_INFO=$(git describe --tags --long --first-parent)
+
+          if [[ $TAG_INFO =~ ^(.+)-([0-9]+)-g([0-9a-f]+)$ ]]; then
+            COMMIT_COUNT="${BASH_REMATCH[2]}"
+          fi
+
+          echo "COMMITS AHEAD: $COMMIT_COUNT"
+          echo "COMMIT HASH: $COMMIT_HASH"
+
+          for pkg in $(lerna list --all --json | jq -r '.[].location'); do
+            jq --arg commit_count "$COMMIT_COUNT" --arg commit_hash "$COMMIT_HASH" '.version |= sub("\\.0$"; "." + $commit_count + "+"+$commit_hash)' "$pkg/package.json" > "$pkg/package.tmp.json"
+            mv "$pkg/package.tmp.json" "$pkg/package.json"
+          done
+
+      - name: Re-install after version bump
+        run: pnpm install --fix-lockfile
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NPM_PUBLISH_TOKEN}"
+        env:
+          NPM_PUBLISH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+
+      - name: Check valid token
+        run: |
+          WHOAMI_RESULT=$(npm whoami)
+          echo "npm whoami result: $WHOAMI_RESULT"
+          if [ "$WHOAMI_RESULT" != "$EXPECTED_NPM_USER" ]; then
+            echo "Error: npm whoami returned '$WHOAMI_RESULT', expected '$EXPECTED_NPM_USER'"
+            exit 1
+          fi
+          echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
+
+      - name: Publish packages to npm
+        run: pnpm -r publish --tag canary --no-git-checks
+        env:
+          NPM_CONFIG_PROVENANCE: true

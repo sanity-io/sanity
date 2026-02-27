@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {isEqual} from 'lodash'
+import {isEqual} from 'lodash-es'
 import {useCallback} from 'react'
 
 import {CommandList} from '../../../../../components/commandList/CommandList'
@@ -15,11 +15,11 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../../preview/components/SanityDefaultPreview'
 import {supportsTouch} from '../../../../../util/supportsTouch'
 import {useValuePreviewWithFallback} from '../../hooks'
-import {type TreeEditingBreadcrumb} from '../../types'
+import {type DialogItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
 
 interface BreadcrumbsItemProps {
-  item: TreeEditingBreadcrumb
+  item: DialogItem
   selected: boolean
   isFirst: boolean
   onPathSelect: (path: Path) => void
@@ -40,7 +40,6 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
     <Stack marginTop={isFirst ? undefined : 1}>
       <Button
         mode="bleed"
-        // eslint-disable-next-line react/jsx-no-bind
         onClick={() => onPathSelect(item.path)}
         selected={selected}
         title={title}
@@ -62,11 +61,15 @@ function BreadcrumbsItem(props: BreadcrumbsItemProps): React.JSX.Element {
 
 interface TreeEditingBreadcrumbsMenuProps {
   collapsed?: boolean
-  items: TreeEditingBreadcrumb[]
+  items: DialogItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
 }
 
+/**
+ * This component is not currently used, but it might be useful to keep in the future if we want to return back to a solution revolving around a tree.
+ * For now I think it's best to keep it
+ */
 export function TreeEditingBreadcrumbsMenu(
   props: TreeEditingBreadcrumbsMenuProps,
 ): React.JSX.Element {
@@ -105,7 +108,7 @@ export function TreeEditingBreadcrumbsMenu(
   )
 
   const renderItem = useCallback(
-    (item: TreeEditingBreadcrumb) => {
+    (item: DialogItem) => {
       const selected = isEqual(item.path, selectedPath)
       const isFirst = isEqual(item.path, items[0].path)
 

@@ -1,8 +1,8 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
-import {type ReleaseDocument} from './types'
 import {useReleasesStore} from './useReleasesStore'
 
 /**

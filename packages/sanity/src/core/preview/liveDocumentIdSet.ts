@@ -1,5 +1,5 @@
 import {type QueryParams, type SanityClient} from '@sanity/client'
-import {sortedIndex} from 'lodash'
+import {sortedIndex} from 'lodash-es'
 import {of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
 
@@ -41,7 +41,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         )
     }
     return versionedClient(client, apiVersion)
-      .observable.listen(query, params, {
+      .observable.listen(`*[${queryFilter}]`, params, {
         visibility: 'transaction',
         events: ['welcome', 'mutation', 'reconnect'],
         includeResult: false,

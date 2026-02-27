@@ -41,7 +41,7 @@ export class FormViewBuilder extends GenericViewBuilder<Partial<BaseView>, FormV
    */
   clone(withSpec?: Partial<FormView>): FormViewBuilder {
     const builder = new FormViewBuilder()
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

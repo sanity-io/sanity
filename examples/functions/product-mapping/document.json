@@ -1,0 +1,11 @@
+{
+  "_type": "product",
+  "_id": "test-product-123",
+  "title": "Summer Cotton T-Shirt",
+  "store": {
+    "tags": ["sanity-parent-summer-collection", "sanity-color-blue", "cotton", "t-shirt", "casual"],
+    "slug": {
+      "current": "summer-cotton-t-shirt"
+    }
+  }
+}

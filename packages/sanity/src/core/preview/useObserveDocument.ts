@@ -15,7 +15,7 @@ const INITIAL_STATE = {loading: true, document: null}
  * Observes a document by its ID and returns the document and loading state
  * it will listen to the document changes.
  */
-export function useObserveDocument<T extends SanityDocument>(
+export function useUnstableObserveDocument<T extends SanityDocument>(
   documentId: string,
   apiConfig?: ObserveDocumentAPIConfig,
 ): {
@@ -31,4 +31,16 @@ export function useObserveDocument<T extends SanityDocument>(
     [documentId, documentPreviewStore, apiConfig],
   )
   return useObservable(observable, INITIAL_STATE)
+}
+
+/**
+ * @deprecated Use `useUnstableObserveDocument` instead
+ * @internal
+ * @beta
+ */
+export const unstable_useObserveDocument = (
+  args: Parameters<typeof useUnstableObserveDocument>,
+) => {
+  // oxlint-disable-next-line react-hooks/rules-of-hooks -- deprecated wrapper for backwards compatibility
+  return useUnstableObserveDocument(...args)
 }

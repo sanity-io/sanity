@@ -1,5 +1,4 @@
 import {pathFor} from '@sanity/util/paths'
-import {useMemo} from 'react'
 import {
   type FieldError,
   type FieldMember,
@@ -26,63 +25,48 @@ export function LanguageFilterObjectInput(
     collapsedFieldSets,
   )
 
-  const defaultMembers = useMemo(
-    () =>
-      membersProp.filter(
-        (member) => member.kind === 'field' && options.defaultLanguages?.includes(member.name),
-      ),
-    [membersProp, options],
+  const defaultMembers = membersProp.filter(
+    (member) => member.kind === 'field' && options.defaultLanguages?.includes(member.name),
   )
-
-  const members: ObjectMember[] = useMemo(() => {
-    const translationsFieldSetMembers = membersProp
-      .filter(
-        (member) =>
-          member.kind === 'field' &&
-          selectedLanguages.includes(member.name) &&
-          !options.defaultLanguages?.includes(member.name),
-      )
-      .map((member): FieldMember | FieldError => {
-        if (member.kind === 'fieldSet') {
-          return {
-            kind: 'error',
-            key: member.key,
-            fieldName: member.fieldSet.name,
-            error: new Error('test') as any, // @todo
-          }
+  const translationsFieldSetMembers = membersProp
+    .filter(
+      (member) =>
+        member.kind === 'field' &&
+        selectedLanguages.includes(member.name) &&
+        !options.defaultLanguages?.includes(member.name),
+    )
+    .map((member): FieldMember | FieldError => {
+      if (member.kind === 'fieldSet') {
+        return {
+          kind: 'error',
+          key: member.key,
+          fieldName: member.fieldSet.name,
+          error: new Error('test') as any, // @todo
         }
+      }
 
-        return member
-      })
+      return member
+    })
 
-    if (translationsFieldSetMembers.length === 0) {
-      return defaultMembers
-    }
-
-    const translationsFieldSet: FieldSetMember = {
-      kind: 'fieldSet',
-      key: 'translationsFieldSet',
-      fieldSet: {
-        path: translationsFieldSetPath,
-        name: 'translations',
-        level: level + 1,
-        title: 'Translations',
-        collapsible: true,
-        collapsed: translationsFieldSetCollapsed ?? true,
-        members: translationsFieldSetMembers,
-      },
-    }
-
-    return defaultMembers.concat([translationsFieldSet])
-  }, [
-    defaultMembers,
-    translationsFieldSetCollapsed,
-    level,
-    membersProp,
-    options,
-    selectedLanguages,
-    translationsFieldSetPath,
-  ])
+  const members: ObjectMember[] =
+    translationsFieldSetMembers.length === 0
+      ? defaultMembers
+      : [
+          ...defaultMembers,
+          {
+            kind: 'fieldSet',
+            key: 'translationsFieldSet',
+            fieldSet: {
+              path: translationsFieldSetPath,
+              name: 'translations',
+              level: level + 1,
+              title: 'Translations',
+              collapsible: true,
+              collapsed: translationsFieldSetCollapsed ?? true,
+              members: translationsFieldSetMembers,
+            },
+          } as FieldSetMember,
+        ]
 
   return <ObjectInput {...restProps} level={level} members={members} path={path} />
 }

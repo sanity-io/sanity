@@ -8,7 +8,14 @@ import {type LocaleSource} from '../../../i18n'
 import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
-import {getIdPair, isDraftId, isVersionId} from '../../../util'
+import {
+  getDocumentVariantType,
+  getIdPair,
+  getPublishedId,
+  getVersionFromId,
+  isDraftId,
+  isVersionId,
+} from '../../../util'
 import {type ValidationStatus} from '../../../validation'
 import {type HistoryStore} from '../history'
 import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
@@ -23,7 +30,7 @@ import {
 } from './document-pair/operationEvents'
 import {type OperationsAPI} from './document-pair/operations'
 import {validation} from './document-pair/validation'
-import {type PairListenerOptions} from './getPairListener'
+import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
@@ -91,9 +98,13 @@ export interface DocumentStore {
       type: string,
     ) => Observable<OperationSuccess | OperationError>
     validation: (
-      publishedId: string,
+      validationTargetId: string,
       type: string,
-      version?: string,
+      // Whether to require referenced documents to be published
+      // if `true`, any reference to a document that's not published will yield a validation error
+      // if `false`, any reference to a non-published document is ok as long as it's in the same bundle
+      // as the document we're validating
+      validatePublishedReferences: boolean,
     ) => Observable<ValidationStatus>
   }
 }
@@ -107,7 +118,7 @@ export interface DocumentStoreOptions {
   initialValueTemplates: Template[]
   i18n: LocaleSource
   serverActionsEnabled: Observable<boolean>
-  pairListenerOptions?: PairListenerOptions
+  extraOptions?: DocumentStoreExtraOptions
 }
 
 /** @internal */
@@ -119,7 +130,7 @@ export function createDocumentStore({
   schema,
   i18n,
   serverActionsEnabled,
-  pairListenerOptions,
+  extraOptions = {},
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -129,6 +140,7 @@ export function createDocumentStore({
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
+  const {onSyncErrorRecovery, onReportLatency} = extraOptions
   const ctx = {
     client,
     getClient,
@@ -137,13 +149,16 @@ export function createDocumentStore({
     schema,
     i18n,
     serverActionsEnabled,
-    pairListenerOptions,
+    extraOptions,
   }
 
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair, serverActionsEnabled, pairListenerOptions)
+      return checkoutPair(client, idPair, serverActionsEnabled, {
+        onSyncErrorRecovery,
+        onReportLatency,
+      })
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -167,7 +182,7 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         )
       },
       documentEvents(publishedId, type, version) {
@@ -176,7 +191,7 @@ export function createDocumentStore({
           getIdPairFromPublished(publishedId, version),
           type,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         )
       },
       editOperations(publishedId, type, version) {
@@ -194,7 +209,7 @@ export function createDocumentStore({
           historyStore,
           schema,
           serverActionsEnabled,
-          pairListenerOptions,
+          extraOptions,
         }).pipe(
           filter(
             (result) =>
@@ -208,9 +223,11 @@ export function createDocumentStore({
           }),
         )
       },
-      validation(publishedId, type, version) {
-        const idPair = getIdPairFromPublished(publishedId, version)
-        return validation(ctx, idPair, type)
+      validation(validationTargetId, type, requirePublishedReferences) {
+        const publishedId = getPublishedId(validationTargetId)
+        const idPair = getIdPair(publishedId, {version: getVersionFromId(validationTargetId)})
+        const validationTarget = getDocumentVariantType(validationTargetId)
+        return validation(ctx, idPair, type, validationTarget, requirePublishedReferences)
       },
     },
   }

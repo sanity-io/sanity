@@ -4,6 +4,7 @@ export type ConditionalWrapperRenderWrapperCallback = (children: React.ReactNode
  * A helper component that conditionally wraps its children in a wrapper component.
  *
  * @internal
+ * @deprecated do not use this, just do the conditional inline, it performs better with React Compiler without the redirection of a wrapper
  */
 export function ConditionalWrapper({
   children,

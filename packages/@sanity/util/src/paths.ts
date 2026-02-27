@@ -27,7 +27,7 @@ export function get(obj: unknown, path: Path | string, defaultVal?: unknown): un
     throw new Error('Path must be an array or a string')
   }
 
-  let acc: unknown | undefined = obj
+  let acc: unknown = obj
   for (let i = 0; i < select.length; i++) {
     const segment = select[i]
     if (isIndexSegment(segment)) {

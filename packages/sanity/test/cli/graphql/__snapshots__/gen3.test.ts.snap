@@ -1749,6 +1749,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -1773,6 +1777,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -1786,6 +1795,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -1924,6 +1937,84 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -2204,6 +2295,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -2238,6 +2333,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -2259,6 +2359,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -4208,6 +4312,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -4262,6 +4371,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -4303,6 +4417,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema 1`] 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -6484,6 +6602,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -6508,6 +6630,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": true,
           "type": "SanityFileAssetCustomFilterSuffix",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceCustomFilterSuffix",
+        },
       ],
       "kind": "InputObject",
       "name": "FileCustomFilterSuffix",
@@ -6521,6 +6648,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -6659,6 +6790,84 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceCustomFilterSuffix",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -6939,6 +7148,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -6973,6 +7186,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": undefined,
           "type": "SanityImageHotspotCustomFilterSuffix",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceCustomFilterSuffix",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageCustomFilterSuffix",
@@ -6994,6 +7212,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -8943,6 +9165,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -8997,6 +9224,11 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
           "isReference": undefined,
           "type": "SanityImagePaletteCustomFilterSuffix",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataCustomFilterSuffix",
@@ -9038,6 +9270,10 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -9470,7 +9706,7 @@ exports[`GraphQL - Generation 3 > Should be able to generate graphql schema with
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -12603,6 +12839,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -12627,6 +12867,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -12640,6 +12885,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -12780,6 +13029,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -12846,6 +13173,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -12880,6 +13211,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -12901,6 +13237,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -14016,6 +14356,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -14070,6 +14415,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -14111,6 +14461,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -19766,7 +20120,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -22899,6 +23253,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -22923,6 +23281,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -22936,6 +23299,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -23076,6 +23443,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -23142,6 +23587,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -23176,6 +23625,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -23197,6 +23651,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -24312,6 +24770,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -24366,6 +24829,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -24407,6 +24875,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -30062,7 +30534,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'manySelfRefsSchema
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -31811,6 +32283,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -31835,6 +32311,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -31848,6 +32329,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -31986,6 +32471,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -32266,6 +32829,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -32300,6 +32867,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -32321,6 +32893,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -34270,6 +34846,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -34324,6 +34905,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -34365,6 +34951,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -34797,7 +35387,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -36546,6 +37136,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -36570,6 +37164,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -36583,6 +37182,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -36721,6 +37324,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
       ],
       "kind": "InputObject",
       "name": "GeopointSorting",
+    },
+    {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
     },
     {
       "description": undefined,
@@ -37001,6 +37682,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -37035,6 +37720,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -37056,6 +37746,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -39005,6 +39699,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -39059,6 +39758,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -39100,6 +39804,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -39532,7 +40240,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'testStudioSchema' 
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p false 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 1`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -40582,6 +41290,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -40606,6 +41318,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -40619,6 +41336,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -40759,6 +41480,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -40825,6 +41624,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -40859,6 +41662,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -40880,6 +41688,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -41995,6 +42807,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -42049,6 +42866,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -42090,6 +42912,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",
@@ -42603,7 +43429,7 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
 }
 `;
 
-exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p true 1`] = `
+exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' > Should be able to generate graphql schema, withUnionCache: %p 2`] = `
 {
   "generation": "gen3",
   "interfaces": [
@@ -43653,6 +44479,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": true,
           "type": "SanityFileAsset",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "File",
@@ -43677,6 +44507,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": true,
           "type": "SanityFileAssetFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "FileFilter",
@@ -43690,6 +44525,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "_type",
           "type": "SortOrder",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -43830,6 +44669,84 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
       "name": "GeopointSorting",
     },
     {
+      "description": undefined,
+      "fields": [
+        {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "GlobalDocumentReference",
+      "originalName": "globalDocumentReference",
+      "type": "Object",
+      Symbol(internal): {},
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceFilter",
+    },
+    {
+      "fields": [
+        {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GlobalDocumentReferenceSorting",
+    },
+    {
       "fields": [
         {
           "description": "Checks if the value is equal to the given input.",
@@ -43896,6 +44813,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "hotspot",
           "type": "SanityImageHotspot",
         },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReference",
+        },
       ],
       "kind": "Type",
       "name": "Image",
@@ -43930,6 +44851,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImageHotspotFilter",
         },
+        {
+          "fieldName": "media",
+          "isReference": undefined,
+          "type": "GlobalDocumentReferenceFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "ImageFilter",
@@ -43951,6 +44877,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "hotspot",
           "type": "SanityImageHotspotSorting",
+        },
+        {
+          "fieldName": "media",
+          "type": "GlobalDocumentReferenceSorting",
         },
       ],
       "kind": "InputObject",
@@ -45066,6 +45996,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "fieldName": "palette",
           "type": "SanityImagePalette",
         },
+        {
+          "description": undefined,
+          "fieldName": "thumbHash",
+          "type": "String",
+        },
       ],
       "kind": "Type",
       "name": "SanityImageMetadata",
@@ -45120,6 +46055,11 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
           "isReference": undefined,
           "type": "SanityImagePaletteFilter",
         },
+        {
+          "fieldName": "thumbHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
       ],
       "kind": "InputObject",
       "name": "SanityImageMetadataFilter",
@@ -45161,6 +46101,10 @@ exports[`GraphQL - Generation 3 > Union cache: sanitySchema: 'unionRefsSchema' >
         {
           "fieldName": "palette",
           "type": "SanityImagePaletteSorting",
+        },
+        {
+          "fieldName": "thumbHash",
+          "type": "SortOrder",
         },
       ],
       "kind": "InputObject",

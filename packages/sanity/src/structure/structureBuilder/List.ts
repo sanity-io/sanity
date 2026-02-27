@@ -1,7 +1,8 @@
-import {find} from 'lodash'
+import {find} from 'lodash-es'
 import {isRecord} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
+import {DividerBuilder} from './Divider'
 import {isDocumentListItem} from './DocumentListItem'
 import {
   type BuildableGenericList,
@@ -56,12 +57,16 @@ const resolveChildForItem: ChildResolver = (itemId: string, options: ChildResolv
 }
 
 function maybeSerializeListItem(
-  item: ListItem | ListItemBuilder | Divider,
+  item: ListItem | ListItemBuilder | Divider | DividerBuilder,
   index: number,
   path: SerializePath,
 ): ListItem | Divider {
   if (item instanceof ListItemBuilder) {
     return item.serialize({path, index})
+  }
+
+  if (item instanceof DividerBuilder) {
+    return item.serialize()
   }
 
   const listItem = item as ListItem
@@ -104,7 +109,7 @@ export interface List extends GenericList {
  */
 export interface ListInput extends GenericListInput {
   /** List input items array. See {@link ListItem}, {@link ListItemBuilder} and {@link Divider} */
-  items?: (ListItem | ListItemBuilder | Divider)[]
+  items?: (ListItem | ListItemBuilder | Divider | DividerBuilder)[]
 }
 
 /**
@@ -114,7 +119,7 @@ export interface ListInput extends GenericListInput {
  */
 export interface BuildableList extends BuildableGenericList {
   /** List items. See {@link ListItem}, {@link ListItemBuilder} and {@link Divider} */
-  items?: (ListItem | ListItemBuilder | Divider)[]
+  items?: (ListItem | ListItemBuilder | Divider | DividerBuilder)[]
 }
 
 /**
@@ -125,14 +130,17 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
   /** buildable list option object. See {@link BuildableList} */
   protected spec: BuildableList
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: ListInput,
   ) {
     super()
+    this._context = _context
     this.spec = spec ? spec : {}
     this.initialValueTemplatesSpecified = Boolean(spec && spec.initialValueTemplates)
   }
@@ -142,7 +150,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
    * @param items - list items. See {@link ListItemBuilder}, {@link ListItem} and {@link Divider}
    * @returns list builder based on items provided. See {@link ListBuilder}
    */
-  items(items: (ListItemBuilder | ListItem | Divider)[]): ListBuilder {
+  items(items: (ListItemBuilder | ListItem | Divider | DividerBuilder)[]): ListBuilder {
     return this.clone({items})
   }
 
@@ -206,7 +214,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
    */
   clone(withSpec?: BuildableList): ListBuilder {
     const builder = new ListBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

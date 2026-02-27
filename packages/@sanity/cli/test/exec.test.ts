@@ -1,10 +1,10 @@
 import {describe, expect} from 'vitest'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
+import {getCliUserEmail, runSanityCmdCommand, studioNames} from './shared/environment'
 
 describeCliTest('CLI: `sanity exec`', () => {
-  describe.each(studioVersions)('%s', (version) => {
+  describe.each(studioNames)('%s', (version) => {
     testConcurrent('sanity exec', async () => {
       const result = await runSanityCmdCommand(version, ['exec', 'script.ts'])
       const data = JSON.parse(result.stdout.trim())

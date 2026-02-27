@@ -1,12 +1,12 @@
 import {type LayoutProps} from '../../config'
-import {useWorkspace} from '../../studio'
+import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {ReleasesMetadataProvider} from '../contexts/ReleasesMetadataProvider'
 import {ReleasesUpsellProvider} from '../contexts/upsell/ReleasesUpsellProvider'
 
 export function ReleasesStudioLayout(props: LayoutProps) {
-  const isReleasesEnabled = !!useWorkspace().releases?.enabled
+  const releasesToolAvailable = useReleasesToolAvailable()
 
-  if (!isReleasesEnabled) {
+  if (!releasesToolAvailable) {
     return props.renderDefault(props)
   }
 

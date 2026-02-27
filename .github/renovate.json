@@ -5,8 +5,24 @@
     "github>sanity-io/renovate-config:studio-v3",
     ":dependencyDashboardApproval"
   ],
-  "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
+  "ignorePresets": [
+    "github>sanity-io/renovate-config:group-non-major",
+    "github>sanity-io/renovate-config:workarounds-esm",
+    "github>sanity-io/renovate-config:dedupe"
+  ],
+  "minimumReleaseAge": "3 days",
   "packageRules": [
+    {
+      "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
+      "matchPackageNames": [
+        "/^@sanity\\//",
+        "/^@portabletext\\//",
+        "/^react-rx$/",
+        "/^groq-js$/",
+        "/^oxfmt$/"
+      ],
+      "minimumReleaseAge": "0 days"
+    },
     {
       "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
       "matchUpdateTypes": ["minor", "patch"],
@@ -31,21 +47,16 @@
         "replacement",
         "rollback"
       ],
-      "matchPackageNames": [
-        "!@portabletext/block-tools",
-        "!@portabletext/editor",
-        "!@sanity/client",
-        "!@sanity/tsdoc",
-        "!@sanity/ui"
-      ]
+      "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
     },
     {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
-        "@portabletext/block-tools",
-        "@portabletext/editor",
+        "@portabletext/*",
         "@sanity/bifur-client",
         "@sanity/client",
+        "@sanity/import",
+        "@sanity/export",
         "@sanity/comlink",
         "@sanity/export",
         "@sanity/icons",
@@ -58,7 +69,11 @@
         "@sanity/visual-editing-csm",
         "get-it",
         "groq-js",
-        "react-rx"
+        "motion",
+        "react-rx",
+        "scrollmirror",
+        "xstate",
+        "@xstate/react"
       ],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"
@@ -66,12 +81,14 @@
     {
       "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
       "matchPackageNames": [
+        "lerna",
         "@portabletext/block-tools",
         "@portabletext/editor",
         "@sanity/bifur-client",
         "@sanity/client",
         "@sanity/comlink",
         "@sanity/eslint-config-i18n",
+        "@sanity/import",
         "@sanity/export",
         "@sanity/icons",
         "@sanity/insert-menu",
@@ -80,17 +97,16 @@
         "@sanity/presentation-comlink",
         "@sanity/preview-url-secret",
         "@sanity/template-validator",
-        "@sanity/tsdoc",
         "@sanity/ui",
         "@sanity/visual-editing-csm",
         "esbuild",
         "get-it",
         "groq-js",
-        "lerna",
         "react-dom",
         "react-is",
         "react-rx",
         "react",
+        "use-sync-external-store",
         "styled-components",
         "typescript"
       ],
@@ -98,20 +114,25 @@
       "schedule": ["every weekday"]
     },
     {
-      "description": "ESBuild 0.23 drops support for Windows 7 and 8, for now we don't want renovate to open PRs to bump them",
-      "allowedVersions": "<=0.21",
-      "matchPackageNames": ["esbuild"]
+      "description": "Upgrade @portabletext/* packages together",
+      "matchPackageNames": ["@portabletext/*"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "portabletext"
     },
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",
       "groupName": "typescript-tooling",
-      "matchPackageNames": ["@sanity/pkg-utils", "@sanity/tsdoc", "typescript"]
+      "matchPackageNames": ["@sanity/pkg-utils", "typescript"]
+    },
+    {
+      "description": "Always upgrade oxlint together",
+      "groupName": "oxlint",
+      "matchPackageNames": ["oxlint", "eslint-plugin-oxlint", "oxlint-tsgolint"]
     }
   ],
   "ignorePaths": [
     "packages/@sanity/cli/test/__fixtures__/v2/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-18/package.json",
-    "packages/sanity/fixtures/examples/prj-with-react-19/package.json",
-    "packages/sanity/fixtures/examples/prj-with-styled-components-5/package.json"
+    "packages/sanity/fixtures/examples/prj-with-react-19/package.json"
   ]
 }

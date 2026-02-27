@@ -21,6 +21,7 @@ const TasksToolbar = ({onClick, isOpen}: {onClick: () => void; isOpen: boolean})
       mode="bleed"
       onClick={onClick}
       selected={isOpen}
+      data-testid="tasks-toolbar"
     />
   )
 }

@@ -1,20 +1,24 @@
+import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type BadgeTone, Box, Card, Flex, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {Box, Card, Flex, Text, useToast} from '@sanity/ui'
+import {useState} from 'react'
 
+import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {type TargetPerspective} from '../../../../perspective/types'
 import {Preview} from '../../../../preview/components/Preview'
 import {CreatedRelease} from '../../../__telemetry__/releases.telemetry'
 import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
-import {releasesLocaleNamespace} from '../../../i18n'
+import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
+import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
-import {type EditableReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
 import {createReleaseId} from '../../../util/createReleaseId'
+import {getIsReleaseInvalid} from '../../../util/getIsReleaseInvalid'
 import {getIsScheduledDateInPast} from '../../../util/getIsScheduledDateInPast'
 import {ReleaseForm} from '../../dialog/ReleaseForm'
 import {ReleaseAvatar} from '../../ReleaseAvatar'
@@ -23,15 +27,15 @@ export function CopyToNewReleaseDialog(props: {
   onClose: () => void
   documentId: string
   documentType: string
-  tone: BadgeTone
+  release: TargetPerspective
   title: string
   onCreateVersion: (releaseId: string) => void
 }): React.JSX.Element {
-  const {onClose, documentId, documentType, tone, title, onCreateVersion} = props
+  const {onClose, documentId, documentType, release: sourceRelease, title, onCreateVersion} = props
   const {t} = useTranslation()
-  const {t: tRelease} = useTranslation(releasesLocaleNamespace)
   const toast = useToast()
   const createReleaseMetadata = useCreateReleaseMetadata()
+  const {releasePromise} = useGuardWithReleaseLimitUpsell()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType)
@@ -59,20 +63,22 @@ export function CopyToNewReleaseDialog(props: {
 
   const telemetry = useTelemetry()
   const {createRelease} = useReleaseOperations()
+  const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
   const displayTitle = title || t('release.placeholder-untitled-release')
 
   const isScheduledDateInPast = getIsScheduledDateInPast(release)
+  const invalid = getIsReleaseInvalid(release)
 
-  const handleOnChange = useCallback((releaseMetadata: EditableReleaseDocument) => {
+  const handleOnChange = (releaseMetadata: EditableReleaseDocument) => {
     setRelease(releaseMetadata)
-  }, [])
+  }
 
-  const handleAddVersion = useCallback(async () => {
+  const handleAddVersion = () => {
     onCreateVersion(newReleaseId)
-  }, [onCreateVersion, newReleaseId])
+  }
 
-  const handleCreateRelease = useCallback(async () => {
+  const handleCreateRelease = async () => {
     // re-evaluate if date is in past
     // as dialog could have been left idle for a while
     if (getIsScheduledDateInPast(release)) {
@@ -80,14 +86,20 @@ export function CopyToNewReleaseDialog(props: {
       return // do not submit if date is in past
     }
 
-    try {
-      setIsSubmitting(true)
+    setIsSubmitting(true)
+    const inQuota = await releasePromise
 
+    if (!inQuota) {
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
       const releaseValue = createReleaseMetadata(release)
 
       await createRelease(releaseValue)
 
-      await handleAddVersion()
+      handleAddVersion()
       telemetry.log(CreatedRelease, {origin: 'document-panel'})
     } catch (err) {
       if (isReleaseLimitError(err)) {
@@ -101,40 +113,24 @@ export function CopyToNewReleaseDialog(props: {
           description: err.message,
         })
       }
-    } finally {
-      setIsSubmitting(false)
     }
-  }, [
-    release,
-    createReleaseMetadata,
-    createRelease,
-    handleAddVersion,
-    telemetry,
-    onClose,
-    toast,
-    t,
-  ])
+    setIsSubmitting(false)
+    clearReleaseDataFromStorage()
+  }
+
+  const handleOnClose = () => {
+    clearReleaseDataFromStorage()
+    onClose()
+  }
 
   return (
     <Dialog
       id={'create-release-dialog'}
       header={t('release.dialog.copy-to-release.title')}
       onClickOutside={onClose}
-      onClose={onClose}
+      onClose={handleOnClose}
       padding={false}
       width={1}
-      footer={{
-        cancelButton: {
-          disabled: isSubmitting,
-          onClick: onClose,
-        },
-        confirmButton: {
-          text: t('release.action.add-to-new-release'),
-          onClick: handleCreateRelease,
-          disabled: isSubmitting || isScheduledDateInPast,
-          tone: 'primary',
-        },
-      }}
     >
       <Box
         paddingX={2}
@@ -161,7 +157,7 @@ export function CopyToNewReleaseDialog(props: {
               textOverflow: 'ellipsis',
             }}
           >
-            <ReleaseAvatar padding={1} tone={tone} />
+            <ReleaseAvatar padding={1} release={sourceRelease} />
             <Text size={1} title={displayTitle}>
               {displayTitle}
             </Text>
@@ -172,10 +168,29 @@ export function CopyToNewReleaseDialog(props: {
       <Box paddingX={5} paddingY={3}>
         {isScheduledDateInPast && (
           <Card padding={3} marginBottom={3} radius={2} shadow={1} tone="critical">
-            <Text size={1}>{tRelease('schedule-dialog.publish-date-in-past-warning')}</Text>
+            <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
           </Card>
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
+
+        <Flex width="full" gap={3} justify="flex-end" paddingTop={3} align="center">
+          <Button
+            disabled={isSubmitting}
+            text={t('common.dialog.cancel-button.text')}
+            data-testid="cancel-button"
+            onClick={onClose}
+            mode="bleed"
+          />
+          <Button
+            disabled={isSubmitting || isScheduledDateInPast || invalid}
+            type="submit"
+            onClick={handleCreateRelease}
+            text={t('release.action.add-to-new-release')}
+            loading={isSubmitting}
+            tone="primary"
+            data-testid="confirm-button"
+          />
+        </Flex>
       </Box>
     </Dialog>
   )

@@ -4,8 +4,7 @@ import {
   type ErrorBoundaryProps as UIErrorBoundaryProps,
 } from '@sanity/ui'
 import {useCallback, useContext} from 'react'
-
-import {SourceContext} from '../../_singletons'
+import {SourceContext} from 'sanity/_singletons'
 
 export type ErrorBoundaryProps = UIErrorBoundaryProps
 
@@ -20,7 +19,17 @@ export function ErrorBoundary({onCatch, ...rest}: ErrorBoundaryProps): React.JSX
   const handleCatch = useCallback(
     ({error: caughtError, info: caughtInfo}: {error: Error; info: React.ErrorInfo}) => {
       // Send the error to the source if it has an onUncaughtError method
-      source?.onUncaughtError?.(caughtError, caughtInfo)
+
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
+        source?.onUncaughtError?.(caughtError, caughtInfo)
+      }
+      try {
+        run()
+      } catch (e) {
+        e.message = `Encountered an additional error when calling custom "onUncaughtError()": ${e.message}`
+        console.error(e)
+      }
 
       // Call the onCatch prop if it exists
       onCatch?.({error: caughtError, info: caughtInfo})

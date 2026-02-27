@@ -111,8 +111,8 @@ const arrayListOfReferenceOptionsExample = {
   ],
   options: {
     list: [
-      {value: {_type: 'reference', _ref: 'marius'}, title: 'Marius'},
-      {value: {_type: 'reference', _ref: 'espen'}, title: 'Espen'},
+      {_type: 'reference', _ref: 'marius'},
+      {_type: 'reference', _ref: 'espen'},
     ],
   },
 }

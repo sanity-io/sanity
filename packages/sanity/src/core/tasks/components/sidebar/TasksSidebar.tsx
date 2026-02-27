@@ -1,4 +1,5 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
+import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 
@@ -7,11 +8,11 @@ import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'
 import {TasksList} from '../list/TasksList'
 import {TasksUpsellPanel} from '../upsell'
-import {TasksListFeedbackFooter} from './TaskListFeedbackFooter'
 import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
-const RootCard = styled(Card)`
+const MotionCard = motion.create(Card)
+const RootCard = styled(MotionCard)`
   flex: 1;
   flex-direction: column;
 `
@@ -37,23 +38,19 @@ export function TasksStudioSidebarInner() {
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
 
-  const filteredList = useMemo(() => {
-    return data.filter((item) => {
-      if (!item.createdByUser) return false
-      if (activeTabId === 'assigned') {
-        return item.assignedTo === currentUser?.id
-      }
-      if (activeTabId === 'subscribed') {
-        return currentUser?.id && item.subscribers?.includes(currentUser.id)
-      }
-      if (activeTabId === 'document') {
-        return (
-          activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
-        )
-      }
-      return false
-    })
-  }, [activeDocument?.documentId, activeTabId, data, currentUser])
+  const filteredList = data.filter((item) => {
+    if (!item.createdByUser) return false
+    if (activeTabId === 'assigned') {
+      return item.assignedTo === currentUser?.id
+    }
+    if (activeTabId === 'subscribed') {
+      return currentUser?.id && item.subscribers?.includes(currentUser.id)
+    }
+    if (activeTabId === 'document') {
+      return activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
+    }
+    return false
+  })
 
   const content = useMemo(() => {
     if (viewMode !== 'list') {
@@ -77,7 +74,14 @@ export function TasksStudioSidebarInner() {
   }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
 
   return (
-    <RootCard display="flex" height="fill" flex={1} overflow="hidden">
+    <RootCard
+      display="flex"
+      height="fill"
+      flex={1}
+      overflow="hidden"
+      initial={{opacity: 0}}
+      animate={{opacity: 1, transition: {duration: 0.2}}}
+    >
       <HeaderStack space={3} padding={3} sizing="border">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
@@ -96,7 +100,6 @@ export function TasksStudioSidebarInner() {
       >
         {content}
       </ContentFlex>
-      {viewMode === 'list' && <TasksListFeedbackFooter />}
     </RootCard>
   )
 }

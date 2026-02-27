@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {type ClientPerspective} from '@sanity/client'
 import {type UnresolvedPath} from '@sanity/presentation-comlink'
-import {useRootTheme} from '@sanity/ui'
 import {memo, useEffect} from 'react'
 import {
   getPublishedId,
@@ -44,12 +43,11 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
   const {comlink, perspective} = props
 
   const workspace = useWorkspace()
-  const theme = useRootTheme()
 
   // Send a representation of the schema to the visual editing context
   useEffect(() => {
     try {
-      const schema = extractSchema(workspace, theme)
+      const schema = extractSchema(workspace)
       /**
        * @deprecated switch to explict schema fetching (using
        * 'visual-editing/schema') at next major
@@ -60,7 +58,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
     } catch {
       return undefined
     }
-  }, [comlink, theme, workspace])
+  }, [comlink, workspace])
 
   const client = useClient(
     isReleasePerspective(perspective) ? RELEASES_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION},
@@ -75,6 +73,7 @@ function PostMessageSchema(props: PostMessageSchemaProps): React.JSX.Element | n
           const arr = Array.from(paths)
           const projection = arr.map((path, i) => `"${i}": ${path}[0]._type`).join(',')
           const query = `*[_id == $id][0]{${projection}}`
+          // Should implement max 25 concurrent queries here
           const result = await client.fetch(
             query,
             {id: getPublishedId(id)},

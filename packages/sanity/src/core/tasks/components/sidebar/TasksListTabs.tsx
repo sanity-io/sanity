@@ -61,7 +61,6 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
           key={`${tab.id}-tab`}
           aria-controls={`${tab.id}-panel`}
           id={`${tab.id}-tab`}
-          // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleTabChange(tab)}
           selected={tab.id === activeTabId}
         >

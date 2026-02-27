@@ -1,0 +1,101 @@
+name: Close Stale Issues Needing More Info
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/stale-issues.yml"
+
+permissions:
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: stale-issues
+  cancel-in-progress: false
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark and close stale issues
+        id: stale
+        uses: actions/stale@v10
+        with:
+          enable-statistics: true
+          only-issue-labels: "needs-more-info"
+
+          # Prevents backlog processing
+          start-date: "2026-01-29T00:00:00Z"
+
+          # 10 days inactive → warning, then 4 more days → closure (14 days total)
+          days-before-stale: 10
+          days-before-close: 4
+
+          # Tracks that warning has been posted
+          stale-issue-label: "stale-warned"
+
+          stale-issue-message: >
+            Hi there, thanks again for this issue report. We have had a look into it
+            and are currently waiting for some more information. If you are able to help by
+            providing any further details as requested above that would be a great help.
+            If you are no longer experiencing this issue, or aren't able to provide any
+            further details, this issue will be closed in another 4 days.
+
+          close-issue-message: >
+            Hi there, we really appreciate your report of this issue. We had been
+            waiting for some more details to look into this properly. Since we didn't hear
+            back, we are going to close this issue at this current time. However, please
+            do either reopen or raise another issue if you find this is still causing concern.
+            We really thank you for the time to help us make Studio a better experience for
+            all users!
+
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+
+          # Prevents rate limiting
+          operations-per-run: 30
+
+          # Resets stale state if user responds
+          remove-stale-when-updated: true
+
+      - name: Report actions taken
+        if: always()
+        env:
+          STALED_ISSUES: ${{ steps.stale.outputs.staled-issues-prs }}
+          CLOSED_ISSUES: ${{ steps.stale.outputs.closed-issues-prs }}
+          ISSUE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/issues
+        run: |
+          {
+            echo "## Stale Issue Workflow Summary"
+            echo ""
+            echo "**Workflow completed at:** $(date -u)"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "### ⚠️ Warning of Closure (10 days inactive)" >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$STALED_ISSUES" ] || [ "$STALED_ISSUES" = "[]" ]; then
+            echo "No issues received warnings in this run." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "$STALED_ISSUES" | jq -r --arg base_url "$ISSUE_BASE_URL" \
+              '.[] | "- [#\(.number)](\($base_url)/\(.number)) - \(.title)"' \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "### ✅ Closed (14 days inactive)" >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$CLOSED_ISSUES" ] || [ "$CLOSED_ISSUES" = "[]" ]; then
+            echo "No issues were closed in this run." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "$CLOSED_ISSUES" | jq -r --arg base_url "$ISSUE_BASE_URL" \
+              '.[] | "- [#\(.number)](\($base_url)/\(.number)) - \(.title)"' \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          {
+            echo "---"
+            echo "*Check the workflow logs above for detailed statistics.*"
+          } >> "$GITHUB_STEP_SUMMARY"

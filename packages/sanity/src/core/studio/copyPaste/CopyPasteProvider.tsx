@@ -1,9 +1,8 @@
-/* eslint-disable max-statements */
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
-import {flatten, isEqual, last} from 'lodash'
+import {flatten, isEqual, last} from 'lodash-es'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
 
@@ -133,13 +132,26 @@ export const CopyPasteProvider: React.FC<{
         schemaTypes: [schemaTypeAtPath.jsonType],
       })
 
-      const isWrittenToClipboard = await writeClipboardItem(payloadValue)
+      try {
+        const isWrittenToClipboard = await writeClipboardItem(payloadValue)
 
-      if (!isWrittenToClipboard) {
-        toast.push({
-          status: 'error',
-          title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
-        })
+        if (!isWrittenToClipboard) {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        }
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        } else {
+          throw error
+        }
       }
     },
     [documentMeta, telemetry, toast, t],
@@ -157,7 +169,19 @@ export const CopyPasteProvider: React.FC<{
         value,
       )!
 
-      const clipboardItem = await getClipboardItem()
+      let clipboardItem: SanityClipboardItem | null = null
+      try {
+        clipboardItem = await getClipboardItem()
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          toast.push({
+            status: 'error',
+            title: t('copy-paste.on-copy.validation.clipboard-not-supported.title'),
+            description: t('copy-paste.on-copy.validation.clipboard-not-supported.description'),
+          })
+        }
+        return
+      }
 
       // Return early if no clipboard item or if clipboard item is invalid
       if (!clipboardItem) {
@@ -237,7 +261,8 @@ export const CopyPasteProvider: React.FC<{
       }
       copiedJsonTypes.push(sourceSchemaType.jsonType)
 
-      try {
+      // Workaround for try/catch not being fully supported by the React Compiler yet
+      const run = async () => {
         const {targetValue, errors} = await transferValue(transferValueOptions)
         const nonWarningErrors = errors.filter((error) => error.level !== 'warning')
         const _isEmptyValue = isEmptyValue(targetValue)
@@ -296,6 +321,9 @@ export const CopyPasteProvider: React.FC<{
             : [...prefixPatches, set(targetValue, targetPath)],
           targetSchemaTypeTitle,
         })
+      }
+      try {
+        await run()
       } catch (error) {
         toast.push({
           status: 'error',

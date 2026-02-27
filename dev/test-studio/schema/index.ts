@@ -5,18 +5,28 @@ import {commentsCI} from './ci/comments'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import actions from './debug/actions'
+import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
+import {
+  annotationCustomTypeTest,
+  ctaType,
+  tooltipAnnotationType,
+} from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {collapsibleObjects} from './debug/collapsibleObjects'
 import {commentsDebug} from './debug/comments'
 import conditionalFields from './debug/conditionalFields'
+import conditionalFieldsWithPath, {
+  conditionallyHiddenField,
+} from './debug/conditionalFieldsWithPath'
 import customInputs from './debug/customInputs'
 import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
 import dateTimeValidation from './debug/dateTimeValidation'
 import dateValidation from './debug/dateValidation'
+import {decorations} from './debug/decorations'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -24,6 +34,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
 import {fieldActionsTest} from './debug/fieldActionsTest'
@@ -44,14 +55,19 @@ import {
 import focus from './debug/focus'
 import {formInputDebug} from './debug/formInputDebug'
 import gallery from './debug/gallery'
+import {hiddenFieldValidationTypes} from './debug/hiddenFieldValidation'
 import {customBlock, hoistedPt, hoistedPtDocument} from './debug/hoistedPt'
 import {initialValuesTest, superlatives} from './debug/initialValuesTest'
 import {inspectorsTestType} from './debug/inspectors'
 import invalidPreviews from './debug/invalidPreviews'
-import {languageFilterDebugType} from './debug/languageFilter'
+import {languageFilterDebugType, localeBlockContentType} from './debug/languageFilter'
+import lazyComponents from './debug/lazyComponents'
 import liveEdit from './debug/liveEdit'
 import localeString from './debug/localeString'
+import {locationResolverTest} from './debug/locationResolverTest'
+import {longValidationTestType} from './debug/longValidation'
 import manyFieldsTest from './debug/manyFieldsTest'
+import {manyViewsType} from './debug/manyViews'
 import notitle from './debug/notitle'
 import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
@@ -80,8 +96,11 @@ import validation, {validationArraySuperType} from './debug/validation'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
+import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
+import internationalizedArray from './externalPlugins/internationalizedArray'
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
+import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
@@ -96,13 +115,19 @@ import date from './standard/date'
 import datetime from './standard/datetime'
 import emails from './standard/emails'
 import files from './standard/files'
+import globalDocumentReference, {
+  createGlobalDocumentReferenceSubtype,
+} from './standard/globalDocumentReference'
 import images, {myImage} from './standard/images'
+import {initialFullScreenPTEType} from './standard/initialFullScreenPTE'
 import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
 import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
+import {customPlugins} from './standard/portableText/customPlugins'
+import {ptCustomWithDefaultsType} from './standard/portableText/customWithDefaults'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
 import simpleBlock from './standard/portableText/simpleBlock'
@@ -115,6 +140,7 @@ import slugs, {slugAlias} from './standard/slugs'
 import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
+import videos from './standard/videos'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -150,149 +176,173 @@ const codeInputType = {
   ],
 }
 
-export const schemaTypes = [
-  // Test documents with standard inputs
-  arrays,
-  topLevelArrayType,
-  topLevelPrimitiveArrayType,
-  booleans,
-  date,
-  datetime,
-  emails,
-  files,
-  images,
-  numbers,
-  objects,
-  ptAllTheBellsAndWhistlesType,
-  blocks,
-  ptCustomBlockEditors,
-  ptCustomMarkersTestType,
-  richTextObject,
-  ...Object.values(scrollBugTypes),
-  simpleBlock,
-  manyEditors,
-  simpleBlockNote,
-  simpleBlockNoteBody,
-  simpleBlockNoteUrl,
-  spotifyEmbed,
-  references,
-  referenceAlias,
-  slugs,
-  slugAlias,
-  strings,
-  texts,
-  urls,
+export function createSchemaTypes(projectId: string) {
+  return [
+    // Test documents with standard inputs
+    arrays,
+    topLevelArrayType,
+    topLevelPrimitiveArrayType,
+    booleans,
+    date,
+    datetime,
+    emails,
+    files,
+    images,
+    videos,
+    numbers,
+    objects,
+    ptAllTheBellsAndWhistlesType,
+    initialFullScreenPTEType,
+    blocks,
+    ptCustomBlockEditors,
+    ptCustomMarkersTestType,
+    ptCustomWithDefaultsType,
+    richTextObject,
+    ...Object.values(scrollBugTypes),
+    customPlugins,
+    simpleBlock,
+    manyEditors,
+    simpleBlockNote,
+    simpleBlockNoteBody,
+    simpleBlockNoteUrl,
+    spotifyEmbed,
+    references,
+    referenceAlias,
+    slugs,
+    slugAlias,
+    strings,
+    texts,
+    urls,
 
-  // Test documents for debugging
-  actions,
-  button,
-  collapsibleObjects,
-  commentsDebug,
-  conditionalFields,
-  customInputs,
-  customInputsWithPatches,
-  customNumber,
-  dateTimeValidation,
-  dateValidation,
-  deprecatedDocument,
-  deprecatedFields,
-  documentActions,
-  empty,
-  experiment,
-  fieldActionsTest,
-  fieldComponentsTest,
-  fieldsets,
-  removeRestoreAction,
+    // Test documents for debugging
+    actions,
+    annotationCustomTypeTest,
+    ctaType,
+    tooltipAnnotationType,
+    button,
+    collapsibleObjects,
+    domAttrsAsFieldNames,
+    commentsDebug,
+    conditionalFields,
+    conditionalFieldsWithPath,
+    conditionallyHiddenField,
+    customInputs,
+    customInputsWithPatches,
+    customNumber,
+    dateTimeValidation,
+    dateValidation,
+    deprecatedDocument,
+    deprecatedFields,
+    decorations,
+    documentActions,
+    empty,
+    experiment,
+    fieldActionsTest,
+    fieldComponentsTest,
+    ...hiddenFieldValidationTypes,
+    fieldsets,
+    removeRestoreAction,
 
-  fieldValidationInferReproSharedObject,
-  fieldValidationInferReproDoc,
+    fieldValidationInferReproSharedObject,
+    fieldValidationInferReproDoc,
 
-  focus,
-  gallery,
-  hoistedPt,
-  hoistedPtDocument,
-  customBlock,
-  initialValuesTest,
-  superlatives,
-  inspectorsTestType,
-  invalidPreviews,
-  languageFilterDebugType,
-  liveEdit,
-  localeString,
-  manyFieldsTest,
-  myImage,
-  myObject,
-  namedDeprecatedObject,
-  namedDeprecatedArray,
-  notitle,
-  objectsDebug,
-  poppers,
-  presence,
-  objectWithNestedArray,
-  previewImageUrlTest,
-  formInputDebug,
-  previewMediaTest,
-  previewSelectBugRepro,
-  radio,
-  readOnly,
-  recursive,
-  recursiveArray,
-  recursiveObjectTest,
-  recursiveObject,
-  recursivePopover,
-  patchOnMountDebug,
-  simpleArrayOfObjects,
-  arrayCapabilities,
-  simpleReferences,
-  reservedFieldNames,
-  review,
-  select,
-  typeWithNoToplevelStrings,
-  uploads,
-  validation,
-  validationArraySuperType,
-  fieldGroups,
-  fieldGroupsDefault,
-  fieldGroupsMany,
-  fieldGroupsWithI18n,
-  fieldGroupsWithValidation,
-  fieldGroupsWithFieldsetsAndValidation,
-  fieldGroupsWithFieldsetsHidden,
-  virtualizationInObject,
-  virtualizationDebug,
+    focus,
+    gallery,
+    hoistedPt,
+    hoistedPtDocument,
+    customBlock,
+    initialValuesTest,
+    superlatives,
+    inspectorsTestType,
+    invalidPreviews,
+    languageFilterDebugType,
+    localeBlockContentType,
+    lazyComponents,
+    locationResolverTest,
+    liveEdit,
+    localeString,
+    manyFieldsTest,
+    manyViewsType,
+    myImage,
+    myObject,
+    namedDeprecatedObject,
+    namedDeprecatedArray,
+    notitle,
+    objectsDebug,
+    longValidationTestType,
+    poppers,
+    presence,
+    objectWithNestedArray,
+    previewImageUrlTest,
+    formInputDebug,
+    previewMediaTest,
+    previewSelectBugRepro,
+    radio,
+    readOnly,
+    recursive,
+    recursiveArray,
+    recursiveObjectTest,
+    recursiveObject,
+    recursivePopover,
+    patchOnMountDebug,
+    simpleArrayOfObjects,
+    arrayCapabilities,
+    allFieldsGroupHidden,
+    simpleReferences,
+    reservedFieldNames,
+    review,
+    select,
+    typeWithNoToplevelStrings,
+    uploads,
+    validation,
+    validationArraySuperType,
+    fieldGroups,
+    fieldGroupsDefault,
+    fieldGroupsMany,
+    fieldGroupsWithI18n,
+    fieldGroupsWithValidation,
+    fieldGroupsWithFieldsetsAndValidation,
+    fieldGroupsWithFieldsetsHidden,
+    virtualizationInObject,
+    virtualizationDebug,
 
-  // Test documents with official plugin inputs
-  code,
-  // @todo temporary, until code input is v3 compatible
-  codeInputType,
-  color,
-  geopoint,
-  hotspot,
-  hotspotArrayTest,
+    // Test documents with official plugin inputs
+    code,
+    // @todo temporary, until code input is v3 compatible
+    codeInputType,
+    color,
+    geopoint,
+    hotspot,
+    hotspotArrayTest,
 
-  // Test documents with 3rd party plugin inputs
-  markdown,
-  mux,
+    // Test documents with 3rd party plugin inputs
+    markdown,
+    mux,
+    internationalizedArray,
+    documentInternationalizationTest,
+    // Other documents
+    author,
+    book,
+    species,
+    house,
+    playlist,
+    playlistTrack,
 
-  // Other documents
-  author,
-  book,
-  species,
-  playlist,
-  playlistTrack,
+    // CI documents
+    allNativeInputComponents,
+    allTypes,
+    circularCrossDatasetReferenceTest,
+    commentsCI,
+    conditionalFieldset,
+    crossDatasetReference,
+    crossDatasetSubtype,
+    globalDocumentReference(projectId),
+    createGlobalDocumentReferenceSubtype(projectId),
+    fieldGroupsWithFieldsets,
+    ptReference,
+    validationTest,
 
-  // CI documents
-  allNativeInputComponents,
-  allTypes,
-  circularCrossDatasetReferenceTest,
-  commentsCI,
-  conditionalFieldset,
-  crossDatasetReference,
-  crossDatasetSubtype,
-  fieldGroupsWithFieldsets,
-  ptReference,
-  validationTest,
-
-  // Test documents for docs
-  ...v3docs.types,
-]
+    // Test documents for docs
+    ...v3docs.types,
+  ]
+}

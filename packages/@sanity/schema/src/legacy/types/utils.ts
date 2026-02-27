@@ -19,6 +19,15 @@ export function lazyGetter(target: any, key: any, getter: any, config: Config = 
   return target
 }
 
+export function hiddenGetter(target: any, key: string, value: unknown) {
+  Object.defineProperty(target, key, {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value,
+  })
+}
+
 //
 // const o = lazyGetter({}, 'expensive', function() {
 //   console.log('doing expensive calculations')

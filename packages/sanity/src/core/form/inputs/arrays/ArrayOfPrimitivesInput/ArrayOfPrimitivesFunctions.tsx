@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
 import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
@@ -7,6 +6,7 @@ import {useCallback, useId, useMemo} from 'react'
 import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps} from '../../../types'
+import {useArrayValidation} from '../common/ArrayValidationContext'
 
 /**
  * @hidden
@@ -18,6 +18,8 @@ export function ArrayOfPrimitivesFunctions<
   const {schemaType, readOnly, children, onValueCreate, onItemAppend} = props
   const menuButtonId = useId()
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached ?? false
 
   const insertItem = useCallback(
     (itemType: any) => {
@@ -60,6 +62,23 @@ export function ArrayOfPrimitivesFunctions<
     )
   }
 
+  if (maxReached) {
+    return (
+      <Tooltip portal content={t('inputs.array.action.max-reached')}>
+        <Grid>
+          <Button
+            data-testid="add-max-reached-primitive-button"
+            icon={AddIcon}
+            mode="ghost"
+            disabled
+            size="large"
+            text={t(addItemI18nKey)}
+          />
+        </Grid>
+      </Tooltip>
+    )
+  }
+
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
       {schemaType.of.length === 1 ? (
@@ -87,6 +106,7 @@ export function ArrayOfPrimitivesFunctions<
                 const icon = memberDef.icon || memberDef.type?.icon || referenceIcon
                 return (
                   <MenuItem
+                    // oxlint-disable-next-line no-array-index-key
                     key={i}
                     text={memberDef.title || memberDef.type?.name}
                     onClick={() => insertItem(memberDef)}

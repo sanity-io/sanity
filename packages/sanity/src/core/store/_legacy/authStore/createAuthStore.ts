@@ -3,11 +3,12 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {isEqual, memoize} from 'lodash'
+import {isEqual, memoize} from 'lodash-es'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
-import {type AuthConfig} from '../../../config'
+import {type AuthConfig, type LoginMethod} from '../../../config'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
 import {CorsOriginError} from '../cors'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
@@ -23,33 +24,80 @@ export interface AuthStoreOptions extends AuthConfig {
   dataset: string
 }
 
-const getStorageKey = (projectId: string) => {
+const getStorageKey = (projectId: string): string => {
   // Project ID is part of the localStorage key so that different projects can
   // store their separate tokens, and it's easier to do book keeping.
   if (!projectId) throw new Error('Invalid project id')
   return `__studio_auth_token_${projectId}`
 }
 
-const getToken = (projectId: string): string | null => {
+const getHashToken = (): string | null => {
+  if (typeof window === 'undefined' || typeof window.location !== 'object') {
+    return null
+  }
+
+  // Token pattern used for extracting tokens from URL hash
+  const tokenPattern = /token=([^&]{32,})&?/
+  const [, tokenParam] = window.location.hash.match(tokenPattern) || []
+  if (!tokenParam) {
+    return null
+  }
+
+  // Remove the token from URL for security
+  const newHash = window.location.hash.replace(tokenPattern, '')
+  const newUrl = new URL(window.location.href)
+  newUrl.hash = newHash.length > 1 ? newHash : ''
+  history.replaceState(null, '', newUrl)
+
+  return tokenParam
+}
+
+const getAuthOptions = (
+  loginMethod: LoginMethod,
+  token: string | null,
+): {token: string} | {withCredentials: boolean} | null => {
+  if (loginMethod === 'cookie') {
+    return {withCredentials: true}
+  }
+
+  if (loginMethod === 'token') {
+    return token ? {token} : null
+  }
+
+  return token ? {token} : {withCredentials: true}
+}
+
+const getStoredToken = (projectId: string): string | null => {
   try {
     const item = storage.getItem(getStorageKey(projectId))
-    if (item) {
-      const {token} = JSON.parse(item) as {token: string}
-      if (token && typeof token === 'string') {
-        return token
-      }
-    }
+    if (!item) return null
+
+    const {token} = JSON.parse(item) as {token: string}
+    return token && typeof token === 'string' ? token : null
   } catch (err) {
     console.error(err)
+    return null
   }
-  return null
+}
+
+const getToken = (projectId: string): string | null => {
+  const storedToken = getStoredToken(projectId)
+  const hashToken = getHashToken()
+
+  // Prefer hash token over stored token when available and different
+  if (hashToken && (!storedToken || hashToken !== storedToken)) {
+    saveToken({token: hashToken, projectId})
+    return hashToken
+  }
+
+  return storedToken || null
 }
 
 const clearToken = (projectId: string): void => {
   try {
     storage.removeItem(getStorageKey(projectId))
   } catch (err) {
-    console.error(err)
+    console.error('Failed to clear auth token from storage:', err)
   }
 }
 
@@ -60,7 +108,7 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
       JSON.stringify({token, time: new Date().toISOString()}),
     )
   } catch (err) {
-    console.error(err)
+    console.error('Failed to save auth token to storage:', err)
   }
 }
 
@@ -71,7 +119,6 @@ const getCurrentUser = async (
   try {
     const user = await client.request({
       uri: '/users/me',
-      withCredentials: true,
       tag: 'users.get-current',
     })
 
@@ -98,13 +145,16 @@ const getCurrentUser = async (
 
     if (invalidCorsConfig) {
       // Throw a specific error on CORS-errors, to allow us to show a customized dialog
-      throw new CorsOriginError({projectId: client.config()?.projectId})
+      throw new CorsOriginError({
+        isStaging: client.config().apiHost.endsWith('.work'),
+        projectId: client.config()?.projectId,
+      })
     }
 
     // Some non-CORS error - is it one of those undefinable network errors?
     if (err.isNetworkError && !err.message && err.request && err.request.url) {
       const host = new URL(err.request.url).host
-      throw new Error(`Unknown network error attempting to reach ${host}`)
+      throw new Error(`Unknown network error attempting to reach ${host}`, {cause: err})
     }
 
     // Some other error, just throw it
@@ -159,12 +209,12 @@ export function _createAuthStore({
         dataset,
         apiVersion: '2021-06-07',
         useCdn: false,
-        ...(token && {token}),
-        withCredentials: true,
+        ...getAuthOptions(loginMethod, token),
         perspective: 'raw',
         requestTagPrefix: 'sanity.studio',
         ignoreBrowserTokenWarning: true,
         allowReconfigure: false,
+        headers: DEFAULT_STUDIO_CLIENT_HEADERS,
         ...hostOptions,
       }),
     ),
@@ -202,6 +252,7 @@ export function _createAuthStore({
       withCredentials: true,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
@@ -238,14 +289,15 @@ export function _createAuthStore({
   }
 
   async function logout() {
+    const token = getToken(projectId)
     const requestClient = clientFactory({
       projectId,
       dataset,
       useCdn: true,
-      withCredentials: true,
-      token: getToken(projectId) ?? undefined,
+      ...getAuthOptions(loginMethod, token),
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
+      headers: DEFAULT_STUDIO_CLIENT_HEADERS,
       ...hostOptions,
     })
 
@@ -285,4 +337,4 @@ function hash(value: unknown): string {
 /**
  * @internal
  */
-export const createAuthStore = memoize(_createAuthStore, hash)
+export const createAuthStore: typeof _createAuthStore = memoize(_createAuthStore, hash)

@@ -101,7 +101,7 @@ export function reducer(state: State, action: Action): State {
     default:
       throw Error(
         `Unknown action: ${
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line no-explicit-any
           (action as any).type
         }`,
         {cause: action},

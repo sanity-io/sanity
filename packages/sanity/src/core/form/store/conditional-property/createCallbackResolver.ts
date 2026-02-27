@@ -1,4 +1,4 @@
-import {type CurrentUser, isKeyedObject, type SchemaType} from '@sanity/types'
+import {type CurrentUser, isKeyedObject, type Path, type SchemaType} from '@sanity/types'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {MAX_FIELD_DEPTH} from '../constants'
@@ -19,6 +19,7 @@ interface ResolveCallbackStateOptions {
   currentUser: Omit<CurrentUser, 'role'> | null
   schemaType: SchemaType
   level: number
+  path: Path
 }
 
 function resolveCallbackState({
@@ -29,12 +30,14 @@ function resolveCallbackState({
   schemaType,
   level,
   property,
+  path,
 }: ResolveCallbackStateOptions): StateTree<boolean> | undefined {
   const context: ConditionalPropertyCallbackContext = {
     value,
     parent,
     document: document as ConditionalPropertyCallbackContext['document'],
     currentUser,
+    path,
   }
   const selfValue = resolveConditionalProperty(schemaType[property], context)
 
@@ -64,6 +67,7 @@ function resolveCallbackState({
           schemaType: fieldset.field.type,
           level: level + 1,
           property,
+          path: [...path, fieldset.field.name],
         })
         if (!childResult) continue
 
@@ -87,6 +91,7 @@ function resolveCallbackState({
           schemaType: field.type,
           level: level + 1,
           property,
+          path: [...path, field.name],
         })
         if (!childResult) continue
 
@@ -119,6 +124,7 @@ function resolveCallbackState({
           parent: value,
           schemaType: itemType,
           property,
+          path: [...path, {_key: item._key}],
         })
         if (!childResult) continue
 
@@ -182,6 +188,7 @@ export function createCallbackResolver<TProperty extends 'hidden' | 'readOnly'>(
         schemaType,
         value: documentValue,
         property,
+        path: [],
       }),
     )
 

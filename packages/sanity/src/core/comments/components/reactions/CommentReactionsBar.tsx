@@ -155,8 +155,8 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
 
           return (
             <CommentReactionsUsersTooltip
-              currentUser={currentUser}
               key={name}
+              currentUser={currentUser}
               reactionName={name}
               userIds={userIds}
             >
@@ -164,7 +164,6 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
                 <UIButton
                   disabled={readOnly || mode === 'upsell'}
                   mode="ghost"
-                  // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => handleSelect(name)}
                   padding={2}
                   radius="full"
@@ -187,7 +186,6 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
         <TransparentCard tone="default">
           <CommentReactionsMenuButton
             mode={mode}
-            // eslint-disable-next-line react/jsx-no-bind
             onSelect={(o) => handleSelect(o.shortName)}
             options={COMMENT_REACTION_OPTIONS}
             readOnly={readOnly}

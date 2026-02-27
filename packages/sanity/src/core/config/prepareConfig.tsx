@@ -2,13 +2,22 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
+import debugit from 'debug'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
-import {startCase} from 'lodash'
+import {startCase} from 'lodash-es'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {FileSource, ImageSource} from '../form/studio/assetSource'
+import {
+  createDatasetFileAssetSource,
+  createDatasetImageAssetSource,
+} from '../form/studio/assetSourceDataset'
+import {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../form/studio/assetSourceMediaLibrary'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {createSchema} from '../schema'
@@ -16,16 +25,21 @@ import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {uploadSchema} from '../studio/manifest/uploadSchema'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
-  createFallbackOriginReducer,
+  decisionParametersSchemaReducer,
+  directUploadsReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
+  draftsEnabledReducer,
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
@@ -34,14 +48,18 @@ import {
   initialLanguageFilter,
   internalTasksReducer,
   legacySearchEnabledReducer,
+  mediaLibraryEnabledReducer,
+  mediaLibraryFrontendHostReducer,
+  mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  releaseActionsReducer,
   resolveProductionUrlReducer,
+  scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
   serverDocumentActionsReducer,
-  startInCreateEnabledReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -54,7 +72,9 @@ import {SchemaError} from './SchemaError'
 import {
   type Config,
   type ConfigContext,
+  DECISION_PARAMETERS_SCHEMA,
   type MissingConfigFile,
+  type PluginOptions,
   type PreparedConfig,
   type SingleWorkspace,
   type Source,
@@ -65,6 +85,8 @@ import {
 } from './types'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
+
+const debug = debugit('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -79,6 +101,42 @@ function normalizeIcon(
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
+// Create media library sources with configuration
+const createMediaLibraryAssetSources = (config: PluginOptions) => {
+  const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
+  const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
+
+  // Only create sources if media library is enabled
+  if (!enabled) {
+    return {fileSource: null, imageSource: null}
+  }
+
+  const fileSource = createSanityMediaLibraryFileSource({
+    libraryId: libraryId || null,
+  })
+
+  const imageSource = createSanityMediaLibraryImageSource({
+    libraryId: libraryId || null,
+  })
+
+  return {fileSource, imageSource}
+}
+
+// Create default asset sources with configuration
+const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) => {
+  const fileSource = createDatasetFileAssetSource({
+    client,
+    title: config.title || config.name,
+  })
+
+  const imageSource = createDatasetImageAssetSource({
+    client,
+    title: config.title || config.name,
+  })
+
+  return {fileSource, imageSource}
+}
 
 /**
  * Takes in a config (created from the `defineConfig` function) and returns
@@ -127,7 +185,26 @@ export function prepareConfig(
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
       return {
         ...source,
-        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)]
+          /*
+           * @FIXME: with the introduction of global references, @sanity/assist broke
+           * As a quickfix the plugins was released with a know property on the plugin definition.
+           * This checks for that property: if it is missing, the plugin is not compatible with this version of the studio.
+           * This ensures auto updating studios can start, albeit without assist, it it is old.
+           */
+          .filter((plugin) => {
+            const validPlugin =
+              plugin.name !== '@sanity/assist' ||
+              (plugin as unknown as {handlesGDR?: boolean}).handlesGDR
+            if (!validPlugin) {
+              console.warn(
+                'Found an incompatible version of @sanity/assist plugin. It has been disabled.\n' +
+                  'To re-enable the plugin, please upgrade to https://github.com/sanity-io/assist/releases/tag/v3.2.2 or later.',
+              )
+            }
+
+            return validPlugin
+          }),
       }
     })
 
@@ -199,6 +276,7 @@ export function prepareConfig(
       auth: resolvedSources[0].auth,
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
+      apiHost: rootSource.apiHost,
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
@@ -283,6 +361,10 @@ function resolveSource({
     projectId,
     schema,
     i18n: i18n.source,
+    [DECISION_PARAMETERS_SCHEMA]: decisionParametersSchemaReducer({
+      config,
+      initialValue: undefined,
+    }),
   }
 
   // <TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
@@ -308,6 +390,9 @@ function resolveSource({
   /* eslint-enable no-proto */
   // </TEMPORARY UGLY HACK TO PRINT DEPRECATION WARNINGS ON USE>
 
+  const defaultAssetSources = createDatasetAssetSources(config, context.client)
+  const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -317,7 +402,7 @@ function resolveSource({
       reducer: schemaTemplatesReducer,
       initialValue: schema
         .getTypeNames()
-        .filter((typeName) => !/^sanity\./.test(typeName))
+        .filter((typeName) => !typeName.startsWith('sanity.'))
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
@@ -509,6 +594,15 @@ function resolveSource({
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
         }),
+      drafts: {
+        enabled: resolveConfigProperty({
+          config,
+          context,
+          reducer: draftsEnabledReducer,
+          propertyName: 'document.drafts.enabled',
+          initialValue: true,
+        }),
+      },
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -568,27 +662,25 @@ function resolveSource({
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [FileSource],
+          initialValue: mediaLibraryAssetSources.fileSource
+            ? [mediaLibraryAssetSources.fileSource, defaultAssetSources.fileSource]
+            : [defaultAssetSources.fileSource],
           propertyName: 'formBuilder.file.assetSources',
           reducer: fileAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.file?.directUploads === undefined ? true : config.form.file.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'file'}),
       },
       image: {
         assetSources: resolveConfigProperty({
           config,
           context,
-          initialValue: [ImageSource],
+          initialValue: mediaLibraryAssetSources.imageSource
+            ? [mediaLibraryAssetSources.imageSource, defaultAssetSources.imageSource]
+            : [defaultAssetSources.imageSource],
           propertyName: 'formBuilder.image.assetSources',
           reducer: imageAssetSourceResolver,
         }),
-        directUploads:
-          // TODO: consider refactoring this to `noDirectUploads` or similar
-          // default value for this is `true`
-          config.form?.image?.directUploads === undefined ? true : config.form.image.directUploads,
+        directUploads: directUploadsReducer({config, schemaTypeName: 'image'}),
       },
     },
 
@@ -634,6 +726,12 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
+      schemaDescriptorId: authenticated
+        ? catchTap(uploadSchema(schema, getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)), (err) => {
+            debug('Uploading schema failed', {err})
+            return undefined
+          })
+        : Promise.resolve(undefined),
     },
     onUncaughtError: (error: Error, errorInfo: ErrorInfo) => {
       return onUncaughtErrorResolver({
@@ -650,13 +748,9 @@ function resolveSource({
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
         releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
       },
-      treeArrayEditing: {
-        // This beta feature is no longer available.
-        enabled: false,
-      },
       create: {
-        startInCreateEnabled: startInCreateEnabledReducer({config, initialValue: true}),
-        fallbackStudioOrigin: createFallbackOriginReducer(config),
+        startInCreateEnabled: false,
+        fallbackStudioOrigin: undefined,
       },
     },
     // eslint-disable-next-line camelcase
@@ -667,6 +761,42 @@ function resolveSource({
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),
     },
+
+    mediaLibrary: {
+      enabled: mediaLibraryEnabledReducer({config, initialValue: false}),
+      libraryId: mediaLibraryLibraryIdReducer({config, initialValue: undefined}),
+      __internal: {
+        frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
+      },
+    },
+
+    advancedVersionControl: {
+      enabled: resolveConfigProperty({
+        config,
+        context,
+        reducer: advancedVersionControlEnabledReducer,
+        propertyName: 'advancedVersionControl.enabled',
+        initialValue: false,
+      }),
+    },
+    scheduledDrafts: {
+      enabled: scheduledDraftsEnabledReducer({config, initialValue: true}),
+    },
+
+    releases: config.releases
+      ? {
+          enabled: config.releases.enabled ?? true,
+          limit: config.releases.limit,
+          actions: (partialContext) =>
+            resolveConfigProperty({
+              config,
+              context: {...context, ...partialContext},
+              initialValue: [],
+              propertyName: 'releases.actions',
+              reducer: releaseActionsReducer,
+            }),
+        }
+      : {enabled: true},
   }
 
   return source
@@ -714,4 +844,13 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+/**
+ * Registers a catch to a promise (to prevent it from being caught by the
+ * "unhandled promise" handler) while returning the original promise.
+ */
+function catchTap<T>(promise: Promise<T>, cb: (reason: unknown) => void): Promise<T> {
+  promise.catch(cb)
+  return promise
 }

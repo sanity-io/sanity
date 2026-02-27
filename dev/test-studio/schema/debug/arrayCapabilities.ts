@@ -1,9 +1,9 @@
 import {defineType} from '@sanity/types'
 
-const DISABLED_ACTIONS = ['add', 'addBefore', 'addAfter', 'duplicate', 'remove', 'copy'] as const
+const DISABLED_ACTIONS = ['add', 'duplicate', 'addBefore', 'addAfter', 'remove', 'copy'] as const
 
 export const arrayCapabilities = defineType({
-  name: 'arrayCapabilitiesExample',
+  name: 'arrayCapabilities',
   type: 'document',
   title: 'Array Capabilities test',
   // icon,
@@ -31,6 +31,7 @@ export const arrayCapabilities = defineType({
           fields: [{name: 'first', type: 'string', title: 'First string'}],
         },
       ],
+      initialValue: [{_type: 'something', first: 'First'}],
     },
     {
       name: 'objectArrayAsGrid',
@@ -72,6 +73,18 @@ export const arrayCapabilities = defineType({
           title: 'A number',
         },
       ],
+    },
+    {
+      name: 'arrayOfReferences',
+      title: 'Array of references to authors',
+      description: `With disabledActions: ${DISABLED_ACTIONS.join(', ')}`,
+      type: 'array',
+      options: {
+        collapsible: true,
+        collapsed: true,
+        disableActions: DISABLED_ACTIONS,
+      },
+      of: [{type: 'reference', to: [{type: 'author'}]}],
     },
   ],
 })

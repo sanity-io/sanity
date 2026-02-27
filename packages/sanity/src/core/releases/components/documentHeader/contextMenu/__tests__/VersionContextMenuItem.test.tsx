@@ -1,8 +1,8 @@
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
-import {type ReleaseDocument, type ReleaseType} from '../../../../store/types'
 import {VersionContextMenuItem} from '../VersionContextMenuItem'
 
 const mockRelease: ReleaseDocument = {
@@ -51,7 +51,7 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={asapRelease} />, {wrapper})
-    expect(screen.getByText('ASAP')).toBeInTheDocument()
+    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
   })
 
   it('renders release type as undecided', async () => {
@@ -80,6 +80,6 @@ describe('VersionContextMenuItem', () => {
     const wrapper = await createTestProvider()
 
     render(<VersionContextMenuItem release={mockRelease} />, {wrapper})
-    expect(screen.getByTestId('release-avatar-primary')).toBeInTheDocument()
+    expect(screen.getByTestId('release-avatar-suggest')).toBeInTheDocument()
   })
 })

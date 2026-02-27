@@ -1,225 +1,190 @@
 import {
-  type Action,
-  type EditAction,
+  type BaseActionOptions,
+  type CreateVersionAction,
+  type EditableReleaseDocument,
   type IdentifiedSanityDocumentStub,
+  type ReleaseDocument,
   type SanityClient,
+  type SingleActionResult,
 } from '@sanity/client'
 
-import {getPublishedId, getVersionId} from '../../util'
+import {getPublishedId, getVersionFromId, getVersionId} from '../../util'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
-import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from '../index'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
-import {prepareVersionReferences} from '../util/prepareVersionReferences'
+import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseLimitError} from './isReleaseLimitError'
-import {type EditableReleaseDocument} from './types'
 
-interface operationsOptions {
-  dryRun?: boolean
-  skipCrossDatasetValidation?: boolean
-}
 export interface ReleaseOperationsStore {
-  publishRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
-  schedule: (releaseId: string, date: Date, opts?: operationsOptions) => Promise<void>
-  //todo: reschedule: (releaseId: string, newDate: Date) => Promise<void>
-  unschedule: (releaseId: string, opts?: operationsOptions) => Promise<void>
-  archive: (releaseId: string, opts?: operationsOptions) => Promise<void>
-  unarchive: (releaseId: string, opts?: operationsOptions) => Promise<void>
-  updateRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
-  createRelease: (release: EditableReleaseDocument, opts?: operationsOptions) => Promise<void>
-  deleteRelease: (releaseId: string, opts?: operationsOptions) => Promise<void>
+  publishRelease: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  schedule: (releaseId: string, date: Date, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  unschedule: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  archive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  unarchive: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  updateRelease: (
+    release: EditableReleaseDocument,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  createRelease: (
+    release: EditableReleaseDocument,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  deleteRelease: (releaseId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   revertRelease: (
     revertReleaseId: string,
     documents: RevertDocument[],
     releaseMetadata: ReleaseDocument['metadata'],
     revertType: 'staged' | 'immediate',
-    opts?: operationsOptions,
+  ) => Promise<void>
+  duplicateRelease: (
+    releaseDocumentId: string,
+    releaseMetadata: ReleaseDocument['metadata'],
+    releaseDocuments?: IdentifiedSanityDocumentStub[],
   ) => Promise<void>
   createVersion: (
     releaseId: string,
     documentId: string,
-    initialvalue?: Record<string, unknown>,
-    opts?: operationsOptions,
-  ) => Promise<void>
-  discardVersion: (releaseId: string, documentId: string, opts?: operationsOptions) => Promise<void>
-  unpublishVersion: (documentId: string, opts?: operationsOptions) => Promise<void>
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  discardVersion: (
+    releaseId: string,
+    documentId: string,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
+  unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
+  revertUnpublishVersion: (
+    documentId: string,
+    opts?: BaseActionOptions,
+  ) => Promise<SingleActionResult>
 }
-
-const IS_CREATE_VERSION_ACTION_SUPPORTED = false
-const METADATA_PROPERTY_NAME = 'metadata'
 
 export function createReleaseOperationsStore(options: {
   client: SanityClient
   onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached']
 }): ReleaseOperationsStore {
-  const {client} = options
-  const requestAction = createRequestAction(options.onReleaseLimitReached)
+  const {client, onReleaseLimitReached} = options
 
-  const handleCreateRelease = (release: EditableReleaseDocument, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      {
-        actionType: 'sanity.action.release.create',
-        releaseId: getReleaseIdFromReleaseDocumentId(release._id),
-        [METADATA_PROPERTY_NAME]: release.metadata,
-      },
+  const handleReleaseLimitError = (
+    action: Promise<SingleActionResult>,
+    opts?: {dryRun?: boolean},
+  ) =>
+    action.catch((error) => {
+      // if dryRunning then essentially this is a silent request
+      // so don't want to create disruptive upsell because of limit
+      if (!opts?.dryRun && isReleaseLimitError(error)) {
+        // free accounts do not return limit, 0 is implied
+        onReleaseLimitReached(error.details.limit || 0)
+      }
+
+      throw error
+    })
+
+  const handleCreateRelease = (release: EditableReleaseDocument, opts?: BaseActionOptions) =>
+    handleReleaseLimitError(
+      client.releases.create(
+        {releaseId: getReleaseIdFromReleaseDocumentId(release._id), metadata: release.metadata},
+        opts,
+      ),
       opts,
     )
 
   const handleUpdateRelease = async (
     release: EditableReleaseDocument,
-    opts?: operationsOptions,
+    opts?: BaseActionOptions,
   ) => {
-    const bundleId = getReleaseIdFromReleaseDocumentId(release._id)
+    const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
 
     const unsetKeys = Object.entries(release)
       .filter(([_, value]) => value === undefined)
-      .map(([key]) => `${METADATA_PROPERTY_NAME}.${key}`)
+      .map(([key]) => `metadata.${key}`)
 
-    await requestAction(
-      client,
-      {
-        actionType: 'sanity.action.release.edit',
-        releaseId: bundleId,
-        patch: {
-          // todo: consider more granular updates here
-          set: {[METADATA_PROPERTY_NAME]: release.metadata},
-          unset: unsetKeys,
+    return handleReleaseLimitError(
+      client.releases.edit(
+        {
+          releaseId,
+          patch: {
+            set: {metadata: release.metadata},
+            unset: unsetKeys,
+          },
         },
-      },
+        opts,
+      ),
       opts,
     )
   }
 
-  const handlePublishRelease = (releaseId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.release.publish',
-          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        },
-      ],
+  const handlePublishRelease = (releaseId: string, opts?: BaseActionOptions) =>
+    handleReleaseLimitError(
+      client.releases.publish({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
-  const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
+  const handleScheduleRelease = (releaseId: string, publishAt: Date, opts?: BaseActionOptions) =>
+    handleReleaseLimitError(
+      client.releases.schedule(
         {
-          actionType: 'sanity.action.release.schedule',
           releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
           publishAt: publishAt.toISOString(),
         },
-      ],
+        opts,
+      ),
       opts,
     )
 
-  const handleUnscheduleRelease = (releaseId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.release.unschedule',
-          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        },
-      ],
+  const handleUnscheduleRelease = (releaseId: string, opts?: BaseActionOptions) =>
+    handleReleaseLimitError(
+      client.releases.unschedule({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
-  const handleArchiveRelease = (releaseId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.release.archive',
-          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        },
-      ],
+  const handleArchiveRelease = (releaseId: string, opts?: BaseActionOptions) =>
+    client.releases.archive({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts)
+
+  const handleUnarchiveRelease = (releaseId: string, opts?: BaseActionOptions) =>
+    handleReleaseLimitError(
+      client.releases.unarchive({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts),
       opts,
     )
 
-  const handleUnarchiveRelease = (releaseId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.release.unarchive',
-          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        },
-      ],
-      opts,
-    )
-
-  const handleDeleteRelease = (releaseId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.release.delete',
-          releaseId: getReleaseIdFromReleaseDocumentId(releaseId),
-        },
-      ],
-      opts,
-    )
+  const handleDeleteRelease = (releaseId: string, opts?: BaseActionOptions) =>
+    client.releases.delete({releaseId: getReleaseIdFromReleaseDocumentId(releaseId)}, opts)
 
   const handleCreateVersion = async (
     releaseId: string,
     documentId: string,
-    initialValue?: Record<string, unknown>,
-    opts?: operationsOptions,
+    opts?: BaseActionOptions,
   ) => {
-    // the documentId will show you where the document is coming from and which
-    // document should it copy from
-
-    // fetch original document
+    // fetch original document to get the revision id
     const document = await client.getDocument(documentId)
 
-    if (!document && !initialValue) {
-      throw new Error(`Document with id ${documentId} not found and no initial value provided`)
+    if (!document) {
+      throw new Error(`Document with id ${documentId} not found`)
     }
 
-    const versionDocument = prepareVersionReferences({
-      ...(document || {}),
-      ...(initialValue || {}),
-      _id: getVersionId(documentId, releaseId),
-    }) as IdentifiedSanityDocumentStub
-
-    await (IS_CREATE_VERSION_ACTION_SUPPORTED
-      ? requestAction(
-          client,
-          [
-            {
-              actionType: 'sanity.action.document.createVersion',
-              releaseId,
-              attributes: versionDocument,
-            },
-          ],
-          opts,
-        )
-      : client.create(versionDocument, opts))
-  }
-
-  const handleDiscardVersion = (releaseId: string, documentId: string, opts?: operationsOptions) =>
-    requestAction(
-      client,
-      [
-        {
-          actionType: 'sanity.action.document.discard',
-          draftId: getVersionId(documentId, releaseId),
-        },
-      ],
+    return client.createVersion(
+      {
+        baseId: documentId,
+        ifBaseRevisionId: document?._rev,
+        publishedId: getPublishedId(documentId),
+        releaseId,
+      },
       opts,
     )
+  }
 
-  const handleUnpublishVersion = (documentId: string) =>
-    requestAction(client, [
-      {
-        actionType: 'sanity.action.document.version.unpublish',
-        draftId: documentId,
-        publishedId: getPublishedId(documentId),
-      },
-    ])
+  const handleDiscardVersion = (releaseId: string, documentId: string, opts?: BaseActionOptions) =>
+    client.discardVersion({releaseId, publishedId: getPublishedId(documentId)}, false, opts)
+
+  const handleUnpublishVersion = (documentId: string, opts?: BaseActionOptions) => {
+    const releaseId = getVersionFromId(documentId)
+    // in cases where the document is not part of a release, or document is `drafts.`
+    // the releaseId will be undefined
+    // cannot unpublish in this case
+    if (!releaseId) {
+      throw new Error(`Release ID not found for document ${documentId}`)
+    }
+
+    return client.unpublishVersion({releaseId, publishedId: getPublishedId(documentId)}, opts)
+  }
 
   const handleRevertRelease = async (
     revertReleaseId: string,
@@ -233,21 +198,59 @@ export function createReleaseOperationsStore(options: {
         title: releaseMetadata.title,
         description: releaseMetadata.description,
         releaseType: 'asap',
+        cardinality: 'many',
       },
     })
-    await Promise.allSettled(
-      releaseDocuments.map((document) =>
-        handleCreateVersion(
-          getReleaseIdFromReleaseDocumentId(revertReleaseId),
-          document._id,
-          document,
-        ),
-      ),
+    const versionId = getReleaseIdFromReleaseDocumentId(revertReleaseId)
+    const newVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
+      (releaseDocument) => ({
+        actionType: 'sanity.action.document.version.create',
+        document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+        publishedId: getPublishedId(releaseDocument._id),
+      }),
     )
+    await client.action(newVersionDocumentActions)
 
     if (revertType === 'immediate') {
       await handlePublishRelease(revertReleaseId)
     }
+  }
+
+  const handleDuplicateRelease = async (
+    releaseDocumentId: string,
+    releaseMetadata: ReleaseDocument['metadata'],
+    releaseDocuments?: IdentifiedSanityDocumentStub[],
+  ) => {
+    await handleCreateRelease({
+      _id: releaseDocumentId,
+      metadata: releaseMetadata,
+    })
+
+    if (releaseDocuments) {
+      const versionId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
+      const duplicateVersionDocumentActions: CreateVersionAction[] = releaseDocuments.map(
+        (releaseDocument) => ({
+          actionType: 'sanity.action.document.version.create',
+          document: {...releaseDocument, _id: getVersionId(releaseDocument._id, versionId)},
+          publishedId: getPublishedId(releaseDocument._id),
+        }),
+      )
+      await client.action(duplicateVersionDocumentActions)
+    }
+  }
+
+  const handleRevertUnpublishVersion = async (documentId: string, opts?: BaseActionOptions) => {
+    return await client.action(
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: documentId,
+        publishedId: getPublishedId(documentId),
+        patch: {
+          unset: ['_system.delete'],
+        },
+      },
+      opts,
+    )
   }
 
   return {
@@ -260,109 +263,10 @@ export function createReleaseOperationsStore(options: {
     publishRelease: handlePublishRelease,
     deleteRelease: handleDeleteRelease,
     revertRelease: handleRevertRelease,
+    duplicateRelease: handleDuplicateRelease,
     createVersion: handleCreateVersion,
     discardVersion: handleDiscardVersion,
     unpublishVersion: handleUnpublishVersion,
-  }
-}
-
-interface ScheduleApiAction {
-  actionType: 'sanity.action.release.schedule'
-  releaseId: string
-  publishAt: string
-  dryRun?: boolean
-  skipCrossDatasetValidation?: boolean
-}
-
-interface PublishApiAction {
-  actionType: 'sanity.action.release.publish'
-  releaseId: string
-}
-
-interface ArchiveApiAction {
-  actionType: 'sanity.action.release.archive'
-  releaseId: string
-}
-
-interface UnarchiveApiAction {
-  actionType: 'sanity.action.release.unarchive'
-  releaseId: string
-}
-
-interface UnscheduleApiAction {
-  actionType: 'sanity.action.release.unschedule'
-  releaseId: string
-}
-
-interface CreateReleaseApiAction {
-  actionType: 'sanity.action.release.create'
-  releaseId: string
-  [METADATA_PROPERTY_NAME]?: Partial<ReleaseDocument['metadata']>
-}
-
-interface CreateVersionReleaseApiAction {
-  actionType: 'sanity.action.document.createVersion'
-  releaseId: string
-  attributes: IdentifiedSanityDocumentStub
-}
-
-interface UnpublishVersionReleaseApiAction {
-  actionType: 'sanity.action.document.version.unpublish'
-  draftId: string
-  publishedId: string
-}
-
-interface EditReleaseApiAction {
-  actionType: 'sanity.action.release.edit'
-  releaseId: string
-  patch: EditAction['patch']
-}
-
-interface DeleteApiAction {
-  actionType: 'sanity.action.release.delete'
-  releaseId: string
-}
-
-type ReleaseAction =
-  | Action
-  | ScheduleApiAction
-  | PublishApiAction
-  | CreateReleaseApiAction
-  | EditReleaseApiAction
-  | UnscheduleApiAction
-  | ArchiveApiAction
-  | UnarchiveApiAction
-  | DeleteApiAction
-  | CreateVersionReleaseApiAction
-  | UnpublishVersionReleaseApiAction
-
-export function createRequestAction(
-  onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached'],
-) {
-  return async function requestAction(
-    client: SanityClient,
-    actions: ReleaseAction | ReleaseAction[],
-    options?: operationsOptions,
-  ): Promise<void> {
-    const {dataset} = client.config()
-    try {
-      return await client.request({
-        uri: `/data/actions/${dataset}`,
-        method: 'POST',
-        body: {
-          ...options,
-          actions: Array.isArray(actions) ? actions : [actions],
-        },
-      })
-    } catch (e) {
-      // if dryRunning then essentially this is a silent request
-      // so don't want to create disruptive upsell because of limit
-      if (!options?.dryRun && isReleaseLimitError(e)) {
-        // free accounts do not return limit, 0 is implied
-        onReleaseLimitReached(e.details.limit || 0)
-      }
-
-      throw e
-    }
+    revertUnpublishVersion: handleRevertUnpublishVersion,
   }
 }

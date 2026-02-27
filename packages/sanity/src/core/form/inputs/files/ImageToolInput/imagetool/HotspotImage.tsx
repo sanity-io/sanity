@@ -38,7 +38,7 @@ export interface HotspotImageProps {
   className?: string
   style?: CSSProperties
   alt?: string
-  onError?: (event: SyntheticEvent<HTMLImageElement, Event>) => void
+  onError?: (event: SyntheticEvent<HTMLImageElement>) => void
   onLoad?: () => void
 }
 
@@ -86,11 +86,11 @@ export const HotspotImage = memo(function HotspotImage(props: HotspotImageProps)
 
     if (alreadyLoaded) {
       debug("Image '%s' already loaded, refreshing (from cache) to trigger onLoad / onError", src)
-      // eslint-disable-next-line no-self-assign
+      // oxlint-disable-next-line no-self-assign
       imageElement.src = imageElement.src
     }
 
-    updateContainerAspect()
+    startTransition(() => updateContainerAspect())
 
     window.addEventListener('resize', updateContainerAspect)
 

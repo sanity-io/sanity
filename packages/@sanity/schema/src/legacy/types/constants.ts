@@ -14,3 +14,11 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
   'initialValue',
   'deprecated',
 ]
+
+/**
+ * The property name used for each type where we store the "own props" of the type.
+ * This is the set of properties which are _not_ inherited, but explicitly defined on this type.
+ */
+export const OWN_PROPS_NAME = '_internal_ownProps'
+
+export const ALL_FIELDS_GROUP_NAME = 'all-fields'

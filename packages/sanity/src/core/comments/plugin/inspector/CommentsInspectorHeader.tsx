@@ -10,8 +10,8 @@ import {type CommentStatus, type CommentsUIMode} from '../../types'
 
 const Root = styled(Card)({
   position: 'relative',
-  zIndex: 1,
-  lineHeight: 0,
+  zIndex: '1',
+  lineHeight: '0',
 })
 
 interface CommentsInspectorHeaderProps {

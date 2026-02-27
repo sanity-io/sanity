@@ -1,16 +1,12 @@
-'use no memo'
-// The `use no memo` directive is due to a known issue with react-virtual and react compiler: https://github.com/TanStack/virtual/issues/736
-
+import {type ReleaseDocument} from '@sanity/client'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
+import {AnimatePresence, motion} from 'motion/react'
 import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
 import {useTranslation} from '../../../i18n'
 import {releasesLocaleNamespace} from '../../i18n'
-import {type ReleaseDocument} from '../../store/types'
-import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
 
@@ -32,6 +28,7 @@ export function ReleaseDashboardActivityPanel({
   show,
 }: ReleaseDashboardActivityPanelProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
+  const {t: tCore} = useTranslation()
   return (
     <AnimatePresence>
       {show && (
@@ -68,7 +65,7 @@ export function ReleaseDashboardActivityPanel({
                 )}
                 <ReleaseActivityList
                   releaseTitle={
-                    release.metadata.title || getReleaseIdFromReleaseDocumentId(release._id)
+                    release.metadata.title || tCore('release.placeholder-untitled-release')
                   }
                   releaseId={release._id}
                   events={events.events}

@@ -1,5 +1,5 @@
 import {type Path, type PathSegment} from '@sanity/types'
-import {find, get} from 'lodash'
+import {find, get} from 'lodash-es'
 import {useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-sync */
 import fs from 'node:fs'
 
 import {type PackageManifest} from '../types'

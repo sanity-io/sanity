@@ -1,0 +1,140 @@
+name: Create Release PR
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  create-or-update-pr:
+    # this runs in main, and we want to skip running it when release PRs are merged
+    # format of the commit message is specified in lerna.json
+    if: >
+      !startsWith(github.event.head_commit.message, 'chore(release): publish')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Ensure main exists locally
+        run: git checkout -B main origin/main && git switch -
+
+      - uses: ./.github/actions/setup
+
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+
+      - name: Build
+        run: pnpm build --output-logs=full --log-order=grouped
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Get base version
+        # store the current version and use as base version when generating changelog documents
+        id: get-base-version
+        run: |
+          echo "base-version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Update version
+        run: |
+          npx lerna version \
+            --force-publish \
+            --no-git-tag-version \
+            --conventional-commits \
+            --yes
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Fix lerna.json EOF formatting
+        # lerna version formats lerna.json removing EOF line
+        # this is needed to pass linter
+        run: pnpm oxfmt lerna.json
+
+      - name: Sync workspace lockfile
+        run: pnpm install --lockfile-only
+
+      - name: Get version commit message
+        # generate the commit message that would be created (determined by lerna.json)
+        id: version-commit
+        run: |
+          VERSION=$(cat lerna.json | jq -r .version)
+          echo "message=chore(release): publish v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get version
+        id: release-as
+        run: echo "version=$(cat lerna.json | jq -r .version)" >> $GITHUB_OUTPUT
+
+      - name: Prepare content release with release note document
+        id: release-notes
+        run: |
+          {
+            echo "notes<<EOF"
+            pnpm --silent release-notes generate-changelog \
+              --baseVersion=${{ steps.get-base-version.outputs.base-version }} \
+              --tentativeVersion="${{steps.release-as.outputs.version}}" \
+              --outputFormat=pr-description
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Draft release notes for upcoming release
+        id: draft-release-notes
+        run: pnpm --silent release-notes draft-release-notes --baseVersion=${{ steps.get-base-version.outputs.base-version }}
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_CLAUDE_API_KEY: ${{ secrets.RELEASE_NOTES_CLAUDE_API_KEY }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Create or update PR
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8
+        id: create-pull-request
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          title: "${{steps.version-commit.outputs.message}}"
+          body: |
+            ${{steps.release-notes.outputs.notes}}
+          commit-message: "${{steps.version-commit.outputs.message}}"
+          branch: ci/release-main
+          labels: "release:latest"
+          sign-commits: true
+          base: main
+          draft: true
+
+      - name: Post release notes reminder to the associated PR
+        run: |
+          pnpm --silent release-notes comment-pr-after-merge \
+          --baseVersion=${{ steps.get-base-version.outputs.base-version }} \
+          --commit=${{ github.sha }}
+        env:
+          RELEASE_NOTES_SANITY_PROJECT_ID: ${{ vars.RELEASE_NOTES_SANITY_PROJECT_ID }}
+          RELEASE_NOTES_SANITY_DATASET: ${{ vars.RELEASE_NOTES_SANITY_DATASET }}
+          RELEASE_NOTES_ADMIN_STUDIO_URL: ${{ vars.RELEASE_NOTES_ADMIN_STUDIO_URL }}
+          RELEASE_NOTES_SANITY_TOKEN: ${{ secrets.RELEASE_NOTES_SANITY_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

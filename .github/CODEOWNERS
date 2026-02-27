@@ -8,7 +8,7 @@
 # areas to improve maintainablitly and availability
 
 # Releases
-/packages/sanity/src/core/releases @sanity-io/studio-app
+/packages/sanity/src/core/releases @sanity-io/studio
 
 # -- Others --
 
@@ -20,10 +20,12 @@
 *.telemetry.ts @sanity-io/data-eng
 
 # Code and typegeneration
-/packages/@sanity/codegen/ @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/actions/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
 # Presentation Tool, which interfaces with Visual Editing libraries
 /packages/sanity/src/presentation/ @sanity-io/ecosystem
+
+# Examples
+/examples/functions @kmelve @kenjonespizza @iamkevingreen

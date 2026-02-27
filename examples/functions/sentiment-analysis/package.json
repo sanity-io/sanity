@@ -1,0 +1,24 @@
+{
+  "name": "sentiment-analysis",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "1.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "sentiment-analysis",
+    "src": "./functions/sentiment-analysis",
+    "memory": 2,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "publish"
+      ],
+      "filter": "_type in ['review', 'comment', 'feedback'] && !defined(sentiment)",
+      "projection": "{_id}"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

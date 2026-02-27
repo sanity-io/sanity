@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import {isPast} from 'date-fns'
+import {isPast} from 'date-fns/isPast'
 import {useCallback} from 'react'
 
 interface CalendarDayProps {
@@ -36,6 +36,7 @@ export function CalendarDay(props: CalendarDayProps) {
         radius={2}
         selected={selected}
         tone={isToday || selected ? 'primary' : 'default'}
+        data-testid={`calendar-day-${date.toDateString().replaceAll(' ', '-')}`}
       >
         <Text
           muted={!selected && !isCurrentMonth}

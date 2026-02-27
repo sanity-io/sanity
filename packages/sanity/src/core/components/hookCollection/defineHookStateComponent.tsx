@@ -1,4 +1,4 @@
-import {memo, useEffect} from 'react'
+import {useEffect} from 'react'
 
 import {type HookCollectionActionHook} from './types'
 
@@ -6,45 +6,30 @@ export function defineHookStateComponent<Args, State>({
   hook: useHook,
   id,
 }: {
-  hook: HookCollectionActionHook<
-    Args & {
-      onComplete: () => void
-    },
-    State
-  >
+  hook: HookCollectionActionHook<Args, State>
   id: string
 }) {
   const HookStateComponent = ({
     args,
     handleNext,
-    handleReset,
   }: {
     args: Args
-    handleNext: (id: string, hookState: any) => void
-    handleReset: (id: string) => void
+    handleNext: (id: string, hookState: State | null) => void
   }) => {
-    const hookState = useHook({
-      ...args,
-      onComplete: () => {
-        handleReset(id)
-      },
-    })
+    const hookState = useHook(args)
 
     useEffect(() => {
-      handleNext(id, hookState)
-      return () => {
-        handleNext(id, null)
+      if (hookState) {
+        handleNext(id, {...hookState, action: useHook.action})
+      } else {
+        handleNext(id, hookState)
       }
     }, [handleNext, hookState])
 
     return null
   }
   // Massively helps debugging and profiling by setting the display name
-  const {displayName = 'HookState'} = useHook
+  const {displayName = id.replace(/-[0-9]+$/, '')} = useHook
   HookStateComponent.displayName = displayName
-  return memo(
-    HookStateComponent,
-    // Only re-render if the args prop changes, ignore other prop changes
-    (prev, next) => prev.args === next.args,
-  )
+  return HookStateComponent
 }

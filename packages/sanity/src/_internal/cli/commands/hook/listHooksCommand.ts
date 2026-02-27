@@ -19,7 +19,7 @@ const listHooksCommand: CliCommandDefinition = {
         .config({apiVersion: '2021-10-04'})
         .request<Hook[]>({uri: '/hooks'})
     } catch (err) {
-      throw new Error(`Hook list retrieval failed:\n${err.message}`)
+      throw new Error(`Hook list retrieval failed:\n${err.message}`, {cause: err})
     }
 
     hooks.forEach((hook) => {

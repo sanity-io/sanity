@@ -3,7 +3,6 @@ import {LayerProvider, PortalProvider} from '@sanity/ui'
 
 import {SearchPopover} from '../../../studio/components/navbar/search/components/SearchPopover'
 import {SearchProvider} from '../../../studio/components/navbar/search/contexts/search/SearchProvider'
-import {useBundleDocuments} from './useBundleDocuments'
 
 export type AddedDocument = Pick<SanityDocument, '_id' | '_type' | 'title'> &
   Partial<SanityDocument>
@@ -12,20 +11,24 @@ export function AddDocumentSearch({
   open,
   onClose,
   releaseId,
+  idsInRelease,
 }: {
   open: boolean
   onClose: (document?: AddedDocument) => void
   releaseId: string
+  idsInRelease: string[]
 }): React.JSX.Element {
-  const {results} = useBundleDocuments(releaseId)
-  const idsInRelease: string[] = results.map((doc) => doc.document._id)
-
   return (
     <LayerProvider zOffset={1}>
-      {/* eslint-disable-next-line @sanity/i18n/no-attribute-string-literals*/}
-      <SearchProvider perspective={['raw']} disabledDocumentIds={idsInRelease} canDisableAction>
+      <SearchProvider disabledDocumentIds={idsInRelease} canDisableAction>
         <PortalProvider>
-          <SearchPopover onClose={onClose} onItemSelect={onClose} open={open} disableIntentLink />
+          <SearchPopover
+            onClose={onClose}
+            onItemSelect={onClose}
+            open={open}
+            previewPerspective={[releaseId]}
+            disableIntentLink
+          />
         </PortalProvider>
       </SearchProvider>
     </LayerProvider>

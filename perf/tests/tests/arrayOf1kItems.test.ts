@@ -1,4 +1,4 @@
-import {range} from 'lodash'
+import {range} from 'lodash-es'
 
 import {type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
@@ -52,9 +52,7 @@ export default {
     await page.waitForSelector('[data-testid="string-input"]')
     await page.getByRole('button', {name: 'Item 1'}).click()
 
-    const input = await page
-      .getByTestId('field-deep[_key=="item-1"].text')
-      .getByTestId('string-input')
+    const input = page.getByTestId('field-deep[_key=="item-1"].text').getByTestId('string-input')
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>

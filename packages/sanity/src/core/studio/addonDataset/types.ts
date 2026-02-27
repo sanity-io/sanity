@@ -15,4 +15,5 @@ export interface AddonDatasetContextValue {
    */
   createAddonDataset: () => Promise<SanityClient | null>
   ready: boolean
+  error: Error | null
 }

@@ -1,9 +1,20 @@
-import {type ReactCompilerConfig, type UserViteConfig} from '@sanity/cli'
-import chalk from 'chalk'
+import {
+  type CliCommandContext,
+  type CliConfig,
+  type ReactCompilerConfig,
+  type UserViteConfig,
+} from '@sanity/cli'
+import {type ViteDevServer} from 'vite'
 
 import {debug} from './debug'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+import {extendViteConfigWithUserConfig, getViteConfig, type ViteOptions} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
+
+export interface SchemaExtractionOptions {
+  enabled: boolean
+  outputPath?: string
+  workspaceName?: string
+}
 
 export interface DevServerOptions {
   cwd: string
@@ -17,11 +28,26 @@ export interface DevServerOptions {
   reactStrictMode: boolean
   reactCompiler: ReactCompilerConfig | undefined
   vite?: UserViteConfig
-  appLocation?: string
-  isCoreApp?: boolean
+  entry?: string
+  isApp?: boolean
+
+  /**
+   * Typegen configuration. When enabled, types are generated on startup
+   * and when query files or schema.json change.
+   */
+  typegen?: CliConfig['typegen'] & {enabled?: boolean}
+
+  /**
+   * Telemetry logger for tracking plugin usage
+   */
+  telemetryLogger?: CliCommandContext['telemetry']
+
+  /** Schema extraction options */
+  schemaExtraction?: ViteOptions['schemaExtraction']
 }
 
 export interface DevServer {
+  server: ViteDevServer
   close(): Promise<void>
 }
 
@@ -34,13 +60,15 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     reactStrictMode,
     vite: extendViteConfig,
     reactCompiler,
-    appLocation,
-    isCoreApp,
+    entry,
+    isApp,
+    typegen,
+    telemetryLogger,
+    schemaExtraction,
   } = options
 
-  const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, appLocation, isCoreApp})
+  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath, entry, isApp})
 
   debug('Resolving vite config')
   const mode = 'development'
@@ -51,7 +79,10 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
     server: {port: httpPort, host: httpHost},
     cwd,
     reactCompiler,
-    isCoreApp,
+    isApp,
+    typegen,
+    telemetryLogger,
+    schemaExtraction,
   })
 
   // Extend Vite configuration with user-provided config
@@ -66,20 +97,12 @@ export async function startDevServer(options: DevServerOptions): Promise<DevServ
   debug('Creating vite server')
   const {createServer} = await import('vite')
   const server = await createServer(viteConfig)
-  const info = server.config.logger.info
 
   debug('Listening on specified port')
   await server.listen()
 
-  const startupDuration = Date.now() - startTime
-  const url = `http://${httpHost || 'localhost'}:${httpPort || '3333'}${basePath}`
-  const appType = isCoreApp ? 'Sanity application' : 'Sanity Studio'
-  info(
-    `${appType} ` +
-      `using ${chalk.cyan(`vite@${require('vite/package.json').version}`)} ` +
-      `ready in ${chalk.cyan(`${Math.ceil(startupDuration)}ms`)} ` +
-      `and running at ${chalk.cyan(url)}`,
-  )
-
-  return {close: () => server.close()}
+  return {
+    server,
+    close: () => server.close(),
+  }
 }

@@ -39,7 +39,6 @@ export function usePresenceReportedValues(): TrackerContextGetSnapshot<FieldPres
   const snapshot = useContext(PresenceTrackerContextGetSnapshot)
 
   if (snapshot === null) {
-    // eslint-disable-next-line no-console
     console.warn(
       new Error(
         'No context provided for reporter. Make sure that the component calling "usePresenceReportedValues()", is wrapped inside a <PresenceTracker> element',
@@ -58,7 +57,6 @@ export const usePresenceReporter: ReporterHook<FieldPresenceData> = (id, value, 
   const store = useContext(PresenceTrackerContextStore)
 
   if (store === null) {
-    // eslint-disable-next-line no-console
     console.warn(
       new Error(
         'No context provided for reporter. Make sure that the component calling "usePresenceReporter()", is wrapped inside a <PresenceTracker> element',

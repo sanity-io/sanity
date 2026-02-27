@@ -1,10 +1,11 @@
-import {Box} from '@sanity/ui'
+import {Box, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   CommandList,
   type CommandListItemContext,
   type GeneralPreviewLayoutKey,
   useGetI18nText,
+  useI18nText,
 } from 'sanity'
 import {styled} from 'styled-components'
 
@@ -14,18 +15,49 @@ import {type PaneListItem, type PaneListItemDivider} from '../../types'
 interface ListPaneContentProps {
   childItemId?: string
   isActive?: boolean
-  items: (PaneListItem<unknown> | PaneListItemDivider)[] | undefined
+  items: (PaneListItem | PaneListItemDivider)[] | undefined
   layout?: GeneralPreviewLayoutKey
   showIcons: boolean
   title: string
 }
 
+const DividerContainer = styled(Box)`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.75rem 0 0.25rem 0;
+`
+
 const Divider = styled.hr`
+  flex: 1;
   background-color: var(--card-border-color);
   height: 1px;
   margin: 0;
   border: none;
 `
+
+const DividerTitle = styled(Text)`
+  padding-bottom: 0.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+`
+
+interface DividerItemProps {
+  item: PaneListItemDivider
+}
+
+function DividerItem({item}: DividerItemProps) {
+  const {title: dividerTitle} = useI18nText(item)
+  return (
+    <DividerContainer>
+      <DividerTitle weight="semibold" muted size={1}>
+        {dividerTitle}
+      </DividerTitle>
+
+      <Divider />
+    </DividerContainer>
+  )
+}
 
 /**
  * @internal
@@ -48,28 +80,21 @@ export function ListPaneContent(props: ListPaneContentProps) {
 
   const shouldShowIconForItem = useCallback(
     (item: PaneListItem): boolean => {
-      const itemShowIcon = item.displayOptions?.showIcon
-
       // Specific true/false on item should have precedence over list setting
-      if (typeof itemShowIcon !== 'undefined') {
-        return itemShowIcon !== false // Boolean(item.icon)
-      }
-
       // If no item setting is defined, defer to the pane settings
-      return showIcons !== false // Boolean(item.icon)
+      return item.displayOptions?.showIcon ?? showIcons ?? false
     },
     [showIcons],
   )
 
   const renderItem = useCallback(
-    (item: PaneListItem<unknown> | PaneListItemDivider, ctx: CommandListItemContext) => {
+    (item: PaneListItem | PaneListItemDivider, ctx: CommandListItemContext) => {
       const {virtualIndex: itemIndex} = ctx
 
       if (item.type === 'divider') {
         return (
-          // eslint-disable-next-line react/no-array-index-key
           <Box key={`divider-${itemIndex}`} marginBottom={1}>
-            <Divider />
+            {item.title ? <DividerItem item={item} /> : <Divider />}
           </Box>
         )
       }
@@ -85,9 +110,9 @@ export function ListPaneContent(props: ListPaneContentProps) {
 
       return (
         <PaneItem
+          key={item.id}
           icon={shouldShowIconForItem(item) ? item.icon : false}
           id={item.id}
-          key={item.id}
           layout={layout}
           marginBottom={1}
           pressed={pressed}

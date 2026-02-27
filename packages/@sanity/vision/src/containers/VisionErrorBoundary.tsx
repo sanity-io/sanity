@@ -31,6 +31,7 @@ export class VisionErrorBoundary extends Component<
   }
 
   static getDerivedStateFromError(error: unknown) {
+    // oxlint-disable-next-line restrict-template-expressions - @TODO use new Error(msg, {cause: error}) instead of casting to string, and console.error() the full error
     return {error: error instanceof Error ? error.message : `${error}`}
   }
 

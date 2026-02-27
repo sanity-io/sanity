@@ -3,7 +3,7 @@ import {observableCallback} from 'observable-callback'
 import {concat, fromEvent, merge, NEVER, type Observable, of, throwError, timer} from 'rxjs'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
 
-import {catchWithCount} from './utils/catchWithCount'
+import {catchWithCount} from '../../../util/catchWithCount'
 
 /** @internal */
 export interface ConnectionStatusStore {
@@ -92,7 +92,7 @@ export function createConnectionStatusStore({
       const expiry$ = timer(retryAt)
       const isOffline = !navigator.onLine
       const initialErrorStatus = createErrorStatus({
-        error,
+        error: error as Error,
         retryAt,
         isOffline,
         attemptNo: successiveErrorsCount,

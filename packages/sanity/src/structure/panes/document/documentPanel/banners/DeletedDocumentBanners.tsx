@@ -4,6 +4,7 @@ import {useCallback} from 'react'
 import {
   isDraftPerspective,
   isPublishedPerspective,
+  isReleaseDocument,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
@@ -17,43 +18,38 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
 
 export function DeletedDocumentBanners() {
-  const {isDeleted, isDeleting} = useDocumentPane()
+  const {isDeleted, isDeleting, ready} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
-
+  if (!ready) return null
   if (
     !isPublishedPerspective(selectedPerspective) &&
     !isDraftPerspective(selectedPerspective) &&
+    isReleaseDocument(selectedPerspective) &&
     selectedPerspective.state === 'archived'
   ) {
-    return <ArchivedReleaseBanner release={selectedPerspective as ReleaseDocument} />
+    return <ArchivedReleaseBanner release={selectedPerspective} />
   }
   if (isDeleted && !isDeleting) return <DeletedDocumentBanner />
 }
 
 function DeletedDocumentBanner() {
-  const {documentId, documentType, lastNonDeletedRevId} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPane()
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
 
   const handleRestore = useCallback(() => {
-    if (lastNonDeletedRevId) {
-      restore.execute(lastNonDeletedRevId)
-      navigateIntent('edit', {id: documentId, type: documentType})
-    }
-  }, [documentId, documentType, navigateIntent, restore, lastNonDeletedRevId])
+    restore.execute('lastRevision')
+    navigateIntent('edit', {id: documentId, type: documentType})
+  }, [documentId, documentType, navigateIntent, restore])
 
   const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <Banner
-      action={
-        lastNonDeletedRevId
-          ? {
-              onClick: handleRestore,
-              text: t('banners.deleted-document-banner.restore-button.text'),
-            }
-          : undefined
-      }
+      action={{
+        onClick: handleRestore,
+        text: t('banners.deleted-document-banner.restore-button.text'),
+      }}
       content={
         <Text size={1} weight="medium">
           {t('banners.deleted-document-banner.text')}
@@ -76,7 +72,9 @@ const ArchivedReleaseBanner = ({release}: {release: ReleaseDocument}) => {
           <Translate
             t={t}
             i18nKey="banners.deleted-release-banner.text"
-            values={{title: release.metadata?.title}}
+            values={{
+              title: release.metadata?.title || t('release.placeholder-untitled-release'),
+            }}
           />
         </Text>
       }

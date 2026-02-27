@@ -7,6 +7,7 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -19,12 +20,12 @@ const DISABLED_REASON_KEY = {
   LIVE_EDIT_ENABLED: 'action.unpublish.disabled.live-edit-enabled',
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const UnpublishAction: DocumentActionComponent = ({
+export const useUnpublishAction: DocumentActionComponent = ({
   id,
   type,
   draft,
-  onComplete,
   liveEdit,
   release,
 }) => {
@@ -37,28 +38,28 @@ export const UnpublishAction: DocumentActionComponent = ({
   })
   const currentUser = useCurrentUser()
   const {t} = useTranslation(structureLocaleNamespace)
+  const {selectedPerspective} = usePerspective()
+
+  const isDraft = selectedPerspective === 'drafts'
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
-    onComplete()
-  }, [onComplete])
+  }, [])
 
   const handleConfirm = useCallback(() => {
     setConfirmDialogOpen(false)
     unpublish.execute()
-    onComplete()
-  }, [onComplete, unpublish])
+  }, [unpublish])
 
   const dialog: DocumentActionModalDialogProps | null = useMemo(() => {
     if (isConfirmDialogOpen) {
       return {
         type: 'dialog',
-        onClose: onComplete,
+        onClose: handleCancel,
         content: (
           <ConfirmDeleteDialog
             id={draft?._id || id}
             type={type}
-            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             action="unpublish"
             onCancel={handleCancel}
             onConfirm={handleConfirm}
@@ -68,11 +69,12 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
 
     return null
-  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, onComplete, type])
+  }, [draft, id, handleCancel, handleConfirm, isConfirmDialogOpen, type])
 
   return useMemo(() => {
-    if (release) {
+    if (release || isDraft) {
       // Version documents cannot be unpublished by this action, they should be unpublished as part of a release
+      // Draft documents can't either
       return null
     }
     if (liveEdit) {
@@ -102,15 +104,16 @@ export const UnpublishAction: DocumentActionComponent = ({
     }
   }, [
     release,
-    currentUser,
-    dialog,
-    isPermissionsLoading,
+    isDraft,
     liveEdit,
+    isPermissionsLoading,
     permissions?.granted,
-    t,
     unpublish.disabled,
+    t,
+    dialog,
+    currentUser,
   ])
 }
 
-UnpublishAction.action = 'unpublish'
-UnpublishAction.displayName = 'UnpublishAction'
+useUnpublishAction.action = 'unpublish'
+useUnpublishAction.displayName = 'UnpublishAction'

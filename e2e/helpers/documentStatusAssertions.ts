@@ -1,0 +1,109 @@
+import {expect, type Locator} from '@playwright/test'
+
+/**
+ * Regular expressions for matching document status text
+ * It matches the text "just now" or "secs. ago"
+ */
+const documentStatusPatterns = {
+  published: /Published (just now|\d+ sec\. ago)/i,
+  created: /Created (just now|\d+ sec\. ago)/i,
+  unpublished: /Unpublished (just now|\d+ sec\. ago)/i,
+  edited: /Edited (just now|\d+ sec\. ago)/i,
+  createdOrEdited: /(Created|Edited) (just now|\d+ sec\. ago)/i,
+  saved: /Saved/i,
+} as const
+
+/**
+ * Options for document status assertions
+ */
+interface DocumentStatusOptions {
+  timeout?: number
+  useInnerText?: boolean
+}
+
+const DEFAULT_OPTIONS: DocumentStatusOptions = {
+  timeout: 60_000,
+  useInnerText: true,
+}
+
+/**
+ * Assert that a document status element shows a published state
+ */
+export async function expectPublishedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toBeVisible()
+  await expect(statusElement).toContainText(documentStatusPatterns.published, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows a created state
+ */
+export async function expectCreatedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toBeVisible()
+  // The created status now won't be shown because we are creating the document in two transactions, the first one
+  // which wil create it with the initial value, either the copy of the published or the document initial values and the second
+  // transaction which will update the document with the new value.
+  await expect(statusElement).toContainText(documentStatusPatterns.edited, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows a created or edited state, sometimes the way the test is written can lead to the "created" status changing to "edited", and it's fine
+ */
+export async function expectCreatedOrEditedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toContainText(documentStatusPatterns.createdOrEdited, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows an unpublished state
+ */
+export async function expectUnpublishedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toContainText(documentStatusPatterns.unpublished, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+/**
+ * Assert that a document status element shows a edited state
+ */
+export async function expectEditedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toBeVisible()
+  await expect(statusElement).toContainText(documentStatusPatterns.edited, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}
+
+export async function expectSavedStatus(
+  statusElement: Locator,
+  options: DocumentStatusOptions = DEFAULT_OPTIONS,
+) {
+  await expect(statusElement).toBeVisible()
+  await expect(statusElement).toContainText(documentStatusPatterns.saved, {
+    useInnerText: options.useInnerText,
+    timeout: options.timeout,
+  })
+}

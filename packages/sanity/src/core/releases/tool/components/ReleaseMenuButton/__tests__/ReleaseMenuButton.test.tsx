@@ -1,16 +1,19 @@
-import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import {act} from 'react'
+import {type ReleaseDocument, type ReleaseState} from '@sanity/client'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {
+  activeASAPRelease,
   activeScheduledRelease,
+  activeUndecidedRelease,
   archivedScheduledRelease,
   publishedASAPRelease,
   scheduledRelease,
 } from '../../../../__fixtures__/release.fixture'
+import {useReleasesUpsellMockReturn} from '../../../../contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../../i18n'
-import {type ReleaseDocument, type ReleaseState} from '../../../../index'
 import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
@@ -41,28 +44,46 @@ vi.mock('../../../detail/useBundleDocuments', () => ({
   useBundleDocuments: vi.fn(() => useBundleDocumentsMockReturnWithResults),
 }))
 
+vi.mock('../../../../contexts/upsell/useReleasesUpsell', () => ({
+  useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({state: {}, navigate: vi.fn()}),
 }))
 
-const renderTest = async ({release, documentsCount, ignoreCTA = false}: ReleaseMenuButtonProps) => {
+const renderTest = async ({
+  release,
+  documentsCount,
+  ignoreCTA = false,
+  documents = [],
+}: ReleaseMenuButtonProps) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
   return render(
-    <ReleaseMenuButton ignoreCTA={ignoreCTA} release={release} documentsCount={documentsCount} />,
+    <ReleaseMenuButton
+      ignoreCTA={ignoreCTA}
+      release={release}
+      documentsCount={documentsCount}
+      documents={documents}
+    />,
     {wrapper},
   )
 }
 
 describe('ReleaseMenuButton', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+
+    mockUseBundleDocuments.mockRestore()
+
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+  })
+
   describe('when permission is provided', () => {
     beforeEach(() => {
-      vi.clearAllMocks()
-
-      mockUseBundleDocuments.mockRestore()
-
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
     })
 
@@ -74,16 +95,14 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('archive-release-menu-item')
 
         await waitFor(() => {
           expect(screen.getByTestId('archive-release-menu-item')).not.toBeDisabled()
         })
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('archive-release-menu-item'))
-        })
+        await userEvent.click(screen.getByTestId('archive-release-menu-item'))
 
         screen.getByTestId('confirm-archive-dialog')
       }
@@ -95,7 +114,7 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('archive-release-menu-item')).not.toBeInTheDocument()
       })
@@ -107,7 +126,7 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('archive-release-menu-item-menu-item')).not.toBeInTheDocument()
       })
@@ -121,21 +140,18 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('archive-release-menu-item')
 
         await waitFor(() => {
           expect(screen.getByTestId('archive-release-menu-item')).not.toBeDisabled()
         })
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('archive-release-menu-item'))
-        })
+        await userEvent.click(screen.getByTestId('archive-release-menu-item'))
 
-        expect(screen.queryByTestId('confirm-archive-dialog')).toBeInTheDocument()
-        await act(() => {
-          fireEvent.click(screen.getByTestId('confirm-button'))
-        })
+        expect(screen.getByTestId('confirm-archive-dialog')).toBeInTheDocument()
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
         expect(useReleaseOperationsMockReturn.archive).toHaveBeenCalledWith(
           activeScheduledRelease._id,
         )
@@ -144,9 +160,7 @@ describe('ReleaseMenuButton', () => {
       test('can reject archiving', async () => {
         await openConfirmArchiveDialog()
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('cancel-button'))
-        })
+        await userEvent.click(screen.getByTestId('cancel-button'))
 
         expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
       })
@@ -157,9 +171,7 @@ describe('ReleaseMenuButton', () => {
         })
 
         test('will archive an active release', async () => {
-          await act(() => {
-            fireEvent.click(screen.getByTestId('confirm-button'))
-          })
+          await userEvent.click(screen.getByTestId('confirm-button'))
 
           expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
           expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
@@ -177,9 +189,7 @@ describe('ReleaseMenuButton', () => {
         })
 
         test('will not archive the release', async () => {
-          await act(() => {
-            fireEvent.click(screen.getByTestId('confirm-button'))
-          })
+          await userEvent.click(screen.getByTestId('confirm-button'))
 
           expect(useReleaseOperations().archive).toHaveBeenCalledWith(activeScheduledRelease._id)
           expect(screen.queryByTestId('confirm-archive-dialog')).not.toBeInTheDocument()
@@ -195,16 +205,14 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('delete-release-menu-item')
 
         await waitFor(() => {
           expect(screen.getByTestId('delete-release-menu-item')).not.toBeDisabled()
         })
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('delete-release-menu-item'))
-        })
+        await userEvent.click(screen.getByTestId('delete-release-menu-item'))
 
         screen.getByTestId('confirm-delete-dialog')
       }
@@ -216,7 +224,7 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('delete-release-menu-item')).not.toBeInTheDocument()
       })
@@ -231,21 +239,17 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
         screen.getByTestId('delete-release-menu-item')
 
         await waitFor(() => {
           expect(screen.getByTestId('delete-release-menu-item')).not.toBeDisabled()
         })
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('delete-release-menu-item'))
-        })
+        await userEvent.click(screen.getByTestId('delete-release-menu-item'))
 
-        expect(screen.queryByTestId('confirm-delete-dialog')).toBeInTheDocument()
-        await act(() => {
-          fireEvent.click(screen.getByTestId('confirm-button'))
-        })
+        expect(screen.getByTestId('confirm-delete-dialog')).toBeInTheDocument()
+        await userEvent.click(screen.getByTestId('confirm-button'))
         expect(useReleaseOperationsMockReturn.deleteRelease).toHaveBeenCalledWith(
           publishedASAPRelease._id,
         )
@@ -254,9 +258,7 @@ describe('ReleaseMenuButton', () => {
       test('can reject deleting', async () => {
         await openConfirmDeleteDialog()
 
-        await act(() => {
-          fireEvent.click(screen.getByTestId('cancel-button'))
-        })
+        await userEvent.click(screen.getByTestId('cancel-button'))
 
         expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
       })
@@ -267,9 +269,7 @@ describe('ReleaseMenuButton', () => {
         })
 
         test('will delete an active release', async () => {
-          await act(() => {
-            fireEvent.click(screen.getByTestId('confirm-button'))
-          })
+          await userEvent.click(screen.getByTestId('confirm-button'))
 
           expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(
             archivedScheduledRelease._id,
@@ -289,14 +289,14 @@ describe('ReleaseMenuButton', () => {
         })
 
         test('will not delete the release', async () => {
-          await act(() => {
-            fireEvent.click(screen.getByTestId('confirm-button'))
-          })
+          await userEvent.click(screen.getByTestId('confirm-button'))
 
           expect(useReleaseOperations().deleteRelease).toHaveBeenCalledWith(
             archivedScheduledRelease._id,
           )
-          expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument()
+          await waitFor(() =>
+            expect(screen.queryByTestId('confirm-delete-dialog')).not.toBeInTheDocument(),
+          )
         })
       })
     })
@@ -312,7 +312,7 @@ describe('ReleaseMenuButton', () => {
         await waitFor(() => {
           screen.getByTestId('release-menu-button')
         })
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
 
         expect(screen.queryByTestId('unschedule-release-menu-item')).not.toBeInTheDocument()
       })
@@ -327,12 +327,144 @@ describe('ReleaseMenuButton', () => {
           screen.getByTestId('release-menu-button')
         })
 
-        fireEvent.click(screen.getByTestId('release-menu-button'))
+        await userEvent.click(screen.getByTestId('release-menu-button'))
 
-        fireEvent.click(screen.getByTestId('unschedule-release-menu-item'))
+        await userEvent.click(screen.getByTestId('unschedule-release-menu-item'))
 
         // does not require confirmation
         expect(useReleaseOperations().unschedule).toHaveBeenCalledWith(fixture._id)
+      })
+    })
+
+    describe('schedule release', () => {
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('will not allow for scheduling of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('schedule-button-menu-item')).not.toBeInTheDocument()
+      })
+
+      test.each([
+        {state: 'active', fixture: activeScheduledRelease},
+        {state: 'active', fixture: activeASAPRelease},
+        {state: 'active', fixture: activeUndecidedRelease},
+      ])('will schedule a $state release', async ({fixture}) => {
+        await renderTest({
+          release: fixture,
+          documentsCount: 1,
+          documents: [
+            {
+              memoKey: 'some-m',
+              document: {
+                _id: `some-id`,
+                _type: 'some-type',
+                _createdAt: '2023-01-01T00:00:00Z',
+                _updatedAt: '2023-01-01T00:00:00Z',
+                _rev: 'some-rev',
+                title: 'some title',
+                publishedDocumentExists: true,
+              },
+              validation: {
+                isValidating: false,
+                hasError: false,
+                validation: [],
+              },
+              previewValues: {
+                isLoading: false,
+                values: undefined,
+              },
+            },
+          ],
+        })
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        await waitFor(() => {
+          expect(screen.getByTestId('schedule-button-menu-item')).not.toBeDisabled()
+        })
+
+        await userEvent.click(screen.getByTestId('schedule-button-menu-item'))
+
+        await userEvent.click(screen.getByTestId('publish-all-button-menu-item'))
+
+        expect(screen.getByTestId('confirm-publish-dialog')).toBeInTheDocument()
+      })
+    })
+
+    describe('publish release', () => {
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('will not allow for publish of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('publish-all-button-menu-item')).not.toBeInTheDocument()
+      })
+
+      test.each([
+        {state: 'active', fixture: activeScheduledRelease},
+        {state: 'active', fixture: activeASAPRelease},
+        {state: 'active', fixture: activeUndecidedRelease},
+      ])('will publish a $state release', async ({fixture}) => {
+        await renderTest({
+          release: fixture,
+          documentsCount: 1,
+          documents: [
+            {
+              memoKey: 'some-m',
+              document: {
+                _id: `some-id`,
+                _type: 'some-type',
+                _createdAt: '2023-01-01T00:00:00Z',
+                _updatedAt: '2023-01-01T00:00:00Z',
+                _rev: 'some-rev',
+                title: 'some title',
+                publishedDocumentExists: true,
+              },
+              validation: {
+                isValidating: false,
+                hasError: false,
+                validation: [],
+              },
+              previewValues: {
+                isLoading: false,
+                values: undefined,
+              },
+            },
+          ],
+        })
+
+        await waitFor(() => {
+          screen.getByTestId('release-menu-button')
+        })
+
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        await waitFor(() => {
+          expect(screen.getByTestId('publish-all-button-menu-item')).not.toBeDisabled()
+        })
+
+        await userEvent.click(screen.getByTestId('publish-all-button-menu-item'))
+
+        expect(screen.getByTestId('confirm-publish-dialog')).toBeInTheDocument()
       })
     })
 
@@ -342,11 +474,9 @@ describe('ReleaseMenuButton', () => {
 
       await renderTest({release: archivedRelease, documentsCount: 1})
 
-      fireEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(screen.getByTestId('release-menu-button'))
 
-      await act(() => {
-        fireEvent.click(screen.getByTestId('archive-release-menu-item'))
-      })
+      await userEvent.click(screen.getByTestId('archive-release-menu-item'))
 
       expect(useReleaseOperations().updateRelease).toHaveBeenCalledWith({
         ...archivedRelease,
@@ -361,9 +491,85 @@ describe('ReleaseMenuButton', () => {
         screen.getByTestId('release-menu-button')
       })
 
-      fireEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.queryByTestId('unschedule-release-menu-item')).not.toBeInTheDocument()
+    })
+
+    describe('duplicate release', () => {
+      const duplicateReleaseMock = vi.fn()
+
+      beforeEach(() => {
+        duplicateReleaseMock.mockReset().mockResolvedValue({releaseId: 'new-duplicated-release-id'})
+        mockUseReleaseOperations.mockReturnValue({
+          ...useReleaseOperationsMockReturn,
+          duplicateRelease: duplicateReleaseMock,
+        })
+      })
+
+      test.each([
+        {name: 'active scheduled', release: activeScheduledRelease},
+        {name: 'active ASAP', release: activeASAPRelease},
+        {name: 'active undecided', release: activeUndecidedRelease},
+      ])('allows duplicating an $name release', async ({release}) => {
+        await renderTest({release, documentsCount: 1, documents: []})
+
+        await screen.findByTestId('release-menu-button')
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+
+        await waitFor(() => {
+          expect(duplicateMenuItem).not.toBeDisabled()
+        })
+
+        await userEvent.click(duplicateMenuItem)
+
+        screen.getByTestId('confirm-duplicate-dialog')
+
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        expect(duplicateReleaseMock).toHaveBeenCalled()
+      })
+
+      test.each([
+        {state: 'archived', fixture: archivedScheduledRelease},
+        {state: 'published', fixture: publishedASAPRelease},
+      ])('does not allow for duplicating of $state releases', async ({fixture}) => {
+        await renderTest({release: fixture, documentsCount: 1})
+
+        await screen.findByTestId('release-menu-button')
+        await userEvent.click(screen.getByTestId('release-menu-button'))
+
+        expect(screen.queryByTestId('duplicate-release-menu-item')).not.toBeInTheDocument()
+      })
+
+      describe('when duplication fails', () => {
+        beforeEach(() => {
+          duplicateReleaseMock.mockRejectedValue(new Error('some duplication error'))
+        })
+
+        test('handles failure when trying to duplicate an active release', async () => {
+          await renderTest({release: activeScheduledRelease, documentsCount: 1, documents: []})
+
+          await screen.findByTestId('release-menu-button')
+          await userEvent.click(screen.getByTestId('release-menu-button'))
+
+          const duplicateMenuItem = screen.getByTestId('duplicate-release-menu-item')
+
+          await waitFor(() => {
+            expect(duplicateMenuItem).not.toBeDisabled()
+          })
+
+          await userEvent.click(duplicateMenuItem)
+
+          screen.getByTestId('confirm-duplicate-dialog')
+
+          await userEvent.click(screen.getByTestId('confirm-button'))
+
+          expect(duplicateReleaseMock).toHaveBeenCalled()
+        })
+      })
     })
   })
 
@@ -383,7 +589,7 @@ describe('ReleaseMenuButton', () => {
         screen.getByTestId('release-menu-button')
       })
 
-      fireEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.getByTestId('archive-release-menu-item')).toBeDisabled()
     })
@@ -395,7 +601,7 @@ describe('ReleaseMenuButton', () => {
         screen.getByTestId('release-menu-button')
       })
 
-      fireEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.getByTestId('delete-release-menu-item')).toBeDisabled()
     })
@@ -407,9 +613,18 @@ describe('ReleaseMenuButton', () => {
         screen.getByTestId('release-menu-button')
       })
 
-      fireEvent.click(screen.getByTestId('release-menu-button'))
+      await userEvent.click(screen.getByTestId('release-menu-button'))
 
       expect(screen.getByTestId('unarchive-release-menu-item')).toBeDisabled()
+    })
+
+    test('will disable duplicate menu', async () => {
+      await renderTest({release: activeScheduledRelease, documentsCount: 1})
+
+      await screen.findByTestId('release-menu-button')
+      await userEvent.click(screen.getByTestId('release-menu-button'))
+
+      expect(screen.getByTestId('duplicate-release-menu-item')).toBeDisabled()
     })
   })
 })

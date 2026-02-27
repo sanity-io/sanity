@@ -1,0 +1,6 @@
+dist
+out
+out-*
+schema.json
+*.types.ts
+sanity.types.ts

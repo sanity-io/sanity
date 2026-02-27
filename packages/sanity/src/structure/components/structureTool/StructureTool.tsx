@@ -1,14 +1,14 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
-import {Fragment, memo, useCallback, useEffect, useState} from 'react'
+import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
-import {useRouterState} from 'sanity/router'
+import {useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
-import {useResolvedPanes} from '../../structureResolvers'
-import {type PaneNode} from '../../types'
+import {ResolvedPanesProvider, useResolvedPanes} from '../../structureResolvers'
+import {type PaneNode, type RouterPanes} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {PaneLayout} from '../pane'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
@@ -31,13 +31,16 @@ const isSaveHotkey = isHotkey('mod+s')
 export const StructureTool = memo(function StructureTool({onPaneChange}: StructureToolProps) {
   const {push: pushToast} = useToast()
   const schema = useSchema()
+  const {navigate} = useRouter()
+  const routerState = useRouterState()
   const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
-  const {paneDataItems, resolvedPanes} = useResolvedPanes()
+  const resolvedPanesValue = useResolvedPanes()
+  const {paneDataItems, resolvedPanes, setMaximizedPane, maximizedPane} = resolvedPanesValue
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
   // the structure is resolved and we know what panes to load/display
   const isResolvingIntent = useRouterState(
-    useCallback((routerState) => typeof routerState.intent === 'string', []),
+    useCallback((state) => typeof state.intent === 'string', []),
   )
   const {
     sanity: {media},
@@ -47,6 +50,19 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const handleRootCollapse = useCallback(() => setLayoutCollapsed(true), [setLayoutCollapsed])
   const handleRootExpand = useCallback(() => setLayoutCollapsed(false), [setLayoutCollapsed])
+
+  /* When a pane is maximised, show only from that pane up to and including itself
+   * - Take the deepest maximised pane.
+   * - Combine with all panes that are deeper than it that are in the same group, or an ancestral group.
+   * - Only show these matching panes.
+   */
+  const maximizedLastIndex = paneDataItems.findLastIndex((pane) => pane.maximized)
+  const paneItemsToShow =
+    maximizedLastIndex === -1
+      ? paneDataItems
+      : paneDataItems
+          .slice(maximizedLastIndex)
+          .filter((pane) => pane.groupIndex <= paneDataItems[maximizedLastIndex].groupIndex)
 
   useEffect(() => {
     // we check for length before emitting here to skip the initial empty array
@@ -79,64 +95,177 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
 
   const hasDefinedDocumentTypes = schema._original?.types.some(_isCustomDocumentTypeDefinition)
 
+  const onSetMaximizedPane = useCallback(
+    (paneData: (typeof paneDataItems)[number] | null) => {
+      if (!paneData) return
+
+      const currentPanes = (routerState?.panes || []) as RouterPanes
+
+      if (paneData.maximized) {
+        setMaximizedPane(null)
+        // Resets all the panes to the current state
+        navigate({
+          panes: currentPanes,
+        })
+        return
+      }
+
+      // Only allow document panes to be maximised
+      if (paneData.pane !== LOADING_PANE && paneData.pane.type === 'document') {
+        // Navigate to this pane, closing all panes after it
+        const slicedPanes = currentPanes.slice(0, paneData.groupIndex)
+        setMaximizedPane(paneData)
+        navigate({
+          panes: slicedPanes,
+        })
+      }
+    },
+    [navigate, routerState?.panes, setMaximizedPane],
+  )
+
+  const previousSelectedIndexRef = useRef(-1)
+
+  useEffect(() => {
+    // find the first pane that has mode=focus as pane params
+    // if found:
+    // - make sure to set it as the maximized pane (documents only)
+    // - then remove the param from the router state
+    //  Ideally we'd persist it in the router somehow so it can survive reloads, but it's currently
+    //  tricky to solve in a good way because maximized pane state should follow user navigation, so
+    //  if you click a button opening another pane, now this new pane should be maximized. The
+    //  natural solve for this is to make mode=focus a sticky query param, and always make the
+    //  "current active" pane maximized. However, it doesn't seem like we have a concept of
+    //  "current active" pane (there's an "active" state on panes, but that's deduced from a set of
+    //  heuristics based things like pane order of appearance, screen width, etc.).
+
+    const focusedPaneAccordingToParams = paneDataItems.find((p) => p.params?.mode === 'focus')
+
+    if (!focusedPaneAccordingToParams) return
+
+    // Only allow document panes to be maximised
+    if (
+      focusedPaneAccordingToParams.pane !== LOADING_PANE &&
+      focusedPaneAccordingToParams.pane.type === 'document'
+    ) {
+      setMaximizedPane(focusedPaneAccordingToParams)
+    }
+
+    const currentPanes = (routerState?.panes || []) as RouterPanes
+
+    const panesWithoutFocus: RouterPanes = currentPanes.map((group) =>
+      group.map((pane) => {
+        const {mode: _omitMode, ...rest} = pane.params || {}
+        const nextParams = Object.keys(rest).length ? rest : undefined
+        return {...pane, params: nextParams}
+      }),
+    )
+
+    navigate({panes: panesWithoutFocus}, {replace: true})
+  }, [navigate, paneDataItems, routerState?.panes, setMaximizedPane])
+
+  // Manage maximised pane: sync with navigation and handle cleanup
+  useEffect(() => {
+    const selectedIndex = paneDataItems.findIndex((pane) => pane.selected)
+    const prevSelectedIndex = previousSelectedIndexRef.current
+    previousSelectedIndexRef.current = selectedIndex
+
+    if (!maximizedPane) return
+
+    // Clear focus if the maximised pane is not a document pane (focus only works with documents)
+    if (maximizedPane.pane !== LOADING_PANE && maximizedPane.pane.type !== 'document') {
+      setMaximizedPane(null)
+      return
+    }
+
+    // When navigating in focus mode, update focus to follow the newly selected pane
+    // This ensures opening a document to the right works correctly even when they were opened previously
+    if (selectedIndex !== -1 && selectedIndex !== prevSelectedIndex) {
+      const selectedPane = paneDataItems[selectedIndex]
+      // Only set focus if the newly selected pane is a document pane
+      setMaximizedPane(selectedPane)
+
+      return
+    }
+
+    // Clean up or find fallback when maximised pane no longer exists
+    const isMaximizedPanePresent = paneDataItems.some((pane) => pane.key === maximizedPane.key)
+
+    if (!isMaximizedPanePresent) {
+      const fallbackPane = paneDataItems.find(
+        (pane) =>
+          pane.groupIndex === maximizedPane.groupIndex &&
+          pane.siblingIndex === maximizedPane.siblingIndex &&
+          pane.pane !== LOADING_PANE &&
+          pane.pane.type === 'document',
+      )
+      setMaximizedPane(fallbackPane || null)
+    }
+  }, [maximizedPane, paneDataItems, setMaximizedPane])
+
   if (!hasDefinedDocumentTypes) {
     return <NoDocumentTypesScreen />
   }
 
   return (
-    <PortalProvider element={portalElement || null}>
-      <StyledPaneLayout
-        flex={1}
-        height={layoutCollapsed ? undefined : 'fill'}
-        minWidth={media[1]}
-        onCollapse={handleRootCollapse}
-        onExpand={handleRootExpand}
-      >
-        {paneDataItems.map(
-          ({
-            active,
-            childItemId,
-            groupIndex,
-            itemId,
-            key: paneKey,
-            pane,
-            index: paneIndex,
-            params: paneParams,
-            path,
-            payload,
-            siblingIndex,
-            selected,
-          }) => (
-            <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
-              {pane === LOADING_PANE ? (
-                <LoadingPane paneKey={paneKey} path={path} selected={selected} />
-              ) : (
-                <StructureToolPane
-                  active={active}
-                  groupIndex={groupIndex}
-                  index={paneIndex}
-                  pane={pane}
-                  childItemId={childItemId}
-                  itemId={itemId}
-                  paneKey={paneKey}
-                  params={paneParams}
-                  payload={payload}
-                  path={path}
-                  selected={selected}
-                  siblingIndex={siblingIndex}
-                />
-              )}
-            </Fragment>
-          ),
-        )}
-        {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
-        {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
-        {paneDataItems.length <= 1 && isResolvingIntent && (
-          <LoadingPane paneKey="intent-resolver" />
-        )}
-      </StyledPaneLayout>
-      <StructureTitle resolvedPanes={resolvedPanes} />
-      <div data-portal="" ref={setPortalElement} />
-    </PortalProvider>
+    <ResolvedPanesProvider value={resolvedPanesValue}>
+      <PortalProvider element={portalElement || null}>
+        <StyledPaneLayout
+          flex={1}
+          height={layoutCollapsed ? undefined : 'fill'}
+          minWidth={media[1]}
+          onCollapse={handleRootCollapse}
+          onExpand={handleRootExpand}
+        >
+          {paneItemsToShow.map((paneData) => {
+            const {
+              active,
+              childItemId,
+              groupIndex,
+              itemId,
+              key: paneKey,
+              pane,
+              index: paneIndex,
+              params: paneParams,
+              path,
+              payload,
+              siblingIndex,
+              selected,
+              maximized,
+            } = paneData
+            return (
+              <Fragment key={`${pane === LOADING_PANE ? 'loading' : pane.type}-${paneIndex}`}>
+                {pane === LOADING_PANE ? (
+                  <LoadingPane paneKey={paneKey} path={path} selected={selected} />
+                ) : (
+                  <StructureToolPane
+                    active={active}
+                    groupIndex={groupIndex}
+                    index={paneIndex}
+                    pane={pane}
+                    childItemId={childItemId}
+                    itemId={itemId}
+                    paneKey={paneKey}
+                    params={paneParams}
+                    payload={payload}
+                    path={path}
+                    selected={selected}
+                    siblingIndex={siblingIndex}
+                    maximized={maximized}
+                    onSetMaximizedPane={() => onSetMaximizedPane(paneData)}
+                  />
+                )}
+              </Fragment>
+            )
+          })}
+          {/* If there's just 1 pane (the root), or less, and we're resolving an intent then it's necessary to show */}
+          {/* a loading indicator as the intent resolving is async, could take a while and can also be interrupted/redirected */}
+          {paneDataItems.length <= 1 && isResolvingIntent && (
+            <LoadingPane paneKey="intent-resolver" />
+          )}
+        </StyledPaneLayout>
+        <StructureTitle resolvedPanes={resolvedPanes} />
+        <div data-portal="" ref={setPortalElement} />
+      </PortalProvider>
+    </ResolvedPanesProvider>
   )
 })

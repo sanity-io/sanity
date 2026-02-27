@@ -33,7 +33,6 @@ export function MissingSchemaType(props: MissingSchemaTypeProps) {
           values={{documentId: value._id}}
         />
       }
-      // eslint-disable-next-line react/jsx-no-bind
       media={() => <WarningOutlineIcon />}
       layout={layout}
     />

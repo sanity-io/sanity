@@ -127,7 +127,6 @@ describe('applyOrderingFunctions()', () => {
 })
 
 describe('fieldExtendsType()', () => {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   test('correctly identifies string fields', () => {
     const field = (mockSchema.get('category') as ObjectSchemaType).fields.find(
       (current) => current.name === 'title',
@@ -167,7 +166,6 @@ describe('fieldExtendsType()', () => {
 
     expect(fieldExtendsType(field, 'number')).toBe(false)
   })
-  /* eslint-enable @typescript-eslint/no-non-null-assertion */
 })
 
 describe('findStaticTypesInFilter()', () => {

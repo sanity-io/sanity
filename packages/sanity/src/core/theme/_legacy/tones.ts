@@ -2,6 +2,9 @@ import {_buildTints, _isDark} from './helpers'
 import {type LegacyPalette} from './palette'
 import {type LegacyThemeTints} from './types'
 
+/**
+ * @deprecated – Will be removed in upcoming major version
+ */
 export interface LegacyTones {
   button: {
     default: {
@@ -60,6 +63,9 @@ export interface LegacyTones {
   }
 }
 
+/**
+ * @deprecated – Will be removed in upcoming major version
+ */
 export function buildLegacyTones(legacyPalette: LegacyPalette): LegacyTones {
   return {
     state: {

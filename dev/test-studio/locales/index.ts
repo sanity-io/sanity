@@ -37,14 +37,16 @@ const nbNO = defineLocaleResourceBundle({
     // Used by `fieldGroupsWithI18n` debug schema type
     'field-groups.group-1': '🇳🇴 Gruppe 1',
     'field-groups.group-2': '🇳🇴 Gruppe 2',
+    'text-divider-title': 'Norsk overraskelse 🇳🇴',
   },
 })
 
-const nbNOBStructureOverrides = defineLocaleResourceBundle({
+export const nbNOBStructureOverrides = defineLocaleResourceBundle({
   locale: 'nb-NO',
   namespace: 'structure',
   resources: {
     'default-definition.content-title': 'Innhold 🇳🇴',
+    'text-divider-title': 'Norsk overraskelse 🇳🇴',
   },
 })
 

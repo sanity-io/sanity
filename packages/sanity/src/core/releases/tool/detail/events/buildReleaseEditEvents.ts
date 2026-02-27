@@ -1,7 +1,7 @@
+import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 
 import {applyMendozaPatch} from '../../../../preview/utils/applyMendozaPatch'
-import {type ReleaseDocument, type ReleaseType} from '../../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseEvent} from './types'
 

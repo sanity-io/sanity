@@ -1,4 +1,4 @@
-import {isValid as isValidDate} from 'date-fns'
+import {isValid as isValidDate} from 'date-fns/isValid'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
 const FALSEY_STRINGS = ['false', 'no', 'false', '0', 'null']
@@ -20,7 +20,7 @@ function toLocalDate(input: Date) {
 function getTZName() {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch (e) {} // eslint-disable-line no-empty
+  } catch {} // eslint-disable-line no-empty
   return null
 }
 

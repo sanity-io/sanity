@@ -140,13 +140,16 @@ export class ListItemBuilder implements Serializable<ListItem> {
   /** List item option object. See {@link PartialListItem} */
   protected spec: PartialListItem
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: ListItemInput,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 
@@ -211,7 +214,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   showIcon(enabled = true): ListItemBuilder {
     return this.clone({
-      displayOptions: {...(this.spec.displayOptions || {}), showIcon: enabled},
+      displayOptions: {...this.spec.displayOptions, showIcon: enabled},
     })
   }
 
@@ -339,7 +342,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   clone(withSpec?: PartialListItem): ListItemBuilder {
     const builder = new ListItemBuilder(this._context)
-    builder.spec = {...this.spec, ...(withSpec || {})}
+    builder.spec = {...this.spec, ...withSpec}
     return builder
   }
 }

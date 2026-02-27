@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import {fireEvent, render, renderHook, waitFor} from '@testing-library/react'
+import {render, renderHook, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {of} from 'rxjs'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
@@ -125,8 +126,8 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
     test("if unseen is empty, card doesn't show ", () => {
-      const {queryByText} = render(null, {wrapper})
-      expect(queryByText("What's new")).toBeNull()
+      render(null, {wrapper})
+      expect(screen.queryByText("What's new")).toBeNull()
     })
   })
   describe('if seen announcements failed', () => {
@@ -147,8 +148,8 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
     test("if unseen is empty, card doesn't show ", () => {
-      const {queryByText} = render(null, {wrapper})
-      expect(queryByText("What's new")).toBeNull()
+      render(null, {wrapper})
+      expect(screen.queryByText("What's new")).toBeNull()
     })
   })
   describe('if seen announcements is not loading and has no values', () => {
@@ -165,10 +166,10 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
     test('unseen is not empty, card shows', () => {
-      const {getByText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      expect(getByText("What's new")).toBeInTheDocument()
-      expect(getByText(mockAnnouncements[0].title)).toBeInTheDocument()
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[0].title)).toBeInTheDocument()
     })
   })
   describe('if seen announcements has values', () => {
@@ -190,10 +191,10 @@ describe('StudioAnnouncementsProvider', () => {
       expect(result.current.studioAnnouncements).toEqual(mockAnnouncements)
     })
     test('unseen is not empty, card shows', () => {
-      const {getByText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      expect(getByText("What's new")).toBeInTheDocument()
-      expect(getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
     })
   })
   describe('test components interactions', () => {
@@ -212,20 +213,25 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
-      const cardButton = getByLabelText('Open announcements')
-      fireEvent.click(cardButton)
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      const cardButton = screen.getByLabelText('Open announcements')
+      await userEvent.click(cardButton)
 
-      await waitFor(() => {
-        expect(queryByText("What's new")).toBeNull()
-      })
+      await waitFor(
+        () => {
+          const element = screen.queryByText("What's new")
+          expect(element).not.toBeVisible()
+        },
+        {timeout: 3000},
+      )
       // The first announcement is seen, so it's not rendered
-      expect(queryByText(mockAnnouncements[0].title)).toBeNull()
-      // The second announcement is unseen, so it's rendered
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(screen.queryByText(mockAnnouncements[0].title)).toBeNull()
+      // The second announcement is unseen, so it's rendered (may appear multiple times - in dialog and elsewhere)
+      const announcement2Elements = screen.queryAllByText(mockAnnouncements[1].title)
+      expect(announcement2Elements.length).toBeGreaterThan(0)
 
       // Opening the dialog calls the telemetry only once, with the seen card
       expect(mockLog).toBeCalledTimes(3)
@@ -259,16 +265,16 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
-      const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      const closeButton = screen.getByLabelText('Dismiss announcements')
+      await userEvent.click(closeButton)
       await waitFor(() => {
-        expect(queryByText("What's new")).toBeNull()
+        expect(screen.queryByText("What's new")).toBeNull()
       })
-      expect(queryByText(mockAnnouncements[1].title)).toBeNull()
+      expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
 
       // Dismissing the card calls telemetry with the seen and dismiss logs
       expect(mockLog).toBeCalledTimes(2)
@@ -293,21 +299,21 @@ describe('StudioAnnouncementsProvider', () => {
       const {useTelemetry} = await import('@sanity/telemetry/react')
       ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: mockLog})
 
-      const {queryByText, getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
-      const cardButton = getByLabelText('Open announcements')
-      fireEvent.click(cardButton)
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      const cardButton = screen.getByLabelText('Open announcements')
+      await userEvent.click(cardButton)
       await waitFor(() => {
-        expect(queryByText("What's new")).toBeNull()
+        expect(screen.queryByText("What's new")).toBeNull()
       })
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
-      const closeButton = getByLabelText('Close dialog')
-      fireEvent.click(closeButton)
-      expect(queryByText("What's new")).toBeNull()
-      expect(queryByText(mockAnnouncements[1].title)).toBeNull()
+      const closeButton = screen.getByLabelText('Close dialog')
+      await userEvent.click(closeButton)
+      expect(screen.queryByText("What's new")).toBeNull()
+      expect(screen.queryByText(mockAnnouncements[1].title)).toBeNull()
 
       expect(mockLog).toBeCalledTimes(4)
       expect(mockLog).toBeCalledWith(ProductAnnouncementCardSeen, {
@@ -346,29 +352,28 @@ describe('StudioAnnouncementsProvider', () => {
       const Component = () => {
         const {onDialogOpen} = useStudioAnnouncements()
         return (
-          // eslint-disable-next-line react/jsx-no-bind
           <button onClick={() => onDialogOpen('help_menu')} type="button">
             Open dialog
           </button>
         )
       }
 
-      const {queryByText, getByRole} = render(<Component />, {wrapper})
+      render(<Component />, {wrapper})
 
-      expect(queryByText("What's new")).toBeInTheDocument()
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(screen.getByText("What's new")).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
 
-      const openDialogButton = getByRole('button', {name: 'Open dialog'})
-      fireEvent.click(openDialogButton)
+      const openDialogButton = screen.getByRole('button', {name: 'Open dialog'})
+      await userEvent.click(openDialogButton)
 
       // The card closes even if we open it from somewhere else
       await waitFor(() => {
-        expect(queryByText("What's new")).toBeNull()
+        expect(screen.queryByText("What's new")).toBeNull()
       })
       // The first announcement is seen, it's rendered because it's showing all
-      expect(queryByText(mockAnnouncements[0].title)).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[0].title)).toBeInTheDocument()
       // The second announcement is unseen, so it's rendered
-      expect(queryByText(mockAnnouncements[1].title)).toBeInTheDocument()
+      expect(screen.getByText(mockAnnouncements[1].title)).toBeInTheDocument()
     })
   })
   describe('tests audiences - studio version is 3.57.0', () => {
@@ -571,7 +576,7 @@ describe('StudioAnnouncementsProvider', () => {
     beforeEach(() => {
       vi.clearAllMocks()
     })
-    test('when the card is dismissed, and only 1 announcement received', () => {
+    test('when the card is dismissed, and only 1 announcement received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -579,13 +584,13 @@ describe('StudioAnnouncementsProvider', () => {
       ])
       mockClient([mockAnnouncements[0]])
 
-      const {getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      const closeButton = screen.getByLabelText('Dismiss announcements')
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith([mockAnnouncements[0]._id])
     })
-    test('when the card is dismissed, and 2 announcements are received', () => {
+    test('when the card is dismissed, and 2 announcements are received', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -593,13 +598,13 @@ describe('StudioAnnouncementsProvider', () => {
       ])
       mockClient(mockAnnouncements)
 
-      const {getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      const closeButton = screen.getByLabelText('Dismiss announcements')
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test("when the card is dismissed, doesn't persist previous stored values", () => {
+    test("when the card is dismissed, doesn't persist previous stored values", async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is not present anymore in the mock announcements, this id won't be stored in next save.
       seenAnnouncementsMock.mockReturnValue([
@@ -607,13 +612,13 @@ describe('StudioAnnouncementsProvider', () => {
         saveSeenAnnouncementsMock,
       ])
       mockClient(mockAnnouncements)
-      const {getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      const closeButton = screen.getByLabelText('Dismiss announcements')
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test('when the card is dismissed, persist previous stored values', () => {
+    test('when the card is dismissed, persist previous stored values', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       // The id received here is present in the mock announcements, this id will be persisted in next save.
       seenAnnouncementsMock.mockReturnValue([
@@ -622,13 +627,13 @@ describe('StudioAnnouncementsProvider', () => {
       ])
       mockClient(mockAnnouncements)
 
-      const {getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      const closeButton = getByLabelText('Dismiss announcements')
-      fireEvent.click(closeButton)
+      const closeButton = screen.getByLabelText('Dismiss announcements')
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
-    test('when the dialog is closed', () => {
+    test('when the dialog is closed', async () => {
       const saveSeenAnnouncementsMock = vi.fn()
       seenAnnouncementsMock.mockReturnValue([
         of({value: [], error: null, loading: false}),
@@ -636,13 +641,13 @@ describe('StudioAnnouncementsProvider', () => {
       ])
       mockClient(mockAnnouncements)
 
-      const {getByLabelText} = render(null, {wrapper})
+      render(null, {wrapper})
 
-      const openButton = getByLabelText('Open announcements')
-      fireEvent.click(openButton)
+      const openButton = screen.getByLabelText('Open announcements')
+      await userEvent.click(openButton)
       // Dialog renders and we close it
-      const closeButton = getByLabelText('Close dialog')
-      fireEvent.click(closeButton)
+      const closeButton = screen.getByLabelText('Close dialog')
+      await userEvent.click(closeButton)
       expect(saveSeenAnnouncementsMock).toHaveBeenCalledWith(mockAnnouncements.map((d) => d._id))
     })
   })

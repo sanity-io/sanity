@@ -1,13 +1,14 @@
 import {DesktopIcon, MobileDeviceIcon, PanelLeftIcon, RefreshIcon} from '@sanity/icons'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Box, Card, Flex, Hotkeys, Switch, Text} from '@sanity/ui'
-import {type ReactNode, type RefObject, useCallback, useMemo} from 'react'
+import {useSelector} from '@xstate/react'
+import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
 import {Button, Tooltip} from '../../ui-components'
 import {presentationLocaleNamespace} from '../i18n'
-import {ACTION_IFRAME_RELOAD} from '../reducers/presentationReducer'
 import {type HeaderOptions} from '../types'
+import {useId} from '../useId'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
@@ -24,8 +25,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     canSharePreviewAccess,
     canToggleSharePreviewAccess,
     canUseSharedPreviewAccess,
-    dispatch,
-    iframe,
     iframeRef,
     initialUrl,
     navigatorEnabled,
@@ -33,6 +32,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     onRefresh,
     openPopup,
     overlaysConnection,
+    presentationRef,
     perspective,
     previewUrl,
     setViewport,
@@ -40,7 +40,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     toggleNavigator,
     toggleOverlay,
     viewport,
-    visualEditing: {overlaysEnabled},
+    previewUrlRef,
   } = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
@@ -59,13 +59,23 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       if (!iframeRef.current) {
         return
       }
-      dispatch({type: ACTION_IFRAME_RELOAD})
+      presentationRef.send({type: 'iframe reload'})
       // Funky way to reload an iframe without CORS issues
-      // eslint-disable-next-line no-self-assign
       // ref.current.src = ref.current.src
-      Object.assign(iframeRef.current, {src: `${targetOrigin}${previewUrl || '/'}`})
+      Object.assign(iframeRef.current, {src: new URL(previewUrl || '/', targetOrigin).toString()})
     })
   }
+
+  const isLoading = useSelector(presentationRef, (state) => state.matches('loading'))
+  const isLoaded = useSelector(presentationRef, (state) => state.matches('loaded'))
+  const isRefreshing = useSelector(presentationRef, (state) =>
+    state.matches({loaded: 'refreshing'}),
+  )
+  const isReloading = useSelector(presentationRef, (state) => state.matches({loaded: 'reloading'}))
+  const overlaysEnabled = useSelector(
+    presentationRef,
+    (state) => state.context.visualEditingOverlaysEnabled,
+  )
 
   const previewLocationRoute = useMemo(() => {
     const previewURL = new URL(previewUrl || '/', targetOrigin)
@@ -73,6 +83,14 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
 
     return `${pathname}${search}`
   }, [previewUrl, targetOrigin])
+
+  const perspectiveToggleTooltipId = useId()
+
+  /**
+   * If the preview URL machine is busy it means it's about to change the target origin and reload the iframe,
+   * so we show a spinner
+   */
+  const previewUrlBusy = useSelector(previewUrlRef, (state) => state.hasTag('busy'))
 
   return (
     <Flex align="center" gap={1} paddingX={1} style={{width: '100%'}}>
@@ -126,9 +144,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           <Flex align="center" gap={3}>
             <div style={{margin: -4}}>
               <Switch
+                indeterminate={!isLoaded}
                 checked={overlaysEnabled}
                 onChange={toggleOverlay}
-                disabled={iframe.status === 'loading' || overlaysConnection !== 'connected'}
+                disabled={isLoading || overlaysConnection !== 'connected'}
               />
             </div>
             <Box>
@@ -142,15 +161,24 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
 
       <Box flex={1}>
         <PreviewLocationInput
+          previewUrlRef={previewUrlRef}
           prefix={
             <Box padding={1}>
               <Tooltip
                 animate
                 content={
                   <Text size={1}>
-                    {iframe.status === 'loaded'
+                    {isLoaded
                       ? t('preview-frame.refresh-button.tooltip')
-                      : t('preview-frame.status', {context: iframe.status})}
+                      : t('preview-frame.status', {
+                          context: isLoading
+                            ? 'loading'
+                            : isRefreshing
+                              ? 'refreshing'
+                              : isReloading
+                                ? 'reloading'
+                                : 'unknown',
+                        })}
                   </Text>
                 }
                 fallbackPlacements={['bottom-end']}
@@ -161,7 +189,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                   aria-label={t('preview-frame.refresh-button.aria-label')}
                   icon={RefreshIcon}
                   mode="bleed"
-                  loading={iframe.status === 'reloading' || iframe.status === 'refreshing'}
+                  loading={isReloading || isRefreshing || previewUrlBusy}
                   onClick={handleRefresh}
                   tooltipProps={null}
                 />
@@ -169,13 +197,14 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             </Box>
           }
           onChange={onPathChange}
-          origin={previewLocationOrigin}
           suffix={
             <Box padding={1}>
               <OpenPreviewButton
                 openPopup={openPopup}
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
+                perspective={perspective}
+                targetOrigin={targetOrigin}
               />
             </Box>
           }
@@ -186,6 +215,9 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       <Flex align="center" flex="none" gap={1}>
         <Tooltip
           animate
+          ref={(node) => {
+            node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
+          }}
           content={
             <Text size={1}>
               {t('preview-frame.viewport-button.tooltip', {
@@ -198,6 +230,8 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           portal
         >
           <Button
+            data-testid="preview-viewport-toggle"
+            data-viewport={viewport}
             aria-label={t('preview-frame.viewport-button.aria-label')}
             icon={viewport === 'desktop' ? MobileDeviceIcon : DesktopIcon}
             mode="bleed"
@@ -222,9 +256,10 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
   )
 }
 
-function PreviewHeader(
+/** @internal */
+export function PreviewHeader(
   props: Omit<PreviewHeaderProps, 'renderDefault'> & {options?: HeaderOptions},
-) {
+): React.JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const renderDefault = useCallback((props: Omit<PreviewHeaderProps, 'renderDefault'>) => {
     return <PreviewHeaderDefault {...props} />
@@ -244,15 +279,4 @@ function PreviewHeader(
       </Flex>
     </Card>
   )
-}
-
-/** @internal */
-export function usePresentationPreviewHeader(
-  props: Omit<PreviewHeaderProps, 'renderDefault'> & {options?: HeaderOptions},
-): () => ReactNode {
-  const Component = useCallback(() => {
-    return <PreviewHeader {...props} />
-  }, [props])
-
-  return Component
 }

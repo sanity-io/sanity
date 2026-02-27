@@ -13,6 +13,7 @@ import {
   type EmailDefinition,
   type FileDefinition,
   type GeopointDefinition,
+  type GlobalDocumentReferenceDefinition,
   type ImageDefinition,
   type NumberDefinition,
   type ObjectDefinition,
@@ -53,6 +54,7 @@ export interface IntrinsicDefinitions {
   object: ObjectDefinition
   reference: ReferenceDefinition
   crossDatasetReference: CrossDatasetReferenceDefinition
+  globalDocumentReference: GlobalDocumentReferenceDefinition
   slug: SlugDefinition
   string: StringDefinition
   text: TextDefinition

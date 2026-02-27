@@ -1,0 +1,9 @@
+{
+  "_type": "post",
+  "_id": "drafts.test-document-id",
+  "_createdAt": "2024-01-15T10:30:00Z",
+  "title": "New Blog Post",
+  "slug": {
+    "current": "new-blog-post-published"
+  }
+}

@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {
   combineLatest,
   distinctUntilChanged,
@@ -14,7 +14,6 @@ import {
 
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {type ReleasesReducerState} from '../../../store/reducer'
-import {type ReleaseDocument} from '../../../store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 import {getReleaseActivityEvents} from './getReleaseActivityEvents'
@@ -76,14 +75,19 @@ export function getReleaseEvents({
     ? getReleaseActivityEvents({client, releaseId})
     : notEnabledActivityEvents
 
-  const groqFilter = `_id in path("versions.${getReleaseIdFromReleaseDocumentId(releaseId)}.*")`
+  const groqFilter = `sanity::partOfRelease($releaseId)`
+
   // Turn off document counts listener if eventsAPI is not enabled.
   const documentsCount$ = eventsAPIEnabled
     ? of(0)
     : documentPreviewStore
-        .unstable_observeDocumentIdSet(groqFilter, undefined, {
-          apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
-        })
+        .unstable_observeDocumentIdSet(
+          groqFilter,
+          {releaseId: getReleaseIdFromReleaseDocumentId(releaseId)},
+          {
+            apiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
+          },
+        )
         .pipe(
           filter(({status}) => status === 'connected'),
           map(({documentIds}) => documentIds.length),

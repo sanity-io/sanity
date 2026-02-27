@@ -1,12 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import {has} from 'lodash-es'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {type Workspace} from '../../src/core/config'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {createSchema} from '../../src/core/schema/createSchema'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
+import {hasValidationContext} from '../../src/core/validation/inferFromSchemaType'
 import {validateDocument} from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
@@ -58,7 +60,6 @@ describe('schema validation inference', () => {
       name: 'fieldValidationInferReproDoc',
       type: 'document',
       title: 'FieldValidationRepro',
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       validation: (Rule: Rule) =>
         Rule.fields({
           stringField: (fieldRule) => fieldRule.required(),
@@ -93,6 +94,113 @@ describe('schema validation inference', () => {
           (validation) => validation['_rules'],
         ),
       ).toEqual([{flag: 'type', constraint: 'String'}])
+    })
+  })
+
+  describe('media validation', () => {
+    const documentWithImage = {
+      type: 'document',
+      name: 'documentWithImage',
+      title: 'Document with Image',
+      fields: [
+        {
+          name: 'imageField',
+          type: 'image',
+          validation: (Rule: Rule) =>
+            Rule.required().media(async ({media}) => {
+              // Validate that the image is a summer image when the document topic is summer
+              if (media.asset.assetType === 'sanity.imageAsset') {
+                const aspects = media.asset.aspects
+                if (has(aspects, 'season') && aspects.season === 'summer') {
+                  return true
+                }
+                return 'Image must be a summer image'
+              }
+              return true
+            }),
+        },
+      ],
+    }
+    const schema = createSchema({
+      name: 'default',
+      types: [documentWithImage],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithImage',
+      imageField: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-12345-67890-png',
+          _type: 'reference',
+        },
+        media: {
+          _type: 'globalDocumentReference',
+          _ref: 'media-library:abc:def',
+        },
+      },
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      client.fetch.mockReset()
+    })
+
+    test("gives error if media can't be found", async () => {
+      client.fetch.mockImplementation(() => Promise.resolve(false))
+
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toEqual([
+        {
+          item: {
+            message: 'The asset could not be found in the Media Library',
+          },
+          level: 'error',
+          message: 'The asset could not be found in the Media Library',
+          path: ['imageField'],
+        },
+      ])
+    })
+
+    test("gives error if media doesn't validate according to media validation rule", async () => {
+      client.fetch.mockImplementation(() =>
+        Promise.resolve({
+          _id: 'image-12345-67890-png',
+          assetType: 'sanity.imageAsset',
+          aspects: {season: 'winter'}, // Not a summer image
+        }),
+      )
+
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toEqual([
+        {
+          // eslint-disable-next-line camelcase
+          __internal_metadata: {
+            name: 'media',
+          },
+          item: {
+            message: 'Image must be a summer image',
+          },
+          level: 'error',
+          message: 'Image must be a summer image',
+          path: ['imageField'],
+        },
+      ])
     })
   })
 
@@ -146,10 +254,9 @@ describe('schema validation inference', () => {
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
-        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && !(_id in path("versions.**.mockDocument")) && slugField.current == $slug][0]._id)',
+        '!defined(*[_type == $docType && !sanity::versionOf($published) && slugField.current == $slug][0]._id)',
         {
           docType: 'documentWithSlug',
-          draft: 'drafts.mockDocument',
           published: 'mockDocument',
           slug: 'example-value',
         },
@@ -185,10 +292,9 @@ describe('schema validation inference', () => {
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
-        '!defined(*[_type == $docType && !(_id in [$draft, $published]) && !(_id in path("versions.**.mockDocument")) && slugField.current == $slug][0]._id)',
+        '!defined(*[_type == $docType && !sanity::versionOf($published) && slugField.current == $slug][0]._id)',
         {
           docType: 'documentWithSlug',
-          draft: 'drafts.mockDocument',
           published: 'mockDocument',
           slug: 'example-value',
         },
@@ -375,3 +481,73 @@ async function expectError(
   // This shouldn't actually be needed, but counts against an assertion in jest-terms
   expect(levelMatch.message).toMatch(message!)
 }
+
+describe('hasValidationContext', () => {
+  describe('returns false for non-context-aware validation', () => {
+    test('undefined', () => {
+      expect(hasValidationContext(undefined)).toBe(false)
+    })
+
+    test('false', () => {
+      expect(hasValidationContext(false)).toBe(false)
+    })
+
+    test('Rule instance', () => {
+      const rule = {} as Rule
+      expect(hasValidationContext(rule)).toBe(false)
+    })
+
+    test('function with 0 parameters', () => {
+      const validation = () => ({}) as Rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('function with 1 parameter (rule only)', () => {
+      const validation = (_rule: Rule) => _rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('array with no context-aware functions', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule) => _rule]
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+  })
+
+  describe('returns true for context-aware validation', () => {
+    test('function with 2 parameters (rule and context)', () => {
+      const validation = (_rule: Rule, _context: unknown) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('arrow function with destructured context parameter', () => {
+      // Destructuring in parameter list should still report length === 2
+      const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('regular function with destructured context parameter', () => {
+      // Regular functions should behave the same as arrow functions
+      function validation(_rule: Rule, {hidden}: {hidden?: boolean}) {
+        return _rule
+      }
+      expect(validation.length).toBe(2)
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('function with rest parameters after rule', () => {
+      const validation = (_rule: Rule, ..._args: unknown[]) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('array containing at least one context-aware function', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule, _context: unknown) => _rule]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('nested array with context-aware function', () => {
+      const validation = [[(_rule: Rule, _context: unknown) => _rule]]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+  })
+})

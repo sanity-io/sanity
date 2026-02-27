@@ -12,7 +12,7 @@ export const test = baseTest.extend<{
       })
 
       const boundingBox = await locator.boundingBox()
-      await expect(boundingBox?.y).toBeLessThanOrEqual(1)
+      expect(boundingBox?.y).toBeLessThanOrEqual(1)
     }
 
     await _use(scrollToTop)

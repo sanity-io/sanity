@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://sanity.io">
-    <img src="https://cdn.sanity.io/images/3do82whm/next/1dfce9dde7a62ccaa8e8377254a1e919f6c07ad3-128x128.svg" />
+    <img src="https://cdn.sanity.io/images/3do82whm/next/d6cf401d52c33b7a5a354a14ab7de94dea2f0c02-192x192.svg" />
   </a>
   <h1 align="center">Sanity</h1>
   <h4 align="center">
@@ -11,11 +11,14 @@
 </div>
 
 <div align="center">
-  <img alt="" src="https://img.shields.io/npm/v/sanity?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/latest?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/next?style=flat">
+  <img alt="" src="https://img.shields.io/npm/v/sanity/stable?style=flat">
+  <br />
   <img alt="" src="https://img.shields.io/npm/dm/@sanity/client?style=flat">
   <img alt="" src="https://img.shields.io/npm/l/sanity.svg?style=flat">
-  <a aria-label="Join the community on Slack" href="https://slack.sanity.io">
-    <img alt="" src="https://img.shields.io/badge/Join%20Slack-f03e2f?logo=Slack&style=flat"></a>
+  <a aria-label="Join the Sanity community" href="https://www.sanity.io/community/join?utm_source=readme">
+    <img alt="" src="https://img.shields.io/discord/1304483263171264613?label=Discord"></a>
   <a aria-label="Follow Sanity on Bluesky" href="https://bsky.app/profile/sanity.io">
     <img alt="" src="https://img.shields.io/badge/follow-@sanity.io-blue?logo=bluesky"></a>
 </div>
@@ -63,7 +66,7 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - [Sweet APIs for reading, writing, importing, exporting, go back in time, and listening for updates](https://www.sanity.io/docs/datastore).
 - [Secure, scalable and GDPR compliant](https://www.sanity.io/security).
 - [Zero config Graph Oriented Query Language (GROQ)](https://www.sanity.io/docs/how-queries-work), and [GraphQL API](https://www.sanity.io/docs/graphql).
-- [Helpful and friendly developer community](https://slack.sanity.io).
+- [Helpful and friendly developer community](https://snty.link/community).
 
 ### [Structured Content](https://www.sanity.io/structured-content)
 
@@ -80,15 +83,15 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - Subscribe to our [YouTube channel](https://www.youtube.com/@sanity_io)
 - Subscribe to [our blog by RSS](https://www.sanity.io/feed/rss)
 - Subscribe to our [newsletter](https://www.sanity.io/newsletter)
-- Join the [developer community on Slack](https://slack.sanity.io)
+- Join the [Sanity community](https://www.sanity.io/community/join?utm_source=readme)
 
 ## Code of Conduct
 
-We aim to be an inclusive, welcoming community for everyone. To make that explicit, we have a [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md) that applies to communication around the project.
+We aim to be an inclusive, welcoming community for everyone. To make that explicit, we have a [code of conduct](https://github.com/sanity-io/sanity/blob/main/CODE_OF_CONDUCT.md) that applies to communication around the project.
 
 ## Want to contribute?
 
-Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/current/CONTRIBUTING.md) to learn how.
+Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/main/CONTRIBUTING.md) to learn how.
 
 ### Help Improve Sanity Studio translations
 
@@ -108,4 +111,4 @@ Your contributions not only improve Sanity Studio but also bring together a dive
 
 ## License
 
-Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/current/LICENSE)
+Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/main/LICENSE)

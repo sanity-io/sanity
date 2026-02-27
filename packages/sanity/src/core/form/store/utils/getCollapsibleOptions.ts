@@ -30,7 +30,6 @@ export function getCollapsedWithDefaults(
   }
 
   const collapsed =
-    // eslint-disable-next-line no-nested-ternary
     typeof options?.collapsed === 'boolean'
       ? options.collapsed
       : level >= AUTO_COLLAPSE_DEPTH

@@ -3,7 +3,8 @@ import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
-  type DocumentActionComponent,
+  type DuplicateDocumentActionComponent,
+  getVersionFromId,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -20,10 +21,19 @@ const DISABLED_REASON_KEY = {
   NOT_READY: 'action.duplicate.disabled.not-ready',
 }
 
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, release}) => {
+export const useDuplicateAction: DuplicateDocumentActionComponent = ({
+  id,
+  type,
+  release,
+  mapDocument,
+  version,
+}) => {
   const documentStore = useDocumentStore()
-  const {duplicate} = useDocumentOperation(id, type, release)
+  const bundleId = version?._id && getVersionFromId(version._id)
+
+  const {duplicate} = useDocumentOperation(id, type, bundleId)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
 
@@ -49,14 +59,14 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, 
         .operationEvents(id, type)
         .pipe(filter((e) => e.op === 'duplicate' && e.type === 'success')),
     )
-    duplicate.execute(dupeId)
+    duplicate.execute(dupeId, {mapDocument})
 
     // only navigate to the duplicated document when the operation is successful
     await duplicateSuccess
     navigateIntent('edit', {id: dupeId, type})
 
-    onComplete()
-  }, [documentStore.pair, duplicate, id, navigateIntent, onComplete, type])
+    setDuplicating(false)
+  }, [documentStore.pair, duplicate, id, mapDocument, navigateIntent, type])
 
   return useMemo(() => {
     if (!isPermissionsLoading && !permissions?.granted) {
@@ -88,5 +98,5 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete, 
   ])
 }
 
-DuplicateAction.action = 'duplicate'
-DuplicateAction.displayName = 'DuplicateAction'
+useDuplicateAction.action = 'duplicate'
+useDuplicateAction.displayName = 'DuplicateAction'

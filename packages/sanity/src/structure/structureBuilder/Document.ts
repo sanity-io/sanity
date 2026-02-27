@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {uniq} from 'lodash'
+import {uniq} from 'lodash-es'
 import {type I18nTextRecord} from 'sanity'
 
 import {type ChildResolver} from './ChildResolver'
@@ -77,6 +77,12 @@ export interface PartialDocumentNode {
    * Document options. See {@link DocumentOptions}
    */
   options?: Partial<DocumentOptions>
+  /**
+   * View IDs to open as split panes by default when the document is opened.
+   * Pass an array of view IDs that match the IDs defined in `views`.
+   * If specified with 2+ valid view IDs, the document will open in split-pane mode.
+   */
+  defaultPanes?: string[]
 }
 
 /**
@@ -87,13 +93,16 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   /** Component builder option object See {@link PartialDocumentNode} */
   protected spec: PartialDocumentNode
 
+  protected _context: StructureContext
+
   constructor(
     /**
      * Structure context. See {@link StructureContext}
      */
-    protected _context: StructureContext,
+    _context: StructureContext,
     spec?: PartialDocumentNode,
   ) {
+    this._context = _context
     this.spec = spec ? spec : {}
   }
 
@@ -167,7 +176,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
     return this.clone({
       id: paneId,
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         id: documentId,
       },
     })
@@ -187,7 +196,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   schemaType(documentType: SchemaType | string): DocumentBuilder {
     return this.clone({
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         type: typeof documentType === 'string' ? documentType : documentType.name,
       },
     })
@@ -208,7 +217,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
   initialValueTemplate(templateId: string, parameters?: Record<string, unknown>): DocumentBuilder {
     return this.clone({
       options: {
-        ...(this.spec.options || {}),
+        ...this.spec.options,
         template: templateId,
         templateParameters: parameters,
       },
@@ -242,6 +251,29 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    */
   getViews(): (View | ViewBuilder)[] {
     return this.spec.views || []
+  }
+
+  /**
+   * Set the view IDs to open as split panes by default when the document is opened.
+   * Pass an array of view IDs that match the IDs defined in `views()`.
+   * If specified with 2+ valid view IDs, the document will open in split-pane mode.
+   *
+   * @param viewIds - Array of view IDs to open as split panes
+   * @returns document builder with defaultPanes config. See {@link DocumentBuilder}
+   *
+   * @example
+   * ```ts
+   * S.document()
+   *   .schemaType('article')
+   *   .views([
+   *     S.view.form().id('editor'),
+   *     S.view.component(PreviewPane).id('preview').title('Preview')
+   *   ])
+   *   .defaultPanes(['editor', 'preview'])  // Opens both as split panes
+   * ```
+   */
+  defaultPanes(viewIds: string[]): DocumentBuilder {
+    return this.clone({defaultPanes: viewIds})
   }
 
   /** Serialize Document builder
@@ -303,6 +335,26 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
       )
     }
 
+    // Validate and filter defaultPanes - only include valid view IDs
+    let defaultPanes: string[] | undefined
+    if (this.spec.defaultPanes && this.spec.defaultPanes.length > 0) {
+      const validViewIds = this.spec.defaultPanes.filter((windowId) => viewIds.includes(windowId))
+      const invalidViewIds = this.spec.defaultPanes.filter(
+        (windowId) => !viewIds.includes(windowId),
+      )
+
+      if (invalidViewIds.length > 0) {
+        console.warn(
+          `DefaultPanes contains invalid view IDs that don't match any defined views: ${invalidViewIds.join(', ')}. Valid view IDs are: ${viewIds.join(', ')}`,
+        )
+      }
+
+      // Only set defaultPanes if we have 2+ valid view IDs (needed for split panes)
+      if (validViewIds.length >= 2) {
+        defaultPanes = validViewIds
+      }
+    }
+
     return {
       ...this.spec,
       child: this.spec.child || createDocumentChildResolver(this._context),
@@ -310,6 +362,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
       type: 'document',
       options: getDocumentOptions(options),
       views,
+      defaultPanes,
     }
   }
 
@@ -319,7 +372,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
    */
   clone(withSpec: PartialDocumentNode = {}): DocumentBuilder {
     const builder = new DocumentBuilder(this._context)
-    const options = {...(this.spec.options || {}), ...(withSpec.options || {})}
+    const options = {...this.spec.options, ...withSpec.options}
     builder.spec = {...this.spec, ...withSpec, options}
     return builder
   }

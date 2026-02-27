@@ -1,5 +1,5 @@
 import {AddDocumentIcon, CopyIcon, TrashIcon} from '@sanity/icons'
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type UploadState} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
@@ -12,15 +12,20 @@ import {type FIXME} from '../../../../../FIXME'
 import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
 import {getSchemaTypeTitle} from '../../../../../schema'
-import {FormFieldValidationStatus} from '../../../../components'
+import {EnhancedObjectDialog, FormFieldValidationStatus} from '../../../../components'
 import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {TreeEditingEnabledProvider, useTreeEditingEnabled} from '../../../../studio/tree-editing'
+import {
+  EnhancedObjectDialogProvider,
+  useEnhancedObjectDialog,
+} from '../../../../studio/tree-editing'
+import {UPLOAD_STATUS_KEY} from '../../../../studio/uploads/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
+import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
@@ -83,15 +88,22 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+  const arrayValidation = useArrayValidation()
+  const maxReached = arrayValidation?.maxReached
+  const maxReachedReason = arrayValidation?.maxReachedReason
 
-  const treeEditing = useTreeEditingEnabled()
-  const treeEditingDisabledByOption = parentSchemaType?.options?.treeEditing === false
-  const legacyEditing = treeEditingDisabledByOption || treeEditing.legacyEditing
+  const {enabled: enhancedObjectDialogEnabled} = useEnhancedObjectDialog()
+
+  const uploadState = (value as any)[UPLOAD_STATUS_KEY] as UploadState | undefined
+  const uploadProgress =
+    typeof uploadState?.progress === 'number' ? uploadState?.progress : undefined
 
   // The edit portal should open if the item is open and:
-  // - tree array editing is disabled
-  // - legacy array editing is enabled (e.g. in a Portable Text editor)
-  const openPortal = open && (!treeEditing.enabled || legacyEditing)
+  // - EnhancedObjectDialog is disabled
+  // - the EnhancedObjectDialog is not available
+  const openPortal = open && !enhancedObjectDialogEnabled
+
+  const openEnhancedDialog = open && enhancedObjectDialogEnabled
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -160,6 +172,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     insertMenuOptions: parentSchemaType.options?.insertMenu,
     onInsert: handleInsert,
     referenceElement: contextMenuButtonElement,
+    disabled: maxReached,
+    disabledReason: maxReachedReason,
   })
 
   const disableActions = parentSchemaType.options?.disableActions || EMPTY_ARRAY
@@ -168,6 +182,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     return [
       !disableActions.includes('remove') && (
         <MenuItem
+          key="remove"
           text={t('inputs.array.action.remove')}
           tone="critical"
           icon={TrashIcon}
@@ -175,10 +190,16 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         />
       ),
       !disableActions.includes('copy') && (
-        <MenuItem text={t('inputs.array.action.copy')} icon={CopyIcon} onClick={handleCopy} />
+        <MenuItem
+          key="copy"
+          text={t('inputs.array.action.copy')}
+          icon={CopyIcon}
+          onClick={handleCopy}
+        />
       ),
       !disableActions.includes('duplicate') && (
         <MenuItem
+          key="duplicate"
           text={t('inputs.array.action.duplicate')}
           icon={AddDocumentIcon}
           onClick={handleDuplicate}
@@ -230,6 +251,21 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const tone = getTone({readOnly, hasErrors, hasWarnings})
 
+  // Prevent default on mousedown to stop focus from shifting before click completes.
+  // This fixes a Safari issue where focus events trigger re-renders that interrupt the click.
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    event.preventDefault()
+  }, [])
+
+  // Handle click: open the dialog and stop propagation to prevent onClickOutside from firing.
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation()
+      onOpen()
+    },
+    [onOpen],
+  )
+
   const item = (
     <CellLayout
       menu={menu}
@@ -252,7 +288,13 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         flex={1}
         tabIndex={0}
         disabled={resolvingInitialValue}
-        onClick={onOpen}
+        // Use mousedown to trigger open before focus events cause re-renders.
+        // This fixes a Safari-specific issue where the array container receives focus first,
+        // triggering a state update that causes a re-render before the click event completes.
+        // The click handler checks if already open and stops propagation to prevent
+        // the dialog's onClickOutside from detecting this as an "outside" click.
+        onMouseDown={handleMouseDown}
+        onClick={handleClick}
         ref={setPreviewCardElement}
         onFocus={onFocus}
         __unstable_focusRing
@@ -263,6 +305,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           layout: 'media',
           withBorder: false,
           withShadow: false,
+          progress: uploadProgress,
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
@@ -272,7 +315,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
   return (
-    <TreeEditingEnabledProvider legacyEditing={treeEditingDisabledByOption}>
+    <EnhancedObjectDialogProvider>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         {item}
       </ChangeIndicator>
@@ -293,6 +336,23 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           {children}
         </EditPortal>
       )}
-    </TreeEditingEnabledProvider>
+      {openEnhancedDialog && (
+        <EnhancedObjectDialog
+          header={
+            readOnly
+              ? t('inputs.array.action.view', {itemTypeTitle})
+              : t('inputs.array.action.edit', {itemTypeTitle})
+          }
+          type={parentSchemaType?.options?.modal?.type || 'dialog'}
+          width={parentSchemaType?.options?.modal?.width ?? 1}
+          id={value._key}
+          onClose={onClose}
+          autofocus={focused}
+          legacy_referenceElement={previewCardElement}
+        >
+          {children}
+        </EnhancedObjectDialog>
+      )}
+    </EnhancedObjectDialogProvider>
   )
 }

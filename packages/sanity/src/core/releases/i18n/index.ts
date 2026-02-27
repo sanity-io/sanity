@@ -6,7 +6,7 @@ import {type LocaleResourceBundle} from '../../i18n'
  * @public
  */
 // api extractor take issues with 'as const' for literals
-// eslint-disable-next-line @typescript-eslint/prefer-as-const
+// oxlint-disable-next-line prefer-as-const
 export const releasesLocaleNamespace: 'releases' = 'releases'
 
 /**

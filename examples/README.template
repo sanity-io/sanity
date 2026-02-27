@@ -1,0 +1,528 @@
+# [Example Name]
+
+<!-- 
+BEST PRACTICE: Use a clear, descriptive name that explains what the example does
+- For general functions: "Auto-Tag Function" instead of "Tagging Example"
+- For external service integrations: Include the service name in the title
+  Example: "Updating Search Index with Algolia" instead of "Search Integration"
+  Example: "Syncing Products with Shopify" instead of "Product Sync"
+  Example: "Sending Notifications to Slack" instead of "Notification Function"
+-->
+
+[Explore all examples](https://github.com/sanity-io/sanity/tree/main/examples)
+
+<!-- 
+BEST PRACTICE: Always include the link back to examples directory for discoverability
+Add demo link if available: [See it in action](demo-url) | 
+-->
+
+## Problem
+
+<!-- 
+BEST PRACTICE: 
+- Write 1-2 clear sentences describing the specific content management challenge
+- Focus on pain points developers/content creators actually face
+- Be specific rather than generic (e.g., "manually tagging is time-consuming" not "content management is hard")
+-->
+
+[Describe the specific content management challenge this example solves]
+
+## Solution
+
+<!-- 
+BEST PRACTICE:
+- Explain the approach in simple terms
+- Mention key technologies used (AI, webhooks, etc.)
+- Keep it concise - save technical details for Implementation section
+-->
+
+[Brief explanation of how this example addresses the problem using Sanity features]
+
+## Benefits
+
+<!-- 
+BEST PRACTICE:
+- Focus on tangible outcomes for content teams or developers
+- Use action-oriented language ("Saves time", "Improves consistency")
+- Include both immediate and long-term benefits
+- Aim for 3-5 clear bullet points
+-->
+
+- [Specific benefit #1 - quantify when possible]
+- [Specific benefit #2 - focus on workflow improvements]
+- [Specific benefit #3 - mention scalability/consistency gains]
+- [Additional benefits as needed]
+
+## Compatible Templates
+
+<!-- 
+BEST PRACTICE:
+- Specify which Sanity templates the example is designed to work with
+- Include schema requirements if the example assumes specific document structures
+- Provide setup instructions for adding missing fields to existing schemas
+- Link to the specific templates for easy access
+- Include both general compatibility and specific tested templates
+-->
+
+This function is built to be compatible with [specific template(s) or "any of the official templates"]. We recommend testing the function out in one of those after you have installed them locally.
+
+### Adding required fields to your schema
+
+If you're using the [specific template name], you may need to add required fields:
+
+1. Open `path/to/schema/file.ts`
+2. Add this field to the `fields` array:
+
+```typescript
+defineField({
+  name: 'fieldName',
+  title: 'Field Title',
+  type: 'field-type',
+  description: 'Description of what this field is used for',
+}),
+```
+
+3. Deploy your updated schema:
+
+```bash
+# From the studio/ folder (adjust path as needed for template structure)
+npx sanity schema deploy
+```
+
+## Implementation
+
+<!-- 
+BEST PRACTICE:
+- Provide step-by-step instructions
+- Include all necessary code snippets
+- Use proper syntax highlighting for code blocks
+- Test instructions to ensure they work
+- Include both CLI commands and configuration examples
+- Specify correct working directories for monorepo templates
+- Include function dependency installation
+-->
+
+**Important:** Run these commands from the root of your project (not inside the `studio/` folder).
+
+1. **Initialize the example**
+
+   For a new project:
+
+   ```bash
+   npx sanity blueprints init --example [example-name]
+   ```
+
+   For an existing project:
+
+   ```bash
+   npx sanity blueprints add function --example [example-name]
+   ```
+
+2. **Add configuration to your blueprint**
+
+   ```ts
+   // sanity.blueprint.ts
+   import { defineBlueprint, defineDocumentFunction } from "@sanity/blueprints";
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: "sanity.function.document",
+         name: "[function-name]",
+         src: "./functions/[function-name]",
+         memory: 2,
+         timeout: 30,
+         event: {
+           on: ["create", "update"],
+           filter: "_type == 'document-type' && condition",
+           projection: "{_id}",
+         },
+       }),
+     ],
+   });
+   ```
+
+3. **Install dependencies**
+
+   Install dependencies in the project root:
+
+   ```bash
+   npm install
+   ```
+
+   And install function dependencies:
+
+   ```bash
+   npm install @sanity/functions
+   cd functions/[function-name]
+   npm install
+   cd ../..
+   ```
+
+4. **Make sure you have a schema deployed**
+
+   From the studio folder, run:
+
+   ```bash
+   # In the studio/ folder (adjust path for template structure)
+   npx sanity schema deploy
+   ```
+
+## Testing the function locally
+
+<!-- 
+BEST PRACTICE:
+- Always include local testing instructions
+- Provide multiple testing approaches (basic, interactive, custom data)
+- Include debugging tips
+- Mention Node.js version requirements
+- Add troubleshooting for common issues
+- Document the requirement for real document IDs in dataset
+- Include proper folder navigation for monorepo templates
+-->
+
+You can test the [example-name] function locally using the Sanity CLI before deploying it to production.
+
+**Important:** Document functions require that the document ID used in testing actually exists in your dataset. The examples below show how to work with real document IDs.
+
+### 1. Basic Function Test
+
+Since document functions require the document ID to exist in your dataset, create a test document first:
+
+```bash
+# From the studio/ folder, create a test document
+cd studio
+npx sanity documents create ../functions/[function-name]/document.json --replace
+```
+
+Then test the function with the created document (from project root):
+
+```bash
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file functions/[function-name]/document.json
+```
+
+**Alternative:** Test with a real document from your dataset:
+
+```bash
+# From the studio/ folder, find and export an existing document
+cd studio
+npx sanity documents query "*[_type == 'document-type'][0]" > ../real-document.json
+
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file real-document.json
+```
+
+### 2. Interactive Development Mode
+
+Start the development server for interactive testing:
+
+```bash
+npx sanity functions dev
+```
+
+This opens an interactive playground where you can test functions with custom data
+
+### 3. Test with Custom Data
+
+For custom data testing, you still need to use a real document ID that exists in your dataset:
+
+```bash
+# From the studio/ folder, create or find a real document ID
+cd studio
+REAL_DOC_ID=$(npx sanity documents query "*[_type == 'document-type'][0]._id")
+
+# Create a temporary JSON file with custom data in project root
+cd ..
+cat > test-custom-data.json << EOF
+{
+  "_type": "document-type",
+  "_id": $REAL_DOC_ID,
+  "field": "Your custom data here..."
+}
+EOF
+
+# Test with the custom data file
+npx sanity functions test [function-name] --file test-custom-data.json
+```
+
+### 4. Test with Real Document Data
+
+The most reliable approach is to test with existing documents from your dataset:
+
+```bash
+# From the studio/ folder, find and export a document that matches your function's filter
+cd studio
+npx sanity documents query "*[_type == 'document-type' && condition][0]" > ../test-real-document.json
+
+# Back to project root for function testing
+cd ..
+npx sanity functions test [function-name] --file test-real-document.json
+```
+
+### 5. Enable Debugging
+
+To see detailed logs during testing, modify the function temporarily to add logging:
+
+```typescript
+// Add this to your function for debugging
+console.log('Event data:', JSON.stringify(event.data, null, 2))
+console.log('Result:', result)
+```
+
+### Testing Tips
+
+- **Use real document IDs** - Document functions require IDs that exist in your dataset
+- **Query for test documents** - Use `npx sanity documents query` to find suitable test documents
+- **Use Node.js v22.x** locally to match production runtime
+- **Test edge cases** like missing fields or unexpected data
+- **Check function logs** in CLI output for debugging
+- **Test without external API calls** first when applicable
+- **Create test content** - If you don't have suitable documents, create some test documents first
+
+## Deploying your function
+
+<!-- 
+BEST PRACTICE:
+- Always include deployment steps after local testing
+- Mention prerequisites clearly
+- Include both blueprint configuration and deployment commands
+- Add troubleshooting for common deployment issues
+- Reference the official documentation
+-->
+
+Once you've tested your function locally and are satisfied with its behavior, you can deploy it to production.
+
+**Important:** Make sure you have the Deploy Studio permission for your Sanity project before attempting to deploy.
+
+### Prerequisites for deployment
+
+- Sanity CLI v3.92.0 or later
+- Deploy Studio permissions for your Sanity project  
+- Node.js v22.x (matches production runtime)
+
+### Deploy to production
+
+1. **Verify your blueprint configuration**
+
+   Make sure your `sanity.blueprint.ts` file is properly configured with your function:
+
+   ```ts
+   // sanity.blueprint.ts
+   import { defineBlueprint, defineDocumentFunction } from "@sanity/blueprints";
+
+   export default defineBlueprint({
+     resources: [
+       defineDocumentFunction({
+         type: "sanity.function.document",
+         name: "[function-name]",
+         src: "./functions/[function-name]",
+         memory: 2,
+         timeout: 30,
+         event: {
+           on: ["publish"],
+           filter: "_type == 'document-type' && condition",
+           projection: "{_id}",
+         },
+       }),
+     ],
+   });
+   ```
+
+2. **Deploy your blueprint**
+
+   From your project root, run:
+
+   ```bash
+   npx sanity blueprints deploy
+   ```
+
+   This command will:
+   - Package your function code
+   - Upload it to Sanity's infrastructure
+   - Configure the event triggers
+   - Make your function live in production
+
+3. **Verify deployment**
+
+   After deployment, you can verify your function is active by:
+   - Checking the Sanity Manage console under "API > Functions"
+   - Testing with a real document publish/update
+   - Monitoring function logs in the CLI
+
+### Deployment best practices
+
+- **Test thoroughly first** - Always test your function locally before deploying
+- **Use GROQ filters** - Add specific filters to avoid unnecessary function executions
+- **Monitor performance** - Functions run on Node.js v22.x with configurable memory and timeout
+- **Avoid recursion** - Be careful not to create functions that trigger themselves
+- **Check permissions** - Ensure your function has the necessary permissions for external APIs
+
+### Troubleshooting deployment
+
+**Error: "Deploy Studio permission required"**
+- Cause: Your account doesn't have deployment permissions for this project
+- Solution: Ask a project admin to grant you Deploy Studio permissions
+
+**Error: "Blueprint validation failed"**
+- Cause: Issues with your `sanity.blueprint.ts` configuration
+- Solution: Check the configuration matches the expected schema
+
+**Function not triggering after deployment**
+- Cause: GROQ filter might be too restrictive or event configuration incorrect
+- Solution: Review your event configuration and test with documents that match your filter
+
+For more details, see the [official function deployment documentation](https://www.sanity.io/docs/compute-and-ai/function-quickstart).
+
+## Requirements
+
+<!-- 
+BEST PRACTICE:
+- List all prerequisites clearly
+- Include both technical and account requirements
+- Mention schema requirements specifically
+- Note any paid features or API access needed
+-->
+
+- A Sanity project
+- [Specific schema requirements - be detailed about field names and types]
+- [Any Sanity feature requirements (Functions, AI, etc.)]
+- [External service requirements if applicable]
+- [Node.js version or other technical requirements]
+
+## Usage Example
+
+<!-- 
+BEST PRACTICE:
+- Show the function in action with a realistic scenario
+- Use numbered steps to show the workflow
+- Include before/after states when relevant
+- Explain the outcome clearly
+-->
+
+When [trigger condition occurs], the function automatically:
+
+1. [Step 1 - what triggers the function]
+2. [Step 2 - what data it processes]
+3. [Step 3 - what actions it takes]
+4. [Step 4 - what the result/outcome is]
+
+This results in [clear description of the end benefit].
+
+## Customization
+
+<!-- 
+BEST PRACTICE:
+- Include this section for complex examples
+- Show common modifications developers might need
+- Provide code examples for customizations
+- Explain configuration options
+-->
+
+[Optional section for examples that have common customization needs]
+
+## Troubleshooting
+
+<!-- 
+BEST PRACTICE:
+- Include this section for examples with common issues
+- Use clear problem/solution format
+- Include error messages developers might see
+- Provide debugging steps
+-->
+
+[Optional section for examples with known issues or complex setup]
+
+### Common Issues
+
+**Error: [Common error message]**
+- Cause: [Why this happens]
+- Solution: [How to fix it]
+
+## Related Examples
+
+<!-- 
+BEST PRACTICE:
+- Link to related examples when relevant
+- Help developers discover complementary functionality
+- Use descriptive link text
+-->
+
+[Optional section linking to related examples]
+
+---
+
+<!-- 
+CODING GUIDELINES FOR FUNCTION EXAMPLES:
+
+When writing function examples, follow these best practices to ensure
+consistency and beginner-friendliness:
+
+## Code Quality Standards
+
+1. **Always use TypeScript** - But keep typing light to maintain readability
+   - Use explicit types for function parameters and return values
+   - Avoid complex generic types or advanced TypeScript features
+   - Focus on clarity over type sophistication
+
+2. **Documentation and Comments**
+   - Use light inline comments for key concepts and non-obvious logic
+   - Avoid over-commenting obvious operations
+   - Include comments explaining Sanity-specific concepts (setIfMissing, projections, etc.)
+
+3. **Beginner-Friendly Patterns**
+   - Avoid complex patterns that might confuse newcomers
+   - Use straightforward control flow (avoid deeply nested logic)
+   - Prefer explicit operations over clever one-liners
+   - Structure code in logical, easy-to-follow steps
+
+4. **Error Handling**
+   - Include error handling for common edge cases
+   - Use try-catch blocks for external API calls and database operations
+   - Provide meaningful error messages in logs
+   - Handle missing fields and unexpected data gracefully
+
+5. **Self-Contained Code**
+   - Make examples work independently without external dependencies
+   - Include all necessary imports and configuration
+   - Avoid requiring complex setup beyond basic Sanity project requirements
+   - Keep external service dependencies minimal and well-documented
+
+6. **Clear Input/Output Examples**
+   - Provide realistic sample data in document.json
+   - Include TypeScript types that show expected input structure
+   - Document what the function returns or modifies
+   - Show before/after states in documentation
+
+7. **Naming and Structure**
+   - Use descriptive variable and function names
+   - Choose names that explain purpose over implementation
+   - Structure code in logical flow from input → processing → output
+   - Group related operations together
+
+8. **Package Configuration**
+   - Include complete package.json with all necessary dependencies
+   - Use stable, well-supported package versions
+   - Include blueprintResourceItem configuration
+   - Add clear example instructions
+
+## Example Structure Checklist
+
+Every function example should include:
+- [ ] index.ts with TypeScript implementation
+- [ ] package.json with dependencies and blueprint config
+- [ ] document.json with realistic test data
+- [ ] README.md following this template
+- [ ] Error handling for common edge cases
+- [ ] Clear inline documentation
+- [ ] Self-contained, runnable code
+
+TEMPLATE MAINTENANCE NOTES:
+- Keep sections in this order for consistency
+- Always test instructions before publishing
+- Include realistic sample data in document.json
+- Ensure all code snippets use proper syntax highlighting
+- Update links when examples are moved or renamed
+-->

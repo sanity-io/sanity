@@ -1,10 +1,11 @@
 import {createHash} from 'node:crypto'
 import {mkdir, writeFile} from 'node:fs/promises'
 import {dirname, join, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
 import {Worker} from 'node:worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {minutesToMilliseconds} from 'date-fns'
+import {minutesToMilliseconds} from 'date-fns/minutesToMilliseconds'
 import readPkgUp from 'read-pkg-up'
 
 import {
@@ -13,9 +14,12 @@ import {
   type ManifestWorkspaceFile,
 } from '../../../manifest/manifestTypes'
 import {type ExtractManifestWorkerData} from '../../threads/extractManifest'
+import {readModuleVersion} from '../../util/readModuleVersion'
 import {getTimer} from '../../util/timing'
 
-const MANIFEST_FILENAME = 'create-manifest.json'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+export const MANIFEST_FILENAME = 'create-manifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.create-schema.json'
 const TOOLS_FILENAME_SUFFIX = '.create-tools.json'
 
@@ -29,10 +33,10 @@ const CREATE_TIMER = 'create-manifest'
 const EXTRACT_TASK_TIMEOUT_MS = minutesToMilliseconds(2)
 
 const EXTRACT_FAILURE_MESSAGE =
-  "Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
-  `Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
+  "↳ Couldn't extract manifest file. Sanity Create will not be available for the studio.\n" +
+  `  Disable this message with ${FEATURE_ENABLED_ENV_NAME}=false`
 
-interface ExtractFlags {
+export interface ExtractManifestFlags {
   path?: string
 }
 
@@ -41,7 +45,7 @@ interface ExtractFlags {
  * @returns `undefined` if extract succeeded - caught error if it failed
  */
 export async function extractManifestSafe(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<Error | undefined> {
   if (!EXTRACT_MANIFEST_ENABLED) {
@@ -60,7 +64,7 @@ export async function extractManifestSafe(
 }
 
 async function extractManifest(
-  args: CliCommandArguments<ExtractFlags>,
+  args: CliCommandArguments<ExtractManifestFlags>,
   context: CliCommandContext,
 ): Promise<void> {
   const {output, workDir} = context
@@ -95,10 +99,12 @@ async function extractManifest(
        * Version history:
        * 1: Initial release.
        * 2: Added tools file.
+       * 3. Added studioVersion field.
        */
-      version: 2,
+      version: 3,
       createdAt: new Date().toISOString(),
       workspaces: workspaceFiles,
+      studioVersion: await readModuleVersion(workDir, 'sanity'),
     }
 
     await writeFile(path, JSON.stringify(manifest, null, 2))
@@ -106,7 +112,7 @@ async function extractManifest(
 
     spinner.succeed(`Extracted manifest (${manifestDuration.toFixed()}ms)`)
   } catch (err) {
-    spinner.info(EXTRACT_FAILURE_MESSAGE)
+    spinner.fail(err.message)
     throw err
   }
 }
@@ -124,19 +130,18 @@ async function getWorkspaceManifests({
     '_internal',
     'cli',
     'threads',
-    'extractManifest.js',
+    'extractManifest.cjs',
   )
 
   const worker = new Worker(workerPath, {
     workerData: {workDir} satisfies ExtractManifestWorkerData,
-    // eslint-disable-next-line no-process-env
     env: process.env,
   })
 
   let timeout = false
   const timeoutId = setTimeout(() => {
     timeout = true
-    worker.terminate()
+    void worker.terminate()
   }, EXTRACT_TASK_TIMEOUT_MS)
 
   try {

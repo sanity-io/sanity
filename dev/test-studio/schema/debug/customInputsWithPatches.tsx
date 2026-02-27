@@ -100,17 +100,8 @@ export function CustomComponent(props: ObjectInputProps) {
   return (
     <>
       <Grid columns={[2]} gap={2}>
-        <Button
-          // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => setRandomValue(['a'])}
-          text="Set random value for A"
-        />
-        <Button
-          // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => clearValue(['a'])}
-          text="Clear A"
-          tone="critical"
-        />
+        <Button onClick={() => setRandomValue(['a'])} text="Set random value for A" />
+        <Button onClick={() => clearValue(['a'])} text="Clear A" tone="critical" />
       </Grid>
 
       {props.renderDefault(props)}

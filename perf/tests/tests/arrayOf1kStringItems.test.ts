@@ -1,4 +1,4 @@
-import {range} from 'lodash'
+import {range} from 'lodash-es'
 
 import {type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
@@ -47,7 +47,7 @@ export default {
     // Wait for the form to render
     await page.waitForSelector('[data-testid="string-input"]')
 
-    const input = await page.getByTestId('string-input').nth(1)
+    const input = page.getByTestId('string-input').nth(1)
     await input.click()
 
     const samples = await input.evaluate((el: HTMLInputElement) =>

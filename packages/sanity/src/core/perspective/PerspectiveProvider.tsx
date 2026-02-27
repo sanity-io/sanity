@@ -1,12 +1,14 @@
-import {type ReleaseId} from '@sanity/client'
 import {useMemo} from 'react'
 import {PerspectiveContext} from 'sanity/_singletons'
 
+import {getReleaseIdFromReleaseDocumentId} from '../releases'
 import {getReleasesPerspectiveStack} from '../releases/hooks/utils'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useWorkspace} from '../studio/workspace'
+import {isSystemBundleName} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
-import {type PerspectiveContextValue, type SelectedPerspective} from './types'
+import {getSelectedPerspective} from './getSelectedPerspective'
+import {type PerspectiveContextValue, type ReleaseId} from './types'
 
 /**
  * @internal
@@ -22,14 +24,16 @@ export function PerspectiveProvider({
 }) {
   const {data: releases} = useActiveReleases()
 
-  const selectedPerspective: SelectedPerspective = useMemo(() => {
-    if (!selectedPerspectiveName) return 'drafts'
-    if (selectedPerspectiveName === 'published') return 'published'
-    const selectedRelease = releases.find(
-      (release) => getReleaseIdFromReleaseDocumentId(release._id) === selectedPerspectiveName,
-    )
-    return selectedRelease || 'drafts'
-  }, [selectedPerspectiveName, releases])
+  const {
+    document: {
+      drafts: {enabled: isDraftModelEnabled},
+    },
+  } = useWorkspace()
+
+  const selectedPerspective = useMemo(
+    () => getSelectedPerspective(selectedPerspectiveName, releases),
+    [selectedPerspectiveName, releases],
+  )
 
   const perspectiveStack = useMemo(
     () =>
@@ -37,20 +41,31 @@ export function PerspectiveProvider({
         releases,
         selectedPerspectiveName,
         excludedPerspectives,
+        isDraftModelEnabled,
       }),
-    [releases, selectedPerspectiveName, excludedPerspectives],
+    [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const value: PerspectiveContextValue = useMemo(
-    () => ({
+  const value: PerspectiveContextValue = useMemo(() => {
+    // For regular releases and published, use as-is
+    return {
       selectedPerspective,
       selectedPerspectiveName,
-      selectedReleaseId:
-        selectedPerspectiveName === 'published' ? undefined : selectedPerspectiveName,
+      selectedReleaseId: isSystemBundleName(selectedPerspectiveName)
+        ? undefined
+        : releases
+            .map((release) => getReleaseIdFromReleaseDocumentId(release._id))
+            .find((releaseName) => releaseName === selectedPerspectiveName),
       perspectiveStack,
       excludedPerspectives,
-    }),
-    [selectedPerspective, selectedPerspectiveName, perspectiveStack, excludedPerspectives],
-  )
+    }
+  }, [
+    selectedPerspectiveName,
+    releases,
+    selectedPerspective,
+    perspectiveStack,
+    excludedPerspectives,
+  ])
+
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
 }

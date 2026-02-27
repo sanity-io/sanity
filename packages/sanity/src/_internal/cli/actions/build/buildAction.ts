@@ -1,21 +1,29 @@
 import path from 'node:path'
 
-import chalk from 'chalk'
-import {info} from 'log-symbols'
-import semver from 'semver'
-import {noopLogger} from '@sanity/telemetry'
-import {rimraf} from 'rimraf'
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {runTypegenGenerate, RunTypegenOptions, TypesGeneratedTrace} from '@sanity/codegen'
+import {noopLogger} from '@sanity/telemetry'
+import chalk from 'chalk'
+import logSymbols from 'log-symbols'
+import {rimraf} from 'rimraf'
+import semver from 'semver'
 
-import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
-import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
-import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
-import {getTimer} from '../../util/timing'
-import {BuildTrace} from './build.telemetry'
+import {buildStaticFiles} from '../../server'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
-import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
-import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
+import {baseUrl} from '../../util/baseUrl'
+import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
+import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
+import {compareDependencyVersions} from '../../util/compareDependencyVersions'
+import {getAppId} from '../../util/getAppId'
+import {getAutoUpdatesImportMap} from '../../util/getAutoUpdatesImportMap'
+import {isInteractive} from '../../util/isInteractive'
+import {formatModuleSizes, sortModulesBySize} from '../../util/moduleFormatUtils'
+import {getPackageManagerChoice} from '../../util/packageManager/packageManagerChoice'
+import {upgradePackages} from '../../util/packageManager/upgradePackages'
 import {shouldAutoUpdate} from '../../util/shouldAutoUpdate'
+import {getTimer} from '../../util/timing'
+import {warnAboutMissingAppId} from '../../util/warnAboutMissingAppId'
+import {BuildTrace} from './build.telemetry'
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -32,7 +40,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger, cliConfigPath} = context
   const flags: BuildSanityStudioCommandFlags = {
     'minify': true,
     'stats': false,
@@ -46,7 +54,6 @@ export default async function buildSanityStudio(
   const unattendedMode = Boolean(flags.yes || flags.y)
   const defaultOutputDir = path.resolve(path.join(workDir, 'dist'))
   const outputDir = path.resolve(args.argsWithoutOptions[0] || defaultOutputDir)
-  const isCoreApp = cliConfig && '__experimental_coreAppConfiguration' in cliConfig
 
   await checkStudioDependencyVersions(workDir)
 
@@ -57,43 +64,102 @@ export default async function buildSanityStudio(
     return {didCompile: false}
   }
 
-  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig})
+  const autoUpdatesEnabled = shouldAutoUpdate({flags, cliConfig, output})
 
-  // Get the version without any tags if any
-  const coercedSanityVersion = semver.coerce(installedSanityVersion)?.version
-  if (autoUpdatesEnabled && !coercedSanityVersion) {
-    throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
-  }
-  const version = encodeURIComponent(`^${coercedSanityVersion}`)
-  const autoUpdatesImports = getAutoUpdateImportMap(version)
-
+  let autoUpdatesImports = {}
   if (autoUpdatesEnabled) {
-    output.print(`${info} Building with auto-updates enabled`)
+    // Get the clean version without build metadata: https://semver.org/#spec-item-10
+    const cleanSanityVersion = semver.parse(installedSanityVersion)?.version
+    if (!cleanSanityVersion) {
+      throw new Error(`Failed to parse installed Sanity version: ${installedSanityVersion}`)
+    }
+
+    const sanityDependencies = [
+      {name: 'sanity', version: cleanSanityVersion},
+      {name: '@sanity/vision', version: cleanSanityVersion},
+    ]
+
+    const appId = getAppId({cliConfig, output})
+
+    autoUpdatesImports = getAutoUpdatesImportMap(sanityDependencies, {appId})
+
+    output.print(`${logSymbols.info} Building with auto-updates enabled`)
+
+    // note: we want to show this warning only if running `sanity build`
+    // since `sanity deploy` will prompt for appId if it's missing and tell the user to add it to sanity.cli.ts when done
+    // see deployAction.ts
+    if (args.groupOrCommand !== 'deploy' && !appId) {
+      warnAboutMissingAppId({
+        appType: 'studio',
+        cliConfigPath,
+        output,
+        projectId: cliConfig?.api?.projectId,
+      })
+    }
 
     // Check the versions
-    try {
-      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
+    const result = await compareDependencyVersions(sanityDependencies, workDir)
 
-      // If it is in unattended mode, we don't want to prompt
-      if (result?.length && !unattendedMode) {
-        const shouldContinue = await prompt.single({
-          type: 'confirm',
+    if (result?.length) {
+      const versionMismatchWarning =
+        `The following local package versions are different from the versions currently served at runtime.\n` +
+        `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
+        `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')}`
+
+      // If it is non-interactive or in unattended mode, we don't want to prompt
+      if (isInteractive && !unattendedMode) {
+        const choice = await prompt.single({
+          type: 'list',
           message: chalk.yellow(
-            `The following local package versions are different from the versions currently served at runtime.\n` +
-              `When using auto updates, we recommend that you test locally with the same versions before deploying. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
-              `Continue anyway?`,
+            `${logSymbols.warning} ${versionMismatchWarning}\n\nDo you want to upgrade local versions before deploying?`,
           ),
-          default: false,
+          choices: [
+            {
+              type: 'choice',
+              value: 'upgrade',
+              name: `Upgrade local versions (recommended). You will need to run the ${args.groupOrCommand} command again`,
+            },
+            {
+              type: 'choice',
+              value: 'upgrade-and-proceed',
+              name: `Upgrade and proceed with ${args.groupOrCommand}`,
+            },
+            {
+              type: 'choice',
+              value: 'continue',
+              name: `Continue anyway`,
+            },
+            {type: 'choice', name: 'Cancel', value: 'cancel'},
+          ],
+          default: 'upgrade-and-proceed',
         })
 
-        if (!shouldContinue) {
-          return process.exit(0)
+        if (choice === 'cancel') {
+          return {didCompile: false}
         }
+
+        if (choice === 'upgrade' || choice === 'upgrade-and-proceed') {
+          await upgradePackages(
+            {
+              packageManager: (await getPackageManagerChoice(workDir, {interactive: false})).chosen,
+              packages: result.map((res) => [res.pkg, res.remote]),
+            },
+            context,
+          )
+
+          if (choice !== 'upgrade-and-proceed') {
+            return {didCompile: false}
+          }
+        }
+      } else {
+        // if non-interactive or unattended, just show the warningMessage
+        console.warn(`WARNING: ${versionMismatchWarning}`)
       }
-    } catch (err) {
-      throw err
     }
+  }
+
+  if (cliConfig?.schemaExtraction?.enabled) {
+    output.print(`${logSymbols.info} Building with schema extraction enabled`)
   }
 
   const envVarKeys = getSanityEnvVars()
@@ -147,7 +213,7 @@ export default async function buildSanityStudio(
     spin.succeed()
   }
 
-  spin = output.spinner(`Build Sanity ${isCoreApp ? 'application' : 'Studio'}`).start()
+  spin = output.spinner(`Build Sanity Studio`).start()
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
@@ -176,11 +242,10 @@ export default async function buildSanityStudio(
       importMap,
       reactCompiler:
         cliConfig && 'reactCompiler' in cliConfig ? cliConfig.reactCompiler : undefined,
-      appLocation:
-        cliConfig && '__experimental_coreAppConfiguration' in cliConfig
-          ? cliConfig.__experimental_coreAppConfiguration?.appLocation
-          : undefined,
-      isCoreApp,
+      entry: cliConfig && 'app' in cliConfig ? cliConfig.app?.entry : undefined,
+      typegen: cliConfig?.typegen,
+      telemetryLogger: telemetry,
+      schemaExtraction: cliConfig?.schemaExtraction,
     })
 
     trace.log({
@@ -190,7 +255,7 @@ export default async function buildSanityStudio(
     })
     const buildDuration = timer.end('bundleStudio')
 
-    spin.text = `Build Sanity ${isCoreApp ? 'application' : 'Studio'} (${buildDuration.toFixed()}ms)`
+    spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
     trace.complete()
@@ -204,35 +269,40 @@ export default async function buildSanityStudio(
     throw err
   }
 
+  if (cliConfig?.typegen?.enabled) {
+    const typegenTrace = telemetry.trace(TypesGeneratedTrace)
+
+    try {
+      typegenTrace.start()
+      const typegenConfig = cliConfig?.typegen
+      const typegenOptions: RunTypegenOptions = {
+        workDir,
+        config: {
+          formatGeneratedCode: typegenConfig?.formatGeneratedCode ?? false,
+          generates: typegenConfig?.generates ?? 'sanity.types.ts',
+          overloadClientMethods: typegenConfig?.overloadClientMethods ?? false,
+          path: typegenConfig?.path ?? './src/**/*.{ts,tsx,js,jsx}',
+          schema: typegenConfig?.schema ?? 'schema.json',
+        },
+      }
+
+      const {code, ...stats} = await runTypegenGenerate(typegenOptions)
+      typegenTrace.log({
+        ...stats,
+        configMethod: 'cli',
+        configOverloadClientMethods: typegenConfig.overloadClientMethods ?? false,
+      })
+      typegenTrace.complete()
+    } catch (err) {
+      typegenTrace.error(err)
+      throw err
+    }
+  }
+
   return {didCompile: true}
 }
 
 // eslint-disable-next-line no-process-env
 function getSanityEnvVars(env: Record<string, string | undefined> = process.env): string[] {
   return Object.keys(env).filter((key) => key.toUpperCase().startsWith('SANITY_STUDIO_'))
-}
-
-function sortModulesBySize(chunks: ChunkStats[]): ChunkModule[] {
-  return chunks
-    .flatMap((chunk) => chunk.modules)
-    .sort((modA, modB) => modB.renderedLength - modA.renderedLength)
-}
-
-function formatModuleSizes(modules: ChunkModule[]): string {
-  const lines: string[] = []
-  for (const mod of modules) {
-    lines.push(` - ${formatModuleName(mod.name)} (${formatSize(mod.renderedLength)})`)
-  }
-
-  return lines.join('\n')
-}
-
-function formatModuleName(modName: string): string {
-  const delimiter = '/node_modules/'
-  const nodeIndex = modName.lastIndexOf(delimiter)
-  return nodeIndex === -1 ? modName : modName.slice(nodeIndex + delimiter.length)
-}
-
-function formatSize(bytes: number): string {
-  return chalk.cyan(`${(bytes / 1024).toFixed()} kB`)
 }

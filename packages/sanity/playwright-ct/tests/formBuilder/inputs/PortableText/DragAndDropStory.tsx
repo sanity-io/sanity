@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import {type SanityDocument} from '@sanity/client'
 import {defineArrayMember, defineField, defineType, type Path} from '@sanity/types'
 

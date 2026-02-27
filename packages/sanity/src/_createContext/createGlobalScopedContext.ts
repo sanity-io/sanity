@@ -18,10 +18,18 @@ export function createGlobalScopedContext<ContextType, const T extends ContextTy
   const symbol = Symbol.for(key)
 
   /**
-   * Prevent errors about re-renders on React SSR on Next.js App Router
+   * Prevent errors about re-renders on React SSR on Next.js App Router, as well as JSDOM-based
+   * environments such as when we extract schemas etc from the studio configuration.
    */
-  if (typeof document === 'undefined') {
-    return createContext<ContextType>(defaultValue)
+  if (
+    typeof document === 'undefined' ||
+    (typeof window !== 'undefined' &&
+      typeof window.navigator !== 'undefined' &&
+      window.navigator.userAgent.includes('jsdom'))
+  ) {
+    const context = createContext<ContextType>(defaultValue)
+    context.displayName = key
+    return context
   }
 
   if (!globalScope[symbol]) {

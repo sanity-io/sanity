@@ -1,0 +1,24 @@
+{
+  "name": "@repo/utils",
+  "version": "5.12.0",
+  "private": true,
+  "description": "Shared repository utils",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "check:types": "(cd ../../.. && tsc --project packages/@repo/utils/tsconfig.json --erasableSyntaxOnly)",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "lodash-es": "^4.17.22",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
+    "eslint": "catalog:"
+  }
+}

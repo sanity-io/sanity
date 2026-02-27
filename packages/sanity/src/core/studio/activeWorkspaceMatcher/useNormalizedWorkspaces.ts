@@ -1,4 +1,4 @@
-import {escapeRegExp} from 'lodash'
+import {escapeRegExp} from 'lodash-es'
 import {useMemo} from 'react'
 
 import {type WorkspacesContextValue} from '../workspaces'

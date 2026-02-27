@@ -18,12 +18,12 @@ import {styled} from 'styled-components'
 import {visionLocaleNamespace} from '../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 
-const Dot = styled.div<{tone: CardTone}>`
+const Dot = styled.div<{$tone: CardTone}>`
   width: 4px;
   height: 4px;
   border-radius: 3px;
   box-shadow: 0 0 0 1px var(--card-bg-color);
-  background-color: ${({tone}) => `var(--card-badge-${tone}-dot-color)`};
+  background-color: ${({$tone}) => `var(--card-badge-${$tone}-dot-color)`};
 `
 
 const SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION = false
@@ -80,7 +80,10 @@ export function PerspectivePopover() {
 
             <Card>
               <Text>
-                <PerspectivePopoverLink href="https://sanity.io/docs/perspectives" target="_blank">
+                <PerspectivePopoverLink
+                  href="https://www.sanity.io/docs/perspectives"
+                  target="_blank"
+                >
                   {t('settings.perspectives.action.docs-link')} &rarr;
                 </PerspectivePopoverLink>
               </Text>
@@ -105,7 +108,7 @@ export function PerspectivePopover() {
         onClick={handleClick}
         selected={open}
       >
-        <Dot tone={SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? 'caution' : 'primary'} />
+        <Dot $tone={SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? 'caution' : 'primary'} />
       </Button>
     </Popover>
   )

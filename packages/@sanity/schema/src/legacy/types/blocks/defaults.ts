@@ -116,3 +116,5 @@ export const DEFAULT_DECORATORS = [
   DECORATORS.underline,
   DECORATORS.strikeThrough,
 ]
+
+export const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]

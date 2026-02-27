@@ -96,7 +96,6 @@ history.listen(() => render(document.location))
 - `route(path : string, ?options : Options, ?children : ) : Router`
 - `route.scope(name : string, path : string, ?options : Options, ?children : ) : Router`
 - `Router`:
-
   - `encode(state : object) : string`
   - `decode(path : string) : object`
   - `isRoot(path : string) : boolean`

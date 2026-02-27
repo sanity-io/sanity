@@ -1,22 +1,24 @@
-import {TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {RevertIcon, TrashIcon, UnpublishIcon} from '@sanity/icons'
+import {useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
+  type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
+import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {UnpublishVersionDialog} from '../../components/dialog/UnpublishVersionDialog'
+import {useVersionOperations} from '../../hooks/useVersionOperations'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 
-/**
- * @internal
- */
-export const UnpublishVersionAction = (
+// React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
+/** @internal */
+export const useUnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
   const {id, type, release, published, version} = props
@@ -24,6 +26,9 @@ export const UnpublishVersionAction = (
   const isPublished = published !== null
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
+  const {revertUnpublishVersion} = useVersionOperations()
+  const toast = useToast()
+  const {t: coreT} = useTranslation()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
@@ -34,11 +39,25 @@ export const UnpublishVersionAction = (
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  const handleDialogOpen = useCallback(() => {
-    setDialogOpen(true)
-  }, [])
+  const handleOnClick = useCallback(async () => {
+    // if the document is already unpublished, revert the unpublish
+    if (isAlreadyUnpublished && version) {
+      try {
+        await revertUnpublishVersion(version._id)
+      } catch {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: coreT('release.action.revert-unpublish-version.failure.title'),
+          description: coreT('release.action.revert-unpublish-version.failure.description'),
+        })
+      }
+    } else {
+      setDialogOpen(true)
+    }
+  }, [isAlreadyUnpublished, version, revertUnpublishVersion, toast, coreT])
 
-  if (!version) return null
+  if (!release || !version) return null
 
   const insufficientPermissions = !isPermissionsLoading && !permissions?.granted
 
@@ -54,22 +73,30 @@ export const UnpublishVersionAction = (
   }
 
   return {
-    dialog: dialogOpen && {
-      type: 'custom',
-      component: (
-        <UnpublishVersionDialog
-          documentVersionId={version._id}
-          documentType={type}
-          onClose={() => setDialogOpen(false)}
-        />
-      ),
-    },
+    dialog: dialogOpen &&
+      !isAlreadyUnpublished && {
+        type: 'custom',
+        component: (
+          <UnpublishVersionDialog
+            documentVersionId={version._id}
+            documentType={type}
+            onClose={() => setDialogOpen(false)}
+          />
+        ),
+      },
     /** @todo should be switched once we have the document actions updated */
-    label: t('action.unpublish-doc-actions'),
-    icon: UnpublishIcon,
-    onHandle: handleDialogOpen,
-    disabled: !isPublished || isAlreadyUnpublished,
+    label: isAlreadyUnpublished
+      ? t('action.revert-unpublish-actions')
+      : t('action.unpublish-doc-actions'),
+    icon: isAlreadyUnpublished ? RevertIcon : UnpublishIcon,
+    onHandle: handleOnClick,
+    disabled: !isPublished,
     /** @todo should be switched once we have the document actions updated */
-    title: t('action.unpublish-doc-actions'),
+    title: isAlreadyUnpublished
+      ? t('action.revert-unpublish-actions')
+      : t('action.unpublish-doc-actions'),
   }
 }
+
+useUnpublishVersionAction.action = 'unpublishVersion'
+useUnpublishVersionAction.displayName = 'UnpublishVersionAction'

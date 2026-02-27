@@ -85,7 +85,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   const selectRev = useCallback(
     (revEvent: DocumentGroupEvent) => {
-      try {
+      // Workaround for React Compiler not yet fully supporting try/catch/finally syntax
+      const run = () => {
         if (
           isDeleteDocumentVersionEvent(revEvent) ||
           isDeleteDocumentGroupEvent(revEvent) ||
@@ -99,6 +100,9 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         const [since, rev] = findRangeForRevision(revEvent?.id)
         setTimelineRange(since, rev)
         handleClose()
+      }
+      try {
+        run()
       } catch (err) {
         toast.push({
           closable: true,
@@ -161,16 +165,15 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   ])
 
   const revLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
         formatParams,
       })
     : t('timeline.latest-revision')
 
-  // eslint-disable-next-line no-nested-ternary
   const sinceLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.type], {
+    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
         formatParams,
@@ -180,9 +183,15 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
       : t('timeline.no-previous-events')
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
+  const portalElements = useMemo(
+    () => ({
+      [TIMELINE_MENU_PORTAL]: popoverRef,
+    }),
+    [popoverRef],
+  )
 
   return (
-    <PortalProvider __unstable_elements={{[TIMELINE_MENU_PORTAL]: popoverRef}}>
+    <PortalProvider __unstable_elements={portalElements}>
       <Root
         data-testid="timeline-menu"
         constrainSize

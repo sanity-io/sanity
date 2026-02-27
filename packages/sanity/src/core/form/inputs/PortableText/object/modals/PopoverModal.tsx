@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
-import {type ReactNode, useCallback, useRef, useState} from 'react'
+import {type PropsWithChildren, type ReactNode, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
 
@@ -23,10 +23,25 @@ interface PopoverEditDialogProps {
   width?: ModalWidth
 }
 
+/**
+ * Wrapper for focus lock that maintains scroll on the popover
+ * Unlike Fragment (on some react versions) this does not absorb the ref prop
+ */
+const NoopContainer = ({children, ...props}: PropsWithChildren) => (
+  <div
+    {...props}
+    // Makes the div focusable so clicking on the popover will move the focus away from the input once focus lock is active
+    // Solves an issue when scrolling the popover and then clicking outside of the input will scroll back the popover to the input.
+    tabIndex={-1}
+  >
+    {children}
+  </div>
+)
+
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
-  const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
+  const {floatingBoundary, referenceBoundary, referenceElement, width = 2} = props
   return (
     <RootPopover
       content={<Content {...props} />}
@@ -49,7 +64,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
 }
 
 function Content(props: PopoverEditDialogProps) {
-  const {onClose, referenceBoundary, referenceElement, title, autoFocus} = props
+  const {onClose, referenceBoundary, referenceElement, title} = props
   const isClosedRef = useRef(false)
 
   const handleClose = useCallback(() => {
@@ -61,11 +76,22 @@ function Content(props: PopoverEditDialogProps) {
     useCallback(
       (event: KeyboardEvent) => {
         if (event.key === 'Escape') {
+          event.preventDefault()
+          event.stopPropagation()
+          event.stopImmediatePropagation()
           handleClose()
         }
       },
       [handleClose],
     ),
+    {
+      /**
+       * We need to capture the event to prevent it from being propagated to the parent
+       * This is needed when, for example, in order for the fullscreen mode to be closed
+       * Last over existing popovers
+       */
+      capture: true,
+    },
   )
 
   useClickOutsideEvent(
@@ -82,6 +108,17 @@ function Content(props: PopoverEditDialogProps) {
     // This is needed in order for focusLock not to trap focus in the
     // popover when closing the popover and focus is to be returned to the editor
     if (isClosedRef.current) return false
+
+    const target = element as Node
+    const portalElements = document.querySelectorAll('[data-portal]')
+    const isWithinPortal = Array.from(portalElements).some((portal) => portal.contains(target))
+
+    // We want to have an exception to the clicking when the target is outside of the portal
+    // And the popover is not closed.
+    // This is needed in order for focusLock not to trap focus in the modal
+    // Because then, if we are trying to change matters in an opened pane, focusLock will trap focus in the modal
+    if (!isWithinPortal && !isClosedRef.current) return false
+
     return Boolean(element.contentEditable) || Boolean(containerElement.current?.contains(element))
   }, [])
 
@@ -91,7 +128,7 @@ function Content(props: PopoverEditDialogProps) {
       containerElement={containerElement}
     >
       <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-        <Flex ref={containerElement} direction="column" height="fill">
+        <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
           <ContentHeaderBox flex="none" padding={1}>
             <Flex align="center">
               <Box flex={1} padding={2}>
@@ -99,11 +136,12 @@ function Content(props: PopoverEditDialogProps) {
               </Box>
 
               <Button
-                autoFocus={Boolean(autoFocus)}
+                autoFocus
                 icon={CloseIcon}
                 mode="bleed"
                 onClick={handleClose}
                 tooltipProps={{content: 'Close'}}
+                data-testid="close-popover-edit-dialog-button"
               />
             </Flex>
           </ContentHeaderBox>

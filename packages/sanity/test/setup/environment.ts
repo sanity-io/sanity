@@ -1,8 +1,9 @@
-// eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
+/* eslint-disable class-methods-use-this */
+// oxlint-disable-next-line no-unassigned-import
 import 'blob-polyfill'
-// eslint-disable-next-line import/no-unassigned-import, import/no-extraneous-dependencies
+// oxlint-disable-next-line no-unassigned-import
 import './clipboardItemPolyfill'
-// eslint-disable-next-line import/no-unassigned-import
+// oxlint-disable-next-line no-unassigned-import
 import '@testing-library/jest-dom/vitest'
 
 import {cleanup} from '@testing-library/react'
@@ -15,15 +16,13 @@ expect.extend({
 })
 
 afterEach(() => cleanup())
-
-export {}
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
 // get rid of context warning
 const warn = console.warn
 const error = console.error
-window.console = {
-  ...window.console,
+;(globalThis as any).console = {
+  ...(globalThis as any).console,
   warn: (...args: any[]) => {
     if (!/No context provided/.test(args[0])) {
       warn(...args)
@@ -37,24 +36,37 @@ window.console = {
 }
 
 // IntersectionObserver isn't available in the test browser environment
-const mockIntersectionObserver = vi.fn().mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null,
-})
+class MockIntersectionObserver {
+  observe(): void {
+    // no-op
+  }
+  unobserve(): void {
+    // no-op
+  }
+  disconnect(): void {
+    // no-op
+  }
+  takeRecords(): any[] {
+    return []
+  }
+}
 
-window.IntersectionObserver = mockIntersectionObserver as any
+;(globalThis as any).IntersectionObserver = MockIntersectionObserver
 
 // ResizeObserver isn't available in the test browser environment
-const mockResizeObserver = vi.fn()
-mockResizeObserver.mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null,
-})
-window.ResizeObserver = mockResizeObserver as any
-
-window.matchMedia = vi.fn().mockImplementation((query) => ({
+class MockResizeObserver {
+  observe(): void {
+    // no-op
+  }
+  unobserve(): void {
+    // no-op
+  }
+  disconnect(): void {
+    // no-op
+  }
+}
+;(globalThis as any).ResizeObserver = MockResizeObserver
+;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
   matches: false,
   media: query,
   onchange: null,
@@ -64,8 +76,7 @@ window.matchMedia = vi.fn().mockImplementation((query) => ({
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
 }))
-
-window.Promise.withResolvers = <T>() => {
+;(globalThis as any).Promise.withResolvers = <T>() => {
   let resolve: (value: T | PromiseLike<T>) => void = () => {}
   let reject: (reason?: any) => void = () => {}
 
@@ -79,7 +90,7 @@ window.Promise.withResolvers = <T>() => {
 
 // Resets the matchMedia mock
 beforeEach(() => {
-  window.matchMedia = vi.fn().mockImplementation((query) => ({
+  ;(globalThis as any).matchMedia = vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,

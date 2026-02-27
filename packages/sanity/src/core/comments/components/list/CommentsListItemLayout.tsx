@@ -100,7 +100,7 @@ const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
 })
 
 const RetryCardButton = styled(Card)`
-  // Add not on hover
+  /* Add not on hover */
   &:not(:hover) {
     background-color: transparent;
   }
@@ -112,8 +112,8 @@ const RootStack = styled(Stack)(({theme}) => {
   return css`
     position: relative;
 
-    // Only show the floating layer on hover when hover is supported.
-    // Else, the layer is always visible.
+    /* Only show the floating layer on hover when hover is supported.
+    Else, the layer is always visible. */
     @media (hover: hover) {
       ${ContextMenuBox} {
         opacity: 0;
@@ -161,7 +161,7 @@ interface CommentsListItemLayoutProps {
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentUpdatePayload) => void
-  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onInputKeyDown?: (event: React.KeyboardEvent) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
@@ -210,16 +210,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
   // Filter out reactions that's been optimistically removed from the comment.
-  const reactions = useMemo(
-    () =>
-      (comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY).filter(
-        (r) => {
-          // Filter out reactions that might have to incorrect format
-          return 'userId' in r && 'shortName' in r
-        },
-      ),
-    [comment?.reactions],
-  )
+  const reactions = (
+    comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY
+  ).filter((r) => {
+    // Filter out reactions that might have to incorrect format
+    return 'userId' in r && 'shortName' in r
+  })
 
   const hasReactions = Boolean(reactions?.length)
 
@@ -267,7 +263,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   }, [cancelEdit, hasChanges, hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: React.KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return

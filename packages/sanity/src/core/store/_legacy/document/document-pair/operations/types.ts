@@ -1,9 +1,12 @@
 import {type SanityClient} from '@sanity/client'
-import {type SanityDocument, type Schema} from '@sanity/types'
+import {type SanityDocument, type SanityDocumentLike, type Schema} from '@sanity/types'
 
-import {type HistoryStore} from '../../../history'
+import {type DocumentRevision, type HistoryStore} from '../../../history'
 import {type IdPair} from '../../types'
 import {type DocumentVersionSnapshots} from '../snapshotPair'
+
+/** @public */
+export type MapDocument = (document: SanityDocumentLike) => SanityDocumentLike
 
 /** @internal */
 export interface OperationImpl<
@@ -27,16 +30,26 @@ type Patch = any
 // Note: Changing this interface in a backwards incompatible manner will be a breaking change
 export interface OperationsAPI {
   commit: Operation | GuardedOperation
-  delete: Operation<[], 'NOTHING_TO_DELETE' | 'NOT_READY'>
-  del: Operation<[], 'NOTHING_TO_DELETE'> | GuardedOperation
+  delete: Operation<[versions?: string[]], 'NOTHING_TO_DELETE' | 'NOT_READY'>
+  del: Operation<[versions?: string[]], 'NOTHING_TO_DELETE'> | GuardedOperation
   publish:
     | Operation<[], 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES'>
     | GuardedOperation
   patch: Operation<[patches: Patch[], initialDocument?: Record<string, any>]> | GuardedOperation
   discardChanges: Operation<[], 'NO_CHANGES' | 'NOT_PUBLISHED'> | GuardedOperation
   unpublish: Operation<[], 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'> | GuardedOperation
-  duplicate: Operation<[documentId: string], 'NOTHING_TO_DUPLICATE'> | GuardedOperation
-  restore: Operation<[revision: string]> | GuardedOperation
+  duplicate:
+    | Operation<
+        [
+          documentId: string,
+          options?: {
+            mapDocument?: MapDocument
+          },
+        ],
+        'NOTHING_TO_DUPLICATE'
+      >
+    | GuardedOperation
+  restore: Operation<[revision: DocumentRevision]> | GuardedOperation
 }
 
 /** @internal */

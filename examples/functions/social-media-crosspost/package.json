@@ -1,0 +1,45 @@
+{
+  "name": "social-media-crosspost",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@humanwhocodes/crosspost": "^0.1.1",
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.1.0",
+    "@sanity/image-url": "^2.0.3"
+  },
+  "blueprintResourceItem": {
+    "type": "sanity.function.document",
+    "name": "social-media-crosspost",
+    "src": "./functions/social-media-crosspost",
+    "memory": 2,
+    "timeout": 30,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'socialPost'",
+      "projection": "{_id, body, mainImage, platforms, platformOverrides}"
+    },
+    "env": {
+      "COMMENT": "Delete any unnecessary environment variables. See https://github.com/humanwhocodes/crosspost?tab=readme-ov-file#setting-up-strategies for credential setup instructions",
+      "TWITTER_ACCESS_TOKEN_KEY": "TWITTER_ACCESS_TOKEN_KEY",
+      "TWITTER_ACCESS_TOKEN_SECRET": "TWITTER_ACCESS_TOKEN_SECRET",
+      "TWITTER_API_CONSUMER_KEY": "TWITTER_API_CONSUMER_KEY",
+      "TWITTER_API_CONSUMER_SECRET": "TWITTER_API_CONSUMER_SECRET",
+      "MASTODON_ACCESS_TOKEN": "MASTODON_ACCESS_TOKEN",
+      "MASTODON_HOST": "MASTODON_HOST",
+      "BLUESKY_IDENTIFIER": "BLUESKY_IDENTIFIER",
+      "BLUESKY_PASSWORD": "BLUESKY_PASSWORD",
+      "BLUESKY_HOST": "BLUESKY_HOST",
+      "LINKEDIN_ACCESS_TOKEN": "LINKEDIN_ACCESS_TOKEN",
+      "DISCORD_WEBHOOK_URL": "DISCORD_WEBHOOK_URL",
+      "TELEGRAM_BOT_TOKEN": "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_CHAT_ID": "TELEGRAM_CHAT_ID",
+      "SLACK_BOT_TOKEN": "SLACK_BOT_TOKEN",
+      "SLACK_CHANNEL": "SLACK_CHANNEL",
+      "DEVTO_API_KEY": "DEVTO_API_KEY"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

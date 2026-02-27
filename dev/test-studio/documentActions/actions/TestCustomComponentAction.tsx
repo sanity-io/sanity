@@ -1,10 +1,10 @@
 import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {type DocumentActionComponent} from 'sanity'
+import {useState} from 'react'
+import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
-export const TestCustomComponentAction: DocumentActionComponent = () => {
+export const useTestCustomComponentAction: DocumentActionComponent = () => {
   const [open, setOpen] = useState<boolean>(false)
-  const toggleOpen = useCallback(() => setOpen((v) => !v), [])
+  const toggleOpen = () => setOpen((v) => !v)
 
   return {
     label: 'Custom modal',
@@ -31,5 +31,7 @@ export const TestCustomComponentAction: DocumentActionComponent = () => {
         </Dialog>
       ),
     },
-  }
+  } satisfies DocumentActionDescription
 }
+
+useTestCustomComponentAction.displayName = 'TestCustomComponentAction'

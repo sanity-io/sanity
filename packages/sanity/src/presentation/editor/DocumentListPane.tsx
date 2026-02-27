@@ -12,13 +12,14 @@ import {styled} from 'styled-components'
 import {ErrorBoundary} from '../../ui-components'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
+import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
 import {
   type MainDocumentState,
+  type PresentationNavigate,
   type PresentationSearchParams,
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-import {PresentationPaneRouterProvider} from './PresentationPaneRouterProvider'
 
 const RootLayout = styled(PaneLayout)`
   height: 100%;
@@ -37,11 +38,12 @@ const WrappedCode = styled(Code)`
 
 export function DocumentListPane(props: {
   mainDocumentState?: MainDocumentState
+  onEditReference: PresentationNavigate
   onStructureParams: (params: StructureDocumentPaneParams) => void
   searchParams: PresentationSearchParams
   refs: {_id: string; _type: string}[]
 }): React.JSX.Element {
-  const {mainDocumentState, onStructureParams, searchParams, refs} = props
+  const {mainDocumentState, onEditReference, onStructureParams, searchParams, refs} = props
 
   const {t} = useTranslation(presentationLocaleNamespace)
   const {devMode} = usePresentationTool()
@@ -104,6 +106,7 @@ export function DocumentListPane(props: {
       <RootLayout>
         <StructureToolProvider>
           <PresentationPaneRouterProvider
+            onEditReference={onEditReference}
             onStructureParams={onStructureParams}
             structureParams={structureParams}
             searchParams={searchParams}

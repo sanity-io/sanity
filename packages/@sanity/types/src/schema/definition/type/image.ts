@@ -6,12 +6,30 @@ import {type FileOptions, type FileValue} from './file'
 import {type ObjectDefinition} from './object'
 
 /** @public */
-export type ImageMetadataType = 'blurhash' | 'lqip' | 'palette' | 'exif' | 'image' | 'location'
+export type ImageMetadataType =
+  | 'blurhash'
+  | 'thumbhash'
+  | 'lqip'
+  | 'palette'
+  | 'exif'
+  | 'image'
+  | 'location'
+
+/** @public */
+export interface HotspotPreview {
+  title: string
+  aspectRatio: number
+}
+
+/** @public */
+export interface HotspotOptions {
+  previews?: HotspotPreview[]
+}
 
 /** @public */
 export interface ImageOptions extends FileOptions {
   metadata?: ImageMetadataType[]
-  hotspot?: boolean
+  hotspot?: boolean | HotspotOptions
 }
 
 /** @public */
@@ -40,8 +58,10 @@ export interface ImageRule extends RuleDef<ImageRule, ImageValue> {
 }
 
 /** @public */
-export interface ImageDefinition
-  extends Omit<ObjectDefinition, 'type' | 'fields' | 'options' | 'groups' | 'validation'> {
+export interface ImageDefinition extends Omit<
+  ObjectDefinition,
+  'type' | 'fields' | 'options' | 'groups' | 'validation'
+> {
   type: 'image'
   fields?: FieldDefinition[]
   options?: ImageOptions

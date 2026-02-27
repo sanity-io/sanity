@@ -76,8 +76,10 @@ const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
   /** The error message that is shown when there is no value to copy */
   'copy-paste.on-copy.validation.no-value.title': 'Empty value, nothing to copy',
   /** The error message that is shown when the clipboard is not supported */
-  'copy-paste.on-copy.validation.clipboard-not-supported.title':
-    'Your browser does not support this action',
+  'copy-paste.on-copy.validation.clipboard-not-supported.description':
+    'Clipboard access required to copy this content. Allow clipboard permissions in your browser settings, then try copying again.',
+  /** The error message that is shown when the clipboard is not supported */
+  'copy-paste.on-copy.validation.clipboard-not-supported.title': 'Clipboard access blocked',
 })
 
 /**

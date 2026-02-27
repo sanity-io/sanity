@@ -62,22 +62,16 @@ type VendorImports = {
 // Define the vendor packages and their corresponding versions and entry points
 const VENDOR_IMPORTS: VendorImports = {
   'react': {
-    '^19.0.0': {
+    '^19.2.0': {
       '.': './cjs/react.production.js',
       './jsx-runtime': './cjs/react-jsx-runtime.production.js',
       './jsx-dev-runtime': './cjs/react-jsx-dev-runtime.production.js',
       './compiler-runtime': './cjs/react-compiler-runtime.production.js',
       './package.json': './package.json',
     },
-    '^18.0.0': {
-      '.': './cjs/react.production.min.js',
-      './jsx-runtime': './cjs/react-jsx-runtime.production.min.js',
-      './jsx-dev-runtime': './cjs/react-jsx-dev-runtime.production.min.js',
-      './package.json': './package.json',
-    },
   },
   'react-dom': {
-    '^19.0.0': {
+    '^19.2.0': {
       '.': './cjs/react-dom.production.js',
       './client': './cjs/react-dom-client.production.js',
       './server': './cjs/react-dom-server-legacy.browser.production.js',
@@ -86,17 +80,10 @@ const VENDOR_IMPORTS: VendorImports = {
       './static.browser': './cjs/react-dom-server.browser.production.js',
       './package.json': './package.json',
     },
-    '^18.0.0': {
-      '.': './cjs/react-dom.production.min.js',
-      './client': './cjs/react-dom.production.min.js',
-      './server': './cjs/react-dom-server-legacy.browser.production.min.js',
-      './server.browser': './cjs/react-dom-server-legacy.browser.production.min.js',
-      './package.json': './package.json',
-    },
   },
   'styled-components': {
     '^6.1.0': {
-      '.': './dist/styled-components.esm.js',
+      '.': './dist/styled-components.browser.esm.js',
       './package.json': './package.json',
     },
   },

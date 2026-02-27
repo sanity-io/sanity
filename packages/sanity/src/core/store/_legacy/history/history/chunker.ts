@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import {type MendozaEffectPair, type MendozaPatch} from '@sanity/types'
 
 import {type Chunk, type ChunkType} from '../../../../field'

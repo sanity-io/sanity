@@ -1,4 +1,3 @@
-/* eslint-disable no-process-exit, no-sync */
 import childProcess from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -101,7 +100,7 @@ function ensureNpx() {
     if (!npxHelp.includes('npm')) {
       throw new Error('Not the npx we expected')
     }
-  } catch (err) {
+  } catch {
     throw new Error(
       `Failed to run "npx" - required to run codemods. Do you have a recent version of npm installed?`,
     )

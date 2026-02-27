@@ -18,7 +18,7 @@ import {
   type SchemaType,
   type SpanSchemaType,
 } from '@sanity/types'
-import {flatten, isEqual, orderBy} from 'lodash'
+import {flatten, isEqual, orderBy} from 'lodash-es'
 
 import {
   type ArrayDiff,
@@ -80,7 +80,7 @@ export function findChildDiff(diff: ObjectDiff, child: PortableTextChild): Objec
 }
 
 export function getChildSchemaType(
-  fields: ObjectField<SchemaType>[],
+  fields: ObjectField[],
   child: PortableTextChild,
 ): ObjectSchemaType | undefined {
   const childrenField = fields.find((f) => f.name === 'children')
@@ -350,14 +350,14 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
 }
 
 export function getInlineObjects(diff: ObjectDiff): PortableTextObject[] {
-  const allChildren = [
-    ...(diff.toValue ? diff.toValue.children.filter((cld: any) => cld._type !== 'span') : []),
-  ]
+  const allChildren = diff.toValue
+    ? diff.toValue.children.filter((cld: any) => cld._type !== 'span')
+    : []
   const previousChildren = diff.fromValue
     ? diff.fromValue.children.filter((cld: any) => cld._type !== 'span')
     : []
   previousChildren.forEach((oCld: any) => {
-    if (!allChildren.some((cld) => oCld._key === cld._key)) {
+    if (!allChildren.some((cld: any) => oCld._key === cld._key)) {
       allChildren.push(oCld)
     }
   })

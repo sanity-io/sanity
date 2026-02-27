@@ -1,8 +1,8 @@
-/* eslint-disable no-nested-ternary */
+import {type ReleaseDocument} from '@sanity/client'
 import {Card, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 
-import {isReleaseScheduledOrScheduling, type ReleaseDocument} from '../../index'
+import {isReleaseScheduledOrScheduling} from '../../index'
 import {ReleasePublishAllButton} from '../components/releaseCTAButtons/ReleasePublishAllButton'
 import {ReleaseRevertButton} from '../components/releaseCTAButtons/ReleaseRevertButton/ReleaseRevertButton'
 import {ReleaseScheduleButton} from '../components/releaseCTAButtons/ReleaseScheduleButton'
@@ -43,13 +43,15 @@ export function ReleaseDashboardFooter(props: {
         )
       }
 
-      return (
-        <ReleasePublishAllButton
-          release={release}
-          documents={documents}
-          disabled={!documents.length}
-        />
-      )
+      if (release.metadata.releaseType === 'asap') {
+        return (
+          <ReleasePublishAllButton
+            release={release}
+            documents={documents}
+            disabled={!documents.length}
+          />
+        )
+      }
     }
 
     if (release.state === 'published') {
@@ -72,7 +74,12 @@ export function ReleaseDashboardFooter(props: {
 
         <Flex flex="none" gap={1} data-testid="release-dashboard-footer-actions">
           {releaseActionButton}
-          <ReleaseMenuButton release={release} documentsCount={documents.length} ignoreCTA />
+          <ReleaseMenuButton
+            release={release}
+            documentsCount={documents.length}
+            documents={documents}
+            ignoreCTA={release.metadata.releaseType !== 'undecided'}
+          />
         </Flex>
       </Flex>
     </Card>

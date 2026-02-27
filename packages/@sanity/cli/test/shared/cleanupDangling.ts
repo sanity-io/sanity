@@ -10,7 +10,7 @@ import {testClient} from './environment'
 // to same precision as test IDs(8 digits)
 const threshold = Math.floor((Date.now() - 16 * 60 * 60 * 1000) / 10000)
 
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 export async function cleanupDangling(): Promise<void> {
   console.log('Performing dangling resource cleanup: dataset aliases')
   await deleteAliases()

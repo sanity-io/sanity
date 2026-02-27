@@ -103,7 +103,7 @@ export class BufferedDocumentTester {
 
   commit(): this {
     this.resetState()
-    this.doc.commit()
+    void this.doc.commit()
     return this
   }
 

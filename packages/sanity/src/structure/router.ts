@@ -1,4 +1,4 @@
-import {omit} from 'lodash'
+import {omit} from 'lodash-es'
 import {decodeJsonParams, encodeJsonParams, route} from 'sanity/router'
 
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from './types'
@@ -11,8 +11,7 @@ const EMPTY_PARAMS = {}
 export function legacyEditParamsToState(params: string): Record<string, unknown> {
   try {
     return JSON.parse(decodeURIComponent(params))
-  } catch (err) {
-    // eslint-disable-next-line no-console
+  } catch {
     console.warn('Failed to parse JSON parameters')
     return {}
   }
@@ -102,7 +101,6 @@ function parseChunks(chunks: string[], initial: RouterPaneSibling): RouterPaneSi
     } else if (isPayloadLike(chunk)) {
       pane.payload = tryParseBase64Payload(chunk)
     } else {
-      // eslint-disable-next-line no-console
       console.warn('Unknown pane segment: %s - skipping', chunk)
     }
 
@@ -189,7 +187,6 @@ function tryParsePayload(json: string) {
   try {
     return JSON.parse(json)
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.warn(`Failed to parse parameters: ${err.message}`)
     return undefined
   }
@@ -199,7 +196,6 @@ function tryParseBase64Payload(data: string): unknown {
   try {
     return data ? decodeJsonParams(data) : undefined
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.warn(`Failed to parse parameters: ${err.message}`)
     return undefined
   }

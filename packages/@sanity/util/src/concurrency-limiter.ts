@@ -5,7 +5,10 @@
 export class ConcurrencyLimiter {
   current = 0
   resolvers: Array<() => void> = []
-  constructor(public max: number) {}
+  public max: number
+  constructor(max: number) {
+    this.max = max
+  }
 
   /**
    * Indicates when a slot for a new operation is ready.

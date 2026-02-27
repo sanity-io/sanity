@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {PassThrough} from 'node:stream'
+import {fileURLToPath} from 'node:url'
 import {type Gzip} from 'node:zlib'
 
 import {type CliCommandContext, type CliOutputter} from '@sanity/cli'
@@ -10,19 +11,12 @@ import {customAlphabet} from 'nanoid'
 import readPkgUp from 'read-pkg-up'
 
 import {debug as debugIt} from '../../debug'
+import {determineIsApp} from '../../util/determineIsApp'
+import {promiseWithResolvers} from '../../util/promiseWithResolvers'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const debug = debugIt.extend('deploy')
-
-// TODO: replace with `Promise.withResolvers()` once it lands in node
-function promiseWithResolvers<T>() {
-  let resolve!: (t: T) => void
-  let reject!: (err: unknown) => void
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res
-    reject = rej
-  })
-  return {promise, resolve, reject}
-}
 
 export interface ActiveDeployment {
   deployedAt: string
@@ -53,27 +47,33 @@ export interface GetUserApplicationsOptions {
   organizationId?: string
 }
 
-export interface GetUserApplicationOptions extends GetUserApplicationsOptions {
+export interface GetUserApplicationOptions {
+  client: SanityClient
   appHost?: string
   appId?: string
+  isSdkApp?: boolean
 }
 export async function getUserApplication({
   client,
   appHost,
   appId,
+  isSdkApp,
 }: GetUserApplicationOptions): Promise<UserApplication | null> {
-  let query
-  let uri = '/user-applications'
-  if (appId) {
-    uri = `/user-applications/${appId}`
+  let query: undefined | Record<string, string>
+
+  const uri = appId ? `/user-applications/${appId}` : '/user-applications'
+
+  if (isSdkApp) {
     query = {appType: 'coreApp'}
-  } else if (appHost) {
-    query = {appHost}
-  } else {
-    query = {default: 'true'}
+  } else if (!appId) {
+    // either request the app by host or get the default app
+    query = appHost ? {appHost} : {default: 'true'}
   }
   try {
-    return await client.request({uri, query})
+    return await client.request({
+      uri,
+      query,
+    })
   } catch (e) {
     if (e?.statusCode === 404) {
       return null
@@ -118,12 +118,48 @@ function createUserApplication(
   return client.request({uri: '/user-applications', method: 'POST', body, query})
 }
 
+/**
+ * Creates an external studio application.
+ * Validates and normalizes the URL before creation.
+ *
+ * @internal
+ */
+async function createExternalStudio({
+  client,
+  appHost,
+}: {
+  client: SanityClient
+  appHost: string
+}): Promise<UserApplication> {
+  const validationResult = validateUrl(appHost)
+  if (validationResult !== true) {
+    throw new Error(validationResult)
+  }
+
+  const normalizedUrl = normalizeUrl(appHost)
+
+  try {
+    return await createUserApplication(client, {
+      appHost: normalizedUrl,
+      urlType: 'external',
+      type: 'studio',
+    })
+  } catch (e) {
+    debug('Error creating external user application', e)
+    if ([402, 409].includes(e?.statusCode)) {
+      throw new Error(e?.response?.body?.message || 'Bad request', {cause: e})
+    }
+    throw e
+  }
+}
+
 interface SelectApplicationOptions {
   client: SanityClient
   prompt: GetOrCreateUserApplicationOptions['context']['prompt']
   message: string
   createNewLabel: string
   organizationId?: string
+  urlType?: 'internal' | 'external'
 }
 
 /**
@@ -136,8 +172,14 @@ async function selectExistingApplication({
   message,
   createNewLabel,
   organizationId,
+  urlType,
 }: SelectApplicationOptions): Promise<UserApplication | null> {
-  const userApplications = await getUserApplications({client, organizationId})
+  const allUserApplications = await getUserApplications({client, organizationId})
+
+  // Filter by urlType if specified
+  const userApplications = urlType
+    ? allUserApplications?.filter((app) => app.urlType === urlType)
+    : allUserApplications
 
   if (!userApplications?.length) {
     return null
@@ -151,7 +193,7 @@ async function selectExistingApplication({
   const selected = await prompt.single({
     message,
     type: 'list',
-    choices: [{value: 'new', name: createNewLabel}, new prompt.Separator(), ...choices],
+    choices: [...choices, new prompt.Separator(), {value: 'new', name: createNewLabel}],
   })
 
   if (selected === 'new') {
@@ -165,6 +207,7 @@ export interface GetOrCreateUserApplicationOptions {
   client: SanityClient
   context: Pick<CliCommandContext, 'output' | 'prompt' | 'cliConfig'>
   spinner: ReturnType<CliOutputter['spinner']>
+  urlType?: 'internal' | 'external'
 }
 
 /**
@@ -197,12 +240,81 @@ export interface GetOrCreateUserApplicationOptions {
  *   | prompt selection   |  | and create new app     |
  *   +--------------------+  +------------------------+
  */
+
+/**
+ * Validates that a URL is a valid HTTP or HTTPS URL
+ */
+export function validateUrl(url: string): true | string {
+  try {
+    const parsed = new URL(url)
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return 'URL must start with http:// or https://'
+    }
+    return true
+  } catch {
+    return 'Please enter a valid URL'
+  }
+}
+
+/**
+ * Normalizes an external URL by removing trailing slashes
+ */
+export function normalizeUrl(url: string): string {
+  return url.replace(/\/+$/, '')
+}
+
 export async function getOrCreateStudio({
   client,
   spinner,
   context,
+  urlType = 'internal',
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
   const {output, prompt} = context
+
+  // For external URLs, show existing external studios or prompt for a new URL
+  if (urlType === 'external') {
+    spinner.succeed()
+
+    // Use shared selection helper for existing external studios
+    const selectedApp = await selectExistingApplication({
+      client,
+      prompt,
+      message: 'Select existing external studio or create new',
+      createNewLabel: 'Create new external studio',
+      urlType: 'external',
+    })
+
+    if (selectedApp) {
+      return selectedApp
+    }
+
+    // Prompt for new external URL
+    output.print('Enter the URL to your studio.')
+
+    const {promise, resolve} = promiseWithResolvers<UserApplication>()
+
+    await prompt.single({
+      type: 'input',
+      filter: normalizeUrl,
+      message: 'Studio URL (https://...):',
+      validate: async (externalUrl: string) => {
+        try {
+          const response = await createExternalStudio({client, appHost: externalUrl})
+          resolve(response)
+          return true
+        } catch (e) {
+          // Convert error to string for prompt validation
+          if (e instanceof Error) {
+            return e.message
+          }
+          throw e
+        }
+      },
+    })
+
+    return await promise
+  }
+
   // if there is already an existing user-app, then just return it
   const existingUserApplication = await getUserApplication({client})
 
@@ -218,6 +330,7 @@ export async function getOrCreateStudio({
     prompt,
     message: 'Select existing studio hostname',
     createNewLabel: 'Create new studio hostname',
+    urlType: 'internal',
   })
 
   if (selectedApp) {
@@ -267,16 +380,13 @@ export async function getOrCreateStudio({
  *
  * @internal
  */
-export async function getOrCreateCoreApplication({
+export async function getOrCreateApplication({
   client,
   context,
   spinner,
 }: GetOrCreateUserApplicationOptions): Promise<UserApplication> {
   const {prompt, cliConfig} = context
-  const organizationId =
-    cliConfig &&
-    '__experimental_coreAppConfiguration' in cliConfig &&
-    cliConfig.__experimental_coreAppConfiguration?.organizationId
+  const organizationId = cliConfig && 'app' in cliConfig && cliConfig.app?.organizationId
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
@@ -287,6 +397,7 @@ export async function getOrCreateCoreApplication({
     message: 'Select an existing deployed application',
     createNewLabel: 'Create new deployed application',
     organizationId: organizationId || undefined,
+    urlType: 'internal',
   })
 
   if (selectedApp) {
@@ -355,31 +466,48 @@ export interface BaseConfigOptions {
   client: SanityClient
   context: Pick<CliCommandContext, 'output' | 'prompt' | 'cliConfig'>
   spinner: ReturnType<CliOutputter['spinner']>
+  urlType?: 'internal' | 'external'
 }
 
-interface StudioConfigOptions extends BaseConfigOptions {
-  appHost: string
-}
-
-interface CoreAppConfigOptions extends BaseConfigOptions {
-  appId?: string
-}
+type UserApplicationConfigOptions = BaseConfigOptions &
+  (
+    | {
+        /**
+         * @deprecated – appHost is replaced by appId, but kept for backwards compat
+         */
+        appHost: string | undefined
+        appId: undefined
+      }
+    | {
+        appId: string | undefined
+        /**
+         * @deprecated – appHost is replaced by appId, but kept for backwards compat
+         */
+        appHost: undefined
+      }
+  )
 
 async function getOrCreateStudioFromConfig({
   client,
   context,
   spinner,
   appHost,
-}: StudioConfigOptions): Promise<UserApplication> {
+  appId,
+}: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output} = context
+
   // if there is already an existing user-app, then just return it
-  const existingUserApplication = await getUserApplication({client, appHost})
+  const existingUserApplication = await getUserApplication({client, appId, appHost})
 
   // Complete the spinner so prompt can properly work
   spinner.succeed()
 
   if (existingUserApplication) {
     return existingUserApplication
+  }
+
+  if (!appHost) {
+    throw new Error(`Application not found. Application with id ${appId} does not exist`)
   }
 
   output.print('Your project has not been assigned a studio hostname.')
@@ -399,7 +527,7 @@ async function getOrCreateStudioFromConfig({
     spinner.fail()
     // if the name is taken, it should return a 409 so we relay to the user
     if ([402, 409].includes(e?.statusCode)) {
-      throw new Error(e?.response?.body?.message || 'Bad request') // just in case
+      throw new Error(e?.response?.body?.message || 'Bad request', {cause: e}) // just in case
     }
     debug('Error creating user application from config', e)
     // otherwise, it's a fatal error
@@ -407,22 +535,20 @@ async function getOrCreateStudioFromConfig({
   }
 }
 
-async function getOrCreateCoreAppFromConfig({
+async function getOrCreateAppFromConfig({
   client,
   context,
   spinner,
+  appHost,
   appId,
-}: CoreAppConfigOptions): Promise<UserApplication> {
+}: UserApplicationConfigOptions): Promise<UserApplication> {
   const {output, cliConfig} = context
-  const organizationId =
-    cliConfig &&
-    '__experimental_coreAppConfiguration' in cliConfig &&
-    cliConfig.__experimental_coreAppConfiguration?.organizationId
   if (appId) {
     const existingUserApplication = await getUserApplication({
       client,
       appId,
-      organizationId: organizationId || undefined,
+      appHost,
+      isSdkApp: determineIsApp(cliConfig),
     })
     spinner.succeed()
 
@@ -431,10 +557,10 @@ async function getOrCreateCoreAppFromConfig({
     }
   }
 
-  // core apps cannot arbitrarily create ids or hosts, so send them to create option
-  output.print('The appId provided in your configuration is not recognized.')
+  // custom apps cannot arbitrarily create ids or hosts, so send them to create option
+  output.print('The id provided in your configuration is not recognized.')
   output.print('Checking existing applications...')
-  return getOrCreateCoreApplication({client, context, spinner})
+  return getOrCreateApplication({client, context, spinner})
 }
 
 /**
@@ -444,23 +570,75 @@ async function getOrCreateCoreAppFromConfig({
  * @internal
  */
 export async function getOrCreateUserApplicationFromConfig(
-  options: BaseConfigOptions & {
-    appHost?: string
-    appId?: string
-  },
+  options: UserApplicationConfigOptions,
 ): Promise<UserApplication> {
-  const {context} = options
-  const isCoreApp = context.cliConfig && '__experimental_coreAppConfiguration' in context.cliConfig
+  const {client, context, spinner, appId, appHost, urlType} = options
+  const {output} = context
+  const isSdkApp = determineIsApp(context.cliConfig)
 
-  if (isCoreApp) {
-    return getOrCreateCoreAppFromConfig(options)
+  if (isSdkApp) {
+    return getOrCreateAppFromConfig(options)
   }
 
-  if (!options.appHost) {
-    throw new Error('Studio host was detected, but is invalid')
+  // Handle external URLs: studioHost contains the full URL
+  if (urlType === 'external') {
+    // If appId is provided, look up the existing application by ID
+    if (appId) {
+      const existingUserApplication = await getUserApplication({client, appId})
+
+      spinner.succeed()
+
+      if (existingUserApplication) {
+        return existingUserApplication
+      }
+
+      throw new Error(`Application not found. Application with id ${appId} does not exist`)
+    }
+
+    if (!appHost) {
+      throw new Error(
+        'External deployment requires studioHost to be set in sanity.cli.ts with a full URL, or deployment.appId to reference an existing application',
+      )
+    }
+
+    // Validate and normalize URL for existence check
+    const validationResult = validateUrl(appHost)
+    if (validationResult !== true) {
+      throw new Error(validationResult)
+    }
+    const normalizedUrl = normalizeUrl(appHost)
+
+    // Check if an external application with this URL already exists
+    const existingUserApplication = await getUserApplication({client, appHost: normalizedUrl})
+
+    spinner.succeed()
+
+    if (existingUserApplication) {
+      return existingUserApplication
+    }
+
+    // Create new external studio using shared helper
+    output.print(`Registering external studio at ${normalizedUrl}`)
+    output.print('')
+    spinner.start('Registering external studio URL')
+
+    try {
+      const response = await createExternalStudio({client, appHost: normalizedUrl})
+      spinner.succeed()
+      return response
+    } catch (e) {
+      spinner.fail()
+      throw e
+    }
   }
 
-  return getOrCreateStudioFromConfig({...options, appHost: options.appHost})
+  if (!appId && !appHost) {
+    throw new Error(
+      'Studio was detected, but neither appId or appHost (deprecated) found in CLI config',
+    )
+  }
+
+  return getOrCreateStudioFromConfig(options)
 }
 
 export interface CreateDeploymentOptions {
@@ -468,8 +646,10 @@ export interface CreateDeploymentOptions {
   applicationId: string
   version: string
   isAutoUpdating: boolean
-  tarball: Gzip
-  isCoreApp?: boolean
+  tarball: Gzip | undefined
+  isSdkApp?: boolean
+  /** StudioManifest to include in the deployment */
+  manifest?: object
 }
 
 export async function createDeployment({
@@ -478,32 +658,48 @@ export async function createDeployment({
   applicationId,
   isAutoUpdating,
   version,
-  isCoreApp,
+  isSdkApp,
+  manifest,
 }: CreateDeploymentOptions): Promise<{location: string}> {
   const formData = new FormData()
   formData.append('isAutoUpdating', isAutoUpdating.toString())
   formData.append('version', version)
-  formData.append('tarball', tarball, {contentType: 'application/gzip', filename: 'app.tar.gz'})
+  // manifest must come before tarball - fastify-multipart's req.file() only captures
+  // fields that appear before the file stream in multipart form data
+  if (manifest) {
+    formData.append('manifest', JSON.stringify(manifest))
+  }
+  if (tarball) {
+    formData.append('tarball', tarball, {contentType: 'application/gzip', filename: 'app.tar.gz'})
+  }
 
   return client.request({
     uri: `/user-applications/${applicationId}/deployments`,
     method: 'POST',
     headers: formData.getHeaders(),
     body: formData.pipe(new PassThrough()),
-    query: isCoreApp ? {appType: 'coreApp'} : {appType: 'studio'},
+    query: isSdkApp ? {appType: 'coreApp'} : {appType: 'studio'},
   })
 }
 
 export interface DeleteUserApplicationOptions {
   client: SanityClient
   applicationId: string
+  appType: 'coreApp' | 'studio'
 }
 
 export async function deleteUserApplication({
   applicationId,
   client,
+  appType,
 }: DeleteUserApplicationOptions): Promise<void> {
-  await client.request({uri: `/user-applications/${applicationId}`, method: 'DELETE'})
+  await client.request({
+    uri: `/user-applications/${applicationId}`,
+    query: {
+      appType,
+    },
+    method: 'DELETE',
+  })
 }
 
 export async function getInstalledSanityVersion(): Promise<string> {

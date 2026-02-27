@@ -15,10 +15,20 @@ export interface BlockOptions extends BaseSchemaTypeOptions {
    */
   spellCheck?: boolean
   unstable_whitespaceOnPasteMode?: 'preserve' | 'normalize' | 'remove'
+
+  /**
+   * When enabled, the editor will restrict all line breaks and soft breaks,
+   * forcing content to remain on a single line. This will also update
+   * the styling of the editor to reflect the single-line constraint.
+   *
+   * Pasting content that is on multiple lines will be normalized to a single line, if possible.
+   *
+   * @defaultValue false
+   */
+  oneLine?: boolean
 }
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BlockRule extends RuleDef<BlockRule, any[]> {}
 
 /**
@@ -39,7 +49,7 @@ export interface BlockRule extends RuleDef<BlockRule, any[]> {}
  *           {title: 'Strong', value: 'strong'},
  *           {title: 'Emphasis', value: 'em'},
  *           {title: 'Underline', value: 'underline'},
- *           {title: 'Strike', value: 'strike'},
+ *           {title: 'Strike', value: 'strike-through'},
  *           {title: 'Code', value: 'code'},
  *         ]
  *       }
@@ -208,7 +218,7 @@ export interface BlockMarksDefinition {
  *           {title: 'Strong', value: 'strong'},
  *           {title: 'Emphasis', value: 'em'},
  *           {title: 'Underline', value: 'underline'},
- *           {title: 'Strike', value: 'strike'},
+ *           {title: 'Strike', value: 'strike-through'},
  *           {title: 'Code', value: 'code'},
  *         ],
  *         annotations: [

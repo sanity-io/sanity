@@ -14,6 +14,7 @@ import {styled} from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
+import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {CommentInput, type CommentInputHandle} from '../../components'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
@@ -34,7 +35,7 @@ interface CommentsFieldButtonProps {
   onClose: () => void
   onCommentAdd: () => void
   onDiscard: () => void
-  onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onInputKeyDown?: (event: React.KeyboardEvent) => void
   open: boolean
   value: CommentMessage
 }
@@ -56,6 +57,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     value,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {error: addonDatasetError} = useAddonDataset()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
     null,
@@ -86,7 +88,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   }, [closePopover, hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: React.KeyboardEvent) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return
@@ -164,7 +166,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         <div>
           <Button
             aria-label={t('field-button.aria-label-add')}
-            disabled={isCreatingDataset}
+            disabled={isCreatingDataset || Boolean(addonDatasetError)}
             icon={AddCommentIcon}
             mode="bleed"
             onClick={onClick}

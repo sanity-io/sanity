@@ -48,7 +48,7 @@ export const reactIconsV3: CodeMod = {
 async function maybeReadJson(jsonPath: string): Promise<PackageJson | null> {
   try {
     return await readJson(jsonPath)
-  } catch (err) {
+  } catch {
     return null
   }
 }

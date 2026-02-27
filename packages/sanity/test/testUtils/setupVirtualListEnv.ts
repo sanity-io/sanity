@@ -1,38 +1,50 @@
-import {afterEach, beforeEach, vi} from 'vitest'
+// oxlint-disable no-extend-native
+import {beforeEach, vi} from 'vitest'
 
 export const setupVirtualListEnv = (
   dataTestId?: string,
   rectWidth: number = 350,
   rectHeight: number = 800,
 ) => {
-  const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect
-
-  const getDOMRect = (width: number, height: number) => ({
-    width,
-    height,
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    x: 0,
-    y: 0,
-    toJSON: () => {},
-  })
-
   beforeEach(() => {
+    const originalOffsetHeight = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetHeight',
+    )
+    const originalOffsetWidth = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetWidth',
+    )
     // Virtual list will return an empty list of items unless we have some size,
-    // so we need to mock getBoundingClientRect to return a size for the list.
+    // so we need to mock offsetHeight and offsetWidth to return a size for the list.
     // Not pretty, but it's what they recommend for testing outside of browsers:
     // https://github.com/TanStack/virtual/issues/641
-    Element.prototype.getBoundingClientRect = vi.fn(function (this: Element) {
-      if (!dataTestId || this.getAttribute('data-testid') === dataTestId) {
-        return getDOMRect(rectWidth, rectHeight)
-      }
-      return getDOMRect(0, 0)
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get: vi.fn(function (this: Element) {
+        if (!dataTestId || this.getAttribute('data-testid') === dataTestId) {
+          return rectHeight
+        }
+        return 0
+      }),
     })
-  })
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+      configurable: true,
+      get: vi.fn(function (this: Element) {
+        if (!dataTestId || this.getAttribute('data-testid') === dataTestId) {
+          return rectWidth
+        }
+        return 0
+      }),
+    })
 
-  afterEach(() => {
-    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect
+    return () => {
+      if (originalOffsetHeight) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight)
+      }
+      if (originalOffsetWidth) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth)
+      }
+    }
   })
 }

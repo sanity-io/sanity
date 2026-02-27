@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// oxlint-disable no-explicit-any
 import {type Dirent, type Stats} from 'node:fs'
 import fs from 'node:fs/promises'
 import {Readable} from 'node:stream'
@@ -13,9 +13,12 @@ import {
   createDeployment,
   deleteUserApplication,
   dirIsEmptyOrNonExistent,
-  getOrCreateCoreApplication,
+  getOrCreateApplication,
   getOrCreateStudio,
   getOrCreateUserApplicationFromConfig,
+  getUserApplication,
+  normalizeUrl,
+  validateUrl,
 } from '../helpers'
 
 vi.mock('node:fs/promises')
@@ -51,6 +54,44 @@ const mockFetch = vi.fn<typeof fetch>()
 global.fetch = mockFetch
 
 const context = {output: mockOutput, prompt: mockPrompt}
+
+describe('validateUrl', () => {
+  it('returns true for valid https URL', () => {
+    expect(validateUrl('https://my-studio.example.com')).toBe(true)
+  })
+
+  it('returns true for valid http URL', () => {
+    expect(validateUrl('http://my-studio.example.com')).toBe(true)
+  })
+
+  it('returns error for ftp protocol', () => {
+    expect(validateUrl('ftp://my-studio.example.com')).toBe(
+      'URL must start with http:// or https://',
+    )
+  })
+
+  it('returns error for invalid URL', () => {
+    expect(validateUrl('not-a-url')).toBe('Please enter a valid URL')
+  })
+
+  it('returns error for empty string', () => {
+    expect(validateUrl('')).toBe('Please enter a valid URL')
+  })
+})
+
+describe('normalizeUrl', () => {
+  it('removes trailing slash', () => {
+    expect(normalizeUrl('https://my-studio.example.com/')).toBe('https://my-studio.example.com')
+  })
+
+  it('removes multiple trailing slashes', () => {
+    expect(normalizeUrl('https://my-studio.example.com///')).toBe('https://my-studio.example.com')
+  })
+
+  it('leaves URL without trailing slash unchanged', () => {
+    expect(normalizeUrl('https://my-studio.example.com')).toBe('https://my-studio.example.com')
+  })
+})
 
 describe('getOrCreateStudio', () => {
   beforeEach(() => {
@@ -116,7 +157,7 @@ describe('getOrCreateStudio', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // Simulate no list of deployments
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate user input
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
     const result = await getOrCreateStudio({
@@ -131,6 +172,199 @@ describe('getOrCreateStudio', () => {
       }),
     )
     expect(result).toEqual(existingApp)
+  })
+
+  it('prompts for external URL when urlType is external and no existing external studios', async () => {
+    const externalApp = {
+      id: 'external-app',
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    }
+    // Return empty list of studios (no existing external studios)
+    mockClientRequest.mockResolvedValueOnce([])
+    vi.mocked(mockPrompt.single).mockImplementationOnce(
+      async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
+        const externalUrl = 'https://my-studio.example.com'
+        await validate!(externalUrl)
+        return externalUrl
+      },
+    )
+    mockClientRequest.mockResolvedValueOnce(externalApp)
+
+    const result = await getOrCreateStudio({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+      urlType: 'external',
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Studio URL (https://...):',
+      }),
+    )
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications',
+      method: 'POST',
+      body: {appHost: 'https://my-studio.example.com', urlType: 'external', type: 'studio'},
+      query: {appType: 'studio'},
+    })
+    expect(result).toEqual(externalApp)
+  })
+
+  it('allows selecting existing external studio when urlType is external', async () => {
+    const existingExternalApp = {
+      id: 'existing-external-app',
+      appHost: 'https://existing-studio.example.com',
+      urlType: 'external',
+      title: 'My Existing Studio',
+    }
+    const internalApp = {
+      id: 'internal-app',
+      appHost: 'my-studio',
+      urlType: 'internal',
+    }
+    // Return mix of internal and external studios
+    mockClientRequest.mockResolvedValueOnce([internalApp, existingExternalApp])
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
+      // Verify only external studios are shown
+      expect(choices).toContainEqual(expect.objectContaining({name: 'My Existing Studio'}))
+      expect(choices).not.toContainEqual(expect.objectContaining({value: 'my-studio'}))
+      // Select the existing external studio
+      return Promise.resolve(existingExternalApp.appHost)
+    })
+
+    const result = await getOrCreateStudio({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+      urlType: 'external',
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Select existing external studio or create new',
+        choices: expect.arrayContaining([
+          expect.objectContaining({name: 'My Existing Studio'}),
+          expect.objectContaining({name: 'Create new external studio'}),
+        ]),
+      }),
+    )
+    expect(result).toEqual(existingExternalApp)
+  })
+
+  it('prompts for new URL when "Create new" is selected from external studios list', async () => {
+    const existingExternalApp = {
+      id: 'existing-external-app',
+      appHost: 'https://existing-studio.example.com',
+      urlType: 'external',
+    }
+    const newExternalApp = {
+      id: 'new-external-app',
+      appHost: 'https://new-studio.example.com',
+      urlType: 'external',
+    }
+    // Return existing external studio
+    mockClientRequest.mockResolvedValueOnce([existingExternalApp])
+    // Select "Create new"
+    ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
+      return Promise.resolve('new')
+    })
+    // Prompt for URL and validate
+    vi.mocked(mockPrompt.single).mockImplementationOnce(
+      async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
+        const externalUrl = 'https://new-studio.example.com'
+        await validate!(externalUrl)
+        return externalUrl
+      },
+    )
+    mockClientRequest.mockResolvedValueOnce(newExternalApp)
+
+    const result = await getOrCreateStudio({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+      urlType: 'external',
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalledTimes(2)
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications',
+      method: 'POST',
+      body: {appHost: 'https://new-studio.example.com', urlType: 'external', type: 'studio'},
+      query: {appType: 'studio'},
+    })
+    expect(result).toEqual(newExternalApp)
+  })
+
+  it('validates external URL format in prompt', async () => {
+    // Return empty list of studios (no existing external studios)
+    mockClientRequest.mockResolvedValueOnce([])
+    vi.mocked(mockPrompt.single).mockImplementationOnce(
+      async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
+        // Test invalid URL
+        const invalidResult = await validate!('not-a-url')
+        expect(invalidResult).toBe('Please enter a valid URL')
+
+        // Test invalid protocol
+        const ftpResult = await validate!('ftp://example.com')
+        expect(ftpResult).toBe('URL must start with http:// or https://')
+
+        // Test valid URL - mock the API call
+        mockClientRequest.mockResolvedValueOnce({
+          id: 'external-app',
+          appHost: 'https://valid.example.com',
+          urlType: 'external',
+        })
+        const validResult = await validate!('https://valid.example.com')
+        expect(validResult).toBe(true)
+
+        return 'https://valid.example.com'
+      },
+    )
+
+    await getOrCreateStudio({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+      urlType: 'external',
+    })
+
+    expect(mockPrompt.single).toHaveBeenCalled()
+  })
+
+  it('handles API errors (402, 409) for external applications', async () => {
+    // Return empty list of studios (no existing external studios)
+    mockClientRequest.mockResolvedValueOnce([])
+    vi.mocked(mockPrompt.single).mockImplementationOnce(
+      async ({validate}: Parameters<CliCommandContext['prompt']['single']>[0]) => {
+        // First attempt - API returns 409 conflict
+        mockClientRequest.mockRejectedValueOnce({
+          statusCode: 409,
+          response: {body: {message: 'URL already registered'}},
+        })
+        const conflictResult = await validate!('https://taken.example.com')
+        expect(conflictResult).toBe('URL already registered')
+
+        // Second attempt - success
+        mockClientRequest.mockResolvedValueOnce({
+          id: 'external-app',
+          appHost: 'https://available.example.com',
+          urlType: 'external',
+        })
+        const successResult = await validate!('https://available.example.com')
+        expect(successResult).toBe(true)
+
+        return 'https://available.example.com'
+      },
+    )
+
+    await getOrCreateStudio({
+      client: mockClient,
+      context,
+      spinner: mockSpinner,
+      urlType: 'external',
+    })
   })
 })
 
@@ -151,11 +385,37 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       spinner: mockSpinner,
       context,
       appHost: 'example',
+      appId: undefined,
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications',
       query: {appHost: 'example'},
+    })
+    expect(result).toEqual({
+      id: 'existing-app',
+      urlType: 'internal',
+      appHost: 'example.sanity.studio',
+    })
+  })
+
+  it('gets an existing user application if `deployment.appId` is provided in the config', async () => {
+    mockClientRequest.mockResolvedValueOnce({
+      id: 'existing-app',
+      appHost: 'example.sanity.studio',
+      urlType: 'internal',
+    })
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appHost: undefined,
+      appId: 'existing-app',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications/existing-app',
     })
     expect(result).toEqual({
       id: 'existing-app',
@@ -177,6 +437,7 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       client: mockClient,
       spinner: mockSpinner,
       context,
+      appId: undefined,
       appHost: 'newhost',
     })
 
@@ -192,6 +453,172 @@ describe('getOrCreateUserApplicationFromConfig', () => {
       query: {appType: 'studio'},
     })
     expect(result).toEqual(newApp)
+  })
+
+  it('returns existing external user application when urlType is external', async () => {
+    const existingExternalApp = {
+      id: 'external-app',
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    }
+    mockClientRequest.mockResolvedValueOnce(existingExternalApp)
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appId: undefined,
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications',
+      query: {appHost: 'https://my-studio.example.com'},
+    })
+    expect(result).toEqual(existingExternalApp)
+  })
+
+  it('creates an external user application when urlType is external and none exists', async () => {
+    const externalApp = {
+      id: 'external-app',
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    }
+    mockClientRequest.mockResolvedValueOnce(null) // No existing app
+    mockClientRequest.mockResolvedValueOnce(externalApp) // Create response
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appId: undefined,
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    })
+
+    expect(mockClientRequest).toHaveBeenNthCalledWith(1, {
+      uri: '/user-applications',
+      query: {appHost: 'https://my-studio.example.com'},
+    })
+    expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
+      uri: '/user-applications',
+      method: 'POST',
+      body: {appHost: 'https://my-studio.example.com', urlType: 'external', type: 'studio'},
+      query: {appType: 'studio'},
+    })
+    expect(result).toEqual(externalApp)
+  })
+
+  it('validates external URL format from config', async () => {
+    await expect(
+      getOrCreateUserApplicationFromConfig({
+        client: mockClient,
+        spinner: mockSpinner,
+        context,
+        appId: undefined,
+        appHost: 'not-a-valid-url',
+        urlType: 'external',
+      }),
+    ).rejects.toThrow('Please enter a valid URL')
+  })
+
+  it('rejects non-http/https protocols for external URLs', async () => {
+    await expect(
+      getOrCreateUserApplicationFromConfig({
+        client: mockClient,
+        spinner: mockSpinner,
+        context,
+        appId: undefined,
+        appHost: 'ftp://my-studio.example.com',
+        urlType: 'external',
+      }),
+    ).rejects.toThrow('URL must start with http:// or https://')
+  })
+
+  it('throws error when external deployment has no studioHost or appId via config', async () => {
+    await expect(
+      getOrCreateUserApplicationFromConfig({
+        client: mockClient,
+        spinner: mockSpinner,
+        context,
+        appId: undefined,
+        appHost: undefined,
+        urlType: 'external',
+      }),
+    ).rejects.toThrow(
+      'External deployment requires studioHost to be set in sanity.cli.ts with a full URL, or deployment.appId to reference an existing application',
+    )
+  })
+
+  it('returns existing external user application when urlType is external and appId is provided', async () => {
+    const existingExternalApp = {
+      id: 'external-app',
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    }
+    mockClientRequest.mockResolvedValueOnce(existingExternalApp)
+
+    const result = await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appId: 'external-app',
+      appHost: undefined,
+      urlType: 'external',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledWith({
+      uri: '/user-applications/external-app',
+    })
+    expect(result).toEqual(existingExternalApp)
+  })
+
+  it('throws error when external deployment with appId does not exist', async () => {
+    mockClientRequest.mockResolvedValueOnce(null)
+
+    await expect(
+      getOrCreateUserApplicationFromConfig({
+        client: mockClient,
+        spinner: mockSpinner,
+        context,
+        appId: 'non-existent-app',
+        appHost: undefined,
+        urlType: 'external',
+      }),
+    ).rejects.toThrow('Application not found. Application with id non-existent-app does not exist')
+  })
+
+  it('normalizes external URL by removing trailing slash', async () => {
+    const externalApp = {
+      id: 'external-app',
+      appHost: 'https://my-studio.example.com',
+      urlType: 'external',
+    }
+    mockClientRequest.mockResolvedValueOnce(null) // No existing app
+    mockClientRequest.mockResolvedValueOnce(externalApp) // Create response
+
+    await getOrCreateUserApplicationFromConfig({
+      client: mockClient,
+      spinner: mockSpinner,
+      context,
+      appId: undefined,
+      appHost: 'https://my-studio.example.com/',
+      urlType: 'external',
+    })
+
+    // First call: GET with normalized URL
+    expect(mockClientRequest).toHaveBeenNthCalledWith(1, {
+      uri: '/user-applications',
+      query: {appHost: 'https://my-studio.example.com'},
+    })
+    // Second call: POST with normalized URL
+    expect(mockClientRequest).toHaveBeenNthCalledWith(2, {
+      uri: '/user-applications',
+      method: 'POST',
+      body: {appHost: 'https://my-studio.example.com', urlType: 'external', type: 'studio'},
+      query: {appType: 'studio'},
+    })
   })
 })
 
@@ -294,11 +721,15 @@ describe('deleteUserApplication', () => {
     await deleteUserApplication({
       client: mockClient,
       applicationId: 'app-id',
+      appType: 'studio',
     })
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 
@@ -307,12 +738,19 @@ describe('deleteUserApplication', () => {
     mockClientRequest.mockRejectedValueOnce(new Error(errorMessage))
 
     await expect(
-      deleteUserApplication({client: mockClient, applicationId: 'app-id'}),
+      deleteUserApplication({
+        client: mockClient,
+        applicationId: 'app-id',
+        appType: 'studio',
+      }),
     ).rejects.toThrow(errorMessage)
 
     expect(mockClientRequest).toHaveBeenCalledWith({
       uri: '/user-applications/app-id',
       method: 'DELETE',
+      query: {
+        appType: 'studio',
+      },
     })
   })
 })
@@ -394,7 +832,7 @@ describe('checkDir', () => {
   })
 })
 
-describe('getOrCreateCoreApplication', () => {
+describe('getOrCreateApplication', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -403,18 +841,17 @@ describe('getOrCreateCoreApplication', () => {
     output: mockOutput,
     prompt: mockPrompt,
     cliConfig: {
-      // eslint-disable-next-line camelcase
-      __experimental_coreAppConfiguration: {
+      app: {
         organizationId: 'test-org',
       },
     },
   }
 
-  it('returns an existing core application when selected from the list', async () => {
+  it('returns an existing application when selected from the list', async () => {
     const existingApp = {
-      id: 'core-app-1',
+      id: 'app-1',
       appHost: 'test-org-abc123',
-      title: 'Existing Core App',
+      title: 'Existing App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -422,10 +859,10 @@ describe('getOrCreateCoreApplication', () => {
     mockClientRequest.mockResolvedValueOnce([existingApp]) // getUserApplications response
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async ({choices}: any) => {
       // Simulate selecting the existing app
-      return Promise.resolve(choices[2].value)
+      return Promise.resolve(choices[0].value)
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -441,18 +878,18 @@ describe('getOrCreateCoreApplication', () => {
         choices: expect.arrayContaining([
           expect.objectContaining({name: 'Create new deployed application'}),
           expect.anything(), // Separator
-          expect.objectContaining({name: 'Existing Core App'}),
+          expect.objectContaining({name: 'Existing App'}),
         ]),
       }),
     )
     expect(result).toEqual(existingApp)
   })
 
-  it('creates a new core application when no existing apps are found', async () => {
+  it('creates a new application when no existing apps are found', async () => {
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -461,14 +898,14 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(async ({body, query}) => {
       expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
       expect(body).toMatchObject({
-        title: 'New Core App',
+        title: 'New App',
         type: 'coreApp',
         urlType: 'internal',
       })
@@ -476,7 +913,7 @@ describe('getOrCreateCoreApplication', () => {
       return newApp
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -491,18 +928,18 @@ describe('getOrCreateCoreApplication', () => {
     expect(result).toEqual(newApp)
   })
 
-  it('creates a new core application when selected from the list', async () => {
+  it('creates a new application when selected from the list', async () => {
     const existingApp = {
-      id: 'core-app-1',
+      id: 'app-1',
       appHost: 'test-org-abc123',
-      title: 'Existing Core App',
+      title: 'Existing App',
       type: 'coreApp',
       urlType: 'internal',
     }
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -516,14 +953,14 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(async ({body, query}) => {
       expect(query).toEqual({organizationId: 'test-org', appType: 'coreApp'})
       expect(body).toMatchObject({
-        title: 'New Core App',
+        title: 'New App',
         type: 'coreApp',
         urlType: 'internal',
       })
@@ -531,7 +968,7 @@ describe('getOrCreateCoreApplication', () => {
       return newApp
     })
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -542,9 +979,9 @@ describe('getOrCreateCoreApplication', () => {
 
   it('retries with a new appHost if creation fails with 409', async () => {
     const newApp = {
-      id: 'new-core-app',
+      id: 'new-app',
       appHost: 'test-org-xyz789',
-      title: 'New Core App',
+      title: 'New App',
       type: 'coreApp',
       urlType: 'internal',
     }
@@ -553,7 +990,7 @@ describe('getOrCreateCoreApplication', () => {
 
     // Mock the title prompt
     ;(mockPrompt.single as Mock<any>).mockImplementationOnce(async () => {
-      return Promise.resolve('New Core App')
+      return Promise.resolve('New App')
     })
 
     // Mock first creation attempt failing
@@ -565,7 +1002,7 @@ describe('getOrCreateCoreApplication', () => {
     // Mock second creation attempt succeeding
     mockClientRequest.mockResolvedValueOnce(newApp)
 
-    const result = await getOrCreateCoreApplication({
+    const result = await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
@@ -590,7 +1027,7 @@ describe('getOrCreateCoreApplication', () => {
     // Mock the creation request
     mockClientRequest.mockImplementationOnce(() =>
       Promise.resolve({
-        id: 'new-core-app',
+        id: 'new-app',
         appHost: 'test-org-xyz789',
         title: 'Valid Title',
         type: 'coreApp',
@@ -598,12 +1035,64 @@ describe('getOrCreateCoreApplication', () => {
       }),
     )
 
-    await getOrCreateCoreApplication({
+    await getOrCreateApplication({
       client: mockClient,
       context: mockContext,
       spinner: mockSpinner,
     })
 
     expect(mockValidate).toHaveBeenCalled()
+  })
+})
+
+describe('getUserApplication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+  it('requests an app by org id and appType=coreApp', async () => {
+    const existingApp = {
+      id: 'app-1',
+      appHost: 'test-org-abc123',
+      title: 'Existing App',
+      type: 'coreApp',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockImplementationOnce((options) => Promise.resolve(existingApp))
+
+    const result = await getUserApplication({
+      client: mockClient,
+      appHost: 'test-org-xyz789',
+      appId: 'app-1',
+      isSdkApp: true,
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledExactlyOnceWith({
+      uri: '/user-applications/app-1',
+      query: {appType: 'coreApp'},
+    })
+
+    expect(result).toEqual(existingApp)
+  })
+  it('requests a studio by app id', async () => {
+    const existingStudio = {
+      id: 'studio-1',
+      appHost: 'some-studio',
+      title: 'Existing Studio',
+      urlType: 'internal',
+    }
+
+    mockClientRequest.mockResolvedValueOnce(existingStudio)
+
+    const result = await getUserApplication({
+      client: mockClient,
+      appId: 'studio-1',
+    })
+
+    expect(mockClientRequest).toHaveBeenCalledExactlyOnceWith({
+      uri: '/user-applications/studio-1',
+    })
+
+    expect(result).toEqual(existingStudio)
   })
 })

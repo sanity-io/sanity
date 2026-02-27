@@ -56,7 +56,7 @@ function createIntersectionObserverBased(): IntersectionObservableFor {
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
   return function intersectionObservableFor(element) {
-    return new Observable((observer) => {
+    return new Observable<void>((observer) => {
       intersectionObserver.observe(element)
       observer.next()
       return () => intersectionObserver.unobserve(element)

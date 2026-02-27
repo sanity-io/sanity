@@ -1,0 +1,28 @@
+{
+  "name": "telegram-notify",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@sanity/client": "^7.15.0",
+    "@sanity/functions": "^1.0.3"
+  },
+  "blueprintResourceItem": {
+    "name": "telegram-notify",
+    "memory": 1,
+    "timeout": 10,
+    "event": {
+      "on": [
+        "create"
+      ],
+      "filter": "_type == 'comment' && defined(comment)",
+      "projection": "{_id, comment}"
+    },
+    "env": {
+      "COMMENT": "TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, and STUDIO_URL are required",
+      "TELEGRAM_BOT_TOKEN": "TELEGRAM_BOT_TOKEN",
+      "TELEGRAM_CHAT_ID": "TELEGRAM_CHAT_ID",
+      "STUDIO_URL": "STUDIO_URL"
+    }
+  },
+  "exampleInstructions": "Add this resource to your Blueprint config's resources array. Go to README.md for more details on how to use this function."
+}

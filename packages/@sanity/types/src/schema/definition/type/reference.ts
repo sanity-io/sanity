@@ -12,7 +12,6 @@ import {type BaseSchemaDefinition} from './common'
 export type ReferenceValue = Reference
 
 /** @public */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ReferenceRule extends RuleDef<ReferenceRule, ReferenceValue> {}
 
 /** @public */

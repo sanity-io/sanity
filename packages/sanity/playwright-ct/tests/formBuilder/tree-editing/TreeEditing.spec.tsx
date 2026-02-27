@@ -207,7 +207,7 @@ test.skip('Tree editing', () => {
     await page.waitForTimeout(ANIMATION_DURATION)
 
     // Expect the breadcrumb menu to be closed after selecting an item
-    expect(breadcrumbMenuPopover).not.toBeVisible()
+    await expect(breadcrumbMenuPopover).not.toBeVisible()
 
     await page.waitForTimeout(ANIMATION_DURATION)
 

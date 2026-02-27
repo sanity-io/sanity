@@ -3,6 +3,7 @@
 exports[`number > greater than constraint > gt: too low 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be greater than 10",
     },
@@ -16,6 +17,7 @@ exports[`number > greater than constraint > gt: too low 1`] = `
 exports[`number > greater than constraint > gt: too low, at limit 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be greater than 10",
     },
@@ -31,6 +33,7 @@ exports[`number > greater than constraint > gt: valid 1`] = `[]`;
 exports[`number > integer constraint > integer: invalid (float) 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be an integer",
     },
@@ -46,6 +49,7 @@ exports[`number > integer constraint > integer: valid 1`] = `[]`;
 exports[`number > less than constraint > lt: too high 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be less than 10",
     },
@@ -59,6 +63,7 @@ exports[`number > less than constraint > lt: too high 1`] = `
 exports[`number > less than constraint > lt: too high, at limit 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be less than 10",
     },
@@ -74,6 +79,7 @@ exports[`number > less than constraint > lt: valid 1`] = `[]`;
 exports[`number > max constraint > max: too large 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be lower than or equal to 10",
     },
@@ -91,6 +97,7 @@ exports[`number > max constraint > max: valid, at limit 1`] = `[]`;
 exports[`number > min constraint > min: too low 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be greater than or equal to 10",
     },
@@ -108,6 +115,7 @@ exports[`number > min constraint > min: valid, at limit 1`] = `[]`;
 exports[`number > negative constraint > negative: invalid (zero) 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be less than 0",
     },
@@ -121,6 +129,7 @@ exports[`number > negative constraint > negative: invalid (zero) 1`] = `
 exports[`number > negative constraint > negative: invalid 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be less than 0",
     },
@@ -136,6 +145,7 @@ exports[`number > negative constraint > negative: valid 1`] = `[]`;
 exports[`number > positive constraint > positive: invalid 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Must be greater than or equal to 0",
     },
@@ -153,6 +163,7 @@ exports[`number > positive constraint > positive: valid 1`] = `[]`;
 exports[`number > precision constraint > precision: invalid (pi) 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Max precision is 3",
     },
@@ -170,6 +181,7 @@ exports[`number > precision constraint > precision: valid (below limit) 1`] = `[
 exports[`number > required constraint > required: undefined 1`] = `
 [
   {
+    "__internal_metadata": undefined,
     "item": {
       "message": "Required",
     },

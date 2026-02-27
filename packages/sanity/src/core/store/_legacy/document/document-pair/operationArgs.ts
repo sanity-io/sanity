@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable max-nested-callbacks */
-
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
 import {type HistoryStore} from '../../history'
-import {type PairListenerOptions} from '../getPairListener'
+import {type DocumentStoreExtraOptions} from '../getPairListener'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
@@ -21,7 +18,7 @@ export const operationArgs = memoize(
       historyStore: HistoryStore
       schema: Schema
       serverActionsEnabled: Observable<boolean>
-      pairListenerOptions?: PairListenerOptions
+      pairListenerOptions?: DocumentStoreExtraOptions
     },
     idPair: IdPair,
     typeName: string,

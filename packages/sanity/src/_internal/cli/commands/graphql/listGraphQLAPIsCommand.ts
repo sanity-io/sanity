@@ -14,10 +14,7 @@ const listGraphQLAPIsCommand: CliCommandDefinition = {
   signature: '',
   group: 'graphql',
   description: 'Lists all the GraphQL endpoints deployed for this project',
-  action: async (
-    args: CliCommandArguments<Record<string, unknown>>,
-    context: CliCommandContext,
-  ) => {
+  action: async (args: CliCommandArguments, context: CliCommandContext) => {
     const mod = await import('../../actions/graphql/listApisAction')
 
     return mod.default(args, context)

@@ -4,6 +4,7 @@ import {memo, useMemo, useState} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {useSchema} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {useDocumentPairPermissions} from '../../../../store/_legacy/grants/documentPairPermissions'
 import {getPublishedId, getVersionFromId} from '../../../../util/draftUtils'
@@ -13,13 +14,13 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 
-export const DocumentActions = memo(
-  function DocumentActions({
+const DocumentActionsInner = memo(
+  function DocumentActionsInner({
     document,
     releaseTitle,
   }: {
     document: BundleDocumentRow
-    releaseTitle: string
+    releaseTitle: string | undefined
   }) {
     const [showDiscardDialog, setShowDiscardDialog] = useState(false)
     const [showUnpublishDialog, setShowUnpublishDialog] = useState(false)
@@ -68,6 +69,9 @@ export const DocumentActions = memo(
       t,
     ])
 
+    const isUnpublishActionDisabled =
+      noPermissionToUnpublish || !document.document.publishedDocumentExists || isAlreadyUnpublished
+
     return (
       <>
         <Card tone="default" display="flex">
@@ -81,7 +85,10 @@ export const DocumentActions = memo(
                   icon={CloseIcon}
                   onClick={() => setShowDiscardDialog(true)}
                   disabled={isDiscardVersionActionDisabled}
-                  tooltipProps={{content: t('permissions.error.discard-version')}}
+                  tooltipProps={{
+                    disabled: !isDiscardVersionActionDisabled,
+                    content: t('permissions.error.discard-version'),
+                  }}
                 />
                 <MenuDivider />
                 <Box padding={3} paddingBottom={2}>
@@ -90,12 +97,11 @@ export const DocumentActions = memo(
                 <MenuItem
                   text={t('action.unpublish')}
                   icon={UnpublishIcon}
-                  disabled={
-                    noPermissionToUnpublish ||
-                    !document.document.publishedDocumentExists ||
-                    isAlreadyUnpublished
-                  }
-                  tooltipProps={{content: unPublishTooltipContent}}
+                  disabled={isUnpublishActionDisabled}
+                  tooltipProps={{
+                    disabled: !isUnpublishActionDisabled,
+                    content: unPublishTooltipContent,
+                  }}
                   onClick={() => setShowUnpublishDialog(true)}
                 />
               </Menu>
@@ -104,9 +110,11 @@ export const DocumentActions = memo(
         </Card>
         {showDiscardDialog && (
           <DiscardVersionDialog
+            isGoingToUnpublish={isGoingToUnpublish(document.document)}
             onClose={() => setShowDiscardDialog(false)}
             documentId={document.document._id}
             documentType={document.document._type}
+            fromPerspective={releaseTitle || t('release-placeholder.title')}
           />
         )}
         {showUnpublishDialog && (
@@ -119,6 +127,26 @@ export const DocumentActions = memo(
       </>
     )
   },
-  (prev, next) =>
-    prev.document.memoKey === next.document.memoKey && prev.releaseTitle === next.releaseTitle,
+  (prev, next) => prev.document.memoKey === next.document.memoKey,
 )
+
+export const DocumentActions = memo(function GuardedDocumentActions(props: {
+  document: BundleDocumentRow
+  releaseTitle: string | undefined
+}) {
+  const schema = useSchema()
+  const type = schema.get(props.document.document._type)
+  const {t} = useTranslation()
+  if (!type) {
+    return (
+      <ContextMenuButton
+        disabled
+        tooltipProps={{
+          content: t('document.type.not-found', {type: props.document.document._type}),
+        }}
+      />
+    )
+  }
+
+  return <DocumentActionsInner {...props} />
+})

@@ -93,6 +93,12 @@ export function isStringSchemaType(type: unknown): type is StringSchemaType {
 }
 
 /** @internal */
+export function isDateTimeSchemaType(type: unknown): type is StringSchemaType {
+  if (!isStringSchemaType(type)) return false
+  return type.name === 'datetime'
+}
+
+/** @internal */
 export function isNumberSchemaType(type: unknown): type is NumberSchemaType {
   if (!isRecord(type)) return false
   return type.jsonType === 'number'
