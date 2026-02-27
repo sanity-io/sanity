@@ -9,6 +9,11 @@ import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {
+  getAssetSourceDisplayName,
+  getAssetSourcesWithUpload,
+  isComponentModeAssetSource,
+} from '../common/assetSourceUtils'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
@@ -25,11 +30,12 @@ export function FilePreview(props: FileAssetProps) {
     directUploads,
     observeAsset,
     onOpenInSource,
+    onOpenSourceForUpload,
+    onSelectAssetSourceForBrowse,
     onSelectFiles,
     readOnly,
     schemaType,
     setBrowseButtonElement,
-    setSelectedAssetSource,
     value,
   } = props
   const {t} = useTranslation()
@@ -39,7 +45,7 @@ export function FilePreview(props: FileAssetProps) {
 
   const accept = get(schemaType, 'options.accept', '')
 
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
+  const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   const handleSelectFileMenuItemClicked = useCallback(
     (event: React.MouseEvent) => {
@@ -47,14 +53,14 @@ export function FilePreview(props: FileAssetProps) {
       const assetSourceNameData = event.currentTarget.getAttribute('data-asset-source-name')
       const assetSource = assetSources.find((source) => source.name === assetSourceNameData)
       if (assetSource) {
-        setSelectedAssetSource(assetSource)
+        onSelectAssetSourceForBrowse?.(assetSource)
       } else {
         console.warn(
           `No asset source found for the selected asset source name '${assetSourceNameData}'`,
         )
       }
     },
-    [assetSources, setSelectedAssetSource],
+    [assetSources, onSelectAssetSourceForBrowse],
   )
 
   const handleSelectFilesFromAssetSource = useCallback(
@@ -71,6 +77,14 @@ export function FilePreview(props: FileAssetProps) {
     },
     [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
   )
+
+  // Handler for component mode single source
+  const handleOpenSourceForUploadSingle = useCallback(() => {
+    setIsMenuOpen(false)
+    if (onOpenSourceForUpload) {
+      onOpenSourceForUpload(assetSourcesWithUpload[0])
+    }
+  }, [assetSourcesWithUpload, onOpenSourceForUpload])
 
   const browseMenuItem: ReactNode = useMemo(() => {
     // Legacy support for setting asset sources to an empty array through schema
@@ -99,10 +113,7 @@ export function FilePreview(props: FileAssetProps) {
       return (
         <MenuItem
           key={assetSource.name}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
           onClick={handleSelectFileMenuItemClicked}
           icon={assetSource.icon || ImageIcon}
           disabled={readOnly}
@@ -117,18 +128,34 @@ export function FilePreview(props: FileAssetProps) {
     switch (assetSourcesWithUpload.length) {
       case 0:
         return null
-      case 1:
+      case 1: {
+        const singleSource = assetSourcesWithUpload[0]
+        // For component mode, render a menu item that opens the source directly
+        if (isComponentModeAssetSource(singleSource)) {
+          return (
+            <MenuItem
+              icon={UploadIcon}
+              onClick={handleOpenSourceForUploadSingle}
+              data-asset-source-name={singleSource.name}
+              text={t('inputs.files.common.actions-menu.upload.label')}
+              data-testid={`file-input-upload-button-${singleSource.name}`}
+              disabled={readOnly || directUploads === false}
+            />
+          )
+        }
+        // For picker mode, use the file input menu item
         return (
           <FileInputMenuItem
             icon={UploadIcon}
             onSelect={handleSelectFilesFromAssetSourceSingle}
             accept={accept}
-            data-asset-source-name={assetSourcesWithUpload[0].name}
+            data-asset-source-name={singleSource.name}
             text={t('inputs.files.common.actions-menu.upload.label')}
-            data-testid={`file-input-upload-button-${assetSourcesWithUpload[0].name}`}
+            data-testid={`file-input-upload-button-${singleSource.name}`}
             disabled={readOnly || directUploads === false}
           />
         )
+      }
       default:
         return (
           <UploadDropDownMenu
@@ -136,6 +163,7 @@ export function FilePreview(props: FileAssetProps) {
             assetSources={assetSourcesWithUpload}
             directUploads={directUploads}
             onSelectFiles={handleSelectFilesFromAssetSource}
+            onOpenSourceForUpload={onOpenSourceForUpload}
             readOnly={readOnly}
             data-testid="file-input-upload-drop-down-menu-button"
             renderAsMenuGroup
@@ -146,8 +174,10 @@ export function FilePreview(props: FileAssetProps) {
     accept,
     assetSourcesWithUpload,
     directUploads,
+    handleOpenSourceForUploadSingle,
     handleSelectFilesFromAssetSource,
     handleSelectFilesFromAssetSourceSingle,
+    onOpenSourceForUpload,
     readOnly,
     t,
   ])
@@ -234,13 +264,14 @@ function FilePreviewContent({
   const handleOpenInSource = useCallback(() => {
     if (!openInSourceResult) return
 
+    setIsMenuOpen(false)
     const {source, result} = openInSourceResult
     if (result.type === 'url') {
       window.open(result.url, result.target || '_blank')
     } else if (result.type === 'component') {
       onOpenInSource?.(source, fileAsset)
     }
-  }, [fileAsset, onOpenInSource, openInSourceResult])
+  }, [fileAsset, onOpenInSource, openInSourceResult, setIsMenuOpen])
 
   return (
     <FileActionsMenu

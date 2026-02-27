@@ -20,6 +20,15 @@ export interface FileAssetProps extends Omit<BaseFileInputProps, 'renderDefault'
   onCancelUpload?: () => void
   onClearUploadStatus: () => void
   onOpenInSource: (assetSource: AssetSource, asset: FileAsset) => void
+  /**
+   * Called when user selects to browse/select from an asset source.
+   */
+  onSelectAssetSourceForBrowse?: (assetSource: AssetSource) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
   onSelectAssets: (assetsFromSource: AssetFromSource[]) => void
   onSelectFiles: (assetSource: AssetSource, files: File[]) => void
   onStale: () => void

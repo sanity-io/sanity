@@ -5,6 +5,7 @@ import get from 'lodash-es/get.js'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useSource} from '../../../../../core/studio'
+import {Button} from '../../../../../ui-components'
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -13,6 +14,7 @@ import {
   createDatasetImageAssetSource,
 } from '../../../studio/assetSourceDataset'
 import {type FileLike} from '../../../studio/uploads/types'
+import {getAssetSourcesWithUpload, isComponentModeAssetSource} from './assetSourceUtils'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 import {UploadDropDownMenu} from './UploadDropDownMenu'
@@ -23,14 +25,28 @@ interface UploadPlaceholderProps {
   directUploads?: boolean
   hoveringFiles?: FileLike[]
   onUpload?: (assetSource: AssetSource, files: File[]) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
   readOnly?: boolean
   schemaType: SchemaType
   type: string
 }
 
 function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
-  const {assetSources, browse, directUploads, hoveringFiles, onUpload, readOnly, schemaType, type} =
-    props
+  const {
+    assetSources,
+    browse,
+    directUploads,
+    hoveringFiles,
+    onOpenSourceForUpload,
+    onUpload,
+    readOnly,
+    schemaType,
+    type,
+  } = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rect = useElementSize(rootElement)
@@ -42,7 +58,7 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   const source = useSource()
 
   const assetSourcesWithUpload = useMemo(() => {
-    const result: AssetSource[] = assetSources.filter((s) => Boolean(s.Uploader))
+    const result = getAssetSourcesWithUpload(assetSources)
     // If no asset sources are available, we create a default one to upload to the dataset
     if (result.length === 0) {
       const options = {
@@ -72,22 +88,42 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
     switch (assetSourcesWithUpload.length) {
       case 0:
         return null
-      case 1:
+      case 1: {
+        const singleSource = assetSourcesWithUpload[0]
+        // For component mode, render a button that opens the source directly
+        if (isComponentModeAssetSource(singleSource)) {
+          return (
+            <Button
+              data-testid={`file-input-upload-button-${singleSource.name}`}
+              disabled={readOnly || directUploads === false}
+              icon={UploadIcon}
+              mode="bleed"
+              onClick={() => {
+                if (onOpenSourceForUpload) {
+                  onOpenSourceForUpload(singleSource)
+                }
+              }}
+              text={t('input.files.common.upload-placeholder.file-input-button.text')}
+            />
+          )
+        }
+        // For picker mode, use the file input button
         return (
           <FileInputButton
             accept={accept}
-            data-testid={`file-input-upload-button-${assetSourcesWithUpload[0].name}`}
+            data-testid={`file-input-upload-button-${singleSource.name}`}
             disabled={readOnly || directUploads === false}
             icon={UploadIcon}
             mode="bleed"
             onSelect={(files) => {
               if (onUpload) {
-                onUpload(assetSourcesWithUpload[0], files)
+                onUpload(singleSource, files)
               }
             }}
             text={t('input.files.common.upload-placeholder.file-input-button.text')}
           />
         )
+      }
       default:
         return (
           <UploadDropDownMenu
@@ -95,11 +131,21 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
             assetSources={assetSourcesWithUpload}
             directUploads={directUploads}
             onSelectFiles={handleSelectFiles}
+            onOpenSourceForUpload={onOpenSourceForUpload}
             readOnly={readOnly}
           />
         )
     }
-  }, [accept, assetSourcesWithUpload, directUploads, handleSelectFiles, onUpload, readOnly, t])
+  }, [
+    accept,
+    assetSourcesWithUpload,
+    directUploads,
+    handleSelectFiles,
+    onOpenSourceForUpload,
+    onUpload,
+    readOnly,
+    t,
+  ])
 
   return assetSourcesWithUpload.length === 0 ? null : (
     <Flex

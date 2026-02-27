@@ -130,12 +130,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Select asset dialog select-button */
   'asset-source.dialog.button.select': 'Select',
   /** Keys shared between both image asset source and file asset source */
-  /** Select asset dialog title for files */
-  'asset-source.dialog.default-title_file': 'Select file',
-  /** Select asset dialog title for images */
-  'asset-source.dialog.default-title_image': 'Select image',
-  /** Select asset dialog title for videos */
-  'asset-source.dialog.default-title_video': 'Select video',
   /** Insert asset error */
   'asset-source.dialog.insert-asset-error':
     'Error inserting asset. See the console for more information.',
@@ -228,10 +222,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the open in source dialog */
   'asset-sources.media-library.open-in-source-dialog.title': 'Edit asset',
 
-  /** Info messages for the Media Library Asset Source  */
-  'asset-sources.media-library.select-dialog.title_file': 'Selecting file for {{targetTitle}}',
-  'asset-sources.media-library.select-dialog.title_image': 'Selecting image for {{targetTitle}}',
-  'asset-sources.media-library.select-dialog.title_video': 'Selecting video for {{targetTitle}}',
+  /** Title for the upload dialog (component mode) */
+  'asset-sources.media-library.upload-dialog.title': 'Upload to Media Library',
 
   /** Warning message shown when uploading already existing files to the Media Library Asset Source */
   'asset-sources.media-library.warning.file-already-exist.description':
@@ -735,8 +727,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.file.actions-menu.file-options.aria-label': 'Open file options menu',
   /** Browse */
   'inputs.file.browse-button.text': 'Select',
-  /** Select file */
-  'inputs.file.dialog.title': 'Select file',
   /** Unknown member kind: `{{kind}}` */
   'inputs.file.error.unknown-member-kind': 'Unknown member kind: {{kind}}',
   /** The value of this field is not a valid file. Resetting this field will let you choose a new file. */
@@ -812,6 +802,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An upload has made no progress for at least {{staleThresholdMinutes}} minutes and likely got interrupted. You can safely clear the incomplete upload and try uploading again.',
   /** Incomplete upload */
   'inputs.files.common.stale-upload-warning.title': 'Incomplete upload',
+  /** Select file */
+  'inputs.files.select-dialog.title': 'Select file for "{{targetTitle}}"',
   /** Tooltip text for action to crop image */
   'inputs.image.actions-menu.crop-image-tooltip': 'Crop image',
   /** Accessibility label for button to open image edit dialog */
@@ -842,6 +834,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.image.invalid-image-warning.title': 'Invalid image value',
   /** Preview of uploaded image */
   'inputs.image.preview-uploaded-image': 'Preview of uploaded image',
+  /** Select image */
+  'inputs.image.select-dialog.title': 'Select image for "{{targetTitle}}"',
   /** The upload could not be completed at this time. */
   'inputs.image.upload-error.description': 'The upload could not be completed at this time.',
   /** Upload failed */
@@ -1249,7 +1243,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.untyped-value.title': 'Property value missing <code>_type</code>',
   /** Unset value */
   'inputs.untyped-value.unset-item-button.text': 'Unset value',
-
+  /** Select video */
+  'inputs.video.select-dialog.title': 'Select video for "{{targetTitle}}"',
   /** The fallback explanation if no context is provided */
   'insufficient-permissions-message.not-authorized-explanation':
     'You do not have permission to access this feature.',

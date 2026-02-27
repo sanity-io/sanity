@@ -11,7 +11,7 @@ type Props = {
 export function InvalidImageWarning({onClearValue}: Props) {
   const {t} = useTranslation()
   return (
-    <Card tone="caution" padding={4} border radius={2}>
+    <Card data-testid="invalid-image-warning" tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
         <Box>
           <Text size={1}>

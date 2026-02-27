@@ -1,11 +1,11 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import startCase from 'lodash-es/startCase.js'
 import {type ForwardedRef, forwardRef, memo} from 'react'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {getAssetSourceDisplayName} from '../common/assetSourceUtils'
 import {type BaseImageInputProps} from './types'
 
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
@@ -48,10 +48,7 @@ function ImageInputBrowserComponent(
               return (
                 <MenuItem
                   key={assetSource.name}
-                  text={
-                    (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-                    startCase(assetSource.name)
-                  }
+                  text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
                   onClick={() => {
                     setMenuOpen(false)
                     handleSelectImageFromAssetSource(assetSource)

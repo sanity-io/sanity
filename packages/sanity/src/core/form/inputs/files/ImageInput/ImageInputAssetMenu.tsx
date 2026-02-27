@@ -2,7 +2,6 @@ import {isImageSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource, type ImageAsset, type Reference} from '@sanity/types'
 import get from 'lodash-es/get.js'
-import startCase from 'lodash-es/startCase.js'
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
@@ -10,6 +9,11 @@ import {type Observable} from 'rxjs'
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ActionsMenu} from '../common/ActionsMenu'
+import {
+  getAssetSourceDisplayName,
+  getAssetSourcesWithUpload,
+  isComponentModeAssetSource,
+} from '../common/assetSourceUtils'
 import {FileInputMenuItem} from '../common/FileInputMenuItem/FileInputMenuItem'
 import {findOpenInSourceResult, getOpenInSourceName} from '../common/openInSource'
 import {UploadDropDownMenu} from '../common/UploadDropDownMenu'
@@ -32,6 +36,11 @@ function ImageInputAssetMenuComponent(
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
+    /**
+     * Called when an asset source with `uploadMode: 'component'` is selected.
+     * The source should be rendered directly to handle file selection and upload internally.
+     */
+    onOpenSourceForUpload?: (assetSource: AssetSource) => void
     handleSelectImageFromAssetSource: (source: AssetSource) => void
     isImageToolEnabled: boolean
     isMenuOpen: boolean
@@ -48,6 +57,7 @@ function ImageInputAssetMenuComponent(
     handleOpenDialog,
     handleRemoveButtonClick,
     onSelectFile,
+    onOpenSourceForUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
     isImageToolEnabled,
@@ -90,10 +100,7 @@ function ImageInputAssetMenuComponent(
       return (
         <MenuItem
           key={assetSource.name}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
           onClick={() => {
             setMenuOpen(false)
             handleSelectImageFromAssetSource(assetSource)
@@ -116,6 +123,7 @@ function ImageInputAssetMenuComponent(
       handleOpenDialog={handleOpenDialog}
       handleRemoveButtonClick={handleRemoveButtonClick}
       onSelectFile={onSelectFile}
+      onOpenSourceForUpload={onOpenSourceForUpload}
       imageUrlBuilder={imageUrlBuilder}
       isMenuOpen={isMenuOpen}
       observeAsset={observeAsset}
@@ -145,6 +153,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleOpenDialog: () => void
     handleRemoveButtonClick: () => void
     onSelectFile: (assetSource: AssetSource, file: File) => void
+    onOpenSourceForUpload?: (assetSource: AssetSource) => void
     onOpenInSource: (assetSource: AssetSource, asset: ImageAsset) => void
     isMenuOpen: boolean
     observeAsset: (assetId: string) => Observable<ImageAsset>
@@ -164,6 +173,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     handleOpenDialog,
     handleRemoveButtonClick,
     onSelectFile,
+    onOpenSourceForUpload,
     imageUrlBuilder,
     isMenuOpen,
     onOpenInSource,
@@ -182,7 +192,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   const documentId = reference?._ref
   const observable = useMemo(() => observeAsset(documentId), [documentId, observeAsset])
   const asset = useObservable(observable)
-  const assetSourcesWithUpload = assetSources.filter((s) => Boolean(s.Uploader))
+  const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   // Find the first asset source that can handle opening this asset in source
   const openInSourceResult = useMemo(
@@ -204,16 +214,24 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     [assetSourcesWithUpload, handleSelectFilesFromAssetSource],
   )
 
+  // Handler for component mode single source
+  const handleOpenSourceForUploadSingle = useCallback(() => {
+    if (onOpenSourceForUpload) {
+      onOpenSourceForUpload(assetSourcesWithUpload[0])
+    }
+  }, [assetSourcesWithUpload, onOpenSourceForUpload])
+
   const handleOpenInSource = useCallback(() => {
     if (!openInSourceResult || !asset) return
 
+    setMenuOpen(false)
     const {source, result} = openInSourceResult
     if (result.type === 'url') {
       window.open(result.url, result.target || '_blank')
     } else if (result.type === 'component') {
       onOpenInSource?.(source, asset)
     }
-  }, [asset, onOpenInSource, openInSourceResult])
+  }, [asset, onOpenInSource, openInSourceResult, setMenuOpen])
 
   if (!documentId || !asset) {
     return <ImageActionsMenuWaitPlaceholder />
@@ -239,19 +257,36 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
     case 0:
       uploadMenuItem = null
       break
-    case 1:
-      uploadMenuItem = (
-        <FileInputMenuItem
-          icon={UploadIcon}
-          onSelect={handleSelectFilesFromAssetSourceSingle}
-          accept={accept}
-          data-asset-source-name={assetSourcesWithUpload[0].name}
-          text={t('inputs.files.common.actions-menu.upload.label')}
-          data-testid="file-input-upload-button"
-          disabled={readOnly || directUploads === false}
-        />
-      )
+    case 1: {
+      const singleSource = assetSourcesWithUpload[0]
+      // For component mode, render a menu item that opens the source directly
+      if (isComponentModeAssetSource(singleSource)) {
+        uploadMenuItem = (
+          <MenuItem
+            icon={UploadIcon}
+            onClick={handleOpenSourceForUploadSingle}
+            data-asset-source-name={singleSource.name}
+            text={t('inputs.files.common.actions-menu.upload.label')}
+            data-testid="file-input-upload-button"
+            disabled={readOnly || directUploads === false}
+          />
+        )
+      } else {
+        // For picker mode, use the file input menu item
+        uploadMenuItem = (
+          <FileInputMenuItem
+            icon={UploadIcon}
+            onSelect={handleSelectFilesFromAssetSourceSingle}
+            accept={accept}
+            data-asset-source-name={singleSource.name}
+            text={t('inputs.files.common.actions-menu.upload.label')}
+            data-testid="file-input-upload-button"
+            disabled={readOnly || directUploads === false}
+          />
+        )
+      }
       break
+    }
     default:
       uploadMenuItem = (
         <UploadDropDownMenu
@@ -259,6 +294,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
           assetSources={assetSourcesWithUpload}
           directUploads={directUploads}
           onSelectFiles={handleSelectFilesFromAssetSource}
+          onOpenSourceForUpload={onOpenSourceForUpload}
           readOnly={readOnly}
           renderAsMenuGroup
         />

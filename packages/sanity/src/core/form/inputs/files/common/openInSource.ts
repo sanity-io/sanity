@@ -1,5 +1,7 @@
 import {type Asset, type AssetSource} from '@sanity/types'
 
+import {getAssetSourceDisplayName} from './assetSourceUtils'
+
 /**
  * Result of finding an asset source that can open the asset in its source.
  */
@@ -43,6 +45,5 @@ export function getOpenInSourceName(
 ): string | undefined {
   if (!openInSourceResult) return undefined
 
-  const {source} = openInSourceResult
-  return (source.i18nKey ? t(source.i18nKey) : source.title) || source.name
+  return getAssetSourceDisplayName(openInSourceResult.source, t)
 }

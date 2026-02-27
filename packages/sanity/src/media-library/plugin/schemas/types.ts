@@ -1,5 +1,5 @@
-import {type Asset} from '@sanity/media-library-types'
 import {
+  type Asset,
   type AssetSource,
   type InitialValueProperty,
   type ObjectDefinition,
@@ -79,7 +79,7 @@ export interface VideoMetadata {
 }
 
 /** @public */
-export type VideoAsset = Omit<Asset, '_type'> & {
+export interface VideoAsset extends Asset {
   _type: 'sanity.videoAsset'
   metadata: VideoMetadata
 }

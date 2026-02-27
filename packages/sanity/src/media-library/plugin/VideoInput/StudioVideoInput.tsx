@@ -1,5 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {useCallback} from 'react'
+import {type Observable} from 'rxjs'
 
 import {observeVideoAsset} from '../../../core/form/studio/inputs/client-adapters/assets'
 import {resolveUploader as defaultResolveUploader} from '../../../core/form/studio/uploads/resolveUploader'
@@ -9,6 +10,7 @@ import {useClient} from '../../../core/hooks'
 import {useDocumentPreviewStore} from '../../../core/store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {sourceName} from '../asset-source'
+import {type VideoAsset} from '../schemas/types'
 import {BaseVideoInput, type BaseVideoInputProps} from './VideoInput'
 
 export type VideoInputProps = Omit<
@@ -36,8 +38,8 @@ export function StudioVideoInput(props: VideoInputProps) {
   const filteredAssetSources = assetSources.filter((source) => source.name === sourceName)
 
   const observeAsset = useCallback(
-    (id: string) => observeVideoAsset(documentPreviewStore, id),
-    [documentPreviewStore],
+    (id: string): Observable<VideoAsset> => observeVideoAsset(documentPreviewStore, id, client),
+    [documentPreviewStore, client],
   )
 
   return (

@@ -30,7 +30,7 @@ export function DropMessage(props: Props) {
   const multiple = types.length > 1
   const {t} = useTranslation()
   return (
-    <Sticky paddingBottom={3} paddingTop={3}>
+    <Sticky data-testid="upload-target-drop-message" paddingBottom={3} paddingTop={3}>
       {acceptedFiles.length > 0 ? (
         <>
           <Inline space={2}>
@@ -60,7 +60,7 @@ export function DropMessage(props: Props) {
           )}
         </>
       ) : (
-        <Inline space={2}>
+        <Inline data-testid="upload-target-drop-message-not-allowed" space={2}>
           <Text>
             <AccessDeniedIcon />
           </Text>

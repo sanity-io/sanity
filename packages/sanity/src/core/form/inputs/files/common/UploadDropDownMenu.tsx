@@ -1,7 +1,6 @@
 import {ChevronDownIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import startCase from 'lodash-es/startCase.js'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {type ChangeEvent, type ForwardedRef, forwardRef, memo, useCallback, useMemo} from 'react'
 
@@ -14,6 +13,7 @@ import {
   MenuItem,
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {getAssetSourceDisplayName, isComponentModeAssetSource} from './assetSourceUtils'
 
 const UPLOAD_DROP_DOWN_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true} as const
 const MENU_GROUP_POPOVER: MenuGroupProps['popover'] = {
@@ -29,6 +29,11 @@ interface UploadDropDownButtonComponentProps {
   directUploads?: boolean
   multiple?: boolean
   onSelectFiles?: (assetSource: AssetSource, files: File[]) => void
+  /**
+   * Called when an asset source with `uploadMode: 'component'` is selected.
+   * The source should be rendered directly to handle file selection and upload internally.
+   */
+  onOpenSourceForUpload?: (assetSource: AssetSource) => void
   readOnly?: boolean
   renderAsMenuGroup?: boolean
 }
@@ -44,6 +49,7 @@ function UploadDropDownMenuComponent(
     directUploads,
     multiple,
     onSelectFiles,
+    onOpenSourceForUpload,
     readOnly,
     renderAsMenuGroup = false,
   } = props
@@ -67,13 +73,21 @@ function UploadDropDownMenuComponent(
       if (!assetSource) {
         return
       }
+      // For component mode, open the source directly without a file picker
+      if (isComponentModeAssetSource(assetSource)) {
+        if (onOpenSourceForUpload) {
+          onOpenSourceForUpload(assetSource)
+        }
+        return
+      }
+      // For picker mode (default), trigger the file input
       const element = document.getElementById(createAssetSourceInputId(assetSource))
       // Test for document.activeElement to avoid clicking the button twice
       if (element && document.activeElement !== element) {
         element.click()
       }
     },
-    [assetSources, createAssetSourceInputId],
+    [assetSources, createAssetSourceInputId, onOpenSourceForUpload],
   )
 
   const renderMenuItemLabel = useCallback(
@@ -81,6 +95,10 @@ function UploadDropDownMenuComponent(
       const assetSourceName = menuItemContent.props[ASSET_SOURCE_DATA_ATTRIBUTE]
       const assetSource = assetSources.find((source) => source.name === assetSourceName)
       if (!assetSource) {
+        return menuItemContent
+      }
+      // For component mode, no file input label is needed
+      if (isComponentModeAssetSource(assetSource)) {
         return menuItemContent
       }
       return <label htmlFor={createAssetSourceInputId(assetSource)}>{menuItemContent}</label>
@@ -92,6 +110,7 @@ function UploadDropDownMenuComponent(
     (assetSource: AssetSource, index: number) => {
       const inputId = createAssetSourceInputId(assetSource)
       const isDefaultSource = assetSource.name === assetSources[0].name
+      const isComponentMode = isComponentModeAssetSource(assetSource)
       return (
         <MenuItem
           key={`${inputId}-menu-button`}
@@ -103,14 +122,12 @@ function UploadDropDownMenuComponent(
           }
           data-testid={`file-input-upload-button-${index}`}
           disabled={uploadsDisabled}
-          htmlFor={inputId}
+          // Only associate with file input for picker mode
+          htmlFor={isComponentMode ? undefined : inputId}
           icon={assetSource.icon}
           onClick={handleMenuItemClick}
-          renderMenuItem={renderMenuItemLabel}
-          text={
-            (assetSource.i18nKey ? t(assetSource.i18nKey) : assetSource.title) ||
-            startCase(assetSource.name)
-          }
+          renderMenuItem={isComponentMode ? undefined : renderMenuItemLabel}
+          text={getAssetSourceDisplayName(assetSource, t, {useStartCaseForName: true})}
         />
       )
     },
@@ -141,23 +158,26 @@ function UploadDropDownMenuComponent(
   )
 
   const fileInputs = useMemo(() => {
-    return assetSources.map((assetSource) => {
-      const _id = createAssetSourceInputId(assetSource)
-      return (
-        <input
-          key={_id}
-          accept={accept}
-          capture={capture}
-          id={_id}
-          data-asset-source-name={assetSource.name}
-          multiple={multiple}
-          onChange={handleFileInputChange}
-          type="file"
-          value=""
-          style={{display: 'none'}}
-        />
-      )
-    })
+    // Only render file inputs for picker mode sources (component mode sources handle file selection internally)
+    return assetSources
+      .filter((assetSource) => !isComponentModeAssetSource(assetSource))
+      .map((assetSource) => {
+        const _id = createAssetSourceInputId(assetSource)
+        return (
+          <input
+            key={_id}
+            accept={accept}
+            capture={capture}
+            id={_id}
+            data-asset-source-name={assetSource.name}
+            multiple={multiple}
+            onChange={handleFileInputChange}
+            type="file"
+            value=""
+            style={{display: 'none'}}
+          />
+        )
+      })
   }, [accept, assetSources, capture, createAssetSourceInputId, handleFileInputChange, multiple])
 
   if (assetSources && assetSources.length > 1) {

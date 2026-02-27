@@ -4,11 +4,11 @@ import {Box, Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
+import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
 import {UploadTargetCard} from '../common/uploadTarget/UploadTargetCard'
 import {UploadWarning} from '../common/UploadWarning'
-import {Browser} from './Browser'
 import {FilePreview} from './FilePreview'
 import {InvalidFileWarning} from './InvalidFileWarning'
 import {type FileAssetProps} from './types'
@@ -17,6 +17,7 @@ const ASSET_FIELD_PATH = ['asset']
 
 export function FileAsset(props: FileAssetProps) {
   const {
+    assetSources,
     changed,
     clearField,
     directUploads,
@@ -25,6 +26,7 @@ export function FileAsset(props: FileAssetProps) {
     isUploading,
     onCancelUpload,
     onClearUploadStatus,
+    onOpenSourceForUpload,
     onSelectAssets,
     onSelectFiles,
     onStale,
@@ -88,8 +90,10 @@ export function FileAsset(props: FileAssetProps) {
           <UploadTargetCard
             {...elementProps}
             $border={hasValueOrUpload}
+            assetSources={assetSources}
             isReadOnly={readOnly}
             onFocus={handleFileTargetFocus}
+            onOpenSourceForUpload={onOpenSourceForUpload}
             onSelectFile={({assetSource, file}) => handleSelectFiles(assetSource, [file])}
             radius={2}
             sizing="border"
@@ -117,18 +121,46 @@ export function FileAsset(props: FileAssetProps) {
 }
 
 function FileUploadPlaceHolder(props: FileAssetProps & {disableNew?: boolean}) {
-  const {assetSources, directUploads, disableNew, onSelectFiles, schemaType, readOnly} = props
+  const {
+    assetSources,
+    directUploads,
+    disableNew,
+    onOpenSourceForUpload,
+    onSelectFiles,
+    schemaType,
+    readOnly,
+    id,
+    browseButtonElementRef,
+    setIsBrowseMenuOpen,
+    onSelectAssetSourceForBrowse,
+  } = props
+
+  const browseElement = (
+    <AssetSourceBrowser
+      assetSources={assetSources}
+      readOnly={readOnly}
+      id={id}
+      browseButtonElementRef={browseButtonElementRef}
+      schemaType={schemaType}
+      onSelectAssetSource={(assetSource) => {
+        setIsBrowseMenuOpen(false)
+        onSelectAssetSourceForBrowse?.(assetSource)
+      }}
+      dataTestIdPrefix="file-input"
+    />
+  )
 
   return (
     <Card tone={readOnly ? 'transparent' : 'inherit'} border paddingX={3} paddingY={2} radius={2}>
       {disableNew ? (
-        <Browser {...props} />
+        browseElement
       ) : (
         <UploadPlaceholder
           assetSources={assetSources}
-          browse={<Browser {...props} />}
+          browse={browseElement}
           directUploads={directUploads}
           onUpload={onSelectFiles}
+          onOpenSourceForUpload={onOpenSourceForUpload}
           schemaType={schemaType}
           readOnly={readOnly}
           type="file"
