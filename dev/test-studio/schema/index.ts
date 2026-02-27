@@ -142,6 +142,7 @@ import strings from './standard/strings'
 import texts from './standard/texts'
 import urls from './standard/urls'
 import videos from './standard/videos'
+import withObjectFieldsOrder from './standard/withObjectFieldsOrder'
 
 // @todo temporary, until code input is v3 compatible
 const codeInputType = {
@@ -214,6 +215,7 @@ export function createSchemaTypes(projectId: string) {
     strings,
     texts,
     urls,
+    withObjectFieldsOrder,
 
     // Test documents for debugging
     actions,

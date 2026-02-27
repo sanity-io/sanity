@@ -104,6 +104,7 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationInObject',
   'annotationCustomTypeTest',
   'arrayOfStringsGridCustomInputTest',
+  'withObjectFieldsOrder',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest', 'commentsCI']
