@@ -21,6 +21,8 @@ import {
 import {isValidElementType} from 'react-is'
 import {Flex} from 'ui5'
 
+import {isVideoAssetSource} from '../../../media-library/plugin/preview/isVideoAssetSource'
+import {VideoThumbnail} from '../../../media-library/plugin/preview/VideoThumbnail'
 import {resolveBlockImageDimensions} from '../../components/previews/helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
@@ -164,6 +166,12 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
 
     if (isImageSource(mediaProp)) {
       return renderMedia
+    }
+
+    if (isVideoAssetSource(mediaProp)) {
+      return function VideoMediaPreview({dimensions}: {dimensions: PreviewMediaDimensions}) {
+        return <VideoThumbnail value={mediaProp} dimensions={dimensions} />
+      }
     }
 
     if (isValidElementType(mediaProp)) {
