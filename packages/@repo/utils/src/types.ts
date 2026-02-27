@@ -1,4 +1,4 @@
-export interface PackageManifest {
+export interface PackageJSON {
   name: string
   private?: boolean
   version: string
@@ -9,9 +9,9 @@ export interface PackageManifest {
   keywords?: string[]
 }
 
-export interface Package {
+export interface PackageInfo {
   path: string
   dirname: string
   relativeDir: string
-  manifest: PackageManifest
+  contents: PackageJSON
 }
