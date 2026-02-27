@@ -243,4 +243,31 @@ describe('createFieldDefinitions', () => {
     const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
     expect(fieldDefs[0].title).toEqual('A title wrapped in a component')
   })
+
+  it('should sanitize title text without rendering custom React components', () => {
+    function ThrowsOnRender(props: {children: React.ReactNode}) {
+      throw new Error('should not render')
+    }
+
+    const mockSchema = Schema.compile({
+      name: 'default',
+      types: [
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              title: <ThrowsOnRender>Safe child text</ThrowsOnRender>,
+              type: 'string',
+            },
+          ],
+        },
+      ],
+    })
+
+    const fieldDefs = createFieldDefinitions(mockSchema, filterDefinitions)
+    expect(fieldDefs[0].title).toEqual('Safe child text')
+  })
 })
