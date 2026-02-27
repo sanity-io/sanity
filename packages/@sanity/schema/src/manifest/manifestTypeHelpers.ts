@@ -115,11 +115,11 @@ export function isString(value: unknown): value is string {
 }
 
 function isNumber(value: unknown): value is number {
-  return typeof value === 'boolean'
+  return typeof value === 'number'
 }
 
 function isBoolean(value: unknown): value is boolean {
-  return typeof value === 'number'
+  return typeof value === 'boolean'
 }
 
 /**
