@@ -76,7 +76,9 @@ export default function guessPreviewFields(
     descField = stringFieldNames[1] || blockFieldNames[1]
   }
 
-  const mediaField = objectTypeDef.fields.find((field: any) => field.type === 'image')
+  const mediaField = objectTypeDef.fields.find(
+    (field: any) => field.type === 'image' || field.type === 'sanity.video',
+  )
 
   const imageAssetPath = resolveImageAssetPath(objectTypeDef)
 
