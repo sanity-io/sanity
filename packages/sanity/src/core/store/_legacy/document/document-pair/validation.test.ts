@@ -37,6 +37,24 @@ const schema = createSchema({
         {name: 'exampleRefTwo', type: 'reference', to: [{type: 'movie'}]},
       ],
     },
+    {
+      name: 'adminMovie',
+      title: 'Admin Movie',
+      type: 'document',
+      fields: [
+        {name: 'title', type: 'string'},
+        {
+          name: 'adminOnlyTitle',
+          type: 'string',
+          hidden: ({currentUser}) => currentUser?.id !== 'admin-user',
+          validation: (Rule) =>
+            Rule.custom((value, context) => {
+              if (context.hidden) return true
+              return value ? true : 'Admin title is required'
+            }),
+        },
+      ],
+    },
   ],
 })
 
@@ -48,8 +66,10 @@ const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
 function createSubscription(
   client: SanityClient,
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
+  options: {typeName?: string; currentUser?: {id: string} | null; documentId?: string} = {},
 ) {
   const getClient = () => client
+  const {typeName = 'movie', currentUser, documentId = 'example-id'} = options
 
   const stream = validation(
     {
@@ -59,9 +79,10 @@ function createSubscription(
       observeDocumentPairAvailability,
       i18n: getFallbackLocaleSource(),
       serverActionsEnabled: false,
+      currentUser,
     },
-    {publishedId: 'example-id', draftId: 'drafts.example-id'},
-    'movie',
+    {publishedId: documentId, draftId: `drafts.${documentId}`},
+    typeName,
     'draft',
   ).pipe(publish())
 
@@ -530,5 +551,83 @@ describe('validation', () => {
 
     summerEditStateSubject.complete()
     winterEditStateSubject.complete()
+  })
+
+  it('resolves hidden-field validation with currentUser in context', async () => {
+    const client = getMockClient()
+    const mockEditStateSubject = new Subject<EditStateFor>()
+
+    mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
+
+    const adminSubscription = createSubscription(client, () => EMPTY, {
+      typeName: 'adminMovie',
+      currentUser: {id: 'admin-user'},
+    })
+
+    mockEditStateSubject.next({
+      id: 'example-id',
+      draft: {
+        _id: 'drafts.example-id',
+        _createdAt: '2021-09-07T16:23:52.256Z',
+        _rev: 'adminRev1',
+        _type: 'adminMovie',
+        _updatedAt: '2021-09-07T16:23:52.256Z',
+        title: 'Admin doc',
+      },
+      transactionSyncLock: null,
+      liveEdit: false,
+      published: null,
+      type: 'adminMovie',
+      ready: true,
+    })
+
+    await adminSubscription.doneValidating()
+    adminSubscription.closeSubscription()
+    const adminResults = await adminSubscription.subscription
+
+    expect(adminResults[adminResults.length - 1]).toMatchObject({
+      isValidating: false,
+      validation: [
+        {
+          item: {message: 'Admin title is required'},
+          level: 'error',
+          path: ['adminOnlyTitle'],
+        },
+      ],
+    })
+
+    const nonAdminSubscription = createSubscription(client, () => EMPTY, {
+      typeName: 'adminMovie',
+      currentUser: {id: 'non-admin-user'},
+      documentId: 'example-id-two',
+    })
+
+    mockEditStateSubject.next({
+      id: 'example-id-two',
+      draft: {
+        _id: 'drafts.example-id-two',
+        _createdAt: '2021-09-07T16:23:52.256Z',
+        _rev: 'adminRev2',
+        _type: 'adminMovie',
+        _updatedAt: '2021-09-07T16:23:52.256Z',
+        title: 'Non-admin doc',
+      },
+      transactionSyncLock: null,
+      liveEdit: false,
+      published: null,
+      type: 'adminMovie',
+      ready: true,
+    })
+
+    await nonAdminSubscription.doneValidating()
+    nonAdminSubscription.closeSubscription()
+    const nonAdminResults = await nonAdminSubscription.subscription
+
+    expect(nonAdminResults[nonAdminResults.length - 1]).toMatchObject({
+      isValidating: false,
+      validation: [],
+    })
+
+    mockEditStateSubject.complete()
   })
 })
