@@ -430,6 +430,39 @@ describe('checkoutPair -- slow commit warning', () => {
     sub.unsubscribe()
   })
 
+  test('does not call onSlowCommit when commit succeeds before threshold', async () => {
+    const onSlowCommit = vi.fn()
+    const commitSubject = new Subject()
+
+    const fastClient = {
+      ...client,
+      dataRequest: vi.fn(() => commitSubject),
+    }
+
+    const {draft, published} = checkoutPair(fastClient as any as SanityClient, idPair, of(false), {
+      onSlowCommit,
+    })
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'quick save'}}]))
+    draft.commit()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    // Commit succeeds before the 50s threshold
+    commitSubject.next({transactionId: 'tx1', results: []})
+    commitSubject.complete()
+
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(onSlowCommit).not.toHaveBeenCalled()
+
+    sub.unsubscribe()
+  })
+
   test('calls onSlowCommit again for a new slow period after the previous one resolved', async () => {
     const onSlowCommit = vi.fn()
     const listenerSubject = new Subject()

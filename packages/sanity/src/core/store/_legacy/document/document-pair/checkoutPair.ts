@@ -309,15 +309,17 @@ export function checkoutPair(
         ),
       ),
     ),
+    share(),
   )
 
   const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
+  const commitResolved$ = merge(pendingEnd$, commits$)
 
   // Each new commit request restarts the timer via switchMap.
-  // The timer is cancelled if pending mutations resolve before the threshold.
+  // The timer is cancelled when the commit succeeds or pending mutations resolve.
   const slowCommitWarning$ = onSlowCommit
     ? commitRequests$.pipe(
-        switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(pendingEnd$))),
+        switchMap(() => timer(SLOW_COMMIT_TIMEOUT_MS).pipe(takeUntil(commitResolved$))),
         tap(() => onSlowCommit()),
       )
     : EMPTY
