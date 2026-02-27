@@ -109,6 +109,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
           portal
           open={isMenuOpen}
           constrainSize
+          animate={false}
         >
           <ContextMenuButton
             aria-label={t('inputs.image.actions-menu.options.aria-label')}

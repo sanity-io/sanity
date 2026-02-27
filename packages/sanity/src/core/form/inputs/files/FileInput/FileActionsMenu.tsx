@@ -137,6 +137,7 @@ export function FileActionsMenu(props: Props) {
             portal
             open={isMenuOpen}
             constrainSize
+            animate={false}
           >
             <ContextMenuButton
               aria-label={t('inputs.file.actions-menu.file-options.aria-label')}

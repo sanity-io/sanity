@@ -137,6 +137,7 @@ export function VideoActionsMenu(props: Props) {
           portal
           open={isMenuOpen}
           constrainSize
+          animate={false}
         >
           <ContextMenuButton
             aria-label={t('inputs.file.actions-menu.video-options.aria-label')}
