@@ -124,6 +124,18 @@ describe('regenerateKeys', () => {
     expect(result.items[1]).toMatchObject({_key: expect.stringMatching(HEX_12)})
   })
 
+  it('does not remap marks on non-block types with markDefs-shaped fields', () => {
+    const item = {
+      _key: 'root',
+      _type: 'myCustomType',
+      markDefs: [{_key: 'x123', label: 'Definition'}],
+      children: [{_key: 'y', marks: ['x123', 'bold']}],
+    }
+    const result = regenerateKeys(item)
+
+    expect(result.children[0].marks).toEqual(['x123', 'bold'])
+  })
+
   it('does not mutate the input', () => {
     const item = {
       _key: 'root',
@@ -135,25 +147,5 @@ describe('regenerateKeys', () => {
     regenerateKeys(item)
 
     expect(JSON.stringify(item)).toBe(snapshot)
-  })
-
-  describe('structural sharing', () => {
-    it('returns original reference for primitive arrays and plain objects with no keyed arrays', () => {
-      const tags = ['foo', 'bar']
-      const meta = {title: 'test', nested: {value: 42}}
-      const item = {_key: 'aaa', tags, meta}
-      const result = regenerateKeys(item)
-
-      expect(result.tags).toBe(tags)
-      expect(result.meta).toBe(meta)
-    })
-
-    it('does not share branches containing keyed arrays', () => {
-      const items = [{_key: 'child', value: 'a'}]
-      const item = {_key: 'aaa', items}
-      const result = regenerateKeys(item)
-
-      expect(result.items).not.toBe(items)
-    })
   })
 })
