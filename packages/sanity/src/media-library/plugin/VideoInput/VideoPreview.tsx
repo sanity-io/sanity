@@ -1,4 +1,4 @@
-import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
 import get from 'lodash-es/get.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
@@ -9,14 +9,12 @@ import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'
 import {
   getAssetSourceDisplayName,
   getAssetSourcesWithUpload,
-  isComponentModeAssetSource,
 } from '../../../core/form/inputs/files/common/assetSourceUtils'
-import {FileInputMenuItem} from '../../../core/form/inputs/files/common/FileInputMenuItem/FileInputMenuItem'
 import {
   findOpenInSourceResult,
   getOpenInSourceName,
 } from '../../../core/form/inputs/files/common/openInSource'
-import {UploadDropDownMenu} from '../../../core/form/inputs/files/common/UploadDropDownMenu'
+import {useUploadMenuItem} from '../../../core/form/inputs/files/common/useUploadMenuItem'
 import {sourceName as MEDIA_LIBRARY_SOURCE_NAME} from '../../../core/form/studio/assetSourceMediaLibrary'
 import {DEFAULT_API_VERSION} from '../../../core/form/studio/assetSourceMediaLibrary/constants'
 import {useClient} from '../../../core/hooks'
@@ -194,6 +192,20 @@ export function VideoPreview(props: VideoAssetInputProps) {
     [assetSourcesWithUpload, handleSelectVideosFromAssetSource],
   )
 
+  const handleOpenSourceForUploadSingle = useCallback(() => {
+    setIsMenuOpen(false)
+    onOpenSourceForUpload?.(assetSourcesWithUpload[0])
+  }, [assetSourcesWithUpload, onOpenSourceForUpload])
+
+  // Wrapped for UploadDropDownMenu (multiple sources) - must close menu when selecting from submenu
+  const handleOpenSourceForUpload = useCallback(
+    (assetSource: AssetSource) => {
+      setIsMenuOpen(false)
+      onOpenSourceForUpload?.(assetSource)
+    },
+    [onOpenSourceForUpload],
+  )
+
   const browseMenuItem: ReactNode = useMemo(() => {
     // Legacy support for setting asset sources to an empty array through schema
     // Will still allow for uploading videos through the default studio asset source,
@@ -230,63 +242,19 @@ export function VideoPreview(props: VideoAssetInputProps) {
     })
   }, [assetSources, handleSelectAssetSourceForBrowse, readOnly, sourcesFromSchema?.length, t])
 
-  const uploadMenuItem: ReactNode = useMemo(() => {
-    switch (assetSourcesWithUpload.length) {
-      case 0:
-        return null
-      case 1: {
-        const singleSource = assetSourcesWithUpload[0]
-        if (isComponentModeAssetSource(singleSource)) {
-          return (
-            <MenuItem
-              icon={UploadIcon}
-              onClick={() => {
-                setIsMenuOpen(false)
-                onOpenSourceForUpload?.(singleSource)
-              }}
-              data-asset-source-name={singleSource.name}
-              text={t('inputs.files.common.actions-menu.upload.label')}
-              data-testid={`video-input-upload-button-${singleSource.name}`}
-              disabled={readOnly || directUploads === false}
-            />
-          )
-        }
-        return (
-          <FileInputMenuItem
-            icon={UploadIcon}
-            onSelect={handleSelectVideosFromAssetSourceSingle}
-            accept={accept}
-            data-asset-source-name={singleSource.name}
-            text={t('inputs.files.common.actions-menu.upload.label')}
-            data-testid={`video-input-upload-button-${singleSource.name}`}
-            disabled={readOnly || directUploads === false}
-          />
-        )
-      }
-      default:
-        return (
-          <UploadDropDownMenu
-            accept={accept}
-            assetSources={assetSourcesWithUpload}
-            directUploads={directUploads}
-            onSelectFiles={handleSelectVideosFromAssetSource}
-            onOpenSourceForUpload={onOpenSourceForUpload}
-            readOnly={readOnly}
-            data-testid="video-input-upload-drop-down-menu-button"
-            renderAsMenuGroup
-          />
-        )
-    }
-  }, [
+  const uploadMenuItem = useUploadMenuItem({
     accept,
     assetSourcesWithUpload,
     directUploads,
-    handleSelectVideosFromAssetSource,
-    handleSelectVideosFromAssetSourceSingle,
-    onOpenSourceForUpload,
     readOnly,
-    t,
-  ])
+    onSelectFiles: handleSelectVideosFromAssetSource,
+    onOpenSourceForUpload: handleOpenSourceForUpload,
+    onOpenSourceForUploadSingle: handleOpenSourceForUploadSingle,
+    onSelectFilesSingle: handleSelectVideosFromAssetSourceSingle,
+    getSingleButtonTestId: (sourceName) => `video-input-upload-button-${sourceName}`,
+    dropdownMenuTestId: 'video-input-upload-drop-down-menu-button',
+    onCloseParentMenu: () => setIsMenuOpen(false),
+  })
 
   if (!asset) {
     return null

@@ -23,19 +23,25 @@ const MENU_GROUP_POPOVER: MenuGroupProps['popover'] = {
 const ASSET_SOURCE_DATA_ATTRIBUTE = 'data-asset-source-name'
 
 interface UploadDropDownButtonComponentProps {
-  accept?: string
-  assetSources: AssetSource[]
-  capture?: 'user' | 'environment'
-  directUploads?: boolean
-  multiple?: boolean
-  onSelectFiles?: (assetSource: AssetSource, files: File[]) => void
+  'accept'?: string
+  'assetSources': AssetSource[]
+  'capture'?: 'user' | 'environment'
+  'directUploads'?: boolean
+  'multiple'?: boolean
+  'onSelectFiles'?: (assetSource: AssetSource, files: File[]) => void
   /**
    * Called when an asset source with `uploadMode: 'component'` is selected.
    * The source should be rendered directly to handle file selection and upload internally.
    */
-  onOpenSourceForUpload?: (assetSource: AssetSource) => void
-  readOnly?: boolean
-  renderAsMenuGroup?: boolean
+  'onOpenSourceForUpload'?: (assetSource: AssetSource) => void
+  /**
+   * Called when any item in the upload submenu is clicked (before the action).
+   * Use this to close the parent menu so both submenu and main menu close.
+   */
+  'onCloseParentMenu'?: () => void
+  'readOnly'?: boolean
+  'renderAsMenuGroup'?: boolean
+  'data-testid'?: string
 }
 
 function UploadDropDownMenuComponent(
@@ -50,8 +56,10 @@ function UploadDropDownMenuComponent(
     multiple,
     onSelectFiles,
     onOpenSourceForUpload,
+    onCloseParentMenu,
     readOnly,
     renderAsMenuGroup = false,
+    'data-testid': dataTestId,
   } = props
   const {t} = useTranslation()
 
@@ -73,6 +81,8 @@ function UploadDropDownMenuComponent(
       if (!assetSource) {
         return
       }
+      // Close parent menu first so both submenu and main menu close
+      onCloseParentMenu?.()
       // For component mode, open the source directly without a file picker
       if (isComponentModeAssetSource(assetSource)) {
         if (onOpenSourceForUpload) {
@@ -87,7 +97,7 @@ function UploadDropDownMenuComponent(
         element.click()
       }
     },
-    [assetSources, createAssetSourceInputId, onOpenSourceForUpload],
+    [assetSources, createAssetSourceInputId, onCloseParentMenu, onOpenSourceForUpload],
   )
 
   const renderMenuItemLabel = useCallback(
@@ -188,6 +198,7 @@ function UploadDropDownMenuComponent(
       return (
         <>
           <MenuGroup
+            data-testid={dataTestId}
             icon={UploadIcon}
             text={t('input.files.common.upload-placeholder.file-input-button.text')}
             popover={MENU_GROUP_POPOVER}
