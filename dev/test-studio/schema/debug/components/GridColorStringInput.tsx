@@ -14,6 +14,8 @@ export function GridColorStringInput(props: StringInputProps) {
         display: 'flex',
         alignItems: 'center',
         gap: '0.5rem',
+        justifyContent: 'center',
+        flexDirection: 'column',
       }}
     >
       <input
