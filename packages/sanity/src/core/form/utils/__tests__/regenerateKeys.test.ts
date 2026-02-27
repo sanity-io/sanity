@@ -124,16 +124,29 @@ describe('regenerateKeys', () => {
     expect(result.items[1]).toMatchObject({_key: expect.stringMatching(HEX_12)})
   })
 
-  it('does not remap marks on non-block types with markDefs-shaped fields', () => {
+  it('does not remap marks when children are not records', () => {
     const item = {
       _key: 'root',
       _type: 'myCustomType',
       markDefs: [{_key: 'x123', label: 'Definition'}],
-      children: [{_key: 'y', marks: ['x123', 'bold']}],
+      children: ['x123', 'bold'],
     }
     const result = regenerateKeys(item)
 
-    expect(result.children[0].marks).toEqual(['x123', 'bold'])
+    expect(result.children).toEqual(['x123', 'bold'])
+  })
+
+  it('remaps marks for named PT block types', () => {
+    const item = {
+      _key: 'block',
+      _type: 'customHoistedBlock',
+      markDefs: [{_key: 'link1', _type: 'link', href: 'https://example.com'}],
+      children: [{_key: 'span1', _type: 'span', text: 'click', marks: ['link1']}],
+    }
+    const result = regenerateKeys(item)
+    const [newLinkKey] = result.markDefs.map((def) => def._key)
+
+    expect(result.children[0].marks).toEqual([newLinkKey])
   })
 
   it('does not mutate the input', () => {
