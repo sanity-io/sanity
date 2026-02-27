@@ -27,7 +27,7 @@ const DIALOG_TITLE_KEYS: Record<AssetSourceDialogAssetType, string> = {
 const DEFAULT_ACCEPT: Record<AssetSourceDialogAssetType, string> = {
   'file': '',
   'image': 'image/*',
-  'sanity.video': '',
+  'sanity.video': 'video/*',
 }
 
 export interface AssetSourceDialogProps<

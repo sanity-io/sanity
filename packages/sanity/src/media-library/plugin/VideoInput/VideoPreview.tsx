@@ -78,7 +78,11 @@ export function VideoPreview(props: VideoAssetInputProps) {
   const asset = value?.asset
   const mediaRef = value?.media?._ref
   const sourcesFromSchema = schemaType.options?.sources
-  const accept = get(schemaType, 'options.accept', '')
+  const accept = get(
+    schemaType,
+    'options.accept',
+    schemaType.name === 'sanity.video' ? 'video/*' : '',
+  )
   const isStaging = useClient({apiVersion: DEFAULT_API_VERSION})
     .config()
     .apiHost.endsWith('.sanity.work')

@@ -82,7 +82,11 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
     [onUpload],
   )
 
-  const accept = get(schemaType, 'options.accept', '')
+  const accept = get(
+    schemaType,
+    'options.accept',
+    schemaType.name === 'sanity.video' ? 'video/*' : '',
+  )
 
   const uploadButton = useMemo(() => {
     switch (assetSourcesWithUpload.length) {
