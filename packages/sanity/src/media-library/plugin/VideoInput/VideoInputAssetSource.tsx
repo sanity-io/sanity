@@ -1,4 +1,4 @@
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {useCallback} from 'react'
 import {type Asset} from 'sanity'
 

@@ -1,7 +1,7 @@
 import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {uniqueId} from 'lodash-es'
+import uniqueId from 'lodash-es/uniqueId.js'
 import {
   type ForwardedRef,
   forwardRef,

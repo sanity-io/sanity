@@ -1,5 +1,5 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
 import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
 

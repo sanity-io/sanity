@@ -1,7 +1,8 @@
 import {join} from 'node:path'
 
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import {mean, once} from 'lodash-es'
+import mean from 'lodash-es/mean.js'
+import once from 'lodash-es/once.js'
 
 import {promiseWithResolvers} from '../../util/promiseWithResolvers'
 import {SchemaExtractedTrace, SchemaExtractionWatchModeTrace} from './extractSchema.telemetry'

@@ -1,7 +1,7 @@
 import {type CliOutputter} from '@sanity/cli'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaValidationProblemGroup} from '@sanity/types'
-import {upperFirst} from 'lodash-es'
+import upperFirst from 'lodash-es/upperFirst.js'
 import logSymbols from 'log-symbols'
 
 const consoleOutputter = {error: (...args: unknown[]) => console.error(...args)}

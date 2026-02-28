@@ -1,4 +1,4 @@
-import {range} from 'lodash-es'
+import range from 'lodash-es/range.js'
 
 export const MONTH_NAMES = [
   'January',

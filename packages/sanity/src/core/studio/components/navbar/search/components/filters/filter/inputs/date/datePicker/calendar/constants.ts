@@ -1,4 +1,4 @@
-import {range} from 'lodash-es'
+import range from 'lodash-es/range.js'
 
 import {type StudioLocaleResourceKeys} from '../../../../../../../../../../../i18n'
 

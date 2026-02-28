@@ -5,7 +5,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {noop} from 'lodash-es'
+import noop from 'lodash-es/noop.js'
 import {
   type FocusEvent,
   type ReactElement,

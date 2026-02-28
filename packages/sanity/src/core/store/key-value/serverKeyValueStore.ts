@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {concat, type Observable, Subject} from 'rxjs'
 import {distinctUntilChanged, filter, map} from 'rxjs/operators'
 

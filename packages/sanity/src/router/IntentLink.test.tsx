@@ -1,5 +1,5 @@
 import {render} from '@testing-library/react'
-import {noop} from 'lodash-es'
+import noop from 'lodash-es/noop.js'
 import {describe, expect, it, vi} from 'vitest'
 
 import {IntentLink} from './IntentLink'

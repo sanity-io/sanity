@@ -1,5 +1,5 @@
 import {type AssetSourceComponentAction, type FileAsset} from '@sanity/types'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {useCallback, useMemo} from 'react'
 
 import {useTranslation} from '../../../../i18n'

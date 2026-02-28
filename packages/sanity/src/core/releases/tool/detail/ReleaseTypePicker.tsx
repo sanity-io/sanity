@@ -3,7 +3,7 @@ import {PublishIcon} from '@sanity/icons'
 import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent, useToast} from '@sanity/ui'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {Button, Popover, Tab} from '../../../../ui-components'

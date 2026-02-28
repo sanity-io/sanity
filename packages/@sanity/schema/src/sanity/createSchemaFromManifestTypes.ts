@@ -5,7 +5,8 @@ import {
   type RuleTypeConstraint,
   type UriValidationOptions,
 } from '@sanity/types'
-import {cloneDeep, isObject} from 'lodash-es'
+import cloneDeep from 'lodash-es/cloneDeep.js'
+import isObject from 'lodash-es/isObject.js'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from './builtinTypes'

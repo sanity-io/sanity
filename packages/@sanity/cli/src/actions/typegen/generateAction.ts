@@ -10,7 +10,8 @@ import {
   TypesGeneratedTrace,
 } from '@sanity/codegen'
 import chalk from 'chalk'
-import {omit, once} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
+import once from 'lodash-es/once.js'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliConfig} from '../../util/getCliConfig'

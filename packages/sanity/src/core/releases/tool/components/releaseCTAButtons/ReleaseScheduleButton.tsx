@@ -7,7 +7,7 @@ import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {Button, Dialog, MenuItem, type TooltipProps} from '../../../../../ui-components'

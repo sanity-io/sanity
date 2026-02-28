@@ -1,4 +1,4 @@
-import {pick} from 'lodash-es'
+import pick from 'lodash-es/pick.js'
 
 import primitivePreview from '../preview/primitivePreview'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'

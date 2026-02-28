@@ -1,4 +1,4 @@
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 
 import * as types from './types'
 import {lazyGetter} from './types/utils'

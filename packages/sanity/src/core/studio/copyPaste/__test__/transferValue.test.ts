@@ -1,5 +1,5 @@
 import {type ConditionalPropertyCallbackContext, type TypedObject} from '@sanity/types'
-import {omit} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
 import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {createSchema} from '../../../schema/createSchema'

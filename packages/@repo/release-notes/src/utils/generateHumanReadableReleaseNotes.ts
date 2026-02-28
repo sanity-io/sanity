@@ -2,7 +2,8 @@ import {Anthropic} from '@anthropic-ai/sdk'
 import {toPlainText} from '@portabletext/toolkit'
 import {readEnv} from '@repo/utils'
 import {type PortableTextBlock, type SanityDocument} from '@sanity/types'
-import {groupBy, upperFirst} from 'lodash-es'
+import groupBy from 'lodash-es/groupBy.js'
+import upperFirst from 'lodash-es/upperFirst.js'
 
 import {type KnownEnvVar, type StudioChangelogEntry} from '../types'
 

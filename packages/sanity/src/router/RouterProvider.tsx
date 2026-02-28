@@ -1,4 +1,6 @@
-import {fromPairs, partition, toPairs} from 'lodash-es'
+import fromPairs from 'lodash-es/fromPairs.js'
+import partition from 'lodash-es/partition.js'
+import toPairs from 'lodash-es/toPairs.js'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 

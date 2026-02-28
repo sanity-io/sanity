@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {uniq} from 'lodash-es'
+import uniq from 'lodash-es/uniq.js'
 import {type I18nTextRecord} from 'sanity'
 
 import {type ChildResolver} from './ChildResolver'

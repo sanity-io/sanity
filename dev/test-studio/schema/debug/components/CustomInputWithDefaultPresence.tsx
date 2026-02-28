@@ -1,4 +1,4 @@
-import {range} from 'lodash-es'
+import range from 'lodash-es/range.js'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
 import {FieldPresence, type ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
 

@@ -1,5 +1,5 @@
 import {type Schema} from '@sanity/types'
-import {isObject} from 'lodash-es'
+import isObject from 'lodash-es/isObject.js'
 import {type PreviewLayoutKey} from 'sanity'
 import {type StructureBuilder} from 'sanity/structure'
 

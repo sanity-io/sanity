@@ -98,7 +98,13 @@ export default [
       ...sanityTypescript.rules,
       'no-negated-condition': 'off',
       '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
-      'import/extensions': ['error', {pattern: {cjs: 'always', json: 'always'}}],
+      'import/extensions': [
+        'error',
+        {
+          pattern: {cjs: 'always', json: 'always'},
+          pathGroupOverrides: [{pattern: 'lodash-es/*', action: 'ignore'}],
+        },
+      ],
       'import/named': 'off',
       'import/no-named-as-default': 'off',
       'import/no-named-as-default-member': 'off',

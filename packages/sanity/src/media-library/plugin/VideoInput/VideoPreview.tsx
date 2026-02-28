@@ -1,6 +1,7 @@
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource} from '@sanity/types'
-import {get, startCase} from 'lodash-es'
+import get from 'lodash-es/get.js'
+import startCase from 'lodash-es/startCase.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ActionsMenu} from '../../../core/form/inputs/files/common/ActionsMenu'

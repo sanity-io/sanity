@@ -7,7 +7,7 @@ import {
   type UploadState,
 } from '@sanity/types'
 import {Stack, useToast} from '@sanity/ui'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {
   Fragment,
   memo,

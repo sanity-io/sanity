@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {difference} from 'lodash-es'
+import difference from 'lodash-es/difference.js'
 import {
   Children,
   cloneElement,

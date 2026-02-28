@@ -13,7 +13,7 @@ import {
 import {absolutify} from '@sanity/util/fs'
 import {Mutex} from 'async-mutex'
 import createDebug from 'debug'
-import {isString} from 'lodash-es'
+import isString from 'lodash-es/isString.js'
 import prettyMs from 'pretty-ms'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'

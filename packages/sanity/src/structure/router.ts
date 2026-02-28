@@ -1,4 +1,4 @@
-import {omit} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
 import {decodeJsonParams, encodeJsonParams, route} from 'sanity/router'
 
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from './types'
