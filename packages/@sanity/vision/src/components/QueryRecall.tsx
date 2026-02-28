@@ -1,4 +1,4 @@
-import {AddIcon, SearchIcon, TrashIcon, UsersIcon} from '@sanity/icons'
+import {AddIcon, SearchIcon, TrashIcon, UnpublishIcon, UsersIcon} from '@sanity/icons'
 import {
   Badge,
   Box,
@@ -60,6 +60,7 @@ export function QueryRecall({
   const [searchQuery, setSearchQuery] = useState('')
   const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
+  const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -159,6 +160,64 @@ export function QueryRecall({
       })
     },
     [deleteQuery, saveQuery, saveQueryError, t, toast],
+  )
+
+  const handleUnshareQuery = useCallback(
+    async (query: QueryConfig) => {
+      setPendingUnshareKeys((prev) => [...prev, query._key])
+      const nextQueryObj = getStateFromUrl(query.url)
+      const duplicatePersonalQuery = queries?.find((existingQuery) => {
+        if (existingQuery._key === query._key) return false
+        if (existingQuery.shared) return false
+        const existingQueryObj = getStateFromUrl(existingQuery.url)
+        return (
+          nextQueryObj &&
+          existingQueryObj &&
+          existingQueryObj.query === nextQueryObj.query &&
+          isEqual(existingQueryObj.params, nextQueryObj.params)
+        )
+      })
+
+      if (duplicatePersonalQuery) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('save-query.already-saved'),
+          description: `${duplicatePersonalQuery.title} - ${formatDate.format(
+            new Date(duplicatePersonalQuery.savedAt || ''),
+          )}`,
+        })
+        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+        return
+      }
+
+      await saveQuery({
+        shared: false,
+        title: query.title || t('label.untitled-query'),
+        url: query.url,
+        savedAt: new Date().toISOString(),
+      })
+
+      if (saveQueryError) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: saveQueryError.message,
+        })
+        setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+        return
+      }
+
+      await deleteQuery(query._key)
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: t('save-query.unshared-success'),
+      })
+      setPendingUnshareKeys((prev) => prev.filter((key) => key !== query._key))
+    },
+    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, saveQueryError, t, toast],
   )
 
   const handleTitleSave = useCallback(
@@ -266,7 +325,9 @@ export function QueryRecall({
     ],
   )
 
-  const filteredQueries = queries?.filter((q) => {
+  const visibleQueries = queries?.filter((q) => !pendingUnshareKeys.includes(q._key))
+
+  const filteredQueries = visibleQueries?.filter((q) => {
     const matchesSearch = q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter =
       queryFilter === 'all' ||
@@ -411,66 +472,54 @@ export function QueryRecall({
                       />
                     )}
                   </Flex>
-                  {!q.shared && (
-                    <MenuButton
-                      button={<ContextMenuButton />}
-                      id={`${q._key}-menu`}
-                      menu={
-                        <Menu>
-                          <MenuItem
-                            icon={UsersIcon}
-                            padding={3}
-                            text={t('label.share')}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              void handleShareQuery(q)
-                            }}
-                          />
-                          <MenuItem
-                            tone="critical"
-                            padding={3}
-                            icon={TrashIcon}
-                            text={t('action.delete')}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              void deleteQuery(q._key)
-                            }}
-                          />
-                        </Menu>
-                      }
-                      popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
-                    />
-                  )}
-                  {q.shared && canMutateQuery && (
-                    <MenuButton
-                      button={
-                        <Button mode="bleed" padding={0}>
-                          <UserAvatar size={0} user={q.authorId || ''} withTooltip />
-                        </Button>
-                      }
-                      id={`${q._key}-menu`}
-                      menu={
-                        <Menu>
-                          <MenuItem
-                            tone="critical"
-                            padding={3}
-                            icon={TrashIcon}
-                            text={t('action.delete')}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              void deleteQuery(q._key)
-                            }}
-                          />
-                        </Menu>
-                      }
-                      popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
-                    />
-                  )}
-                  {q.shared && !canMutateQuery && (
-                    <Box padding={1}>
-                      <UserAvatar size={0} user={q.authorId || ''} withTooltip />
-                    </Box>
-                  )}
+                  <Flex align="center" gap={2}>
+                    {q.shared && <UserAvatar size={0} user={q.authorId || ''} withTooltip />}
+                    {(!q.shared || canMutateQuery) && (
+                      <MenuButton
+                        button={<ContextMenuButton />}
+                        id={`${q._key}-menu`}
+                        menu={
+                          <Menu>
+                            {!q.shared && (
+                              <MenuItem
+                                icon={UsersIcon}
+                                padding={3}
+                                text={t('label.share')}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void handleShareQuery(q)
+                                }}
+                              />
+                            )}
+                            {q.shared && canMutateQuery && (
+                              <MenuItem
+                                icon={UnpublishIcon}
+                                padding={3}
+                                text={t('action.unshare')}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void handleUnshareQuery(q)
+                                }}
+                              />
+                            )}
+                            {canMutateQuery && (
+                              <MenuItem
+                                tone="critical"
+                                padding={3}
+                                icon={TrashIcon}
+                                text={t('action.delete')}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void deleteQuery(q._key)
+                                }}
+                              />
+                            )}
+                          </Menu>
+                        }
+                        popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                      />
+                    )}
+                  </Flex>
                 </Flex>
 
                 {fullQueryPreview ? (

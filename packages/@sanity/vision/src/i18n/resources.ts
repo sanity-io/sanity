@@ -34,6 +34,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for saving a shared query */
   'action.save-shared-query': 'Save as shared',
   /** Label for updating a query */
+  'action.unshare': 'Unshare',
+  /** Label for updating a query */
   'action.update': 'Update',
 
   /** Label for actions user can take */
@@ -105,6 +107,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'save-query.shared-success': 'Shared query saved',
   /** Save success label */
   'save-query.success': 'Query saved',
+  /** Save unshared query success label */
+  'save-query.unshared-success': 'Query moved to personal',
 
   /** Label for the "API version" dropdown in settings */
   'settings.api-version-label': 'API version',
