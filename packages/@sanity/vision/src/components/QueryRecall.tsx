@@ -1,5 +1,6 @@
-import {AddIcon, SearchIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, SearchIcon, ShareIcon, TrashIcon} from '@sanity/icons'
 import {
+  Badge,
   Box,
   Button,
   Card,
@@ -9,13 +10,16 @@ import {
   MenuButton,
   MenuItem,
   Stack,
+  Tab,
+  TabList,
   Text,
   TextInput,
+  Tooltip,
   useToast,
 } from '@sanity/ui'
 import isEqual from 'lodash-es/isEqual.js'
 import {type ReactElement, useCallback, useState} from 'react'
-import {ContextMenuButton, useDateTimeFormat, useTranslation} from 'sanity'
+import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -37,6 +41,7 @@ export function QueryRecall({
   currentParams: Record<string, unknown>
   generateUrl: (query: string, params: Record<string, unknown>) => string
 }): ReactElement {
+  type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
   const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting, saveQueryError} =
     useSavedQueries()
@@ -53,6 +58,7 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
 
   const handleSave = useCallback(async () => {
@@ -61,6 +67,7 @@ export function QueryRecall({
 
     // Check for duplicates by comparing query content and params
     const isDuplicate = queries?.some((q) => {
+      if (q.shared) return false
       const savedQueryObj = getStateFromUrl(q.url)
       return (
         savedQueryObj &&
@@ -71,6 +78,7 @@ export function QueryRecall({
 
     if (isDuplicate) {
       const duplicateQuery = queries?.find((q) => {
+        if (q.shared) return false
         const savedQueryObj = getStateFromUrl(q.url)
         return (
           savedQueryObj &&
@@ -89,6 +97,7 @@ export function QueryRecall({
 
     if (newUrl) {
       await saveQuery({
+        shared: false,
         url: newUrl,
         savedAt: new Date().toISOString(),
         title: 'Untitled',
@@ -122,6 +131,35 @@ export function QueryRecall({
     formatDate,
     saveQuery,
   ])
+
+  const handleShareQuery = useCallback(
+    async (query: QueryConfig) => {
+      await saveQuery({
+        shared: true,
+        title: query.title || t('label.untitled-query'),
+        url: query.url,
+        savedAt: new Date().toISOString(),
+      })
+
+      if (saveQueryError) {
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('save-query.error'),
+          description: saveQueryError.message,
+        })
+        return
+      }
+
+      await deleteQuery(query._key)
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: t('save-query.shared-success'),
+      })
+    },
+    [deleteQuery, saveQuery, saveQueryError, t, toast],
+  )
 
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
@@ -229,7 +267,12 @@ export function QueryRecall({
   )
 
   const filteredQueries = queries?.filter((q) => {
-    return q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = q?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter =
+      queryFilter === 'all' ||
+      (queryFilter === 'personal' && !q.shared) ||
+      (queryFilter === 'shared' && q.shared)
+    return matchesSearch && matchesFilter
   })
 
   return (
@@ -243,7 +286,7 @@ export function QueryRecall({
             label={t('action.save-query')}
             icon={AddIcon}
             disabled={saving}
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             mode="bleed"
           />
         </Flex>
@@ -255,17 +298,42 @@ export function QueryRecall({
             onChange={(event) => setSearchQuery(event.currentTarget.value)}
           />
         </Box>
+        <Box paddingX={3} paddingBottom={2}>
+          <TabList space={1}>
+            <Tab
+              id="query-filter-all"
+              label={t('label.all')}
+              selected={queryFilter === 'all'}
+              onClick={() => setQueryFilter('all')}
+            />
+            <Tab
+              id="query-filter-personal"
+              label={t('label.personal')}
+              selected={queryFilter === 'personal'}
+              onClick={() => setQueryFilter('personal')}
+            />
+            <Tab
+              id="query-filter-shared"
+              label={t('label.shared')}
+              selected={queryFilter === 'shared'}
+              onClick={() => setQueryFilter('shared')}
+            />
+          </TabList>
+        </Box>
       </FixedHeader>
       <Stack paddingY={3}>
         {filteredQueries?.map((q) => {
           const queryObj = getStateFromUrl(q.url)
+          const fullQueryPreview = queryObj?.query || ''
+          const shortQueryPreview = fullQueryPreview.split('{')[0]
           const isSelected = selectedUrl === q.url
+          const canMutateQuery = !q.shared || q.isOwnedByCurrentUser
 
           // Compare against current live state
           const areQueriesEqual =
             queryObj && currentQuery === queryObj.query && isEqual(currentParams, queryObj.params)
 
-          const isEdited = isSelected && !areQueriesEqual
+          const isEdited = isSelected && !areQueriesEqual && canMutateQuery
           return (
             <Card
               key={q._key}
@@ -305,16 +373,24 @@ export function QueryRecall({
                         weight="bold"
                         size={3}
                         textOverflow="ellipsis"
-                        style={{maxWidth: '170px', cursor: 'pointer', padding: '4px 0'}}
+                        style={{
+                          maxWidth: '170px',
+                          cursor: canMutateQuery ? 'pointer' : 'default',
+                          padding: '4px 0',
+                        }}
                         title={
                           optimisticTitles[q._key] ||
                           q.title ||
                           q._key.slice(q._key.length - 5, q._key.length)
                         }
-                        onClick={() => {
-                          setEditingKey(q._key)
-                          setEditingTitle(q.title || q._key.slice(0, 5))
-                        }}
+                        onClick={
+                          canMutateQuery
+                            ? () => {
+                                setEditingKey(q._key)
+                                setEditingTitle(q.title || q._key.slice(0, 5))
+                              }
+                            : undefined
+                        }
                       >
                         {optimisticTitles[q._key] ||
                           q.title ||
@@ -332,36 +408,106 @@ export function QueryRecall({
                       />
                     )}
                   </Flex>
-                  <MenuButton
-                    button={<ContextMenuButton />}
-                    id={`${q._key}-menu`}
-                    menu={
-                      <Menu
-                      // style={{background: 'white', backgroundColor: 'white', borderRadius: '11%'}}
-                      >
-                        <MenuItem
-                          tone="critical"
-                          padding={3}
-                          icon={TrashIcon}
-                          text={t('action.delete')}
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            void deleteQuery(q._key)
-                          }}
-                        />
-                      </Menu>
-                    }
-                    popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
-                  />
+                  {!q.shared && (
+                    <MenuButton
+                      button={<ContextMenuButton />}
+                      id={`${q._key}-menu`}
+                      menu={
+                        <Menu>
+                          <MenuItem
+                            icon={ShareIcon}
+                            padding={3}
+                            text={t('label.share')}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              void handleShareQuery(q)
+                            }}
+                          />
+                          <MenuItem
+                            tone="critical"
+                            padding={3}
+                            icon={TrashIcon}
+                            text={t('action.delete')}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              void deleteQuery(q._key)
+                            }}
+                          />
+                        </Menu>
+                      }
+                      popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                    />
+                  )}
+                  {q.shared && canMutateQuery && (
+                    <MenuButton
+                      button={
+                        <Button mode="bleed" padding={0}>
+                          <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                        </Button>
+                      }
+                      id={`${q._key}-menu`}
+                      menu={
+                        <Menu>
+                          <MenuItem
+                            tone="critical"
+                            padding={3}
+                            icon={TrashIcon}
+                            text={t('action.delete')}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              void deleteQuery(q._key)
+                            }}
+                          />
+                        </Menu>
+                      }
+                      popover={{portal: true, placement: 'bottom-end', tone: 'default'}}
+                    />
+                  )}
+                  {q.shared && !canMutateQuery && (
+                    <Box padding={1}>
+                      <UserAvatar size={0} user={q.authorId || ''} withTooltip />
+                    </Box>
+                  )}
                 </Flex>
 
-                <Code muted>{queryObj?.query.split('{')[0]}</Code>
+                {fullQueryPreview ? (
+                  <Tooltip
+                    content={
+                      <Box
+                        padding={2}
+                        style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
+                      >
+                        <Code size={1}>{fullQueryPreview}</Code>
+                      </Box>
+                    }
+                    placement="top"
+                    portal
+                  >
+                    <Code muted>{shortQueryPreview}</Code>
+                  </Tooltip>
+                ) : (
+                  <Code muted />
+                )}
 
                 <Flex align="center" gap={1}>
                   <Text size={1} muted>
                     {formatDate.format(new Date(q.savedAt || ''))}
                   </Text>
                 </Flex>
+
+                {q.shared && (
+                  <Box
+                    style={{
+                      position: 'absolute',
+                      right: '16px',
+                      bottom: isEdited ? '44px' : '16px',
+                    }}
+                  >
+                    <Badge mode="outline" tone="primary">
+                      {t('label.shared')}
+                    </Badge>
+                  </Box>
+                )}
 
                 {isEdited && (
                   <Button
