@@ -1,4 +1,4 @@
-import {AddIcon, SearchIcon, ShareIcon, TrashIcon} from '@sanity/icons'
+import {AddIcon, SearchIcon, TrashIcon, UsersIcon} from '@sanity/icons'
 import {
   Badge,
   Box,
@@ -302,18 +302,21 @@ export function QueryRecall({
           <TabList space={1}>
             <Tab
               id="query-filter-all"
+              aria-controls="vision-query-recall-list"
               label={t('label.all')}
               selected={queryFilter === 'all'}
               onClick={() => setQueryFilter('all')}
             />
             <Tab
               id="query-filter-personal"
+              aria-controls="vision-query-recall-list"
               label={t('label.personal')}
               selected={queryFilter === 'personal'}
               onClick={() => setQueryFilter('personal')}
             />
             <Tab
               id="query-filter-shared"
+              aria-controls="vision-query-recall-list"
               label={t('label.shared')}
               selected={queryFilter === 'shared'}
               onClick={() => setQueryFilter('shared')}
@@ -321,7 +324,7 @@ export function QueryRecall({
           </TabList>
         </Box>
       </FixedHeader>
-      <Stack paddingY={3}>
+      <Stack id="vision-query-recall-list" paddingY={3}>
         {filteredQueries?.map((q) => {
           const queryObj = getStateFromUrl(q.url)
           const fullQueryPreview = queryObj?.query || ''
@@ -415,7 +418,7 @@ export function QueryRecall({
                       menu={
                         <Menu>
                           <MenuItem
-                            icon={ShareIcon}
+                            icon={UsersIcon}
                             padding={3}
                             text={t('label.share')}
                             onClick={(event) => {
