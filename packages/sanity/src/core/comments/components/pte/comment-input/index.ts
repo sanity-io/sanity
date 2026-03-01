@@ -1,2 +1,2 @@
-export * from './CommentInput'
+export * from './CommentInputLazy'
 export * from './CommentInputProvider'
