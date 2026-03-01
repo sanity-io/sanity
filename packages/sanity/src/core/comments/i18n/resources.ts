@@ -30,6 +30,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'compose.send-comment-aria-label': 'Send comment',
   /** When composing a comment, the tooltip text for the button to send a comment */
   'compose.send-comment-tooltip': 'Send comment',
+  /** Loading message shown while the comment input is loading */
+  'compose.loading': 'Loading…',
 
   /** The inspector text when error copying link */
   'copy-link-error-message': 'Unable to copy link to clipboard',

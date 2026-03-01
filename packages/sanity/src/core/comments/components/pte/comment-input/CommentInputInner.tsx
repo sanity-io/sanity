@@ -1,10 +1,7 @@
 import {type RenderBlockFunction} from '@portabletext/editor'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
-// eslint-disable-next-line camelcase
-import {getTheme_v2} from '@sanity/ui/theme'
+import {type AvatarSize, Flex, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -12,93 +9,9 @@ import {useUser} from '../../../../store'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../../avatars'
 import {MentionIcon, SendIcon} from '../../icons'
+import {AvatarContainer, ButtonDivider, EditableWrap, RootCard} from './CommentInputStyles'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
-
-const EditableWrap = styled(Box)`
-  max-height: 20vh;
-  overflow-y: auto;
-`
-
-const ButtonDivider = styled(MenuDivider)({
-  height: 20,
-  width: 1,
-})
-
-function focusRingBorderStyle(border: {color: string; width: number}): string {
-  return `inset 0 0 0 ${border.width}px ${border.color}`
-}
-
-const RootCard = styled(Card)(({theme}) => {
-  const {color, input, radius} = getTheme_v2(theme)
-  const radii = radius[2]
-
-  return css`
-    border-radius: ${radii}px;
-    box-shadow: var(--input-box-shadow);
-
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
-
-    &:not([data-expand-on-focus='false'], :focus-within) {
-      background: transparent;
-      box-shadow: unset;
-    }
-
-    &[data-focused='true']:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
-    }
-
-    &:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='false'] {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='true'] {
-      [data-ui='CommentInputActions']:not([hidden]) {
-        display: none;
-      }
-
-      &:focus-within {
-        [data-ui='CommentInputActions'] {
-          display: flex;
-        }
-      }
-    }
-    &:hover {
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: color.input.default.hovered.border,
-        width: input.border.width,
-      })};
-    }
-  `
-})
-
-const AvatarContainer = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return `
-    min-height: ${theme.avatar.sizes[1]?.size}px;
-    display: flex;
-    align-items: center;
-  `
-})
 
 interface CommentInputInnerProps {
   avatarSize?: AvatarSize
