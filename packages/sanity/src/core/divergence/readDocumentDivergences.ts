@@ -1,6 +1,6 @@
 import {isKeyedObject, type KeyedObject, type Path, type SanityDocument} from '@sanity/types'
 import {fromString, startsWith, toString} from '@sanity/util/paths'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {
   combineLatest,
   EMPTY,

@@ -1,4 +1,4 @@
-import {memoize} from 'lodash-es'
+import memoize from 'lodash-es/memoize.js'
 import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PackageVersionInfoContext} from 'sanity/_singletons'
 import semver from 'semver'

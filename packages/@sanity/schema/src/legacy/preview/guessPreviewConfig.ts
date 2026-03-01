@@ -1,5 +1,6 @@
 import arrify from 'arrify'
-import {isUndefined, omitBy} from 'lodash-es'
+import isUndefined from 'lodash-es/isUndefined.js'
+import omitBy from 'lodash-es/omitBy.js'
 
 import {createFallbackPrepare} from './fallbackPrepare'
 import {isBlockField} from './portableText'

@@ -1,4 +1,4 @@
-import {upperFirst} from 'lodash-es'
+import upperFirst from 'lodash-es/upperFirst.js'
 
 import {isDocumentType} from '../helpers'
 import {

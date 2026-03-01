@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {omit} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
 import {asyncScheduler, combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, throttleTime} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'

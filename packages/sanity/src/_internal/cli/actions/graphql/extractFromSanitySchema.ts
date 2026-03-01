@@ -12,7 +12,8 @@ import {
   type Schema as CompiledSchema,
   type SchemaType,
 } from '@sanity/types'
-import {startCase, uniqBy} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
+import uniqBy from 'lodash-es/uniqBy.js'
 import oneline from 'oneline'
 
 import * as helpUrls from './helpUrls'

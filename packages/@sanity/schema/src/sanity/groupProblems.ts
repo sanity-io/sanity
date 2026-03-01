@@ -3,7 +3,8 @@ import {
   type SchemaTypeDefinition,
   type SchemaValidationProblemGroup,
 } from '@sanity/types'
-import {flatten, get} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import get from 'lodash-es/get.js'
 
 import {type ProblemPath, type ProblemPathPropertySegment, type TypeWithProblems} from './typedefs'
 import {error} from './validation/createValidationResult'

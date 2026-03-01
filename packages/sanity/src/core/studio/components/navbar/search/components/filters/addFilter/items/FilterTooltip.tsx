@@ -1,5 +1,6 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {startCase, uniq} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
+import uniq from 'lodash-es/uniq.js'
 
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'

@@ -1,5 +1,5 @@
 import {arrayToJSONMatchPath} from '@sanity/mutator'
-import {flatten} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
 
 import {SANITY_PATCH_TYPE} from '../patch'
 import {type FormPatch, type FormPatchOrigin} from '../patch/types'

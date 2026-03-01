@@ -1,4 +1,5 @@
-import {escapeRegExp, isEqual} from 'lodash-es'
+import escapeRegExp from 'lodash-es/escapeRegExp.js'
+import isEqual from 'lodash-es/isEqual.js'
 import {
   type ComponentType,
   type MutableRefObject,

@@ -1,4 +1,4 @@
-import {partition} from 'lodash-es'
+import partition from 'lodash-es/partition.js'
 import {concat, type Observable, of, switchMap, throwError, timer} from 'rxjs'
 import {mergeMap, scan} from 'rxjs/operators'
 

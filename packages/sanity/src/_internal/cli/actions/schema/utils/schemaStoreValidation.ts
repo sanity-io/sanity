@@ -1,4 +1,4 @@
-import {uniqBy} from 'lodash-es'
+import uniqBy from 'lodash-es/uniqBy.js'
 
 import {isDefined} from '../../../../manifest/manifestTypeHelpers'
 import {SANITY_WORKSPACE_SCHEMA_ID_PREFIX} from '../../../../manifest/manifestTypes'

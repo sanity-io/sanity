@@ -1,6 +1,6 @@
 import {lcs_dp as lcsDp} from '@algorithm.ts/lcs'
 import {type KeyedObject} from '@sanity/types'
-import {intersection} from 'lodash-es'
+import intersection from 'lodash-es/intersection.js'
 import {EMPTY, filter, from, map, type Observable, of, shareReplay, switchMap, toArray} from 'rxjs'
 
 import {

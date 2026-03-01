@@ -4,7 +4,7 @@ import {isPortableTextBlock} from '@portabletext/toolkit'
 import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 import {arrayToJSONMatchPath, extractWithPath} from '@sanity/mutator'
 import {type PortableTextBlock} from '@sanity/types'
-import {set} from 'lodash-es'
+import set from 'lodash-es/set.js'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
 import {type TargetPerspective} from '../../../../perspective/types'

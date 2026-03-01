@@ -1,4 +1,4 @@
-import {escapeRegExp} from 'lodash-es'
+import escapeRegExp from 'lodash-es/escapeRegExp.js'
 
 type ImportMap = {imports?: Record<string, string>}
 

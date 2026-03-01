@@ -1,5 +1,5 @@
 import * as PathUtils from '@sanity/util/paths'
-import {orderBy} from 'lodash-es'
+import orderBy from 'lodash-es/orderBy.js'
 import {memo, useCallback, useEffect, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 

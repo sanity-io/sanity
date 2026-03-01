@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback} from 'react'
 
 import {CommandList} from '../../../../../components/commandList/CommandList'

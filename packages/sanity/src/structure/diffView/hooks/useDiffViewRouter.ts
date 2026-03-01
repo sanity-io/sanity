@@ -1,4 +1,5 @@
-import {fromPairs, toPairs} from 'lodash-es'
+import fromPairs from 'lodash-es/fromPairs.js'
+import toPairs from 'lodash-es/toPairs.js'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 

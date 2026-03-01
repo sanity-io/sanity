@@ -1,4 +1,4 @@
-import {compact} from 'lodash-es'
+import compact from 'lodash-es/compact.js'
 
 import {type Expression} from './Expression'
 import {Matcher} from './Matcher'

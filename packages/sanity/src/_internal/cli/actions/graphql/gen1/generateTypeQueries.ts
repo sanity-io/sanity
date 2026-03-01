@@ -1,4 +1,5 @@
-import {startCase, upperFirst} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
+import upperFirst from 'lodash-es/upperFirst.js'
 import pluralize from 'pluralize-esm'
 
 import {isNonUnion} from '../helpers'

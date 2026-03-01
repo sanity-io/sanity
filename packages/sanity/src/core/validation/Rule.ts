@@ -7,7 +7,7 @@ import {
   type ValidationMarker,
   type Validator,
 } from '@sanity/types'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'

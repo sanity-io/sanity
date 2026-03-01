@@ -1,5 +1,5 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
-import {isPlainObject} from 'lodash-es'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'

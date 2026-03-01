@@ -1,4 +1,4 @@
-import {capitalize} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
 import {memo, useCallback, useMemo} from 'react'
 
 import {FormFieldSet} from '../../components/formField'

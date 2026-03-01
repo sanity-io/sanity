@@ -1,7 +1,7 @@
 import {Box, Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
-import {get} from 'lodash-es'
+import get from 'lodash-es/get.js'
 import {
   type CSSProperties,
   Fragment,

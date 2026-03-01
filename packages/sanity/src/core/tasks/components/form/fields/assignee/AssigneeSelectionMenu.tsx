@@ -11,7 +11,7 @@ import {
   TextInput,
   VirtualList,
 } from '@sanity/ui'
-import {deburr} from 'lodash-es'
+import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 

@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import QuickLRU from 'quick-lru'
 import {
   debounceTime,

@@ -13,7 +13,7 @@ import {
   TextInput,
   useToast,
 } from '@sanity/ui'
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, useDateTimeFormat, useTranslation} from 'sanity'
 

@@ -1,4 +1,4 @@
-import {kebabCase} from 'lodash-es'
+import kebabCase from 'lodash-es/kebabCase.js'
 
 import {HELP_URL, SerializeError} from '../SerializeError'
 import {type Serializable, type SerializeOptions, type SerializePath} from '../StructureNodes'

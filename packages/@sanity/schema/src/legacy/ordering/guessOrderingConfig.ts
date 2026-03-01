@@ -1,5 +1,6 @@
 import {type SortOrdering} from '@sanity/types'
-import {capitalize, startCase} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
+import startCase from 'lodash-es/startCase.js'
 
 const CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption', 'description']
 
