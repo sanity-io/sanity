@@ -16,6 +16,7 @@ import {
   NestedDialogClosed,
   NestedDialogOpened,
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
+import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
 
 /**
@@ -80,6 +81,8 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
   const telemetry = useTelemetry()
+  const {__internal} = useFormBuilder()
+  const isInspectOpen = Boolean(__internal.inspectOpen)
   const {absolutePath, path} = (children as React.ReactElement)?.props as {
     absolutePath?: Path
     path?: Path
@@ -163,9 +166,11 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   )
 
   const handleCompleteDialogClose = useCallback(() => {
+    if (isInspectOpen) return
+
     telemetry.log(NestedDialogClosed)
     close()
-  }, [close, telemetry])
+  }, [close, isInspectOpen, telemetry])
 
   useGlobalKeyDown(handleGlobalKeyDown)
 

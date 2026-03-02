@@ -61,6 +61,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
     openPath,
+    inspectOpen,
     compareValue,
     hasUpstreamVersion,
   } = useDocumentPane()
@@ -196,6 +197,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
               <FormHeader documentId={documentId} schemaType={formState.schemaType} title={title} />
               <FormBuilder
                 __internal_fieldActions={fieldActions}
+                __internal_inspectOpen={inspectOpen}
                 __internal_patchChannel={patchChannel}
                 changed={formState.changed}
                 collapsedFieldSets={collapsedFieldSets}
