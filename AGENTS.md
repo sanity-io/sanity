@@ -31,25 +31,24 @@ pnpm test
 # Update snapshots if tests fail due to expected changes
 pnpm test -- -u
 
-# Type check
-pnpm check:types
+# Type check (now handled by oxlint)
+pnpm check:oxlint
 ```
 
 ## CI Checks - What Must Pass
 
 These checks run on every PR and **must pass**:
 
-| Check            | Command              | Notes                                                    |
-| ---------------- | -------------------- | -------------------------------------------------------- |
-| **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`          |
-| **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter. Fix with `pnpm chore:oxlint:fix` |
-| **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`             |
-| **Type Check**   | `pnpm check:types`   | TypeScript via tsgo + turbo                              |
-| **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                    |
-| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                    |
-| **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                 |
-| **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                |
-| **PR Title**     | Conventional commits | e.g., `feat(scope): description`                         |
+| Check            | Command              | Notes                                                                   |
+| ---------------- | -------------------- | ----------------------------------------------------------------------- |
+| **Format**       | `pnpm check:format`  | Uses Prettier. Fix with `pnpm chore:format:fix`                         |
+| **Oxlint**       | `pnpm check:oxlint`  | Fast Rust-based linter + type checker. Fix with `pnpm chore:oxlint:fix` |
+| **ESLint**       | `pnpm lint`          | Full linting. Fix with `pnpm chore:lint:fix`                            |
+| **Unit Tests**   | `pnpm test`          | Vitest, sharded in CI                                                   |
+| **CLI Tests**    | Runs via `pnpm test` | Tests for @sanity/cli                                                   |
+| **Export Tests** | `pnpm test:exports`  | Ensures ESM/CJS/DTS work                                                |
+| **Dep Check**    | `pnpm depcheck`      | Finds unused/missing deps                                               |
+| **PR Title**     | Conventional commits | e.g., `feat(scope): description`                                        |
 
 ### Before Committing
 
@@ -200,8 +199,7 @@ pnpm test:e2e --ui          # Interactive mode
 
 - Building packages (`pnpm build`)
 - Running unit tests (`pnpm test`)
-- Linting and formatting (`pnpm lint`, `pnpm lint:fix`)
-- Type checking (`pnpm check:types`)
+- Linting, formatting, and type checking (`pnpm lint`, `pnpm lint:fix`, `pnpm check:oxlint`)
 
 **Recommendation:** For most code changes, use `pnpm build && pnpm test` to verify correctness. This covers the vast majority of development tasks without any auth setup. Only use the dev studio when visual verification is specifically needed.
 

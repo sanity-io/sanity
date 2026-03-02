@@ -181,6 +181,7 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
  * @returns The Journey schema as a module export
  */
 async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
+  // @ts-expect-error -- DocumentOrObject is compatible with SchemaObject at runtime
   const serialised = wrapSchemaTypeInHelpers(schemaType)
   const imports = getImports(serialised)
   const prettifiedSchemaType = await format(serialised, {

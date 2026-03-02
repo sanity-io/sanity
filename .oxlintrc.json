@@ -46,7 +46,14 @@
     "**/*.test.tsx",
     "**/*.test.js",
     "**/*.test.jsx",
-    "**/__tests__/**"
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**",
+    "**/__test__/**",
+    "**/__mocks__/**",
+    "**/__fixtures__/**",
+    "**/playwright-ct/**",
+    "**/test/**"
   ],
   "categories": {
     "correctness": "error",
