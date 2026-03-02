@@ -1,6 +1,5 @@
 import {ThemeProvider} from '@sanity/ui'
 import {type RootTheme} from '@sanity/ui/theme'
-import DOMPurify from 'isomorphic-dompurify'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 import {isValidElementType} from 'react-is'
@@ -312,7 +311,7 @@ function normalizeIcon(
  * Uses ServerStyleSheet to capture styled-components styles without
  * interfering with the main application's style sheet.
  */
-export const resolveIcon = (props: IconProps): string | undefined => {
+export const resolveIcon = async (props: IconProps): Promise<string | undefined> => {
   try {
     // Create the icon element wrapped with theme provider
     const iconElement = normalizeIcon(props.icon, props.title, props.subtitle)
@@ -324,6 +323,7 @@ export const resolveIcon = (props: IconProps): string | undefined => {
     // Combine styles and element
     const html = elementHtml.trim()
 
+    const {default: DOMPurify} = await import('isomorphic-dompurify')
     return DOMPurify.sanitize(html, purifyConfig)
   } catch {
     return undefined
