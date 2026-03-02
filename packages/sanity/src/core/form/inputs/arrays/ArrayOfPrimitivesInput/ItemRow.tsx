@@ -11,6 +11,7 @@ import {FormFieldValidationStatus} from '../../../components/formField'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {InsertMenuGroup} from '../ArrayOfObjectsInput/InsertMenuGroups'
 import {useArrayValidation} from '../common/ArrayValidationContext'
+import {CellLayout} from '../layouts/CellLayout'
 import {RowLayout} from '../layouts/RowLayout'
 import {getEmptyValue} from './getEmptyValue'
 
@@ -158,6 +159,32 @@ export const ItemRow = forwardRef(function ItemRow(
       ),
     [inputId, menuItems, readOnly],
   )
+
+  const isGrid = parentSchemaType.options?.layout === 'grid'
+
+  if (isGrid) {
+    return (
+      <CellLayout
+        tone={tone}
+        readOnly={!!readOnly}
+        menu={menu}
+        dragHandle={sortable}
+        presence={
+          presence.length === 0 ? null : <FieldPresence presence={presence} maxAvatars={1} />
+        }
+        validation={
+          validation.length > 0 ? (
+            <Box paddingX={1} paddingY={3}>
+              <FormFieldValidationStatus validation={validation} />
+            </Box>
+          ) : null
+        }
+      >
+        <Box padding={2}>{children}</Box>
+      </CellLayout>
+    )
+  }
+
   return (
     <RowLayout
       tone={tone}

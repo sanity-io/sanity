@@ -103,6 +103,7 @@ export const DEBUG_INPUT_TYPES = [
   'virtualizationDebug',
   'virtualizationInObject',
   'annotationCustomTypeTest',
+  'arrayOfStringsGridCustomInputTest',
 ]
 
 export const CI_INPUT_TYPES = ['conditionalFieldset', 'validationCI', 'textsTest', 'commentsCI']

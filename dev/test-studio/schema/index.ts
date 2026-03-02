@@ -13,6 +13,7 @@ import {
   tooltipAnnotationType,
 } from './debug/annotationCustomTypeTest'
 import {arrayCapabilities} from './debug/arrayCapabilities'
+import {arrayOfStringsGridCustomInput} from './debug/arrayOfStringsGridCustomInput'
 import button from './debug/button'
 import {circularCrossDatasetReferenceTest} from './debug/circularCrossDatasetReference'
 import {collapsibleObjects} from './debug/collapsibleObjects'
@@ -219,6 +220,7 @@ export function createSchemaTypes(projectId: string) {
     annotationCustomTypeTest,
     ctaType,
     tooltipAnnotationType,
+    arrayOfStringsGridCustomInput,
     button,
     collapsibleObjects,
     domAttrsAsFieldNames,
