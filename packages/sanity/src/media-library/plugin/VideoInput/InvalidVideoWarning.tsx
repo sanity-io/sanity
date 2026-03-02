@@ -3,13 +3,14 @@ import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useTranslation} from '../../../core/i18n'
 import {Button} from '../../../ui-components/button'
+import {mediaLibraryLocaleNamespace} from '../i18n'
 
 type Props = {
   onClearValue?: () => void
 }
 
 export function InvalidVideoWarning({onClearValue}: Props) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(mediaLibraryLocaleNamespace)
   return (
     <Card tone="caution" padding={4} border radius={2}>
       <Flex gap={4} marginBottom={4}>
@@ -20,16 +21,16 @@ export function InvalidVideoWarning({onClearValue}: Props) {
         </Box>
         <Stack space={3}>
           <Text size={1} weight="medium">
-            {t('inputs.video.invalid-video-warning.title')}
+            {t('invalid-video-warning.title')}
           </Text>
-          <Text size={1}>{t('inputs.video.invalid-video-warning.description')}</Text>
+          <Text size={1}>{t('invalid-video-warning.description')}</Text>
         </Stack>
       </Flex>
       <Button
         icon={ResetIcon}
         mode="ghost"
         onClick={onClearValue}
-        text={t('inputs.video.invalid-video-warning.reset-button.text')}
+        text={t('invalid-video-warning.reset-button.text')}
         width="fill"
       />
     </Card>

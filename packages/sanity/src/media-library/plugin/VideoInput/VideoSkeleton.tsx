@@ -4,6 +4,7 @@ import {type CSSProperties} from 'react'
 
 import {useTranslation} from '../../../core/i18n'
 import {Button} from '../../../ui-components/button'
+import {mediaLibraryLocaleNamespace} from '../i18n'
 import {RatioBox} from './styles'
 
 interface VideoSkeletonProps {
@@ -13,7 +14,7 @@ interface VideoSkeletonProps {
 }
 
 export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(mediaLibraryLocaleNamespace)
   const ratio = aspectRatio ?? 16 / 9
 
   return (
@@ -32,13 +33,13 @@ export function VideoSkeleton({error, retry, aspectRatio}: VideoSkeletonProps) {
           padding={4}
         >
           <Text size={1} muted>
-            {error.message || t('inputs.file.video-error.description')}
+            {error.message || t('video-error.description')}
           </Text>
           {retry && (
             <Button
               icon={ResetIcon}
               mode="ghost"
-              text={t('inputs.file.video-error.retry-button.text')}
+              text={t('video-error.retry-button.text')}
               onClick={retry}
             />
           )}
