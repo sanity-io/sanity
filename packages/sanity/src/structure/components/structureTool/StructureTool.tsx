@@ -1,7 +1,7 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useRef, useState} from 'react'
-import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
+import {_isCustomDocumentTypeDefinition, prefetchPortableTextInput, useSchema} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -63,6 +63,10 @@ export const StructureTool = memo(function StructureTool({onPaneChange}: Structu
       : paneDataItems
           .slice(maximizedLastIndex)
           .filter((pane) => pane.groupIndex <= paneDataItems[maximizedLastIndex].groupIndex)
+
+  useEffect(() => {
+    prefetchPortableTextInput()
+  }, [])
 
   useEffect(() => {
     // we check for length before emitting here to skip the initial empty array
