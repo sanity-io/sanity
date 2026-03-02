@@ -83,6 +83,10 @@
           {
             "name": "date-fns",
             "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
+          },
+          {
+            "name": "lodash-es",
+            "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
           }
         ],
         "patterns": [
@@ -92,7 +96,7 @@
           },
           {
             "group": ["lodash.*", "lodash/*", "lodash"],
-            "message": "Please use the default import from 'lodash-es' instead."
+            "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
           }
         ]
       }

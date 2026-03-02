@@ -1,7 +1,7 @@
 import {ResetIcon} from '@sanity/icons'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
-import {capitalize} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
   type FocusEvent,

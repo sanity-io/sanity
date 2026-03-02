@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
-import {startCase} from 'lodash-es'
+import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
 import {styled} from 'styled-components'
 

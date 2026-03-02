@@ -1,6 +1,6 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaType} from '@sanity/types'
-import {difference} from 'lodash-es'
+import difference from 'lodash-es/difference.js'
 
 const ACTIONS_FLAG = '__experimental_actions'
 

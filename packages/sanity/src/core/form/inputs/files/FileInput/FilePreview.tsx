@@ -1,7 +1,8 @@
 import {isFileSource} from '@sanity/asset-utils'
 import {ImageIcon, SearchIcon, UploadIcon} from '@sanity/icons'
 import {type AssetSource, type FileAsset} from '@sanity/types'
-import {get, startCase} from 'lodash-es'
+import get from 'lodash-es/get.js'
+import startCase from 'lodash-es/startCase.js'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'

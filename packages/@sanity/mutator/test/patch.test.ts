@@ -1,4 +1,4 @@
-import {cloneDeep} from 'lodash-es'
+import cloneDeep from 'lodash-es/cloneDeep.js'
 import {expect, test} from 'vitest'
 
 import {type Doc} from '../src/document/types'

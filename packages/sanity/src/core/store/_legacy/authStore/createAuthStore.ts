@@ -3,7 +3,8 @@ import {
   createClient as createSanityClient,
   type SanityClient,
 } from '@sanity/client'
-import {isEqual, memoize} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
+import memoize from 'lodash-es/memoize.js'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 

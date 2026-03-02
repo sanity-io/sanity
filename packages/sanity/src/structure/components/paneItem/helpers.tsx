@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
-import {assignWith} from 'lodash-es'
+import assignWith from 'lodash-es/assignWith.js'
 import {type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'

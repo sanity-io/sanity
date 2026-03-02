@@ -1,4 +1,4 @@
-import {padEnd} from 'lodash-es'
+import padEnd from 'lodash-es/padEnd.js'
 
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
 import {getNoSuchCommandText} from './noSuchCommandText'

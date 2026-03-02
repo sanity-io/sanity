@@ -1,7 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
-import {memoize, noop} from 'lodash-es'
+import memoize from 'lodash-es/memoize.js'
+import noop from 'lodash-es/noop.js'
 import {type ReactNode, Suspense, use, useState} from 'react'
 import {
   ChangeConnectorRoot,

@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map} from 'rxjs'
 

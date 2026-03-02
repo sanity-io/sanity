@@ -14,6 +14,7 @@ export interface BlueprintsDestroyFlags {
   'stackId'?: string
   'stack'?: string
   'no-wait'?: boolean
+  'verbose'?: boolean
 }
 
 const defaultFlags: BlueprintsDestroyFlags = {
@@ -41,7 +42,7 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
 
     const cmdConfig = await initBlueprintConfig({
       bin: 'sanity',
-      log: logger.Logger(output.print),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       token,
     })
 
@@ -54,6 +55,7 @@ const destroyBlueprintsCommand: CliCommandDefinition<BlueprintsDestroyFlags> = {
         'force': flags.force ?? flags.f,
         'project-id': flags['project-id'] ?? flags.projectId ?? flags.project,
         'stack': flags['stack-id'] ?? flags.stackId ?? flags.stack,
+        'verbose': flags.verbose,
       },
     })
 

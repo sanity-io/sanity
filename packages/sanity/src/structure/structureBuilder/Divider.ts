@@ -1,4 +1,4 @@
-import {uniqueId} from 'lodash-es'
+import uniqueId from 'lodash-es/uniqueId.js'
 import {type I18nTextRecord} from 'sanity'
 
 import {type Divider, type Serializable} from './StructureNodes'

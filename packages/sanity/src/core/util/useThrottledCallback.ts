@@ -1,4 +1,4 @@
-import {throttle, type ThrottleSettings} from 'lodash-es'
+import throttle, {type ThrottleSettings} from 'lodash-es/throttle.js'
 import {useMemo} from 'react'
 
 /**

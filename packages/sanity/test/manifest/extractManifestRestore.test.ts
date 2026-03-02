@@ -5,7 +5,7 @@ import {
   type ObjectSchemaType,
   type SchemaType,
 } from '@sanity/types'
-import {pick} from 'lodash-es'
+import pick from 'lodash-es/pick.js'
 import {describe, expect, test} from 'vitest'
 
 import {extractManifestSchemaTypes} from '../../src/_internal/manifest/extractWorkspaceManifest'

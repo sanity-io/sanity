@@ -1,5 +1,6 @@
 import arrify from 'arrify'
-import {capitalize, pick} from 'lodash-es'
+import capitalize from 'lodash-es/capitalize.js'
+import pick from 'lodash-es/pick.js'
 
 import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'

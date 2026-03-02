@@ -1,4 +1,4 @@
-import {isPlainObject} from 'lodash-es'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import inspect from '../../inspect'
 import {error, HELP_IDS, warning} from '../createValidationResult'

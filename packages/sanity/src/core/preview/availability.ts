@@ -1,5 +1,6 @@
 import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {flatten, keyBy} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import keyBy from 'lodash-es/keyBy.js'
 import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'

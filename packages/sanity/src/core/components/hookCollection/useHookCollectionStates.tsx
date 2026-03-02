@@ -1,4 +1,4 @@
-import {type ThrottleSettings} from 'lodash-es'
+import {type ThrottleSettings} from 'lodash-es/throttle.js'
 import {useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 

@@ -1,6 +1,6 @@
 import {type CliCommandContext} from '@sanity/cli'
 import chalk from 'chalk'
-import {uniq} from 'lodash-es'
+import uniq from 'lodash-es/uniq.js'
 
 import {isDefined} from '../../../manifest/manifestTypeHelpers'
 import {type SchemaStoreActionResult, type SchemaStoreContext} from './schemaStoreTypes'

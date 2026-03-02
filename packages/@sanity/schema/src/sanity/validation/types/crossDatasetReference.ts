@@ -1,4 +1,5 @@
-import {flatten, isPlainObject} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS} from '../createValidationResult'

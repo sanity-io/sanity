@@ -1,4 +1,4 @@
-import {isEqual} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
 import {useEffect, useReducer, useRef} from 'react'
 import {distinctUntilChanged, type Observable, type Subscription} from 'rxjs'
 

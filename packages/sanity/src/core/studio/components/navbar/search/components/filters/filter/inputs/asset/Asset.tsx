@@ -1,7 +1,8 @@
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
-import {get, startCase} from 'lodash-es'
+import get from 'lodash-es/get.js'
+import startCase from 'lodash-es/startCase.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 

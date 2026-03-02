@@ -1,4 +1,4 @@
-import {findIndex} from 'lodash-es'
+import findIndex from 'lodash-es/findIndex.js'
 
 import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'

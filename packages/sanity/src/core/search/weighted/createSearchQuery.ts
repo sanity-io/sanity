@@ -1,6 +1,13 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type CrossDatasetType, type SchemaType} from '@sanity/types'
-import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash-es'
+import compact from 'lodash-es/compact.js'
+import flatten from 'lodash-es/flatten.js'
+import flow from 'lodash-es/flow.js'
+import toLower from 'lodash-es/toLower.js'
+import trim from 'lodash-es/trim.js'
+import union from 'lodash-es/union.js'
+import uniq from 'lodash-es/uniq.js'
+import words from 'lodash-es/words.js'
 
 import {
   deriveSearchWeightsFromType,

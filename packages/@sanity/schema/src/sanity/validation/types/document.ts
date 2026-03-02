@@ -1,4 +1,4 @@
-import {isPlainObject} from 'lodash-es'
+import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import {error} from '../createValidationResult'
 import object from './object'

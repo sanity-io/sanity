@@ -1,6 +1,10 @@
 import {type BifurClient} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
-import {flatten, groupBy, isEqual, omit, uniq} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
+import groupBy from 'lodash-es/groupBy.js'
+import isEqual from 'lodash-es/isEqual.js'
+import omit from 'lodash-es/omit.js'
+import uniq from 'lodash-es/uniq.js'
 import {nanoid} from 'nanoid'
 import {
   BehaviorSubject,

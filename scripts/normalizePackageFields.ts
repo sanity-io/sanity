@@ -1,4 +1,4 @@
-import {uniq} from 'lodash-es'
+import uniq from 'lodash-es/uniq.js'
 
 import {type PackageManifest} from './types'
 import transformPkgs from './utils/transformPkgs'

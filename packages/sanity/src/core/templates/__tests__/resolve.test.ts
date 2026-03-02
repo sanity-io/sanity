@@ -1,6 +1,6 @@
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type InitialValueResolverContext} from '@sanity/types'
-import {omit} from 'lodash-es'
+import omit from 'lodash-es/omit.js'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type resolveInitialValue as resolveInitialValueType, type Template} from '../'

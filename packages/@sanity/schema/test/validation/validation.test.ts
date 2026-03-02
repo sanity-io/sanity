@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {SquareIcon} from '@sanity/icons'
-import {flatten} from 'lodash-es'
+import flatten from 'lodash-es/flatten.js'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'

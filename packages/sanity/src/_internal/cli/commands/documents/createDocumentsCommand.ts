@@ -13,7 +13,9 @@ import {uuid} from '@sanity/uuid'
 import chokidar from 'chokidar'
 import execa from 'execa'
 import json5 from 'json5'
-import {isEqual, isPlainObject, noop} from 'lodash-es'
+import isEqual from 'lodash-es/isEqual.js'
+import isPlainObject from 'lodash-es/isPlainObject.js'
+import noop from 'lodash-es/noop.js'
 
 type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
 

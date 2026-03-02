@@ -8,6 +8,7 @@ export interface BlueprintsLogsFlags {
   watch?: boolean
   w?: boolean
   stack?: string
+  verbose?: boolean
 }
 
 const defaultFlags: BlueprintsLogsFlags = {
@@ -35,7 +36,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
 
     const cmdConfig = await initDeployedBlueprintConfig({
       bin: 'sanity',
-      log: logger.Logger(output.print),
+      log: logger.Logger(output.print, {verbose: flags.verbose}),
       stackOverride: flags.stack,
       token,
     })
@@ -46,6 +47,7 @@ const logsBlueprintsCommand: CliCommandDefinition<BlueprintsLogsFlags> = {
       ...cmdConfig.value,
       flags: {
         watch: flags.watch ?? flags.w,
+        verbose: flags.verbose,
       },
     })
 
