@@ -1,4 +1,4 @@
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocument, type Rule} from '@sanity/types'
 
 export default {
   name: 'sanity.imageAsset',
@@ -44,6 +44,7 @@ export default {
       title: 'SHA1 hash',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'extension',
@@ -51,6 +52,7 @@ export default {
       readOnly: true,
       title: 'File extension',
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'mimeType',
@@ -58,6 +60,7 @@ export default {
       readOnly: true,
       title: 'Mime type',
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'size',
@@ -65,6 +68,7 @@ export default {
       title: 'File size in bytes',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'assetId',
@@ -72,6 +76,7 @@ export default {
       title: 'Asset ID',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'uploadId',
@@ -86,6 +91,7 @@ export default {
       title: 'Path',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'url',
@@ -93,6 +99,7 @@ export default {
       title: 'Url',
       readOnly: true,
       fieldset: 'system',
+      validation: (Rule: Rule) => Rule.required(),
     },
     {
       name: 'metadata',
