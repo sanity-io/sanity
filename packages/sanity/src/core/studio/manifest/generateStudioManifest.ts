@@ -20,7 +20,7 @@ export interface GenerateStudioManifestOptions<W extends ManifestWorkspaceInput>
    * Function to resolve the icon HTML string for a workspace.
    * Return undefined if the icon cannot be resolved.
    */
-  resolveIcon: (workspace: W) => string | undefined
+  resolveIcon: (workspace: W) => string | undefined | Promise<string | undefined>
   /** The Sanity version string */
   bundleVersion: string
   /** Optional build ID */
@@ -30,11 +30,11 @@ export interface GenerateStudioManifestOptions<W extends ManifestWorkspaceInput>
 /**
  * Generates a workspace manifest entry from a workspace and its schema descriptor ID.
  */
-function generateWorkspaceManifest<W extends ManifestWorkspaceInput>(
+async function generateWorkspaceManifest<W extends ManifestWorkspaceInput>(
   workspace: W,
   schemaDescriptorId: string,
-  resolveIcon: (workspace: W) => string | undefined,
-): StudioWorkspaceManifest {
+  resolveIcon: (workspace: W) => string | undefined | Promise<string | undefined>,
+): Promise<StudioWorkspaceManifest> {
   return {
     name: workspace.name,
     projectId: workspace.projectId,
@@ -43,7 +43,7 @@ function generateWorkspaceManifest<W extends ManifestWorkspaceInput>(
     basePath: workspace.basePath || undefined,
     title: workspace.title || undefined,
     subtitle: workspace.subtitle || undefined,
-    icon: resolveIcon(workspace),
+    icon: await resolveIcon(workspace),
     mediaLibraryId: workspace.mediaLibrary?.enabled ? workspace.mediaLibrary.libraryId : undefined,
   }
 }
