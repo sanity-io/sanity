@@ -1,6 +1,3 @@
-import max from 'lodash-es/max.js'
-import min from 'lodash-es/min.js'
-
 import {type Expression} from '../jsonpath'
 import {type ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
@@ -55,7 +52,11 @@ export class InsertPatch {
 }
 
 function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
-  let result = min(targetsToIndicies(targets, accessor)) || 0
+  const indices = targetsToIndicies(targets, accessor)
+  let result = 0
+  for (const idx of indices) {
+    if (idx < result) result = idx
+  }
 
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
@@ -70,7 +71,11 @@ function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
 }
 
 function maxIndex(targets: Expression[], accessor: ImmutableAccessor): number {
-  let result = max(targetsToIndicies(targets, accessor)) || 0
+  const indices = targetsToIndicies(targets, accessor)
+  let result = 0
+  for (const idx of indices) {
+    if (idx > result) result = idx
+  }
 
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {

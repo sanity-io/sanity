@@ -1,5 +1,3 @@
-import compact from 'lodash-es/compact.js'
-
 import {type Expression} from './Expression'
 import {Matcher} from './Matcher'
 import {PlainProbe} from './PlainProbe'
@@ -46,5 +44,5 @@ function accessorsFromTarget(target: Expression, accessor: Probe) {
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }
-  return compact(result)
+  return result.filter(Boolean)
 }
