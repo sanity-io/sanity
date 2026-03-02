@@ -164,6 +164,7 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
+          noWarnOnMultipleProjects: true,
           project: [
             'dev/*/tsconfig.json',
             'examples/*/tsconfig.json',
