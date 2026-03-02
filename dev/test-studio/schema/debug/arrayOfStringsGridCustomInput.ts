@@ -21,6 +21,19 @@ export const arrayOfStringsGridCustomInput = defineType({
       initialValue: 'Issue #5554 repro',
     }),
     defineField({
+      name: 'arrayOfStrings',
+      type: 'array',
+      of: [{type: 'string'}],
+    }),
+    defineField({
+      name: 'arrayOfStringsGrid',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        layout: 'grid',
+      },
+    }),
+    defineField({
       name: 'colors',
       title: 'Colors',
       type: 'array',
