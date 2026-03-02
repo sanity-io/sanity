@@ -21,6 +21,7 @@
     "@see": true,
     "@link": true,
     "@example": true,
+    "@alias": true,
     "@deprecated": true,
     "@alpha": true,
     "@param": true,
