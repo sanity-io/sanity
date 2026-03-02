@@ -1,14 +1,7 @@
-import {
-  type ChangeEvent,
-  type ForwardedRef,
-  forwardRef,
-  type HTMLProps,
-  useCallback,
-  useId,
-} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 
-import {type MenuItemProps} from '../../../../../../ui-components'
-import {FileMenuItem} from './FileInputMenuItem.styled'
+import {MenuItem, type MenuItemProps} from '../../../../../../ui-components'
+import {openFilePicker} from '../openFilePicker'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {
   accept?: string
@@ -21,49 +14,28 @@ export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> 
 export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
   props: FileInputMenuItemProps &
     Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: ForwardedRef<HTMLInputElement>,
+  forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {icon, id: idProp, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
-  const id = `${idProp || ''}-${useId()}`
+  const {icon, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
 
-  const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      if (onSelect && event.target.files) {
-        onSelect(Array.from(event.target.files))
-      }
-    },
-    [onSelect],
-  )
+  const handleClick = useCallback(() => {
+    if (disabled || !onSelect) return
+    openFilePicker({
+      accept,
+      capture,
+      multiple,
+      onSelect,
+    })
+  }, [accept, capture, disabled, multiple, onSelect])
 
-  const renderMenuItem = useCallback(
-    (item: React.JSX.Element) => (
-      <div>
-        {item}
-        {/* Visibly hidden input */}
-        <input
-          data-testid="file-menuitem-input"
-          accept={accept}
-          capture={capture}
-          id={id}
-          multiple={multiple}
-          onChange={handleChange}
-          type="file"
-          value=""
-          disabled={disabled}
-        />
-      </div>
-    ),
-    [accept, capture, disabled, handleChange, id, multiple],
-  )
   return (
-    <FileMenuItem
+    <MenuItem
       {...rest}
-      htmlFor={id}
       disabled={disabled}
       ref={forwardedRef}
       icon={icon}
       text={text}
-      renderMenuItem={renderMenuItem}
+      onClick={handleClick}
     />
   )
 })
