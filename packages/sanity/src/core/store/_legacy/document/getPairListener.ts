@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import {defer, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
+import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../releases'
@@ -99,8 +99,12 @@ export function getPairListener(
   ) {
     throw new Error('VersionId cannot be "published" or "drafts"')
   }
-  const sharedEvents = defer(() =>
-    (
+  const markPrefix = `document.pair-listener:${publishedId}`
+  performance.mark(`${markPrefix}:subscribe`)
+
+  const sharedEvents = defer(() => {
+    performance.mark(`${markPrefix}:listen-start`)
+    return (
       client.observable.listen(
         `*[_id in $ids]`,
         {
@@ -116,6 +120,15 @@ export function getPairListener(
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>
     ).pipe(
       dedupeListenerEvents(),
+      tap((event) => {
+        if (event.type === 'welcome') {
+          performance.mark(`${markPrefix}:welcome`)
+          performance.measure(`${markPrefix}:listen→welcome`, {
+            start: `${markPrefix}:listen-start`,
+            end: `${markPrefix}:welcome`,
+          })
+        }
+      }),
       map((event): WelcomeEvent | MutationEvent | ReconnectEvent =>
         event.type === 'mutation'
           ? {
@@ -129,8 +142,8 @@ export function getPairListener(
       shareReplayLatest({
         predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
       }),
-    ),
-  )
+    )
+  })
 
   const pairEvents$ = sharedEvents.pipe(
     scan(
@@ -170,13 +183,25 @@ export function getPairListener(
       // However, as long as the document is actively being edited, either by the local user, or other collaborators,
       // the gap detection and recovery will eventually activate and the document will be consistent again.
       return shouldSyncDocument
-        ? fetchInitialDocumentSnapshots().pipe(
+        ? (performance.mark(`${markPrefix}:fetch-start`),
+          fetchInitialDocumentSnapshots().pipe(
+            tap(() => {
+              performance.mark(`${markPrefix}:fetch-done`)
+              performance.measure(`${markPrefix}:welcome→fetch (waterfall)`, {
+                start: `${markPrefix}:welcome`,
+                end: `${markPrefix}:fetch-done`,
+              })
+              performance.measure(`${markPrefix}:subscribe→snapshots (total)`, {
+                start: `${markPrefix}:subscribe`,
+                end: `${markPrefix}:fetch-done`,
+              })
+            }),
             mergeMap(({draft, published, version}) => [
               createSnapshotEvent(draftId, draft),
               createSnapshotEvent(publishedId, published),
               ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
             ]),
-          )
+          ))
         : of(event)
     }),
     scan(
